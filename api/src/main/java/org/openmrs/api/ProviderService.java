@@ -9,10 +9,6 @@
  */
 package org.openmrs.api;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
@@ -20,6 +16,10 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This service contains methods relating to providers.
@@ -52,8 +52,8 @@ public interface ProviderService extends OpenmrsService {
 	/**
 	 * Retires a given Provider
 	 * 
-	 * @param Provider provider to retire
-	 * @param String reason why the provider is retired
+	 * @param provider provider to retire
+	 * @param reason reason why the provider is retired
 	 * @should retire a provider
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROVIDERS })
@@ -62,7 +62,7 @@ public interface ProviderService extends OpenmrsService {
 	/**
 	 * Unretire a given Provider
 	 * 
-	 * @param Provider provider to unretire
+	 * @param provider provider to unretire
 	 * @should unretire a provider
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROVIDERS })
@@ -71,7 +71,7 @@ public interface ProviderService extends OpenmrsService {
 	/**
 	 * Deletes a given Provider
 	 * 
-	 * @param Provider provider to be deleted
+	 * @param provider provider to be deleted
 	 * @should delete a provider
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_PROVIDERS })
@@ -90,16 +90,14 @@ public interface ProviderService extends OpenmrsService {
 	/**
 	 * @param provider
 	 * @return the Provider object after saving it in the database
-	 * @should save a Provider with provider name alone
 	 * @should save a Provider with Person alone
-	 * @should not save a Provider with both name and person
-	 * @should not save a Provider with both name and person being null
+	 * @should not save a Provider person being null
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROVIDERS })
 	public Provider saveProvider(Provider provider);
 	
 	/**
-	 * @param string
+	 * @param uuid
 	 * @return the Provider object having the given uuid
 	 * @should get provider given Uuid
 	 */

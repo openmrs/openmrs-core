@@ -386,7 +386,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * Returns all childLocations where child.locationId = this.locationId.
 	 *
 	 * @param includeRetired specifies whether or not to include voided childLocations
-	 * @return Returns a Set<Location> of all the childLocations.
+	 * @return Returns a Set&lt;Location&gt; of all the childLocations.
 	 * @since 1.5
 	 * @should return a set of locations
 	 */
@@ -408,7 +408,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * Returns the descendant locations.
 	 *
 	 * @param includeRetired specifies whether or not to include voided childLocations
-	 * @return Returns a Set<Location> of the descendant location.
+	 * @return Returns a Set&lt;Location&gt; of the descendant location.
 	 * @since 1.10
 	 */
 	public Set<Location> getDescendantLocations(boolean includeRetired) {

@@ -60,7 +60,7 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#loadClass(String)}
+	 * @see Context#loadClass(String)
 	 */
 	@Test
 	@Verifies(value = "should load class with the OpenmrsClassLoader", method = "loadClass(String)")

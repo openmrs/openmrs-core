@@ -29,8 +29,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 /**
- * This class should test all methods on the person object.<br/>
- * <br/>
+ * This class should test all methods on the person object.<br>
+ * <br>
  * This class does not touch the database, so it does not need to extend the normal openmrs BaseTest
  */
 public class PersonTest extends BaseContextSensitiveTest {
@@ -257,7 +257,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addAttribute(pa3);
 		// make sure the attribute IS added
 		assertTrue("There should be 3 attributes in the person object but there is actually : " + p.getAttributes().size(),
-		    p.getAttributes().size() == 3);
+				p.getAttributes().size() == 3);
 		
 		p.removeAttribute(pa3);
 		assertTrue("There should be only 2 attribute in the person object now", p.getAttributes().size() == 2);
@@ -309,7 +309,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age after birthday", method = "getAge(Date)")
@@ -324,7 +324,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age before birthday", method = "getAge(Date)")
@@ -339,7 +339,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age on birthday with minutes defined", method = "getAge(Date)")
@@ -354,7 +354,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age on birthday with no minutes defined", method = "getAge(Date)")
@@ -369,7 +369,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge()}
+	 * @see Person#getAge()
 	 */
 	@Test
 	@Verifies(value = "should get age after death", method = "getAge()")
@@ -386,7 +386,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age with given date after death", method = "getAge(Date)")
@@ -405,7 +405,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age with given date before death", method = "getAge(Date)")
@@ -424,7 +424,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age with given date before birth", method = "getAge(Date)")
@@ -443,7 +443,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#addAttribute(PersonAttribute)}
+	 * @see Person#addAttribute(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should not save an attribute with a blank string value", method = "addAttribute(PersonAttribute)")
@@ -464,7 +464,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#addAttribute(PersonAttribute)}
+	 * @see Person#addAttribute(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should not save an attribute with a null value", method = "addAttribute(PersonAttribute)")
@@ -485,7 +485,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#addAttribute(PersonAttribute)}
+	 * @see Person#addAttribute(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should void old attribute when a null or blank string value is added", method = "addAttribute(PersonAttribute)")
@@ -523,7 +523,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#addAddress(PersonAddress)}
+	 * @see Person#addAddress(PersonAddress)
 	 */
 	@Test
 	@Verifies(value = "should not add a person address with blank fields", method = "addAddress(PersonAddress)")
@@ -615,7 +615,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		PersonName expectedPersonName = notVoidedName;
 		
 		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<PersonName>(Arrays.asList(notVoidedName,
-		    voidedName)));
+				voidedName)));
 	}
 	
 	/**
@@ -683,7 +683,46 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		Assert.assertNull(notVoidedPerson.getPersonName());
 	}
-	
+
+	/**
+	 * @see Person#getBirthDateTime()
+	 * @verifies return birthtime along with birthdate
+	 */
+	@Test
+	public void getBirthDateTime_shouldReturnBirthDateTimeAlongWithBirthdate() throws Exception {
+		Person person = new Person();
+
+		person.setBirthdate(new SimpleDateFormat("yyyy-MM-dd").parse("2012-01-01"));
+		person.setBirthtime(new SimpleDateFormat("HH:mm:ss").parse("11:11:11"));
+
+		Assert.assertEquals(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2012-01-01 11:11:11"), person.getBirthDateTime());
+	}
+
+	/**
+	 * @see Person#getBirthDateTime()
+	 * @verifies return null if birthdate is null
+	 */
+	@Test
+	public void getBirthDateTime_shouldReturnNullIfBirthdateIsNull() throws Exception {
+		Person person = new Person();
+
+		person.setBirthdate(null);
+		Assert.assertNull(person.getBirthDateTime());
+	}
+
+	/**
+	 * @see Person#getBirthDateTime()
+	 * @verifies return null if birthtime is null
+	 */
+	@Test
+	public void getBirthDateTime_shouldReturnNullIfBirthtimeIsNull() throws Exception {
+		Person person = new Person();
+
+		person.setBirthdate(new SimpleDateFormat("yyyy-MM-dd").parse("2012-01-01"));
+		person.setBirthtime(null);
+		Assert.assertNull(person.getBirthDateTime());
+	}
+
 	private void checkGetPersonAddressResultForVoidedPerson(PersonAddress expectedPersonAddress,
 	        Set<PersonAddress> personAddresses) {
 		

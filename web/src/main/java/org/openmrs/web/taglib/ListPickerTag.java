@@ -33,6 +33,8 @@ public class ListPickerTag extends TagSupport {
 	
 	private Collection<Object> inheritedItems;
 	
+	private Collection<Object> descendantItems;
+	
 	public int doStartTag() {
 		Random gen = new Random();
 		if (name == null) {
@@ -44,13 +46,18 @@ public class ListPickerTag extends TagSupport {
 		if (inheritedItems == null) {
 			inheritedItems = new Vector<Object>();
 		}
+		if (descendantItems == null) {
+			descendantItems = new Vector<Object>();
+		}
 		if (allItems == null) {
 			allItems = new Vector<Object>();
 		}
-		
 		String str = "\n<div id='" + name + "' class='listItemBox'>";
 		
 		for (Object item : allItems) {
+			if (descendantItems.contains(item)) {
+				continue;
+			}
 			boolean checked = false;
 			boolean inherited = false;
 			if (currentItems.contains(item)) {
@@ -122,6 +129,14 @@ public class ListPickerTag extends TagSupport {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public Collection<Object> getDescendantItems() {
+		return descendantItems;
+	}
+	
+	public void setDescendantItems(Collection<Object> descendantItems) {
+		this.descendantItems = descendantItems;
 	}
 	
 }

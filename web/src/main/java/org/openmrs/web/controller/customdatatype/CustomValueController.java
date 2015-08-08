@@ -46,7 +46,7 @@ public class CustomValueController {
 	 * @param handlerClassname
 	 * @param datatypeClassname
 	 * @param valueReference
-	 * @return
+	 * @return html markup
 	 * @throws IOException
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = "**/viewCustomValue.form")

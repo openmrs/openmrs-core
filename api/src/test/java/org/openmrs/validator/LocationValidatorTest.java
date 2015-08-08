@@ -23,7 +23,7 @@ import org.springframework.validation.Errors;
 public class LocationValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link LocationValidator#validate(Object,Errors)}
+	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if name is null or empty", method = "validate(Object,Errors)")
@@ -39,7 +39,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationValidator#validate(Object,Errors)}
+	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if retired and retireReason is null or empty", method = "validate(Object,Errors)")
@@ -55,7 +55,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationValidator#validate(Object,Errors)}
+	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should set retired to false if retireReason is null or empty", method = "validate(Object,Errors)")
@@ -71,7 +71,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationValidator#validate(Object,Errors)}
+	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all fields are correct", method = "validate(Object,Errors)")
@@ -87,7 +87,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationValidator#validate(Object,Errors)}
+	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if retired location is given retired reason", method = "validate(Object,Errors)")
@@ -105,7 +105,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationValidator#validate(Object,Errors)}
+	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if parent location creates a loop", method = "validate(Object,Errors)")
@@ -127,7 +127,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.validator.LocationValidator#validate(Object,Errors)}
+	 * @see org.openmrs.validator.LocationValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if location name is already exist", method = "validate(Object,Errors)")
@@ -143,7 +143,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationValidator#validate(Object,Errors)}
+	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -173,7 +173,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationValidator#validate(Object,Errors)}
+	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

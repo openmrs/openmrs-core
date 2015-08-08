@@ -105,7 +105,7 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	 * Set the properties of the task. This overrides any properties previously set with the
 	 * setProperty(String, String) method.
 	 * 
-	 * @param properties <code>Map<String, String></code> of the properties to set
+	 * @param properties <code>Map&lt;String, String&gt;</code> of the properties to set
 	 */
 	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;

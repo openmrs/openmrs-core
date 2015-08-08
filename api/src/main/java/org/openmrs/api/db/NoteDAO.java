@@ -24,7 +24,7 @@ public interface NoteDAO {
 	/**
 	 * Get all notes
 	 * 
-	 * @return List<Note> object with all Notes
+	 * @return List&lt;Note&gt; object with all Notes
 	 * @throws DAOException
 	 */
 	public List<Note> getNotes() throws DAOException;

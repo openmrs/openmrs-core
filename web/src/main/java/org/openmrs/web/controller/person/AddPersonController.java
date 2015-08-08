@@ -14,14 +14,16 @@ import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.Vector;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
@@ -33,7 +35,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
-import org.apache.commons.lang.StringUtils;
 
 public class AddPersonController extends SimpleFormController {
 	
@@ -78,7 +79,7 @@ public class AddPersonController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
 	        BindException errors) throws Exception {
 		
-		HashMap<String, String> person = getParametersFromRequest(request);
+		Map<String, String> person = getParametersFromRequest(request);
 		
 		String personId = person.get(PERSON_ID);
 		String viewType = person.get(VIEW_TYPE);
@@ -137,7 +138,7 @@ public class AddPersonController extends SimpleFormController {
 			Integer userId = Context.getAuthenticatedUser().getUserId();
 			
 			invalidAgeFormat = false;
-			HashMap<String, String> person = getParametersFromRequest(request);
+			Map<String, String> person = getParametersFromRequest(request);
 			
 			String gender = person.get(GENDER);
 			String name = person.get(NAME);
@@ -232,7 +233,7 @@ public class AddPersonController extends SimpleFormController {
 		log.debug("Found list of size: " + personList.size());
 		
 		if (personList.size() < 1 && Context.isAuthenticated()) {
-			HashMap<String, String> person = getParametersFromRequest(request);
+			Map<String, String> person = getParametersFromRequest(request);
 			
 			String name = person.get(NAME);
 			String birthdate = person.get(BIRTH_DATE);
@@ -271,7 +272,7 @@ public class AddPersonController extends SimpleFormController {
 	private String getPersonURL(String personId, String personType, String viewType, HttpServletRequest request)
 	        throws ServletException, UnsupportedEncodingException {
 		
-		HashMap<String, String> person = getParametersFromRequest(request);
+		Map<String, String> person = getParametersFromRequest(request);
 		
 		if ("patient".equals(personType)) {
 			if ("edit".equals(viewType)) {
@@ -305,7 +306,7 @@ public class AddPersonController extends SimpleFormController {
 	 * @param person@return
 	 * @throws UnsupportedEncodingException
 	 */
-	private String getParametersForURL(HashMap<String, String> person) throws UnsupportedEncodingException {
+	private String getParametersForURL(Map<String, String> person) throws UnsupportedEncodingException {
 		
 		if (StringUtils.isEmpty(person.get(PERSON_ID))) {
 			return "?addName=" + URLEncoder.encode(person.get(NAME), "UTF-8") + "&addBirthdate=" + person.get(BIRTH_DATE)
@@ -324,8 +325,8 @@ public class AddPersonController extends SimpleFormController {
 	/**
 	 * @param request
 	 */
-	private HashMap<String, String> getParametersFromRequest(HttpServletRequest request) {
-		HashMap<String, String> person = new HashMap<String, String>();
+	private Map<String, String> getParametersFromRequest(HttpServletRequest request) {
+		Map<String, String> person = new HashMap<String, String>();
 		person.put(NAME, ServletRequestUtils.getStringParameter(request, "addName", ""));
 		person.put(BIRTH_DATE, ServletRequestUtils.getStringParameter(request, "addBirthdate", ""));
 		person.put(AGE, ServletRequestUtils.getStringParameter(request, "addAge", ""));

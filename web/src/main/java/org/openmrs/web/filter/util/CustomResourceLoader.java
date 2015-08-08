@@ -70,7 +70,7 @@ public class CustomResourceLoader {
 	/**
 	 * Returns singleton instance of custom resource loader
 	 *
-	 * @param basedir <b>(optional)</b> the absolute path to directory, that contains resources to
+	 * @param httpRequest <b>(optional)</b> the absolute path to directory, that contains resources to
 	 *            be loaded. If this isn't specified then <code>${CONTEXT-ROOT}/WEB-INF/</code> will
 	 *            be used
 	 * @return the singleton instance of {@link CustomResourceLoader}
@@ -106,8 +106,8 @@ public class CustomResourceLoader {
 	
 	/**
 	 * Searches under the base directory on the file system for possible message properties files
-	 * and loads them. <br />
-	 * <br />
+	 * and loads them. <br>
+	 * <br>
 	 * It iterates over each file, nested to the base directory, and decides if this file is a
 	 * messages properties. Then, if file is suitable, it parses the locale from its name. And
 	 * finally, it loads resource bundle for that file and associates it with locale, derived from

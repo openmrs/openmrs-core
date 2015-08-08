@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 public class GZIPFilterTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link org.openmrs.web.filter.GZIPFilter#doFilterInternal(HttpServletRequest,HttpServletResponse, javax.servlet.FilterChain)}
+	 * @see org.openmrs.web.filter.GZIPFilter#doFilterInternal(HttpServletRequest,HttpServletResponse, javax.servlet.FilterChain)
 	 */
 	@Test
 	@Verifies(value = "zip request and response", method = "performGZIPRequest(HttpServletRequest,HttpServletResponse,FilterChain)")

@@ -71,7 +71,6 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
-import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
@@ -86,8 +85,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Hibernate specific implementation of the PatientSetDAO. <br/>
- * <br/>
+ * Hibernate specific implementation of the PatientSetDAO. <br>
+ * <br>
  * This class should not be instantiated. Rather, it is injected into the PatientSetService by
  * Spring.
  * 
@@ -125,17 +124,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		ret.append("</patientset>");
 		return ret.toString();
 	}
-	
-	private String formatUserName(User u) {
-		return u.getPersonName().getFullName();
-	}
-	
-	private String formatUser(User u) {
-		StringBuilder ret = new StringBuilder();
-		ret.append(u.getUserId() + "^" + formatUserName(u));
-		return ret.toString();
-	}
-	
+
 	DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	private Element obsElementHelper(Document doc, Locale locale, Obs obs) {
@@ -1779,7 +1768,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@SuppressWarnings("unchecked")
 	public Map<Integer, Collection<Integer>> getActiveDrugIds(Collection<Integer> patientIds, Date fromDate, Date toDate)
 	        throws DAOException {
-		HashSet<Integer> idsLookup = patientIds == null ? null
+		Set<Integer> idsLookup = patientIds == null ? null
 		        : (patientIds instanceof HashSet ? (HashSet<Integer>) patientIds : new HashSet<Integer>(patientIds));
 		
 		Map<Integer, Collection<Integer>> ret = new HashMap<Integer, Collection<Integer>>();
@@ -2183,7 +2172,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * @param patients
-	 * @param types List<PatientIdentifierTypes> of types to get
+	 * @param types List&lt;PatientIdentifierTypes&gt; of types to get
 	 * @return Map of {@link PatientIdentifier}s
 	 */
 	@SuppressWarnings("unchecked")

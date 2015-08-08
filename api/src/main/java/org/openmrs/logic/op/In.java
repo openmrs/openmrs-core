@@ -10,12 +10,12 @@
 package org.openmrs.logic.op;
 
 /**
- * The In operator test whether a value is in a collection of value or not.<br />
- * <br />
- * Example: <br />
+ * The In operator test whether a value is in a collection of value or not.<br>
+ * <br>
+ * Example: <br>
  * <code>
- *  Collection answers = Collection.asList("ADULTRETURN");<br />
- *  logicService.parseString(EncounterDataSource.ENCOUNTER_KEY).in(typeNames);<br />
+ *  Collection answers = Collection.asList("ADULTRETURN");<br>
+ *  logicService.parseString(EncounterDataSource.ENCOUNTER_KEY).in(typeNames);<br>
  * </code> The above criteria will test whether a patient have EncounterType in the list
  */
 public class In implements ComparisonOperator {

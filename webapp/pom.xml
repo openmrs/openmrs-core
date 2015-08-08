@@ -107,13 +107,13 @@
              <artifactId>jetty-maven-plugin</artifactId>
              <version>8.1.16.v20140903</version>
              <configuration>
-               <webXml>${project.build.directory}/jetty/WEB-INF/web.xml</webXml>
-               <webAppConfig>
+               <webApp>
+               	  <descriptor>${project.build.directory}/jetty/WEB-INF/web.xm</descriptor>
                   <contextPath>/${webapp.name}</contextPath>
                   <!--enable reloading static resources -->
                   <overrideDescriptor>src/test/resources/override-web.xml</overrideDescriptor>
                   <extraClasspath>target/classes;../api/target/classes;../web/target/classes</extraClasspath>
-               </webAppConfig>
+               </webApp>
                <scanIntervalSeconds>10</scanIntervalSeconds>
                <scanTargets>
                   <scanTarget>../api/target/classes</scanTarget>
@@ -159,13 +159,13 @@
                    <artifactId>jetty-maven-plugin</artifactId>
                    <version>8.1.16.v20140903</version>
                    <configuration>
-                     <webXml>${project.build.directory}/jetty/WEB-INF/web.xml</webXml>
-                     <webAppConfig>
-                        <contextPath>/${webapp.name}</contextPath>
-                        <!--enable reloading static resources -->
-                        <overrideDescriptor>src/test/resources/override-web.xml</overrideDescriptor>
-                        <extraClasspath>target/classes;../api/target/classes;../web/target/classes</extraClasspath>
-                     </webAppConfig>
+                     <webApp>
+               	  		<descriptor>${project.build.directory}/jetty/WEB-INF/web.xml</descriptor>
+                  		<contextPath>/${webapp.name}</contextPath>
+                  		<!--enable reloading static resources -->
+                  		<overrideDescriptor>src/test/resources/override-web.xml</overrideDescriptor>
+                  		<extraClasspath>target/classes;../api/target/classes;../web/target/classes</extraClasspath>
+               		 </webApp>
                      <scanIntervalSeconds>0</scanIntervalSeconds>
                   </configuration>
                </plugin>

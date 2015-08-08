@@ -30,7 +30,7 @@ import org.openmrs.web.controller.observation.handler.WebHandlerUtils;
 public class WebImageHandler extends ImageHandler {
 	
 	/** Views supported by this handler */
-	private static final String[] supportedViews = { ComplexObsHandler.URI_VIEW, ComplexObsHandler.HTML_VIEW, };
+	private static final String[] supportedViews = { ComplexObsHandler.URI_VIEW, ComplexObsHandler.HTML_VIEW };
 	
 	/**
 	 * Default Constructor
@@ -44,14 +44,14 @@ public class WebImageHandler extends ImageHandler {
 	 * listed in ComplexObsHandler.*_VIEW. <br>
 	 * Currently the only implemented views are those implemented by ancestor plus the following:
 	 * <ul>
-	 * <li>{@link WebConstants#URI_VIEW}: a lightweight alternative to returning the
+	 * <li>{@link ComplexObsHandler#URI_VIEW}: a lightweight alternative to returning the
 	 * ComplexData from the parent class since this does not require access to the service layer.
 	 * Gives a link to the ComplexServlet for this obs
-	 * <li>{@link WebConstants#HTML_VIEW}: An html tag that will display this complex data. For this
+	 * <li>{@link ComplexObsHandler#HTML_VIEW}: An html tag that will display this complex data. For this
 	 * ImageHandler, its an html img tag.
 	 * </ul>
 	 * 
-	 * @see org.openmrs.obs.handler.ImageHandler#getComplexData(org.openmrs.Obs, java.lang.String)
+	 * @see org.openmrs.obs.handler.ImageHandler#getObs(Obs, String)
 	 */
 	@Override
 	public Obs getObs(Obs obs, String view) {
@@ -79,10 +79,10 @@ public class WebImageHandler extends ImageHandler {
 	 */
 	@Override
 	public String[] getSupportedViews() {
-		List view_list = new ArrayList(Arrays.asList(supportedViews));
-		view_list.addAll(Arrays.asList(super.getSupportedViews()));
-		String[] views = new String[view_list.size()];
-		view_list.toArray(views);
+		List viewList = new ArrayList(Arrays.asList(supportedViews));
+		viewList.addAll(Arrays.asList(super.getSupportedViews()));
+		String[] views = new String[viewList.size()];
+		viewList.toArray(views);
 		return views;
 	}
 	

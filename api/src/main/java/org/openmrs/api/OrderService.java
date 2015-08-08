@@ -32,6 +32,8 @@ import org.openmrs.util.PrivilegeConstants;
  */
 public interface OrderService extends OpenmrsService {
 	
+	public static final String PARALLEL_ORDERS = "PARALLEL_ORDERS";
+	
 	/**
 	 * Setter for the Order data access object. The dao is used for saving and getting orders
 	 * to/from the database
@@ -80,14 +82,19 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail if the careSetting of the previous order does not match
 	 * @should set concept for drug orders if null
 	 * @should pass for a discontinuation order with no previous order
-	 * @should fail if an active order for the same concept and care setting exists
+	 * @should fail if an active drug order for the same concept and care setting exists
+	 * @should pass if an active test order for the same concept and care setting exists
 	 * @should pass if an active order for the same concept exists in a different care setting
 	 * @should set Order type of Drug Order to drug order if not set and concept not mapped
 	 * @should set Order type of Test Order to test order if not set and concept not mapped
-	 * @should fail if an active drug order for the same drug formulation exists
+	 * @should throw AmbiguousOrderException if an active drug order for the same drug formulation exists
 	 * @should pass if an active order for the same concept exists in a different care setting
+	 * @should fail for revision order if an active drug order for the same concept and care settings exists
+	 * @should pass for revision order if an active test order for the same concept and care settings exists
 	 * @should roll the autoExpireDate to the end of the day if it has no time component
 	 * @should not change the autoExpireDate if it has a time component
+	 * @should throw AmbiguousOrderException if disconnecting multiple active orders for the given concept
+	 * @should throw AmbiguousOrderException if disconnecting multiple active drug orders with the same drug
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order, OrderContext orderContext) throws APIException;
@@ -148,7 +155,7 @@ public interface OrderService extends OpenmrsService {
 	 * Get Order by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return order or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -282,7 +289,6 @@ public interface OrderService extends OpenmrsService {
 	 * OrderType as of the specified date. Below is the criteria for determining an active order:
 	 * 
 	 * <pre>
-	 * <p>
 	 * - Not voided
 	 * - Not a discontinuation Order i.e one where action != Action#DISCONTINUE
 	 * - dateActivated is before or equal to asOfDate
@@ -290,8 +296,7 @@ public interface OrderService extends OpenmrsService {
 	 * after asOfDate OR if it has autoExpireDate, then it should be after asOfDate. NOTE: If both
 	 * dateStopped and autoExpireDate are set then dateStopped wins because an order can never
 	 * expire and then stopped later i.e. you stop an order that hasn't yet expired
-	 * <p/>
-	 * <pre/>
+	 * </pre>
 	 * 
 	 * @param patient the patient
 	 * @param orderType The OrderType to match
@@ -400,7 +405,7 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Gets all order frequencies
 	 * 
-	 * @return List<OrderFrequency>
+	 * @return List&lt;OrderFrequency&gt;
 	 * @since 1.10
 	 * @param includeRetired specifies whether retired ones should be included or not
 	 * @should return only non retired order frequencies if includeRetired is set to false
@@ -420,7 +425,7 @@ public interface OrderService extends OpenmrsService {
 	 *            matched
 	 * @param includeRetired Specifies if retired order frequencies that match should be included or
 	 *            not
-	 * @return List<OrderFrequency>
+	 * @return List&lt;OrderFrequency&gt;
 	 * @since 1.10
 	 * @should get non retired frequencies with names matching the phrase if includeRetired is false
 	 * @should include retired frequencies if includeRetired is set to true
@@ -650,7 +655,7 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @return concept list of drug routes
 	 * @since 1.10
-	 * @Should return an empty list if nothing is configured
+	 * @should return an empty list if nothing is configured
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Concept> getDrugRoutes();

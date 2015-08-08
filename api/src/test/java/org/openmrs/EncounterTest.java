@@ -47,7 +47,7 @@ public class EncounterTest extends BaseContextMockTest {
 	ProviderService providerService;
 	
 	/**
-	 * @see {@link Encounter#toString()}
+	 * @see Encounter#toString()
 	 */
 	@Test
 	@Verifies(value = "should not fail with empty object", method = "toString()")
@@ -58,7 +58,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#removeObs(Obs)}
+	 * @see Encounter#removeObs(Obs)
 	 */
 	@Test
 	@Verifies(value = "should remove obs successfully", method = "removeObs(Obs)")
@@ -80,7 +80,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#removeObs(Obs)}
+	 * @see Encounter#removeObs(Obs)
 	 */
 	@Test
 	@Verifies(value = "should not throw error when removing null obs from empty set", method = "removeObs(Obs)")
@@ -90,7 +90,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#removeObs(Obs)}
+	 * @see Encounter#removeObs(Obs)
 	 */
 	@Test
 	@Verifies(value = "should not throw error when removing null obs from non empty set", method = "removeObs(Obs)")
@@ -106,7 +106,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObs()}
+	 * @see Encounter#getObs()
 	 */
 	@Test
 	@Verifies(value = "should not return null with null obs set", method = "getObs()")
@@ -118,7 +118,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getAllObs(null)}
+	 * @see Encounter#getAllObs(null)
 	 */
 	@Test
 	@Verifies(value = "should not return null with null obs set", method = "getAllObs(null)")
@@ -131,7 +131,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObsAtTopLevel(null)}
+	 * @see Encounter#getObsAtTopLevel(null)
 	 */
 	@Test
 	@Verifies(value = "should not return null with null obs set", method = "getObsAtTopLevel(null)")
@@ -144,7 +144,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObs()}
+	 * @see Encounter#getObs()
 	 */
 	@Test
 	@Verifies(value = "should get obs", method = "getObs()")
@@ -160,7 +160,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObsAtTopLevel(null)}
+	 * @see Encounter#getObsAtTopLevel(null)
 	 */
 	@Test
 	@Verifies(value = "should get obs", method = "getObsAtTopLevel(null)")
@@ -178,7 +178,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getAllObs(null)}
+	 * @see Encounter#getAllObs(null)
 	 */
 	@Test
 	@Verifies(value = "should get obs", method = "getAllObs(null)")
@@ -196,7 +196,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObs()}
+	 * @see Encounter#getObs()
 	 */
 	@Test
 	@Verifies(value = "should not get voided obs", method = "getObs()")
@@ -212,7 +212,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObsAtTopLevel(null)}
+	 * @see Encounter#getObsAtTopLevel(null)
 	 */
 	@Test
 	@Verifies(value = "should not get voided obs", method = "getObsAtTopLevel(null)")
@@ -231,7 +231,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getAllObs(null)}
+	 * @see Encounter#getAllObs(null)
 	 */
 	@Test
 	@Verifies(value = "should not get voided obs", method = "getAllObs(null)")
@@ -250,7 +250,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObs()}
+	 * @see Encounter#getObs()
 	 */
 	@Test
 	@Verifies(value = "should only get child obs", method = "getObs()")
@@ -274,7 +274,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObsAtTopLevel(null)}
+	 * @see Encounter#getObsAtTopLevel(null)
 	 */
 	@Test
 	@Verifies(value = "should only get parents obs", method = "getObsAtTopLevel(null)")
@@ -301,7 +301,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getAllObs(null)}
+	 * @see Encounter#getAllObs(null)
 	 */
 	@Test
 	@Verifies(value = "should get both parent and child obs", method = "getAllObs(null)")
@@ -326,7 +326,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObs()}
+	 * @see Encounter#getObs()
 	 */
 	@Test
 	@Verifies(value = "should not get child obs if child also on encounter", method = "getObs()")
@@ -352,7 +352,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObsAtTopLevel(null)}
+	 * @see Encounter#getObsAtTopLevel(null)
 	 */
 	@Test
 	@Verifies(value = "should only return the grouped top level obs", method = "getObsAtTopLevel(null)")
@@ -378,7 +378,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getAllObs(null)}
+	 * @see Encounter#getAllObs(null)
 	 */
 	@Test
 	@Verifies(value = "should get both parent and child with child directly on encounter", method = "getAllObs(null)")
@@ -414,7 +414,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getAllObs(null)}
+	 * @see Encounter#getAllObs(null)
 	 */
 	@Test
 	@Verifies(value = "should get both child and parent obs after removing child from parent grouping", method = "getAllObs(null)")
@@ -440,7 +440,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObs()}
+	 * @see Encounter#getObs()
 	 */
 	@Test
 	@Verifies(value = "should get both child and parent obs after removing child from parent grouping", method = "getObs()")
@@ -467,7 +467,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObsAtTopLevel(null)}
+	 * @see Encounter#getObsAtTopLevel(null)
 	 */
 	@Test
 	@Verifies(value = "should get both child and parent obs after removing child from parent grouping", method = "getObsAtTopLevel(null)")
@@ -493,7 +493,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObs()}
+	 * @see Encounter#getObs()
 	 */
 	@Test
 	@Verifies(value = "should get obs with two levels of hierarchy", method = "getObs()")
@@ -547,7 +547,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObs()}
+	 * @see Encounter#getObs()
 	 */
 	@Test
 	@Verifies(value = "should get obs with three levels of hierarchy", method = "getObs()")
@@ -590,7 +590,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getObs()}
+	 * @see Encounter#getObs()
 	 */
 	@Test
 	@Verifies(value = "should not get voided obs with three layers of hierarchy", method = "getObs()")
@@ -637,7 +637,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#Encounter(Integer)}
+	 * @see Encounter#Encounter(Integer)
 	 */
 	@Test
 	@Verifies(value = "should set encounter id", method = "Encounter(Integer)")
@@ -647,7 +647,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#addObs(Obs)}
+	 * @see Encounter#addObs(Obs)
 	 */
 	@Test
 	@Verifies(value = "should add obs with null values", method = "addObs(Obs)")
@@ -658,7 +658,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#addObs(Obs)}
+	 * @see Encounter#addObs(Obs)
 	 */
 	@Test
 	@Verifies(value = "should not fail with null obs", method = "addObs(Obs)")
@@ -669,7 +669,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#addObs(Obs)}
+	 * @see Encounter#addObs(Obs)
 	 */
 	@Test
 	@Verifies(value = "should set encounter attribute on obs", method = "addObs(Obs)")
@@ -681,7 +681,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#addObs(Obs)}
+	 * @see Encounter#addObs(Obs)
 	 */
 	@Test
 	@Verifies(value = "should add obs to non null initial obs set", method = "addObs(Obs)")
@@ -697,7 +697,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#addObs(Obs)}
+	 * @see Encounter#addObs(Obs)
 	 */
 	@Test
 	@Verifies(value = "should add encounter attrs to obs if attributes are null", method = "addObs(Obs)")
@@ -728,7 +728,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#addObs(Obs)}
+	 * @see Encounter#addObs(Obs)
 	 */
 	@Test
 	@Verifies(value = "should add encounter attrs to obs if attributes are null", method = "addObs(Obs)")
@@ -770,7 +770,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#addOrder(Order)}
+	 * @see Encounter#addOrder(Order)
 	 */
 	@Test
 	@Verifies(value = "should add order with null values", method = "addOrder(Order)")
@@ -781,7 +781,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#addOrder(Order)}
+	 * @see Encounter#addOrder(Order)
 	 */
 	@Test
 	@Verifies(value = "should not fail with null obs passed to add order", method = "addOrder(Order)")
@@ -792,7 +792,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#addOrder(Order)}
+	 * @see Encounter#addOrder(Order)
 	 */
 	@Test
 	@Verifies(value = "should set encounter attribute", method = "addOrder(Order)")
@@ -804,7 +804,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#addOrder(Order)}
+	 * @see Encounter#addOrder(Order)
 	 */
 	@Test
 	@Verifies(value = "should add order to non null initial order set", method = "addOrder(Order)")
@@ -820,7 +820,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#getOrders()}
+	 * @see Encounter#getOrders()
 	 */
 	@Test
 	@Verifies(value = "should add order to encounter when adding order to set returned from getOrders", method = "getOrders()")
@@ -833,7 +833,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#removeOrder(Order)}
+	 * @see Encounter#removeOrder(Order)
 	 */
 	@Test
 	@Verifies(value = "should remove order from encounter", method = "removeOrder(Order)")
@@ -848,7 +848,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#removeOrder(Order)}
+	 * @see Encounter#removeOrder(Order)
 	 */
 	@Test
 	@Verifies(value = "should not fail when removing null order", method = "removeOrder(Order)")
@@ -858,7 +858,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#removeOrder(Order)}
+	 * @see Encounter#removeOrder(Order)
 	 */
 	@Test
 	@Verifies(value = "should not fail when removing non existent order", method = "removeOrder(Order)")
@@ -1327,7 +1327,7 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link Encounter#copyAndAssignToAnotherPatient(org.openmrs.Patient)}
+	 * @see Encounter#copyAndAssignToAnotherPatient(org.openmrs.Patient)
 	 */
 	@Test
 	@Verifies(value = "should copy all Encounter data except visit and assign copied Encounter to given Patient", method = "copy()")

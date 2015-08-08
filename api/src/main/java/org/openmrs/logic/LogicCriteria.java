@@ -186,11 +186,11 @@ public interface LogicCriteria {
 	public LogicCriteria asOf(Date value);
 	
 	/**
-	 * Add a {@link Before} expression to the current LogicCriteria
+	 * Add a {@link org.openmrs.logic.op.Before} expression to the current LogicCriteria
 	 * 
 	 * @param value the operand for the Before operator
 	 * @return LogicCriteria with Before expression
-	 * @see Before
+	 * @see org.openmrs.logic.op.Before
 	 */
 	public LogicCriteria before(Date value);
 	
@@ -204,11 +204,11 @@ public interface LogicCriteria {
 	public LogicCriteria after(Date value);
 	
 	/**
-	 * Add a {@link After} expression to the current LogicCriteria
+	 * Add a {@link org.openmrs.logic.op.After} expression to the current LogicCriteria
 	 * 
 	 * @param value the operand for the After operator
 	 * @return LogicCriteria with After expression
-	 * @see After
+	 * @see org.openmrs.logic.op.After
 	 */
 	public LogicCriteria in(Collection<?> value);
 	
@@ -233,11 +233,11 @@ public interface LogicCriteria {
 	public LogicCriteria contains(double value);
 	
 	/**
-	 * Add a {@link Contains} expression to the current LogicCriteria
+	 * Add a {@link org.openmrs.logic.op.Contains} expression to the current LogicCriteria
 	 * 
 	 * @param value the operand for the Contains operator
 	 * @return LogicCriteria with Contains expression
-	 * @see Contains
+	 * @see org.openmrs.logic.op.Contains
 	 */
 	public LogicCriteria contains(String value);
 	
@@ -262,11 +262,11 @@ public interface LogicCriteria {
 	public LogicCriteria equalTo(double value);
 	
 	/**
-	 * Add a {@link Equals} expression to the current LogicCriteria
+	 * Add a {@link org.openmrs.logic.op.Equals} expression to the current LogicCriteria
 	 * 
 	 * @param value the operand for the Equals operator
 	 * @return LogicCriteria with Equals expression
-	 * @see Equals
+	 * @see org.openmrs.logic.op.Equals
 	 */
 	public LogicCriteria equalTo(String value);
 	
@@ -376,7 +376,7 @@ public interface LogicCriteria {
 	public LogicCriteria within(Duration duration);
 	
 	/**
-	 * @return
+	 * @return logic parameters
 	 */
 	public Map<String, Object> getLogicParameters();
 	

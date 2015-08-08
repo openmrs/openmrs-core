@@ -24,7 +24,7 @@ import org.springframework.validation.Errors;
 public class FieldValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link FieldValidator#validate(Object,Errors)}
+	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if name is null", method = "validate(Object,Errors)")
@@ -46,7 +46,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FieldValidator#validate(Object,Errors)}
+	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if name is empty", method = "validate(Object,Errors)")
@@ -68,7 +68,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FieldValidator#validate(Object,Errors)}
+	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if name is all whitespace", method = "validate(Object,Errors)")
@@ -90,7 +90,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FieldValidator#validate(Object,Errors)}
+	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if selectMultiple is null", method = "validate(Object,Errors)")
@@ -113,7 +113,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FieldValidator#validate(Object,Errors)}
+	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if retired is null", method = "validate(Object,Errors)")
@@ -136,7 +136,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FieldValidator#validate(Object,Errors)}
+	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if name is ok and fieldType, selectMultiple, and retired are non-null", method = "validate(Object,Errors)")
@@ -158,7 +158,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FieldValidator#validate(Object,Errors)}
+	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -183,7 +183,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FieldValidator#validate(Object,Errors)}
+	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

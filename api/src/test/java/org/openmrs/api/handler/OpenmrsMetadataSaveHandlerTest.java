@@ -24,7 +24,7 @@ import org.openmrs.test.Verifies;
 public class OpenmrsMetadataSaveHandlerTest {
 	
 	/**
-	 * @see {@link OpenmrsMetadataSaveHandler#handle(OpenmrsMetadata,User,Date,String)}
+	 * @see OpenmrsMetadataSaveHandler#handle(OpenmrsMetadata,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should trim whitespace from name", method = "handle(OpenmrsMetadata,User,Date,String)")
@@ -38,7 +38,7 @@ public class OpenmrsMetadataSaveHandlerTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsMetadataSaveHandler#handle(OpenmrsMetadata,User,Date,String)}
+	 * @see OpenmrsMetadataSaveHandler#handle(OpenmrsMetadata,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should trim whitespace from description", method = "handle(OpenmrsMetadata,User,Date,String)")

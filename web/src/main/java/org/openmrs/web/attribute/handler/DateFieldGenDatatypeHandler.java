@@ -23,7 +23,7 @@ import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.springframework.stereotype.Component;
 
 /**
- * A fieldgen version of a {@link DateAttributeHandler} that uses the standard Date picker widget.
+ * A handler that uses the standard Date picker widget.
  * @since 1.9
  */
 @Component

@@ -28,7 +28,7 @@ public class TimerSchedulerServiceImplTest extends BaseContextSensitiveTest {
 	/**
 	 * Tests whether the TimerScheduler schedules tasks even if the repeatInterval is zero.
 	 * 
-	 * @see {@link TimerSchedulerServiceImpl#scheduleTask(TaskDefinition)}
+	 * @see TimerSchedulerServiceImpl#scheduleTask(TaskDefinition)
 	 */
 	@Test
 	@Verifies(value = "should handle zero repeat interval", method = "scheduleTask(TaskDefinition)")
@@ -60,7 +60,6 @@ public class TimerSchedulerServiceImplTest extends BaseContextSensitiveTest {
 		
 		// without this commit there seems to be a table lock left on the SCHEDULER_TASK_CONFIG table, see TRUNK-4212
 		Context.flushSession();
-		getConnection().commit();
 		
 		// Assert that the clientTask is not null, i.e. the sheduleTask was able to successfully schedule in case of zero repeatInterval.
 		assertNotNull(

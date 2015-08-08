@@ -23,8 +23,6 @@
 				<param name="sequence">location_attribute_location_attribute_id_seq</param>
 			</generator>
 		</id>
-
-        <discriminator column="location_attribute_id" insert="false" />
         
         <many-to-one name="location" class="Location" not-null="true" column="location_id" />
         

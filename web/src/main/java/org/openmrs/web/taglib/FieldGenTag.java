@@ -306,7 +306,7 @@ public class FieldGenTag extends TagSupport {
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.type", type);
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.formFieldName", formFieldName);
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.parameters", OpenmrsUtil.parseParameterList(parameters));
-		HashMap<String, Object> hmParamMap = (HashMap<String, Object>) pageContext.getRequest().getAttribute(
+		Map<String, Object> hmParamMap = (Map<String, Object>) pageContext.getRequest().getAttribute(
 		    "org.openmrs.fieldGen.parameterMap");
 		if (hmParamMap == null) {
 			hmParamMap = new HashMap<String, Object>();
@@ -467,10 +467,10 @@ public class FieldGenTag extends TagSupport {
 	
 	/**
 	 * If this is set to true, the user's stored default value for this value will be used if the
-	 * {@link #getVal()} is null. <br/>
-	 * <br/>
-	 * Usage of this is up to the individual handlers. See {@link LocationHandler} for an example. <br/>
-	 * <br/>
+	 * {@link #getVal()} is null. <br>
+	 * <br>
+	 * Usage of this is up to the individual handlers. See {@link LocationHandler} for an example. <br>
+	 * <br>
 	 * An example of when the dev doesn't want a default value is if location is set to null by a
 	 * previous user and the current user is only editing. Therefore, the
 	 * FieldGenTag.java#setAllowUserDefault() should only be set to true if creating an object for

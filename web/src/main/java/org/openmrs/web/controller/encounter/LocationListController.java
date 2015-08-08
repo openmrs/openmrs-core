@@ -145,5 +145,4 @@ public class LocationListController extends SimpleFormController {
 		
 		return locationList;
 	}
-	
 }

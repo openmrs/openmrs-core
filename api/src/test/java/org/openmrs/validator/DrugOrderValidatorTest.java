@@ -33,12 +33,15 @@ import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.SimpleDosingInstructions;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -47,8 +50,12 @@ import org.springframework.validation.Errors;
  */
 public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	
+	@Autowired
+	@Qualifier("adminService")
+	AdministrationService adminService;
+	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if asNeeded is null", method = "validate(Object,Errors)")
@@ -64,7 +71,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if dosingType is null", method = "validate(Object,Errors)")
@@ -80,7 +87,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should not fail validation if drug is null", method = "validate(Object,Errors)")
@@ -95,7 +102,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all fields are correct", method = "validate(Object,Errors)")
@@ -287,7 +294,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if drug concept is different from order concept", method = "validate(Object,Errors)")
@@ -451,8 +458,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDrug(drug);
 		
 		Errors errors = new BindException(order, "order");
-		new DrugOrderValidator().validate(order, errors);
-		
+		adminService.validate(order, errors);
 		Assert.assertTrue(errors.hasFieldErrors("concept"));
 	}
 	
@@ -653,7 +659,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -689,7 +695,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

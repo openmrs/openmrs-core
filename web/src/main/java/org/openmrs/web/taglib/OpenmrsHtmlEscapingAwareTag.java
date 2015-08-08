@@ -27,7 +27,7 @@ public abstract class OpenmrsHtmlEscapingAwareTag extends OpenmrsRequestContextA
 	private Boolean htmlEscape;
 	
 	/**
-	 * @see HtmlEscapingAwareTag#setHtmlEscape(String)
+	 * @see HtmlEscapingAwareTag#setHtmlEscape(boolean)
 	 */
 	public void setHtmlEscape(String htmlEscape) throws JspException {
 		this.htmlEscape = ExpressionEvaluationUtils.evaluateBoolean("htmlEscape", htmlEscape, pageContext);

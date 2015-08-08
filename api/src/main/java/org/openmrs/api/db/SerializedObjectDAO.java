@@ -123,7 +123,7 @@ public interface SerializedObjectDAO {
 	 * 
 	 * @param type The class of the object to retrieve
 	 * @param includeRetired if true includes retired/voided objects, otherwise does not
-	 * @return <List> T A list of all the saved objects that match the passed type
+	 * @return &lt;List&gt; T A list of all the saved objects that match the passed type
 	 * @throws DAOException
 	 * @should return all objects of the passed type
 	 */
@@ -134,7 +134,7 @@ public interface SerializedObjectDAO {
 	 * through serialization
 	 * 
 	 * @param type The class of the object to retrieve
-	 * @return <List> T A list of all the saved objects that match the passed type
+	 * @return &lt;List&gt; T A list of all the saved objects that match the passed type
 	 * @throws DAOException
 	 * @should return all non-retired objects of the passed type
 	 */
@@ -147,7 +147,7 @@ public interface SerializedObjectDAO {
 	 * 
 	 * @param type The class of the object to retrieve
 	 * @param includeRetired includeRetired If true, returns voided/retired objects as well
-	 * @return <List> T A list of all the saved objects that match the passed type
+	 * @return &lt;List&gt; T A list of all the saved objects that match the passed type
 	 * @throws DAOException
 	 * @should return all saved objects of the passed type if includeRetired
 	 * @should return only non-retired objects of the passed type if not includeRetired
@@ -160,7 +160,7 @@ public interface SerializedObjectDAO {
 	 * @param type The class of the object to retrieve
 	 * @param name the name of the item to retrieve
 	 * @param exactMatchOnly if true will only return exact matches
-	 * @return <List> T A list of all the saved objects that match the passed type and name
+	 * @return &lt;List&gt; T A list of all the saved objects that match the passed type and name
 	 * @throws DAOException
 	 * @should return all saved objects with the given type and exact name
 	 * @should return all saved objects with the given type and partial name
@@ -175,7 +175,7 @@ public interface SerializedObjectDAO {
 	 * @param type The class of the object to retrieve
 	 * @param name the name of the item to retrieve
 	 * @param exactMatchOnly if true will only return exact matches
-	 * @return <List> T A list of all the saved objects that match the passed type and name
+	 * @return &lt;List&gt; T A list of all the saved objects that match the passed type and name
 	 * @throws DAOException
 	 * @should return all saved objects with the given type and exact name
 	 * @should return all saved objects with the given type and partial name

@@ -30,22 +30,22 @@ import java.util.Set;
  * 
  * <pre>
  * &lt;bean id="attributes" 
- *     class="org.acegisecurity.annotation.SecurityAnnotationAttributes"/>
+ *     class="org.acegisecurity.annotation.SecurityAnnotationAttributes"/&gt;
  * 
  * &lt;bean id="objectDefinitionSource" 
- *     class="org.acegisecurity.intercept.method.MethodDefinitionAttributes">
- *     &lt;property name="attributes">
- *         &lt;ref local="attributes"/>
- *     &lt;/property>
- * &lt;/bean>
+ *     class="org.acegisecurity.intercept.method.MethodDefinitionAttributes"&gt;
+ *     &lt;property name="attributes"&gt;
+ *         &lt;ref local="attributes"/&gt;
+ *     &lt;/property&gt;
+ * &lt;/bean&gt;
  * 
  * &lt;bean id="securityInterceptor" 
- *     class="org.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+ *     class="org.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"&gt;
  *      . . .
- *      &lt;property name="objectDefinitionSource">
- *          &lt;ref local="objectDefinitionSource"/>
- *      &lt;/property>
- * &lt;/bean>
+ *      &lt;property name="objectDefinitionSource"&gt;
+ *          &lt;ref local="objectDefinitionSource"/&gt;
+ *      &lt;/property&gt;
+ * &lt;/bean&gt;
  * </pre>
  * <p>
  * These security annotations are similiar to the Commons Attributes approach, however they are
@@ -61,7 +61,6 @@ public class AuthorizedAnnotationAttributes {
 	 * 
 	 * @param target The target method
 	 * @return Collection of <code>SecurityConfig</code>
-	 * @see Attributes#getAttributes
 	 */
 	public Collection getAttributes(Class target) {
 		Set<String> attributes = new HashSet<String>();
@@ -83,7 +82,6 @@ public class AuthorizedAnnotationAttributes {
 	 * 
 	 * @param method The target method
 	 * @return Collection of <code>SecurityConfig</code>
-	 * @see Attributes#getAttributes
 	 */
 	public Collection getAttributes(Method method) {
 		Set<String> attributes = new HashSet<String>();

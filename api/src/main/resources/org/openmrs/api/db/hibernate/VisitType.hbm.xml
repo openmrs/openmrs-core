@@ -22,7 +22,7 @@
 			</generator>
 		</id>
 		
-		<discriminator column="visit_type_id" insert="false" />
+		
 		
 		<property name="name" type="java.lang.String" not-null="true" length="255" />
 		<property name="description" type="java.lang.String" length="1024" />

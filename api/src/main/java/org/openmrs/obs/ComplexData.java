@@ -13,11 +13,11 @@ import java.io.InputStream;
 
 /**
  * ComplexObs is a transient Object that extends Obs but is not itself persisted in the database. It
- * has a data Object and a title. Alternatively, it can have a byte array in the Object. <br/>
- * <br/>
+ * has a data Object and a title. Alternatively, it can have a byte array in the Object. <br>
+ * <br>
  * Most handlers should support this data Object being an {@link InputStream}, at least prior to
- * saving the object.<br/>
- * <br/>
+ * saving the object.<br>
+ * <br>
  * On pulling data out, the format is per-handler defined and the page doing the viewing should know
  * how to handle it.
  */
@@ -87,7 +87,7 @@ public class ComplexData implements java.io.Serializable {
 	 * @param mimeType
 	 * @since 1.12
 	 */
-	public void setMIMEType(String mimeType) {
+	public void setMimeType(String mimeType) {
 		this.mimeType = mimeType;
 	}
 	
@@ -97,7 +97,7 @@ public class ComplexData implements java.io.Serializable {
 	 * @return data MIME type
 	 * @since 1.12
 	 */
-	public String getMIMEType() {
+	public String getMimeType() {
 		return this.mimeType;
 	}
 	

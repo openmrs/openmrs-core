@@ -32,7 +32,7 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
- * Contains methods pertaining to Persons in the system Use:<br/>
+ * Contains methods pertaining to Persons in the system Use:<br>
  * 
  * <pre>
  * 
@@ -86,7 +86,7 @@ public interface PersonService extends OpenmrsService {
 	 * @param nameSearch string to search the person's name for
 	 * @param birthyear the year of birth to restrict
 	 * @param gender The gender field to search on (Typically just "M" or "F")
-	 * @return Set<Person> object with all people matching criteria
+	 * @return Set&lt;Person&gt; object with all people matching criteria
 	 * @throws APIException
 	 * @should accept greater than three names
 	 * @should match single search to any name part
@@ -109,14 +109,14 @@ public interface PersonService extends OpenmrsService {
 	 * @param personType one of person, user, or patient. If Person, any Person object is returned,
 	 *            if Patient, only Persons that are Patients are returned, if User, only Persons
 	 *            that are Users are returned
-	 * @return Set<Person> object with all people matching criteria
+	 * @return Set&lt;Person&gt; object with all people matching criteria
 	 * @throws APIException
-	 * @see {@link #getSimilarPeople(String, Integer, String)}
+	 * @see #getSimilarPeople(String, Integer, String)
 	 * @since 1.5
 	 * @should limit personType equals Patient searches to only Patients
 	 * @should limit personType equals User searches to only Users
 	 * @should limit return all Persons with personType equals Person
-	 * @deprecated @see {@link #getSimilarPeople(String, Integer, String)}
+	 * @deprecated @see #getSimilarPeople(String, Integer, String)
 	 */
 	@Deprecated
 	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType)
@@ -138,31 +138,31 @@ public interface PersonService extends OpenmrsService {
 	public List<Person> getPeople(String searchPhrase, Boolean dead, Boolean voided) throws APIException;
 	
 	/**
-	 * @deprecated @see #getPeople(...)
+	 * @deprecated see {@link #getPeople(String, Boolean)}
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided) throws APIException;
 	
 	/**
-	 * @deprecated @see #getPeople(...)
+	 * @deprecated see {@link #getPeople(String, Boolean)}
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, String roles) throws APIException;
 	
 	/**
-	 * @deprecated @see #getPeople(...)
+	 * @deprecated see {@link #getPeople(String, Boolean)}
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, List<String> roles) throws APIException;
 	
 	/**
-	 * Save the given person attribute type in the database. <br/>
+	 * Save the given person attribute type in the database. <br>
 	 * If the given type's Id is not empty, then also need to change any global property which is in
 	 * {@link OpenmrsConstants#GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES} and reference this given
-	 * type, prior to saving this given type. <br/>
+	 * type, prior to saving this given type. <br>
 	 * 
 	 * @param type
 	 * @return the saved person attribute type
@@ -178,7 +178,8 @@ public interface PersonService extends OpenmrsService {
 	/**
 	 * Retire a Person Attribute Type
 	 * 
-	 * @param attrTypeId, retiredReason
+	 * @param type
+	 * @param retiredReason
 	 * @should throw an error when trying to retire person attribute type while person attribute types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
@@ -187,7 +188,8 @@ public interface PersonService extends OpenmrsService {
 	/**
 	 * Retire a Person Relationship Type
 	 * 
-	 * @param relationshipType, retiredReason
+	 * @param type
+	 * @param retiredReason
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
 	public RelationshipType retireRelationshipType(RelationshipType type, String retiredReason) throws APIException;
@@ -195,8 +197,8 @@ public interface PersonService extends OpenmrsService {
 	/**
 	 * Unretire a Person Relationship Type
 	 * 
-	 * @param relationshipType, retiredReason
-	 * @Since 1.9
+	 * @param relationshipType retiredReason
+	 * @since 1.9
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
 	public RelationshipType unretireRelationshipType(RelationshipType relationshipType);
@@ -294,7 +296,7 @@ public interface PersonService extends OpenmrsService {
 	 * Get all PersonAttributeTypes in the database with the option of including the retired types
 	 * 
 	 * @param includeRetired boolean - include retired attribute types as well?
-	 * @return List<PersonAttributeType> object of all PersonAttributeTypes, possibly including
+	 * @return List&lt;PersonAttributeType&gt; object of all PersonAttributeTypes, possibly including
 	 *         retired ones
 	 * @should return all person attribute types including retired when include retired is true
 	 * @should return all person attribute types excluding retired when include retired is false
@@ -394,7 +396,7 @@ public interface PersonService extends OpenmrsService {
 	 * Get Relationship by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return relationship or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -479,7 +481,7 @@ public interface PersonService extends OpenmrsService {
 	public List<Relationship> getRelationships(Person p) throws APIException;
 	
 	/**
-	 * @deprecated use {@link #getRelationships(...)}
+	 * @deprecated use {@link #getRelationships()}
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
@@ -585,7 +587,7 @@ public interface PersonService extends OpenmrsService {
 	 * Gets the relationship type with the given uuid.
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return relationship type or null
 	 * @throws APIException
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
@@ -753,7 +755,7 @@ public interface PersonService extends OpenmrsService {
 	 * Get Person by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return person or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -764,7 +766,7 @@ public interface PersonService extends OpenmrsService {
 	 * Get PersonAddress by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return person address or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -775,7 +777,7 @@ public interface PersonService extends OpenmrsService {
 	 * Get PersonAttribute by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return person attribute or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -786,7 +788,7 @@ public interface PersonService extends OpenmrsService {
 	 * Get PersonName by its personNameId
 	 * 
 	 * @param personNameId
-	 * @return
+	 * @return person name or null
 	 * @should find PersonName given valid personNameId
 	 * @should return null if no object found with given personNameId
 	 */
@@ -797,7 +799,7 @@ public interface PersonService extends OpenmrsService {
 	 * Get PersonName by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return person name or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -1000,7 +1002,7 @@ public interface PersonService extends OpenmrsService {
 	 * 
 	 * @param uuid
 	 * @param deserialize
-	 * @return
+	 * @return person merge log object
 	 * @throws SerializationException
 	 * @throws APIException
 	 * @should require uuid

@@ -161,7 +161,7 @@ public class OptionsForm {
 	}
 	
 	/**
-	 * @param notifications The notifications to set.
+	 * @param notification The notifications to set.
 	 */
 	public void setNotification(String notification) {
 		this.notification = notification;

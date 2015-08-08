@@ -203,7 +203,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * Returns the full set of roles be looping over inherited roles. Duplicate roles are dropped.
 	 *
 	 * @param total Roles already looped over
-	 * @return Set<Role> Current and inherited roles
+	 * @return Set&lt;Role&gt; Current and inherited roles
 	 */
 	public Set<Role> recurseOverParents(final Set<Role> total) {
 		if (!this.inheritsRoles()) {
@@ -296,7 +296,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * Returns the full set of child roles be looping over children. Duplicate roles are dropped.
 	 *
 	 * @param total Roles already looped over
-	 * @return Set<Role> Current and child roles
+	 * @return Set&lt;Role&gt; Current and child roles
 	 * @since 1.9
 	 */
 	public Set<Role> recurseOverChildren(final Set<Role> total) {

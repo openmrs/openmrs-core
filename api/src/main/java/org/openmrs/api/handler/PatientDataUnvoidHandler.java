@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * This class deals with {@link Patient} objects when they are unvoided via the unvoid* method in an
  * Openmrs Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP
- * class. <br/>
+ * class. <br>
  * The handler unvoids all the encounters(including their associated observations) and orders
  * associated to the specified patient object that got voided because the patient was getting voided
  *

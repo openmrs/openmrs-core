@@ -48,7 +48,7 @@ public final class OpenmrsConstants {
 	 * This is the hard coded primary key of the order type for DRUG. This has to be done because
 	 * some logic in the API acts on this order type
 	 * 
-	 * @Deprecated
+	 * @deprecated
 	 */
 	public static final int ORDERTYPE_DRUG = 2;
 	
@@ -67,18 +67,17 @@ public final class OpenmrsConstants {
 	
 	/**
 	 * This holds the current openmrs code version. This version is a string containing spaces and
-	 * words.<br/>
-	 * The format is:<br/>
+	 * words.<br>
+	 * The format is:<br>
 	 * <i>major</i>.<i>minor</i>.<i>maintenance</i> <i>suffix</i> Build <i>buildNumber</i>
 	 */
 	public static final String OPENMRS_VERSION = THIS_PACKAGE.getSpecificationVendor() != null ? THIS_PACKAGE
 	        .getSpecificationVendor() : (getBuildVersion() != null ? getBuildVersion() : getVersion());
 	
 	/**
-	 * This holds the current openmrs code version in a short space-less string.<br/>
-	 * The format is:<br/>
-	 * <i>major</i>.<i>minor</i>.<i>maintenance</i>.<i>revision</i>-<i>suffix</i
-	 * >
+	 * This holds the current openmrs code version in a short space-less string.<br>
+	 * The format is:<br>
+	 * <i>major</i>.<i>minor</i>.<i>maintenance</i>.<i>revision</i>-<i>suffix</i>
 	 */
 	public static final String OPENMRS_VERSION_SHORT = THIS_PACKAGE.getSpecificationVersion() != null ? THIS_PACKAGE
 	        .getSpecificationVersion() : (getBuildVersionShort() != null ? getBuildVersionShort() : getVersion());
@@ -221,7 +220,7 @@ public final class OpenmrsConstants {
 	/**
 	 * These words are ignored in concept and patient searches
 	 * 
-	 * @return Collection<String> of words that are ignored
+	 * @return Collection&lt;String&gt; of words that are ignored
 	 */
 	public static final Collection<String> STOP_WORDS() {
 		List<String> stopWords = new Vector<String>();
@@ -240,10 +239,10 @@ public final class OpenmrsConstants {
 	}
 	
 	/**
-	 * A gender character to gender name map<br/>
+	 * A gender character to gender name map<br>
 	 * TODO issues with localization. How should this be handled?
 	 * 
-	 * @return Map<String, String> of gender character to gender name
+	 * @return Map&lt;String, String&gt; of gender character to gender name
 	 */
 	public static final Map<String, String> GENDER() {
 		Map<String, String> genders = new LinkedHashMap<String, String>();
@@ -729,7 +728,7 @@ public final class OpenmrsConstants {
 	/**
 	 * These roles are given to a user automatically and cannot be assigned
 	 * 
-	 * @return <code>Collection<String></code> of the auto-assigned roles
+	 * @return <code>Collection&lt;String&gt;</code> of the auto-assigned roles
 	 */
 	public static final Collection<String> AUTO_ROLES() {
 		List<String> roles = new Vector<String>();
@@ -1099,12 +1098,17 @@ public final class OpenmrsConstants {
 	 * @since 1.11
 	 */
 	public static final Integer SEARCH_INDEX_VERSION = 3;
+
+	/**
+	 * @since 1.12
+	 */
+	public static final String GP_DISABLE_VALIDATION = "validation.disable";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
 	 * 
-	 * @return List<GlobalProperty> of the core global properties
+	 * @return List&lt;GlobalProperty&gt; of the core global properties
 	 */
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
 		List<GlobalProperty> props = new Vector<GlobalProperty>();
@@ -1274,7 +1278,7 @@ public final class OpenmrsConstants {
 		props
 		        .add(new GlobalProperty(
 		                GLOBAL_PROPERTY_PATIENT_NAME_REGEX,
-		                "^[a-zA-Z \\-]+$",
+		                "",
 		                "Names of the patients must pass this regex. Eg : ^[a-zA-Z \\-]+$ contains only english alphabet letters, spaces, and hyphens. A value of .* or the empty string means no validation is done."));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS, String
@@ -1554,7 +1558,10 @@ public final class OpenmrsConstants {
 		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
 		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_EXACT,
 		                "Specifies how person attributes are matched while searching person. Valid values are 'ANYWHERE' or 'EXACT'. Defaults to exact if missing or invalid value is present."));
-		
+
+		props.add(new GlobalProperty(GP_DISABLE_VALIDATION, "false",
+				"Disables validation of OpenMRS Objects. Only takes affect on next restart. Warning: only do this is you know what you are doing!"));
+
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}

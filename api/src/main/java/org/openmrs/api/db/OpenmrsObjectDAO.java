@@ -47,7 +47,7 @@ public interface OpenmrsObjectDAO<T extends BaseOpenmrsObject> {
 	/**
 	 * Save or update a persistent in the database
 	 * 
-	 * @param persistent
+	 * @param newOrPersisted
 	 *            The persistent to save or update
 	 * @return the persistent that was saved or updated
 	 */

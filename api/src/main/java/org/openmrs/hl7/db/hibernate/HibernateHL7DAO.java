@@ -163,8 +163,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InQueueBatch(java.lang.Class, int, int,
-	 *      java.lang.Integer, java.lang.String)
+	 * @see org.openmrs.hl7.db.HL7DAO#getHL7Batch(Class, int, int, Integer, String)
 	 */
 	@SuppressWarnings( { "rawtypes", "unchecked" })
 	public <T> List<T> getHL7Batch(Class clazz, int start, int length, Integer messageState, String query)
@@ -177,8 +176,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.db.HL7DAO#countHL7s(java.lang.Class, java.lang.Long,
-	 *      java.lang.String)
+	 * @see org.openmrs.hl7.db.HL7DAO#countHL7s(Class, Integer, String)
 	 */
 	@SuppressWarnings("rawtypes")
 	public Long countHL7s(Class clazz, Integer messageState, String query) {

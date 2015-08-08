@@ -25,7 +25,7 @@ import org.springframework.validation.Errors;
 public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link StateConversionValidator#validate(Object,Errors)}
+	 * @see StateConversionValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if concept is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -42,7 +42,7 @@ public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link StateConversionValidator#validate(Object,Errors)}
+	 * @see StateConversionValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if programWorkflow is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -61,7 +61,7 @@ public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link StateConversionValidator#validate(Object,Errors)}
+	 * @see StateConversionValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if programWorkflowState is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -80,7 +80,7 @@ public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link StateConversionValidator#validate(Object,Errors)}
+	 * @see StateConversionValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")

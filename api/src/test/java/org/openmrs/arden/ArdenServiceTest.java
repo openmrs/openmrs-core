@@ -25,7 +25,7 @@ public class ArdenServiceTest extends BaseContextSensitiveTest {
 	int MAX_MLM = 1000;
 	
 	/**
-	 * @see {@link ArdenService#compileFile(String,String)}
+	 * @see ArdenService#compileFile(String,String)
 	 */
 	@Test
 	@Ignore

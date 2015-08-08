@@ -21,7 +21,7 @@ import org.openmrs.customdatatype.Customizable;
 
 /**
  * Extension of {@link BaseOpenmrsData} for classes that support customization via user-defined attributes.
- * @param <AttrClass> the type of attribute held
+ * @param <A> the type of attribute held
  * @since 1.9
  */
 public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpenmrsData implements Customizable<A> {
@@ -76,7 +76,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.Customizable#addAttribute(org.openmrs.customdatatype.SingleCustomValue)
+	 * @see org.openmrs.customdatatype.Customizable#addAttribute(Attribute)
 	 */
 	@Override
 	public void addAttribute(A attribute) {
@@ -90,7 +90,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 	
 	/**
 	 * Convenience method that voids all existing attributes of the given type, and sets this new one.
-	 * TODO fail if minOccurs > 1
+	 * TODO fail if minOccurs &gt; 1
 	 * TODO decide whether this should require maxOccurs=1
 	 * @should void the attribute if an attribute with same attribute type already exists and the maxOccurs is set to 1
 	 *

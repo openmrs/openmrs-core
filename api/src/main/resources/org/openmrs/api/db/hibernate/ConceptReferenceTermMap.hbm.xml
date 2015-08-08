@@ -24,8 +24,6 @@
 			</generator>
 		</id>
 		
-		<discriminator column="concept_reference_term_map_id" insert="false" />
-		
 		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" not-null="true"/>
 
 		<many-to-one name="termA" class="ConceptReferenceTerm" column="term_a_id" not-null="true" />

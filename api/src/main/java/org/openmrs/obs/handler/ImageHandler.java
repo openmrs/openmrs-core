@@ -35,13 +35,13 @@ import org.openmrs.obs.ComplexObsHandler;
  * {@link javax.imageio.ImageIO#getWriterFormatNames()} then that mime type will be used to save the
  * image. Images are stored in the location specified by the global property: "obs.complex_obs_dir"
  * 
- * @see OpenmrsConstants#GLOBAL_PROPERTY_COMPLEX_OBS_DIR
+ * @see org.openmrs.util.OpenmrsConstants#GLOBAL_PROPERTY_COMPLEX_OBS_DIR
  * @since 1.5
  */
 public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	/** Views supported by this handler */
-	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
+	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW };
 	
 	public static final Log log = LogFactory.getLog(ImageHandler.class);
 	
@@ -87,23 +87,22 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 				Iterator<ImageReader> imgReader = ImageIO.getImageReaders(imgStream);
 				imgStream.close();
 				if (imgReader.hasNext()) {
-					complexData.setMIMEType("image/" + imgReader.next().getFormatName().toLowerCase());
+					complexData.setMimeType("image/" + imgReader.next().getFormatName().toLowerCase());
 				} else {
 					log.warn("MIME type of " + file.getAbsolutePath() + " is not known");
 				}
 			}
 			catch (FileNotFoundException e) {
-				log.error("Trying to create image file stream from " + file.getAbsolutePath(), e);
+				log.error("Image " + file.getAbsolutePath() + " was not found", e);
 			}
 			catch (IOException e) {
 				log.error("Trying to determine MIME type of " + file.getAbsolutePath(), e);
 			}
 			
 			obs.setComplexData(complexData);
-		}
-		// No other view supported
-		// NOTE: if adding support for another view, don't forget to update supportedViews list above
-		else {
+		} else {
+			// No other view supported
+			// NOTE: if adding support for another view, don't forget to update supportedViews list above
 			return null;
 		}
 		

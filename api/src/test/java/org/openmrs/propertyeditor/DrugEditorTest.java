@@ -21,7 +21,7 @@ import org.openmrs.test.Verifies;
 public class DrugEditorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link DrugEditor#setAsText(String)}
+	 * @see DrugEditor#setAsText(String)
 	 */
 	@Test
 	@Verifies(value = "should set value to the drug with the specified identifier", method = "setAsText(String)")

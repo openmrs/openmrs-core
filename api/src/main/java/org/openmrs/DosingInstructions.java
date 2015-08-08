@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Locale;
 
+import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
 
 /**
@@ -21,7 +22,7 @@ import org.springframework.validation.Errors;
  * implementation would cover
  * "200mg for the first week, then up to 400mg for the rest of the prescription". Implementations of
  * this class should store their data in the appropriate fields on the DrugOrder and Order object.
- * In some cases they could store JSON in the dosing instructions field. <br/>
+ * In some cases they could store JSON in the dosing instructions field. <br>
  * NOTE: Any class that implements this interface should have a default constructor.
  * 
  * @since 1.10
@@ -52,10 +53,10 @@ public interface DosingInstructions {
 	 * 
 	 * @param order DrugOrder to get dosing instructions
 	 * @return DosingInstructions created from DrugOrder
-	 * @throws Exception if dosing type of passing order is not matched with dosing type of
+	 * @throws APIException if dosing type of passing order is not matched with dosing type of
 	 *             implementing dosing instruction
 	 */
-	public DosingInstructions getDosingInstructions(DrugOrder order);
+	public DosingInstructions getDosingInstructions(DrugOrder order) throws APIException;
 	
 	public void validate(DrugOrder order, Errors errors);
 	

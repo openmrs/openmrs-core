@@ -9,6 +9,8 @@
  */
 package org.openmrs.module;
 
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Ignore;
@@ -18,6 +20,7 @@ import org.junit.Test;
  * Tests methods of the module activator that do not require refreshing of the spring application
  * context. For those that require refreshing, see WebModuleActivatorTest
  */
+@Ignore("Unignore after investigating and fixing - TRUNK-4678")
 public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	
 	@Test
@@ -75,6 +78,7 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
+	@Ignore("Unignore after investigating and fixing - TRUNK-4678")
 	public void shouldStopDependantModulesOnStopModule() throws Exception {
 		//since module2 depends on module1, and module3 depends on module2
 		//stopping module1 should also stop both module2 and module3
@@ -92,11 +96,15 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		
 		//willStop() and stopped() should have been called in the right order
 		//which is the reverse of the startup. that is module3, module2, module1
-		assertTrue(moduleTestData.getWillStopCallTime(MODULE3_ID) <= moduleTestData.getWillStopCallTime(MODULE2_ID));
-		assertTrue(moduleTestData.getWillStopCallTime(MODULE2_ID) <= moduleTestData.getWillStopCallTime(MODULE1_ID));
+		assertThat(moduleTestData.getWillStopCallTime(MODULE3_ID), lessThanOrEqualTo(moduleTestData
+		        .getWillStopCallTime(MODULE2_ID)));
+		assertThat(moduleTestData.getWillStopCallTime(MODULE2_ID), lessThanOrEqualTo(moduleTestData
+		        .getWillStopCallTime(MODULE1_ID)));
 		
-		assertTrue(moduleTestData.getStoppedCallTime(MODULE3_ID) <= moduleTestData.getStoppedCallTime(MODULE2_ID));
-		assertTrue(moduleTestData.getStoppedCallTime(MODULE2_ID) <= moduleTestData.getStoppedCallTime(MODULE1_ID));
+		assertThat(moduleTestData.getStoppedCallTime(MODULE3_ID), lessThanOrEqualTo(moduleTestData
+		        .getStoppedCallTime(MODULE2_ID)));
+		assertThat(moduleTestData.getStoppedCallTime(MODULE2_ID), lessThanOrEqualTo(moduleTestData
+		        .getStoppedCallTime(MODULE1_ID)));
 	}
 	
 	@Test
@@ -120,6 +128,7 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
+	@Ignore("Unignore after investigating and fixing - TRUNK-4678")
 	public void shouldExcludePreviouslyStoppedModulesOnShutdown() {
 		//At OpenMRS shutdown, willStop() and stopped() methods get called for all 
 		//started module's activator EXCLUDING any module(s) that were previously stopped.

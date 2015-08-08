@@ -49,7 +49,7 @@ public class Daemon {
 	/**
 	 * This method should not be called directly. The {@link ModuleFactory#startModule(Module)}
 	 * method uses this to start the given module in a new thread that is authenticated as the
-	 * daemon user. <br/>
+	 * daemon user. <br>
 	 * If a non null application context is passed in, it gets refreshed to make the module's
 	 * services available
 	 *
@@ -57,7 +57,7 @@ public class Daemon {
 	 * @param isOpenmrsStartup Specifies whether this module is being started at application startup
 	 *            or not
 	 * @param applicationContext the spring application context instance to refresh
-	 * @returns the module returned from {@link ModuleFactory#startModuleInternal(Module)}
+	 * @return the module returned from {@link ModuleFactory#startModuleInternal(Module)}
 	 */
 	public static Module startModule(final Module module, final boolean isOpenmrsStartup,
 	        final AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
@@ -104,8 +104,8 @@ public class Daemon {
 	}
 	
 	/**
-	 * Executes the given task in a new thread that is authenticated as the daemon user. <br/>
-	 * <br/>
+	 * Executes the given task in a new thread that is authenticated as the daemon user. <br>
+	 * <br>
 	 * This can only be called from {@link TimerSchedulerTask} during actual task execution
 	 *
 	 * @param task the task to run
@@ -185,7 +185,7 @@ public class Daemon {
 					Context.openSession();
 					//Suppressing sonar issue "squid:S1217"
 					//We intentionally do not start a new thread yet, rather wrap the run call in a session.
-					runnable.run(); 
+					runnable.run();
 				}
 				finally {
 					Context.closeSession();
@@ -215,7 +215,7 @@ public class Daemon {
 	 * Calls the {@link OpenmrsService#onStartup()} method, as a daemon, for an instance
 	 * implementing the {@link OpenmrsService} interface.
 	 *
-	 * @param openmrsService instance implementing the {@link OpenmrsService} interface.
+	 * @param service instance implementing the {@link OpenmrsService} interface.
 	 * @since 1.9
 	 */
 	public static void runStartupForService(final OpenmrsService service) throws ModuleException {
@@ -299,7 +299,6 @@ public class Daemon {
 	 *
 	 * @param runnable an object implementing the {@link Runnable} interface.
 	 * @param token the token required to run code as the daemon user
-	 * @return the newly spawned {@link Thread}
 	 * @since 1.9.2
 	 */
 	public static void runInDaemonThreadAndWait(final Runnable runnable, DaemonToken token) {
@@ -346,7 +345,7 @@ public class Daemon {
 	 * 				rather use Daemon.isDeamonThread().
 	 * isDaemonThread is preferred for checking to see if you are in that thread or if the current thread is daemon.
 	 *
-	 * @param user, user whom we are checking if daemon
+	 * @param user user whom we are checking if daemon
 	 * @return true if user is Daemon
 	 * @should return true for a daemon user
 	 * @should return false if the user is not a daemon

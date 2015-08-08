@@ -212,7 +212,6 @@ public class ConceptReferenceTermFormController {
 	 * @param request the {@link WebRequest} object
 	 * @param conceptReferenceTermModel the concept reference term model object for the term to
 	 *            unretire
-	 * @param retireReason the reason why the concept reference term is being unretired
 	 * @return the url to redirect to
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/admin/concepts/unretireConceptReferenceTerm")
@@ -288,7 +287,7 @@ public class ConceptReferenceTermFormController {
 		@SuppressWarnings("unchecked")
 		public ConceptReferenceTermModel(ConceptReferenceTerm conceptReferenceTerm) {
 			this.conceptReferenceTerm = conceptReferenceTerm;
-			ArrayList<ConceptReferenceTermMap> maps = null;
+			List<ConceptReferenceTermMap> maps = null;
 			if (conceptReferenceTerm.getConceptReferenceTermMaps().size() == 0) {
 				maps = new ArrayList<ConceptReferenceTermMap>();
 				maps.add(new ConceptReferenceTermMap(null, null));

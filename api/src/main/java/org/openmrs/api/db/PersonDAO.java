@@ -156,10 +156,8 @@ public interface PersonDAO {
 	public void deleteRelationshipType(RelationshipType relationshipType) throws DAOException;
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return person or null
 	 */
 	public Person getPersonByUuid(String uuid);
 	
@@ -172,26 +170,20 @@ public interface PersonDAO {
 	public PersonName getPersonNameByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return relationship or null
 	 */
 	public Relationship getRelationshipByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return relationship type or null
 	 */
 	public RelationshipType getRelationshipTypeByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return person attribute type or null
 	 */
 	public PersonAttributeType getPersonAttributeTypeByUuid(String uuid);
 	
@@ -200,7 +192,7 @@ public interface PersonDAO {
 	 * bypassing any caches. This is used prior to saving an personAttributeType, so that we can
 	 * change the vlaue of any global property which is in
 	 * {@link OpenmrsConstants#GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES} and reference the given
-	 * personAttributeType. <br/>
+	 * personAttributeType. <br>
 	 * 
 	 * @param personAttributeType the personAttributeType get the the name of
 	 * @return the name currently in the database for this personAttributeType
@@ -209,7 +201,7 @@ public interface PersonDAO {
 	public String getSavedPersonAttributeTypeName(PersonAttributeType personAttributeType);
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes(java.lang.Boolean)
+	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes(boolean)
 	 */
 	public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired);
 	

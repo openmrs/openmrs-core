@@ -20,15 +20,15 @@ import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Functions used within taglibs in a webapp jsp page. <br/>
- * <br/>
+ * Functions used within taglibs in a webapp jsp page. <br>
+ * <br>
  * Example:
  *
  * <pre>
- * &lt;c:forEach items="${openmrs:sort(someListObject)}" var="o" end="0">
+ * &lt;c:forEach items="${openmrs:sort(someListObject)}" var="o" end="0"&gt;
  *   ....
  *   ....
- * &lt;/c:forEach>
+ * &lt;/c:forEach&gt;
  * </pre>
  */
 public class Sort {
@@ -37,7 +37,7 @@ public class Sort {
 	 * This method will sort a collection based on the natural order of it's elements
 	 *
 	 * @param c
-	 * @return
+	 * @return a new, sorted copy of the collection
 	 */
 	public static <T> List<T> sort(Collection<T> c) {
 		return sort(c, null, false);
@@ -47,8 +47,8 @@ public class Sort {
 	 * This method will sort a collection based on the natural order of it's elements
 	 *
 	 * @param c
-	 * @param isDescending
-	 * @return
+	 * @param reverseOrder
+	 * @return a new, sorted copy of the collection
 	 */
 	public static <T extends Comparable<T>> List<T> sort(Collection<T> c, Boolean reverseOrder) {
 		List<T> l = new ArrayList<T>(c);
@@ -59,10 +59,10 @@ public class Sort {
 	/**
 	 * This method will sort a passed Collection
 	 *
-	 * @param c: The collection to sort
-	 * @param sortProperty: The javabean property to sort the elements of the Collection by
-	 * @param isDescending: Boolean indicating whether or not to reverse the order of the collection
-	 * @return: A sorted List of the passed elements
+	 * @param c The collection to sort
+	 * @param sortProperty The javabean property to sort the elements of the Collection by
+	 * @param reverseOrder Boolean indicating whether or not to reverse the order of the collection
+	 * @return A sorted List of the passed elements
 	 */
 	public static <T> List<T> sort(Collection<T> c, String sortProperty, Boolean reverseOrder) {
 		if (StringUtils.isEmpty(sortProperty)) {

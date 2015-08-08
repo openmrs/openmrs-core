@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,6 +58,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Date birthdate;
 	
+	private Date birthtime;
+	
 	private Boolean birthdateEstimated = false;
 	
 	private Boolean deathdateEstimated = false;
@@ -85,8 +89,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	private boolean isPatient;
 	
 	/**
-	 * Convenience map from PersonAttributeType.name to PersonAttribute.<br/>
-	 * <br/>
+	 * Convenience map from PersonAttributeType.name to PersonAttribute.<br>
+	 * <br>
 	 * This is "cached" for each user upon first load. When an attribute is changed, the cache is
 	 * cleared and rebuilt on next access.
 	 */
@@ -104,7 +108,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * This constructor is used to build a new Person object copy from another person object
 	 * (usually a patient or a user subobject). All attributes are copied over to the new object.
 	 * NOTE! All child collection objects are copied as pointers, each individual element is not
-	 * copied. <br/>
+	 * copied. <br>
 	 * 
 	 * @param person Person to create this person object from
 	 */
@@ -121,6 +125,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		
 		gender = person.getGender();
 		birthdate = person.getBirthdate();
+		birthtime = person.getBirthDateTime();
 		birthdateEstimated = person.getBirthdateEstimated();
 		deathdateEstimated = person.getDeathdateEstimated();
 		dead = person.isDead();
@@ -236,6 +241,40 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
+	 * @param birthtime person's time of birth
+	 */
+	@Element(required = false)
+	public void setBirthtime(Date birthtime) {
+		this.birthtime = birthtime;
+	}
+	
+	/**
+	 * @return person's time of birth with the date portion set to the date from person's birthdate
+	 */
+	@Element(required = false)
+	public Date getBirthDateTime() {
+        if(birthdate != null && birthtime != null){
+            String birthDateString = new SimpleDateFormat("yyyy-MM-dd").format(birthdate);
+            String birthTimeString = new SimpleDateFormat("HH:mm:ss").format(birthtime);
+
+            try {
+                return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(birthDateString + " " + birthTimeString);
+            } catch (ParseException e) {
+                log.error(e);
+            }
+        }
+        return null;
+    }
+	
+	/**
+	 * @return person's time of birth.
+	 */
+	@Element(required = false)
+	public Date getBirthtime() {
+        return this.birthtime;
+    }
+
+	/**
 	 * @return Returns the death status.
 	 */
 	public Boolean isDead() {
@@ -305,7 +344,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param addresses Set<PersonAddress> list of known addresses for person
+	 * @param addresses Set&lt;PersonAddress&gt; list of known addresses for person
 	 * @see org.openmrs.PersonAddress
 	 */
 	@ElementList(required = false)
@@ -382,10 +421,10 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Convenience method to add the <code>attribute</code> to this person's attribute list if the
-	 * attribute doesn't exist already.<br/>
-	 * <br/>
-	 * Voids any current attribute with type = <code>newAttribute.getAttributeType()</code><br/>
-	 * <br/>
+	 * attribute doesn't exist already.<br>
+	 * <br>
+	 * Voids any current attribute with type = <code>newAttribute.getAttributeType()</code><br>
+	 * <br>
 	 * NOTE: This effectively limits persons to only one attribute of any given type **
 	 * 
 	 * @param newAttribute PersonAttribute to add to the Person
@@ -450,8 +489,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Convenience Method to return the first non-voided person attribute matching a person
-	 * attribute type. <br/>
-	 * <br/>
+	 * attribute type. <br>
+	 * <br>
 	 * Returns null if this person has no non-voided {@link PersonAttribute} with the given
 	 * {@link PersonAttributeType}, the given {@link PersonAttributeType} is null, or this person
 	 * has no attributes.
@@ -476,8 +515,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Convenience method to get this person's first attribute that has a PersonAttributeType.name
-	 * equal to <code>attributeName</code>.<br/>
-	 * <br/>
+	 * equal to <code>attributeName</code>.<br>
+	 * <br>
 	 * Returns null if this person has no non-voided {@link PersonAttribute} with the given type
 	 * name, the given name is null, or this person has no attributes.
 	 * 
@@ -500,11 +539,11 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Convenience method to get this person's first attribute that has a PersonAttributeTypeId
-	 * equal to <code>attributeTypeId</code>.<br/>
-	 * <br/>
+	 * equal to <code>attributeTypeId</code>.<br>
+	 * <br>
 	 * Returns null if this person has no non-voided {@link PersonAttribute} with the given type id
-	 * or this person has no attributes.<br/>
-	 * <br/>
+	 * or this person has no attributes.<br>
+	 * <br>
 	 * The given id cannot be null.
 	 * 
 	 * @param attributeTypeId the id of the {@link PersonAttributeType} to look for
@@ -520,7 +559,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method< to get all of this person's attributes that have a
+	 * Convenience method to get all of this person's attributes that have a
 	 * PersonAttributeType.name equal to <code>attributeName</code>.
 	 * 
 	 * @param attributeName
@@ -573,8 +612,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to get this person's active attributes in map form: <String,
-	 * PersonAttribute>.
+	 * Convenience method to get this person's active attributes in map form: &lt;String,
+	 * PersonAttribute&gt;.
 	 */
 	public Map<String, PersonAttribute> getAttributeMap() {
 		if (attributeMap != null) {
@@ -595,7 +634,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Convenience method to get all of this person's attributes (including voided ones) in map
-	 * form: <String, PersonAttribute>.
+	 * form: &lt;String, PersonAttribute&gt;.
 	 * 
 	 * @return All person's attributes in map form
 	 * @since 1.12
@@ -695,13 +734,13 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to get the {@link PersonName} object that is marked as "preferred". <br/>
-	 * <br/>
+	 * Convenience method to get the {@link PersonName} object that is marked as "preferred". <br>
+	 * <br>
 	 * If two names are marked as preferred (or no names), the database ordering comes into effect
-	 * and the one that was created most recently will be returned. <br/>
-	 * <br/>
-	 * This method will never return a voided name, even if it is marked as preferred. <br/>
-	 * <br/>
+	 * and the one that was created most recently will be returned. <br>
+	 * <br>
+	 * This method will never return a voided name, even if it is marked as preferred. <br>
+	 * <br>
 	 * Null is returned if this person has no names or all voided names.
 	 * 
 	 * @return the "preferred" person name.
@@ -777,13 +816,13 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to get the {@link PersonAddress} object that is marked as "preferred". <br/>
-	 * <br/>
+	 * Convenience method to get the {@link PersonAddress} object that is marked as "preferred". <br>
+	 * <br>
 	 * If two addresses are marked as preferred (or no addresses), the database ordering comes into
-	 * effect and the one that was created most recently will be returned. <br/>
-	 * <br/>
-	 * This method will never return a voided address, even if it is marked as preferred. <br/>
-	 * <br/>
+	 * effect and the one that was created most recently will be returned. <br>
+	 * <br>
+	 * This method will never return a voided address, even if it is marked as preferred. <br>
+	 * <br>
 	 * Null is returned if this person has no addresses or all voided addresses.
 	 * 
 	 * @return the "preferred" person address.

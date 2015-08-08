@@ -28,7 +28,7 @@ import org.springframework.validation.Errors;
 public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link org.openmrs.validator.EncounterRoleValidator#validate(Object, org.springframework.validation.Errors)}
+	 * @see org.openmrs.validator.EncounterRoleValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the name of the encounter role is null empty or whitespace", method = "validate(Object,Errors)")
@@ -54,7 +54,7 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.validator.EncounterRoleValidator#validate(Object, org.springframework.validation.Errors)}
+	 * @see org.openmrs.validator.EncounterRoleValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if encounter role name is duplicate", method = "validate(Object,Errors)")

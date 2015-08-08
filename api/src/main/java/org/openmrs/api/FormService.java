@@ -79,14 +79,14 @@ public interface FormService extends OpenmrsService {
 	 * Get Form by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return form or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
 	public Form getFormByUuid(String uuid) throws APIException;
 	
 	/**
-	 * Get form by exact name & version match. If version is null, then this method behaves like
+	 * Get form by exact name &amp; version match. If version is null, then this method behaves like
 	 * {@link #getForm(String)}
 	 * 
 	 * @param name exact name of the form to fetch
@@ -165,6 +165,7 @@ public interface FormService extends OpenmrsService {
 	 * @should return retired forms when retired equals true
 	 * @should return all forms including retired and unretired when retired is null
 	 * @should return forms containing all form fields in containingAllFormFields
+	 * @should return forms that have any matching formFields in containingAnyFormField
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Form> getForms(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
@@ -213,7 +214,7 @@ public interface FormService extends OpenmrsService {
 	 * 
 	 * @param publishedOnly
 	 * @param includeRetired
-	 * @return List<Form> object of all matching forms
+	 * @return List&lt;Form&gt; object of all matching forms
 	 * @throws APIException
 	 * @deprecated use {@link #getAllForms()} or {@link #getPublishedForms()} or
 	 *             {@link #getForms(String, Boolean, Collection, Boolean, Collection, Collection)}
@@ -363,7 +364,7 @@ public interface FormService extends OpenmrsService {
 	 * Get FieldType by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return field type or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -373,7 +374,7 @@ public interface FormService extends OpenmrsService {
 	 * Get FieldType by its name
 	 * @since 1.11
 	 * @param name
-	 * @return
+	 * @return field type or null
 	 * @should find object given valid name
 	 * @should return null if no object found with given name
 	 */
@@ -536,7 +537,7 @@ public interface FormService extends OpenmrsService {
 	 * Get Field by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return field or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -546,7 +547,7 @@ public interface FormService extends OpenmrsService {
 	 * Get FieldAnswer by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return field answer or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -622,7 +623,7 @@ public interface FormService extends OpenmrsService {
 	 * Get FormField by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return form field or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */

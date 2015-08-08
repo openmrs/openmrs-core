@@ -21,7 +21,7 @@ import org.openmrs.api.context.Context;
  * visit. An admin can decide how they want their Encounters automatically assigned to Visits by
  * choosing different handlers.
  * 
- * @see EncounterService#getVisitAssignmentHandlers()
+ * @see EncounterService#getEncounterVisitHandlers()
  * @since 1.9
  */
 public interface EncounterVisitHandler {
@@ -41,8 +41,8 @@ public interface EncounterVisitHandler {
 	/**
 	 * Implementations of this method should look at the given <code>encounter</code> and choose
 	 * whether or not it should be assigned to a {@link Visit} that is already open or if it should
-	 * be part of a new visit. <br/>
-	 * <br/>
+	 * be part of a new visit. <br>
+	 * <br>
 	 * The decision of what to do is up to the handler, but it should call
 	 * {@link Encounter#setVisit(Visit)} with the outcome. The visit assigned to the encounter will
 	 * be persisted to the database after this method is returned, so the handler is not required to

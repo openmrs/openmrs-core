@@ -17,10 +17,9 @@ import org.openmrs.customdatatype.RepeatingCustomValueDescriptor;
  * Common interface for user-defined extensions to core domain objects, which would be handled by adding
  * custom database columns in a less generic system. 
  * For example Visit has VisitAttributes that are defined by VisitAttributeTypes (that implement
- * AttributeType<Visit>).
+ * AttributeType&lt;Visit&gt;).
  * @see Attribute
  * @see Customizable
- * @see AttributeHandler
  * @since 1.9
  */
 public interface AttributeType<OwningType extends Customizable<?>> extends RepeatingCustomValueDescriptor, OpenmrsMetadata {

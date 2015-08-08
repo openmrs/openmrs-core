@@ -27,7 +27,7 @@ public interface ArdenService {
 	 * @param ardenRuleDefinition the rule definition to be parsed
 	 * @param outFolder the java output directory location. this is not the full path with the
 	 *            package structure
-	 * @throws Exception when the rule definition parser doesn't recognize the arden structure
+	 * @throws APIException when the rule definition parser doesn't recognize the arden structure
 	 * @since 1.8
 	 */
 	public void compile(String ardenRuleDefinition, String outFolder) throws APIException;

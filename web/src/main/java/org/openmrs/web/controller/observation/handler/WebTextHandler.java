@@ -32,7 +32,7 @@ import org.openmrs.web.controller.observation.handler.WebHandlerUtils;
 public class WebTextHandler extends TextHandler {
 	
 	/** Views supported by this handler */
-	private static final String[] supportedViews = { ComplexObsHandler.URI_VIEW, ComplexObsHandler.HTML_VIEW, };
+	private static final String[] supportedViews = { ComplexObsHandler.URI_VIEW, ComplexObsHandler.HTML_VIEW };
 	
 	/**
 	 * Default Constructor
@@ -45,12 +45,12 @@ public class WebTextHandler extends TextHandler {
 	 * Returns the ComplexData for an Obs depending on the view.
 	 * Currently, the views implemented are those supported by ancestor plus the following:
 	 * <ul>
-	 * <li>{@link WebConstants#URI_VIEW}: a lightweight alternative to returning the
+	 * <li>{@link ComplexObsHandler#URI_VIEW}: a lightweight alternative to returning the
 	 * ComplexData from the parent class since this does not require access to the service layer.
 	 * Gives a link to the ComplexServlet for this obs
 	 * </ul>
 	 * 
-	 * @see org.openmrs.obs.handler.TextHandler#getComplexData(org.openmrs.Obs, java.lang.String)
+	 * @see org.openmrs.obs.handler.TextHandler#getObs(Obs, String)
 	 */
 	@Override
 	public Obs getObs(Obs obs, String view) {
@@ -83,10 +83,10 @@ public class WebTextHandler extends TextHandler {
 	 */
 	@Override
 	public String[] getSupportedViews() {
-		List view_list = new ArrayList(Arrays.asList(supportedViews));
-		view_list.addAll(Arrays.asList(super.getSupportedViews()));
-		String[] views = new String[view_list.size()];
-		view_list.toArray(views);
+		List viewList = new ArrayList(Arrays.asList(supportedViews));
+		viewList.addAll(Arrays.asList(super.getSupportedViews()));
+		String[] views = new String[viewList.size()];
+		viewList.toArray(views);
 		return views;
 	}
 	

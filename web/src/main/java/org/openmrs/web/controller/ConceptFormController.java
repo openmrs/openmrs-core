@@ -129,6 +129,10 @@ public class ConceptFormController extends SimpleFormController {
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
 	        BindException errors) throws Exception {
 		
+		if (getMessageSourceAccessor().getMessage("Concept.cancel").equals(request.getParameter("action"))) {
+			return new ModelAndView(new RedirectView("index.htm"));
+		}
+		
 		Concept concept = ((ConceptFormBackingObject) object).getConcept();
 		ConceptService cs = Context.getConceptService();
 		
@@ -327,8 +331,11 @@ public class ConceptFormController extends SimpleFormController {
 	protected ConceptFormBackingObject formBackingObject(HttpServletRequest request) throws ServletException {
 		String conceptId = request.getParameter("conceptId");
 		try {
-			ConceptService cs = Context.getConceptService();
-			Concept concept = cs.getConcept(Integer.valueOf(conceptId));
+			Concept concept = null;
+			if (StringUtils.hasText(conceptId)) {
+				concept = Context.getConceptService().getConcept(Integer.valueOf(conceptId));
+			}
+			
 			if (concept == null) {
 				return new ConceptFormBackingObject(new Concept());
 			} else {
@@ -655,7 +662,7 @@ public class ConceptFormController extends SimpleFormController {
 		
 		/**
 		 * Builds a white-space separated list of concept ids belonging to a concept set
-		 * @return
+		 * @return white-space separated list
 		 */
 		public String getSetElements() {
 			StringBuilder result = new StringBuilder();
@@ -906,7 +913,7 @@ public class ConceptFormController extends SimpleFormController {
 		/**
 		 * Get the forms that this concept is declared to be used in
 		 *
-		 * @return
+		 * @return list of forms
 		 */
 		public List<Form> getFormsInUse() {
 			return Context.getFormService().getFormsContainingConcept(concept);
@@ -991,7 +998,7 @@ public class ConceptFormController extends SimpleFormController {
 		/**
 		 * Get the other concept questions that this concept is declared as an answer for
 		 *
-		 * @return
+		 * @return list of concepts
 		 */
 		public List<Concept> getQuestionsAnswered() {
 			return Context.getConceptService().getConceptsByAnswer(concept);
@@ -1000,7 +1007,7 @@ public class ConceptFormController extends SimpleFormController {
 		/**
 		 * Get the sets that this concept is declared to be a child member of
 		 *
-		 * @return
+		 * @return list of concept sets
 		 */
 		public List<ConceptSet> getContainedInSets() {
 			return Context.getConceptService().getSetsContainingConcept(concept);

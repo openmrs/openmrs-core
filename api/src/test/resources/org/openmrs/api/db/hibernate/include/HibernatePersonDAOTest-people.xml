@@ -14,8 +14,8 @@
     <!--
         People with names and attributes to test searches by names and/or attributes
     -->
-    <person person_id="42" gender="M" birthdate="1965-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="29BF6F2B-0CE4-4CDB-A9BD-231E1B01C044"/>
-    <person person_id="43" gender="M" birthdate="1995-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="BB3D4E98-1804-471E-B4B5-5180C1ECCEA0"/>
+    <person person_id="42" gender="M" birthdate="1965-09-30" birthtime="12:34:56" birthdate_estimated="0" dead="false" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="29BF6F2B-0CE4-4CDB-A9BD-231E1B01C044"/>
+    <person person_id="43" gender="M" birthdate="1995-09-30" birthdate_estimated="0" dead="false" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="BB3D4E98-1804-471E-B4B5-5180C1ECCEA0"/>
 
     <person_name person_name_id="42" preferred="true" person_id="42" prefix="Mr." given_name="Bilbo Odilon" middle_name="B." family_name="Baggins" family_name2="Senior" family_name_suffix="Hobbit" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" void_reason="" uuid="1305DB6D-9F74-434A-AA11-7E0B62DA8153"/>
     <person_name person_name_id="43" preferred="true" person_id="43" prefix="Mr." given_name="Frodo Ansilon" middle_name="F." family_name="Baggins" family_name2="Junior" family_name_suffix="Hobbit" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" void_reason="" uuid="FF981B8A-6692-4CBF-8BB9-74BFB3F62357"/>

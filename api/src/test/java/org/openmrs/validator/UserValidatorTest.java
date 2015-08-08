@@ -29,7 +29,7 @@ import org.springframework.validation.Errors;
 public class UserValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link UserValidator#isUserNameValid(String)}
+	 * @see UserValidator#isUserNameValid(String)
 	 */
 	@Test
 	@Verifies(value = "should validate username with only alpha numerics", method = "isUserNameValid(String)")
@@ -39,7 +39,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserValidator#isUserNameValid(String)}
+	 * @see UserValidator#isUserNameValid(String)
 	 */
 	@Test
 	@Verifies(value = "should validate username with alpha dash and underscore", method = "isUserNameValid(String)")
@@ -49,7 +49,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserValidator#isUserNameValid(String)}
+	 * @see UserValidator#isUserNameValid(String)
 	 */
 	@Test
 	@Verifies(value = "should validate username with alpha dash underscore and dot", method = "isUserNameValid(String)")
@@ -59,7 +59,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserValidator#isUserNameValid(String)}
+	 * @see UserValidator#isUserNameValid(String)
 	 */
 	@Test
 	@Verifies(value = "should validate username with exactly max size name", method = "isUserNameValid(String)")
@@ -72,7 +72,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserValidator#isUserNameValid(String)}
+	 * @see UserValidator#isUserNameValid(String)
 	 */
 	@Test
 	@Verifies(value = "should not validate username with less than minimumLength", method = "isUserNameValid(String)")
@@ -82,7 +82,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserValidator#isUserNameValid(String)}
+	 * @see UserValidator#isUserNameValid(String)
 	 */
 	@Test
 	@Verifies(value = "should not validate username with invalid character", method = "isUserNameValid(String)")
@@ -92,7 +92,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserValidator#isUserNameValid(String)}
+	 * @see UserValidator#isUserNameValid(String)
 	 */
 	@Test
 	@Verifies(value = "should not validate username with more than maximum size", method = "isUserNameValid(String)")
@@ -104,7 +104,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserValidator#validate(Object,Errors)}
+	 * @see UserValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if retired and retireReason is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -130,7 +130,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserValidator#validate(Object,Errors)}
+	 * @see UserValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
@@ -150,7 +150,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserValidator#isUserNameValid(String)}
+	 * @see UserValidator#isUserNameValid(String)
 	 */
 	@Test
 	@Verifies(value = "should validate when username is null", method = "isUserNameValid(String)")
@@ -160,7 +160,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserValidator#isUserNameValid(String)}
+	 * @see UserValidator#isUserNameValid(String)
 	 */
 	@Test
 	@Verifies(value = "should validate when username is the empty string", method = "isUserNameValid(String)")
@@ -170,7 +170,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserValidator#isUserNameValid(String)}
+	 * @see UserValidator#isUserNameValid(String)
 	 */
 	@Test
 	@Verifies(value = "should not validate when username is whitespace only", method = "isUserNameValid(String)")
@@ -258,7 +258,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserValidator#validate(Object,Errors)}
+	 * @see UserValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -279,7 +279,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserValidator#validate(Object,Errors)}
+	 * @see UserValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

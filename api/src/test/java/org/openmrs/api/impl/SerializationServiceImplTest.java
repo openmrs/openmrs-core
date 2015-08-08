@@ -41,7 +41,7 @@ public class SerializationServiceImplTest {
 	}
 	
 	/**
-	 * @see {@link SerializationServiceImpl#setSerializers(List<OpenmrsSerializer>)}
+	 * @see SerializationServiceImpl#setSerializers(List<OpenmrsSerializer>)
 	 */
 	@Test
 	@Verifies(value = "should not reset serializers list when called multiple times", method = "setSerializers(List<+QOpenmrsSerializer;>)")

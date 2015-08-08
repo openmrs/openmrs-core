@@ -19,8 +19,8 @@ import java.lang.annotation.Target;
 /**
  * Annotation used to provide a few extra options to the API logging advice. This annotation is only
  * needed if a specific method needs some extra information (like if you want to limit the output of
- * this method when being logged because of size concerns or security concerns).<br/>
- * <br/>
+ * this method when being logged because of size concerns or security concerns).<br>
+ * <br>
  * To use, simply place the annotation before a method declaration in its interface:
  * 
  * <pre>

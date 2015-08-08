@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.db;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.openmrs.GlobalProperty;
@@ -23,17 +22,6 @@ import org.springframework.validation.Errors;
  * @see org.openmrs.api.AdministrationService
  */
 public interface AdministrationDAO {
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String,
-	 *      java.lang.Integer, java.lang.Integer)
-	 */
-	public void mrnGeneratorLog(String site, Integer start, Integer count) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#getMRNGeneratorLog()
-	 */
-	public Collection<?> getMRNGeneratorLog() throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(String)

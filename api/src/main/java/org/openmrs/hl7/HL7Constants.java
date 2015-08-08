@@ -9,7 +9,8 @@
  */
 package org.openmrs.hl7;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.openmrs.util.PrivilegeConstants;
 
@@ -174,7 +175,7 @@ public class HL7Constants {
 	public static final int MIGRATION_MAX_BATCH_SIZE = 2000;
 	
 	// List of datatypes that do not require complex definitions
-	public static final Hashtable<String, String> simpleDatatypes = new Hashtable<String, String>();
+	public static final Map<String, String> simpleDatatypes = new HashMap<String, String>();
 	
 	static {
 		simpleDatatypes.put(HL7_TEXT, "xs:string");

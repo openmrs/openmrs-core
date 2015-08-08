@@ -20,8 +20,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.EntityMode;
+import org.hibernate.FlushMode;
 import org.hibernate.LockOptions;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
@@ -42,15 +43,14 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
-import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderDAO that
  * is used by the OrderService. This class is injected by spring into the desired OrderService
  * class. This injection is determined by the xml mappings and elements in the spring application
- * context: /metadata/api/spring/applicationContext.xml.<br/>
- * <br/>
+ * context: /metadata/api/spring/applicationContext.xml.<br>
+ * <br>
  * The OrderService should be used for all Order related database manipulation.
  * 
  * @see org.openmrs.api.OrderService
@@ -184,16 +184,20 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	@Override
-	public List<List<Object>> getOrderFromDatabase(Order order, boolean isOrderADrugOrder) throws APIException {
-		String query = "SELECT patient_id, care_setting, concept_id FROM orders WHERE order_id =";
+	public List<Object[]> getOrderFromDatabase(Order order, boolean isOrderADrugOrder) throws APIException {
+		String sql = "SELECT patient_id, care_setting, concept_id FROM orders WHERE order_id = :orderId";
 		
 		if (isOrderADrugOrder) {
-			query = "SELECT o.patient_id, o.care_setting, o.concept_id, d.drug_inventory_id "
-			        + "FROM orders o, drug_order d WHERE o.order_id = d.order_id AND o.order_id =";
+			sql = " SELECT o.patient_id, o.care_setting, o.concept_id, d.drug_inventory_id "
+			        + " FROM orders o, drug_order d WHERE o.order_id = d.order_id AND o.order_id = :orderId";
 		}
-		List<List<Object>> lists = DatabaseUtil.executeSQL(sessionFactory.getCurrentSession().connection(), query
-		        + order.getOrderId(), true);
-		return lists;
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setParameter("orderId", order.getOrderId());
+		
+		//prevent hibernate from flushing before fetching the list
+		query.setFlushMode(FlushMode.MANUAL);
+		
+		return query.list();
 	}
 	
 	/**
@@ -347,7 +351,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See OrderDAO#getOrderTypeByName
+	 * @see OrderDAO#getOrderTypeByName
 	 */
 	@Override
 	public OrderType getOrderTypeByName(String orderTypeName) {
@@ -357,7 +361,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See OrderDAO#getOrderFrequency
+	 * @see OrderDAO#getOrderFrequency
 	 */
 	@Override
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId) {
@@ -365,7 +369,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See OrderDAO#getOrderFrequencyByUuid
+	 * @see OrderDAO#getOrderFrequencyByUuid
 	 */
 	@Override
 	public OrderFrequency getOrderFrequencyByUuid(String uuid) {
@@ -374,7 +378,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See OrderDAO#getOrderFrequencies(boolean)
+	 * @see OrderDAO#getOrderFrequencies(boolean)
 	 */
 	@Override
 	public List<OrderFrequency> getOrderFrequencies(boolean includeRetired) {
@@ -386,7 +390,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See OrderDAO#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
+	 * @see OrderDAO#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
 	 */
 	@Override
 	public List<OrderFrequency> getOrderFrequencies(String searchPhrase, Locale locale, boolean exactLocale,
@@ -442,7 +446,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		Map<String, ClassMetadata> metadata = sessionFactory.getAllClassMetadata();
 		for (Iterator<ClassMetadata> i = metadata.values().iterator(); i.hasNext();) {
 			ClassMetadata classMetadata = i.next();
-			Class<?> entityClass = classMetadata.getMappedClass(EntityMode.POJO);
+			Class<?> entityClass = classMetadata.getMappedClass();
 			if (Order.class.equals(entityClass)) {
 				continue; //ignore the org.openmrs.Order class itself
 			}
@@ -478,7 +482,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See org.openmrs.api.db.OrderDAO@getOrderType
+	 * @see org.openmrs.api.db.OrderDAO#getOrderType(Integer)
 	 */
 	@Override
 	public OrderType getOrderType(Integer orderTypeId) {
@@ -488,7 +492,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See org.openmrs.api.db.OrderDAO@getOrderTypeByUuid
+	 * @see org.openmrs.api.db.OrderDAO#getOrderTypeByUuid(String)
 	 */
 	@Override
 	public OrderType getOrderTypeByUuid(String uuid) {
@@ -497,7 +501,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See org.openmrs.api.db.OrderDAO@getOrderTypes
+	 * @see org.openmrs.api.db.OrderDAO#getOrderTypes(boolean)
 	 */
 	@Override
 	public List<OrderType> getOrderTypes(boolean includeRetired) {

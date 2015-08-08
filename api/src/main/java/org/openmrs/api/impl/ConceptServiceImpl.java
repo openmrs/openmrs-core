@@ -282,9 +282,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
-		// add/remove entries in the concept_word table (used for searching)
-		this.updateConceptIndex(conceptToReturn);
-		
 		return conceptToReturn;
 	}
 	
@@ -940,8 +937,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#mapConceptProposalToConcept(org.openmrs.ConceptProposal,
-	 *      org.openmrs.Concept, java.util.locale)
+	 * @see org.openmrs.api.ConceptService#mapConceptProposalToConcept(ConceptProposal, Concept, Locale)
 	 */
 	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept, Locale locale) throws APIException {
 		
@@ -1070,31 +1066,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * Convenience method
-	 * 
-	 * @param parent
-	 * @param subList
-	 * @return
-	 */
-	private Boolean containsAll(Collection<String> parent, Collection<String> subList) {
-		
-		for (String s : subList) {
-			s = s.toUpperCase();
-			boolean found = false;
-			for (String p : parent) {
-				p = p.toUpperCase();
-				if (p.startsWith(s)) {
-					found = true;
-				}
-			}
-			if (!found) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	/**
 	 * @see org.openmrs.api.ConceptService#checkIfLocked()
 	 */
 	@Transactional(readOnly = true)
@@ -1182,7 +1153,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getAllConceptSources(java.lang.boolean)
+	 * @see org.openmrs.api.ConceptService#getAllConceptSources(boolean)
 	 */
 	@Transactional(readOnly = true)
 	public List<ConceptSource> getAllConceptSources(boolean includeRetired) {
@@ -1359,8 +1330,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService
-	 * @getConceptsByMapping(java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.ConceptService#getConceptsByMapping(java.lang.String, java.lang.String)
 	 */
 	@Transactional(readOnly = true)
 	public List<Concept> getConceptsByMapping(String code, String sourceName) throws APIException {
@@ -1368,8 +1338,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService
-	 * @getConceptsByMapping(java.lang.String, java.lang.String, boolean)
+	 * @see org.openmrs.api.ConceptService#getConceptsByMapping(java.lang.String, java.lang.String, boolean)
 	 */
 	@Transactional(readOnly = true)
 	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired) throws APIException {
@@ -2064,8 +2033,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource,
-	 *      java.util.Collection
+	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection)
 	 */
 	@Override
 	@Transactional(readOnly = true)

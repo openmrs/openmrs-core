@@ -439,11 +439,9 @@ public class HibernateFormDAO implements FormDAO {
 			}
 			
 			DetachedCriteria subquery = DetachedCriteria.forClass(FormField.class, "ff");
-			subquery.setProjection(Projections.count("ff.formFieldId"));
-			subquery.add(Restrictions.eqProperty("ff.form", "form"));
+			subquery.setProjection(Projections.property("ff.form.formId"));
 			subquery.add(Restrictions.in("ff.formFieldId", anyFormFieldIds));
-			
-			crit.add(Subqueries.lt(0L, subquery));
+			crit.add(Subqueries.propertyIn("form.formId", subquery));
 		}
 		
 		//select * from form where len(containingallformfields) = (select count(*) from form_field ff where ff.form_id = form_id and form_field_id in (containingallformfields);
@@ -547,7 +545,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.FormDAO#getFormFieldByField(org.openmrs.Field)
+	 * @see org.openmrs.api.db.FormDAO#getFormFieldsByField(Field)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")

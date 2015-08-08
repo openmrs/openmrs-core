@@ -203,6 +203,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		Collection<ConceptName> actualNames = actualConcept.getNames();
 		assertEquals(2, actualNames.size());
 		assertEquals(EXPECTED_PREFERRED_NAME, actualConcept.getFullySpecifiedName(new Locale("en", "GB")).getName());
+		assertEquals(1, actualConcept.getShortNames().size());
 		assertNotNull(actualConcept.getShortNameInLocale(new Locale("en", "GB")));
 		assertEquals(EXPECTED_SHORT_NAME, actualConcept.getShortNameInLocale(new Locale("en", "GB")).getName());
 		assertNull(actualConcept.getDescription(new Locale("en", "GB")));
@@ -577,7 +578,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should copy numeric values into numeric concepts", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -621,7 +622,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should display numeric values from table", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -773,7 +774,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should return a concept with a null id if no match is found", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -791,7 +792,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should set the local preferred name", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -818,7 +819,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should void a synonym marked as preferred when it is removed", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -847,7 +848,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should add a new Concept map to an existing concept", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -878,7 +879,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should add a new Concept map when creating a concept", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -911,7 +912,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should ignore new concept map row if the user did not select a term", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -942,7 +943,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should remove a concept map from an existing concept", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")

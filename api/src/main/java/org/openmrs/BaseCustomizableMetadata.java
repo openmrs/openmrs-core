@@ -76,7 +76,7 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.Customizable#addAttribute(org.openmrs.customdatatype.SingleCustomValue)
+	 * @see org.openmrs.customdatatype.Customizable#addAttribute(Attribute)
 	 */
 	@Override
 	public void addAttribute(A attribute) {
@@ -90,7 +90,7 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 	
 	/**
 	 * Convenience method that voids all existing attributes of the given type, and sets this new one.
-	 * TODO fail if minOccurs > 1
+	 * TODO fail if minOccurs &gt; 1
 	 * TODO decide whether this should require maxOccurs=1
 	 * @should void the attribute if an attribute with same attribute type already exists and the maxOccurs is set to 1
 	 * @should work for attributes with datatypes whose values are stored in other tables

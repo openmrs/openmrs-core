@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.openmrs.Concept;
@@ -23,14 +24,14 @@ import org.openmrs.logic.LogicException;
 
 /**
  * A result from the logic service. A result can be 0-to-n date-values pairs. You can treat the
- * result as a list or easily coerce it into a simple value as needed. <br/>
- * <br/>
+ * result as a list or easily coerce it into a simple value as needed. <br>
+ * <br>
  * When possible, results carry references to more complex objects so that code that deals with
  * results and has some prior knowledge of the objects returned by a particular rule can more easily
- * get to the full-featured objects instead of the simplified values in the date-value pairs.<br/>
- * <br/>
+ * get to the full-featured objects instead of the simplified values in the date-value pairs.<br>
+ * <br>
  * TODO: eliminate unnecessary methods (toDatetime(), getDatetime(), and getDate() should all do the
- * same thing)<br/>
+ * same thing)<br>
  * TODO: better support/handling of NULL_RESULT
  */
 public class Result extends ArrayList<Result> {
@@ -436,10 +437,11 @@ public class Result extends ArrayList<Result> {
 	 *         the overridden boolean value (if specifically defined) or a boolean representation of
 	 *         the default datatype. If the result is a list, then return false only if all members
 	 *         are false
-	 *         <table>
-	 *         <th>
-	 *         <td>Datatype</td>
-	 *         <td>Returns</td></th>
+	 *         <table summary="Return logic">
+	 *         <tr>
+	 *         <th>Datatype</th>
+	 *         <th>Returns</th>
+	 *         </tr>
 	 *         <tr>
 	 *         <td>CODED</td>
 	 *         <td>false for concept FALSE<br>
@@ -513,10 +515,11 @@ public class Result extends ArrayList<Result> {
 	 *         datetime value (if specifically defined) or datetime representation of the default
 	 *         datatype. If the result is a list, then the datetime representation of the first
 	 *         member is returned.
-	 *         <table>
-	 *         <th>
-	 *         <td>Datatype</td>
-	 *         <td>Returns</td></th>
+	 *         <table summary="Return logic">
+	 *         <tr>
+	 *         <th>Datatype</th>
+	 *         <th>Returns</th>
+	 *         </tr>
 	 *         <tr>
 	 *         <td>BOOLEAN</td>
 	 *         <td>null</td>
@@ -557,10 +560,11 @@ public class Result extends ArrayList<Result> {
 	 *         the overridden numeric value (if specifically defined) or a numeric representation of
 	 *         the default datatype. If the result is a list, then the value of the first element is
 	 *         returned.
-	 *         <table>
-	 *         <th>
-	 *         <td>Datatype</td>
-	 *         <td>Returns</td></th>
+	 *         <table summary="Return logic">
+	 *         <tr>
+	 *         <th>Datatype</th>
+	 *         <th>Returns</th>
+	 *         </tr>
 	 *         <tr>
 	 *         <td>BOOLEAN</td>
 	 *         <td>1 for true<br>
@@ -575,6 +579,7 @@ public class Result extends ArrayList<Result> {
 	 *         <td>DATETIME</td>
 	 *         <td>Number of milliseconds since Java's epoch</td>
 	 *         </tr>
+	 *         <tr>
 	 *         <td>TEXT</td>
 	 *         <td>numeric value of text if it can be parsed into a number<br>
 	 *         otherwise zero (0)</td> </tr>
@@ -752,7 +757,7 @@ public class Result extends ArrayList<Result> {
 			return this;
 		}
 		Integer something = Integer.valueOf(1);
-		HashMap<Result, Integer> map = new HashMap<Result, Integer>();
+		Map<Result, Integer> map = new HashMap<Result, Integer>();
 		for (Result r : this) {
 			map.put(r, something);
 		}

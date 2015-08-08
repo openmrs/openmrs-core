@@ -23,7 +23,7 @@ import org.springframework.validation.Errors;
 public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link ConceptMapTypeValidator#validate(Object,Errors)}
+	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the concept map type name is a duplicate", method = "validate(Object,Errors)")
@@ -36,7 +36,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptMapTypeValidator#validate(Object,Errors)}
+	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should fail if the concept map type object is null", method = "validate(Object,Errors)")
@@ -46,7 +46,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptMapTypeValidator#validate(Object,Errors)}
+	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the name is a white space character", method = "validate(Object,Errors)")
@@ -59,7 +59,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptMapTypeValidator#validate(Object,Errors)}
+	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the name is an empty string", method = "validate(Object,Errors)")
@@ -72,7 +72,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptMapTypeValidator#validate(Object,Errors)}
+	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the name is null", method = "validate(Object,Errors)")
@@ -84,7 +84,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptMapTypeValidator#validate(Object,Errors)}
+	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "pass if the name is unique amongst all concept map type names", method = "validate(Object,Errors)")
@@ -97,7 +97,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptMapTypeValidator#validate(Object,Errors)}
+	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -112,7 +112,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptMapTypeValidator#validate(Object,Errors)}
+	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

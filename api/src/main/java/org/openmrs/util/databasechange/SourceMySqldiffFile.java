@@ -38,8 +38,8 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Executes (aka "source"s) the given file on the current database. <br/>
- * <br/>
+ * Executes (aka "source"s) the given file on the current database. <br>
+ * <br>
  * Expects parameter: "sqlFile" : name of file on classpath to source on mysql
  */
 public class SourceMySqldiffFile implements CustomTaskChange {
@@ -93,7 +93,12 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			OpenmrsUtil.copyFile(sqlFileInputStream, outputStream);
 		}
 		catch (IOException e) {
-			throw new CustomChangeException("Unable to copy " + sqlFile + " to file: " + tmpOutputFile.getAbsolutePath(), e);
+			if (tmpOutputFile != null) {
+				throw new CustomChangeException(
+				        "Unable to copy " + sqlFile + " to file: " + tmpOutputFile.getAbsolutePath(), e);
+			} else {
+				throw new CustomChangeException("Unable to copy " + sqlFile, e);
+			}
 		}
 		
 		// build the mysql command line string
@@ -238,7 +243,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	}
 	
 	/**
-	 * @see liquibase.change.custom.CustomChange#setFileOpener(liquibase.FileOpener)
+	 * @see liquibase.change.custom.CustomChange#setFileOpener(ResourceAccessor) 
 	 */
 	@Override
 	public void setFileOpener(ResourceAccessor fileOpener) {

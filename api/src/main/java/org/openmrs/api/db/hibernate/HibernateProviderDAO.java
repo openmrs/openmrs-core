@@ -9,11 +9,15 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.classic.Session;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Junction;
@@ -30,10 +34,6 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.util.OpenmrsConstants;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Hibernate specific Provider related functions. This class should not be used directly. All calls
  * should go through the {@link org.openmrs.api.ProviderService} methods.
@@ -49,7 +49,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ProviderDAO#getAllProviders()
+	 * @see org.openmrs.api.db.ProviderDAO#getAllProviders(boolean)
 	 */
 	@Override
 	public List<Provider> getAllProviders(boolean includeRetired) {
@@ -129,8 +129,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ProviderDAO#getProviders(java.lang.String, java.util.Map,
-	 *      java.lang.Integer, java.lang.Integer)
+	 * @see org.openmrs.api.db.ProviderDAO#getProviders(String, Map, Integer, Integer, boolean)
 	 */
 	@Override
 	public List<Provider> getProviders(String name, Map<ProviderAttributeType, String> serializedAttributeValues,
@@ -235,7 +234,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ProviderDAO#getCountOfProviders(java.lang.String)
+	 * @see org.openmrs.api.db.ProviderDAO#getCountOfProviders(String, boolean)
 	 */
 	@Override
 	public Long getCountOfProviders(String name, boolean includeRetired) {

@@ -85,8 +85,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		
 		OpenmrsClassLoaderHolder.INSTANCE = this;
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Creating new OpenmrsClassLoader instance with parent: " + parent);
+		}
 		
 		//disable caching so the jars aren't locked
 		//if performance is effected, this can be disabled in favor of
@@ -392,8 +393,6 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			}
 		}
 		
-		MemoryLeakUtil.clearHibernateSessionFactories();
-		
 		OpenmrsClassScanner.destroyInstance();
 		
 		OpenmrsClassLoaderHolder.INSTANCE = null;
@@ -504,9 +503,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * This clears any references this classloader might have that will prevent garbage collection. <br/>
-	 * <br/>
-	 * Borrowed from Tomcat's WebappClassLoader#clearReferences() (not javadoc linked intentionally) <br/>
+	 * This clears any references this classloader might have that will prevent garbage collection. <br>
+	 * <br>
+	 * Borrowed from Tomcat's WebappClassLoader#clearReferences() (not javadoc linked intentionally) <br>
 	 * The only difference between this and Tomcat's implementation is that this one only acts on
 	 * openmrs objects and also clears out static java.* packages. Tomcat acts on all objects and
 	 * does not clear our static java.* objects.
@@ -587,8 +586,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * Used by {@link #clearReferences()} upon application close. <br/>
-	 * <br/>
+	 * Used by {@link #clearReferences()} upon application close. <br>
+	 * <br>
 	 * Borrowed from Tomcat's WebappClassLoader.
 	 *
 	 * @param instance the object whose fields need to be nulled out
@@ -639,8 +638,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * Determine whether a class was loaded by this class loader or one of its child class loaders. <br/>
-	 * <br/>
+	 * Determine whether a class was loaded by this class loader or one of its child class loaders. <br>
+	 * <br>
 	 * Borrowed from Tomcat's WebappClassLoader
 	 */
 	protected static boolean loadedByThisOrChild(Class<?> clazz) {
@@ -662,8 +661,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	public static void saveState() {
 		try {
 			String key = SchedulerService.class.getName();
-			if (!Context.isRefreshingContext())
+			if (!Context.isRefreshingContext()) {
 				mementos.put(key, Context.getSchedulerService().saveToMemento());
+			}
 		}
 		catch (Exception t) {
 			// pass

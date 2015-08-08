@@ -21,11 +21,11 @@ import org.openmrs.aop.RequiredDataAdvice;
  * {@link RequiredDataAdvice} class uses AOP around each method in every service to check to see if
  * its a void* method. If it is a void* method, this class is called to handle setting the
  * {@link Voidable#isVoided()}, {@link Voidable#setVoidReason(String)},
- * {@link Voidable#setVoiddBy(User)}, and {@link Voidable#setDateVoidd(Date)}. <br/>
- * <br/>
+ * {@link Voidable#setVoidedBy(User)}, and {@link Voidable#setDateVoided(Date)}. <br>
+ * <br>
  * Child collections on this {@link Voidable} that are themselves a {@link Voidable} are looped over
- * and also voided by the {@link RequiredDataAdvice} class.<br/>
- * <br/>
+ * and also voided by the {@link RequiredDataAdvice} class.<br>
+ * <br>
  * This class will only set the voidedBy and dateVoided attributes if voided is set to false. If
  * voided is set to true it is assumed that this object is in a list of things that is getting
  * voided but that it itself was previously voided. The workaround to this is that if the voided bit

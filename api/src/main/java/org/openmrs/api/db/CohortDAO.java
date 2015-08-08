@@ -52,7 +52,7 @@ public interface CohortDAO {
 	 * Finds all cohorts that contain the given patientId
 	 * 
 	 * @param patientId
-	 * @return List<Cohort> object of matching Cohorts
+	 * @return List&lt;Cohort&gt; object of matching Cohorts
 	 * @throws DAOException
 	 */
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException;
@@ -69,7 +69,7 @@ public interface CohortDAO {
 	 * Finds all Cohorts with matching names
 	 * 
 	 * @param nameFragment
-	 * @return List<Cohort> object of matching Cohorts
+	 * @return List&lt;Cohort&gt; object of matching Cohorts
 	 */
 	public List<Cohort> getCohorts(String nameFragment) throws DAOException;
 	
@@ -82,10 +82,8 @@ public interface CohortDAO {
 	public Cohort deleteCohort(Cohort cohort) throws DAOException;
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return cohort or null
 	 */
 	public Cohort getCohortByUuid(String uuid);
 	

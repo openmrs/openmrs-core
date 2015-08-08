@@ -137,7 +137,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	
 	/**
 	 * Returns a {@link ProgramWorkflowState} whose {@link Concept} has any {@link ConceptName} that
-	 * matches the given <code>name</name>
+	 * matches the given <code>name</code>
 	 * 
 	 * @param name the {@link ProgramWorkflowState} name, in any {@link Locale}
 	 * @return a {@link ProgramWorkflowState} which has the passed <code>name</code> in any
@@ -153,13 +153,13 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	}
 	
 	/**
-	 * Returns a Set<{@link ProgramWorkflowState}> including all non-retired ProgramWorkflowStates
+	 * Returns a Set&lt;{@link ProgramWorkflowState}&gt; including all non-retired ProgramWorkflowStates
 	 * and all retired ProgramWorkflowStates in this ProgramWorkflow if <code>includeRetired</code>
 	 * is true
 	 * 
 	 * @param includeRetired - if false, returns only non-retired {@link ProgramWorkflowState}
 	 *            objects in this ProgramWorkflow
-	 * @return Set<ProgramWorkflowState> - all ProgramWorkflowStates matching input parameters
+	 * @return Set&lt;ProgramWorkflowState&gt; - all ProgramWorkflowStates matching input parameters
 	 */
 	public Set<ProgramWorkflowState> getStates(boolean includeRetired) {
 		Set<ProgramWorkflowState> ret = new HashSet<ProgramWorkflowState>();
@@ -172,10 +172,10 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	}
 	
 	/**
-	 * Returns a Set<{@link ProgramWorkflowState}> including all ProgramWorkflowStates, sorted by
+	 * Returns a Set&lt;{@link ProgramWorkflowState}&gt; including all ProgramWorkflowStates, sorted by
 	 * {@link ConceptName}
 	 * 
-	 * @return Set<ProgramWorkflowState> - all ProgramWorkflowStates, sorted by {@link ConceptName}
+	 * @return Set&lt;ProgramWorkflowState&gt; - all ProgramWorkflowStates, sorted by {@link ConceptName}
 	 * @should sort names containing numbers intelligently
 	 */
 	public Set<ProgramWorkflowState> getSortedStates() {
@@ -189,7 +189,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 			
 		};
 		
-		TreeSet<ProgramWorkflowState> sorted = new TreeSet<ProgramWorkflowState>(stateComparator);
+		Set<ProgramWorkflowState> sorted = new TreeSet<ProgramWorkflowState>(stateComparator);
 		if (getStates() != null) {
 			sorted.addAll(getStates());
 		}
@@ -197,11 +197,11 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	}
 	
 	/**
-	 * Returns a List<{@link ProgramWorkflowState}> including all possible next
+	 * Returns a List&lt;{@link ProgramWorkflowState}&gt; including all possible next
 	 * ProgramWorkflowStates, for the passed {@link PatientProgram} ordered by {@link ConceptName}
 	 * 
 	 * @param patientProgram - The PatientProgram to check
-	 * @return List<ProgramWorkflowState> - all possible next ProgramWorkflowStates, for the passed
+	 * @return List&lt;ProgramWorkflowState&gt; - all possible next ProgramWorkflowStates, for the passed
 	 *         {@link PatientProgram} ordered by {@link ConceptName}
 	 */
 	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram) {
@@ -303,7 +303,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	 * Gets the number of states which are not retired
 	 * 
 	 * @return the total number of non retired states
-	 * @Since 1.9
+	 * @since 1.9
 	 */
 	public int getNonRetiredStateCount() {
 		return getStates(false).size();

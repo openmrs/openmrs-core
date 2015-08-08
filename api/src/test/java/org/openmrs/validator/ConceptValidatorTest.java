@@ -73,7 +73,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if any name is an empty string", method = "validate(Object,Errors)")
@@ -87,7 +87,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "fail if any name is a null value", method = "validate(Object,Errors)")
@@ -103,7 +103,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * Tests for duplicate names for the same concept and not with names for other concepts
 	 * 
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test(expected = DuplicateConceptNameException.class)
 	@Verifies(value = "should fail if any names in the same locale for this concept are similar", method = "validate(Object,Errors)")
@@ -118,7 +118,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * Tests for uniqueness amongst all fully specified names in the same locale
 	 * 
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test(expected = DuplicateConceptNameException.class)
 	@Verifies(value = "should fail if there is a duplicate unretired fully specified name in the same locale", method = "validate(Object,Errors)")
@@ -137,7 +137,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * Tests for uniqueness amongst all preferred names in the same locale
 	 * 
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test(expected = DuplicateConceptNameException.class)
 	@Verifies(value = "should fail if there is a duplicate unretired preferred name in the same locale", method = "validate(Object,Errors)")
@@ -157,7 +157,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if there is no name explicitly marked as fully specified", method = "validate(Object,Errors)")
@@ -172,7 +172,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if the concept has atleast one fully specified name added to it", method = "validate(Object,Errors)")
@@ -185,7 +185,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if the duplicate ConceptName is neither preferred nor fully Specified", method = "validate(Object,Errors)")
@@ -204,7 +204,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if the concept with a duplicate name is retired", method = "validate(Object,Errors)")
@@ -242,7 +242,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if the concept has a synonym that is also a short name", method = "validate(Object,Errors)")
@@ -260,7 +260,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if a term is mapped multiple times to the same concept", method = "validate(Object,Errors)")
@@ -281,7 +281,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if the duplicate name in the locale for the concept being validated is voided", method = "validate(Object,Errors)")
@@ -329,7 +329,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass for a new concept with a map created with deprecated concept map methods", method = "validate(Object,Errors)")
@@ -345,7 +345,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass for an edited concept with a map created with deprecated concept map methods", method = "validate(Object,Errors)")
@@ -384,7 +384,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -400,7 +400,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
@@ -418,7 +418,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if fully specified name is the same as short name", method = "validate(Object,Errors)")
@@ -440,7 +440,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if different concepts have the same short name", method = "validate(Object,Errors)")

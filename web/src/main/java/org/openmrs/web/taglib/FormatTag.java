@@ -563,7 +563,7 @@ public class FormatTag extends TagSupport {
 	private void printEncounterProviders(StringBuilder sb, Map<EncounterRole, Set<Provider>> eps) {
 		if (eps != null) {
 			
-			LinkedHashSet<Provider> providerList = getDisplayEncounterProviders(eps);
+			Set<Provider> providerList = getDisplayEncounterProviders(eps);
 			
 			String providers = null;
 			for (Provider provider : providerList) {
@@ -603,7 +603,7 @@ public class FormatTag extends TagSupport {
 	 * @param eps the encounter providers to filter.
 	 * @return the filtered encounter providers.
 	 */
-	private LinkedHashSet<Provider> getDisplayEncounterProviders(Map<EncounterRole, Set<Provider>> encounterProviders) {
+	private Set<Provider> getDisplayEncounterProviders(Map<EncounterRole, Set<Provider>> encounterProviders) {
 		String encounterRoles = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GP_DASHBOARD_PROVIDER_DISPLAY_ENCOUNTER_ROLES, null);
 		
@@ -630,8 +630,8 @@ public class FormatTag extends TagSupport {
 	 * @param rolesArray the roles string array.
 	 * @return a filtered list of providers.
 	 */
-	private LinkedHashSet<Provider> filterProviders(Map<EncounterRole, Set<Provider>> encounterProviders, String[] rolesArray) {
-		LinkedHashSet<Provider> filteredProviders = new LinkedHashSet<Provider>();
+	private Set<Provider> filterProviders(Map<EncounterRole, Set<Provider>> encounterProviders, String[] rolesArray) {
+		Set<Provider> filteredProviders = new LinkedHashSet<Provider>();
 		
 		for (Map.Entry<EncounterRole, Set<Provider>> entry : encounterProviders.entrySet()) {
 			EncounterRole encounterRole = entry.getKey();
@@ -949,7 +949,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @since 1.9
-	 * @param encounterProviders the encounterProviders to set
+	 * @return the encounterProviders
 	 */
 	public Map<EncounterRole, Set<Provider>> getEncounterProviders() {
 		return encounterProviders;
@@ -957,7 +957,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @since 1.9
-	 * @return the encounterProviders
+	 * @param encounterProviders the encounterProviders to set
 	 */
 	public void setEncounterProviders(Map<EncounterRole, Set<Provider>> encounterProviders) {
 		this.encounterProviders = encounterProviders;
@@ -965,7 +965,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @return the withConceptNameType
-	 * @Since 1.9
+	 * @since 1.9
 	 */
 	public String getWithConceptNameType() {
 		return withConceptNameType;
@@ -973,7 +973,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @param withConceptNameType the withConceptNameType to set
-	 * @Since 1.9
+	 * @since 1.9
 	 */
 	public void setWithConceptNameType(String withConceptNameType) {
 		this.withConceptNameType = withConceptNameType;
@@ -981,7 +981,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @return the withConceptNameTag
-	 * @Since 1.9
+	 * @since 1.9
 	 */
 	public String getWithConceptNameTag() {
 		return withConceptNameTag;
@@ -989,7 +989,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @param withConceptNameTag the withConceptNameTag to set
-	 * @Since 1.9
+	 * @since 1.9
 	 */
 	public void setWithConceptNameTag(String withConceptNameTag) {
 		this.withConceptNameTag = withConceptNameTag;

@@ -63,5 +63,4 @@ public class PatientIdentifierTypeListController extends SimpleFormController {
 		
 		return identifierTypeList;
 	}
-	
 }

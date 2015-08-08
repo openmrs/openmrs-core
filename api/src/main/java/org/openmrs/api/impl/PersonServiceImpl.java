@@ -82,7 +82,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer,
 	 *      java.lang.String, java.lang.String)
-	 * @deprecated @see {@link #getSimilarPeople(String, Integer, String)}
+	 * @deprecated @see #getSimilarPeople(String, Integer, String)
 	 */
 	@Transactional(readOnly = true)
 	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType)
@@ -242,7 +242,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#retirePersonAttributeType(org.openmrs.PersonAttributeType)
+	 * @see org.openmrs.api.PersonService#retirePersonAttributeType(PersonAttributeType, String)
 	 */
 	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException {
 		checkIfPersonAttributeTypesAreLocked();
@@ -850,7 +850,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @deprecated @see
+	 * @deprecated see
 	 *             {@link org.openmrs.api.PersonService#getPersonAttributeTypes(java.lang.String, java.lang.String)}
 	 */
 	@Transactional(readOnly = true)
@@ -1135,7 +1135,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getWinningPersonMergeLogs(org.openmrs.Person)
+	 * @see org.openmrs.api.PersonService#getWinningPersonMergeLogs(Person, boolean)
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -1148,7 +1148,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getLosingPersonMergeLog(org.openmrs.Person)
+	 * @see org.openmrs.api.PersonService#getLosingPersonMergeLog(Person, boolean)
 	 */
 	@Override
 	@Transactional(readOnly = true)

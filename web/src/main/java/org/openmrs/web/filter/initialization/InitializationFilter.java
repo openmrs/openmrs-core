@@ -1004,7 +1004,7 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	/**
-	 * @see org.openmrs.web.filter.StartupFilter#skipFilter()
+	 * @see org.openmrs.web.filter.StartupFilter#skipFilter(HttpServletRequest)
 	 */
 	@Override
 	public boolean skipFilter(HttpServletRequest httpRequest) {
@@ -1394,7 +1394,7 @@ public class InitializationFilter extends StartupFilter {
 							
 							// connect via jdbc with root user and create an openmrs user
 							String host = "'%'";
-							if (wizardModel.databaseConnection.contains("localhost")) {
+							if (wizardModel.databaseConnection.contains("localhost") || wizardModel.databaseConnection.contains("127.0.0.1")) {
 								host = "'localhost'";
 							}
 							String sql = "drop user '?'@" + host;

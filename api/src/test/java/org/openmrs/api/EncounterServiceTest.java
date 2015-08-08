@@ -9,24 +9,6 @@
  */
 package org.openmrs.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -42,6 +24,8 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Provider;
 import org.openmrs.Role;
@@ -54,10 +38,32 @@ import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.api.handler.NoVisitAssignmentHandler;
+import org.openmrs.parameter.EncounterSearchCriteria;
+import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Vector;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -84,7 +90,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should save encounter with basic details", method = "saveEncounter(Encounter)")
@@ -101,7 +107,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should update encounter successfully", method = "saveEncounter(Encounter)")
@@ -149,7 +155,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * You should be able to add an obs to an encounter, save the encounter, and have the obs
 	 * automatically persisted. Added to test bug reported in ticket #827
 	 * 
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should cascade save to contained obs", method = "saveEncounter(Encounter)")
@@ -189,7 +195,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * When you save the encounter with a changed location, the location change should be cascaded
 	 * to all the obs associated with the encounter that had the same location as the encounter.
 	 * 
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should cascade location change in encounter to contained obs", method = "saveEncounter(Encounter)")
@@ -230,7 +236,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * cascaded to all the obs associated with the encounter that had a different location from
 	 * encounter's location.
 	 * 
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should not cascade location change in encounter to contained obs if the initial location of the encounter and the obs are different", method = "saveEncounter(Encounter)")
@@ -261,7 +267,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#unvoidEncounter(Encounter)}
+	 * @see EncounterService#unvoidEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should set date stopped on the original after adding revise order", method = "saveEncounter(Encounter)")
@@ -286,7 +292,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#unvoidEncounter(Encounter)}
+	 * @see EncounterService#unvoidEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should not cascade to existing order", method = "saveEncounter(Encounter)")
@@ -307,7 +313,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure that purging an encounter removes the row from the database
 	 * 
-	 * @see {@link EncounterService#purgeEncounter(Encounter)}
+	 * @see EncounterService#purgeEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should purgeEncounter", method = "purgeEncounter(Encounter)")
@@ -328,7 +334,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure that purging an encounter removes the row from the database
 	 * 
-	 * @see {@link EncounterService#purgeEncounter(Encounter,null)}
+	 * @see EncounterService#purgeEncounter(Encounter,null)
 	 */
 	@Test
 	@Verifies(value = "should cascade purge to obs and orders", method = "purgeEncounter(Encounter,null)")
@@ -357,7 +363,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * You should be able to add an obs to an encounter, save the encounter, and have the obs
 	 * automatically persisted.
 	 * 
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should cascade save to contained obs when encounter already exists", method = "saveEncounter(Encounter)")
@@ -389,7 +395,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * and have the obs automatically persisted with the same date as the encounter. Added to test
 	 * bug reported in {@link Ticket#827}
 	 * 
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should cascade encounter datetime to obs", method = "saveEncounter(Encounter)")
@@ -416,7 +422,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * the obsdatetimes to the new datetime. This test is showing error
 	 * http://dev.openmrs.org/ticket/934
 	 * 
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should only cascade the obsdatetimes to obs with different initial obsdatetimes", method = "saveEncounter(Encounter)")
@@ -444,7 +450,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should not overwrite creator if non null", method = "saveEncounter(Encounter)")
@@ -472,7 +478,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should not overwrite dateCreated if non null", method = "saveEncounter(Encounter)")
@@ -509,7 +515,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * Make sure the obs and order creator and dateCreated is preserved when passed into
 	 * {@link EncounterService#saveEncounter(Encounter)}
 	 * 
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should not overwrite obs and orders creator or dateCreated", method = "saveEncounter(Encounter)")
@@ -571,7 +577,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncountersByPatient(Patient)}
+	 * @see EncounterService#getEncountersByPatient(Patient)
 	 */
 	@Test
 	@Verifies(value = "should not get voided encounters", method = "getEncountersByPatient(Patient)")
@@ -583,7 +589,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncountersByPatient(Patient)}
+	 * @see EncounterService#getEncountersByPatient(Patient)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should throw error when given null parameter", method = "getEncountersByPatient(Patient)")
@@ -592,7 +598,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncountersByPatientId(Integer)}
+	 * @see EncounterService#getEncountersByPatientId(Integer)
 	 */
 	@Test
 	@Verifies(value = "should not get voided encounters", method = "getEncountersByPatientId(Integer)")
@@ -604,7 +610,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncountersByPatientId(Integer)}
+	 * @see EncounterService#getEncountersByPatientId(Integer)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should throw error if given a null parameter", method = "getEncountersByPatientId(Integer)")
@@ -613,7 +619,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncountersByPatientIdentifier(String)}
+	 * @see EncounterService#getEncountersByPatientIdentifier(String)
 	 */
 	@Test
 	@Verifies(value = "should not get voided encounters", method = "getEncountersByPatientIdentifier(String)")
@@ -625,7 +631,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncountersByPatientIdentifier(String)}
+	 * @see EncounterService#getEncountersByPatientIdentifier(String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should throw error if given null parameter", method = "getEncountersByPatientIdentifier(String)")
@@ -637,7 +643,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * Make sure {@link EncounterService#voidEncounter(Encounter, String)} marks all the voided
 	 * stuff correctly
 	 * 
-	 * @see {@link EncounterService#voidEncounter(Encounter,String)}
+	 * @see EncounterService#voidEncounter(Encounter,String)
 	 */
 	@Test
 	@Verifies(value = "should void encounter and set attributes", method = "voidEncounter(Encounter,String)")
@@ -664,7 +670,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#voidEncounter(Encounter,String)}
+	 * @see EncounterService#voidEncounter(Encounter,String)
 	 */
 	@Test
 	@Verifies(value = "should cascade to obs", method = "voidEncounter(Encounter,String)")
@@ -681,7 +687,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#voidEncounter(Encounter,String)}
+	 * @see EncounterService#voidEncounter(Encounter,String)
 	 */
 	@Test
 	@Verifies(value = "should cascade to orders", method = "voidEncounter(Encounter,String)")
@@ -698,7 +704,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#unvoidEncounter(Encounter)}
+	 * @see EncounterService#unvoidEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should cascade unvoid to obs", method = "unvoidEncounter(Encounter)")
@@ -715,7 +721,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#unvoidEncounter(Encounter)}
+	 * @see EncounterService#unvoidEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should cascade unvoid to orders", method = "unvoidEncounter(Encounter)")
@@ -732,7 +738,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#voidEncounter(Encounter,String)}
+	 * @see EncounterService#voidEncounter(Encounter,String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should throw error with null reason parameter", method = "voidEncounter(Encounter,String)")
@@ -743,7 +749,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#unvoidEncounter(Encounter)}
+	 * @see EncounterService#unvoidEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should unvoid and unmark all attributes", method = "unvoidEncounter(Encounter)")
@@ -770,7 +776,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)}
+	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
 	@Verifies(value = "should get encounters by location", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
@@ -784,7 +790,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * Get encounters that are after a certain date, and ensure the comparison is INCLUSIVE of the
 	 * given date
 	 * 
-	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)}
+	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
 	@Verifies(value = "should get encounters on or after date", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
@@ -813,7 +819,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)}
+	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
 	@Verifies(value = "should get encounters on or up to a date", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
@@ -827,7 +833,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)}
+	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
 	@Verifies(value = "should get encounters by form", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
@@ -840,7 +846,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)}
+	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
 	@Verifies(value = "should get encounters by provider", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
@@ -853,7 +859,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)}
+	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
 	@Verifies(value = "should get encounters by type", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
@@ -866,7 +872,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)}
+	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
 	@Verifies(value = "should exclude voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
@@ -875,7 +881,22 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)}
+	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)
+	 */
+	@Test
+	@Verifies(value = "should get encounters modified after specified date", method = "getEncounters(EncounterSearchParameter)")
+	public void getEncounters_shouldGetEncountersModifiedAfterSpecifiedDate() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		Assert.assertEquals(7, encounterService.getEncounters(
+				encounterSearchForVoidedWithDateChanged("2006-01-01")).size());
+		Assert.assertEquals(5, encounterService.getEncounters(
+				encounterSearchForVoidedWithDateChanged("2008-06-01")).size());
+		Assert.assertEquals(1, encounterService.getEncounters(
+				encounterSearchForVoidedWithDateChanged("2010-01-01")).size());
+	}
+
+	/**
+	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
 	@Verifies(value = "should include voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
@@ -884,7 +905,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounterType(EncounterType)}
+	 * @see EncounterService#saveEncounterType(EncounterType)
 	 */
 	@Test
 	@Verifies(value = "should save encounter type", method = "saveEncounterType(EncounterType)")
@@ -904,7 +925,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounterType(EncounterType)}
+	 * @see EncounterService#saveEncounterType(EncounterType)
 	 */
 	@Test
 	@Verifies(value = "should not overwrite creator", method = "saveEncounterType(EncounterType)")
@@ -933,7 +954,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounterType(EncounterType)}
+	 * @see EncounterService#saveEncounterType(EncounterType)
 	 */
 	@Test
 	@Verifies(value = "should not overwrite creator or date created", method = "saveEncounterType(EncounterType)")
@@ -971,7 +992,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounterType(EncounterType)}
+	 * @see EncounterService#saveEncounterType(EncounterType)
 	 */
 	@Test
 	@Verifies(value = "should not overwrite date created", method = "saveEncounterType(EncounterType)")
@@ -1002,7 +1023,37 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounterType(String)}
+	 * @see EncounterService#saveEncounterType(EncounterType)
+	 */
+	@Test
+	@Verifies(value = "should set audit info if any item in EncounterType is Edited", method = "saveEncounterType(EncounterType)")
+	public void saveEncounterType_shouldSetAuditInfoIfAnyItemInEncounterTypeIsEdited() throws Exception {
+		EncounterService es = Context.getEncounterService();
+
+		// Create encounter type, ensure creator/dateCreated are set, and changedBy and dateChanged are not setDateCreated.
+		EncounterType encounterType = es.saveEncounterType(new EncounterType("testing", "desc"));
+		User creator = encounterType.getCreator();
+		Date dateCreated = encounterType.getDateCreated();
+
+		assertNotNull("creator should be set after saving", creator);
+		assertNotNull("date creates should be set after saving", dateCreated);
+		assertNull("changed by should not be set after creation", encounterType.getChangedBy());
+		assertNull("date changed should not be set after creation", encounterType.getDateChanged());
+
+		// Edit encounter type.
+		encounterType.setDescription("This has been a test!");
+		EncounterType editedEt = es.saveEncounterType(encounterType);
+		Context.flushSession();
+
+		// Ensure creator/dateCreated remain unchanged, and changedBy and dateChanged are set.
+		assertTrue("creator should not change during edit", creator.equals(editedEt.getCreator()));
+		assertTrue("date created should not changed during edit", dateCreated.equals(editedEt.getDateCreated()));
+		assertNotNull("changed by should be set after edit", editedEt.getChangedBy());
+		assertNotNull("date changed should be set after edit", editedEt.getDateChanged());
+	}
+
+	/**
+	 * @see EncounterService#getEncounterType(String)
 	 */
 	@Test
 	@Verifies(value = "should not get retired types", method = "getEncounterType(String)")
@@ -1026,7 +1077,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * Make sure that the "Some Retired Type" type is not returned because it is retired in
 	 * {@link EncounterService#getEncounterType(String)}
 	 * 
-	 * @see {@link EncounterService#getEncounterType(String)}
+	 * @see EncounterService#getEncounterType(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if only retired type found", method = "getEncounterType(String)")
@@ -1045,7 +1096,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure that we are matching on exact name and not partial name in
 	 * 
-	 * @see {@link EncounterService#getEncounterType(String)}
+	 * @see EncounterService#getEncounterType(String)
 	 */
 	@Test
 	@Verifies(value = "should not get by inexact name", method = "getEncounterType(String)")
@@ -1066,7 +1117,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure that we are not throwing an error with a null parameter to
 	 * 
-	 * @see {@link EncounterService#getEncounterType(String)}
+	 * @see EncounterService#getEncounterType(String)
 	 */
 	@Test
 	@Verifies(value = "should return null with null name parameter", method = "getEncounterType(String)")
@@ -1079,7 +1130,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getAllEncounterTypes(boolean)}
+	 * @see EncounterService#getAllEncounterTypes(boolean)
 	 */
 	@Test
 	@Verifies(value = "should not return retired types", method = "getAllEncounterTypes(boolean)")
@@ -1096,7 +1147,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getAllEncounterTypes(null)}
+	 * @see EncounterService#getAllEncounterTypes(null)
 	 */
 	@Test
 	@Verifies(value = "should include retired types with true includeRetired parameter", method = "getAllEncounterTypes(null)")
@@ -1116,7 +1167,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#findEncounterTypes(String)}
+	 * @see EncounterService#findEncounterTypes(String)
 	 */
 	@Test
 	@Verifies(value = "should return types by partial name match", method = "findEncounterTypes(String)")
@@ -1127,7 +1178,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#findEncounterTypes(String)}
+	 * @see EncounterService#findEncounterTypes(String)
 	 */
 	@Test
 	@Verifies(value = "should return types by partial case insensitive match", method = "findEncounterTypes(String)")
@@ -1138,7 +1189,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#findEncounterTypes(String)}
+	 * @see EncounterService#findEncounterTypes(String)
 	 */
 	@Test
 	@Verifies(value = "should include retired types in the results", method = "findEncounterTypes(String)")
@@ -1159,7 +1210,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * No types should be returned when using a substring other than the starting substring
 	 * 
-	 * @see {@link EncounterService#findEncounterTypes(String)}
+	 * @see EncounterService#findEncounterTypes(String)
 	 */
 	@Test
 	@Verifies(value = "should not partial match name on internal substrings", method = "findEncounterTypes(String)")
@@ -1173,7 +1224,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#findEncounterTypes(String)}
+	 * @see EncounterService#findEncounterTypes(String)
 	 */
 	@Test
 	@Verifies(value = "should return types ordered on name and nonretired first", method = "findEncounterTypes(String)")
@@ -1189,7 +1240,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#retireEncounterType(EncounterType,String)}
+	 * @see EncounterService#retireEncounterType(EncounterType,String)
 	 */
 	@Test
 	@Verifies(value = "should retire type and set attributes", method = "retireEncounterType(EncounterType,String)")
@@ -1214,7 +1265,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#retireEncounterType(EncounterType,String)}
+	 * @see EncounterService#retireEncounterType(EncounterType,String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should throw error if given null reason parameter", method = "retireEncounterType(EncounterType,String)")
@@ -1225,7 +1276,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#unretireEncounterType(EncounterType)}
+	 * @see EncounterService#unretireEncounterType(EncounterType)
 	 */
 	@Test
 	@Verifies(value = "should unretire type and unmark attributes", method = "unretireEncounterType(EncounterType)")
@@ -1252,7 +1303,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounterType(EncounterType)}
+	 * @see EncounterService#saveEncounterType(EncounterType)
 	 */
 	@Test
 	@Verifies(value = "should update an existing encounter type name", method = "saveEncounterType(EncounterType)")
@@ -1276,7 +1327,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#purgeEncounterType(EncounterType)}
+	 * @see EncounterService#purgeEncounterType(EncounterType)
 	 */
 	@Test
 	@Verifies(value = "should purge type", method = "purgeEncounterType(EncounterType)")
@@ -1292,7 +1343,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounter(Integer)}
+	 * @see EncounterService#getEncounter(Integer)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should throw error if given null parameter", method = "getEncounter(Integer)")
@@ -1301,7 +1352,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounterType(Integer)}
+	 * @see EncounterService#getEncounterType(Integer)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should throw error if given null parameter", method = "getEncounterType(Integer)")
@@ -1310,7 +1361,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should cascade patient to orders in the encounter", method = "saveEncounter(Encounter)")
@@ -1328,7 +1379,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounterByUuid(String)}
+	 * @see EncounterService#getEncounterByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getEncounterByUuid(String)")
@@ -1339,7 +1390,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounterByUuid(String)}
+	 * @see EncounterService#getEncounterByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getEncounterByUuid(String)")
@@ -1348,7 +1399,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounterTypeByUuid(String)}
+	 * @see EncounterService#getEncounterTypeByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getEncounterTypeByUuid(String)")
@@ -1359,7 +1410,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounterTypeByUuid(String)}
+	 * @see EncounterService#getEncounterTypeByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getEncounterTypeByUuid(String)")
@@ -1368,8 +1419,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncountersByPatient(String,boolean)}
-	 * @see {@link EncounterService#getEncountersByPatient(String)}
+	 * @see EncounterService#getEncountersByPatient(String,boolean)
+	 * @see EncounterService#getEncountersByPatient(String)
 	 */
 	@Test
 	@Verifies(value = "should get all unvoided encounters for the given patient identifier", method = "getEncountersByPatient(String,boolean)")
@@ -1381,7 +1432,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncountersByPatient(String,boolean)}
+	 * @see EncounterService#getEncountersByPatient(String,boolean)
 	 */
 	@Test
 	@Verifies(value = "should get all unvoided encounters for the given patient name", method = "getEncountersByPatient(String,boolean)")
@@ -1393,7 +1444,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncountersByPatient(String,boolean)}
+	 * @see EncounterService#getEncountersByPatient(String,boolean)
 	 */
 	@Test
 	@Verifies(value = "should include voided encounters in the returned list if includedVoided is true", method = "getEncountersByPatient(String,boolean)")
@@ -1406,7 +1457,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncountersByPatient(String,boolean)}
+	 * @see EncounterService#getEncountersByPatient(String,boolean)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should throw error if given null parameter", method = "getEncountersByPatient(String,boolean)")
@@ -1417,7 +1468,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Tests that all encounters for all patients in a cohort are returned
 	 * 
-	 * @see {@link EncounterService#getAllEncounters(Cohort)}
+	 * @see EncounterService#getAllEncounters(Cohort)
 	 */
 	@Test
 	@Verifies(value = "should get all encounters for a cohort of patients", method = "getAllEncounters(Cohort)")
@@ -1430,7 +1481,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, boolean)}
+	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
 	@Verifies(value = "should get encounters by visit", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QVisitType;>,Collection<QVisit;>,Collection<QUser;>,null)")
@@ -1443,7 +1494,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, boolean)}
+	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
 	@Verifies(value = "should get encounters by visit type", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QVisitType;>,Collection<QVisit;>,Collection<QUser;>,null)")
@@ -1476,7 +1527,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getCountOfEncounters(String,null)}
+	 * @see EncounterService#getCountOfEncounters(String,null)
 	 */
 	@Test
 	@Verifies(value = "should get the correct count of unique encounters", method = "getCountOfEncounters(String,null)")
@@ -1488,7 +1539,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * TODO see ticket https://tickets.openmrs.org/browse/TRUNK-1956 to fix this test
 	 * 
-	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,null,null)}
+	 * @see EncounterService#getEncounters(String,Integer,Integer,null,null)
 	 */
 	@Test
 	@Ignore
@@ -1502,7 +1553,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * TODO see ticket https://tickets.openmrs.org/browse/TRUNK-1956 to fix this test
 	 * 
-	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,null,null)}
+	 * @see EncounterService#getEncounters(String,Integer,Integer,null,null)
 	 */
 	@Test
 	@Ignore
@@ -1530,14 +1581,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNotNull("We should get back an encounter role", newSavedEncounterRole);
 		assertEquals(encounterRole, newSavedEncounterRole);
 		assertTrue("The created encounter role needs to equal the pojo encounter role", encounterRole
-		        .equals(newSavedEncounterRole));
+				.equals(newSavedEncounterRole));
 		
 	}
 	
 	/**
 	 * Make sure that purging an encounter removes the row from the database
 	 * 
-	 * @see {@link EncounterService#purgeEncounterRole(org.openmrs.EncounterRole)}
+	 * @see EncounterService#purgeEncounterRole(org.openmrs.EncounterRole)
 	 */
 	@Test
 	@Verifies(value = "should purge Encounter Role", method = "purgeEncounterRole(EncounterRole)")
@@ -1550,7 +1601,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getAllEncounterRoles(boolean)}
+	 * @see EncounterService#getAllEncounterRoles(boolean)
 	 */
 	@Test
 	@Verifies(value = "get all encounter roles based on include retired flag", method = "getAllEncounterRoles(boolean)")
@@ -1563,7 +1614,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounterRoleByUuid(String)}
+	 * @see EncounterService#getEncounterRoleByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "find encounter role based on uuid", method = "getEncounterRoleByUuid(String)")
@@ -1576,7 +1627,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounterRoleByName(String)}
+	 * @see EncounterService#getEncounterRoleByName(String)
 	 */
 	@Test
 	@Verifies(value = "find encounter role based on its name", method = "getEncounterRoleByName(String)")
@@ -1595,7 +1646,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#retireEncounterRole(org.openmrs.EncounterRole, String)}
+	 * @see EncounterService#retireEncounterRole(org.openmrs.EncounterRole, String)
 	 */
 	@Test
 	@Verifies(value = "should retire type and set attributes", method = "retireEncounterRole(EncounterRole,String)")
@@ -1616,7 +1667,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#retireEncounterRole(org.openmrs.EncounterRole, String)}
+	 * @see EncounterService#retireEncounterRole(org.openmrs.EncounterRole, String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should throw error if given null reason parameter", method = "retireEncounterRole(EncounterRole,String)")
@@ -1627,7 +1678,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#unretireEncounterRole(org.openmrs.EncounterRole)}
+	 * @see EncounterService#unretireEncounterRole(org.openmrs.EncounterRole)
 	 */
 	@Test
 	@Verifies(value = "should unretire type and unmark attributes", method = "unretireEncounterRole(EncounterRole)")
@@ -1665,13 +1716,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role = Context.getEncounterService().saveEncounterRole(role);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		provider.setPerson(newPerson("name"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		Provider provider2 = new Provider();
-		provider2.setName("provider2");
 		provider2.setIdentifier("id2");
+		provider2.setPerson(newPerson("name2"));
 		provider2 = Context.getProviderService().saveProvider(provider2);
 		
 		encounter.addProvider(role, provider);
@@ -1717,13 +1768,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role2 = Context.getEncounterService().saveEncounterRole(role2);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		provider.setPerson(newPerson("name1"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		Provider provider2 = new Provider();
-		provider2.setName("provider2");
 		provider2.setIdentifier("id2");
+		
+		provider2.setPerson(newPerson("name2"));
 		provider2 = Context.getProviderService().saveProvider(provider2);
 		
 		encounter.addProvider(role, provider);
@@ -1818,7 +1870,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should not assign encounter to visit if no handler is registered", method = "saveEncounter(Encounter)")
@@ -1835,7 +1887,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should not assign encounter to visit if the no assign handler is registered", method = "saveEncounter(Encounter)")
@@ -1857,7 +1909,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should assign encounter to visit if the assign to existing handler is registered", method = "saveEncounter(Encounter)")
@@ -1880,7 +1932,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should assign encounter to visit if the assign to existing or new handler is registered", method = "saveEncounter(Encounter)")
@@ -1915,7 +1967,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncountersNotAssignedToAnyVisit(Patient)}
+	 * @see EncounterService#getEncountersNotAssignedToAnyVisit(Patient)
 	 */
 	@Test
 	@Verifies(value = "should return the unvoided encounters not assigned to any visit", method = "getEncountersNotAssignedToAnyVisit(Patient)")
@@ -1929,7 +1981,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
 	@Ignore("TRUNK-50")
@@ -1970,7 +2022,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#voidEncounter(Encounter, String)}
+	 * @see EncounterService#voidEncounter(Encounter, String)
 	 */
 	@Test
 	@Verifies(value = "should not void providers", method = "voidEncounter(Encounter, String)")
@@ -1988,8 +2040,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role = encounterService.saveEncounterRole(role);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		provider.setPerson(newPerson("name"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		encounter.addProvider(role, provider);
@@ -2004,7 +2056,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#filterEncountersByViewPermissions(List, User)}
+	 * @see EncounterService#filterEncountersByViewPermissions(List, User)
 	 */
 	@Test
 	@Verifies(value = "should filter encounters if user is not allowed to see some encounters", method = "filterEncountersByViewPermissions(List, User)")
@@ -2027,8 +2079,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role = encounterService.saveEncounterRole(role);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		
+		provider.setPerson(newPerson("name"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		encounter.addProvider(role, provider);
@@ -2054,7 +2107,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#filterEncountersByViewPermissions(List, User)}
+	 * @see EncounterService#filterEncountersByViewPermissions(List, User)
 	 */
 	@Test
 	@Verifies(value = "should not filter all encounters when the encounter type's view privilege column is null", method = "filterEncountersByViewPermissions(List, User)")
@@ -2077,8 +2130,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role = encounterService.saveEncounterRole(role);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		provider.setPerson(newPerson("name"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		encounter.addProvider(role, provider);
@@ -2090,7 +2143,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#canViewAllEncounterTypes(User)}
+	 * @see EncounterService#canViewAllEncounterTypes(User)
 	 */
 	@Test
 	@Verifies(value = "should return true if user is granted to view all encounters", method = "canViewAllEncounterTypes(User)")
@@ -2116,7 +2169,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#canViewAllEncounterTypes(User)}
+	 * @see EncounterService#canViewAllEncounterTypes(User)
 	 */
 	@Test
 	@Verifies(value = "should return true when the encounter type's view privilege column is null", method = "canViewAllEncounterTypes(User)")
@@ -2136,7 +2189,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#canEditAllEncounterTypes(User)}
+	 * @see EncounterService#canEditAllEncounterTypes(User)
 	 */
 	@Test
 	@Verifies(value = "should return true if user is granted to edit all encounters", method = "canEditAllEncounterTypes(User)")
@@ -2162,7 +2215,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#canEditAllEncounterTypes(User)}
+	 * @see EncounterService#canEditAllEncounterTypes(User)
 	 */
 	@Test
 	@Verifies(value = "should return true when the encounter type's edit privilege column is null", method = "canViewAllEncounterTypes(User)")
@@ -2182,7 +2235,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#canEditEncounter(Encounter, User)}
+	 * @see EncounterService#canEditEncounter(Encounter, User)
 	 */
 	@Test
 	@Verifies(value = "should return true if user can edit encounter", method = "canEditEncounter(Encounter, User)")
@@ -2202,7 +2255,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#canEditEncounter(Encounter, User)}
+	 * @see EncounterService#canEditEncounter(Encounter, User)
 	 */
 	@Test
 	@Verifies(value = "should return false if user can not edit encounter", method = "canEditEncounter(Encounter, User)")
@@ -2219,7 +2272,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#canEditEncounter(Encounter, User)}
+	 * @see EncounterService#canEditEncounter(Encounter, User)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should fail if encounter is null", method = "canEditEncounter(Encounter, User)")
@@ -2229,7 +2282,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#canViewEncounter(Encounter, User)}
+	 * @see EncounterService#canViewEncounter(Encounter, User)
 	 */
 	@Test
 	@Verifies(value = "should return true if user can view encounter", method = "canViewEncounter(Encounter, User)")
@@ -2249,7 +2302,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#canViewEncounter(Encounter, User)}
+	 * @see EncounterService#canViewEncounter(Encounter, User)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should fail if encounter is null", method = "canViewEncounter(Encounter, User)")
@@ -2259,7 +2312,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#canViewEncounter(Encounter, User)}
+	 * @see EncounterService#canViewEncounter(Encounter, User)
 	 */
 	@Test
 	@Verifies(value = "should return false if user can not view encounter", method = "canViewEncounter(Encounter, User)")
@@ -2276,7 +2329,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounter(Integer)}
+	 * @see EncounterService#getEncounter(Integer)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should fail if user is not allowed to view encounter by given id", method = "getEncounter(Integer)")
@@ -2298,7 +2351,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounter(Integer)}
+	 * @see EncounterService#getEncounter(Integer)
 	 */
 	@Test
 	@Verifies(value = "should return encounter if user is allowed to view it", method = "getEncounter(Integer)")
@@ -2324,7 +2377,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounter(Encounter)}
+	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should fail if user is not supposed to edit encounters of type of given encounter", method = "saveEncounter(Encounter)")
@@ -2346,7 +2399,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#voidEncounter(Encounter, String)}
+	 * @see EncounterService#voidEncounter(Encounter, String)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should fail if user is not supposed to edit encounters of type of given encounter", method = "voidEncounter(Encounter, String)")
@@ -2368,7 +2421,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#unvoidEncounter(Encounter)}
+	 * @see EncounterService#unvoidEncounter(Encounter)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should fail if user is not supposed to edit encounters of type of given encounter", method = "voidEncounter(Encounter)")
@@ -2390,7 +2443,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#purgeEncounter(Encounter)}
+	 * @see EncounterService#purgeEncounter(Encounter)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should fail if user is not supposed to edit encounters of type of given encounter", method = "purgeEncounter(Encounter)")
@@ -2412,7 +2465,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#purgeEncounter(Encounter,Boolean)}
+	 * @see EncounterService#purgeEncounter(Encounter,Boolean)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should fail if user is not supposed to edit encounters of type of given encounter", method = "purgeEncounter(Encounter,Boolean)")
@@ -2513,7 +2566,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
 	@Verifies(value = "should fetch encounters by patient id", method = "getEncounters(String,Integer,Integer,Integer,null)")
@@ -2523,7 +2576,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
 	@Verifies(value = "should match on the location name", method = "getEncounters(String,Integer,Integer,Integer,null)")
@@ -2533,7 +2586,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
 	@Verifies(value = "should match on the provider name", method = "getEncounters(String,Integer,Integer,Integer,null)")
@@ -2542,7 +2595,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
 	@Verifies(value = "should should match on provider identifier", method = "getEncounters(String,Integer,Integer,Integer,null)")
@@ -2552,7 +2605,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
 	@Verifies(value = "should match on the provider person name", method = "getEncounters(String,Integer,Integer,Integer,null)")
@@ -2564,7 +2617,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
 	@Verifies(value = "should include voided encounters if includeVoided is set to true", method = "getEncounters(String,Integer,Integer,Integer,null)")
@@ -2573,7 +2626,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
 	@Verifies(value = "should match on the encounter type name", method = "getEncounters(String,Integer,Integer,Integer,null)")
@@ -2582,7 +2635,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
 	@Verifies(value = "should match on the form name", method = "getEncounters(String,Integer,Integer,Integer,null)")
@@ -2591,8 +2644,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#saveEncounterType(EncounterType)}
-	 * @see {@link EncounterService#checkIfEncounterTypesAreLocked()}
+	 * @see EncounterService#saveEncounterType(EncounterType)
+	 * @see EncounterService#checkIfEncounterTypesAreLocked()
 	 */
 	@Test(expected = EncounterTypeLockedException.class)
 	@Verifies(value = "should throw error when trying to save encounter type when encounter types are locked", method = "saveEncounterType(EncounterType)")
@@ -2611,7 +2664,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#retireEncounterType(EncounterType, String)}
+	 * @see EncounterService#retireEncounterType(EncounterType, String)
 	 */
 	@Test(expected = EncounterTypeLockedException.class)
 	@Verifies(value = "should throw error when trying to retire encounter type when encounter types are locked", method = "retireEncounterType(EncounterType, String)")
@@ -2629,7 +2682,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#unretireEncounterType(EncounterType)}
+	 * @see EncounterService#unretireEncounterType(EncounterType)
 	 */
 	@Test(expected = EncounterTypeLockedException.class)
 	@Verifies(value = "should throw error when trying to unretire encounter type when encounter types are locked", method = "unretireEncounterType(EncounterType)")
@@ -2646,7 +2699,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#purgeEncounterType(EncounterType)}
+	 * @see EncounterService#purgeEncounterType(EncounterType)
 	 */
 	@Test(expected = EncounterTypeLockedException.class)
 	@Verifies(value = "should throw error when trying to delete encounter type when encounter types are locked", method = "purgeEncounterType(EncounterType)")
@@ -2747,5 +2800,23 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.getEncounterService().transferEncounter(sourceEncounter, anyPatient);
 		Visit visit = Context.getVisitService().getVisit(200);
 		Assert.assertTrue(visit.isVoided());
+	}
+
+	private EncounterSearchCriteria encounterSearchForVoidedWithDateChanged(String dateChanged) throws Exception {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		return new EncounterSearchCriteriaBuilder()
+				.setIncludeVoided(true)
+				.setDateChanged(sdf.parse(dateChanged))
+				.createEncounterSearchCriteria();
+	}
+
+	private Person newPerson(String name) {
+		Person person = new Person();
+		Set<PersonName> personNames = new TreeSet<PersonName>();
+		PersonName personName = new PersonName();
+		personName.setFamilyName(name);
+		personNames.add(personName);
+		person.setNames(personNames);
+		return person;
 	}
 }

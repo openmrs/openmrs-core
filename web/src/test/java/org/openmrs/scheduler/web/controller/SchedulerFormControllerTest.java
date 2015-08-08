@@ -71,7 +71,7 @@ public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link SchedulerFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see SchedulerFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should reschedule a currently scheduled task", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -91,7 +91,7 @@ public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link SchedulerFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see SchedulerFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should not reschedule a task that is not currently scheduled", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -111,7 +111,7 @@ public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link SchedulerFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see SchedulerFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Ignore("TRUNK-3948")
@@ -132,7 +132,7 @@ public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link SchedulerFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see SchedulerFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should not reschedule an executing task", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -151,6 +151,7 @@ public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 		assertTrue(mav.getModel().isEmpty());
 		
 		Assert.assertSame(oldTaskInstance, task.getTaskInstance());
+		deleteAllData();
 	}
 	
 	/**

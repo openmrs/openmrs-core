@@ -180,7 +180,7 @@ public class DWRFormService {
 	
 	public String getJSTree(Integer formId) {
 		Form form = Context.getFormService().getForm(formId);
-		TreeMap<Integer, TreeSet<FormField>> formFields = FormUtil.getFormStructure(form);
+		Map<Integer, TreeSet<FormField>> formFields = FormUtil.getFormStructure(form);
 		return generateJSTree(formFields, 0, Context.getLocale());
 	}
 	
@@ -261,7 +261,7 @@ public class DWRFormService {
 		}
 	}
 	
-	private String generateJSTree(TreeMap<Integer, TreeSet<FormField>> formFields, Integer current, Locale locale) {
+	private String generateJSTree(Map<Integer, TreeSet<FormField>> formFields, Integer current, Locale locale) {
 		StringBuilder s = new StringBuilder("");
 		
 		if (formFields.containsKey(current)) {

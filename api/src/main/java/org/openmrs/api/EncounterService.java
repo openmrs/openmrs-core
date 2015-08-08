@@ -28,6 +28,7 @@ import org.openmrs.VisitType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.handler.EncounterVisitHandler;
+import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
@@ -90,7 +91,7 @@ public interface EncounterService extends OpenmrsService {
 	 * Get Encounter by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return encounter or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -101,7 +102,7 @@ public interface EncounterService extends OpenmrsService {
 	 * Get all encounters (not voided) for a patient, sorted by encounterDatetime ascending.
 	 * 
 	 * @param patient
-	 * @return List<Encounter> encounters (not voided) for a patient.
+	 * @return List&lt;Encounter&gt; encounters (not voided) for a patient.
 	 * @should not get voided encounters
 	 * @should throw error when given null parameter
 	 */
@@ -163,8 +164,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should get encounters by provider
 	 * @should exclude voided encounters
 	 * @should include voided encounters
-	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, Collection, Collection, boolean)}
+	 * @deprecated use {@link #getEncounters(EncounterSearchCriteria)} instead
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
@@ -198,11 +198,25 @@ public interface EncounterService extends OpenmrsService {
 	 * @should get encounters by visit
 	 * @should exclude voided encounters
 	 * @should include voided encounters
+	 * @deprecated use {@link #getEncounters(EncounterSearchCriteria)} instead
 	 */
+	@Deprecated
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
 	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided);
+	
+	/**
+	 * Get all encounters that match a variety of (nullable) criteria contained in the parameter object.
+	 * Each extra value for a parameter that is provided acts as an "and" and will reduce the number of results returned
+	 *
+	 * @param encounterSearchCriteria the object containing search parameters
+	 * @return a list of encounters ordered by increasing encounterDatetime
+	 * @since 1.12
+	 * @should get encounters modified after specified date
+	 */
+	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
+	public List<Encounter> getEncounters(EncounterSearchCriteria encounterSearchCriteria);
 	
 	/**
 	 * Voiding a encounter essentially removes it from circulation
@@ -283,7 +297,7 @@ public interface EncounterService extends OpenmrsService {
 	 * Get EncounterType by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return encounter type or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -331,7 +345,7 @@ public interface EncounterService extends OpenmrsService {
 	 * are case insensitive so that "NaMe".equals("name") is true. Includes retired EncounterTypes.
 	 * 
 	 * @param name of the encounter type to find
-	 * @return List<EncounterType> matching encounters
+	 * @return List&lt;EncounterType&gt; matching encounters
 	 * @throws APIException
 	 * @should return types by partial name match
 	 * @should return types by partial case insensitive match
@@ -448,7 +462,7 @@ public interface EncounterService extends OpenmrsService {
 	 * Get all encounters (not voided) for a patient
 	 * 
 	 * @param who
-	 * @return List<Encounter> encounters (not voided) for a patient
+	 * @return List&lt;Encounter&gt; encounters (not voided) for a patient
 	 * @deprecated replaced by {@link #getEncountersByPatient(Patient)}
 	 */
 	@Deprecated
@@ -461,7 +475,7 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param who
 	 * @param includeVoided No longer supported.
-	 * @return List<Encounter> object of non-voided Encounters
+	 * @return List&lt;Encounter&gt; object of non-voided Encounters
 	 * @deprecated replaced by {@link #getEncountersByPatient(Patient)}
 	 */
 	@Deprecated
@@ -473,7 +487,7 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param who
 	 * @param where
-	 * @return List<Encounter> object of all encounters with this patient in specified location
+	 * @return List&lt;Encounter&gt; object of all encounters with this patient in specified location
 	 * @deprecated use
 	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
 	 */
@@ -488,7 +502,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param who
 	 * @param fromDate
 	 * @param toDate
-	 * @return List<Encounter> object of all encounters with this patient in specified date range
+	 * @return List&lt;Encounter&gt; object of all encounters with this patient in specified date range
 	 * @deprecated use
 	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
 	 */
@@ -527,7 +541,7 @@ public interface EncounterService extends OpenmrsService {
 	/**
 	 * Get all encounter types (not retired)
 	 * 
-	 * @return A List<EncounterType> object of all non-retired EncounterTypes
+	 * @return A List&lt;EncounterType&gt; object of all non-retired EncounterTypes
 	 * @throws APIException
 	 * @deprecated replaced by {@link #getAllEncounterTypes()}
 	 */
@@ -589,7 +603,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param query patient name or identifier
 	 * @return list of encounters for the given patient
 	 * @throws APIException
-	 * @see {@link EncounterService}{@link #getEncountersByPatient(String, boolean)}
+	 * @see EncounterService#getEncountersByPatient(String, boolean)
 	 * @since 1.7
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
@@ -800,7 +814,7 @@ public interface EncounterService extends OpenmrsService {
 	 * Unretire an EncounterRole. This brings back the given encounter role and says that it can be
 	 * used again
 	 * 
-	 * @param encounterRole the encounter role to unretire
+	 * @param encounterType the encounter role to unretire
 	 * @throws APIException
 	 * @since 1.9
 	 * @should unretire type and unmark attributes
@@ -829,9 +843,9 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param patient the patient to match
 	 * @param includeVoided if voided encounters or visits should be included
-	 * @param query filters results (defaults to return all results if <code>null<code>)
-	 * @param start index to start with (defaults to 0 if <code>null<code>)
-	 * @param length number of results to return (default to return all results if <code>null<code>)
+	 * @param query filters results (defaults to return all results if <code>null</code>)
+	 * @param start index to start with (defaults to 0 if <code>null</code>)
+	 * @param length number of results to return (default to return all results if <code>null</code>)
 	 * @return encounters and empty encounters with only visit set
 	 * @throws APIException
 	 * @since 1.9
@@ -940,7 +954,7 @@ public interface EncounterService extends OpenmrsService {
 	 *
 	 * @param encounter
 	 * @param patient
-	 * @return
+	 * @return transferred encounter
 	 * @since 1.12
 	 *
 	 * @should transfer an encounter with orders and observations to given patient

@@ -247,7 +247,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#getHL7InQueueBatch(int, int, java.lang.String)
+	 * @see org.openmrs.hl7.HL7Service#getHL7InQueueBatch(int, int, int, String)
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -265,7 +265,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#getHL7InArchiveBatch(int, int, java.lang.String)
+	 * @see org.openmrs.hl7.HL7Service#getHL7InArchiveBatch(int, int, int, String)
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -910,7 +910,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#parseHL7Message(java.lang.String)
+	 * @see org.openmrs.hl7.HL7Service#parseHL7String(String)
 	 */
 	public Message parseHL7String(String hl7Message) throws HL7Exception {
 		// Any pre-parsing for HL7 messages would go here
@@ -967,9 +967,9 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	
 	/**
 	 * Sets the given handlers as router applications that are available to HAPI when it is parsing
-	 * an hl7 message.<br/>
+	 * an hl7 message.<br>
 	 * This method is usually used by Spring and the handlers are set in the
-	 * applicationContext-server.xml method.<br/>
+	 * applicationContext-server.xml method.<br>
 	 * The key in the map is a string like "ORU_R01" where the first part is the message type and
 	 * the second is the trigger event.
 	 *

@@ -22,7 +22,7 @@ public class GraphTest {
 	
 	/**
 	 * @throws CycleException 
-	 * @see {@link Graph#topologicalSort()}
+	 * @see Graph#topologicalSort()
 	 */
 	@Test
 	@Verifies(value = "should sort graph in topological order", method = "topologicalSort()")
@@ -57,7 +57,7 @@ public class GraphTest {
 	
 	/**
 	 * @throws CycleException 
-	 * @see {@link Graph#topologicalSort()}
+	 * @see Graph#topologicalSort()
 	 */
 	@Test(expected = CycleException.class)
 	@Verifies(value = "should throw CycleException", method = "topologicalSort()")

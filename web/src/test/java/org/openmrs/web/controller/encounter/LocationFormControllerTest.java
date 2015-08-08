@@ -31,7 +31,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 public class LocationFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link LocationFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see LocationFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should not retire location if reason is empty", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -55,7 +55,7 @@ public class LocationFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see LocationFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should retire location", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -74,7 +74,7 @@ public class LocationFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationFormController#formBackingObject(HttpServletRequest)}
+	 * @see LocationFormController#formBackingObject(HttpServletRequest)
 	 */
 	@Test
 	@Verifies(value = "should return valid location given valid locationId", method = "formBackingObject(HttpServletRequest)")
