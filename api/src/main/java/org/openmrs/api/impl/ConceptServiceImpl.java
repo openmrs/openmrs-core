@@ -179,11 +179,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		checkIfLocked();
 		checkIfDatatypeCanBeChanged(concept);
 		
-		// force isSet when concept has members
-		if (!concept.isSet() && (concept.getSetMembers().size() > 0)) {
-			concept.setSet(true);
-		}
-		
 		List<ConceptName> changedConceptNames = null;
 		Map<String, ConceptName> uuidClonedConceptNameMap = null;
 		
@@ -284,6 +279,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		//See TRUNK-3337 for why we set changed by and date changed every time we save a concept.
 		concept.setDateChanged(new Date());
 		concept.setChangedBy(Context.getAuthenticatedUser());
+		
+		// force isSet when concept has members
+		if (!concept.isSet() && (concept.getSetMembers().size() > 0)) {
+			concept.setSet(true);
+		}
 		
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
