@@ -280,6 +280,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		concept.setDateChanged(new Date());
 		concept.setChangedBy(Context.getAuthenticatedUser());
 		
+		// force isSet when concept has members
+		if (!concept.isSet() && (concept.getSetMembers().size() > 0)) {
+			concept.setSet(true);
+		}
+		
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
 		return conceptToReturn;
