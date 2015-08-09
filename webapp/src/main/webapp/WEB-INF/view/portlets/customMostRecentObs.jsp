@@ -15,7 +15,7 @@
 	<openmrs:htmlInclude file="/dwr/util.js" />
 
 	<table>
-	<c:forTokens var="rawConceptId" items="${model.conceptIds}" delims="," >
+	<c:forEach var="rawConceptId" items="${model.conceptIds}" >
 		<c:set var="conceptId" value="${fn:trim(rawConceptId)}"/>
 		<tr>
 			<td><openmrs_tag:concept conceptId="${conceptId}"/>:</td>
@@ -62,7 +62,7 @@
 				</td>
 			</c:if>
 		</tr>
-	</c:forTokens>
+	</c:forEach>
 	</table>
 </c:if>
 
