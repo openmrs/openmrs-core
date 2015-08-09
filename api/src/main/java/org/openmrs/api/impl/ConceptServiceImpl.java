@@ -163,6 +163,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @should leave preferred name preferred if set
 	 * @should set default preferred name to fully specified first
 	 * @should not set default preferred name to short or index terms
+         * @should force set flag if set members exist
 	 */
 	public Concept saveConcept(Concept concept) throws APIException {
 		ConceptMapType defaultConceptMapType = null;
@@ -280,6 +281,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		concept.setDateChanged(new Date());
 		concept.setChangedBy(Context.getAuthenticatedUser());
 		
+		// force isSet when concept has members
+		if (!concept.isSet() && (concept.getSetMembers().size() > 0)) {
+                    concept.setSet(true);
+		}
+
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
 		return conceptToReturn;
