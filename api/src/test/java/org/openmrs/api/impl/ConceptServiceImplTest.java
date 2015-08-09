@@ -220,4 +220,24 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		assertNotEquals(concept.getName().getName(), nameWithSpaces);
 		assertEquals(concept.getName().getName(), "jwm");
 	}
+        
+        /**
+	 * @see ConceptServiceImpl#saveConcept(Concept)
+	 * @verifies force set flag if set members exist
+	 */        
+        @Test
+	public void saveConcept_shouldForceSetFlagIfSetMembersExist() throws Exception {
+		//Given
+		Concept concept = new Concept();
+                concept.addName(new ConceptName("Concept", new Locale("en", "US")));
+                Concept conceptSetMember = new Concept();
+                conceptSetMember.addName(new ConceptName("Set Member", new Locale("en", "US")));
+                Context.getConceptService().saveConcept(conceptSetMember);
+                concept.addSetMember(conceptSetMember);
+                concept.setSet(false);
+		//When
+		Context.getConceptService().saveConcept(concept);
+		//Then
+                assertTrue(concept.getSet());
+	}
 }
