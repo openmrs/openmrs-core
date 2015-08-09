@@ -232,7 +232,10 @@ public interface ObsService extends OpenmrsService {
 	 *            observation (like Orders and ObsGroups)
 	 * @throws APIException
 	 * @see #purgeObs(Obs, boolean)
+	 *
 	 * @should throw APIException if given true cascade
+	 * @should delete any obsGroupMembers before deleting the obs
+	 * @should not delete referenced orders when purging obs
 	 */
 	@Authorized(PrivilegeConstants.DELETE_OBS)
 	public void purgeObs(Obs obs, boolean cascade) throws APIException;
