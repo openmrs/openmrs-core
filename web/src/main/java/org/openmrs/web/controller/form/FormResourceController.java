@@ -89,7 +89,7 @@ public class FormResourceController {
 				Context.getFormService().saveFormResource(resource);
 			}
 			catch (Exception ex) {
-				session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Error while submitting form, no or invalid file format. Please try again (make sure you select a text file).");
+				session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.file.upload");
 				return "redirect:addFormResource.form?formId=" + resource.getForm().getId() +"&datatype=" + resource.getDatatypeClassname() + "&handler=" + resource.getPreferredHandlerClassname();
 			}
 			return "redirect:formResources.form?formId=" + resource.getForm().getId();
