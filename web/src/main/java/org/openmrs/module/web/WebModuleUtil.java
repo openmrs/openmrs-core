@@ -152,34 +152,66 @@ public class WebModuleUtil {
 				File modFile = mod.getFile();
 				jarFile = new JarFile(modFile);
 				Enumeration<JarEntry> entries = jarFile.entries();
+				String owaName = null;
+				String owaAppFolderPath = null;
+				boolean owaUsed = false;
+				StringBuffer absPath;
+				if (Context.getAdministrationService().getGlobalProperty("owa.started").equalsIgnoreCase("true")) {
+					Enumeration<JarEntry> jarentries = jarFile.entries();
+					owaAppFolderPath = Context.getAdministrationService().getGlobalProperty("owa.appFolderPath");
+					while (jarentries.hasMoreElements()) {
+						JarEntry jarEntry = jarentries.nextElement();
+						String name = jarEntry.getName();
+						if (name.endsWith("manifest.webapp")) {
+							owaUsed = true;
+							owaName = name.substring(11);
+							owaName = owaName.substring(0, owaName.length() - 16);
+						}
+					}
+				}
 				
 				while (entries.hasMoreElements()) {
 					JarEntry entry = entries.nextElement();
 					String name = entry.getName();
 					log.debug("Entry name: " + name);
 					if (name.startsWith("web/module/")) {
-						// trim out the starting path of "web/module/"
-						String filepath = name.substring(11);
 						
-						StringBuffer absPath = new StringBuffer(realPath + "/WEB-INF");
-						
-						// If this is within the tag file directory, copy it into /WEB-INF/tags/module/moduleId/...
-						if (filepath.startsWith("tags/")) {
-							filepath = filepath.substring(5);
-							absPath.append("/tags/module/");
+						if (owaUsed && name.contains(owaName)) {
+							String filepath = name.substring(11);
+							String moduleName = mod.getName();
+							File modName = new File(String.format("%s/%s", owaAppFolderPath, moduleName.replace("/",
+							    File.separator)));
+							if (!modName.exists()) {
+								modName.mkdir();
+							}
+							absPath = new StringBuffer(owaAppFolderPath + "/" + moduleName);
+							absPath.append("/" + filepath);
+							if (log.isDebugEnabled()) {
+								log.debug("Moving file from: " + name + " to " + absPath);
+							}
+						} else {
+							// trim out the starting path of "web/module/"
+							String filepath = name.substring(11);
+							
+							absPath = new StringBuffer(realPath + "/WEB-INF");
+							
+							// If this is within the tag file directory, copy it into /WEB-INF/tags/module/moduleId/...
+							if (filepath.startsWith("tags/")) {
+								filepath = filepath.substring(5);
+								absPath.append("/tags/module/");
+							}
+							// Otherwise, copy it into /WEB-INF/view/module/moduleId/...
+							else {
+								absPath.append("/view/module/");
+							}
+							
+							// if a module id has a . in it, we should treat that as a /, i.e. files in the module
+							// ui.springmvc should go in folder names like .../ui/springmvc/...
+							absPath.append(mod.getModuleIdAsPath() + "/" + filepath);
+							if (log.isDebugEnabled()) {
+								log.debug("Moving file from: " + name + " to " + absPath);
+							}
 						}
-						// Otherwise, copy it into /WEB-INF/view/module/moduleId/...
-						else {
-							absPath.append("/view/module/");
-						}
-						
-						// if a module id has a . in it, we should treat that as a /, i.e. files in the module
-						// ui.springmvc should go in folder names like .../ui/springmvc/...
-						absPath.append(mod.getModuleIdAsPath() + "/" + filepath);
-						if (log.isDebugEnabled()) {
-							log.debug("Moving file from: " + name + " to " + absPath);
-						}
-						
 						// get the output file
 						File outFile = new File(absPath.toString().replace("/", File.separator));
 						if (entry.isDirectory()) {
