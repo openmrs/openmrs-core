@@ -7615,5 +7615,32 @@
 			<column name="birthtime" type="time" />
 		</addColumn>
 	</changeSet>
+
+    <changeSet id="201508111304" author="sns.recommind" dbms="mysql">
+        <preConditions onFail="MARK_RAN"><not><indexExists
+                indexName="global_property_property_index"/></not></preConditions>
+        <comment>Add an index to the global_property.property column</comment>
+        <createIndex tableName="global_property" indexName="global_property_property_index">
+            <column name="property" />
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="201508111412" author="sns.recommind" dbms="mysql">
+        <preConditions onFail="MARK_RAN"><not><indexExists
+                indexName="concept_class_name_index"/></not></preConditions>
+        <comment>Add an index to the concept_class.name column</comment>
+        <createIndex tableName="concept_class" indexName="concept_class_name_index">
+            <column name="name" />
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="201508111415" author="sns.recommind" dbms="mysql">
+        <preConditions onFail="MARK_RAN"><not><indexExists
+                indexName="concept_datatype_name_index"/></not></preConditions>
+        <comment>Add an index to the concept_datatype.name column</comment>
+        <createIndex tableName="concept_datatype" indexName="concept_datatype_name_index">
+            <column name="name" />
+        </createIndex>
+    </changeSet>
 	
 </databaseChangeLog>
