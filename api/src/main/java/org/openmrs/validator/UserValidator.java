@@ -23,7 +23,9 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
@@ -40,14 +42,16 @@ public class UserValidator implements Validator {
 	private static final Pattern EMAIL_PATTERN = Pattern
 	        .compile("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
 	
+	@Autowired
+	private PersonValidator personValidator;
+
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
-		return c.equals(User.class);
+	public boolean supports(Class<?> clazz) {
+		return User.class.isAssignableFrom(clazz);
 	}
 	
 	/**
@@ -55,7 +59,9 @@ public class UserValidator implements Validator {
 	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if retired and retireReason is null or empty or whitespace
+	 * @should fail validation if retired and retireReason is null
+	 * @should fail validation if retired and retireReason is empty
+	 * @should fail validation if retired and retireReason is whitespace
 	 * @should pass validation if all required fields have proper values
 	 * @should fail validation if email as username enabled and email invalid
 	 * @should fail validation if email as username disabled and email provided
@@ -88,6 +94,13 @@ public class UserValidator implements Validator {
 				if (person.getPersonName() == null || StringUtils.isEmpty(person.getPersonName().getFullName())) {
 					errors.rejectValue("person", "Person.names.length");
 				}
+				errors.pushNestedPath("person");
+				try {
+					personValidator.validate(person, errors);
+				} finally {
+					errors.popNestedPath();
+				}
+					
 			}
 			
 			AdministrationService as = Context.getAdministrationService();
