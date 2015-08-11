@@ -621,16 +621,64 @@ function hideError(errorName) {
 }
 
 /**
+ * Initialize all textareas, that have a data-maxlength attribute configuring the maximal
+ * character count for the input. Add listener to validate user input and execute initial
+ * validation for those objects.
+ */
+function initializeForceMaxLength() {
+	jQuery("textarea[data-maxlength]").each(function(i, element) {
+		var updateForceMaxLength = function() {
+			return forceMaxLength(element, jQuery(element).data("maxlength"));
+		};
+		//on input: to get backspace events
+		//on keypress/on paste: to prevent insertion in the middle that will delete content at the end
+		jQuery(element).on("input keypress paste", updateForceMaxLength);
+		updateForceMaxLength(); // initialize once
+	});
+}
+
+/**
  * Forces the length of a field to be a maximum length
  * See view/admin/encounters/encounterTypeForm.jsp for usage example
  * @param object(Required) to be limited.
  * @param maxLength(Required) the length of the limit.
  */
 function forceMaxLength(object, maxLength) {
-    if( object.value.length >= maxLength) {
-       object.value = object.value.substring(0, maxLength);
-       return false;
-    }
+	if (object.value.length >= maxLength) {
+		object.value = object.value.substring(0, maxLength);
+		updateCharactersLeft(object, maxLength, object.value.length);
+		return false;
+	}
+	else{
+		updateCharactersLeft(object, maxLength, object.value.length);
+		return true;
+	}
+}
+
+/**
+ * Update the "characters left" hint for an input field / textarea.
+ * If the hint does not yet exist, it is created. The text is i18n
+ * standardized. The hint is only shown, if half of the allowed/maximal
+ * character count is exceeded.
+ *
+ * @param object the input/textarea input field, that will get a sibling
+ *        element containing the hint
+ * @param maxLength the maximal tolerated character count
+ * @param currentLength the current character count of the objects value
+ */
+function updateCharactersLeft(object, maxLength, currentLength){
+	if (!object.hint) {
+		object.hint = jQuery("<div class=\"tooltip\"></div>").hide();
+		object.hint.insertAfter(jQuery(object));
+	}
+	if (object.value.length >= maxLength * 0.3) {
+		var charactersLeft = maxLength - currentLength;
+		var hintText = omsgs.charactersLeft.replace('{0}', Math.max(charactersLeft, 0));
+		object.hint.text(hintText).show();
+	}
+	else {
+		object.hint.hide();
+	}
 }
 
 /**

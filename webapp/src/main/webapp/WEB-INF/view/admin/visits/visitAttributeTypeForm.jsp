@@ -54,7 +54,7 @@
 		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="visitAttributeType.description">
-				<textarea name="description" rows="3" cols="40" oninput="return forceMaxLength(this, 1024);" >${status.value}</textarea>
+				<textarea name="description" rows="3" cols="40" data-maxlength="1024">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>

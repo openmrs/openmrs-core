@@ -48,6 +48,7 @@ omsgs.tabLabelPrefix="<openmrs:message code="Patient.merge.tabLabelPrefix" javaS
 omsgs.conceptSource="<openmrs:message javaScriptEscape="true" code="ConceptReferenceTerm.source"/>";
 omsgs.conceptReferenceTermCode="<openmrs:message javaScriptEscape="true" code="ConceptReferenceTerm.code"/>";
 omsgs.referencTermSearchPlaceholder="<openmrs:message javaScriptEscape="true" code="ConceptReferenceTerm.searchBox.placeholder"/>";
+omsgs.charactersLeft="<openmrs:message javaScriptEscape="true" code="general.charactersLeft"/>";
 
 omsgs.genderArray=new Array();
 <openmrs:forEachRecord name='gender'>
