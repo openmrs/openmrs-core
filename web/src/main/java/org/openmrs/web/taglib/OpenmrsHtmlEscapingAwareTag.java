@@ -12,7 +12,6 @@ package org.openmrs.web.taglib;
 import javax.servlet.jsp.JspException;
 
 import org.springframework.web.servlet.tags.HtmlEscapingAwareTag;
-import org.springframework.web.util.ExpressionEvaluationUtils;
 
 /**
  * This class takes its functionality from {@link HtmlEscapingAwareTag}. Actually, it supplies a "htmlEscape" property for
@@ -30,7 +29,7 @@ public abstract class OpenmrsHtmlEscapingAwareTag extends OpenmrsRequestContextA
 	 * @see HtmlEscapingAwareTag#setHtmlEscape(boolean)
 	 */
 	public void setHtmlEscape(String htmlEscape) throws JspException {
-		this.htmlEscape = ExpressionEvaluationUtils.evaluateBoolean("htmlEscape", htmlEscape, pageContext);
+		this.htmlEscape = Boolean.valueOf(htmlEscape);
 	}
 	
 	/**
