@@ -628,7 +628,8 @@ function hideError(errorName) {
  */
 function forceMaxLength(object, maxLength) {
     if( object.value.length >= maxLength) {
-       object.value = object.value.substring(0, maxLength); 
+       object.value = object.value.substring(0, maxLength);
+       return false;
     }
 }
 
