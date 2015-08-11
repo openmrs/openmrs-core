@@ -33,7 +33,10 @@
 			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
             <openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-timepicker-addon.js" />
 			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-datepicker-i18n.js" />
-			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-timepicker-i18n.js" />
+            <%-- THIS IS A PATCH TO FIX BUG IN JQUERY FOR DATEPICKER ON IE FOR MONTH YEAR DROPDOWN --%>
+            <%-- IT'S ALREADY FIXED IN NEW VERSION OF JQUEYR  TICKET #6198 --%>
+            <%-- PLEASE, REMOVE THIS INCLUDE AFTER JQUERY UPGRADE --%>
+			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-timepicker-month-year-patch.js" />
 			<link href="<openmrs:contextPath/>/scripts/jquery-ui/css/<spring:theme code='jqueryui.theme.name' />/jquery-ui.custom.css" type="text/css" rel="stylesheet" />
 		</c:if>
 		<link rel="shortcut icon" type="image/ico" href="<openmrs:contextPath/><spring:theme code='favicon' />">
