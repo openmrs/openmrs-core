@@ -9,6 +9,7 @@
  */
 package org.openmrs.validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.EncounterType;
@@ -129,6 +130,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		EncounterType type = new EncounterType();
 		type.setName("name");
+		type.setDescription("some descriptin not exceeding the limit");
 		type.setRetireReason("retireReason");
 		
 		Errors errors = new BindException(type, "type");
@@ -144,15 +146,15 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		EncounterType type = new EncounterType();
-		type
-		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		type
-		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type.setName(StringUtils.repeat("longer than 50 chars", 6));
+		type.setDescription(StringUtils.repeat("longer than 1024 chars", 120));
+		type.setRetireReason(StringUtils.repeat("longer than 255 chars", 27));
 		
 		Errors errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
 		
 		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("description"));
 		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }
