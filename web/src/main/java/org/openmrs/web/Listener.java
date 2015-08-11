@@ -78,6 +78,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	
 	private static Throwable errorAtStartup = null;
 	
+	private static boolean setupNeeded = false;
+	
 	/**
 	 * Boolean flag set on webapp startup marking whether there is a runtime properties file or not.
 	 * If there is not, then the {@link InitializationFilter} takes over any openmrs url and
@@ -97,6 +99,15 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 */
 	public static boolean errorOccurredAtStartup() {
 		return errorAtStartup != null;
+	}
+	
+	/**
+	 * Boolean flag that tells if we need to run the database setup wizard.
+	 * 
+	 * @return true if setup is needed, else false.
+	 */
+	public static boolean isSetupNeeded() {
+		return setupNeeded;
 	}
 	
 	/**
@@ -169,6 +180,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
 				
 				WebDaemon.startOpenmrs(event.getServletContext());
+			}
+			else {
+				setupNeeded = true;
 			}
 			
 		}

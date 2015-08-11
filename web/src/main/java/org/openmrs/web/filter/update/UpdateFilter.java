@@ -508,7 +508,7 @@ public class UpdateFilter extends StartupFilter {
 		
 		log.debug("Initializing the UpdateFilter");
 		
-		if (!InitializationFilter.initializationRequired()) {
+		if (!InitializationFilter.initializationRequired() || Listener.isSetupNeeded()) {
 			model = new UpdateFilterModel();
 			/*
 			 * In this case, Listener#runtimePropertiesFound == true and InitializationFilter Wizard is skipped,
