@@ -21,7 +21,7 @@ import org.openmrs.layout.web.LayoutSupport;
 @Deprecated
 public class NameSupport extends LayoutSupport<NameTemplate> {
 	
-	private static NameSupport singleton;
+	private static volatile NameSupport singleton;
 	
 	static Log log = LogFactory.getLog(NameSupport.class);
 	
