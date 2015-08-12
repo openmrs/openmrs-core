@@ -26,8 +26,10 @@ public class NameSupport extends LayoutSupport<NameTemplate> {
 	static Log log = LogFactory.getLog(NameSupport.class);
 	
 	public NameSupport() {
-		if (singleton == null) {
-			singleton = this;
+		synchronized (NameSupport.class) {
+			if (singleton == null) {
+				singleton = this;
+			}
 		}
 	}
 	
