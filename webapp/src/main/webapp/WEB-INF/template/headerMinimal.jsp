@@ -75,6 +75,9 @@
 			};
 			dwr.engine.setErrorHandler(handler);
 			dwr.engine.setWarningHandler(handler);
+			
+			/* initialize common form validation */
+			jQuery(document).ready(initializeForceMaxLength);
 		</script>
 
 		<openmrs:extensionPoint pointId="org.openmrs.headerMinimalIncludeExt" type="html" requiredClass="org.openmrs.module.web.extension.HeaderIncludeExt">
