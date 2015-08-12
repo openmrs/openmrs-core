@@ -31,7 +31,7 @@ public class NameSupport extends LayoutSupport<NameTemplate> {
 		}
 	}
 	
-	public static NameSupport getInstance() {
+	public static synchronized NameSupport getInstance() {
 		if (singleton == null) {
 			throw new RuntimeException("Not Yet Instantiated");
 		} else {
