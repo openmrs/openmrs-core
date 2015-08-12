@@ -605,44 +605,47 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	public void executeDataSet(String datasetFilename) throws Exception {
 		
-		// try to get the given filename from the cache
-		IDataSet xmlDataSetToRun = cachedDatasets.get(datasetFilename);
-		
-		// if we didn't find it in the cache, load it
-		if (xmlDataSetToRun == null) {
-			File file = new File(datasetFilename);
+		synchronized (BaseContextSensitiveTest.class) {
 			
-			InputStream fileInInputStreamFormat = null;
-			Reader reader = null;
-			try {
-				// try to load the file if its a straight up path to the file or
-				// if its a classpath path to the file
-				if (file.exists()) {
-					fileInInputStreamFormat = new FileInputStream(datasetFilename);
-				} else {
-					fileInInputStreamFormat = getClass().getClassLoader().getResourceAsStream(datasetFilename);
-					if (fileInInputStreamFormat == null)
-						throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
+			// try to get the given filename from the cache
+			IDataSet xmlDataSetToRun = cachedDatasets.get(datasetFilename);
+			
+			// if we didn't find it in the cache, load it
+			if (xmlDataSetToRun == null) {
+				File file = new File(datasetFilename);
+				
+				InputStream fileInInputStreamFormat = null;
+				Reader reader = null;
+				try {
+					// try to load the file if its a straight up path to the file or
+					// if its a classpath path to the file
+					if (file.exists()) {
+						fileInInputStreamFormat = new FileInputStream(datasetFilename);
+					} else {
+						fileInInputStreamFormat = getClass().getClassLoader().getResourceAsStream(datasetFilename);
+						if (fileInInputStreamFormat == null)
+							throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
+					}
+					
+					reader = new InputStreamReader(fileInInputStreamFormat);
+					ReplacementDataSet replacementDataSet = new ReplacementDataSet(
+					        new FlatXmlDataSet(reader, false, true, false));
+					replacementDataSet.addReplacementObject("[NULL]", null);
+					xmlDataSetToRun = replacementDataSet;
+					
+					reader.close();
+				}
+				finally {
+					IOUtils.closeQuietly(fileInInputStreamFormat);
+					IOUtils.closeQuietly(reader);
 				}
 				
-				reader = new InputStreamReader(fileInInputStreamFormat);
-				ReplacementDataSet replacementDataSet = new ReplacementDataSet(
-				        new FlatXmlDataSet(reader, false, true, false));
-				replacementDataSet.addReplacementObject("[NULL]", null);
-				xmlDataSetToRun = replacementDataSet;
-				
-				reader.close();
-			}
-			finally {
-				IOUtils.closeQuietly(fileInInputStreamFormat);
-				IOUtils.closeQuietly(reader);
+				// cache the xmldataset for future runs of this file
+				cachedDatasets.put(datasetFilename, xmlDataSetToRun);
 			}
 			
-			// cache the xmldataset for future runs of this file
-			cachedDatasets.put(datasetFilename, xmlDataSetToRun);
+			executeDataSet(xmlDataSetToRun);
 		}
-		
-		executeDataSet(xmlDataSetToRun);
 	}
 	
 	/**
