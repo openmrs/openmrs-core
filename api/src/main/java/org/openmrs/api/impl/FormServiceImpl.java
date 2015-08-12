@@ -24,6 +24,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.exception.ConstraintViolationException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptComplex;
 import org.openmrs.EncounterType;
@@ -37,6 +38,7 @@ import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.FormsLockedException;
+import org.openmrs.api.InvalidFileTypeException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.FormDAO;
 import org.openmrs.api.handler.SaveHandler;
@@ -952,10 +954,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Override
 	public FormResource saveFormResource(FormResource formResource) throws APIException {
-		if (formResource == null) {
+	    	if (formResource == null) {
 			return null;
 		}
-		
 		// If a form resource with same name exists, replace it with current value
 		FormResource toPersist = formResource;
 		FormResource original = Context.getFormService().getFormResource(formResource.getForm(), formResource.getName());
@@ -967,7 +968,13 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 			original.setPreferredHandlerClassname(formResource.getPreferredHandlerClassname());
 			toPersist = original;
 		}
-		CustomDatatypeUtil.saveIfDirty(toPersist);
+		try {
+		    CustomDatatypeUtil.saveIfDirty(toPersist);
+		}
+		catch (ConstraintViolationException ex) {
+		    throw new InvalidFileTypeException(ex.getMessage(), ex);
+		}
+		
 		return dao.saveFormResource(toPersist);
 	}
 	
