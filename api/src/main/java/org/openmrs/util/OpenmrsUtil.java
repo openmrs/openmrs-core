@@ -2161,6 +2161,7 @@ public class OpenmrsUtil {
 	 */
 	public static void validatePassword(String username, String password, String systemId) throws PasswordException {
 		
+		int minLength = 8;
 		// default values for all of the global properties
 		String userGp = "true";
 		String lengthGp = "8";
@@ -2190,20 +2191,10 @@ public class OpenmrsUtil {
 			regexGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX, regexGp);
 		}
 		
-		if (password == null) {
-			throw new WeakPasswordException();
-		}
-		
-		if ("true".equals(userGp) && (password.equals(username) || password.equals(systemId))) {
-			throw new WeakPasswordException();
-		}
-		
 		if (StringUtils.isNotEmpty(lengthGp)) {
 			try {
-				int minLength = Integer.parseInt(lengthGp);
-				if (password.length() < minLength) {
-					throw new ShortPasswordException(getMessage("error.password.length", lengthGp));
-				}
+				minLength = Integer.parseInt(lengthGp);
+				
 			}
 			catch (NumberFormatException nfe) {
 				log
@@ -2212,16 +2203,106 @@ public class OpenmrsUtil {
 			}
 		}
 		
+		if (password == null) {
+			throw new WeakPasswordException();
+		}
+		
+		if ("true".equals(userGp) && (password.equals(username) || password.equals(systemId))) {
+			throw new WeakPasswordException(getMessage("error.password.duplicate"));
+		}
+		
+		if (StringUtils.isNotEmpty(lengthGp) && password.length() < minLength) {
+			
+			if ("true".equals(caseGp) && "true".equals(digitGp) && "true".equals(nonDigitGp)) {
+				throw new ShortPasswordException(getMessage("error.password.length.case_digit_nondigit", lengthGp));
+			} else if ("true".equals(digitGp) && "true".equals(nonDigitGp)) {
+				throw new ShortPasswordException(getMessage("error.password.length.digit_nondigit", lengthGp));
+			} else if ("true".equals(caseGp) && "true".equals(nonDigitGp)) {
+				throw new ShortPasswordException(getMessage("error.password.length.case_nondigit", lengthGp));
+			} else if ("true".equals(caseGp) && "true".equals(digitGp)) {
+				throw new ShortPasswordException(getMessage("error.password.length.case_digit_nondigit", lengthGp));
+			} else if ("true".equals(nonDigitGp)) {
+				throw new ShortPasswordException(getMessage("error.password.length.nondigit", lengthGp));
+			} else if ("true".equals(digitGp)) {
+				throw new ShortPasswordException(getMessage("error.password.length.digit", lengthGp));
+			} else if ("true".equals(caseGp)) {
+				throw new ShortPasswordException(getMessage("error.password.length.case", lengthGp));
+			} else {
+				throw new ShortPasswordException(getMessage("error.password.length", lengthGp));
+			}
+		}
+		
 		if ("true".equals(caseGp) && !containsUpperAndLowerCase(password)) {
-			throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase"));
+			
+			if (StringUtils.isNotEmpty(lengthGp) && "true".equals(digitGp) && "true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage(
+				    "error.password.requireMixedCase.length_digit_nondigit", lengthGp));
+			} else if ("true".equals(digitGp) && "true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase.digit_nondigit"));
+			} else if (StringUtils.isNotEmpty(lengthGp) && "true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase.length", lengthGp));
+			} else if (StringUtils.isNotEmpty(lengthGp) && "true".equals(digitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage(
+				    "error.password.requireMixedCase.length_digit_nondigit", lengthGp));
+			} else if ("true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase.nondigit"));
+			} else if ("true".equals(digitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase.digit"));
+			} else if (StringUtils.isNotEmpty(lengthGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase.length", lengthGp));
+			} else {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase"));
+			}
+			
 		}
 		
 		if ("true".equals(digitGp) && !containsDigit(password)) {
-			throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber"));
+			
+			if (StringUtils.isNotEmpty(lengthGp) && "true".equals(caseGp) && "true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber.length_case_nondigit",
+				    lengthGp));
+			} else if (StringUtils.isNotEmpty(lengthGp) && "true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber.length_nondigit",
+				    lengthGp));
+			} else if (StringUtils.isNotEmpty(lengthGp) && "true".equals(caseGp)) {
+				throw new InvalidCharactersPasswordException(
+				        getMessage("error.password.requireNumber.length_case", lengthGp));
+			} else if (StringUtils.isNotEmpty(caseGp) && "true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber.case"));
+			} else if ("true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber.nondigit"));
+			} else if ("true".equals(caseGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber.case"));
+			} else if (StringUtils.isNotEmpty(lengthGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber.length", lengthGp));
+			} else {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber"));
+			}
 		}
 		
 		if ("true".equals(nonDigitGp) && containsOnlyDigits(password)) {
-			throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter"));
+			
+			if (StringUtils.isNotEmpty(lengthGp) && "true".equals(caseGp) && "true".equals(digitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter.length_case_digit",
+				    lengthGp));
+			} else if (StringUtils.isNotEmpty(lengthGp) && "true".equals(digitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter.length_digit",
+				    lengthGp));
+			} else if (StringUtils.isNotEmpty(lengthGp) && "true".equals(caseGp)) {
+				throw new InvalidCharactersPasswordException(
+				        getMessage("error.password.requireLetter.length_case", lengthGp));
+			} else if (StringUtils.isNotEmpty(caseGp) && "true".equals(digitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter.case_digit"));
+			} else if ("true".equals(digitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter.digit"));
+			} else if ("true".equals(caseGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter.case"));
+			} else if (StringUtils.isNotEmpty(lengthGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter.length", lengthGp));
+			} else {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter"));
+			}
+			
 		}
 		
 		if (StringUtils.isNotEmpty(regexGp)) {
