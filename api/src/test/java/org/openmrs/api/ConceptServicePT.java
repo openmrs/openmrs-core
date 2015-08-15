@@ -89,7 +89,6 @@ public class ConceptServicePT extends BaseContextSensitiveTest {
 	
 	@AfterClass
 	public static void unloadDictionary() throws Exception {
-		instance.deleteAllData();
 		dictionaryLoaded = false;
 	}
 }
