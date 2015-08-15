@@ -601,7 +601,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldPassDrugOrderWithoutADrugWhenDrugOrderRequireDrugGBIsNotSet() throws Exception {
-		deleteAllData();
 		baseSetupWithStandardDataAndAuthentication();
 		Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
