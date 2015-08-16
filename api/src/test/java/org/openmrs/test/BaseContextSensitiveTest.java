@@ -147,7 +147,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	/**
 	 * Allows to determine if the DB is initialized with standard data
 	 */
-	private static volatile boolean isBaseSetup;
+	private static boolean isBaseSetup;
 	
 	/**
 	 * Stores a user authenticated for running tests which allows to discover a situation when some
@@ -795,9 +795,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		
 		updateSearchIndex();
 		
-		synchronized (BaseContextSensitiveTest.class) {
-			isBaseSetup = false;
-		}
+		isBaseSetup = false;
 	}
 	
 	/**
@@ -838,26 +836,24 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// annotation. If it is deflagged or if the developer has
 		// marked this class as a non-inmemory database, skip these base steps.
 		if (useInMemoryDatabase()) {
-			synchronized (BaseContextSensitiveTest.class) {
-				if (!skipBaseSetup) {
-					if (!isBaseSetup) {
-						initializeInMemoryDatabase();
-						
-						executeDataSet(EXAMPLE_XML_DATASET_PACKAGE_PATH);
-						
-						//Commit so that it is not rolled back after a test.
-						getConnection().commit();
-						
-						updateSearchIndex();
-						
-						isBaseSetup = true;
-					}
+			if (!skipBaseSetup) {
+				if (!isBaseSetup) {
+					initializeInMemoryDatabase();
 					
-					authenticate();
-				} else {
-					if (isBaseSetup) {
-						deleteAllData();
-					}
+					executeDataSet(EXAMPLE_XML_DATASET_PACKAGE_PATH);
+					
+					//Commit so that it is not rolled back after a test.
+					getConnection().commit();
+					
+					updateSearchIndex();
+					
+					isBaseSetup = true;
+				}
+				
+				authenticate();
+			} else {
+				if (isBaseSetup) {
+					deleteAllData();
 				}
 			}
 		}
