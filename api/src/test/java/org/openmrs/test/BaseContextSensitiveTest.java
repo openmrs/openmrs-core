@@ -163,6 +163,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	@InjectMocks
 	protected ContextMockHelper contextMockHelper;
 	
+	private static BaseContextSensitiveTest instance;
+	
 	/**
 	 * Basic constructor for the super class to all openmrs api unit tests. This constructor sets up
 	 * the classloader and the properties file so that by the type spring gets around to finally
@@ -183,6 +185,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		Context.setRuntimeProperties(props);
 		
 		loadCount++;
+		
+		instance = this;
 	}
 	
 	/**
@@ -896,6 +900,17 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	@AfterClass
 	public static void closeSessionAfterEachClass() throws Exception {
+		//Some tests add data via executeDataset()
+		//We need to delete it in order not to interfere with others
+		if (instance != null) {
+			try {
+				instance.deleteAllData();
+			}
+			catch (Exception ex) {
+				//No need to worry about this
+			}
+		}
+		
 		// clean up the session so we don't leak memory
 		if (Context.isSessionOpen()) {
 			Context.closeSession();
