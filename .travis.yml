@@ -18,3 +18,4 @@ notifications:
       - "Build details : %{build_url}"
     use_notice: true
     skip_join: true
+sudo: false
