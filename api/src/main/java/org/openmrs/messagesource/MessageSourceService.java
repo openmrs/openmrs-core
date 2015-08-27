@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Interface for a service which expands on the basic capabilities of a message source.
  */
-@Transactional
+@Transactional(readOnly = true)
 public interface MessageSourceService extends MutableMessageSource {
 	
 	/**
@@ -27,7 +27,6 @@ public interface MessageSourceService extends MutableMessageSource {
 	 * @param s message code to retrieve
 	 * @return the translated message
 	 */
-	@Transactional(readOnly = true)
 	public String getMessage(String s);
 	
 	/**
@@ -35,7 +34,6 @@ public interface MessageSourceService extends MutableMessageSource {
 	 * 
 	 * @return the activeMessageSource
 	 */
-	@Transactional(readOnly = true)
 	public MutableMessageSource getActiveMessageSource();
 	
 	/**
@@ -58,7 +56,6 @@ public interface MessageSourceService extends MutableMessageSource {
 	/**
 	 * @return the availableMessageSources
 	 */
-	@Transactional(readOnly = true)
 	public Set<MutableMessageSource> getMessageSources();
 	
 	/**

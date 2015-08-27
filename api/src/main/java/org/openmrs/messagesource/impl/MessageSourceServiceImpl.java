@@ -24,7 +24,6 @@ import org.openmrs.messagesource.PresentationMessage;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Extensible implementation of the MessageSourceService, which relies on injected implementations
@@ -44,7 +43,6 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	/**
 	 * @see org.openmrs.messagesource.MessageSourceService#getMessage(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
 	public String getMessage(String s) {
 		return getMessage(s, null, Context.getLocale());
 	}

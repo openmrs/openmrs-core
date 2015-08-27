@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Extended MessageSource interface, which provides more information about the available messages
  * and can be changed.
  */
-@Transactional
+@Transactional(readOnly = true)
 public interface MutableMessageSource extends MessageSource, HierarchicalMessageSource {
 	
 	/**
