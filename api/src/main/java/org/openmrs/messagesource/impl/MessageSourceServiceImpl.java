@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
  * ResourceBundleMessageSourceService can be specified in the applicationContext-service.xml file to
  * use the usual .properties files to provide messages.
  */
-@Transactional
+@Transactional(readOnly = true)
 public class MessageSourceServiceImpl implements MessageSourceService {
 	
 	private Log log = LogFactory.getLog(getClass());
@@ -46,7 +46,6 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	/**
 	 * @see org.openmrs.messagesource.MessageSourceService#getMessage(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
 	public String getMessage(String s) {
 		return Context.getMessageSourceService().getMessage(s, null, Context.getLocale());
 	}
