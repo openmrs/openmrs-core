@@ -9,57 +9,84 @@
  */
 package org.openmrs.web.controller.form;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import org.hibernate.exception.ConstraintViolationException;
+import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.openmrs.Form;
 import org.openmrs.FormResource;
 import org.openmrs.customdatatype.datatype.LongFreeTextDatatype;
 import org.openmrs.web.attribute.handler.LongFreeTextFileUploadHandler;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockMultipartHttpServletRequest;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.Errors;
 
 public class FormResourceControllerTest extends BaseWebContextSensitiveTest {
- 
+// 
+//    @Test
+//    public void handleFormResource_shouldStayOnSamePageWhenUnableToSaveFormResource() throws Exception {
+//    	
+//		final String EXPECTED_FORM_ID = "1";
+//		final String EXPECTED_DATATYPE_CLASS_NAME = (new LongFreeTextDatatype()).getClass().getName();
+//		final String EXPECTED_HANDLER_CLASS_NAME = (new LongFreeTextFileUploadHandler()).getClass().getName();
+//		final String EXPECTED_URL = "redirect:addFormResource.form?formId="
+//			+ EXPECTED_FORM_ID + "&datatype=" 
+//			+ EXPECTED_DATATYPE_CLASS_NAME + "&handler="
+//			+ EXPECTED_HANDLER_CLASS_NAME;
+//	    
+//		Errors errors = null;
+//		
+//		Form form = null;
+//		
+//		FormResource resource = null;
+//		
+//		MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
+//		request.setMethod("POST");
+//		request.setParameter("formId", "1");
+//		request.setParameter("datatype", EXPECTED_DATATYPE_CLASS_NAME);
+//		request.setParameter("handler", EXPECTED_HANDLER_CLASS_NAME);
+//	
+//		FormResourceController controller = new FormResourceController();
+//		
+//		String actualUrl = controller.handleAddFormResource(resource, errors, request);
+//		
+//		Assert.assertEquals(EXPECTED_URL, actualUrl);
+//    }
+//    
     @Test
-    public void handleFormResource_shouldReturnViewURLOfCurrentPageWhenAnInvalidFileTypeExceptionIsThrown() throws Exception {
-	
-	final String EXPECTED_FORM_ID = "1";
-	final String EXPECTED_DATATYPE_CLASS_NAME = (new LongFreeTextDatatype()).getClass().getName();
-	final String EXPECTED_HANDLER_CLASS_NAME = (new LongFreeTextFileUploadHandler()).getClass().getName();
-	final String EXPECTED_URL = "redirect:addFormResource.form?formId="
-		+ EXPECTED_FORM_ID + "&datatype=" 
-		+ EXPECTED_DATATYPE_CLASS_NAME + "&handler="
-		+ EXPECTED_HANDLER_CLASS_NAME;
+    public void handleFormResource_shouldRedirectAfterSavingFormResource() throws Exception {
+    	Form form = new Form();
+    	form.setId(1);
+    	form.setName("test form");
+    	form.setFormId(1);
+    	form.setVersion("1.0.0");
+    	
+    	FormResource resource = new FormResource();
+    	resource.setName("test resource");
+    	resource.setForm(form);
+    	resource.setFormResourceId(1);
+    	resource.setId(1);
+    	
+    	byte[] fileContent = "Hello World".getBytes();
+    	String fileName = "/resources/testfile.ico";
+    	MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
+    	MockMultipartFile file = new MockMultipartFile("resourceValue", fileName, "text/plain", fileContent);
+    	
+    	request.setMethod("POST");
+    	request.setParameter("datatype", (new LongFreeTextDatatype()).getClass().getName());
+    	request.setParameter("handler", (new LongFreeTextFileUploadHandler()).getClass().getName());
+    	request.addFile(file);
+    	
+    	Errors errors = Mockito.mock(Errors.class);
+    	Mockito.when(errors.hasErrors()).thenReturn(false);
+    	
+    	FormResourceController controller = new FormResourceController();
+    	
+    	String expectedUrl = "redirect:formResources.form?formId=1";
+    	String actualUrl = controller.handleAddFormResource(resource, errors, request);
     
-	Errors errors = mock(Errors.class);
-	when(errors.hasErrors()).thenReturn(false);
-	
-	Form form = mock(Form.class);
-	when(form.getFormId()).thenReturn(1);
-	when(form.getId()).thenReturn(1);
-	
-	FormResource resource = mock(FormResource.class);
-	when(resource.getForm()).thenReturn(form);
-	when(resource.getDatatypeClassname()).thenReturn(EXPECTED_DATATYPE_CLASS_NAME);
-	when(resource.getPreferredHandlerClassname()).thenReturn(EXPECTED_HANDLER_CLASS_NAME);
-	when(resource.isDirty()).thenThrow(new ConstraintViolationException("for testing", null, "for testing"));
-	
-	MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
-	request.setMethod("POST");
-	request.setParameter("formId", "1");
-	request.setParameter("datatype", EXPECTED_DATATYPE_CLASS_NAME);
-	request.setParameter("handler", EXPECTED_HANDLER_CLASS_NAME);
-
-	FormResourceController controller = new FormResourceController();
-	
-	String actualUrl = controller.handleAddFormResource(resource, errors, request);
-	
-	assertEquals(EXPECTED_URL, actualUrl);
+    	Assert.assertEquals(expectedUrl, actualUrl);
     }
 
 }
