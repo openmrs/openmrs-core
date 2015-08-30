@@ -10,12 +10,17 @@
 package org.openmrs.web.controller.form;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.FormResource;
+import org.openmrs.api.InvalidFileTypeException;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.attribute.WebAttributeUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class FormResourceController {
+	protected final Log log = LogFactory.getLog(getClass());
 	
 	@RequestMapping(method = RequestMethod.GET, value = "admin/forms/formResources")
 	public void manageFormResources(@RequestParam("formId") Form form, Model model) {
@@ -69,20 +75,28 @@ public class FormResourceController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value = "admin/forms/addFormResource")
-	public String handleAddFormResource(@ModelAttribute("resource") FormResource resource, Errors errors,
-	        HttpServletRequest request) {
+	public String handleAddFormResource(@ModelAttribute("resource") FormResource resource, Errors errors, HttpServletRequest request) {
+		HttpSession session = request.getSession();
+	
 		try {
-			Object value = WebAttributeUtil.getValue(request, resource, "resourceValue");
-			resource.setValue(value);
+		    Object value = WebAttributeUtil.getValue(request, resource, "resourceValue");
+		    resource.setValue(value);
 		}
 		catch (Exception ex) {
-			errors.rejectValue("value", "error.general");
+		    errors.rejectValue("value", "error.general");
 		}
 		if (errors.hasErrors()) {
-			throw new RuntimeException("Error handling not yet implemented");
+		    throw new RuntimeException("Error handling not yet implemented");
 		} else {
+		    try {
 			Context.getFormService().saveFormResource(resource);
-			return "redirect:formResources.form?formId=" + resource.getForm().getId();
+		    }
+		    catch (InvalidFileTypeException ex) {
+			log.error(ex.getMessage(), ex);
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.file.upload.expected.text.file");
+			return "redirect:addFormResource.form?formId=" + resource.getForm().getId() + "&datatype=" + resource.getDatatypeClassname() + "&handler=" + resource.getPreferredHandlerClassname();
+		    }
+		    return "redirect:formResources.form?formId=" + resource.getForm().getId();
 		}
 	}
 }
