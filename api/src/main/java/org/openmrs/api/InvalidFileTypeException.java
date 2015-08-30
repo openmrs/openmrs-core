@@ -10,38 +10,40 @@
 package org.openmrs.api;
 
 /**
- * Exception thrown when a {@link FormResource} is being saved with an invalid file type  
+ * Exception thrown for situations of an invalid file type  
  * 
  * @see FormService
  */
 public class InvalidFileTypeException extends APIException {
-
-    /**
-     * Default empty constructor. If at all possible, don't use this one, but use the
-     * {@link #InvalidFileTypeException(String)} constructor to specify a helpful
-     * message to the end user
-     */
-    public InvalidFileTypeException() {
-	super();
-    }
-  
-    /**
-     * General constructor to give a helpful message that relates to why this error occured
-     * 
-     * @param message helpful message string 
-     */
-    public InvalidFileTypeException(String message) {
-	super(message);
-    }
-    
-    /**
-     * General constructor to give the end user a helpful message and to also propagate the parent
-     * error exception message.
-     *  
-     * @param message helpful message string for the end user
-     * @param cause the parent exception cause that this exception is wrapping around
-     */
-    public InvalidFileTypeException(String message, Throwable cause) {
-	super(message, cause);
-    }
+	
+	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Default empty constructor. If at all possible, don't use this one, but use the
+	 * {@link #InvalidFileTypeException(String)} constructor to specify a helpful
+	 * message to the end user
+	 */
+	public InvalidFileTypeException() {
+		super();
+	}
+	
+	/**
+	 * General constructor to give a helpful message that relates to why this error occured
+	 * 
+	 * @param message helpful message string 
+	 */
+	public InvalidFileTypeException(String message) {
+		super(message);
+	}
+	
+	/**
+	 * General constructor to give the end user a helpful message and to also propagate the parent
+	 * error exception message.
+	 *  
+	 * @param message helpful message string for the end user
+	 * @param cause the parent exception cause that this exception is wrapping around
+	 */
+	public InvalidFileTypeException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }
