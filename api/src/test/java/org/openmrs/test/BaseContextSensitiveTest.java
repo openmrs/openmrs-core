@@ -899,7 +899,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @throws Exception
 	 */
 	@AfterClass
-	public static synchronized void closeSessionAfterEachClass() throws Exception {
+	public static void closeSessionAfterEachClass() throws Exception {
 		//Some tests add data via executeDataset()
 		//We need to delete it in order not to interfere with others
 		if (instance != null) {
