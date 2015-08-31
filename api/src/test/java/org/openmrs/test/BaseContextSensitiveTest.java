@@ -163,7 +163,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	@InjectMocks
 	protected ContextMockHelper contextMockHelper;
 	
-	private static BaseContextSensitiveTest instance;
+	private static volatile BaseContextSensitiveTest instance;
 	
 	/**
 	 * Basic constructor for the super class to all openmrs api unit tests. This constructor sets up
@@ -899,7 +899,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @throws Exception
 	 */
 	@AfterClass
-	public static void closeSessionAfterEachClass() throws Exception {
+	public static synchronized void closeSessionAfterEachClass() throws Exception {
 		//Some tests add data via executeDataset()
 		//We need to delete it in order not to interfere with others
 		if (instance != null) {
@@ -909,6 +909,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			catch (Exception ex) {
 				//No need to worry about this
 			}
+			instance = null;
 		}
 		
 		// clean up the session so we don't leak memory
