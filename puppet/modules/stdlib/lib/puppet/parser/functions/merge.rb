@@ -22,6 +22,7 @@ module Puppet::Parser::Functions
     accumulator = Hash.new
     # Merge into the accumulator hash
     args.each do |arg|
+      next if arg.is_a? String and arg.empty? # empty string is synonym for puppet's undef
       unless arg.is_a?(Hash)
         raise Puppet::ParseError, "merge: unexpected argument type #{arg.class}, only expects hash arguments"
       end
