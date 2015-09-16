@@ -107,7 +107,7 @@
 						if (isInteger(age.value) == false) {
 							showError("birthdateError");
 							result = false;
-						} else if (age.value < 0 || age.value > 120) {
+						} else if (age.value < 0 || age.value >= 120) {
 							showError("birthdateError");
 							result = false;
 						}
