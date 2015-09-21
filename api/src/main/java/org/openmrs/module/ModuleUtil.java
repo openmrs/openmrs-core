@@ -251,6 +251,7 @@ public class ModuleUtil {
 	 * @should not match when version has wild card plus qualifier and is outside boundary
 	 * @should match when version has wild card and is within boundary
 	 * @should not match when version has wild card and is outside boundary
+	 * @should return true when required version is empty
 	 */
 	public static boolean matchRequiredVersions(String version, String versionRange) {
 		if (versionRange != null && !versionRange.equals("")) {
@@ -308,6 +309,11 @@ public class ModuleUtil {
 				}
 			}
 		}
+		else {
+			//no version checking if required version is not specified
+			return true;
+		}
+		
 		return false;
 	}
 	
