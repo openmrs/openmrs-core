@@ -302,7 +302,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// if we're using the in-memory hypersonic database, add those
 		// connection properties here to override what is in the runtime
 		// properties
-		if (useInMemoryDatabase()) {
+		if (useInMemoryDatabase() == true) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
 			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000";
 			runtimeProperties.setProperty(Environment.URL, url);
@@ -515,8 +515,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @return true/false whether or not to use an in memory database
 	 */
 	public Boolean useInMemoryDatabase() {
-		String useInMemoryDB = System.getProperty("useInMemoryDatabase");
-		return useInMemoryDB == null || Boolean.valueOf(useInMemoryDB);
+		return true;
 	}
 	
 	/**
@@ -545,12 +544,10 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * tests
 	 */
 	public void initializeInMemoryDatabase() throws Exception {
-
 		//Don't allow the user to overwrite data
-		if (!useInMemoryDatabase()) {
-			return;
-		}
-		
+		if (!useInMemoryDatabase())
+			throw new Exception(
+			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
 		/*
 		 * Hbm2ddl used in tests creates primary key columns, which are not auto incremented, if
 		 * NativeIfNotAssignedIdentityGenerator is used. We need to alter those columns in tests.
