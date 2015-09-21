@@ -338,6 +338,17 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
+	@Verifies(value = "should return true when required version is empty", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldReturnTrueWhenRequiredVersionIsEmpty() {
+		String openmrsVersion = "1.11.4";
+		String requiredVersion = "";
+		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
+	 */
+	@Test
 	@Verifies(value = "should correctly set upper and lower limit for versionRange with qualifiers and wild card", method = "matchRequiredVersions(String version, String versionRange)")
 	public void matchRequiredVersions_shouldCorrectlySetUpperAndLoweLimitForVersionRangeWithQualifiersAndWildCard() {
 		String openmrsVersion = "1.4.11111";
