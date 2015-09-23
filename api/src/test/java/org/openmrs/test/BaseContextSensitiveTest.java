@@ -515,7 +515,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @return true/false whether or not to use an in memory database
 	 */
 	public Boolean useInMemoryDatabase() {
-		return true;
+		return !"false".equals(System.getProperty("useInMemoryDatabase"));
 	}
 	
 	/**
