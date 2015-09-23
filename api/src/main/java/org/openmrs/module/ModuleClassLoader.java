@@ -132,10 +132,10 @@ public class ModuleClassLoader extends URLClassLoader {
 	private void addClassFilePackages(Collection<File> files, int dirLength) {
 		for (File file : files) {
 			String name = file.getAbsolutePath().substring(dirLength);
-			Integer indexOfLastSlash = name.lastIndexOf("/");
+			Integer indexOfLastSlash = name.lastIndexOf(File.separator);
 			if (indexOfLastSlash > 0) {
 				String packageName = name.substring(0, indexOfLastSlash);
-				packageName = packageName.replaceAll("/", ".");
+				packageName = packageName.replaceAll(File.separator, ".");
 				providedPackages.add(packageName);
 			}
 		}
