@@ -108,7 +108,7 @@
              <version>8.1.16.v20140903</version>
              <configuration>
                <webApp>
-               	  <descriptor>${project.build.directory}/jetty/WEB-INF/web.xm</descriptor>
+               	  <descriptor>${project.build.directory}/jetty/WEB-INF/web.xml</descriptor>
                   <contextPath>/${webapp.name}</contextPath>
                   <!--enable reloading static resources -->
                   <overrideDescriptor>src/test/resources/override-web.xml</overrideDescriptor>
