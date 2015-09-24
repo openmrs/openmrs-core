@@ -17,6 +17,9 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.PatientService;
 
+import org.openmrs.Allergy;
+import org.openmrs.Allergies;
+
 /**
  * Database methods for the PatientService
  * 
@@ -321,5 +324,46 @@ public interface PatientDAO {
 	 * @see org.openmrs.api.PatientService#getCountOfPatients(String, boolean)
 	 */
 	public Long getCountOfPatients(String query, boolean includeVoided);
+	
+	/**
+	 * Gets a list of allergies that a patient has
+	 * 
+	 * @param patient the patient
+	 * @return the allergy list
+	 */
+	public List<Allergy> getAllergies(Patient patient);
+	
+	/**
+	 * Gets a patient's allergy status
+	 * 
+	 * @param patient the patient
+	 * @return the allergy status
+	 */
+	public String getAllergyStatus(Patient patient);
+	
+	/**
+	 * Saves patient allergies to the database.
+	 * 
+	 * @param patient the patient
+	 * @param allergies the allergies
+	 * @return the saved allergies
+	 */
+	public Allergies saveAllergies(Patient patient, Allergies allergies);
+	
+	/**
+	 * Gets a allergy
+	 * 
+	 * @param allergyId
+	 * @return allergy
+	 */
+	public Allergy getAllergy(Integer allergyId);
+	
+	/**
+	 * Saves an allergy to the database
+	 * 
+	 * @param allergy the allergy to save
+	 * @return the saved allergy
+	 */
+	public Allergy saveAllergy(Allergy allergy);
 	
 }

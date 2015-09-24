@@ -39,6 +39,10 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
 
+import org.openmrs.api.APIException;
+import org.openmrs.Allergies;
+import org.openmrs.Allergy;
+
 /**
  * Hibernate specific database methods for the PatientService
  *
@@ -669,4 +673,62 @@ public class HibernatePatientDAO implements PatientDAO {
 		//
 		return (long) criteria.list().size();
 	}
+	
+	/**
+	 * @see org.openmrs..api.db.PatientDAO#getAllergies(org.openmrs.Patient)
+	 */
+	//@Override
+	public List<Allergy> getAllergies(Patient patient) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Allergy.class);
+		criteria.add(Restrictions.eq("patient", patient));
+		criteria.add(Restrictions.eq("voided", false));
+		return criteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#getAllergyStatus(org.openmrs.Patient)
+	 */
+	//@Override
+	public String getAllergyStatus(Patient patient) {
+
+		return (String) sessionFactory.getCurrentSession().createSQLQuery(
+			    "select allergy_status from Patient where patient_id = :patientId").setInteger("patientId", patient.getPatientId()).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#saveAllergies(org.openmrs.Patient,
+	 *      org.openmrsallergyapi.Allergies)
+	 */
+	@Override
+	public Allergies saveAllergies(Patient patient, Allergies allergies) {
+
+		sessionFactory.getCurrentSession().createSQLQuery(
+			    "update Patient set allergy_status = :allergyStatus where patient_id = :patientId")
+			    .setInteger("patientId", patient.getPatientId())
+			    .setString("allergyStatus", allergies.getAllergyStatus())
+			    .executeUpdate();
+		
+		for (Allergy allergy : allergies) {
+			sessionFactory.getCurrentSession().save(allergy);
+		}
+			
+		return allergies;
+	}
+	
+	/**
+	 * @see org.openmrs.PatientDAO#getAllergy(Integer)
+	 */
+	public Allergy getAllergy(Integer allergyId) {
+		return (Allergy) sessionFactory.getCurrentSession().createQuery("from Allergy a where a.allergyId = :allergyId")
+				.setInteger("allergyId", allergyId).uniqueResult();
+	}
+
+	/**
+     * @see org.openmrs.api.db.PatientDAO#saveAllergy(org.openmrs.Allergy)
+     */
+    @Override
+    public Allergy saveAllergy(Allergy allergy) {
+    	sessionFactory.getCurrentSession().save(allergy);
+    	return allergy;
+    }
 }
