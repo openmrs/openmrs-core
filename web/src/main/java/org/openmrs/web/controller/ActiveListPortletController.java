@@ -18,9 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.Patient;
 import org.openmrs.activelist.ActiveListItem;
-import org.openmrs.activelist.Allergy;
-import org.openmrs.activelist.AllergySeverity;
-import org.openmrs.activelist.AllergyType;
 import org.openmrs.activelist.Problem;
 import org.openmrs.activelist.ProblemModifier;
 import org.openmrs.api.context.Context;
@@ -40,14 +37,7 @@ public class ActiveListPortletController extends PortletController {
 		model.put("today", Context.getDateFormat().format(new Date()));
 		
 		String type = (String) model.get("type");
-		if ("allergy".equals(type)) {
-			List<Allergy> allergies = Context.getPatientService().getAllergies(patient);
-			List<List<Allergy>> ls = separate(allergies);
-			model.put("allergies", ls.get(0));
-			model.put("removedAllergies", ls.get(1));
-			model.put("allergyTypes", AllergyType.values());
-			model.put("allergySeverities", AllergySeverity.values());
-		} else if ("problem".equals(type)) {
+		if ("problem".equals(type)) {
 			List<Problem> problems = Context.getPatientService().getProblems(patient);
 			List<List<Problem>> ls = separate(problems);
 			model.put("problems", ls.get(0));
