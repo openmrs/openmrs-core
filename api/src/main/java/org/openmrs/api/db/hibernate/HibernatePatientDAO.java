@@ -19,6 +19,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+/*
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+*/
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,6 +45,10 @@ import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
+
+import org.openmrs.api.APIException;
+import org.openmrs.allergyapi.Allergies;
+import org.openmrs.allergyapi.Allergy;
 
 /**
  * Hibernate specific database methods for the PatientService
@@ -669,4 +680,91 @@ public class HibernatePatientDAO implements PatientDAO {
 		//
 		return (long) criteria.list().size();
 	}
+	
+	/**
+	 * @see org.openmrs..api.db.PatientDAO#getAllergies(org.openmrs.Patient)
+	 */
+	//@Override
+	public List<Allergy> getAllergies(Patient patient) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Allergy.class);
+		criteria.add(Restrictions.eq("patient", patient));
+		criteria.add(Restrictions.eq("voided", false));
+		return criteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#getAllergyStatus(org.openmrs.Patient)
+	 */
+	//@Override
+	public String getAllergyStatus(Patient patient) {
+		/*
+		Connection connection = sessionFactory.getCurrentSession().connection();
+		try {
+			PreparedStatement ps = connection.prepareStatement("SELECT allergy_status FROM patient WHERE patient_id = ?");
+			ps.setInt(1, patient.getPatientId());
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			return rs.getString(1);
+		}
+		catch (SQLException e) {
+			throw new APIException("Error while trying to get the patient allergy status", e);
+		}
+		*/
+		return (String) sessionFactory.getCurrentSession().createSQLQuery(
+			    "select allergy_status from Patient where patient_id = :patientId").setInteger("patientId", patient.getPatientId()).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#saveAllergies(org.openmrs.Patient,
+	 *      org.openmrsallergyapi.Allergies)
+	 */
+	@Override
+	public Allergies saveAllergies(Patient patient, Allergies allergies) {
+		/*
+		Connection connection = sessionFactory.getCurrentSession().connection();
+		try {
+			PreparedStatement ps = connection.prepareStatement("UPDATE patient SET allergy_status = ? WHERE patient_id = ?");
+			ps.setString(1, allergies.getAllergyStatus());
+			ps.setInt(2, patient.getPatientId());
+			ps.executeUpdate();
+			
+			for (Allergy allergy : allergies) {
+				sessionFactory.getCurrentSession().save(allergy);
+			}
+				
+			return allergies;
+		}
+		catch (SQLException e) {
+			throw new APIException("Error while trying to save patient allergies", e);
+		}
+		*/
+		sessionFactory.getCurrentSession().createSQLQuery(
+			    "update Patient set allergy_status = :allergyStatus where patient_id = :patientId")
+			    .setInteger("patientId", patient.getPatientId())
+			    .setString("allergyStatus", allergies.getAllergyStatus())
+			    .executeUpdate();
+		
+		for (Allergy allergy : allergies) {
+			sessionFactory.getCurrentSession().save(allergy);
+		}
+			
+		return allergies;
+	}
+	
+	/**
+	 * @see org.openmrs.PatientDAO#getAllergy(Integer)
+	 */
+	public Allergy getAllergy(Integer allergyId) {
+		return (Allergy) sessionFactory.getCurrentSession().createQuery("from Allergy a where a.allergyId = :allergyId")
+				.setInteger("allergyId", allergyId).uniqueResult();
+	}
+
+	/**
+     * @see org.openmrs.api.db.PatientDAO#saveAllergy(org.openmrs.allergyapi.Allergy)
+     */
+    @Override
+    public Allergy saveAllergy(Allergy allergy) {
+    	sessionFactory.getCurrentSession().save(allergy);
+    	return allergy;
+    }
 }

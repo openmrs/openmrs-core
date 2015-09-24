@@ -18,13 +18,17 @@
 
 	<session-factory>
         <property name="javax.persistence.validation.mode">none</property>
-
-		<!--  Hibernate Mapping files -->
+		
+		<!-- allergy-api -->
+		<mapping resource="org/openmrs/api/db/hibernate/Allergy.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/AllergyReaction.hbm.xml" />
 
 		<!-- API -->
 		<mapping resource="org/openmrs/api/db/hibernate/ActiveListItem.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ActiveListType.hbm.xml" />
+		<!-- TRUNK 4747
 		<mapping resource="org/openmrs/api/db/hibernate/ActiveListAllergy.hbm.xml" />
+		TRUNK 4747 -->
 		<mapping resource="org/openmrs/api/db/hibernate/ActiveListProblem.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Concept.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptAnswer.hbm.xml" />

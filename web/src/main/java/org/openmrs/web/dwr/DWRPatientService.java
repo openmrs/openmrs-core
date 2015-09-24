@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -28,9 +29,13 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
-import org.openmrs.activelist.Allergy;
-import org.openmrs.activelist.AllergySeverity;
-import org.openmrs.activelist.AllergyType;
+import org.openmrs.allergyapi.Allergy;
+import org.openmrs.allergyapi.Allergies;
+import org.openmrs.allergyapi.AllergenType;
+import org.openmrs.allergyapi.Allergen;
+import org.openmrs.allergyapi.AllergySeverity;
+import org.openmrs.allergyapi.AllergyType;
+import org.openmrs.allergyapi.AllergyReaction;
 import org.openmrs.activelist.Problem;
 import org.openmrs.activelist.ProblemModifier;
 import org.openmrs.api.APIAuthenticationException;
@@ -628,9 +633,16 @@ public class DWRPatientService implements GlobalPropertyListener {
 		Concept allergyConcept = Context.getConceptService().getConcept(allergenId);
 		Concept reactionConcept = (reactionId == null) ? null : Context.getConceptService().getConcept(reactionId);
 		AllergySeverity allergySeverity = StringUtils.isBlank(severity) ? null : AllergySeverity.valueOf(severity);
-		AllergyType allergyType = StringUtils.isBlank(type) ? null : AllergyType.valueOf(type);
+		AllergenType allergenType = StringUtils.isBlank(type) ? null : AllergenType.valueOf(type);
 		
-		Allergy allergy = new Allergy(patient, allergyConcept, startDate, allergyType, reactionConcept, allergySeverity);
+		Allergy allergy = new Allergy(patient, new Allergen(allergenType, allergyConcept, null), 
+				Context.getConceptService().getConceptByName(severity), "", null);
+		if (reactionConcept != null) {
+			AllergyReaction alr = new AllergyReaction();
+			alr.setReaction(reactionConcept);
+			allergy.addReaction(alr);
+			alr.setAllergy(allergy);
+		}
 		Context.getPatientService().saveAllergy(allergy);
 	}
 	
@@ -648,11 +660,19 @@ public class DWRPatientService implements GlobalPropertyListener {
 	        Integer reactionId) {
 		//get the allergy
 		Allergy allergy = Context.getPatientService().getAllergy(activeListItemId);
-		allergy.setAllergen(Context.getConceptService().getConcept(allergenId));
-		allergy.setAllergyType(type);
-		allergy.setStartDate(parseDate(pStartDate));
-		allergy.setSeverity(severity);
-		allergy.setReaction((reactionId == null) ? null : Context.getConceptService().getConcept(reactionId));
+		Allergen allergen = new Allergen();
+		allergen.setCodedAllergen(Context.getConceptService().getConcept(allergenId));
+		allergy.setAllergen(allergen);
+		allergy.setAllergenType(type);
+		//allergy.setStartDate(parseDate(pStartDate));
+		allergy.setSeverity(Context.getConceptService().getConceptByName(severity));
+		Concept reactionConcept = (reactionId == null) ? null : Context.getConceptService().getConcept(reactionId);
+		if (reactionConcept != null) {
+			AllergyReaction alr = new AllergyReaction();
+			alr.setReaction(reactionConcept);
+			allergy.addReaction(alr);
+			alr.setAllergy(allergy);
+		}
 		Context.getPatientService().saveAllergy(allergy);
 	}
 	

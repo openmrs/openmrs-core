@@ -40,8 +40,8 @@ import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.User;
 import org.openmrs.Visit;
-import org.openmrs.activelist.Allergy;
 import org.openmrs.activelist.Problem;
+import org.openmrs.activelist.ActiveListItem;
 import org.openmrs.api.APIException;
 import org.openmrs.api.BlankIdentifierException;
 import org.openmrs.api.DuplicateIdentifierException;
@@ -70,6 +70,10 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.springframework.transaction.annotation.Transactional;
+
+import org.openmrs.allergyapi.Allergy;
+import org.openmrs.allergyapi.Allergies;
+import org.openmrs.allergyapi.Allergen;
 
 /**
  * Default implementation of the patient service. This class should not be used on its own. The
@@ -1663,26 +1667,125 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
+	 * @see org.openmrs.module.allergyapi.api.PatientService#getAllergies(org.openmrs.Patient)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Allergies getAllergies(Patient patient) {
+		if (patient == null) {
+			throw new IllegalArgumentException("An existing (NOT NULL) patient is required to get allergies");
+		}
+		
+		Allergies allergies = new Allergies();
+		List<Allergy> allergyList = dao.getAllergies(patient);
+		if (allergyList.size() > 0) {
+			allergies.addAll(allergyList);
+		} else {
+			String status = dao.getAllergyStatus(patient);
+			if (Allergies.NO_KNOWN_ALLERGIES.equals(status)) {
+				allergies.confirmNoKnownAllergies();
+			}
+		}
+		return allergies;
+	}
+	
+	/**
+	 * @see org.openmrs.module.allergyapi.api.PatientService#setAllergies(org.openmrs.Patient,
+	 *      org.openmrs.module.allergyapi.Allergies)
+	 */
+	@Override
+	public Allergies setAllergies(Patient patient, Allergies allergies) {
+		//NOTE We neither delete nor edit allergies. We instead void them.
+		//Because we shield the API users from this business logic,
+		//we end up with the complicated code below. :)
+		
+		//get the current allergies as stored in the database
+		List<Allergy> dbAllergyList = getAllergies(patient);
+		for (Allergy originalAllergy : dbAllergyList) {
+			//check if we still have each allergy, else it has just been deleted
+			if (allergies.contains(originalAllergy)) {
+				//we still have this allergy, check if it has been edited/changed
+				Allergy potentiallyEditedAllergy = allergies.getAllergy(originalAllergy.getAllergyId());
+				if (!potentiallyEditedAllergy.hasSameValues(originalAllergy)) {
+					//allergy has been edited, so void it and create a new one with the current values
+					Allergy newAllergy = new Allergy();
+					try {
+						//remove the edited allergy from our current list, and void id
+						allergies.remove(potentiallyEditedAllergy);
+						
+						//copy values from edited allergy, and add it to the current list
+						newAllergy.copy(potentiallyEditedAllergy);
+						allergies.add(newAllergy);
+						
+						//we void its original values, as came from the database, 
+						//instead the current ones which have just been copied 
+						//into the new allergy we have just created above
+						voidAllergy(originalAllergy);
+					}
+					catch (Exception ex) {
+						throw new APIException("Failed to copy edited values", ex);
+					}
+				}
+				continue;
+			}
+			
+			//void the allergy that has been deleted
+			voidAllergy(originalAllergy);
+		}
+		
+		for (Allergy allergy : allergies) {
+			if (allergy.getAllergyId() == null && allergy.getAllergen().getCodedAllergen() == null
+			        && StringUtils.isNotBlank(allergy.getAllergen().getNonCodedAllergen())) {
+				
+				Concept otherNonCoded = Context.getConceptService().getConceptByUuid(Allergen.OTHER_NON_CODED_UUID);
+				if (otherNonCoded == null) {
+					throw new APIException("Can't find concept with uuid:" + Allergen.OTHER_NON_CODED_UUID);
+				}
+				allergy.getAllergen().setCodedAllergen(otherNonCoded);
+			}
+		}
+		
+		return dao.saveAllergies(patient, allergies);
+	}
+	
+	/**
+	 * Voids a given allergy
+	 * 
+	 * @param allergy the allergy to void
+	 */
+	private void voidAllergy(Allergy allergy) {
+		allergy.setVoided(true);
+		allergy.setVoidedBy(Context.getAuthenticatedUser());
+		allergy.setDateVoided(new Date());
+		allergy.setVoidReason("Voided by API");
+		dao.saveAllergy(allergy);
+	}
+	
+	/**
 	 * @see org.openmrs.api.PatientService#getAllergies(org.openmrs.Person)
 	 */
 	@Transactional(readOnly = true)
 	public List<Allergy> getAllergies(Person p) throws APIException {
-		return Context.getActiveListService().getActiveListItems(Allergy.class, p, Allergy.ACTIVE_LIST_TYPE);
+		//return Context.getActiveListService().getActiveListItems(org.openmrs.activelist.Allergy.class, p, org.openmrs.activelist.Allergy.ACTIVE_LIST_TYPE);
+		List<Allergy> allergyList = dao.getAllergies((Patient)p);
+		return allergyList;
 	}
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getAllergy(java.lang.Integer)
 	 */
 	@Transactional(readOnly = true)
-	public Allergy getAllergy(Integer allergyListId) throws APIException {
-		return Context.getActiveListService().getActiveListItem(Allergy.class, allergyListId);
+	public Allergy getAllergy(Integer allergyId) throws APIException {
+		//return Context.getActiveListService().getActiveListItem(org.openmrs.activelist.Allergy.class, allergyListId);
+		return dao.getAllergy(allergyId);
 	}
 	
 	/**
 	 * @see org.openmrs.api.PatientService#saveAllergy(org.openmrs.activelist.Allergy)
 	 */
 	public void saveAllergy(Allergy allergy) throws APIException {
-		Context.getActiveListService().saveActiveListItem(allergy);
+		//Context.getActiveListService().saveActiveListItem(allergy);
+		dao.saveAllergy(allergy);
 	}
 	
 	/**
@@ -1690,7 +1793,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 *      java.lang.String)
 	 */
 	public void removeAllergy(Allergy allergy, String reason) throws APIException {
-		Context.getActiveListService().removeActiveListItem(allergy, null);
+		//Context.getActiveListService().removeActiveListItem(allergy, null);
+		voidAllergy(allergy, reason);
 	}
 	
 	/**
@@ -1698,7 +1802,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 *      java.lang.String)
 	 */
 	public void voidAllergy(Allergy allergy, String reason) throws APIException {
-		Context.getActiveListService().voidActiveListItem(allergy, reason);
+		//Context.getActiveListService().voidActiveListItem(allergy, reason);
+		allergy.setVoided(true);
+		allergy.setVoidedBy(Context.getAuthenticatedUser());
+		allergy.setDateVoided(new Date());
+		allergy.setVoidReason(reason);
+		dao.saveAllergy(allergy);
 	}
 	
 	/**
