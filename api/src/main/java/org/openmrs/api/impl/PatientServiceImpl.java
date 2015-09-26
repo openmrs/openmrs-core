@@ -1667,7 +1667,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * @see org.openmrs.module.allergyapi.api.PatientService#getAllergies(org.openmrs.Patient)
+	 * @see org.openmrs.allergyapi.api.PatientService#getAllergies(org.openmrs.Patient)
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -1690,8 +1690,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * @see org.openmrs.module.allergyapi.api.PatientService#setAllergies(org.openmrs.Patient,
-	 *      org.openmrs.module.allergyapi.Allergies)
+	 * @see org.openmrs.allergyapi.api.PatientService#setAllergies(org.openmrs.Patient,
+	 *      org.openmrs.allergyapi.Allergies)
 	 */
 	@Override
 	public Allergies setAllergies(Patient patient, Allergies allergies) {
