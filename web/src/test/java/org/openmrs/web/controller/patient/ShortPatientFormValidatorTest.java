@@ -274,6 +274,37 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 		validator.validate(model, errors);
 		Assert.assertEquals(true, errors.hasErrors());
 	}
+
+	/**
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
+	 */
+	@Test
+	@Verifies(value = "should not reject duplicate if it is voided", method = "validate(Object,Errors)")
+	public void validate_shouldNotRejectAgainstVoidedName() throws Exception {
+		// having
+		Patient patient = ps.getPatient(2);
+
+		//add a voided name for testing purposes
+		PersonName name = new PersonName("my", "voided", "name");
+		name.setVoided(true);
+		patient.addName(name);
+		Context.getPatientService().savePatient(patient);
+		Assert.assertNotNull(name.getId());//should have been added
+
+		ShortPatientModel model = new ShortPatientModel(patient);
+
+		//change to a voided name
+		model.getPersonName().setGivenName("my");
+		model.getPersonName().setMiddleName("voided");
+		model.getPersonName().setFamilyName("name");
+
+		// when
+		Errors errors = new BindException(model, "patientModel");
+		validator.validate(model, errors);
+
+		// then
+		Assert.assertEquals(false, errors.hasErrors());
+	}
 	
 	/**
 	 * @see ShortPatientFormValidator#validate(Object,Errors)
