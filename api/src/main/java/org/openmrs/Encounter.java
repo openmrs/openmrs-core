@@ -436,6 +436,26 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
+	 * Returns only the non-voided encounter providers for this encounter. If you want <u>all</u> encounter providers,
+	 * use {@link #getEncounterProviders()}
+	 *
+	 * @return list of non-voided encounter providers for this encounter
+	 * @see #getEncounterProviders()
+	 */
+	public Set<EncounterProvider> getActiveEncounterProviders() {
+		Set<EncounterProvider> activeEncounterProviders = new LinkedHashSet<EncounterProvider>();
+		Set<EncounterProvider> providers = getEncounterProviders();
+		if (providers != null && providers.size() > 0) {
+			for (EncounterProvider provider : providers) {
+				if (provider.isVoided() == false) {
+					activeEncounterProviders.add(provider);
+				}
+			}
+		}
+		return activeEncounterProviders;
+	}
+	
+	/**
 	 * @return Returns the provider.
 	 * @since 1.6 (used to return User)
 	 * @deprecated since 1.9, use {@link #getProvidersByRole(EncounterRole)}
