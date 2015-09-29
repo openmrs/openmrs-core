@@ -633,9 +633,10 @@ public class DWRPatientService implements GlobalPropertyListener {
 		Concept allergyConcept = Context.getConceptService().getConcept(allergenId);
 		Concept reactionConcept = (reactionId == null) ? null : Context.getConceptService().getConcept(reactionId);
 		AllergySeverity allergySeverity = StringUtils.isBlank(severity) ? null : AllergySeverity.valueOf(severity);
-		AllergenType allergenType = StringUtils.isBlank(type) ? null : AllergenType.valueOf(type);
+		AllergenType allergenType = StringUtils.isBlank(type) ? AllergenType.OTHER : AllergenType.valueOf(type);
+		allergenType = (allergenType == null) ? AllergenType.OTHER : allergenType;
 		
-		Allergy allergy = new Allergy(patient, new Allergen(allergenType, allergyConcept, null), 
+		Allergy allergy = new Allergy(patient, new Allergen(allergenType, allergyConcept, ""), 
 				Context.getConceptService().getConceptByName(severity), "", null);
 		if (reactionConcept != null) {
 			AllergyReaction alr = new AllergyReaction();
@@ -658,13 +659,12 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 */
 	public void saveAllergy(Integer activeListItemId, Integer allergenId, String type, String pStartDate, String severity,
 	        Integer reactionId) {
-		//get the allergy
 		Allergy allergy = Context.getPatientService().getAllergy(activeListItemId);
-		Allergen allergen = new Allergen();
-		allergen.setCodedAllergen(Context.getConceptService().getConcept(allergenId));
+		Concept allergyConcept = Context.getConceptService().getConcept(allergenId);
+		AllergenType allergenType = StringUtils.isBlank(type) ? AllergenType.OTHER : AllergenType.valueOf(type);
+		allergenType = (allergenType == null) ? AllergenType.OTHER : allergenType;
+		Allergen allergen = new Allergen(allergenType, allergyConcept, "");
 		allergy.setAllergen(allergen);
-		allergy.setAllergenType(type);
-		//allergy.setStartDate(parseDate(pStartDate));
 		allergy.setSeverity(Context.getConceptService().getConceptByName(severity));
 		Concept reactionConcept = (reactionId == null) ? null : Context.getConceptService().getConcept(reactionId);
 		if (reactionConcept != null) {

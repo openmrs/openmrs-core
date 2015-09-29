@@ -117,7 +117,7 @@
 
 		currentlyEditingAllergyId = activeListId;
 		$j('#allergy_concept').val($j('#allergen_conceptName_' + activeListId).html().trim());
-		$j('#allergy_concept_id').val(allergy['allergenId']);
+		$j('#allergy_concept_id').val(allergy['allergyConceptId']);
 		$j('#allergy_type').val(allergy['type']);
 		allergyStartDatePicker.setDate(allergy['startDate']);
 		$j('#allergy_severity').val(allergy['severity']);
@@ -131,7 +131,7 @@
 	function findAllergy(activeListId) {
 		for(var i=0; i < allergies.length; i++) {
 			var a = allergies[i];
-			if(activeListId == a['activeListId']) return a;
+			if(activeListId == a['allergyId']) return a;
 		}
 		return null;
 	}
@@ -203,30 +203,21 @@
 			</c:choose>
 			<tr bgcolor="${bgColor}">
 				<script type="text/javascript">
-					allergies.push({"activeListId": "${allergy.activeListId}",
-									"allergenId": "${allergy.allergen.conceptId}",
-									"type": "${allergy.allergyType}",
-									"startDate": parseDateFromStringToJs("<openmrs:datePattern/>", "<openmrs:formatDate date="${allergy.startDate}" type="textbox" />"),
-									"severity": "${allergy.severity}",
-									"reactionId": "${allergy.reaction.conceptId}",
-									"endDate": parseDateFromStringToJs("<openmrs:datePattern/>", "<openmrs:formatDate date="${allergy.endDate}" type="textbox" />"),
+					allergies.push({"allergyId": "${allergy.allergyId}",
+									"allergenId": "${allergy.getAllergen().getCodedAllergen().getConceptId()}",
+									"type": "${allergy.getAllergen().toString()}",
+									"severity": "${(allergy.getSeverity() == null) ? null : allergy.getSeverity().getName().getName()}",
+									"reactionId": "${allergy.getReactions().get(0).getReaction().getName().getName()}",
 									"voidReason": "${allergy.voidReason}"});
 				</script>
 				<td>
-					<c:choose>
-						<c:when test="${allergy.endDate == null}">
-							<a href="javascript:doEditAllergy(${allergy.activeListId});"><span id="allergen_conceptName_${allergy.activeListId}"><openmrs_tag:concept conceptId="${allergy.allergen.conceptId}"/></span></a>
-						</c:when>
-						<c:otherwise>
-							<span id="allergen_conceptName_${allergy.activeListId}"><openmrs_tag:concept conceptId="${allergy.allergen.conceptId}"/></span>
-						</c:otherwise>
-					</c:choose>
+							<a href="javascript:doEditAllergy(${allergy.allergyId});"><span id="allergen_conceptName_${allergy.allergyId}"><openmrs_tag:concept conceptId="${allergy.getAllergen().getCodedAllergen().getConceptId()}"/></span></a>
+							<span id="allergen_conceptName_${allergy.allergyId}"><openmrs_tag:concept conceptId="${allergy.getAllergen().getCodedAllergen().getConceptId()}"/></span>
 				</td>
-				<td><openmrs:formatDate date="${allergy.startDate}" type="textbox" /></td>
-				<td><span id="reaction_conceptName_${allergy.activeListId}"><openmrs_tag:concept conceptId="${allergy.reaction.conceptId}"/></span></td>
-				<td>${allergy.severity}</td>
+				<td><span id="reaction_conceptName_${allergy.allergyId}"><openmrs_tag:concept conceptId="${allergy.getReactions().get(0).getReaction().getConceptId()}"/></span></td>
+				<td>${(allergy.getSeverity() == null) ? null : allergy.getSeverity().getName().getName()}</td>
 				<td>
-					<a href="javascript:doResolveAllergy(${allergy.activeListId})" title=""><img src="images/delete.gif" border="0" title="<openmrs:message code="ActiveLists.resolve"/>"/></a>
+					<a href="javascript:doResolveAllergy(${allergy.allergyId})" title=""><img src="images/delete.gif" border="0" title="<openmrs:message code="ActiveLists.resolve"/>"/></a>
 				</td>
 			</tr>
 		</c:forEach>
@@ -249,10 +240,8 @@
 			<table style="margin: 0px 0px 1em 2em;" cellpadding="3" cellspacing="0" class="alTable">
 				<tr bgcolor="whitesmoke">
 					<td><openmrs:message code="ActiveLists.allergy.allergen"/></td>
-					<td><openmrs:message code="ActiveLists.date"/></td>
 					<td><openmrs:message code="ActiveLists.allergy.reaction"/></td>
 					<td><openmrs:message code="ActiveLists.allergy.severity"/></td>
-					<td><openmrs:message code="ActiveLists.resolvedOn"/></td>
 				</tr>
 				<c:forEach var="allergy" items="${model.removedAllergies}">
 					<c:choose>
@@ -260,11 +249,9 @@
 						<c:otherwise><c:set var="bgColor1" value="white"/></c:otherwise>
 					</c:choose>
 					<tr bgcolor="${bgColor1}">
-						<td><openmrs_tag:concept conceptId="${allergy.allergen.conceptId}"/></td>
-						<td><openmrs:formatDate date="${allergy.startDate}" type="textbox"/></td>
-						<td><openmrs_tag:concept conceptId="${allergy.reaction.conceptId}"/></td>
-						<td>${allergy.severity}</td>
-						<td><openmrs:formatDate date="${allergy.endDate}" type="textbox"/></td>
+						<td><openmrs_tag:concept conceptId="${allergy.getAllergen().getCodedAllergen().getConceptId()}"/></td>
+						<td><openmrs_tag:concept conceptId="${allergy.getReactions().get(0).getReaction().getName().getName()}"/></td>
+						<td>${(allergy.getSeverity() == null) ? null : allergy.getSeverity().getName().getName()}</td>
 					</tr>
 				</c:forEach>
 			</table>

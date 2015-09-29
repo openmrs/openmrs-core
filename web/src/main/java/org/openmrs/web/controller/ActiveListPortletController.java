@@ -49,8 +49,9 @@ public class ActiveListPortletController extends PortletController {
 			model.put("removedAllergies", ls.get(1));
 			*/
 			Allergies allergies = Context.getPatientService().getAllergies(patient);
+			Allergies removedAllergies = new Allergies();
 			model.put("allergies", allergies);
-			model.put("removedAllergies", allergies);
+			model.put("removedAllergies", removedAllergies);
 
 			model.put("allergyTypes", AllergyType.values());
 			model.put("allergySeverities", AllergySeverity.values());
