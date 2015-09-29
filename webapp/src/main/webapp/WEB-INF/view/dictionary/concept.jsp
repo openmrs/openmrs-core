@@ -269,7 +269,7 @@
 						</tr>
 						<tr>
 							<th><openmrs:message code="ConceptNumeric.units"/></th>
-							<td colspan="2"><c:out value="${command.concept.units}" /></td>
+							<td colspan="2">${command.concept.units}</td>
 						</tr>
 						<tr>
 							<th><openmrs:message code="ConceptNumeric.allowDecimal"/></th>
