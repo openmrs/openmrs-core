@@ -893,7 +893,15 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 				
 				//Commit so that it is not rolled back after a test.
 				getConnection().commit();
+<<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+				
+>>>>>>> d8ca28dc1... Adding support for running unit tests on a non in-memory database
+=======
+				
+>>>>>>> d8ca28dc1... Adding support for running unit tests on a non in-memory database
 				updateSearchIndex();
 				
 				isBaseSetup = true;
