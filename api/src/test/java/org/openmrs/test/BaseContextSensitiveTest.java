@@ -878,29 +878,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		
 		// The skipBaseSetup flag is controlled by the @SkipBaseSetup annotation. 		if (useInMemoryDatabase()) {
 		if (!skipBaseSetup) {
-			if (!isBaseSetup) {
-				
-				deleteAllData();
-				
-				if (useInMemoryDatabase()) {
-					initializeInMemoryDatabase();
-				}
-				else {
-					executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
-				}
-				
-				executeDataSet(EXAMPLE_XML_DATASET_PACKAGE_PATH);
-				
-				//Commit so that it is not rolled back after a test.
-				getConnection().commit();
 
-				updateSearchIndex();
-				
-				isBaseSetup = true;
-			}
-			
-			authenticate();
-		} else {
 			if (isBaseSetup) {
 				deleteAllData();
 			}
