@@ -287,6 +287,26 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			
 			// automatically create the tables defined in the hbm files
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
+		} else {
+			String url = System.getProperty("databaseUrl");
+			String username = System.getProperty("databaseUsername");
+			String password = System.getProperty("databasePassword");
+			
+			runtimeProperties.setProperty(Environment.URL, url);
+			runtimeProperties.setProperty(Environment.DRIVER, System.getProperty("databaseDriver"));
+			runtimeProperties.setProperty(Environment.USER, username);
+			runtimeProperties.setProperty(Environment.PASS, password);
+			runtimeProperties.setProperty(Environment.DIALECT, System.getProperty("databaseDialect"));
+			
+			// these properties need to be set in case the user has this exact
+			// phrasing in their runtime file.
+			runtimeProperties.setProperty("connection.username", username);
+			runtimeProperties.setProperty("connection.password", password);
+			runtimeProperties.setProperty("connection.url", url);
+			
+			//for the first time, automatically create the tables defined in the hbm files
+			//after that, just update, if there are any changes. This is for performance reasons.
+			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "update");
 		}
 		
 		// we don't want to try to load core modules in tests
@@ -762,6 +782,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			executeDataSet(EXAMPLE_XML_DATASET_PACKAGE_PATH);
 			
 			authenticate();
+			
 		}
 		Context.clearSession();
 	}
