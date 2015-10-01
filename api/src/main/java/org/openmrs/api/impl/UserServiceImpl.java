@@ -350,6 +350,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Deprecated
 	public void changePassword(User u, String pw) throws APIException {
+		OpenmrsUtil.validatePassword(u.getUsername(), pw, u.getSystemId());
 		dao.changePassword(u, pw);
 	}
 	
@@ -357,7 +358,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#changePassword(java.lang.String, java.lang.String)
 	 */
 	public void changePassword(String pw, String pw2) throws APIException {
-		dao.changePassword(pw, pw2);
+		User user = Context.getAuthenticatedUser();
+		
+		changePassword(user, pw, pw2);
 	}
 	
 	/**
@@ -734,6 +737,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		} else if (!dao.getLoginCredential(user).checkPassword(oldPassword)) {
 			throw new APIException("old.password.not.correct", (Object[]) null);
 		}
+	
 		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
 		dao.changePassword(user, newPassword);
 	}
