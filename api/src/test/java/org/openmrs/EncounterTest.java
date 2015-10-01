@@ -1377,7 +1377,7 @@ public class EncounterTest extends BaseContextMockTest {
 		Assert.assertEquals(1, encounter.getObs().size());
 		Assert.assertEquals(1, encounterCopy.getObs().size());
 		Assert.assertEquals(1, encounter.getOrders().size());
-		Assert.assertEquals(1, encounterCopy.getOrders().size());
+		Assert.assertEquals(0, encounterCopy.getOrders().size());
 		
 		Assert.assertEquals(1, encounter.getProvidersByRole(encounterRole).size());
 		Assert.assertEquals(1, encounterCopy.getProvidersByRole(encounterRole).size());

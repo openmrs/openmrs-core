@@ -761,7 +761,6 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should copy all Encounter data except visit and assign copied Encounter to given Patient
 	 */
 	public Encounter copyAndAssignToAnotherPatient(Patient patient) {
-		Map<Order, Order> oldNewOrderMap = new HashMap<Order, Order>();
 		Encounter target = new Encounter();
 		
 		target.setChangedBy(getChangedBy());
@@ -787,15 +786,6 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 			target.getEncounterProviders().add(encounterProviderCopy);
 		}
 		
-		//orders
-		for (Order order : getOrders()) {
-			Order orderCopy = order.copy();
-			orderCopy.setEncounter(target);
-			orderCopy.setPatient(patient);
-			target.addOrder(orderCopy);
-			oldNewOrderMap.put(order, orderCopy);
-		}
-		
 		Context.getEncounterService().saveEncounter(target);
 		
 		//obs
@@ -803,10 +793,6 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 			Obs obsCopy = Obs.newInstance(obs);
 			obsCopy.setEncounter(target);
 			obsCopy.setPerson(patient);
-			//refresh order reference
-			Order oldOrder = obsCopy.getOrder();
-			Order newOrder = oldNewOrderMap.get(oldOrder);
-			obsCopy.setOrder(newOrder);
 			target.addObs(obsCopy);
 		}
 		

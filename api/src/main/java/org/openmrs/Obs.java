@@ -191,7 +191,6 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		newObs.setValueModifier(obsToCopy.getValueModifier());
 		newObs.setValueText(obsToCopy.getValueText());
 		newObs.setComment(obsToCopy.getComment());
-		newObs.setOrder(obsToCopy.getOrder());
 		newObs.setEncounter(obsToCopy.getEncounter());
 		newObs.setCreator(obsToCopy.getCreator());
 		newObs.setDateCreated(obsToCopy.getDateCreated());

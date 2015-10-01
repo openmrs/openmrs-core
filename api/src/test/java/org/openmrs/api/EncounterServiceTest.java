@@ -2735,13 +2735,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "transfer an encounter with orders and observations to given patient", method = "transferEncounter(Encounter,Patient)")
-	public void transferEncounter_shouldTransferAnEncounterWithOrdersAndObservationsToGivenPatient() throws Exception {
+	public void transferEncounter_shouldTransferAnEncounterWithObservationsButNotOrdersToGivenPatient() throws Exception {
 		executeDataSet(TRANSFER_ENC_DATA_XML);
 		Patient targetPatient = Context.getPatientService().getPatient(201);
 		// encounter has 2 obs which are connected with the same order
 		Encounter sourceEncounter = Context.getEncounterService().getEncounter(201);
 		
-		Assert.assertEquals(1, sourceEncounter.getOrders().size());
+		Assert.assertEquals(2, sourceEncounter.getOrders().size());
 		Assert.assertEquals(2, sourceEncounter.getObs().size());
 		
 		//transfer
@@ -2754,19 +2754,15 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(targetPatient, transferredEncounter.getPatient());
 		
 		//check order
-		Assert.assertEquals(1, transferredOrders.size());
-		Order transferredOrder = transferredOrders.get(0);
-		Assert.assertEquals(targetPatient, transferredOrder.getPatient());
+		Assert.assertEquals(0, transferredOrders.size());
 		
 		//check obs
 		Assert.assertEquals(2, transferredObservations.size());
 		Assert.assertEquals(targetPatient, transferredObservations.get(0).getPerson());
 		Assert.assertEquals(targetPatient, transferredObservations.get(1).getPerson());
 		
-		//check if obs has reference to the same order
-		Assert.assertEquals(transferredOrder, transferredObservations.get(0).getOrder());
-		Assert.assertEquals(transferredOrder, transferredObservations.get(1).getOrder());
-		Assert.assertSame(transferredObservations.get(0).getOrder(), transferredObservations.get(1).getOrder());
+		Assert.assertNull(transferredObservations.get(0).getOrder());
+		Assert.assertNull(transferredObservations.get(1).getOrder());
 		
 		//check if form is transferred
 		Assert.assertNotNull(transferredEncounter.getForm());
