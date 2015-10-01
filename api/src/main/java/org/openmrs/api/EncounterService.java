@@ -957,7 +957,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @return transferred encounter
 	 * @since 1.12
 	 *
-	 * @should transfer an encounter with orders and observations to given patient
+	 * @should transfer an encounter with observations but not orders to given patient
 	 * @should void given encounter
 	 * @should void given encounter visit if given encounter is the only encounter
 	 */

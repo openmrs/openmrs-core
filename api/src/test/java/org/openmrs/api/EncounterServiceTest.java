@@ -2734,7 +2734,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#transferEncounter(Encounter,Patient)
 	 */
 	@Test
-	@Verifies(value = "transfer an encounter with orders and observations to given patient", method = "transferEncounter(Encounter,Patient)")
+	@Verifies(value = "transfer an encounter with observations but not orders to given patient", method = "transferEncounter(Encounter,Patient)")
 	public void transferEncounter_shouldTransferAnEncounterWithObservationsButNotOrdersToGivenPatient() throws Exception {
 		executeDataSet(TRANSFER_ENC_DATA_XML);
 		Patient targetPatient = Context.getPatientService().getPatient(201);
