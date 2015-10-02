@@ -29,6 +29,16 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
+<<<<<<< HEAD
+=======
+import org.openmrs.allergyapi.Allergy;
+import org.openmrs.allergyapi.Allergies;
+import org.openmrs.allergyapi.AllergenType;
+import org.openmrs.allergyapi.Allergen;
+import org.openmrs.allergyapi.AllergySeverity;
+import org.openmrs.allergyapi.AllergyType;
+import org.openmrs.allergyapi.AllergyReaction;
+>>>>>>> origin/TRUNK-4747
 import org.openmrs.activelist.Problem;
 import org.openmrs.activelist.ProblemModifier;
 import org.openmrs.api.APIAuthenticationException;
@@ -609,6 +619,95 @@ public class DWRPatientService implements GlobalPropertyListener {
 	}
 	
 	/**
+<<<<<<< HEAD
+=======
+	 * Creates an Allergy Item
+	 *
+	 * @param patientId
+	 * @param allergenId
+	 * @param type
+	 * @param pStartDate
+	 * @param severity
+	 * @param reactionId
+	 */
+	public void createAllergy(Integer patientId, Integer allergenId, String type, String pStartDate, String severity,
+	        Integer reactionId) {
+		Date startDate = parseDate(pStartDate);
+		
+		Patient patient = Context.getPatientService().getPatient(patientId);
+		Concept allergyConcept = Context.getConceptService().getConcept(allergenId);
+		Concept reactionConcept = (reactionId == null) ? null : Context.getConceptService().getConcept(reactionId);
+		AllergySeverity allergySeverity = StringUtils.isBlank(severity) ? null : AllergySeverity.valueOf(severity);
+		AllergenType allergenType = StringUtils.isBlank(type) ? AllergenType.OTHER : AllergenType.valueOf(type);
+		allergenType = (allergenType == null) ? AllergenType.OTHER : allergenType;
+		
+		Allergy allergy = new Allergy(patient, new Allergen(allergenType, allergyConcept, ""), 
+				Context.getConceptService().getConceptByName(severity), "", null);
+		if (reactionConcept != null) {
+			AllergyReaction alr = new AllergyReaction();
+			alr.setReaction(reactionConcept);
+			allergy.addReaction(alr);
+			alr.setAllergy(allergy);
+		}
+		Context.getPatientService().saveAllergy(allergy);
+	}
+	
+	/**
+	 * Save an Allergy
+	 *
+	 * @param activeListItemId
+	 * @param allergenId Concept ID
+	 * @param type
+	 * @param pStartDate
+	 * @param severity
+	 * @param reactionId
+	 */
+	public void saveAllergy(Integer activeListItemId, Integer allergenId, String type, String pStartDate, String severity,
+	        Integer reactionId) {
+		Allergy allergy = Context.getPatientService().getAllergy(activeListItemId);
+		Concept allergyConcept = Context.getConceptService().getConcept(allergenId);
+		AllergenType allergenType = StringUtils.isBlank(type) ? AllergenType.OTHER : AllergenType.valueOf(type);
+		allergenType = (allergenType == null) ? AllergenType.OTHER : allergenType;
+		Allergen allergen = new Allergen(allergenType, allergyConcept, "");
+		allergy.setAllergen(allergen);
+		allergy.setSeverity(Context.getConceptService().getConceptByName(severity));
+		Concept reactionConcept = (reactionId == null) ? null : Context.getConceptService().getConcept(reactionId);
+		if (reactionConcept != null) {
+			AllergyReaction alr = new AllergyReaction();
+			alr.setReaction(reactionConcept);
+			allergy.addReaction(alr);
+			alr.setAllergy(allergy);
+		}
+		Context.getPatientService().saveAllergy(allergy);
+	}
+	
+	/**
+	 * Resolve an allergy
+	 *
+	 * @param activeListId
+	 * @param reason
+	 */
+	public void removeAllergy(Integer activeListId, String reason) {
+		Allergy allergy = Context.getPatientService().getAllergy(activeListId);
+		Context.getPatientService().removeAllergy(allergy, reason);
+	}
+	
+	/**
+	 * Voids the Allergy
+	 *
+	 * @param activeListId
+	 * @param reason
+	 */
+	public void voidAllergy(Integer activeListId, String reason) {
+		Allergy allergy = Context.getPatientService().getAllergy(activeListId);
+		if (reason == null) {
+			reason = "Error - user entered incorrect data from UI";
+		}
+		Context.getPatientService().voidAllergy(allergy, reason);
+	}
+	
+	/**
+>>>>>>> origin/TRUNK-4747
 	 * Creates a Problem Item
 	 *
 	 * @param patientId

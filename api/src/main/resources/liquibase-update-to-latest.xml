@@ -8746,6 +8746,10 @@
 		</createIndex>
 	</changeSet>
 
+<<<<<<< HEAD
+=======
+<!-- allergy-api TRUNK-4747 -->
+>>>>>>> origin/TRUNK-4747
     <!--
         Create allergy table
     -->
@@ -8866,7 +8870,13 @@
 			</not>
 		</preConditions>
 		<comment>Custom changeset to migrate allergies from old to new tables</comment>
+<<<<<<< HEAD
 		<customChange class="org.openmrs.MigrateAllergiesChangeSet"></customChange>
 	</changeSet>
 
+=======
+		<customChange class="org.openmrs.allergyapi.MigrateAllergiesChangeSet"></customChange>
+	</changeSet>
+<!-- allergy-api TRUNK-4747 -->
+>>>>>>> origin/TRUNK-4747
 </databaseChangeLog>

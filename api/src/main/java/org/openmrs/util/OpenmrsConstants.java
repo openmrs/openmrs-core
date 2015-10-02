@@ -1562,6 +1562,12 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_DISABLE_VALIDATION, "false",
 				"Disables validation of OpenMRS Objects. Only takes affect on next restart. Warning: only do this is you know what you are doing!"));
 
+<<<<<<< HEAD
+=======
+		
+		/** allergy-api */
+
+>>>>>>> origin/TRUNK-4747
 		props.add(new GlobalProperty("allergy.concept.severity.mild", "1498AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 		        "UUID for the MILD severity concept"));
 		
@@ -1588,6 +1594,11 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty("allergy.concept.unknown", "1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 		        "UUID for the allergy unknown concept"));
+<<<<<<< HEAD
+=======
+
+		/** allergy-api */
+>>>>>>> origin/TRUNK-4747
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

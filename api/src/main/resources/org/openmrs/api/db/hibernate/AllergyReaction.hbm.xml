@@ -14,7 +14,11 @@
         "-//Hibernate/Hibernate Mapping DTD 3.1//EN"
         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
+<<<<<<< HEAD
 <hibernate-mapping package="org.openmrs" auto-import="false">
+=======
+<hibernate-mapping package="org.openmrs.allergyapi" auto-import="false">
+>>>>>>> origin/TRUNK-4747
     <class name="AllergyReaction" table="allergy_reaction">
         <id name="allergyReactionId" type="int" column="allergy_reaction_id">
             <generator class="native">
