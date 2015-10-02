@@ -7,12 +7,9 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.activelist;
+package org.openmrs;
 
-/**
- *
- */
-public enum AllergyType {
+public enum AllergenType {
 	DRUG,
 	FOOD,
 	ENVIRONMENT,

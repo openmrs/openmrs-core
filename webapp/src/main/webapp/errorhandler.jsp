@@ -17,8 +17,11 @@ if (exception.getCause() != null && (ContextAuthenticationException.class.equals
 <%@ include file="/WEB-INF/view/authorizationHandlerInclude.jsp" %>
 
 <%
-}else{
+}
 %>
+<%--
+else{
+--%>
 
 <%-- Otherwise the Exception Handler retains control --%>
 <font color="red">

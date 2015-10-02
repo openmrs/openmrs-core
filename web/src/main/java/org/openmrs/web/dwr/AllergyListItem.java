@@ -9,16 +9,23 @@
  */
 package org.openmrs.web.dwr;
 
+import java.util.Calendar;
 import java.util.Date;
 
-import org.openmrs.activelist.Allergy;
+import org.openmrs.Concept;
+import org.openmrs.Allergy;
+import org.openmrs.Allergen;
+import org.openmrs.AllergenType;
+import org.openmrs.AllergyProperties;
+import org.openmrs.AllergySeverity;
+import org.openmrs.AllergyReaction;
 
 /**
  *
  */
 public class AllergyListItem {
 	
-	private Integer activeListId;
+	private Integer allergyId;
 	
 	private Integer allergyConceptId;
 	
@@ -37,21 +44,37 @@ public class AllergyListItem {
 	private String reaction;
 	
 	public AllergyListItem(Allergy allergy) {
-		this.activeListId = allergy.getActiveListId();
-		this.allergyConceptId = allergy.getAllergen().getConceptId();
-		this.allergen = allergy.getAllergen().getName().getName();
-		this.start = allergy.getStartDate();
-		this.end = allergy.getEndDate();
-		this.type = (allergy.getAllergyType() == null) ? null : allergy.getAllergyType().name();
-		this.severity = (allergy.getSeverity() == null) ? null : allergy.getSeverity().name();
-		if (allergy.getReaction() != null) {
-			this.reactionConceptId = allergy.getReaction().getConceptId();
-			this.reaction = allergy.getReaction().getName().getName();
+		this.allergyId = allergy.getAllergyId();
+		this.allergyConceptId = allergy.getAllergen().getCodedAllergen().getConceptId();
+		this.allergen = allergy.getAllergen().toString();
+		// new allergy api does not support dates
+		Date tmpDate = new Date();
+		this.start = tmpDate;
+		this.end = tmpDate;
+		this.start.setYear(tmpDate.getYear() - 20);
+		this.end.setYear(tmpDate.getYear() + 60);
+		// new allergy api does not support dates
+		this.type = (allergy.getAllergen() == null) ? null : allergy.getAllergen().toString();
+		this.severity = (allergy.getSeverity() == null) ? null : allergy.getSeverity().getName().getName();
+		if (allergy.getReactions().size() > 0) {
+			AllergyReaction reaction = allergy.getReactions().get(0);
+			this.reactionConceptId = reaction.getReaction().getConceptId();
+			this.reaction = reaction.getReaction().getName().getName();
 		}
 	}
 	
-	public Integer getActiveListId() {
-		return activeListId;
+	/**
+	 * @return the allergyId
+	 */
+	public Integer getAllergyId() {
+		return allergyId;
+	}
+	
+	/**
+	 * @param allergyId the allergyId to set
+	 */
+	public void setAllergyId(Integer allergyId) {
+		this.allergyId = allergyId;
 	}
 	
 	public void setAllergyConceptId(Integer allergyConceptId) {

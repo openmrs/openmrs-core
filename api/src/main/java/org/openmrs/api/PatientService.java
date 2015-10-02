@@ -20,7 +20,9 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
-import org.openmrs.activelist.Allergy;
+import org.openmrs.Allergy;
+import org.openmrs.Allergies;
+import org.openmrs.activelist.ActiveListItem;
 import org.openmrs.activelist.Problem;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
@@ -925,15 +927,36 @@ public interface PatientService extends OpenmrsService {
 	public void voidProblem(Problem problem, String reason) throws APIException;
 	
 	/**
-	 * Returns a sorted set of Allergies, sorted on sort_weight
+	 * Gets allergies for a given patient
 	 * 
-	 * @param p the Person
-	 * @return sorted set based on the sort weight of the list items
-	 * @throws APIException
-	 * @should return empty list if no allergies exist for the Patient
+	 * @param patient the patient
+	 * @return the allergies object
+	 * @should get the allergy list and status
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_ALLERGIES })
-	public List<Allergy> getAllergies(Person p) throws APIException;
+	Allergies getAllergies(Patient patient);
+	
+	/**
+	 * Updates the patient's allergies
+	 * 
+	 * @param patient the patient
+	 * @param allergies the allergies
+	 * @return the saved allergies
+	 * @should save the allergy list and status
+	 * @should void removed allergies and maintain status as see list if some allergies are removed
+	 * @should void all allergies and set status to unknown if all allergies are removed
+	 * @should set status to no known allergies for patient without allergies
+	 * @should void all allergies and set status to no known allergies if all allergies are removed and status set as such
+	 * @should void allergies with edited comment
+	 * @should void allergies with edited severity
+	 * @should void allergies with edited coded allergen
+	 * @should void allergies with edited non coded allergen
+	 * @should void allergies with edited reaction coded
+	 * @should void allergies with edited reaction non coded
+	 * @should void allergies with removed reactions
+	 * @should void allergies with added reactions
+     * @should set the non coded concept for non coded allergen if not specified
+	 */
+	Allergies setAllergies(Patient patient, Allergies allergies);
 	
 	/**
 	 * Returns the Allergy
