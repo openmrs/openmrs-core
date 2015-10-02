@@ -350,7 +350,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Deprecated
 	public void changePassword(User u, String pw) throws APIException {
-		OpenmrsUtil.validatePassword(u.getUsername(), pw, u.getSystemId());
 		dao.changePassword(u, pw);
 	}
 	

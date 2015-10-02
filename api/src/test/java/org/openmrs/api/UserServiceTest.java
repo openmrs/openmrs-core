@@ -201,25 +201,25 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User u = us.getUserByUsername("admin");
 		assertNotNull("There needs to be a user with username 'admin' in the database", u);
 		
-		us.changePassword("test", "test2");
-		us.changePassword("test2", "test");
+		us.changePassword("test", "Tester12");
+		us.changePassword("Tester12", "Tester13");
 	}
-	
+
 	/**
 	 * Make sure we can grant roles to users
-	 * 
+	 *
 	 * @see UserService#saveUser(User,String)
 	 */
 	@Test
 	@Verifies(value = "should grant new roles in roles list to user", method = "saveUser(User,String)")
 	public void saveUser_shouldGrantNewRolesInRolesListToUser() throws Exception {
 		UserService us = Context.getUserService();
-		
+
 		// add in some basic properties
 		executeDataSet(XML_FILENAME);
-		
+
 		User u = us.getUserByUsername("admin");
-		
+
 		Role role1 = new Role();
 		role1.setDescription("testing1");
 		role1.setRole("test1");
@@ -227,7 +227,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Set<Privilege> privileges1 = new HashSet<Privilege>();
 		privileges1.add(p1);
 		role1.setPrivileges(privileges1);
-		
+
 		Role role2 = new Role();
 		role2.setDescription("testing2");
 		role2.setRole("test2");
@@ -235,18 +235,18 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Set<Privilege> privileges2 = new HashSet<Privilege>();
 		privileges2.add(p2);
 		role2.setPrivileges(privileges2);
-		
+
 		us.saveUser(u.addRole(role1), null);
-		
+
 		us.saveUser(u.addRole(role2), null);
-		
+
 		// so the contents are fetched from the db
 		Context.evictFromSession(u);
-		
+
 		us.getUser(u.getUserId()).hasRole("test1");
 		us.getUser(u.getUserId()).hasRole("test2");
 	}
-	
+
 	/**
 	 * @see UserService#getUserByUsername(String)
 	 */
@@ -258,7 +258,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = us.getUserByUsername(username);
 		assertNotNull("username not found " + username, user);
 	}
-	
+
 	/**
 	 * @see UserService#changePassword(String,String)
 	 */
@@ -268,13 +268,13 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("incorrectlyhashedSha1", "test");
-		
+
 		UserService us = Context.getUserService();
-		us.changePassword("test", "test2");
-		
+		us.changePassword("test", "Tester12");
+
 		Context.logout(); // so that the next test reauthenticates
 	}
-	
+
 	/**
 	 * @see UserService#changeQuestionAnswer(String,String,String)
 	 */
@@ -284,13 +284,13 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("correctlyhashedSha1", "test");
-		
+
 		UserService us = Context.getUserService();
 		us.changeQuestionAnswer("test", "some question", "some answer");
-		
+
 		Context.logout(); // so that the next test reauthenticates
 	}
-	
+
 	/**
 	 * @see UserService#changeQuestionAnswer(String,String,String)
 	 */
@@ -300,13 +300,13 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("incorrectlyhashedSha1", "test");
-		
+
 		UserService us = Context.getUserService();
 		us.changeQuestionAnswer("test", "some question", "some answer");
-		
+
 		Context.logout(); // so that the next test reauthenticates
 	}
-	
+
 	/**
 	 * @see UserService#changePassword(String,String)
 	 */
@@ -316,13 +316,13 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("correctlyhashedSha1", "test");
-		
+
 		UserService us = Context.getUserService();
-		us.changePassword("test", "test2");
-		
+		us.changePassword("test", "Tester12");
+
 		Context.logout(); // so that the next test reauthenticates
 	}
-	
+
 	/**
 	 * @see UserService#getUsers(String,List,boolean)
 	 */
@@ -330,14 +330,14 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should match search to familyName2", method = "getUsers(String,List,boolean)")
 	public void getUsers_shouldMatchSearchToFamilyName2() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
-		
+
 		List<User> users = Context.getUserService().getUsers("Johnson", null, false);
 		Assert.assertEquals(3, users.size());
 		Assert.assertTrue(containsId(users, 2));
 		Assert.assertTrue(containsId(users, 4));
 		Assert.assertTrue(containsId(users, 5));
 	}
-	
+
 	/**
 	 * @see UserService#changePassword(String,String)
 	 */
@@ -347,30 +347,30 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("userWithSha512Hash", "test");
-		
+
 		UserService us = Context.getUserService();
-		us.changePassword("test", "test2");
-		
+		us.changePassword("test", "Tester12");
+
 		Context.logout(); // so that the next test reauthenticates
 	}
-	
+
 	/**
 	 * This test verifies that {@link PersonName}s are fetched correctly from the hibernate cache.
 	 * (Or really, not fetched from the cache but instead are mapped with lazy=false. For some
 	 * reason Hibernate isn't able to find objects in the cache if a parent object was the one that
 	 * loaded them)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void shouldFetchNamesForPersonsThatWereFirstFetchedAsUsers() throws Exception {
 		Person person = Context.getPersonService().getPerson(1);
 		User user = Context.getUserService().getUser(1);
-		
+
 		user.getNames().size();
 		person.getNames().size();
 	}
-	
+
 	/**
 	 * @see UserService#getPrivilegeByUuid(String)
 	 */
@@ -382,7 +382,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Privilege privilege = Context.getUserService().getPrivilegeByUuid(uuid);
 		Assert.assertEquals("Some Privilege", privilege.getPrivilege());
 	}
-	
+
 	/**
 	 * @see UserService#getPrivilegeByUuid(String)
 	 */
@@ -391,7 +391,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getPrivilegeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getUserService().getPrivilegeByUuid("some invalid uuid"));
 	}
-	
+
 	/**
 	 * @see UserService#getRoleByUuid(String)
 	 */
@@ -402,7 +402,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Role role = Context.getUserService().getRoleByUuid(uuid);
 		Assert.assertEquals("Provider", role.getRole());
 	}
-	
+
 	/**
 	 * @see UserService#getRoleByUuid(String)
 	 */
@@ -411,7 +411,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getRoleByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getUserService().getRoleByUuid("some invalid uuid"));
 	}
-	
+
 	/**
 	 * @see UserService#getUserByUuid(String)
 	 */
@@ -422,7 +422,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = Context.getUserService().getUserByUuid(uuid);
 		Assert.assertEquals(501, (int) user.getUserId());
 	}
-	
+
 	/**
 	 * @see UserService#getUserByUuid(String)
 	 */
@@ -431,7 +431,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getUserByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getUserService().getUserByUuid("some invalid uuid"));
 	}
-	
+
 	/**
 	 * @see UserService#changeHashedPassword(User,String,String)
 	 */
@@ -443,13 +443,13 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		String salt = Security.getRandomToken();
 		String hash = Security.encodeString("new password" + salt);
 		userService.changeHashedPassword(user, hash, salt);
-		
+
 		// TODO Review this a little further
 		// This is the assert - checks to see if current user can use the new password
-		userService.changePassword("new password", "another new password"); // try to change the password with the new one
-		
+		userService.changePassword("new password", "Another new password1"); // try to change the password with the new one
+
 	}
-	
+
 	/**
 	 * @see UserService#changePassword(User,String)
 	 */
@@ -457,8 +457,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should change password for the given user and password", method = "changePassword(User,String)")
 	public void changePassword_shouldChangePasswordForTheGivenUserAndPassword() throws Exception {
 		UserService userService = Context.getUserService();
-		userService.changePassword("test", "another new password");
-		userService.changePassword("another new password", "yet another new password"); // try to change the password with the new one
+		userService.changePassword("test", "Another new password1");
+		userService.changePassword("Another new password1", "Yet another new password1"); // try to change the password with the new one
 	}
 	
 	/**
@@ -1318,4 +1318,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		expectedException.expectMessage("user.must.exist");
 		userService.changePassword(notExistingUser, anyString, anyString);
 	}
+
+    @Test
+    public void changePassword_shouldThrowShortPasswordExceptionWithShortPassword() throws Exception {
+        expectedException.expect(ShortPasswordException.class);
+        expectedException.expectMessage("error.password.length");
+
+        Context.getUserService().changePassword("test", "");
+    }
 }
