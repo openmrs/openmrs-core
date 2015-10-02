@@ -15,27 +15,16 @@
         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 <hibernate-mapping>
 
-<<<<<<< HEAD
     <class name="org.openmrs.Allergy" table="allergy">
-=======
-    <class name="org.openmrs.allergyapi.Allergy" table="allergy">
->>>>>>> origin/TRUNK-4747
-        <id name="allergyId" type="int" column="allergy_id">
+       <id name="allergyId" type="int" column="allergy_id">
             <generator class="native"/>
         </id>
         <discriminator column="allergy_id" insert="false"/>
         <many-to-one name="patient" column="patient_id" class="org.openmrs.Patient" not-null="true"/>
-<<<<<<< HEAD
         <component name="allergen" class="org.openmrs.Allergen">
             <property name="allergenType" column="allergen_type" length="50" not-null="true">
                 <type name="org.openmrs.util.HibernateEnumType">
                     <param name="enumClassName">org.openmrs.AllergenType</param>
-=======
-        <component name="allergen" class="org.openmrs.allergyapi.Allergen">
-            <property name="allergenType" column="allergen_type" length="50" not-null="true">
-                <type name="org.openmrs.util.HibernateEnumType">
-                    <param name="enumClassName">org.openmrs.allergyapi.AllergenType</param>
->>>>>>> origin/TRUNK-4747
                 </type>
             </property>
             <many-to-one name="codedAllergen" column="coded_allergen" class="org.openmrs.Concept" not-null="true"/>
@@ -47,11 +36,7 @@
             <key>
                 <column name="allergy_id" not-null="true"/>
             </key>
-<<<<<<< HEAD
             <one-to-many class="org.openmrs.AllergyReaction"/>
-=======
-            <one-to-many class="org.openmrs.allergyapi.AllergyReaction"/>
->>>>>>> origin/TRUNK-4747
         </bag>
         <many-to-one name="creator" column="creator" class="org.openmrs.User" not-null="true"/>
         <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>

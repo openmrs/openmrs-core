@@ -13,12 +13,12 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.openmrs.Concept;
-import org.openmrs.allergyapi.Allergy;
-import org.openmrs.allergyapi.Allergen;
-import org.openmrs.allergyapi.AllergenType;
-import org.openmrs.allergyapi.AllergyProperties;
-import org.openmrs.allergyapi.AllergySeverity;
-import org.openmrs.allergyapi.AllergyReaction;
+import org.openmrs.Allergy;
+import org.openmrs.Allergen;
+import org.openmrs.AllergenType;
+import org.openmrs.AllergyProperties;
+import org.openmrs.AllergySeverity;
+import org.openmrs.AllergyReaction;
 
 /**
  *

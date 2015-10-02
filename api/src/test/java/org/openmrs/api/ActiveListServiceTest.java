@@ -20,19 +20,11 @@ import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.activelist.ActiveListItem;
 import org.openmrs.activelist.ActiveListType;
-<<<<<<< HEAD
 import org.openmrs.Allergy;
 import org.openmrs.AllergySeverity;
 import org.openmrs.AllergenType;
 import org.openmrs.Allergen;
 import org.openmrs.AllergyProperties;
-=======
-import org.openmrs.allergyapi.Allergy;
-import org.openmrs.allergyapi.AllergySeverity;
-import org.openmrs.allergyapi.AllergenType;
-import org.openmrs.allergyapi.Allergen;
-import org.openmrs.allergyapi.AllergyProperties;
->>>>>>> origin/TRUNK-4747
 import org.openmrs.activelist.Problem;
 import org.openmrs.activelist.ProblemModifier;
 import org.openmrs.api.context.Context;
@@ -75,30 +67,6 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, items.size());
 	}
 	
-<<<<<<< HEAD
-=======
-	/*
-	 * TRUNK 4747
-	@Test
-	public void should_getActiveListItems_withAllergy() throws Exception {
-		Patient p = patientService.getPatient(2);
-		List<org.openmrs.activelist.Allergy> items = activeListService.getActiveListItems(org.openmrs.activelist.Allergy.class, p, new ActiveListType(1));
-		assertEquals(1, items.size());
-	}
-	 */
-	
-	//	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId) throws Exception;
-	/*
-	 * TRUNK 4747
-	@Test
-	public void should_getActiveListItem_Allergy() throws Exception {
-		org.openmrs.activelist.Allergy item = activeListService.getActiveListItem(org.openmrs.activelist.Allergy.class, 1);
-		Assert.assertNotNull(item);
-		Assert.assertTrue(item instanceof org.openmrs.activelist.Allergy);
-	}
-	 */
-	
->>>>>>> origin/TRUNK-4747
 	//	public ActiveListItem getActiveListItemByUuid(String uuid) throws Exception;
 	//
 	//	public ActiveListItem saveActiveListItem(ActiveListItem item) throws Exception;
@@ -115,76 +83,7 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 		items = activeListService.getActiveListItems(Problem.class, p, new ActiveListType(2));
 		assertEquals(2, items.size());
 	}
-<<<<<<< HEAD
-		
-=======
 	
-	/*
-	 * TRUNK 4747
-	@Test
-	public void should_saveActiveListItem_Allergy() throws Exception {
-		Patient p = patientService.getPatient(2);
-		List<org.openmrs.activelist.Allergy> items = activeListService.getActiveListItems(org.openmrs.activelist.Allergy.class, p, new ActiveListType(1));
-		assertEquals(1, items.size());
-		
-		Concept concept = Context.getConceptService().getConcept(88);//Aspirin
-		AllergyProperties ap = new AllergyProperties();
-		org.openmrs.activelist.Allergy allergy = new org.openmrs.activelist.Allergy(p, 
-				concept, new Date(), org.openmrs.activelist.AllergyType.ANIMAL, null, 
-				org.openmrs.activelist.AllergySeverity.INTOLERANCE);
-		activeListService.saveActiveListItem(allergy);
-		
-		items = activeListService.getActiveListItems(org.openmrs.activelist.Allergy.class, p, new ActiveListType(1));
-		assertEquals(2, items.size());
-	}
-	 */
-	
-	//	public ActiveListItem removeActiveListItem(ActiveListItem item, Date endDate) throws Exception;
-	/*
-	 * TRUNK 4747
-	@Test
-	public void should_removeActiveListItem_Allergy() throws Exception {
-		org.openmrs.activelist.Allergy item = activeListService.getActiveListItem(org.openmrs.activelist.Allergy.class, 1);
-		activeListService.removeActiveListItem(item, null);
-		
-		item = activeListService.getActiveListItem(org.openmrs.activelist.Allergy.class, 1);
-		Assert.assertNotNull(item);
-		Assert.assertNotNull(item.getEndDate());
-	}
-	 */
-	
-	//	public ActiveListItem voidActiveListItem(ActiveListItem item, String reason) throws Exception;
-	/*
-	 * TRUNK 4747
-	@Test
-	public void should_voidActiveListItem_Allergy() throws Exception {
-		org.openmrs.activelist.Allergy item = activeListService.getActiveListItem(org.openmrs.activelist.Allergy.class, 1);
-		item = (org.openmrs.activelist.Allergy) activeListService.voidActiveListItem(item, "Because");
-		Assert.assertTrue(item.isVoided());
-		
-		Patient p = patientService.getPatient(2);
-		List<org.openmrs.activelist.Allergy> items = activeListService.getActiveListItems(org.openmrs.activelist.Allergy.class, p, new ActiveListType(1));
-		assertEquals(0, items.size());
-	}
-	 */
-	
-	/**
-	 * @see ActiveListService#purgeActiveListItem(ActiveListItem)
-	 * @verifies purge active list item from database
-	 */
-	/*
-	 * TRUNK 4747
-	@Test
-	public void purgeActiveListItem_shouldPurgeActiveListItemFromDatabase() throws Exception {
-		ActiveListItem item = activeListService.getActiveListItem(org.openmrs.activelist.Allergy.class, 1);
-		activeListService.purgeActiveListItem(item);
-		
-		item = activeListService.getActiveListItem(ActiveListItem.class, 1);
-		Assert.assertNull(item);
-	}
-	 */
-	
->>>>>>> origin/TRUNK-4747
 	private void assertEquals(int i1, int i2) {
 		Assert.assertEquals(Integer.valueOf(i1), Integer.valueOf(i2));
 	}

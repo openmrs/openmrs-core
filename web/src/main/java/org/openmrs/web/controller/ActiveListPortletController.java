@@ -18,13 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.Patient;
 import org.openmrs.activelist.ActiveListItem;
-<<<<<<< HEAD
-=======
-import org.openmrs.allergyapi.Allergy;
-import org.openmrs.allergyapi.Allergies;
-import org.openmrs.allergyapi.AllergySeverity;
-import org.openmrs.allergyapi.AllergyType;
->>>>>>> origin/TRUNK-4747
 import org.openmrs.activelist.Problem;
 import org.openmrs.activelist.ProblemModifier;
 import org.openmrs.api.context.Context;
@@ -44,25 +37,7 @@ public class ActiveListPortletController extends PortletController {
 		model.put("today", Context.getDateFormat().format(new Date()));
 		
 		String type = (String) model.get("type");
-<<<<<<< HEAD
 		if ("problem".equals(type)) {
-=======
-		if ("allergy".equals(type)) {
-			/*
-			List<Allergy> allergies = Context.getPatientService().getAllergies(patient.getPerson());
-			List<List<Allergy>> ls = separate(allergies);
-			model.put("allergies", ls.get(0));
-			model.put("removedAllergies", ls.get(1));
-			*/
-			Allergies allergies = Context.getPatientService().getAllergies(patient);
-			Allergies removedAllergies = new Allergies();
-			model.put("allergies", allergies);
-			model.put("removedAllergies", removedAllergies);
-
-			model.put("allergyTypes", AllergyType.values());
-			model.put("allergySeverities", AllergySeverity.values());
-		} else if ("problem".equals(type)) {
->>>>>>> origin/TRUNK-4747
 			List<Problem> problems = Context.getPatientService().getProblems(patient);
 			List<List<Problem>> ls = separate(problems);
 			model.put("problems", ls.get(0));

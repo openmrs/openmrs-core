@@ -17,13 +17,8 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.PatientService;
 
-<<<<<<< HEAD
 import org.openmrs.Allergy;
 import org.openmrs.Allergies;
-=======
-import org.openmrs.allergyapi.Allergy;
-import org.openmrs.allergyapi.Allergies;
->>>>>>> origin/TRUNK-4747
 
 /**
  * Database methods for the PatientService

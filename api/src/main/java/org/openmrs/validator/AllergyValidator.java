@@ -13,15 +13,9 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.PatientService;
-<<<<<<< HEAD
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 import org.openmrs.Allergen;
-=======
-import org.openmrs.allergyapi.Allergies;
-import org.openmrs.allergyapi.Allergy;
-import org.openmrs.allergyapi.Allergen;
->>>>>>> origin/TRUNK-4747
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

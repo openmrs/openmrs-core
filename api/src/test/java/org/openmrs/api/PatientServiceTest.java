@@ -66,17 +66,10 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.Visit;
-<<<<<<< HEAD
 import org.openmrs.Allergy;
 import org.openmrs.AllergenType;
 import org.openmrs.Allergen;
 import org.openmrs.Allergies;
-=======
-import org.openmrs.allergyapi.Allergy;
-import org.openmrs.allergyapi.AllergenType;
-import org.openmrs.allergyapi.Allergen;
-import org.openmrs.allergyapi.Allergies;
->>>>>>> origin/TRUNK-4747
 import org.openmrs.activelist.Problem;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
@@ -2351,13 +2344,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		Patient p = patientService.getPatient(3);
 		if (p != null) {
-<<<<<<< HEAD
 			Allergies allergies = patientService.getAllergies(p);
-			Assert.assertNotNull(allergies);
-			assertEqualsInt(0, allergies.size());
-		}
-=======
-			List<Allergy> allergies = patientService.getAllergies(p.getPerson());
 			Assert.assertNotNull(allergies);
 			assertEqualsInt(0, allergies.size());
 		}
@@ -2454,11 +2441,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			++countAllergies;
 		}
 		
-<<<<<<< HEAD
 		Allergies allergies = patientService.getAllergies(p);
-=======
-		List<Allergy> allergies = patientService.getAllergies(p.getPerson());
->>>>>>> origin/TRUNK-4747
 		Assert.assertNotNull(allergies);
 		assertEqualsInt(countAllergies, allergies.size());
 		
@@ -2470,10 +2453,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		}
 		
 		Assert.assertNotNull(allergen.getPatient());
-<<<<<<< HEAD
-=======
-		//Assert.assertNotNull(allergen.getStartDate());
->>>>>>> origin/TRUNK-4747
 	}
 	
 	/**
@@ -2486,20 +2465,12 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		Patient p = patientService.getPatient(2);
 		
-<<<<<<< HEAD
 		Allergies allergies = patientService.getAllergies(p);
-=======
-		List<Allergy> allergies = patientService.getAllergies(p.getPerson());
->>>>>>> origin/TRUNK-4747
 		Assert.assertNotNull(allergies);
 		patientService.removeAllergy(allergies.get(0), "resolving by retiring");
 		
-		allergies = patientService.getAllergies(p.getPerson());
+		allergies = patientService.getAllergies(p);
 		Assert.assertNotNull(allergies);
-<<<<<<< HEAD
-=======
-		//Assert.assertNotNull(allergies.get(0).getEndDate());
->>>>>>> origin/TRUNK-4747
 	}
 	
 	private void assertEqualsInt(int expected, Integer actual) throws Exception {
