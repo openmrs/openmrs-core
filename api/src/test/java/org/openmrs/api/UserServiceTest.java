@@ -1299,7 +1299,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		String oldPassword = "userServiceTest";
 		String weakPassword = "weak";
 		
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.password.length"));
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.password.short.case_digit_nondigit"));
 		userService.changePassword(user6001, oldPassword, weakPassword);
 	}
 	
@@ -1322,7 +1322,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
     @Test
     public void changePassword_shouldThrowShortPasswordExceptionWithShortPassword() throws Exception {
         expectedException.expect(ShortPasswordException.class);
-        expectedException.expectMessage("error.password.length");
+        expectedException.expectMessage("error.password.short.case_digit_nondigit");
 
         Context.getUserService().changePassword("test", "");
     }
