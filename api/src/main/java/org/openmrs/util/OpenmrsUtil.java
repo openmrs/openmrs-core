@@ -1215,11 +1215,15 @@ public class OpenmrsUtil {
 		if (systemProperty != null) {
 			filepath = systemProperty;
 		} else {
-			String runtimeProperty = Context.getRuntimeProperties().getProperty(
-			    OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
-			if (runtimeProperty != null) {
-				filepath = runtimeProperty;
-			}
+			systemProperty = System.getenv("OPENMRS_APPLICATION_DATA_DIRECTORY");
+			if(null == systemProperty){
+				String runtimeProperty = Context.getRuntimeProperties().getProperty(
+			    	OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
+				if (runtimeProperty != null) {
+					filepath = runtimeProperty;
+				}
+			} else
+				filepath = systemProperty;
 		}
 		
 		if (filepath == null) {
