@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -208,10 +209,19 @@ public class ModuleListController extends SimpleFormController {
 				if (someModuleNeedsARefresh) {
 					WebModuleUtil.refreshWAC(getServletContext(), false, null);
 				}
-			} else {
+			} else if (action.equals(msa.getMessage("Module.stopAll"))) {
+				Collection<Module> startedModules = ModuleFactory.getStartedModulesInOrder();
+
+				ModuleFactory.stopModules(startedModules);
+				WebModuleUtil.stopModules(startedModules, getServletContext(), true);
+				WebModuleUtil.shutdownModules(getServletContext());
+				WebModuleUtil.refreshWAC(getServletContext(), false, null);
+			}
+			else {
 				ModuleUtil.checkForModuleUpdates();
 			}
-		} else if (action.equals(msa.getMessage("Module.installUpdate"))) {
+		} 
+		else if (action.equals(msa.getMessage("Module.installUpdate"))) {
 			// download and install update
 			if (!ModuleUtil.allowAdmin()) {
 				error = msa.getMessage("Module.disallowAdministration",
