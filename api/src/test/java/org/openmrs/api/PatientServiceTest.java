@@ -2351,25 +2351,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see PatientService#getAllergy(Integer)
-	 */
-	/*
-	@Test
-	@Verifies(value = "return an allergy by id", method = "getAllergy(Integer)")
-	public void getAllergy_shouldReturnAnAllergyById() throws Exception {
-		executeDataSet(ACTIVE_LIST_INITIAL_XML);
-		
-		Allergy allergy = patientService.getAllergy(1);
-		Assert.assertNotNull(allergy);
-		//Assert.assertNotNull(allergy.getActiveListId());
-		//Assert.assertNotNull(allergy.getActiveListType());
-		Assert.assertNotNull(allergy.getAllergen());
-		//Assert.assertNotNull(allergy.getStartDate());
->>>>>>> origin/TRUNK-4747
-	}
-	 */
-	
-	/**
 	 * @see PatientService#saveProblem(Problem)
 	 */
 	@Test
