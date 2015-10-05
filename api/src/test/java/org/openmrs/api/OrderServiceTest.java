@@ -2969,4 +2969,101 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderService.saveOrder(order, orderContext);
 		assertNotNull(orderService.getOrder(order.getOrderId()));
 	}
+	
+	/**
+	 * @see OrderService#getNonCodedDrugConcept()
+	 * @verifies return an null if nothing is configured
+	 */
+	@Test
+	public void getNonCodedDrugConcept_shouldReturnNullIfNothingIsConfigured() throws Exception {
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_DRUG_NON_CODED_CONCEPT_UUID, ""));
+		assertNull(orderService.getNonCodedDrugConcept());
+	}
+	
+	/**
+	 * @see OrderService#getNonCodedDrugConcept()
+	 * @verifies return a Concept if GP is set
+	 */
+	@Test
+	public void getNonCodedDrugConcept_shouldReturnAConceptIfGPIsSet() throws Exception {
+		Concept nonCodedDrugConcept = orderService.getNonCodedDrugConcept();
+		assertNotNull(nonCodedDrugConcept);
+		assertThat(nonCodedDrugConcept.getConceptId(), is(5584));
+		assertEquals(nonCodedDrugConcept.getName().getName(), "DRUG OTHER");
+		
+	}
+	
+	/**
+	 * @verifies pass if an active drug order for the same coded concept, care setting and different drug non coded exists
+	 * @see OrderService#saveOrder(Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldPassForANewNonCodedDrugOrderIfAnotherActiveNonCodedDrugOrderAlreadyExists()
+	        throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
+		final Patient patient = patientService.getPatient(2);
+		final Concept nonCodedConcept = conceptService.getConcept(5584);
+		//sanity check that we have an active order for the same concept
+		DrugOrder duplicateOrder = (DrugOrder) orderService.getOrder(584);
+		assertTrue(duplicateOrder.isActive());
+		assertEquals(nonCodedConcept, duplicateOrder.getConcept());
+		
+		DrugOrder drugOrder = new DrugOrder();
+		drugOrder.setPatient(patient);
+		drugOrder.setCareSetting(orderService.getCareSetting(1));
+		drugOrder.setConcept(nonCodedConcept);
+		drugOrder.setDrugNonCoded("non coded drug paracetemol");
+		drugOrder.setEncounter(encounterService.getEncounter(6));
+		drugOrder.setOrderer(providerService.getProvider(1));
+		drugOrder.setCareSetting(duplicateOrder.getCareSetting());
+		drugOrder.setDrug(duplicateOrder.getDrug());
+		drugOrder.setDose(duplicateOrder.getDose());
+		drugOrder.setDoseUnits(duplicateOrder.getDoseUnits());
+		drugOrder.setRoute(duplicateOrder.getRoute());
+		drugOrder.setFrequency(duplicateOrder.getFrequency());
+		drugOrder.setQuantity(duplicateOrder.getQuantity());
+		drugOrder.setQuantityUnits(duplicateOrder.getQuantityUnits());
+		drugOrder.setNumRefills(duplicateOrder.getNumRefills());
+
+		Order savedOrder = orderService.saveOrder(drugOrder, null);
+
+		assertNotNull(orderService.getOrder(savedOrder.getOrderId()));
+	}
+
+	/**
+	 * @verifies fail if an active drug order for the same coded concept, care setting and drug non coded exists
+	 * @see OrderService#saveOrder(Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldFailIfAnActiveDrugOrderForTheSameConceptAndDrugNonCodedAndCareSettingExists()
+			throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
+		final Patient patient = patientService.getPatient(2);
+		final Concept nonCodedConcept = conceptService.getConcept(5584);
+		//sanity check that we have an active order for the same concept
+		DrugOrder duplicateOrder = (DrugOrder) orderService.getOrder(584);
+		assertTrue(duplicateOrder.isActive());
+		assertEquals(nonCodedConcept, duplicateOrder.getConcept());
+
+		DrugOrder drugOrder = new DrugOrder();
+		drugOrder.setPatient(patient);
+		drugOrder.setCareSetting(orderService.getCareSetting(1));
+		drugOrder.setConcept(nonCodedConcept);
+		drugOrder.setDrugNonCoded("non coded drug Crocine");
+		drugOrder.setEncounter(encounterService.getEncounter(6));
+		drugOrder.setOrderer(providerService.getProvider(1));
+		drugOrder.setCareSetting(duplicateOrder.getCareSetting());
+		drugOrder.setDrug(duplicateOrder.getDrug());
+		drugOrder.setDose(duplicateOrder.getDose());
+		drugOrder.setDoseUnits(duplicateOrder.getDoseUnits());
+		drugOrder.setRoute(duplicateOrder.getRoute());
+		drugOrder.setFrequency(duplicateOrder.getFrequency());
+		drugOrder.setQuantity(duplicateOrder.getQuantity());
+		drugOrder.setQuantityUnits(duplicateOrder.getQuantityUnits());
+		drugOrder.setNumRefills(duplicateOrder.getNumRefills());
+
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot have more than one active order for the same orderable and care setting");
+		orderService.saveOrder(drugOrder, null);
+	}
 }

@@ -184,13 +184,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 			
 			//concept should be the same as on previous order, same applies to drug for drug orders
-			boolean isDrugOrderAndHasADrug = isDrugOrder && ((DrugOrder) order).getDrug() != null;
+			boolean isDrugOrderAndHasADrug = isDrugOrder && (((DrugOrder) order).getDrug() != null || ((DrugOrder) order).isNonCodedDrug()) ;
 			if (!OpenmrsUtil.nullSafeEquals(order.getConcept(), previousOrder.getConcept())) {
 				throw new APIException("The concept of the previous order and the new one order don't match");
 			} else if (isDrugOrderAndHasADrug) {
 				DrugOrder drugOrder1 = (DrugOrder) order;
 				DrugOrder drugOrder2 = (DrugOrder) previousOrder;
-				if (!OpenmrsUtil.nullSafeEquals(drugOrder1.getDrug(), drugOrder2.getDrug())) {
+				if (!drugOrder1.hasSameOrderableAs(drugOrder2)) {
 					throw new APIException("The drug of the previous order and the new one order don't match");
 				}
 			} else if (!order.getOrderType().equals(previousOrder.getOrderType())) {
@@ -365,7 +365,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	private DrugOrder checkDrugOrdersForDiscontinuing(DrugOrder drugOrder1, DrugOrder drugOrder2) {
-		if (OpenmrsUtil.nullSafeEquals(drugOrder1.getDrug(), drugOrder2.getDrug())) {
+		if (drugOrder1.hasSameOrderableAs(drugOrder2)) {
 			return drugOrder2;
 		}
 		return null;
@@ -945,7 +945,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public List<Concept> getTestSpecimenSources() {
 		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID);
 	}
-	
+
+	@Override
+	public Concept getNonCodedDrugConcept() {
+		String conceptUuid = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_DRUG_NON_CODED_CONCEPT_UUID);
+		return Context.getConceptService().getConceptByUuid(conceptUuid);
+	}
+
 	private List<Concept> getSetMembersOfConceptSetFromGP(String globalProperty) {
 		String conceptUuid = Context.getAdministrationService().getGlobalProperty(globalProperty);
 		Concept concept = Context.getConceptService().getConceptByUuid(conceptUuid);
@@ -954,5 +960,4 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		return Collections.emptyList();
 	}
-	
 }

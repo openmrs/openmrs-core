@@ -12,6 +12,7 @@ package org.openmrs.validator;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -648,5 +649,119 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertEquals("DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode", errors.getFieldError("durationUnits")
 		        .getCode());
+	}
+	
+	@Test
+	@Verifies(value = "should fail validation if drug non coded is not set for non coded drug order", method = "validate(Object,Errors)")
+	public void saveOrder_shouldFailDrugOrderWithoutADrugNonCodedWhenDrugOrderIsNonCoded() throws Exception {
+		Patient patient = Context.getPatientService().getPatient(7);
+		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
+		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
+
+		assertNull(Context.getAdministrationService().getGlobalPropertyObject(
+		    OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG));
+		//place drug order
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		order.setEncounter(encounter);
+		order.setConcept(Context.getOrderService().getNonCodedDrugConcept());
+		order.setPatient(patient);
+		order.setCareSetting(careSetting);
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDateActivated(encounter.getEncounterDatetime());
+		order.setOrderType(orderType);
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setInstructions("None");
+		order.setDosingInstructions("Test Instruction");
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors());
+		assertEquals("DrugOrder.error.cannotSetBothDrugAndNonCodedDrug", errors.getFieldError("concept").getCode());
+	}
+
+	@Test
+	@Verifies(value = "should pass validation if drug non coded is set for non coded drug order", method = "validate(Object,Errors)")
+	public void saveOrder_shouldPassDrugOrderWithADrugNonCodedWhenDrugOrderIsNonCoded() throws Exception {
+		Patient patient = Context.getPatientService().getPatient(7);
+		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
+		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
+		assertNull(Context.getAdministrationService().getGlobalPropertyObject(
+				OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG));
+		//place drug order
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		order.setEncounter(encounter);
+		order.setConcept(Context.getOrderService().getNonCodedDrugConcept());
+		order.setDrugNonCoded("Non coded drug");
+		order.setPatient(patient);
+		order.setCareSetting(careSetting);
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDateActivated(encounter.getEncounterDatetime());
+		order.setOrderType(orderType);
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setInstructions("None");
+		order.setDosingInstructions("Test Instruction");
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertFalse(errors.hasFieldErrors());
+	}
+
+	@Test
+	@Verifies(value = "should fail validation if drug is set for non coded drug order", method = "validate(Object,Errors)")
+	public void saveOrder_shouldFailDrugOrderWithADrugSetWhenDrugOrderIsNonCoded() throws Exception {
+		Patient patient = Context.getPatientService().getPatient(7);
+		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
+		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
+		assertNull(Context.getAdministrationService().getGlobalPropertyObject(
+				OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG));
+		//place drug order
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		order.setEncounter(encounter);
+		order.setConcept(Context.getOrderService().getNonCodedDrugConcept());
+		Drug drug = new Drug();
+		drug.setConcept(Context.getOrderService().getNonCodedDrugConcept());
+		order.setDrug(drug);
+		order.setDrugNonCoded("Non coded drug");
+		order.setPatient(patient);
+		order.setCareSetting(careSetting);
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDateActivated(encounter.getEncounterDatetime());
+		order.setOrderType(orderType);
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setInstructions("None");
+		order.setDosingInstructions("Test Instruction");
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors());
+		assertEquals("DrugOrder.error.onlyOneOfDrugOrNonCodedShouldBeSet", errors.getFieldError("drug").getCode());
+	}
+
+	@Test
+	@Verifies(value = "should fail validation if drug non coded is set for coded drug order", method = "validate(Object,Errors)")
+	public void saveOrder_shouldFailDrugOrderWithANonCodedDrugSetWhenDrugOrderIsNotNonCoded() throws Exception {
+		Patient patient = Context.getPatientService().getPatient(7);
+		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
+		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
+		assertNull(Context.getAdministrationService().getGlobalPropertyObject(
+				OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG));
+		//place drug order
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		order.setEncounter(encounter);
+		order.setConcept(Context.getOrderService().getNonCodedDrugConcept());
+		order.setDrug(Context.getConceptService().getDrug(3));
+		order.setPatient(patient);
+		order.setCareSetting(careSetting);
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDateActivated(encounter.getEncounterDatetime());
+		order.setOrderType(orderType);
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setInstructions("None");
+		order.setDosingInstructions("Test Instruction");
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors());
+		assertEquals("DrugOrder.error.cannotSetBothDrugAndNonCodedDrug", errors.getFieldErrors("concept").get(1).getCode());
 	}
 }
