@@ -49,6 +49,7 @@ import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
 import org.openmrs.ConceptWord;
+import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
@@ -1166,7 +1167,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	public Concept getConceptByUuid(String uuid) {
 		return (Concept) sessionFactory.getCurrentSession().createQuery("from Concept c where c.uuid = :uuid").setString(
-		    "uuid", uuid).uniqueResult();
+                "uuid", uuid).uniqueResult();
 	}
 	
 	/**
