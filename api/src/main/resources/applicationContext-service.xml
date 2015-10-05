@@ -680,7 +680,16 @@
 		<property name="mappingJarLocations">
 			<ref bean="mappingJarResources" />
 		</property>
+        <property name="packagesToScan">
+            <list>
+                <value>org.openmrs</value>
+            </list>
+            </property>
 		<!--  default properties must be set in the hibernate.default.properties -->
+	</bean>
+	
+	<bean id="dbSessionFactory" class="org.openmrs.api.db.hibernate.DbSessionFactory">
+		<constructor-arg name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
 	<!--  **************************  TRANSACTION MANAGER CONFIGURATION  *************************  -->

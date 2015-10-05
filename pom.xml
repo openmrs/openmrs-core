@@ -14,7 +14,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs</artifactId>
-	<version>1.9.9-SNAPSHOT</version>
+	<version>1.9.10-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>
 	<description>Master project for the modules of OpenMRS</description>
@@ -38,8 +38,8 @@
 	</organization>
 
 	<scm>
-		<connection>scm:git:https://github.com/openmrs/openmrs-core</connection>
-		<developerConnection>scm:git:https://github.com/openmrs/openmrs-core</developerConnection>
+		<connection>scm:git:git@github.com:openmrs/openmrs-core</connection>
+		<developerConnection>scm:git:git@github.com:openmrs/openmrs-core</developerConnection>
 		<url>https://github.com/openmrs/openmrs-core</url>
 	  <tag>HEAD</tag>
   </scm>
@@ -835,6 +835,7 @@
 						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<useReleaseProfile>false</useReleaseProfile>
 						<arguments>-Prelease</arguments>
+						<tagNameFormat>@{project.version}</tagNameFormat>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -946,6 +947,7 @@
 						<exclude>src/main/webapp/WEB-INF/view/scripts/jquery/**</exclude>
 						<exclude>src/main/webapp/WEB-INF/view/scripts/jquery-ui/**</exclude>
 						<exclude>src/main/webapp/WEB-INF/view/module/**</exclude>
+						<exclude>release-scripts/**</exclude>
 						<!-- From gitignore -->
 						<exclude>.idea/**</exclude>
 						<exclude>target/**</exclude>

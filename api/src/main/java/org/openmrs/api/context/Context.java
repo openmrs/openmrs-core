@@ -164,7 +164,7 @@ public class Context {
 	 * 
 	 * @return ContextDAO
 	 */
-	private static ContextDAO getContextDAO() {
+	static ContextDAO getContextDAO() {
 		if (contextDAO == null)
 			throw new APIException("contextDAO is null");
 		return contextDAO;
@@ -176,6 +176,10 @@ public class Context {
 	 * @param dao ContextDAO to set
 	 */
 	public void setContextDAO(ContextDAO dao) {
+		contextDAO = dao;
+	}
+	
+	public static void setDAO(ContextDAO dao) {
 		contextDAO = dao;
 	}
 	
