@@ -579,7 +579,13 @@ public final class OpenmrsConstants {
 	 * @since 1.12
 	 */
 	public static final String GP_DISABLE_VALIDATION = "validation.disable";
-	
+
+    /**
+     * @since 1.12
+	 * Specifies the uuid of the concept which represents drug non coded
+	 */
+	public static final String GP_DRUG_ORDER_DRUG_OTHER = "drugOrder.drugOther";
+
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
@@ -1063,6 +1069,8 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty("allergy.concept.unknown", "1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 		        "UUID for the allergy unknown concept"));
 		
+		props
+				.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "", "Specifies the uuid of the concept which represents drug other non coded"));
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}

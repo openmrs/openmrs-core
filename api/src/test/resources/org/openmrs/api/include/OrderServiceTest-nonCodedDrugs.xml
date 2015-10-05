@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+    <concept concept_id="5584" retired="false" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0"
+             version="0.1" changed_by="1" date_changed="2006-08-12 00:00:00.0" uuid="6584d845-7584-11e4-945f-0858400c9s89"/>
+    <concept_name concept_id="5584" name="DRUG OTHER" concept_name_id="1584" locale="en" creator="1" date_created="2015-09-30 13:52:53.0"
+                  concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="85844a00-7669-81e3-991f-08i0200c9u66"/>
+    <global_property property="drugOrder.drugOther" property_value="6584d845-7584-11e4-945f-0858400c9s89" uuid="65846f40-s9b5-2ae3-9q1a-0858400o9a6i"/>
+
+    <orders order_id="584" order_type_id="1" order_number="1" urgency="ROUTINE" order_action="NEW" concept_id="5584"
+            orderer="1" instructions="2x daily" date_activated="2008-08-19 00:00:00.0"
+            creator="1" date_created="2008-08-19 00:0:00.0" voided="false" patient_id="2" uuid="584de0a3-05o4-4p4a-be03-e01b4c4b9584"
+            care_setting="1" encounter_id="6"/>
+    <drug_order order_id="584"  dose="3" dose_units="50" as_needed="false" frequency="1" drug_non_coded="non coded drug Crocine"
+                dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10"
+                dispense_as_written="0"/>
+</dataset>
+

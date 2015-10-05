@@ -8908,5 +8908,14 @@
         </comment>
         <dropTable tableName="active_list_type"/>
     </changeSet>
-    
+
+	<changeSet id="201509281653" author="Sravanthi">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="drug_order" columnName="drug_non_coded" /></not>
+		</preConditions>
+		<comment>Add drug_non_coded column to drug_order table</comment>
+		<addColumn tableName="drug_order">
+			<column name="drug_non_coded" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
 </databaseChangeLog>
