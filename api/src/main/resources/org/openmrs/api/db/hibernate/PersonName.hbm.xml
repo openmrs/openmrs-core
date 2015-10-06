@@ -16,6 +16,8 @@
 <hibernate-mapping package="org.openmrs">
 
 	<class name="PersonName" table="person_name">
+	
+		<cache usage="read-write"/>
 
 		<id name="personNameId" type="java.lang.Integer"
 			column="person_name_id" unsaved-value="0">
@@ -23,8 +25,6 @@
 				<param name="sequence">person_name_person_name_id_seq</param>
 			</generator>
 		</id>
-
-		
 
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />

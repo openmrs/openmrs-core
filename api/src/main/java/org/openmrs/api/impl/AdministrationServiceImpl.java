@@ -1221,6 +1221,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Override
 	public boolean isDatabaseStringComparisonCaseSensitive() {
-		return Boolean.valueOf(getGlobalProperty(OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON, "true"));
+		return dao.isDatabaseStringComparisonCaseSensitive();
 	}
 }
