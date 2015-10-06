@@ -648,7 +648,11 @@ public class Context {
 	 * @return true if user has been authenticated in this context
 	 */
 	public static boolean isAuthenticated() {
-		return getAuthenticatedUser() != null;
+		if (Daemon.isDaemonThread()) {
+			return true;
+		} else {
+			return getAuthenticatedUser() != null;
+		}
 	}
 	
 	/**
@@ -686,7 +690,6 @@ public class Context {
 	 * @should give daemon user full privileges
 	 */
 	public static boolean hasPrivilege(String privilege) {
-		
 		// the daemon threads have access to all things
 		if (Daemon.isDaemonThread()) {
 			return true;
