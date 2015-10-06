@@ -660,6 +660,7 @@
 	<!--  **************************  VALIDATOR CONFIGURATION  *************************  -->
 	<!--  Configuration for all openmrs validators                                        -->
 	
+	<bean id="allergyValidator" class="org.openmrs.validator.AllergyValidator" />
 	<bean id="personValidator" class="org.openmrs.validator.PersonValidator" />
 	<bean id="patientValidator" class="org.openmrs.validator.PatientValidator" />
 	<bean id="locationValidator" class="org.openmrs.validator.LocationValidator"/>
@@ -708,6 +709,6 @@
 		<context:include-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileIncludeFilter" />
 		<context:exclude-filter type="custom" expression="org.openmrs.util.TestTypeFilter"/> <!-- Excludes classes with unit test super classes -->
 		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter" />
-	</context:component-scan>
+	</context:component-scan> 
     
 </beans>

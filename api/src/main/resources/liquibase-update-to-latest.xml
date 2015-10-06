@@ -8746,4 +8746,126 @@
 		</createIndex>
 	</changeSet>
 
+    <!--
+        Create allergy table
+    -->
+    <changeSet id="RA-354-create-allergy-table-rev1" author="fbiedrzycki">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="allergy"/>
+            </not>
+        </preConditions>
+        <comment>Create allergy table</comment>
+        <createTable tableName="allergy">
+            <column name="allergy_id" autoIncrement="true" type="int">
+                <constraints nullable="false" unique="true"  primaryKey="true"/>
+            </column>
+            <column name="patient_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="severity_concept_id" type="int"/>
+            <column name="coded_allergen" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="non_coded_allergen" type="varchar(255)">
+            </column>
+            <column name="allergen_type" type="varchar(50)">
+            <constraints nullable="false"/></column>
+            <column name="comment" type="varchar(1024)"></column>
+            <column name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime"/>
+            <column name="voided" type="tinyint" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voided_by" type="int"></column>
+            <column name="date_voided" type="datetime"></column>
+            <column name="void_reason" type="varchar(255)"></column>
+            <column name="uuid" type="char(38)"></column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="allergy" baseColumnNames="patient_id"
+                                 constraintName="allergy_patient_id_fk" referencedColumnNames="patient_id"
+                                 referencedTableName="patient"/>
+        <addForeignKeyConstraint baseTableName="allergy" baseColumnNames="coded_allergen"
+                                 constraintName="allergy_coded_allergen_fk" referencedColumnNames="concept_id"
+                                 referencedTableName="concept"/>
+        <addForeignKeyConstraint baseTableName="allergy" baseColumnNames="severity_concept_id"
+                                 constraintName="allergy_severity_concept_id_fk" referencedColumnNames="concept_id"
+                                 referencedTableName="concept"/>
+        <addForeignKeyConstraint baseTableName="allergy" baseColumnNames="creator" constraintName="allergy_creator_fk"
+                                 referencedColumnNames="user_id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseTableName="allergy" baseColumnNames="changed_by" constraintName="allergy_changed_by_fk"
+                                 referencedColumnNames="user_id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseTableName="allergy" baseColumnNames="voided_by"
+                                 constraintName="allergy_voided_by_fk" referencedColumnNames="user_id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <!--
+            Create allergy_reaction table
+        -->
+    <changeSet id="RA-355-create-allergy-reaction-table" author="fbiedrzycki">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="allergy_reaction"/>
+            </not>
+            <tableExists tableName="allergy"></tableExists>
+        </preConditions>
+        <comment>Create allergy_reaction table</comment>
+        <createTable tableName="allergy_reaction">
+            <column name="allergy_reaction_id" autoIncrement="true" type="int">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="allergy_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reaction_concept_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reaction_non_coded" type="varchar(255)">
+            </column>
+            <column name="uuid" type="char(38)"></column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="allergy_reaction" baseColumnNames="allergy_id"
+                                 constraintName="allergy_reaction_allergy_id_fk" referencedColumnNames="allergy_id"
+                                 referencedTableName="allergy"/>
+        <addForeignKeyConstraint baseTableName="allergy_reaction" baseColumnNames="reaction_concept_id"
+                                 constraintName="allergy_reaction_reaction_concept_id_fk"
+                                 referencedColumnNames="concept_id"
+                                 referencedTableName="concept"/>
+    </changeSet>
+
+    <changeSet id="RA-360-Add-allergy-status-to-patient-2" author="rpuzdrowski">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="patient"></tableExists>
+            <not>
+                <columnExists tableName="patient" columnName="allergy_status"/>
+            </not>
+        </preConditions>
+        <comment>Add allergy_status field to the patient table</comment>
+        <addColumn tableName="patient">
+            <column name="allergy_status" type="varchar(50)" defaultValue="Unknown">
+            	<constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="TRUNK-4548-MigrateAllergiesChangeSet1" author="dkayiwa">
+    	<preConditions onFail="MARK_RAN">
+    		<not>
+				<sqlCheck expectedResult="0">
+					select count(*) from active_list al 
+					inner join active_list_allergy ala on al.active_list_id=ala.active_list_id
+					where voided = 0 and active_list_type_id = (select active_list_type_id 
+					from active_list_type where name = 'Allergy')
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Custom changeset to migrate allergies from old to new tables</comment>
+		<customChange class="org.openmrs.MigrateAllergiesChangeSet"></customChange>
+	</changeSet>
 </databaseChangeLog>
