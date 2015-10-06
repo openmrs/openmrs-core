@@ -20,7 +20,7 @@
          user.home - User's home directory
          user.dir - User's current working directory
          java.io.tmpdir - Default temp file path -->
-    <diskStore path="user.home"/>
+    <diskStore path="java.io.tmpdir"/>
 
 
     <!--Default Cache configuration. These will applied to caches programmatically created through
@@ -52,8 +52,8 @@
      -->
 
     <defaultCache maxElementsInMemory="1000" eternal="false"
-                  timeToIdleSeconds="30" timeToLiveSeconds="30" overflowToDisk="false"
-                  diskPersistent="false" diskExpiryThreadIntervalSeconds="45"/>
+                  timeToIdleSeconds="60" timeToLiveSeconds="0" overflowToDisk="false"
+                  diskPersistent="false"/>
 
     <!--Predefined caches.  Add your cache configuration settings here.
          If you do not have a configuration for your cache a WARNING will be issued when the
@@ -85,72 +85,82 @@
          diskExpiryThreadIntervalSeconds- The number of seconds between runs of the disk expiry thread. The default value
          is 120 seconds.
      -->
-
-    <!--
-    <cache name="org.openmrs.Concept" maxElementsInMemory="1000"
-        eternal="true" overflowToDisk="true" />
-
+    
     <cache name="org.openmrs.User"
-        maxElementsInMemory="5000"
-        eternal="false"
-        overflowToDisk="false"
-        timeToIdleSeconds="300"
-        timeToLiveSeconds="600"
-    />-->
+           maxElementsInMemory="100"
+           eternal="true"
+           overflowToDisk="false"
+           diskPersistent="false"
+            />
 
     <cache name="org.openmrs.Role"
            maxElementsInMemory="100"
            eternal="true"
            overflowToDisk="false"
-           timeToIdleSeconds="12000"
-           timeToLiveSeconds="12000"
            diskPersistent="false"
-           diskExpiryThreadIntervalSeconds="120"
-           memoryStoreEvictionPolicy="LRU"
+            />
+            
+    <cache name="org.openmrs.Person"
+           maxElementsInMemory="100"
+           eternal="true"
+           overflowToDisk="false"
+           diskPersistent="false"
+            />
+            
+    <cache name="org.openmrs.PersonName"
+           maxElementsInMemory="100"
+           eternal="true"
+           overflowToDisk="false"
+           diskPersistent="false"
+            />
+    
+    <cache name="org.openmrs.PersonAddress"
+           maxElementsInMemory="100"
+           eternal="true"
+           overflowToDisk="false"
+           diskPersistent="false"
+            />
+    
+    <cache name="org.openmrs.PersonAttribute"
+           maxElementsInMemory="100"
+           eternal="true"
+           overflowToDisk="false"
+           diskPersistent="false"
             />
 
     <cache name="org.openmrs.Concept"
            maxElementsInMemory="10000"
            eternal="true"
            overflowToDisk="false"
-           timeToIdleSeconds="12000"
-           timeToLiveSeconds="12000"
            diskPersistent="false"
-           diskExpiryThreadIntervalSeconds="120"
-           memoryStoreEvictionPolicy="LRU"
+            />
+            
+    <cache name="org.openmrs.ConceptDatatype"
+           maxElementsInMemory="100"
+           eternal="true"
+           overflowToDisk="false"
+           diskPersistent="false"
             />
 
+	<cache name="org.openmrs.ConceptClass"
+           maxElementsInMemory="100"
+           eternal="true"
+           overflowToDisk="false"
+           diskPersistent="false"
+            />
+	
     <cache name="org.openmrs.Location"
            maxElementsInMemory="100"
            eternal="true"
            overflowToDisk="false"
-           timeToIdleSeconds="12000"
-           timeToLiveSeconds="12000"
            diskPersistent="false"
-           diskExpiryThreadIntervalSeconds="120"
-           memoryStoreEvictionPolicy="LRU"
-            />
-            
-    <cache name="org.openmrs.User"
-           maxElementsInMemory="100"
-           eternal="true"
-           overflowToDisk="false"
-           timeToIdleSeconds="12000"
-           timeToLiveSeconds="12000"
-           diskPersistent="false"
-           diskExpiryThreadIntervalSeconds="120"
-           memoryStoreEvictionPolicy="LRU"
             />
             
     <cache name="org.openmrs.GlobalProperty"
-           maxElementsInMemory="200"
+           maxElementsInMemory="1000"
            eternal="true"
            overflowToDisk="false"
-           timeToIdleSeconds="12000"
-           timeToLiveSeconds="12000"
            diskPersistent="false"
-           diskExpiryThreadIntervalSeconds="120"
-           memoryStoreEvictionPolicy="LRU"
             />
         
 	<!-- This section to do probing  -->    

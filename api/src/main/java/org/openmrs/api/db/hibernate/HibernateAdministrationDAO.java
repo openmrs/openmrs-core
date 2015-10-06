@@ -256,13 +256,14 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertyObject(java.lang.String)
 	 */
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
-		GlobalProperty gp = (GlobalProperty) criteria.add(Restrictions.eq("property", propertyName).ignoreCase())
-		        .uniqueResult();
-		
-		// if no gp exists, hibernate returns a null value
-		
-		return gp;
+		if (isDatabaseStringComparisonCaseSensitive()) {
+			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
+			GlobalProperty gp = (GlobalProperty) criteria.add(Restrictions.eq("property", propertyName).ignoreCase())
+			        .uniqueResult();
+			return gp;
+		} else {
+			return (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class, propertyName);
+		}
 	}
 	
 	public GlobalProperty getGlobalPropertyByUuid(String uuid) throws DAOException {
@@ -392,5 +393,15 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		}
 		
 		return matchingValidators;
+	}
+	
+	@Override
+	public boolean isDatabaseStringComparisonCaseSensitive() {
+		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class, OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON);
+		if (gp != null) {
+			return Boolean.valueOf(gp.getPropertyValue());
+		} else {
+			return true;
+		}
 	}
 }
