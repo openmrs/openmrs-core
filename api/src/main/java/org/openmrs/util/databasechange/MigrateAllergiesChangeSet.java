@@ -7,7 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs;
+package org.openmrs.util.databasechange;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -9,9 +9,6 @@
  */
 package org.openmrs;
 
-/*
- * allergy-api
- */
 public enum AllergyType {
 	DRUG,
 	FOOD,
