@@ -22,7 +22,6 @@ import org.aopalliance.aop.Advice;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
-import org.openmrs.api.ActiveListService;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
@@ -500,22 +499,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setMessageSourceService(MessageSourceService messageSourceService) {
 		setService(MessageSourceService.class, messageSourceService);
-	}
-	
-	/**
-	 * Gets the ActiveListService used in the context.
-	 *
-	 * @return ActiveListService
-	 */
-	public ActiveListService getActiveListService() {
-		return getService(ActiveListService.class);
-	}
-	
-	/**
-	 * Sets the ActiveListService used in the context
-	 */
-	public void setActiveListService(ActiveListService activeListService) {
-		setService(ActiveListService.class, activeListService);
 	}
 	
 	/**

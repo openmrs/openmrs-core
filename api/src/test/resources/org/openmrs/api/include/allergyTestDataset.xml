@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+	<allergy allergy_id="1" coded_allergen="792" patient_id="2" allergen_type="DRUG" severity_concept_id="23" voided="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="21543629-7d8c-11e1-909d-c80aa9edcf4e"/>
+    <allergy allergy_id="2" coded_allergen="5089" patient_id="2" allergen_type="DRUG" severity_concept_id="23" voided="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="35543629-7d8c-11e1-909d-c80aa9edcf4e"/>
+    <allergy allergy_id="3" coded_allergen="5497" patient_id="2" allergen_type="DRUG" severity_concept_id="23" voided="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="4b9d9421-7d8c-11e1-909d-c80aa9edcf4e"/>
+    <allergy allergy_id="4" coded_allergen="88" patient_id="2" allergen_type="DRUG" severity_concept_id="23" voided="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="43ac5109-7d8c-11e1-909d-c80aa9edcf4e"/>
+
+	<allergy_reaction allergy_reaction_id="1" allergy_id="1" reaction_concept_id="3" uuid="29bf4fbc-fcdb-4a5b-97ea-0d5c4b4315a1"/>
+	<allergy_reaction allergy_reaction_id="2" allergy_id="1" reaction_concept_id="4" uuid="f4f7be24-7601-449e-b216-8a22d80e11cf"/>
+	<allergy_reaction allergy_reaction_id="3" allergy_id="2" reaction_concept_id="5" uuid="2f8a8a23-bef3-4d45-b6d0-2a0ddd0c733b"/>
+	<allergy_reaction allergy_reaction_id="4" allergy_id="2" reaction_concept_id="6" uuid="212d3d01-699a-4941-b1fb-13eaba8e07a2"/>
+</dataset>

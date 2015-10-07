@@ -50,8 +50,7 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.Person;
-import org.openmrs.activelist.Allergy;
-import org.openmrs.activelist.Problem;
+import org.openmrs.Allergy;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.ObsServiceImpl;
 import org.openmrs.obs.ComplexData;
@@ -1750,32 +1749,12 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		conceptProposal.setObs(obsService.getObs(conceptProposalObsId));
 		obs.addGroupMember(conceptProposal.getObs());
 
-		final int allergyStartObsId = 6;
-		final int allergyStopObsId = 7;
-		Allergy allergy = new Allergy();
-		allergy.setStartObs(obsService.getObs(allergyStartObsId));
-		allergy.setStopObs(obsService.getObs(allergyStopObsId));
-		obs.addGroupMember(allergy.getStartObs());
-		obs.addGroupMember(allergy.getStopObs());
-
-		final int problemStartObsId = 8;
-		final int problemStopObsId = 9;
-		Problem problem = new Problem();
-		problem.setStartObs(obsService.getObs(problemStartObsId));
-		problem.setStopObs(obsService.getObs(problemStopObsId));
-		obs.addGroupMember(problem.getStartObs());
-		obs.addGroupMember(problem.getStopObs());
-
 		//before calling purgeObs method the Obs exists
 		Assert.assertNotNull(obsService.getObs(parentObsId));
 		Assert.assertNotNull(obsService.getObs(childObsId));
 		Assert.assertNotNull(obsService.getObs(unrelatedObsId));
 		Assert.assertNotNull(obsService.getObs(orderReferencingObsId));
 		Assert.assertNotNull(obsService.getObs(conceptProposalObsId));
-		Assert.assertNotNull(obsService.getObs(allergyStartObsId));
-		Assert.assertNotNull(obsService.getObs(allergyStopObsId));
-		Assert.assertNotNull(obsService.getObs(problemStartObsId));
-		Assert.assertNotNull(obsService.getObs(problemStopObsId));
 
 		Context.getObsService().purgeObs(obs, false);
 
@@ -1785,10 +1764,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(obsService.getObs(unrelatedObsId));
 		Assert.assertNull(obsService.getObs(orderReferencingObsId));
 		Assert.assertNull(obsService.getObs(conceptProposalObsId));
-		Assert.assertNull(obsService.getObs(allergyStartObsId));
-		Assert.assertNull(obsService.getObs(allergyStopObsId));
-		Assert.assertNull(obsService.getObs(problemStartObsId));
-		Assert.assertNull(obsService.getObs(problemStopObsId));
 	}
 
 	/**

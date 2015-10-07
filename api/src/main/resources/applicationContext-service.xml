@@ -106,7 +106,6 @@
         <property name="hl7Service"><ref bean="hL7Service"/></property>
         <property name="ardenService"><ref bean="ardenService"/></property>
         <property name="messageSourceService"><ref bean="messageSourceService"/></property>
-        <property name="activeListService"><ref bean="activeListService"/></property>
         <property name="visitService"><ref bean="visitService"/></property>
         <property name="providerService"><ref bean="providerService"/></property>
         <property name="noteService"><ref bean="noteService" /></property>
@@ -184,9 +183,6 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
 	<bean id="hL7DAO" class="org.openmrs.hl7.db.hibernate.HibernateHL7DAO">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
-	</bean>
-	<bean id="activeListDAO" class="org.openmrs.api.db.hibernate.HibernateActiveListDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
 	<bean id="visitDAO" class="org.openmrs.api.db.hibernate.HibernateVisitDAO">
@@ -275,9 +271,6 @@
 	</bean>
 	<bean id="patientSetServiceTarget" class="org.openmrs.api.impl.PatientSetServiceImpl">
 		<property name="patientSetDAO"><ref bean="patientSetDAO"/></property>	
-	</bean>
-	<bean id="activeListServiceTarget" class="org.openmrs.api.impl.ActiveListServiceImpl">
-		<property name="activeListDAO"><ref bean="activeListDAO"/></property>	
 	</bean>
 	<bean id="visitServiceTarget" class="org.openmrs.api.impl.VisitServiceImpl">
         <property name="visitDAO"><ref bean="visitDAO"/></property>
@@ -524,14 +517,6 @@
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
-	<bean id="activeListService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="activeListServiceTarget"/></property>
-		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
-		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
-	</bean>
 	<bean id="visitService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 	    <property name="transactionManager"><ref local="transactionManager"/></property>
 	    <property name="target"><ref local="visitServiceTarget"/></property>
@@ -660,6 +645,7 @@
 	<!--  **************************  VALIDATOR CONFIGURATION  *************************  -->
 	<!--  Configuration for all openmrs validators                                        -->
 	
+	<bean id="allergyValidator" class="org.openmrs.validator.AllergyValidator" />
 	<bean id="personValidator" class="org.openmrs.validator.PersonValidator" />
 	<bean id="patientValidator" class="org.openmrs.validator.PatientValidator" />
 	<bean id="locationValidator" class="org.openmrs.validator.LocationValidator"/>
@@ -708,6 +694,6 @@
 		<context:include-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileIncludeFilter" />
 		<context:exclude-filter type="custom" expression="org.openmrs.util.TestTypeFilter"/> <!-- Excludes classes with unit test super classes -->
 		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter" />
-	</context:component-scan>
+	</context:component-scan> 
     
 </beans>

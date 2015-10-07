@@ -66,8 +66,11 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.Visit;
-import org.openmrs.activelist.Allergy;
-import org.openmrs.activelist.Problem;
+import org.openmrs.Allergy;
+import org.openmrs.AllergenType;
+import org.openmrs.Allergen;
+import org.openmrs.Allergies;
+
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
@@ -103,8 +106,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	protected static final String USER_WHO_IS_NOT_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-userNotAPatient.xml";
 	
 	protected static final String FIND_PATIENTS_XML = "org/openmrs/api/include/PatientServiceTest-findPatients.xml";
-	
-	private static final String ACTIVE_LIST_INITIAL_XML = "org/openmrs/api/include/ActiveListTest.xml";
 	
 	private static final String PATIENT_RELATIONSHIPS_XML = "org/openmrs/api/include/PersonServiceTest-createRelationship.xml";
 	
@@ -2316,149 +2317,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(patientService.getPatient(7).isVoided());
 		Assert.assertTrue(patientService.getPatient(8).isVoided());
 	}
-	
-	/**
-	 * @see PatientService#getProblems(Patient)
-	 */
-	@Test
-	@Verifies(value = "return empty list if no problems exist for this Patient", method = "getProblems(Patient)")
-	public void getProblems_shouldReturnEmptyListIfNoProblemsExistForThisPatient() throws Exception {
-		executeDataSet(ACTIVE_LIST_INITIAL_XML);
 		
-		Patient p = patientService.getPatient(3);
-		List<Problem> problems = patientService.getProblems(p);
-		Assert.assertNotNull(problems);
-		assertEqualsInt(0, problems.size());
-	}
-	
-	/**
-	 * @see PatientService#getAllergies(Patient)
-	 */
-	@Test
-	@Verifies(value = "return empty list if no allergies exist for this Patient", method = "getAllergies(Patient)")
-	public void getAllergies_shouldReturnEmptyListIfNoAllergiesExistForThisPatient() throws Exception {
-		executeDataSet(ACTIVE_LIST_INITIAL_XML);
-		
-		Patient p = patientService.getPatient(3);
-		List<Allergy> allergies = patientService.getAllergies(p);
-		Assert.assertNotNull(allergies);
-		assertEqualsInt(0, allergies.size());
-	}
-	
-	/**
-	 * @see PatientService#getAllergy(Integer)
-	 */
-	@Test
-	@Verifies(value = "return an allergy by id", method = "getAllergy(Integer)")
-	public void getAllergy_shouldReturnAnAllergyById() throws Exception {
-		executeDataSet(ACTIVE_LIST_INITIAL_XML);
-		
-		Allergy allergy = patientService.getAllergy(1);
-		Assert.assertNotNull(allergy);
-		Assert.assertNotNull(allergy.getActiveListId());
-		Assert.assertNotNull(allergy.getActiveListType());
-		Assert.assertNotNull(allergy.getAllergen());
-		Assert.assertNotNull(allergy.getStartDate());
-	}
-	
-	/**
-	 * @see PatientService#saveProblem(Problem)
-	 */
-	@Test
-	@Verifies(value = "save the problem and set the weight for correct ordering", method = "saveProblem(ProblemListItem)")
-	public void saveProblem_shouldSaveTheProblemAndSetTheWeightForCorrectOrdering() throws Exception {
-		executeDataSet(ACTIVE_LIST_INITIAL_XML);
-		
-		Patient p = patientService.getPatient(2);
-		
-		List<Problem> problems = patientService.getProblems(p);
-		assertEqualsInt(1, problems.size());
-		
-		Problem problem = new Problem();
-		problem.setPerson(p);
-		problem.setProblem(Context.getConceptService().getConcept(88));// Aspirin
-		
-		patientService.saveProblem(problem);
-		
-		problems = patientService.getProblems(p);
-		Assert.assertNotNull(problems);
-		assertEqualsInt(2, problems.size());
-		
-		problem = problems.get(1);
-		assertEqualsInt(88, problem.getProblem().getConceptId());
-		Assert.assertNotNull(problem.getPerson());
-		Assert.assertNotNull(problem.getStartDate());
-		assertThat(problem.getSortWeight(), is(2d));
-	}
-	
-	/**
-	 * @see PatientService#resolveProblem(Problem, String)
-	 */
-	@Test
-	@Verifies(value = "set the end date for the problem", method = "resolveProblem(ProblemListItem, String)")
-	public void resolveProblem_shouldSetTheEndDateForTheProblem() throws Exception {
-		executeDataSet(ACTIVE_LIST_INITIAL_XML);
-		
-		Patient p = patientService.getPatient(2);
-		
-		List<Problem> problems = patientService.getProblems(p);
-		Assert.assertNotNull(problems);
-		patientService.removeProblem(problems.get(0), "resolving by retiring");
-		
-		problems = patientService.getProblems(p);
-		Assert.assertNotNull(problems);
-		Assert.assertNotNull(problems.get(0).getEndDate());
-	}
-	
-	/**
-	 * @see PatientService#saveAllergy(Problem)
-	 */
-	@Test
-	@Verifies(value = "save the allergy", method = "saveAllergy(AllergyListItem)")
-	public void saveAllergy_shouldSaveTheAllergy() throws Exception {
-		executeDataSet(ACTIVE_LIST_INITIAL_XML);
-		
-		Patient p = patientService.getPatient(2);
-		Allergy allergen = new Allergy();
-		allergen.setPerson(p);
-		allergen.setAllergen(Context.getConceptService().getConcept(88));// Aspirin
-		
-		patientService.saveAllergy(allergen);
-		
-		List<Allergy> allergies = patientService.getAllergies(p);
-		Assert.assertNotNull(allergies);
-		assertEqualsInt(2, allergies.size());
-		
-		for (Allergy a : allergies) {
-			if (a.getAllergen().getConceptId().equals(88)) {
-				allergen = a;
-				break;
-			}
-		}
-		
-		Assert.assertNotNull(allergen.getPerson());
-		Assert.assertNotNull(allergen.getStartDate());
-	}
-	
-	/**
-	 * @see PatientService#resolveAllergy(Problem, String)
-	 */
-	@Test
-	@Verifies(value = "set the end date for the allergy", method = "resolveAllergy(AllergyListItem, String)")
-	public void resolveAllergy_shouldSetTheEndDateForTheAllergy() throws Exception {
-		executeDataSet(ACTIVE_LIST_INITIAL_XML);
-		
-		Patient p = patientService.getPatient(2);
-		
-		List<Allergy> allergies = patientService.getAllergies(p);
-		Assert.assertNotNull(allergies);
-		patientService.removeAllergy(allergies.get(0), "resolving by retiring");
-		
-		allergies = patientService.getAllergies(p);
-		Assert.assertNotNull(allergies);
-		Assert.assertNotNull(allergies.get(0).getEndDate());
-	}
-	
 	private void assertEqualsInt(int expected, Integer actual) throws Exception {
 		Assert.assertEquals(Integer.valueOf(expected), actual);
 	}
