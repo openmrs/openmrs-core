@@ -8866,7 +8866,7 @@
 			</not>
 		</preConditions>
 		<comment>Custom changeset to migrate allergies from old to new tables</comment>
-		<customChange class="org.openmrs.MigrateAllergiesChangeSet"></customChange>
+		<customChange class="org.openmrs.util.databasechange.MigrateAllergiesChangeSet"></customChange>
 	</changeSet>
    
     <changeSet id="20151007-TRUNK-4747-remove_active_list_problem" author="jdegraft">
