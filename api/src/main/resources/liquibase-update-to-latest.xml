@@ -8780,7 +8780,7 @@
             </column>
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="datetime"/>
-            <column name="voided" type="tinyint" defaultValue="0">
+            <column name="voided" type="boolean" defaultValue="false">
                 <constraints nullable="false"/>
             </column>
             <column name="voided_by" type="int"></column>
