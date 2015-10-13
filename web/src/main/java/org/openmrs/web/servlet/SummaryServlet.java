@@ -67,8 +67,8 @@ public class SummaryServlet extends HttpServlet {
 		
 		HttpSession session = request.getSession();
 		
-		if (!Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)) {
-			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + PrivilegeConstants.VIEW_PATIENTS);
+		if (!Context.hasPrivilege(PrivilegeConstants.GET_PATIENTS)) {
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + PrivilegeConstants.GET_PATIENTS);
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 			return;
 		}
@@ -83,7 +83,7 @@ public class SummaryServlet extends HttpServlet {
 		summary.write("<clinicalSummaryList>\n");
 		for (Integer patientId : patientSet.getMemberIds()) {
 			try {
-				Result xml = logic.eval(patientService.getPatient(patientId), "CLINICAL SUMMARY");
+				Result xml = logic.eval(patientService.getPatient(patientId).getPatientId(), "CLINICAL SUMMARY");
 				
 				// Output results
 				String s = xml.toString();
@@ -182,20 +182,6 @@ public class SummaryServlet extends HttpServlet {
 		
 		// if they submitted identifiers in the textarea or via a web submission
 		if (identifiers.size() > 0) {
-			
-			// validate check digits on identifiers
-			for (int x = 0; x < identifiers.size(); x++) {
-				String id = identifiers.get(x);
-				try {
-					if (!OpenmrsUtil.isValidCheckDigit(id)) {
-						log.warn("Invalid check digit: '" + id + "' at location " + x);
-					}
-				}
-				catch (Exception e) {
-					log.warn("Invalid check digit: '" + id + "' at location " + x, e);
-				}
-			}
-			
 			ps = Cohort.union(ps, Context.getPatientSetService().convertPatientIdentifier(identifiers));
 		}
 		

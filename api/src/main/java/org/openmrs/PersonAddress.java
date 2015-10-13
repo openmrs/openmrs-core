@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import static org.apache.commons.lang.StringUtils.defaultString;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -20,8 +22,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
-
-import static org.apache.commons.lang.StringUtils.defaultString;
 
 /**
  * This class is the representation of a person's address. This class is many-to-one to the Person
@@ -337,26 +337,6 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	}
 	
 	/**
-	 * @deprecated As of 1.8, replaced by {@link #getAddress3()}
-	 * @return Returns the neighborhoodCell.
-	 */
-	@Deprecated
-	@Element(data = true, required = false)
-	public String getNeighborhoodCell() {
-		return getAddress3();
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #setAddress3(String)}
-	 * @param address3 The neighborhoodCell to set.
-	 */
-	@Deprecated
-	@Element(data = true, required = false)
-	public void setNeighborhoodCell(String address3) {
-		this.setAddress3(address3);
-	}
-	
-	/**
 	 * Convenience method to test whether any of the fields in this address are set
 	 *
 	 * @return whether any of the address fields (address1, address2, cityVillage, stateProvince,
@@ -374,67 +354,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 		        && StringUtils.isBlank(getLongitude());
 		
 	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #getAddress6()}
-	 * @return the region
-	 */
-	@Deprecated
-	@Element(data = true, required = false)
-	public String getRegion() {
-		return getAddress6();
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #setAddress6(String)}
-	 * @param address6 the region to set
-	 */
-	@Deprecated
-	@Element(data = true, required = false)
-	public void setRegion(String address6) {
-		this.setAddress6(address6);
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #getAddress5()}
-	 * @return the subregion
-	 */
-	@Deprecated
-	@Element(data = true, required = false)
-	public String getSubregion() {
-		return getAddress5();
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #setAddress5(String)}
-	 * @param address5 the subregion to set
-	 */
-	@Deprecated
-	@Element(data = true, required = false)
-	public void setSubregion(String address5) {
-		this.setAddress5(address5);
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #getAddress4()}
-	 * @return the townshipDivision
-	 */
-	@Deprecated
-	@Element(data = true, required = false)
-	public String getTownshipDivision() {
-		return getAddress4();
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #setAddress4(String)}
-	 * @param address4 the address4 to set
-	 */
-	@Deprecated
-	@Element(data = true, required = false)
-	public void setTownshipDivision(String address4) {
-		this.setAddress4(address4);
-	}
-	
+			
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 * Note: this comparator imposes orderings that are inconsistent with equals.

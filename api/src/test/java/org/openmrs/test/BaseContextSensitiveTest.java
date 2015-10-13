@@ -69,7 +69,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.Before;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openmrs.ConceptName;
@@ -78,7 +77,6 @@ import org.openmrs.User;
 import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
@@ -155,14 +153,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	private User authenticatedUser;
 	
-	/**
-	 * Allows mocking services returned by Context. See {@link ContextMockHelper}
-	 * 
-	 * @since 1.11, 1.10, 1.9.9
-	 */
-	@InjectMocks
-	protected ContextMockHelper contextMockHelper;
-	
 	private static volatile BaseContextSensitiveTest instance;
 	
 	/**
@@ -197,14 +187,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	@Before
 	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
-	}
-	
-	/**
-	 * @since 1.11, 1.10, 1.9.9
-	 */
-	@After
-	public void revertContextMocks() {
-		contextMockHelper.revertMocks();
 	}
 	
 	/**

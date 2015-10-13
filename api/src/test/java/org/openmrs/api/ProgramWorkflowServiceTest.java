@@ -401,7 +401,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(pp.getProgram().getWorkflow(1).getState(diedConcept));
 		
 		Thread.sleep(10);//delay so that we have a time difference
-		pws.triggerStateConversion(pp.getPatient(), diedConcept, new Date());
 		
 		pp = pws.getPatientProgram(patientProgramId);
 		Assert.assertEquals(originalDateCompleted, pp.getDateCompleted());

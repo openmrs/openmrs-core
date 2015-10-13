@@ -18,8 +18,9 @@
 	<joined-subclass name="org.openmrs.activelist.Problem" extends="org.openmrs.activelist.ActiveListItem" table="active_list_problem" lazy="false">
 		<key column="active_list_id" not-null="true" on-delete="cascade"/>
 		<property name="modifier" column="status">
-			<type name="org.openmrs.util.HibernateEnumType">
-				<param name="enumClassName">org.openmrs.activelist.ProblemModifier</param>
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">org.openmrs.activelist.ProblemModifier</param>
+				<param name="type">12</param>
 			</type>
 		</property>
 		<property name="sortWeight" type="java.lang.Double" column="sort_weight" length="22"/>

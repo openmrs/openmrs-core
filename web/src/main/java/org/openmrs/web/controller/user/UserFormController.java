@@ -130,6 +130,7 @@ public class UserFormController {
 	@RequestMapping(value = "/admin/users/user.form", method = RequestMethod.POST)
 	public String handleSubmission(WebRequest request, HttpSession httpSession, ModelMap model,
 	        @RequestParam(required = false, value = "action") String action,
+	        @RequestParam(required = false, value = "oldPassword") String oldPassword,
 	        @RequestParam(required = false, value = "userFormPassword") String password,
 	        @RequestParam(required = false, value = "secretQuestion") String secretQuestion,
 	        @RequestParam(required = false, value = "secretAnswer") String secretAnswer,
@@ -262,15 +263,15 @@ public class UserFormController {
 			}
 			
 			if (isNewUser(user)) {
-				us.saveUser(user, password);
+				us.createUser(user, password);
 			} else {
-				us.saveUser(user, null);
+				us.saveUser(user);
 				
 				if (!"".equals(password) && Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS)) {
 					if (log.isDebugEnabled()) {
 						log.debug("calling changePassword for user " + user + " by user " + Context.getAuthenticatedUser());
 					}
-					us.changePassword(user, password);
+					us.changePassword(user, oldPassword, password);
 				}
 			}
 			

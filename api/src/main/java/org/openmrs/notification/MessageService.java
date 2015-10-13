@@ -90,46 +90,4 @@ public interface MessageService {
 	
 	@SuppressWarnings("unchecked")
 	public List getTemplatesByName(String name) throws MessageException;
-	
-	/* Begin Deprecated methods */
-
-	// Old send message methods
-	@Deprecated
-	public void send(Message message) throws MessageException;
-	
-	@Deprecated
-	public void send(Message message, String roleName) throws MessageException;
-	
-	@Deprecated
-	public void send(Message message, Integer userId) throws MessageException;
-	
-	@Deprecated
-	public void send(Message message, User user) throws MessageException;
-	
-	@Deprecated
-	public void send(Message message, Role role) throws MessageException;
-	
-	@Deprecated
-	public void send(Message message, Collection<User> users) throws MessageException;
-	
-	@Deprecated
-	public void send(String recipients, String sender, String subject, String message) throws MessageException;
-	
-	// Old prepare message methods
-	@Deprecated
-	public Message create(String subject, String message) throws MessageException;
-	
-	@Deprecated
-	public Message create(String sender, String subject, String message) throws MessageException;
-	
-	@Deprecated
-	public Message create(String recipients, String sender, String subject, String message) throws MessageException;
-	
-	@Deprecated
-	@SuppressWarnings("unchecked")
-	public Message prepare(String templateName, Map data) throws MessageException;
-	
-	@Deprecated
-	public Message prepare(Template template) throws MessageException;
-	
 }

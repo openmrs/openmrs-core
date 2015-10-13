@@ -298,11 +298,6 @@ public class Result extends ArrayList<Result> {
 		this.resultObject = object;
 	}
 	
-	@Deprecated
-	public static final Result nullResult() {
-		return emptyResult;
-	}
-	
 	/**
 	 * @return null/empty result
 	 */
@@ -630,7 +625,7 @@ public class Result extends ArrayList<Result> {
 				case BOOLEAN:
 					return (valueBoolean ? "true" : "false");
 				case CODED:
-					return (valueCoded == null ? "" : valueCoded.getBestName(Context.getLocale()).getName());
+					return (valueCoded == null ? "" : valueCoded.getName(Context.getLocale()).getName());
 				case DATETIME:
 					return (valueDatetime == null ? "" : Context.getDateFormat().format(valueDatetime));
 				case NUMERIC:

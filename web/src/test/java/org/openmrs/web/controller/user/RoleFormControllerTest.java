@@ -21,7 +21,6 @@ import org.openmrs.web.test.WebTestHelper;
 import org.openmrs.web.test.WebTestHelper.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.annotation.NotTransactional;
 
 /**`
  * Tests {@link RoleFormController}.
@@ -36,7 +35,6 @@ public class RoleFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	@Test
-	@NotTransactional
 	public void shouldUpdateRoleWithParent() throws Exception {
 		Role child = new Role("child", "child");
 		getUS().saveRole(child);

@@ -44,8 +44,8 @@ public class CurrentUsersController {
 	@RequestMapping(method = RequestMethod.GET, value = "/admin/maintenance/currentUsers.list")
 	public void listCurrentUsers(HttpServletRequest request, ModelMap modelMap) {
 		log.debug("List current users");
-		if (!Context.hasPrivilege(PrivilegeConstants.VIEW_USERS)) {
-			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.VIEW_USERS);
+		if (!Context.hasPrivilege(PrivilegeConstants.GET_USERS)) {
+			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.GET_USERS);
 		}
 		
 		modelMap.put("currentUsers", CurrentUsers.getCurrentUsernames(request.getSession()));

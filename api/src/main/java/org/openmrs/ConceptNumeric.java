@@ -9,10 +9,10 @@
  */
 package org.openmrs;
 
-import org.hibernate.search.annotations.Indexed;
 import java.util.HashSet;
 import java.util.TreeSet;
 
+import org.hibernate.search.annotations.Indexed;
 import org.simpleframework.xml.Attribute;
 
 /**
@@ -219,33 +219,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	public void setUnits(String units) {
 		this.units = units;
 	}
-	
-	/**
-	 * @deprecated use {@link #isAllowDecimal()}
-	 */
-	@Deprecated
-	public Boolean isPrecise() {
-		return isAllowDecimal();
-	}
-	
-	/**
-	 * @deprecated use {@link #getAllowDecimal()}
-	 */
-	@Deprecated
-	@Attribute
-	public Boolean getPrecise() {
-		return getAllowDecimal();
-	}
-	
-	/**
-	 * @deprecated use {@link #setAllowDecimal(Boolean)}
-	 */
-	@Deprecated
-	@Attribute
-	public void setPrecise(Boolean precise) {
-		setAllowDecimal(precise);
-	}
-	
+
 	/**
 	 * This method will <i>always</i> return true for ConceptNumeric objects that have a datatype of
 	 * Numeric

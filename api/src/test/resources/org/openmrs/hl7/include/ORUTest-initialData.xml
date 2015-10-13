@@ -63,7 +63,7 @@
   <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
   <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="c0f4c2de-c4d1-4803-be36-42784854e3a4"/>
   <patient_identifier patient_identifier_id="2" patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="bcad3a53-2f78-4db1-9fea-0164156dbbe8"/>
-  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="569466d4-5eb1-497a-b0bf-c95602ff5442"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="569466d4-5eb1-497a-b0bf-c95602ff5442"/>
   <relationship_type relationship_type_id="2" preferred="0" weight="0" creator="1" date_created="2007-05-04 00:00:00.0" retired="0" uuid="8d91a01c-c2cc-11de-8d13-0010c6dffd0f" a_is_to_b="Sibling" b_is_to_a="Sibling" description="Relationship between brother/sister, brother/brother, and sister/sister"/>
   <relationship_type relationship_type_id="3" preferred="0" weight="0" creator="1" date_created="2007-05-04 00:00:00.0" retired="0" uuid="8d91a210-c2cc-11de-8d13-0010c6dffd0f" a_is_to_b="Parent" b_is_to_a="Child" description="Relationship from a mother/father to the child"/>
   

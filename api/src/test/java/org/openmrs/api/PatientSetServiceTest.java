@@ -167,40 +167,6 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientSetService#getPatientsByProgramAndState(org.openmrs.Program, List, Date, Date)
-	 */
-	@Test
-	@Verifies(value = "should get patients in state", method = "getPatientsByProgramAndState(Program,List<QProgramWorkflowState;>,Date,Date)")
-	public void getPatientsByProgramAndState_shouldGetPatientsInState() throws Exception {
-		ProgramWorkflowService pws = Context.getProgramWorkflowService();
-		Cohort cohort = service.getPatientsByProgramAndState(pws.getProgram(1), Collections.singletonList(pws.getState(2)),
-		    null, null);
-		Assert.assertEquals(1, cohort.size());
-		Assert.assertTrue(cohort.contains(2));
-		
-		cohort = service.getPatientsByProgramAndState(pws.getProgram(1), Collections.singletonList(pws.getState(4)), null,
-		    null);
-		Assert.assertEquals(0, cohort.size());
-	}
-	
-	/**
-	 * @see PatientSetService#getPatientsByProgramAndState(org.openmrs.Program,List,Date,Date)
-	 */
-	@Test
-	@Verifies(value = "should get patients in states", method = "getPatientsByProgramAndState(Program,List<QProgramWorkflowState;>,Date,Date)")
-	public void getPatientsByProgramAndState_shouldGetPatientsInStates() throws Exception {
-		ProgramWorkflowService pws = Context.getProgramWorkflowService();
-		List<ProgramWorkflowState> list = new ArrayList<ProgramWorkflowState>();
-		list.add(pws.getState(2));
-		list.add(pws.getState(4));
-		Cohort cohort = service.getPatientsByProgramAndState(pws.getProgram(1), list, null, null);
-		Assert.assertEquals(1, cohort.size());
-		Assert.assertTrue(cohort.contains(2));
-		
-		//TODO also test having two states get multiple poeple
-	}
-	
-	/**
 	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, GroupMethod, Date, Date)
 	 */
 	@Test
@@ -379,19 +345,5 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("Xanadu", ret.get(6));
 		Assert.assertEquals("Xanadu", ret.get(7));
 		Assert.assertEquals("Xanadu", ret.get(8));
-	}
-	
-	/**
-	 * @see PatientSetService#getCurrentStates(Cohort, ProgramWorkflow)
-	 */
-	@Test
-	@Verifies(value = "should return an empty map if cohort is empty", method = "getCurrentStates(Cohort, ProgramWorkflow)")
-	public void getCurrentStates_shouldReturnAnEmptyMapIfCohortIsEmpty() throws Exception {
-		Cohort nobody = new Cohort();
-		ProgramWorkflowService pws = Context.getProgramWorkflowService();
-		ProgramWorkflow one = pws.getWorkflow(1);
-		
-		Map<Integer, PatientState> results = Context.getPatientSetService().getCurrentStates(nobody, one);
-		Assert.assertEquals(results.size(), 0);
 	}
 }

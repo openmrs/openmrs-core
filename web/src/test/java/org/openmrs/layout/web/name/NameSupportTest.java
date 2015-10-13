@@ -11,6 +11,7 @@ package org.openmrs.layout.web.name;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.layout.name.NameSupport;
 import org.openmrs.test.Verifies;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 

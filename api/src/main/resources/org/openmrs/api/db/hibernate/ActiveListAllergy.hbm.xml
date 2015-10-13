@@ -18,13 +18,15 @@
     <joined-subclass name="org.openmrs.activelist.Allergy" extends="org.openmrs.activelist.ActiveListItem" table="active_list_allergy" lazy="false">
 		<key column="active_list_id" not-null="true" on-delete="cascade"/>
 		<property name="allergyType" column="allergy_type" length="50">
-			<type name="org.openmrs.util.HibernateEnumType">
-				<param name="enumClassName">org.openmrs.activelist.AllergyType</param>
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">org.openmrs.activelist.AllergyType</param>
+				<param name="type">12</param>
 			</type>
 		</property>
 		<property name="severity" column="severity" length="50">
-		    <type name="org.openmrs.util.HibernateEnumType">
-		    	<param name="enumClassName">org.openmrs.activelist.AllergySeverity</param>
+		    <type name="org.hibernate.type.EnumType">
+		    	<param name="enumClass">org.openmrs.activelist.AllergySeverity</param>
+		    	<param name="type">12</param>
 		    </type>
 		</property>
 		<many-to-one name="reaction" class="org.openmrs.Concept">

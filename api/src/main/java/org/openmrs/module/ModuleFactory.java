@@ -771,8 +771,6 @@ public class ModuleFactory {
 					if (module.getModuleActivator() != null) {
 						// if extends BaseModuleActivator
 						module.getModuleActivator().willStart();
-					} else {
-						module.getActivator().startup();//implements old Activator interface
 					}
 				}
 				catch (ModuleException e) {
@@ -1199,8 +1197,6 @@ public class ModuleFactory {
 			try {
 				if (mod.getModuleActivator() != null) {// extends BaseModuleActivator
 					mod.getModuleActivator().stopped();
-				} else {
-					mod.getActivator().shutdown(); // implements old Activator interface
 				}
 			}
 			catch (Exception t) {
@@ -1218,7 +1214,6 @@ public class ModuleFactory {
 			//
 			//Same thing applies to activator, moduleActivator and AdvicePoint classInstance.
 			mod.getExtensions().clear();
-			mod.setActivator(null);
 			mod.setModuleActivator(null);
 			mod.disposeAdvicePointsClassInstance();
 			

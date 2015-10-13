@@ -9,20 +9,19 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Properties;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-
-import java.util.Properties;
 
 /**
  * This class tests the {@link ContextDAO} linked to from the Context. Currently that file is the
@@ -332,7 +331,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		u.setUsername("");
 		u.getPerson().setGender("M");
 		
-		us.saveUser(u, "Openmr5xy");
+		us.createUser(u, "Openmr5xy");
 		dao.authenticate("", "password");
 		
 	}

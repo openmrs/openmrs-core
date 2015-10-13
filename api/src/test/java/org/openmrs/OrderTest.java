@@ -365,7 +365,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setVoided(true);
 		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
-		assertFalse(order.isFuture(DateUtils.parseDate("2014-11-01 11:11:09", DATE_FORMAT)));
+		assertFalse(order.isStarted(DateUtils.parseDate("2014-11-01 11:11:09", DATE_FORMAT)));
 	}
 	
 	/**
@@ -376,7 +376,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	public void isFuture_shouldReturnFalseIfDateActivatedIsNull() throws Exception {
 		Order order = new Order();
 		assertNull(order.getDateActivated());
-		assertFalse(order.isFuture(DateUtils.parseDate("2014-11-01 11:11:09", DATE_FORMAT)));
+		assertFalse(order.isStarted(DateUtils.parseDate("2014-11-01 11:11:09", DATE_FORMAT)));
 	}
 	
 	/**
@@ -388,7 +388,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		Date dateActivated = DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT);
 		order.setDateActivated(dateActivated);
-		assertFalse(order.isFuture(dateActivated));
+		assertFalse(order.isStarted(dateActivated));
 	}
 	
 	/**
@@ -399,7 +399,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	public void isFuture_shouldReturnTrueIfOrderWasActivatedAfterTheCheckDate() throws Exception {
 		Order order = new Order();
 		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
-		assertTrue(order.isFuture(DateUtils.parseDate("2014-11-01 11:11:09", DATE_FORMAT)));
+		assertTrue(order.isStarted(DateUtils.parseDate("2014-11-01 11:11:09", DATE_FORMAT)));
 	}
 	
 	/**

@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -26,15 +25,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,7 +46,6 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
-import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -64,16 +53,12 @@ import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Person;
 import org.openmrs.PersonAttributeType;
-import org.openmrs.PersonName;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.ObsService;
-import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.Modifier;
 import org.openmrs.api.PatientSetService.PatientLocationMethod;
@@ -110,19 +95,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
-	}
-	
-	/**
-	 * @deprecated
-	 * @see org.openmrs.api.db.PatientSetDAO#exportXml(org.openmrs.Cohort)
-	 */
-	public String exportXml(Cohort ps) throws DAOException {
-		StringBuffer ret = new StringBuffer("<patientset>");
-		for (Integer patientId : ps.getMemberIds()) {
-			ret.append(exportXml(patientId));
-		}
-		ret.append("</patientset>");
-		return ret.toString();
 	}
 
 	DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -191,253 +163,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		obsNode.appendChild(doc.createTextNode(value));
 		
 		return obsNode;
-	}
-	
-	/**
-	 * Note that the formatting may depend on locale
-	 * 
-	 * @deprecated
-	 */
-	@Deprecated
-	public String exportXml(Integer patientId) throws DAOException {
-		Locale locale = Context.getLocale();
-		
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		Document doc = null;
-		
-		PatientService patientService = Context.getPatientService();
-		EncounterService encounterService = Context.getEncounterService();
-		
-		Patient p = patientService.getPatient(patientId);
-		List<Encounter> encounters = encounterService.getEncountersByPatientId(patientId);
-		
-		try {
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			doc = builder.newDocument();
-			
-			Element root = (Element) doc.createElement("patient_data");
-			doc.appendChild(root);
-			
-			Element patientNode = doc.createElement("patient");
-			patientNode.setAttribute("patient_id", p.getPatientId().toString());
-			
-			boolean firstName = true;
-			Element namesNode = doc.createElement("names");
-			for (PersonName name : p.getNames()) {
-				if (firstName) {
-					if (name.getGivenName() != null) {
-						patientNode.setAttribute("given_name", name.getGivenName());
-					}
-					if (name.getMiddleName() != null) {
-						patientNode.setAttribute("middle_name", name.getMiddleName());
-					}
-					if (name.getFamilyName() != null) {
-						patientNode.setAttribute("family_name", name.getFamilyName());
-					}
-					if (name.getFamilyName2() != null) {
-						patientNode.setAttribute("family_name2", name.getFamilyName2());
-					}
-					firstName = false;
-				}
-				Element nameNode = doc.createElement("name");
-				if (name.getGivenName() != null) {
-					nameNode.setAttribute("given_name", name.getGivenName());
-				}
-				if (name.getMiddleName() != null) {
-					nameNode.setAttribute("middle_name", name.getMiddleName());
-				}
-				if (name.getFamilyName() != null) {
-					nameNode.setAttribute("family_name", name.getFamilyName());
-				}
-				if (name.getFamilyName2() != null) {
-					nameNode.setAttribute("family_name2", name.getFamilyName2());
-				}
-				namesNode.appendChild(nameNode);
-			}
-			patientNode.appendChild(namesNode);
-			patientNode.setAttribute("gender", p.getGender());
-			
-			/*
-			if (p.getRace() != null) {
-				patientNode.setAttribute("race", p.getRace());
-			}
-			 */
-			if (p.getBirthdate() != null) {
-				patientNode.setAttribute("birthdate", df.format(p.getBirthdate()));
-			}
-			if (p.getBirthdateEstimated() != null) {
-				patientNode.setAttribute("birthdate_estimated", p.getBirthdateEstimated().toString());
-			}
-			/*
-			if (p.getBirthplace() != null) {
-				patientNode.setAttribute("birthplace", p.getBirthplace());
-			}
-			*/
-			/*
-			if (p.getCitizenship() != null) {
-				patientNode.setAttribute("citizenship", p.getCitizenship());
-			}
-			 */
-			/*
-			if (p.getMothersName() != null) {
-				patientNode.setAttribute("mothers_name", p.getMothersName());
-			}
-			if (p.getCivilStatus() != null) {
-				patientNode.setAttribute("civil_status", p.getCivilStatus().getName(locale, false).getName());
-			}
-			 */
-			if (p.getDeathDate() != null) {
-				patientNode.setAttribute("death_date", df.format(p.getDeathDate()));
-			}
-			if (p.getDeathdateEstimated() != null) {
-				patientNode.setAttribute("deathdate_estimated", p.getDeathdateEstimated().toString());
-			}
-			
-			if (p.getCauseOfDeath() != null) {
-				patientNode.setAttribute("cause_of_death", p.getCauseOfDeath().getName(locale, false).getName());
-			}
-			/*
-			if (p.getHealthDistrict() != null) {
-				patientNode.setAttribute("health_district", p.getHealthDistrict());
-			}
-			if (p.getHealthCenter() != null) {
-				patientNode.setAttribute("health_center", p.getHealthCenter().getName());
-				patientNode.setAttribute("health_center_id", p.getHealthCenter().getLocationId().toString());
-			}
-			 */
-
-			for (Encounter e : encounters) {
-				Element encounterNode = doc.createElement("encounter");
-				if (e.getEncounterDatetime() != null) {
-					encounterNode.setAttribute("datetime", df.format(e.getEncounterDatetime()));
-				}
-				
-				Element metadataNode = doc.createElement("metadata");
-				{
-					Location l = e.getLocation();
-					if (l != null) {
-						Element temp = doc.createElement("location");
-						temp.setAttribute("location_id", l.getLocationId().toString());
-						temp.appendChild(doc.createTextNode(l.getName()));
-						metadataNode.appendChild(temp);
-					}
-					EncounterType t = e.getEncounterType();
-					if (t != null) {
-						Element temp = doc.createElement("encounter_type");
-						temp.setAttribute("encounter_type_id", t.getEncounterTypeId().toString());
-						temp.appendChild(doc.createTextNode(t.getName()));
-						metadataNode.appendChild(temp);
-					}
-					Form f = e.getForm();
-					if (f != null) {
-						Element temp = doc.createElement("form");
-						temp.setAttribute("form_id", f.getFormId().toString());
-						temp.appendChild(doc.createTextNode(f.getName()));
-						metadataNode.appendChild(temp);
-					}
-					Person u = e.getProvider();
-					if (u != null) {
-						Element temp = doc.createElement("provider");
-						temp.setAttribute("provider_id", u.getPersonId().toString());
-						temp.appendChild(doc.createTextNode(u.getPersonName().getFullName()));
-						metadataNode.appendChild(temp);
-					}
-				}
-				encounterNode.appendChild(metadataNode);
-				
-				Collection<Obs> observations = e.getObs();
-				if (observations != null && observations.size() > 0) {
-					Element observationsNode = doc.createElement("observations");
-					for (Obs obs : observations) {
-						Element obsNode = obsElementHelper(doc, locale, obs);
-						observationsNode.appendChild(obsNode);
-					}
-					encounterNode.appendChild(observationsNode);
-				}
-				
-				Set<Order> orders = e.getOrders();
-				if (orders != null && orders.size() != 0) {
-					Element ordersNode = doc.createElement("orders");
-					for (Order order : orders) {
-						Element orderNode = doc.createElement("order");
-						orderNode.setAttribute("order_id", order.getOrderId().toString());
-						
-						Concept concept = order.getConcept();
-						orderNode.setAttribute("concept_id", concept.getConceptId().toString());
-						orderNode.appendChild(doc.createTextNode(concept.getName(locale).getName()));
-						
-						if (order.getInstructions() != null) {
-							orderNode.setAttribute("instructions", order.getInstructions());
-						}
-						if (order.getDateActivated() != null) {
-							orderNode.setAttribute("date_activated", df.format(order.getDateActivated()));
-						}
-						if (order.getAutoExpireDate() != null) {
-							orderNode.setAttribute("auto_expire_date", df.format(order.getAutoExpireDate()));
-						}
-						if (order.getOrderer() != null) {
-							orderNode.setAttribute("orderer", formatProvider(order.getOrderer()));
-						}
-						if (order.getDateStopped() != null) {
-							orderNode.setAttribute("date_stopped", df.format(order.getDateStopped()));
-						}
-						if (order.getOrderReason() != null) {
-							orderNode.setAttribute("order_reason", order.getOrderReason().getName(locale, false).getName());
-						}
-						
-						ordersNode.appendChild(orderNode);
-					}
-				}
-				
-				patientNode.appendChild(encounterNode);
-			}
-			
-			ObsService obsService = Context.getObsService();
-			List<Obs> allObservations = obsService.getObservationsByPerson(p);
-			if (allObservations != null && allObservations.size() > 0) {
-				log.debug("allObservations has " + allObservations.size() + " obs");
-				Set<Obs> undoneObservations = new HashSet<Obs>();
-				for (Obs obs : allObservations) {
-					if (obs.getEncounter() == null) {
-						undoneObservations.add(obs);
-					}
-				}
-				log.debug("undoneObservations has " + undoneObservations.size() + " obs");
-				
-				if (undoneObservations.size() > 0) {
-					Element observationsNode = doc.createElement("observations");
-					for (Obs obs : undoneObservations) {
-						Element obsNode = obsElementHelper(doc, locale, obs);
-						observationsNode.appendChild(obsNode);
-						log.debug("added node " + obsNode + " to observationsNode");
-					}
-					patientNode.appendChild(observationsNode);
-				}
-			}
-			
-			root.appendChild(patientNode);
-			
-		}
-		catch (Exception ex) {
-			throw new DAOException(ex);
-		}
-		
-		String ret = null;
-		
-		try {
-			Source source = new DOMSource(doc);
-			StringWriter sw = new StringWriter();
-			Result result = new StreamResult(sw);
-			
-			Transformer xformer = TransformerFactory.newInstance().newTransformer();
-			xformer.transform(source, result);
-			ret = sw.toString();
-		}
-		catch (Exception ex) {
-			throw new DAOException(ex);
-		}
-		
-		return ret;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -1317,7 +1042,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		// set up the return map
 		for (Encounter enc : encounters) {
-			Integer ptId = enc.getPatientId();
+			Integer ptId = enc.getPatient().getPatientId();
 			if (!ret.containsKey(ptId)) {
 				ret.put(ptId, enc);
 			}
@@ -1423,7 +1148,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		// set up the return map
 		for (Encounter enc : encounters) {
-			Integer ptId = enc.getPatientId();
+			Integer ptId = enc.getPatient().getPatientId();
 			if (!ret.containsKey(ptId)) {
 				ret.put(ptId, enc);
 			}
@@ -1458,7 +1183,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		// set up the return map
 		for (Encounter enc : encounters) {
-			Integer ptId = enc.getPatientId();
+			Integer ptId = enc.getPatient().getPatientId();
 			if (!ret.containsKey(ptId)) {
 				ret.put(ptId, enc);
 			}

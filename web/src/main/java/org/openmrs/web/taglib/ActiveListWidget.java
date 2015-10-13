@@ -144,7 +144,7 @@ public class ActiveListWidget extends TagSupport {
 				StringBuilder s = new StringBuilder();
 				s.append("<tr><th></th>");
 				for (Concept c : otherConceptList) {
-					ConceptName cn = c.getBestShortName(loc);
+					ConceptName cn = c.getShortestName(loc, false);
 					s.append("<th><small>" + cn.getName() + "</small></th>");
 				}
 				s.append("</tr>");

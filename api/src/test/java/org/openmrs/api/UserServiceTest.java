@@ -86,7 +86,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.setUsername("bwolfe");
 		u.getPerson().setGender("M");
 		
-		User createdUser = us.saveUser(u, "Openmr5xy");
+		User createdUser = us.createUser(u, "Openmr5xy");
 		
 		// if we're returning the object from create methods, check validity
 		assertTrue("The user returned by the create user method should equal the passed in user", createdUser.equals(u));
@@ -139,7 +139,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertTrue(user.hasRole("Some Role"));
 		
 		// do the actual creating of the user object
-		userService.saveUser(user, "Openmr5xy");
+		userService.createUser(user, "Openmr5xy");
 		Assert.assertNotNull("User was not created", userService.getUser(user.getUserId()));
 		
 		Integer shouldCreateUserWhoIsPatientAlreadyTestUserIdCreated = user.getUserId();
@@ -181,7 +181,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertNotNull("There needs to be a user with username 'admin' in the database", u);
 		
 		u.setUsername("admin2");
-		us.saveUser(u, null);
+		us.saveUser(u);
 		
 		User u2 = us.getUserByUsername("admin2");
 		
@@ -236,9 +236,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		privileges2.add(p2);
 		role2.setPrivileges(privileges2);
 
-		us.saveUser(u.addRole(role1), null);
+		us.saveUser(u.addRole(role1));
 
-		us.saveUser(u.addRole(role2), null);
+		us.saveUser(u.addRole(role2));
 
 		// so the contents are fetched from the db
 		Context.evictFromSession(u);
@@ -475,7 +475,6 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		// need to retrieve the user since the service method does not modify the given user object
 		User o = userService.getUser(501);
-		Assert.assertEquals("the question", o.getSecretQuestion());
 		Assert.assertTrue(userService.isSecretAnswer(o, "the answer"));
 	}
 	
@@ -1123,7 +1122,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.setUsername("bwolfe");
 		u.getPerson().setGender("M");
 		
-		us.saveUser(u, "short");
+		us.createUser(u, "short");
 	}
 	
 	/**

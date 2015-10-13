@@ -296,14 +296,26 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * @should return negative if this attribute has lower attribute type than argument
 	 * @should return negative if other attribute has lower value
 	 * @should return negative if this attribute has lower attribute id than argument
-	 * @should not throw exception if attribute type is null
-	 * @deprecated since 1.12. Use DefaultComparator instead.
-	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
-	@SuppressWarnings("squid:S1210")
 	public int compareTo(PersonAttribute other) {
-		DefaultComparator paDComparator = new DefaultComparator();
-		return paDComparator.compare(this, other);
+		int retValue;
+		if ((retValue = OpenmrsUtil.compareWithNullAsGreatest(getAttributeType(), other.getAttributeType())) != 0) {
+			return retValue;
+		}
+		
+		if ((retValue = isVoided().compareTo(other.isVoided())) != 0) {
+			return retValue;
+		}
+		
+		if ((retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated())) != 0) {
+			return retValue;
+		}
+		
+		if ((retValue = OpenmrsUtil.compareWithNullAsGreatest(getValue(), other.getValue())) != 0) {
+			return retValue;
+		}
+		
+		return OpenmrsUtil.compareWithNullAsGreatest(getPersonAttributeId(), other.getPersonAttributeId());
 	}
 	
 	/**

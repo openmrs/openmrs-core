@@ -781,8 +781,12 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get encounters by location", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldGetEncountersByLocation() throws Exception {
-		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, new Location(1), null, null, null,
-		    null, null, true);
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+		.setLocation(new Location(1))
+		.setIncludeVoided(true)
+		.createEncounterSearchCriteria();
+		
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(6, encounters.size());
 	}
 	
@@ -799,19 +803,28 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 		
 		// test for a min date long before all dates
-		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2004-12-31"), null,
-		    null, null, null, false);
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+		.setFromDate(ymd.parse("2004-12-31"))
+		.setIncludeVoided(false)
+		.createEncounterSearchCriteria();
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(5, encounters.size());
 		assertEquals(1, encounters.get(0).getEncounterId().intValue());
 		
 		// test for exact date search
-		encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2005-01-01"), null, null, null,
-		    null, false);
+		encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+		.setFromDate(ymd.parse("2005-01-01"))
+		.setIncludeVoided(false)
+		.createEncounterSearchCriteria();
+		encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(5, encounters.size());
 		
 		// test for one day later
-		encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2005-01-02"), null, null, null,
-		    null, false);
+		encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+		.setFromDate(ymd.parse("2005-01-02"))
+		.setIncludeVoided(false)
+		.createEncounterSearchCriteria();
+		encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(4, encounters.size());
 		assertEquals(3, encounters.get(0).getEncounterId().intValue());
 		assertEquals(4, encounters.get(1).getEncounterId().intValue());
@@ -825,8 +838,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should get encounters on or up to a date", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldGetEncountersOnOrUpToADate() throws Exception {
 		Date toDate = new SimpleDateFormat("yyyy-dd-MM").parse("2006-01-01");
-		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, toDate, null, null, null,
-		    true);
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+		.setToDate(toDate)
+		.setIncludeVoided(true)
+		.createEncounterSearchCriteria();
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(2, encounters.size());
 		assertEquals(15, encounters.get(0).getEncounterId().intValue());
 		assertEquals(1, encounters.get(1).getEncounterId().intValue());
@@ -840,22 +856,12 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldGetEncountersByForm() throws Exception {
 		List<Form> forms = new Vector<Form>();
 		forms.add(new Form(1));
-		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, forms, null, null,
-		    true);
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+		.setEnteredViaForms(forms)
+		.setIncludeVoided(true)
+		.createEncounterSearchCriteria();
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(8, encounters.size());
-	}
-	
-	/**
-	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
-	 */
-	@Test
-	@Verifies(value = "should get encounters by provider", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
-	public void getEncounters_shouldGetEncountersByProvider() throws Exception {
-		List<User> providers = new ArrayList<User>();
-		providers.add(Context.getUserService().getUser(1));
-		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, null,
-		    providers, true);
-		assertEquals(2, encounters.size()); // should be encounters 15 and 16
 	}
 	
 	/**
@@ -866,8 +872,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldGetEncountersByType() throws Exception {
 		List<EncounterType> types = new Vector<EncounterType>();
 		types.add(new EncounterType(1));
-		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, types, null,
-		    true);
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+		.setEncounterTypes(types)
+		.setIncludeVoided(true)
+		.createEncounterSearchCriteria();
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(7, encounters.size());
 	}
 	
@@ -877,7 +886,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should exclude voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldExcludeVoidedEncounters() throws Exception {
-		assertEquals(6, Context.getEncounterService().getEncounters(null, null, null, null, null, null, null, false).size());
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+		.setIncludeVoided(false)
+		.createEncounterSearchCriteria();
+		assertEquals(6, Context.getEncounterService().getEncounters(encounterSearchCriteria).size());
 	}
 	
 	/**
@@ -901,7 +913,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should include voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldIncludeVoidedEncounters() throws Exception {
-		assertEquals(8, Context.getEncounterService().getEncounters(null, null, null, null, null, null, null, true).size());
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+		.setIncludeVoided(true)
+		.createEncounterSearchCriteria();
+		assertEquals(8, Context.getEncounterService().getEncounters(encounterSearchCriteria).size());
 	}
 	
 	/**
@@ -1488,8 +1503,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldGetEncountersByVisit() throws Exception {
 		List<Visit> visits = new ArrayList<Visit>();
 		visits.add(new Visit(1));
-		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, null, null,
-		    null, visits, true);
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+		.setVisits(visits)
+		.setIncludeVoided(true)
+		.createEncounterSearchCriteria();
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(2, encounters.size());
 	}
 	
@@ -1501,8 +1519,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldGetEncountersByVisitType() throws Exception {
 		List<VisitType> visitTypes = new Vector<VisitType>();
 		visitTypes.add(new VisitType(2));
-		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, null, null,
-		    visitTypes, null, true);
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+		.setVisitTypes(visitTypes)
+		.setIncludeVoided(true)
+		.createEncounterSearchCriteria();
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(2, encounters.size());
 	}
 	
@@ -2345,7 +2366,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.becomeUser(user.getSystemId());
 		
 		// have to add privilege in order to be able to call getEncounter(Integer) method
-		Context.addProxyPrivilege(PrivilegeConstants.VIEW_ENCOUNTERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
 		
 		assertNull(Context.getEncounterService().getEncounter(encounter.getId()));
 	}
@@ -2371,7 +2392,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.becomeUser(user.getSystemId());
 		
 		// have to add privilege in order to be able to call getEncounter(Integer) method
-		Context.addProxyPrivilege(PrivilegeConstants.VIEW_ENCOUNTERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
 		
 		assertNotNull(Context.getEncounterService().getEncounter(encounter.getId()));
 	}

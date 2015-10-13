@@ -151,7 +151,7 @@ public class MigrationHelper {
 				}
 				pass = new String(password);
 			}
-			us.saveUser(user, pass);
+			us.createUser(user, pass);
 			++ret;
 		}
 		return ret;
@@ -257,7 +257,7 @@ public class MigrationHelper {
 						user.addRole(role);
 					}
 				}
-				us.saveUser(user, pass);
+				us.createUser(user, pass);
 			}
 			if (user == null) {
 				throw new IllegalArgumentException("Can't find user '" + userLastName + ", " + userFirstName + "'");

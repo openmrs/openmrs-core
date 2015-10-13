@@ -62,8 +62,8 @@ import org.openmrs.obs.handler.TextHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * TODO clean up and add tests for all methods in ObsService
@@ -503,7 +503,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		ObsService os = Context.getObsService();
 		
-		Obs normalObs = os.getComplexObs(7, OpenmrsConstants.RAW_VIEW);
+		Obs normalObs = os.getComplexObs(7, ComplexObsHandler.RAW_VIEW);
 		
 		Assert.assertFalse(normalObs.isComplex());
 	}

@@ -1967,7 +1967,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		//given
 		Person person = personService.getPerson(2);
 		User user = new User(person);
-		Context.getUserService().saveUser(user, "Admin123");
+		Context.getUserService().createUser(user, "Admin123");
 		personService.voidPerson(person, "reason");
 		
 		//when
@@ -2003,7 +2003,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		//given
 		Person person = personService.getPerson(2);
 		User user = new User(person);
-		Context.getUserService().saveUser(user, "Admin123");
+		Context.getUserService().createUser(user, "Admin123");
 		Assert.assertFalse(Context.getUserService().getUsersByPerson(person, false).isEmpty());
 		
 		//when

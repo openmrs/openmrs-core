@@ -9,13 +9,11 @@
  */
 package org.openmrs.logic;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.openmrs.Cohort;
-import org.openmrs.Patient;
 import org.openmrs.logic.datasource.LogicDataSource;
 import org.openmrs.logic.result.Result;
 import org.openmrs.logic.result.Result.Datatype;
@@ -71,28 +69,9 @@ public interface LogicService {
 	 * Fetch all known (registered) tokens
 	 * 
 	 * @return all known (registered) tokens
-	 * @deprecated use {@link #getAllTokens()}
-	 */
-	@Deprecated
-	public Set<String> getTokens();
-	
-	/**
-	 * Fetch all known (registered) tokens
-	 * 
-	 * @return all known (registered) tokens
 	 * @should return all registered token
 	 */
 	public List<String> getAllTokens();
-	
-	/**
-	 * Fetch all known (registered) tokens matching a given string
-	 * 
-	 * @param token full or partial token name
-	 * @return all tokens containing the given string
-	 * @deprecated use {@link #getTokens(String)}
-	 */
-	@Deprecated
-	public Set<String> findToken(String token);
 	
 	/**
 	 * Fetch all known (registered) tokens matching a given string
@@ -239,60 +218,7 @@ public interface LogicService {
 	 */
 	public Map<LogicCriteria, Result> eval(Integer patientId, Map<String, Object> parameters, LogicCriteria... criteria)
 	        throws LogicException;
-	
-	/**
-	 * Evaluates a rule for a given patient, given the token for the rule.
-	 * 
-	 * @param who patient for whom the rule is to be calculated
-	 * @param expression expression to be parsed and evaluated
-	 * @return patient-specific result from given rule
-	 * @throws LogicException
-	 * @deprecated use {@link #eval(Integer, String)}
-	 * @see #parse(String)
-	 */
-	@Deprecated
-	public Result eval(Patient who, String expression) throws LogicException;
-	
-	/**
-	 * Evaluates a rule for a given patient, given a token and parameters for the rule.
-	 * 
-	 * @param who patient for whom the rule is to be calculated
-	 * @param expression expression to be parsed and evaluated
-	 * @param parameters parameters to be passed to the rule
-	 * @return patient-specific result from given rule
-	 * @throws LogicException
-	 * @deprecated use {@link #eval(Integer, String, Map)}
-	 * @see #parse(String)
-	 */
-	@Deprecated
-	public Result eval(Patient who, String expression, Map<String, Object> parameters) throws LogicException;
-	
-	/**
-	 * Evaluates a query for a given patient
-	 * 
-	 * @param who patient for whom the query is to be run
-	 * @param criteria question to be answered (along with the token) for the given patient
-	 * @return result of query
-	 * @throws LogicException
-	 * @deprecated use {@link #eval(Integer, LogicCriteria)}
-	 */
-	@Deprecated
-	public Result eval(Patient who, LogicCriteria criteria) throws LogicException;
-	
-	/**
-	 * Evaluates a query for a given patient
-	 * 
-	 * @param who <code>Patient</code> for whom the query is to be run
-	 * @param criteria <code>Criteria</code> question to be answered (along with the token) for the
-	 *            given patient
-	 * @param parameters <code>Map</code> of arguments to be passed to the rule
-	 * @return <code>Result</code> of query
-	 * @throws LogicException
-	 * @deprecated use {@link #eval(Integer, LogicCriteria, Map)}
-	 */
-	@Deprecated
-	public Result eval(Patient who, LogicCriteria criteria, Map<String, Object> parameters) throws LogicException;
-	
+		
 	/**
 	 * Evaluates a query over a list of patients
 	 * 
@@ -372,16 +298,6 @@ public interface LogicService {
 	 * 
 	 * @param token token to look up by
 	 * @return collection of tags
-	 * @deprecated use {@link #getTokenTags(String)}
-	 */
-	@Deprecated
-	public Collection<String> getTagsByToken(String token);
-	
-	/**
-	 * Gets all tags associated with this token.
-	 * 
-	 * @param token token to look up by
-	 * @return collection of tags
 	 * @should return set of tags for a certain token
 	 */
 	public Set<String> getTokenTags(String token);
@@ -391,29 +307,9 @@ public interface LogicService {
 	 * 
 	 * @param tag tag to look up by
 	 * @return collection of tokens
-	 * @deprecated use {@link #getTokensWithTag(String)}
-	 */
-	@Deprecated
-	public Set<String> getTokensByTag(String tag);
-	
-	/**
-	 * Gets all tokens associated with this tag.
-	 * 
-	 * @param tag tag to look up by
-	 * @return collection of tokens
 	 * @should return set of token associated with a tag
 	 */
 	public List<String> getTokensWithTag(String tag);
-	
-	/**
-	 * Performs a partial match search for token tags among all known tokens.
-	 * 
-	 * @param partialTag partial match string
-	 * @return collection of tags
-	 * @deprecated use {@link #getTags(String)}
-	 */
-	@Deprecated
-	public Set<String> findTags(String partialTag);
 	
 	/**
 	 * Performs a partial match search for token tags among all known tokens.
@@ -441,35 +337,14 @@ public interface LogicService {
 	 * @return list of parameters
 	 */
 	public Set<RuleParameterInfo> getParameterList(String token);
-	
-	/**
-	 * Adds a data source to the logic service. Data sources provide access to granular data that
-	 * can be combined by rules to derive higher level information.
-	 * 
-	 * @param name name for the data source
-	 * @param logicDataSource the data source
-	 * @throws LogicException
-	 * @deprecated data sources are now auto-registered via Spring (since Logic module version 0.5)
-	 */
-	@Deprecated
-	public void registerLogicDataSource(String name, LogicDataSource logicDataSource) throws LogicException;
-	
+		
 	/**
 	 * Get all registered logic data sources
 	 * 
 	 * @return all registered logic data sources
 	 */
 	public Map<String, LogicDataSource> getLogicDataSources();
-	
-	/**
-	 * Adds the given logic data sources to the list of current data sources on this logic service
-	 * 
-	 * @param logicDataSources
-	 * @deprecated data sources are now auto-registered via Spring (since Logic module version 0.5)
-	 */
-	@Deprecated
-	public void setLogicDataSources(Map<String, LogicDataSource> logicDataSources) throws LogicException;
-	
+		
 	/**
 	 * Get a logic data source by name
 	 * 
@@ -478,28 +353,6 @@ public interface LogicService {
 	 *         source registered under the given name (must be an exact match)
 	 */
 	public LogicDataSource getLogicDataSource(String name);
-	
-	/**
-	 * Remove a logic data source by name
-	 * 
-	 * @param name name of the logic data source to be unregistered
-	 * @deprecated data sources are now auto-registered via Spring (since Logic module version 0.5)
-	 */
-	@Deprecated
-	public void removeLogicDataSource(String name);
-	
-	/**
-	 * Parse a criteria String to create a new LogicCriteria. <br>
-	 * <br>
-	 * Example: <br>
-	 * <code>logicService.parseString("LAST 'CD4 COUNT' &lt; 200");</code>
-	 * 
-	 * @param inStr LogicCriteria expression in a plain String object.
-	 * @return LogicCriteria using all possible operand and operator from the String input
-	 * @deprecated use {@link LogicService#parse(String)}
-	 */
-	@Deprecated
-	public LogicCriteria parseString(String inStr);
 	
 	/**
 	 * Parse a criteria String to create a new LogicCriteria. <br>

@@ -51,8 +51,6 @@
 			not-null="true" column="concept_id" />
 		<many-to-one name="dosageForm" class="org.openmrs.Concept"
 			not-null="false" column="dosage_form" />
-		<many-to-one name="route" class="org.openmrs.Concept"
-			not-null="false" />
 
 		<set name="ingredients" lazy="true" inverse="true">
 			<key column="drug_id" />	

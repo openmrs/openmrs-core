@@ -23,7 +23,6 @@ import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.web.Listener;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
@@ -50,7 +49,6 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	@NotTransactional
 	public void shouldCallWillRefreshContextAndContextRefreshedOnRefresh() throws Exception {
 		
 		ModuleUtil.refreshApplicationContext((AbstractRefreshableApplicationContext) applicationContext, false, null);
@@ -65,7 +63,6 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	@NotTransactional
 	public void shouldRefreshOtherModulesOnStoppingModule() {
 		
 		//When OpenMRS is running and you stop a module:
@@ -98,7 +95,6 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	@NotTransactional
 	public void shouldRefreshOtherModulesOnStartingStoppedModule() throws Exception {
 		Module module = ModuleFactory.getModuleById(MODULE3_ID);
 		ModuleFactory.stopModule(module);
@@ -136,7 +132,6 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	@NotTransactional
 	public void shouldRefreshContextForAllStartedModulesOnWebStartup() throws Throwable {
 		
 		//At OpenMRS start up:
@@ -161,7 +156,6 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	@NotTransactional
 	public void shouldRefreshOtherModulesOnInstallingNewModule() throws Exception {
 		//first completely remove module3
 		Module module = ModuleFactory.getModuleById(MODULE3_ID);
@@ -205,7 +199,6 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	@NotTransactional
 	public void shouldUpgradeModule() throws Exception {
 		Module module = ModuleFactory.getModuleById(MODULE3_ID);
 		
@@ -227,7 +220,6 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	@NotTransactional
 	public void shouldUpgradeModuleWithDependents() throws Exception {
 		Module module = ModuleFactory.getModuleById(MODULE1_ID);
 		assertTrue(module.getVersion().equals("1.0-SNAPSHOT"));

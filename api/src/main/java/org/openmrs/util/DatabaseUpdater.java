@@ -145,22 +145,12 @@ public class DatabaseUpdater {
 		}
 		
 		try {
-			return executeChangelog(changelog, CONTEXT, userInput, callback);
+			return executeChangelog(changelog, CONTEXT, userInput, callback, null);
 		}
 		catch (Exception e) {
 			throw new DatabaseUpdateException("There was an error while updating the database to the latest. file: "
 			        + changelog + ". Error: " + e.getMessage(), e);
 		}
-	}
-	
-	/**
-	 * @deprecated use
-	 *             {@link #executeChangelog(String, String, Map, ChangeSetExecutorCallback, ClassLoader)}
-	 */
-	@Deprecated
-	public static List<String> executeChangelog(String changeLogFile, String contexts, Map<String, Object> userInput,
-	        ChangeSetExecutorCallback callback) throws Exception {
-		return executeChangelog(changeLogFile, contexts, userInput, callback, null);
 	}
 	
 	/**
@@ -554,7 +544,7 @@ public class DatabaseUpdater {
 	 *
 	 * @return list of changesets that both have and haven't been run
 	 */
-	@Authorized(PrivilegeConstants.VIEW_DATABASE_CHANGES)
+	@Authorized(PrivilegeConstants.GET_DATABASE_CHANGES)
 	public static List<OpenMRSChangeSet> getDatabaseChanges() throws Exception {
 		Database database = null;
 		
@@ -588,7 +578,7 @@ public class DatabaseUpdater {
 	/**
 	 * @see DatabaseUpdater#getUnrunDatabaseChanges(String...)
 	 */
-	@Authorized(PrivilegeConstants.VIEW_DATABASE_CHANGES)
+	@Authorized(PrivilegeConstants.GET_DATABASE_CHANGES)
 	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges() throws Exception {
 		return getUnrunDatabaseChanges(CHANGE_LOG_FILE);
 	}
@@ -602,7 +592,7 @@ public class DatabaseUpdater {
 	 * @return list of change sets
 	 * @throws Exception
 	 */
-	@Authorized(PrivilegeConstants.VIEW_DATABASE_CHANGES)
+	@Authorized(PrivilegeConstants.GET_DATABASE_CHANGES)
 	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges(String... changeLogFilenames) throws Exception {
 		log.debug("Getting unrun changesets");
 		

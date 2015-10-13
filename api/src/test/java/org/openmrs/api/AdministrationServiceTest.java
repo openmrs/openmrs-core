@@ -732,7 +732,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		
 		User user = Context.getAuthenticatedUser();
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "es_CL, en_US, pl");
-		Context.getUserService().saveUser(user, null);
+		Context.getUserService().saveUser(user);
 		
 		//when
 		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();
@@ -755,7 +755,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB"));
 		User user = Context.getAuthenticatedUser();
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "");
-		Context.getUserService().saveUser(user, null);
+		Context.getUserService().saveUser(user);
 		Context.setLocale(new Locale("en", "GB"));
 		
 		//when
@@ -778,7 +778,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		
 		User user = Context.getAuthenticatedUser();
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "en_GB, en_US");
-		Context.getUserService().saveUser(user, null);
+		Context.getUserService().saveUser(user);
 		
 		//when
 		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();

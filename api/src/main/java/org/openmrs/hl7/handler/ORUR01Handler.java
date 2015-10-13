@@ -380,20 +380,6 @@ public class ORUR01Handler implements Application {
 		}
 		Context.getEncounterService().saveEncounter(encounter);
 		
-		// Notify HL7 service that we have created a new encounter, allowing
-		// features/modules to trigger on HL7-generated encounters.
-		// -This can be removed once we have a obs_group table and all
-		// obs can be created in memory as part of the encounter *before* we
-		// call EncounterService.createEncounter().  For now, making obs groups
-		// requires that one obs be created (in the database) before others can
-		// be linked to it, forcing us to save the encounter prematurely."
-		//
-		// NOTE: The above referenced fix is now done.  This method is
-		// deprecated and will be removed in the next release.  All modules
-		// should modify their AOP methods to hook around
-		// EncounterService.createEncounter(Encounter).
-		hl7Service.encounterCreated(encounter);
-		
 		// loop over the proposed concepts and save each to the database
 		// now that the encounter is saved
 		for (ConceptProposal proposal : conceptProposals) {

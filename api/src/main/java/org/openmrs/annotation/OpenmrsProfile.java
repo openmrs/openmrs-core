@@ -27,12 +27,6 @@ import java.lang.annotation.Target;
 public @interface OpenmrsProfile {
 	
 	/**
-	 * @deprecated Since 1.11.3, 1.10.2, 1.9.9 use {@link #openmrsPlatformVersion()}.
-	 */
-	@Deprecated
-	public String openmrsVersion() default "";
-	
-	/**
 	 * @since 1.11.3, 1.10.2, 1.9.9
 	 */
 	public String openmrsPlatformVersion() default "";

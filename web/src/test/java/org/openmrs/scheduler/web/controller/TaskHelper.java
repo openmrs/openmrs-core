@@ -76,7 +76,7 @@ public class TaskHelper {
 		TaskDefinition task = service.getTaskByName("Hello World Task");
 		
 		task.setStartTime(startTime);
-		service.saveTask(task);
+		service.saveTaskDefinition(task);
 		
 		return task;
 	}

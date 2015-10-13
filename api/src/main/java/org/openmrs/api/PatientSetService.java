@@ -24,7 +24,6 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
@@ -41,17 +40,6 @@ import org.openmrs.api.db.PatientSetDAO;
 public interface PatientSetService extends OpenmrsService {
 	
 	public void setPatientSetDAO(PatientSetDAO dao);
-	
-	/**
-	 * Export a set of patients to an XML
-	 * 
-	 * @param ps The set you want to export as XML
-	 * @return an XML representation of this patient-set, including patient characteristics, and
-	 *         observations
-	 */
-	public String exportXml(Cohort ps);
-	
-	public String exportXml(Integer patientId);
 	
 	public Cohort getAllPatients() throws DAOException;
 	
@@ -277,13 +265,6 @@ public interface PatientSetService extends OpenmrsService {
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c);
 	
 	/**
-	 * @deprecated use {@link #getObservationsValues(Cohort, Concept, List, Integer, boolean)}
-	 *             instead
-	 */
-	@Deprecated
-	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes);
-	
-	/**
 	 * Returns a mapping from patient id to obs for concept <code>c</code>
 	 * <p>
 	 * The returned List&lt; attribute value &gt; is [obs value, attr value, attr value, attr value...]
@@ -411,16 +392,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @return Map&lt;Integer,Map&lt;String,Object&gt;&gt; with characteristics of specified patients
 	 */
 	public Map<Integer, Map<String, Object>> getCharacteristics(Cohort patients);
-	
-	/**
-	 * The PatientIdentifer object in the returned map now ONLY contains the identifier string, no
-	 * other data is available
-	 * 
-	 * @deprecated use method by same name that returns just the string instead of the whole object
-	 */
-	@Deprecated
-	public Map<Integer, PatientIdentifier> getPatientIdentifiersByType(Cohort patients, PatientIdentifierType type);
-	
+		
 	/**
 	 * Gets a map of patient identifiers values by identifier type, indexed by patient primary key.
 	 * 

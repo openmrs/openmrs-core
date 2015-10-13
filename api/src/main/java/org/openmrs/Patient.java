@@ -103,24 +103,6 @@ public class Patient extends Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return patient's tribe
-	 * @deprecated Tribe is not long a value on Patient. Install the Tribe module
-	 */
-	@Deprecated
-	public Tribe getTribe() {
-		throw new APIException("Tribe.install.module", new Object[] { "Patient.getTribe" });
-	}
-	
-	/**
-	 * @param tribe patient's tribe
-	 * @deprecated Tribe is not long a value on Patient. Install the Tribe module
-	 */
-	@Deprecated
-	public void setTribe(Tribe tribe) {
-		throw new APIException("Tribe.install.module", new Object[] { "Patient.setTribe(Tribe)" });
-	}
-	
-	/**
 	 * Get all of this patients identifiers -- both voided and non-voided ones. If you want only
 	 * non-voided identifiers, use {@link #getActiveIdentifiers()}
 	 * 

@@ -49,8 +49,9 @@
 		</set>
 		
 		<property name="conceptNameType" column="concept_name_type" length="50">
-			<type name="org.openmrs.util.HibernateEnumType">
-				<param name="enumClassName">org.openmrs.api.ConceptNameType</param>
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">org.openmrs.api.ConceptNameType</param>
+				<param name="type">12</param>
 			</type>
 		</property>
 		

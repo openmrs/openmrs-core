@@ -42,14 +42,6 @@ public class LocaleUtility implements GlobalPropertyListener {
 	private static List<Locale> localesAllowedListCache = null;
 	
 	/**
-	 * Default internal locale.
-	 *
-	 * @deprecated use {@link #getDefaultLocale()} now
-	 */
-	@Deprecated
-	public static final Locale DEFAULT_LOCALE = Locale.UK;
-	
-	/**
 	 * Gets the default locale specified as a global property.
 	 *
 	 * @return default locale object.

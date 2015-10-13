@@ -148,31 +148,6 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, Integer,
-	 *      Integer, boolean)
-	 *
-	 * @deprecated replaced by {@link org.openmrs.api.db.PatientDAO#getPatients(String, Integer, Integer)}
-	 *
-	 */
-	@Deprecated
-	@SuppressWarnings("unchecked")
-	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly, Integer start, Integer length, boolean searchOnNamesOrIdentifiers)
-	        throws DAOException {
-		if (StringUtils.isBlank(name) && StringUtils.isBlank(identifier)
-		        && (identifierTypes == null || identifierTypes.isEmpty())) {
-			return Collections.emptyList();
-		}
-		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
-		    matchIdentifierExactly, true, searchOnNamesOrIdentifiers);
-		setFirstAndMaxResult(criteria, start, length);
-		
-		return criteria.list();
-	}
-	
-	/**
 	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, boolean, Integer, Integer)
 	 * @should return exact match first
 	 */
@@ -611,29 +586,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		sessionFactory.getCurrentSession().delete(patientIdentifier);
 		
-	}
-	
-	/**
-	 * @see PatientDAO#getCountOfPatients(String, String, List, boolean, boolean)
-	 *
-	 * @deprecated replaced by {@link org.openmrs.api.db.PatientDAO#getCountOfPatients(String)}
-	 */
-	@Deprecated
-	public Long getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly, boolean searchOnNamesOrIdentifiers) {
-		if (StringUtils.isBlank(name) && StringUtils.isBlank(identifier)
-		        && (identifierTypes == null || identifierTypes.isEmpty())) {
-			return 0L;
-		}
-		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
-		    matchIdentifierExactly, false, searchOnNamesOrIdentifiers);
-		
-		// Using Hibernate projections did NOT work here, the resulting queries could not be executed due to
-		// missing group-by clauses. Hence the poor man's implementation of counting search results.
-		//
-		return (long) criteria.list().size();
 	}
 	
 	/**
