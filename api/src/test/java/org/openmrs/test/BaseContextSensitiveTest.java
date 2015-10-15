@@ -69,6 +69,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.Before;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openmrs.ConceptName;
@@ -77,8 +78,8 @@ import org.openmrs.User;
 import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.module.ModuleConstants;
-import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -154,6 +155,14 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	private User authenticatedUser;
 	
+	/**
+	 * Allows mocking services returned by Context. See {@link ContextMockHelper}
+	 * 
+	 * @since 1.11, 1.10, 1.9.9
+	 */
+	@InjectMocks
+	protected ContextMockHelper contextMockHelper;
+	
 	private static volatile BaseContextSensitiveTest instance;
 	
 	/**
@@ -188,6 +197,14 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	@Before
 	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
+	}
+	
+	/**
+	 * @since 1.11, 1.10, 1.9.9
+	 */
+	@After
+	public void revertContextMocks() {
+		contextMockHelper.revertMocks();
 	}
 	
 	/**
@@ -556,7 +573,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		 * Hbm2ddl used in tests creates primary key columns, which are not auto incremented, if
 		 * NativeIfNotAssignedIdentityGenerator is used. We need to alter those columns in tests.
 		 */
-		List<String> tables = Arrays.asList("concept", "active_list");
+		List<String> tables = Arrays.asList("concept");
 		for (String table : tables) {
 			getConnection().prepareStatement("ALTER TABLE " + table + " ALTER COLUMN " + table + "_id INT AUTO_INCREMENT")
 			        .execute();

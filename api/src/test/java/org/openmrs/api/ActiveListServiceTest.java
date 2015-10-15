@@ -79,37 +79,6 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(item instanceof Allergy);
 	}
 	
-	//	public ActiveListItem getActiveListItemByUuid(String uuid) throws Exception;
-	//
-	//	public ActiveListItem saveActiveListItem(ActiveListItem item) throws Exception;
-	@Test
-	public void should_saveActiveListItem_Problem() throws Exception {
-		Patient p = patientService.getPatient(2);
-		List<Problem> items = activeListService.getActiveListItems(Problem.class, p, new ActiveListType(2));
-		assertEquals(1, items.size());
-		
-		Concept concept = Context.getConceptService().getConcept(88);//Aspirin
-		Problem problem = new Problem(p, concept, new Date(), ProblemModifier.HISTORY_OF, "", null);
-		activeListService.saveActiveListItem(problem);
-		
-		items = activeListService.getActiveListItems(Problem.class, p, new ActiveListType(2));
-		assertEquals(2, items.size());
-	}
-	
-	@Test
-	public void should_saveActiveListItem_Allergy() throws Exception {
-		Patient p = patientService.getPatient(2);
-		List<Allergy> items = activeListService.getActiveListItems(Allergy.class, p, new ActiveListType(1));
-		assertEquals(1, items.size());
-		
-		Concept concept = Context.getConceptService().getConcept(88);//Aspirin
-		Allergy allergy = new Allergy(p, concept, new Date(), AllergyType.ANIMAL, null, AllergySeverity.INTOLERANCE);
-		activeListService.saveActiveListItem(allergy);
-		
-		items = activeListService.getActiveListItems(Allergy.class, p, new ActiveListType(1));
-		assertEquals(2, items.size());
-	}
-	
 	//	public ActiveListItem removeActiveListItem(ActiveListItem item, Date endDate) throws Exception;
 	@Test
 	public void should_removeActiveListItem_Allergy() throws Exception {

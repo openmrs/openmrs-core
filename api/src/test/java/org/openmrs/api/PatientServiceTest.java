@@ -2262,37 +2262,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(allergy.getAllergen());
 		Assert.assertNotNull(allergy.getStartDate());
 	}
-	
-	/**
-	 * @see PatientService#saveProblem(Problem)
-	 */
-	@Test
-	@Verifies(value = "save the problem and set the weight for correct ordering", method = "saveProblem(ProblemListItem)")
-	public void saveProblem_shouldSaveTheProblemAndSetTheWeightForCorrectOrdering() throws Exception {
-		executeDataSet(ACTIVE_LIST_INITIAL_XML);
 		
-		Patient p = patientService.getPatient(2);
-		
-		List<Problem> problems = patientService.getProblems(p);
-		assertEqualsInt(1, problems.size());
-		
-		Problem problem = new Problem();
-		problem.setPerson(p);
-		problem.setProblem(Context.getConceptService().getConcept(88));// Aspirin
-		
-		patientService.saveProblem(problem);
-		
-		problems = patientService.getProblems(p);
-		Assert.assertNotNull(problems);
-		assertEqualsInt(2, problems.size());
-		
-		problem = problems.get(1);
-		assertEqualsInt(88, problem.getProblem().getConceptId());
-		Assert.assertNotNull(problem.getPerson());
-		Assert.assertNotNull(problem.getStartDate());
-		assertThat(problem.getSortWeight(), is(2d));
-	}
-	
 	/**
 	 * @see PatientService#resolveProblem(Problem, String)
 	 */
@@ -2310,36 +2280,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		problems = patientService.getProblems(p);
 		Assert.assertNotNull(problems);
 		Assert.assertNotNull(problems.get(0).getEndDate());
-	}
-	
-	/**
-	 * @see PatientService#saveAllergy(Problem)
-	 */
-	@Test
-	@Verifies(value = "save the allergy", method = "saveAllergy(AllergyListItem)")
-	public void saveAllergy_shouldSaveTheAllergy() throws Exception {
-		executeDataSet(ACTIVE_LIST_INITIAL_XML);
-		
-		Patient p = patientService.getPatient(2);
-		Allergy allergen = new Allergy();
-		allergen.setPerson(p);
-		allergen.setAllergen(Context.getConceptService().getConcept(88));// Aspirin
-		
-		patientService.saveAllergy(allergen);
-		
-		List<Allergy> allergies = patientService.getAllergies(p);
-		Assert.assertNotNull(allergies);
-		assertEqualsInt(2, allergies.size());
-		
-		for (Allergy a : allergies) {
-			if (a.getAllergen().getConceptId().equals(88)) {
-				allergen = a;
-				break;
-			}
-		}
-		
-		Assert.assertNotNull(allergen.getPerson());
-		Assert.assertNotNull(allergen.getStartDate());
 	}
 	
 	/**
