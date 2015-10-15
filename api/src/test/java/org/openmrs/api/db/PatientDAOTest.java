@@ -122,11 +122,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		pService.savePatient(patient6);
 		
 		//we expect only one matching patient
-		int actualSize = dao.getPatients(null, 0, null).size();
+		int actualSize = dao.getPatients("*567", 0, null).size();
 		Assert.assertEquals(1, actualSize);
 		
 		//if actually the search returned the matching patient
-		Patient actualPatient = dao.getPatients(null, 0, null).get(0);
+		Patient actualPatient = dao.getPatients("*567", 0, null).get(0);
 		
 		Assert.assertEquals(patient2, actualPatient);
 	}
@@ -153,11 +153,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		pService.savePatient(patient6);
 		
 		//we expect only one matching patient
-		int actualSize = dao.getPatients(null, 0, null).size();
+		int actualSize = dao.getPatients("%567", 0, null).size();
 		Assert.assertEquals(1, actualSize);
 		
 		//if actually the search returned the matching patient
-		Patient actualPatient = dao.getPatients(null, 0, null).get(0);
+		Patient actualPatient = dao.getPatients("%567", 0, null).get(0);
 		
 		Assert.assertEquals(patient2, actualPatient);
 	}
@@ -185,11 +185,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		pService.savePatient(patient6);
 		
 		//we expect only one matching patient
-		int actualSize = dao.getPatients(null, 0, null).size();
+		int actualSize = dao.getPatients("_567", 0, null).size();
 		Assert.assertEquals(1, actualSize);
 		
 		//if actually the search returned the matching patient
-		Patient actualPatient = dao.getPatients(null, 0, null).get(0);
+		Patient actualPatient = dao.getPatients("_567", 0, null).get(0);
 		
 		Assert.assertEquals(patient2, actualPatient);
 	}
@@ -565,36 +565,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(patientIdentifierTypes.size(), 1);
 		Assert.assertEquals(nonRetiredRequired, patientIdentifierTypes.get(0));
-	}
-	
-	/**
-	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
-	 * @verifies return non retired patient identifier types that has checkDigit
-	 */
-	@Test
-	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypesThatHasCheckDigit() {
-		PatientIdentifierType nonRetiredHasDigit = dao.getPatientIdentifierType(1);
-		
-		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, true);
-		
-		Assert.assertEquals(patientIdentifierTypes.size(), 1);
-		Assert.assertEquals(nonRetiredHasDigit, patientIdentifierTypes.get(0));
-	}
-	
-	/**
-	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
-	 * @verifies return non retired patient identifier types that has not CheckDigit
-	 */
-	@Test
-	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypesThatHasNotCheckDigit() {
-		PatientIdentifierType nonRetiredHasNoDigit1 = dao.getPatientIdentifierType(2);
-		PatientIdentifierType nonRetiredHasNoDigit2 = dao.getPatientIdentifierType(5);
-		
-		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, false);
-		
-		Assert.assertEquals(patientIdentifierTypes.size(), 2);
-		Assert.assertTrue(patientIdentifierTypes.contains(nonRetiredHasNoDigit1));
-		Assert.assertTrue(patientIdentifierTypes.contains(nonRetiredHasNoDigit2));
 	}
 	
 	/**
@@ -1127,7 +1097,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldGetPatientByIdentifier_SignatureNo1() throws Exception {
-		List<Patient> patients = dao.getPatients(null, 0, 11);
+		List<Patient> patients = dao.getPatients("42-42-42", 0, 11);
 		
 		Assert.assertEquals(1, patients.size());
 		Assert.assertEquals("Bilbo Odilon", patients.get(0).getGivenName());
@@ -1183,7 +1153,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getPatients_shouldGetPatientBySearchingOnNamesOrIdentifiersAndUsingNameValueAsIdentifierParameter_SignatureNo1()
 	        throws Exception {
-		List<Patient> patients = dao.getPatients(null, 0, 11);
+		List<Patient> patients = dao.getPatients("Bilbo Odilon", 0, 11);
 		
 		Assert.assertEquals(1, patients.size());
 		Assert.assertEquals("Bilbo Odilon", patients.get(0).getGivenName());

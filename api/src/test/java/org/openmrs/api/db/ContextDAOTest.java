@@ -331,7 +331,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		u.setUsername("");
 		u.getPerson().setGender("M");
 		
-		us.createUser(u, "Openmr5xy");
+		us.saveUser(u);
 		dao.authenticate("", "password");
 		
 	}

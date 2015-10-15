@@ -306,7 +306,6 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(errors.hasFieldErrors("username"));
 		Assert.assertTrue(errors.hasFieldErrors("systemId"));
-		Assert.assertTrue(errors.hasFieldErrors("secretQuestion"));
 		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 		Assert.assertTrue(errors.hasFieldErrors("person.names[0].givenName"));
 		Assert.assertTrue(errors.hasFieldErrors("person.names[0].middleName"));

@@ -350,7 +350,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// patient is actually there
 		String identifier = firstJohnPatient.getPatientIdentifier().getIdentifier();
 		assertNotNull("Uh oh, the patient doesn't have an identifier", identifier);
-		List<Patient> patients = patientService.getPatients(null, identifier, null, false);
+		List<Patient> patients = patientService.getPatients(identifier, null, null, false);
 		assertTrue("Odd. The firstJohnPatient isn't in the list of patients for this identifier", patients
 		        .contains(firstJohnPatient));
 		
@@ -439,19 +439,15 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(new PatientIdentifierType(1));
 		// make sure we get back only one patient
-		List<Patient> patients = patientService.getPatients(null, "1234", types, false);
+		List<Patient> patients = patientService.getPatients("1234", null, types, false);
 		assertEquals(1, patients.size());
 		
 		// make sure we get back only one patient
-		patients = patientService.getPatients(null, "1234", null, false);
+		patients = patientService.getPatients("1234", null, null, false);
 		assertEquals(1, patients.size());
 		
-		// make sure we get back only patient #2 and patient #5
-		patients = patientService.getPatients(null, null, types, false);
-		assertEquals(2, patients.size());
-		
 		// make sure we can search a padded identifier
-		patients = patientService.getPatients(null, "00000001234", null, false);
+		patients = patientService.getPatients("00000001234", null, null, false);
 		assertEquals(1, patients.size());
 	}
 	

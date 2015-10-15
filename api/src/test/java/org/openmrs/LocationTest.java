@@ -103,10 +103,4 @@ public class LocationTest {
 		
 		Assert.assertThat(descendantLocations, equalTo(expectedLocations));
 	}
-	
-	@Test
-	public void sometest() {
-		Location location = new Location(1440);
-		Assert.assertEquals("1440", location.toString());
-	}
 }

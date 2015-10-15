@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ProviderService;
-import org.openmrs.test.BaseContextMockTest;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 /**
@@ -36,7 +36,7 @@ import org.openmrs.test.Verifies;
  * 
  * @see Encounter
  */
-public class EncounterTest extends BaseContextMockTest {
+public class EncounterTest extends BaseContextSensitiveTest {
 	
 	@Mock
 	EncounterService encounterService;
@@ -1156,6 +1156,7 @@ public class EncounterTest extends BaseContextMockTest {
 		encounter.setDateCreated(new Date());
 		encounter.setChangedBy(new User());
 		encounter.setDateChanged(new Date());
+		encounter.setVoided(true);
 		encounter.setVoidReason("void");
 		encounter.setDateVoided(new Date());
 		
@@ -1173,7 +1174,7 @@ public class EncounterTest extends BaseContextMockTest {
 		
 		encounter.setVisit(new Visit());
 		
-		Patient patient = new Patient(1234);
+		Patient patient = new Patient(7);
 		
 		Encounter encounterCopy = encounter.copyAndAssignToAnotherPatient(patient);
 		
