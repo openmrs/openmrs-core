@@ -638,7 +638,7 @@ public class Context {
 	 */
 	public static User getAuthenticatedUser() {
 		if (Daemon.isDaemonThread()) {
-			return contextDAO.getUserByUuid(Daemon.DAEMON_USER_UUID);
+			return Daemon.getDaemonUser();
 		}
 		
 		return getUserContext().getAuthenticatedUser();
