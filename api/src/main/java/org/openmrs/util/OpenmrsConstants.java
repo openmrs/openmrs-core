@@ -1105,7 +1105,7 @@ public final class OpenmrsConstants {
 	 * @since 1.12
 	 * Specifies the uuid of concept which represents drug non coded
 	 */
-	public static final String GP_DRUG_NON_CODED_CONCEPT_UUID = "order.drugNonCodedConceptUuid";
+	public static final String GP_DRUG_ORDER_DRUG_OTHER = "drugOrder.drugOther";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
@@ -1612,7 +1612,7 @@ public final class OpenmrsConstants {
 		                "Specifies how person attributes are matched while searching person. Valid values are 'ANYWHERE' or 'EXACT'. Defaults to exact if missing or invalid value is present."));
 
 		props
-				.add(new GlobalProperty(GP_DRUG_NON_CODED_CONCEPT_UUID, "", "Specifies the uuid of concept which represents drug non coded"));
+				.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "", "Specifies the uuid of concept which represents drug other non coded"));
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
