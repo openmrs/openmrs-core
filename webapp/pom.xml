@@ -155,9 +155,9 @@
          <build>
             <plugins>
                <plugin>
-                   <groupId>org.mortbay.jetty</groupId>
+                   <groupId>org.eclipse.jetty</groupId>
                    <artifactId>jetty-maven-plugin</artifactId>
-                   <version>8.1.16.v20140903</version>
+                   <version>9.3.3.v20150827</version>
                    <configuration>
                      <webApp>
                	  		<descriptor>${project.build.directory}/jetty/WEB-INF/web.xml</descriptor>
