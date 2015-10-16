@@ -142,7 +142,7 @@
 		</property>
 		<property name="order"><value>99</value></property>
 	</bean>
-
+	
 	<!--<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>-->
 	<bean id="springController" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
 

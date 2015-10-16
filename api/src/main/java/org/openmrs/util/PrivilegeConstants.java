@@ -530,4 +530,8 @@ public class PrivilegeConstants {
 
 	@AddOnStartup(description = "Able to manage the search index")
 	public static final String MANAGE_SEARCH_INDEX = "Manage Search Index";
+
+	@AddOnStartup(description = "Able to add, edit, delete allergies")
+	public static final String MODIFY_ALLERGIES = "Task: Modify Allergies";
+
 }

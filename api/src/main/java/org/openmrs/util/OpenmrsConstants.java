@@ -1035,6 +1035,34 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_DISABLE_VALIDATION, "false",
 				"Disables validation of OpenMRS Objects. Only takes affect on next restart. Warning: only do this is you know what you are doing!"));
 
+
+		props.add(new GlobalProperty("allergy.concept.severity.mild", "1498AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+		        "UUID for the MILD severity concept"));
+		
+		props.add(new GlobalProperty("allergy.concept.severity.moderate", "1499AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+		        "UUID for the MODERATE severity concept"));
+		
+		props.add(new GlobalProperty("allergy.concept.severity.severe", "1500AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+		        "UUID for the SEVERE severity concept"));
+		
+		props.add(new GlobalProperty("allergy.concept.allergen.food", "162553AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+		        "UUID for the food allergens concept"));
+		
+		props.add(new GlobalProperty("allergy.concept.allergen.drug", "162552AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+		        "UUID for the drug allergens concept"));
+		
+		props.add(new GlobalProperty("allergy.concept.allergen.environment", "162554AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+		        "UUID for the environment allergens concept"));
+		
+		props.add(new GlobalProperty("allergy.concept.reactions", "162555AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+		        "UUID for the allergy reactions concept"));
+		
+		props.add(new GlobalProperty("allergy.concept.otherNonCoded", "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+		        "UUID for the allergy other non coded concept"));
+		
+		props.add(new GlobalProperty("allergy.concept.unknown", "1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+		        "UUID for the allergy unknown concept"));
+		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
@@ -1218,4 +1246,5 @@ public final class OpenmrsConstants {
 	
 	/** Value for the long person name format */
 	public static final String PERSON_NAME_FORMAT_LONG = "long";
+
 }

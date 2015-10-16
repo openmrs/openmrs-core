@@ -1158,6 +1158,6 @@
 		<sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
 		<sonar.analysis.mode>incremental</sonar.analysis.mode>
 		
-		<argLine>-Duser.language=en -Duser.region=US -Xmx512m -XX:MaxPermSize=512m ${customArgLineForTesting}</argLine>
+		<argLine>-Duser.language=en -Duser.region=US -Xmx2g ${customArgLineForTesting}</argLine>
 	</properties>
 </project>

@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -28,11 +29,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
-import org.openmrs.activelist.Allergy;
-import org.openmrs.activelist.AllergySeverity;
-import org.openmrs.activelist.AllergyType;
-import org.openmrs.activelist.Problem;
-import org.openmrs.activelist.ProblemModifier;
+
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
@@ -583,142 +580,6 @@ public class DWRPatientService implements GlobalPropertyListener {
 		*/
 
 		return ret;
-	}
-	
-	/**
-	 * Creates an Allergy Item
-	 *
-	 * @param patientId
-	 * @param allergenId
-	 * @param type
-	 * @param pStartDate
-	 * @param severity
-	 * @param reactionId
-	 */
-	public void createAllergy(Integer patientId, Integer allergenId, String type, String pStartDate, String severity,
-	        Integer reactionId) {
-		Date startDate = parseDate(pStartDate);
-		
-		Patient patient = Context.getPatientService().getPatient(patientId);
-		Concept allergyConcept = Context.getConceptService().getConcept(allergenId);
-		Concept reactionConcept = (reactionId == null) ? null : Context.getConceptService().getConcept(reactionId);
-		AllergySeverity allergySeverity = StringUtils.isBlank(severity) ? null : AllergySeverity.valueOf(severity);
-		AllergyType allergyType = StringUtils.isBlank(type) ? null : AllergyType.valueOf(type);
-		
-		Allergy allergy = new Allergy(patient, allergyConcept, startDate, allergyType, reactionConcept, allergySeverity);
-		Context.getPatientService().saveAllergy(allergy);
-	}
-	
-	/**
-	 * Save an Allergy
-	 *
-	 * @param activeListItemId
-	 * @param allergenId Concept ID
-	 * @param type
-	 * @param pStartDate
-	 * @param severity
-	 * @param reactionId
-	 */
-	public void saveAllergy(Integer activeListItemId, Integer allergenId, String type, String pStartDate, String severity,
-	        Integer reactionId) {
-		//get the allergy
-		Allergy allergy = Context.getPatientService().getAllergy(activeListItemId);
-		allergy.setAllergen(Context.getConceptService().getConcept(allergenId));
-		allergy.setAllergyType(type);
-		allergy.setStartDate(parseDate(pStartDate));
-		allergy.setSeverity(severity);
-		allergy.setReaction((reactionId == null) ? null : Context.getConceptService().getConcept(reactionId));
-		Context.getPatientService().saveAllergy(allergy);
-	}
-	
-	/**
-	 * Resolve an allergy
-	 *
-	 * @param activeListId
-	 * @param reason
-	 */
-	public void removeAllergy(Integer activeListId, String reason) {
-		Allergy allergy = Context.getPatientService().getAllergy(activeListId);
-		Context.getPatientService().removeAllergy(allergy, reason);
-	}
-	
-	/**
-	 * Voids the Allergy
-	 *
-	 * @param activeListId
-	 * @param reason
-	 */
-	public void voidAllergy(Integer activeListId, String reason) {
-		Allergy allergy = Context.getPatientService().getAllergy(activeListId);
-		if (reason == null) {
-			reason = "Error - user entered incorrect data from UI";
-		}
-		Context.getPatientService().voidAllergy(allergy, reason);
-	}
-	
-	/**
-	 * Creates a Problem Item
-	 *
-	 * @param patientId
-	 * @param problemId
-	 * @param status
-	 * @param pStartDate
-	 * @param comments
-	 */
-	public void createProblem(Integer patientId, Integer problemId, String status, String pStartDate, String comments) {
-		Patient patient = Context.getPatientService().getPatient(patientId);
-		Concept problemConcept = Context.getConceptService().getConcept(problemId);
-		ProblemModifier modifier = StringUtils.isBlank(status) ? null : ProblemModifier.valueOf(status);
-		
-		Problem problem = new Problem(patient, problemConcept, parseDate(pStartDate), modifier, comments, null);
-		Context.getPatientService().saveProblem(problem);
-	}
-	
-	/**
-	 * Saves the Problem
-	 *
-	 * @param activeListId
-	 * @param problemId
-	 * @param status
-	 * @param pStartDate
-	 * @param comments
-	 */
-	public void saveProblem(Integer activeListId, Integer problemId, String status, String pStartDate, String comments) {
-		//get the allergy
-		Problem problem = Context.getPatientService().getProblem(activeListId);
-		problem.setProblem(Context.getConceptService().getConcept(problemId));
-		problem.setModifier(status);
-		problem.setStartDate(parseDate(pStartDate));
-		problem.setComments(comments);
-		Context.getPatientService().saveProblem(problem);
-	}
-	
-	/**
-	 * Remove a problem, sets the end date
-	 *
-	 * @param activeListId
-	 * @param reason
-	 * @param pEndDate
-	 */
-	public void removeProblem(Integer activeListId, String reason, String pEndDate) {
-		Problem problem = Context.getPatientService().getProblem(activeListId);
-		problem.setEndDate(parseDate(pEndDate));
-		
-		Context.getPatientService().removeProblem(problem, reason);
-	}
-	
-	/**
-	 * Voids the Problem
-	 *
-	 * @param activeListId
-	 * @param reason
-	 */
-	public void voidProblem(Integer activeListId, String reason) {
-		Problem problem = Context.getPatientService().getProblem(activeListId);
-		if (reason == null) {
-			reason = "Error - user entered incorrect data from UI";
-		}
-		Context.getPatientService().voidProblem(problem, reason);
 	}
 	
 	/**

@@ -32,7 +32,6 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
-import org.openmrs.api.ActiveListService;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
@@ -535,13 +534,6 @@ public class Context {
 			log.error("Unable to create message service due", e);
 		}
 		return ms;
-	}
-	
-	/**
-	 * @return active list service
-	 */
-	public static ActiveListService getActiveListService() {
-		return getServiceContext().getActiveListService();
 	}
 	
 	/**

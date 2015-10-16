@@ -7,15 +7,9 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.activelist;
+package org.openmrs;
 
-/**
- *
- */
-public enum AllergySeverity {
-	UNKNOWN,
-	INTOLERANCE,
-	MILD,
-	MODERATE,
-	SEVERE
+public class AllergyConstants {
+	
+	public static final String PRIVILEGE_MODIFY_ALLERGIES = "Task: Modify Allergies";
 }
