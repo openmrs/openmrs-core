@@ -1060,6 +1060,11 @@
 									<goal>prepare-agent</goal>
 								</goals>
 								<phase>validate</phase>
+								<configuration>
+									 <includes>
+                                        <include>org.openmrs.*</include>
+                                    </includes>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>
