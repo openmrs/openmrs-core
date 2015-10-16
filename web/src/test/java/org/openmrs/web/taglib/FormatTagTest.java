@@ -137,7 +137,7 @@ public class FormatTagTest extends BaseContextSensitiveTest {
 		
 		// check if encounter is properly printed
 		checkStartTagEvaluation(pageContext, tag, Context.getEncounterService().getEncounter(3),
-		    "Emergency @Unknown Location | 01/08/2008 | Super User");
+		    "Emergency @Unknown Location | 01/08/2008 | ");
 		
 		// check if observation value is properly printed
 		checkStartTagEvaluation(pageContext, tag, Context.getObsService().getObs(7), "50.0");
