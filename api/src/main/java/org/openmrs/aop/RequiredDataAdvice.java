@@ -273,7 +273,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		for (Field field : allInheritedFields) {
 			
 			// skip field if it's declared independent
-			if (field.isAnnotationPresent(Independent.class)) {
+			if (Reflect.isAnnotationPresent(openmrsObjectClass, field.getName(), Independent.class)) {
 				continue;
 			}
 			
