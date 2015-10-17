@@ -19,6 +19,17 @@ public class LocationEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see LocationEditor#setAsText(String)
+	 * @verifies set using id
+	 */
+	@Test
+	public void setAsText_shouldSetUsingIdWithGrouping() throws Exception {
+		LocationEditor editor = new LocationEditor();
+		editor.setAsText("1,0");
+		Assert.assertNotNull(editor.getValue());
+	}
+	
+	/**
+	 * @see LocationEditor#setAsText(String)
 	 * @verifies set using uuid
 	 */
 	@Test

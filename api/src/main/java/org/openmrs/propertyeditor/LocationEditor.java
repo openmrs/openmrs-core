@@ -14,6 +14,7 @@
 package org.openmrs.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
+import java.text.DecimalFormat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,7 +46,10 @@ public class LocationEditor extends PropertyEditorSupport {
 		LocationService ls = Context.getLocationService();
 		if (StringUtils.hasText(text)) {
 			try {
-				setValue(ls.getLocation(Integer.valueOf(text)));
+				DecimalFormat df = new DecimalFormat();
+				df.setGroupingUsed(false);
+				Integer id = df.parse(text).intValue();
+				setValue(ls.getLocation(id));
 			}
 			catch (Exception ex) {
 				Location location = ls.getLocationByUuid(text);
