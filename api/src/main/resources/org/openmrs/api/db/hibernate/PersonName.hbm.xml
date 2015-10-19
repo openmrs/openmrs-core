@@ -16,8 +16,6 @@
 <hibernate-mapping package="org.openmrs">
 
 	<class name="PersonName" table="person_name">
-	
-		<cache usage="read-write"/>
 
 		<id name="personNameId" type="java.lang.Integer"
 			column="person_name_id" unsaved-value="0">

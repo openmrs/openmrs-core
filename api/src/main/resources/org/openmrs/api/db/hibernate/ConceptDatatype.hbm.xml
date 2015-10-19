@@ -16,8 +16,6 @@
 <hibernate-mapping package="org.openmrs">
 
 	<class name="ConceptDatatype" table="concept_datatype">
-	
-		<cache usage="read-only"/>
 
 		<id name="conceptDatatypeId" type="java.lang.Integer" column="concept_datatype_id" unsaved-value="0">
 			<generator class="native">

@@ -17,8 +17,6 @@
 
     <class name="User" table="users">
 
-		<cache usage="read-write"/>
-		
 		<id name="userId" type="java.lang.Integer" column="user_id" unsaved-value="0">
 			<generator class="native">
 				<param name="sequence">users_user_id_seq</param>
@@ -31,7 +29,7 @@
                   column="uuid" length="38" unique="true" not-null="true"/>
 
         <many-to-one name="person" class="Person" column="person_id"
-                     not-null="true" lazy="false" cascade="save-update" />
+                     not-null="true" lazy="false" cascade="save-update"/>
 
         <property name="systemId" type="java.lang.String" not-null="true"
                   column="system_id" length="50"/>
@@ -41,7 +39,7 @@
         <!--<many-to-one name="creator" class="User" not-null="true"/>
 
         -->
-        <many-to-one name="creator" class="User" not-null="true"/>
+         <many-to-one name="creator" class="User" not-null="true"/>
          
         <property name="dateCreated" type="java.util.Date" column="date_created"
                   not-null="true" length="19"/>
@@ -69,7 +67,6 @@
 
         <!-- bi-directional many-to-many association to Role -->
         <set name="roles" table="user_role" lazy="false" cascade="save-update,merge,evict">
-        	<cache usage="read-write"/>
             <key>
                 <column name="user_id"/>
             </key>

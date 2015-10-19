@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 import org.springframework.validation.Errors;
@@ -149,9 +148,4 @@ public interface AdministrationDAO {
 	 * @see org.openmrs.api.AdministrationService#validate(Object, Errors)
 	 */
 	public void validate(Object object, Errors errors) throws DAOException;
-	
-	/**
-	 * @see AdministrationService#isDatabaseStringComparisonCaseSensitive()
-	 */
-	public boolean isDatabaseStringComparisonCaseSensitive() throws DAOException;
 }
