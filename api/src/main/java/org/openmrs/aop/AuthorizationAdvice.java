@@ -48,8 +48,9 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 			log.debug("Calling authorization advice before " + method.getName());
 		}
 		
+		User user = Context.getAuthenticatedUser();
+		
 		if (log.isDebugEnabled()) {
-			User user = Context.getAuthenticatedUser();
 			log.debug("User " + user);
 			if (user != null) {
 				log.debug("has roles " + user.getAllRoles());
@@ -85,7 +86,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 					if (requireAll) {
 						// if all are required, the first miss causes them
 						// to "fail"
-						throwUnauthorized(Context.getAuthenticatedUser(), method, privilege);
+						throwUnauthorized(user, method, privilege);
 					}
 				}
 			}
@@ -94,14 +95,14 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 				// If there's no match, then we know there are privileges and
 				// that the user didn't have any of them. The user is not
 				// authorized to access the method
-				throwUnauthorized(Context.getAuthenticatedUser(), method, privileges);
+				throwUnauthorized(user, method, privileges);
 			}
 			
 		} else if (attributes.hasAuthorizedAnnotation(method)) {
 			// if there are no privileges defined, just require that 
 			// the user be authenticated
 			if (Context.isAuthenticated() == false) {
-				throwUnauthorized(Context.getAuthenticatedUser(), method);
+				throwUnauthorized(user, method);
 			}
 		}
 	}

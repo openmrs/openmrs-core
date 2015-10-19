@@ -35,8 +35,6 @@ public class Daemon {
 	
 	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<Boolean>();
 	
-	private static volatile Integer daemonUserId = null;
-	
 	/**
 	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext)
 	 */
@@ -346,28 +344,5 @@ public class Daemon {
 	 */
 	public static boolean isDaemonUser(User user) {
 		return DAEMON_USER_UUID.equals(user.getUuid());
-	}
-	
-	/**
-	 * Allows to fetch DaemonUser. Used by {@link Context#getAuthenticatedUser()}.
-	 * 
-	 * @return daemon user
-	 * 
-	 * @since 2.0, 1.12.0, 1.11.5, 1.10.4, 1.9.10
-	 */
-	public static User getDaemonUser() {
-		if (daemonUserId != null) {
-			User user = Context.getUserService().getUser(daemonUserId);
-			if (user != null && DAEMON_USER_UUID.equals(user.getUuid())) {
-				return user;
-			}
-		}
-		
-		User user = Context.getUserService().getUserByUuid(DAEMON_USER_UUID);
-		if (user != null) {
-			daemonUserId = user.getId();
-			return user;
-		}
-		throw new IllegalStateException("No daemon user!");
 	}
 }
