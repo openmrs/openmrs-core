@@ -539,33 +539,11 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @should return negative if other familynamePrefix is greater
 	 * @should return negative if other familyNameSuffix is greater
 	 * @should return negative if other dateCreated is greater
+	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
 	public int compareTo(PersonName other) {
-		int ret = isVoided().compareTo(other.isVoided());
-		if (ret == 0)
-			ret = other.isPreferred().compareTo(isPreferred());
-		if (ret == 0)
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyName(), other.getFamilyName());
-		if (ret == 0)
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyName2(), other.getFamilyName2());
-		if (ret == 0)
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getGivenName(), other.getGivenName());
-		if (ret == 0)
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getMiddleName(), other.getMiddleName());
-		if (ret == 0)
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyNamePrefix(), other.getFamilyNamePrefix());
-		if (ret == 0)
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyNameSuffix(), other.getFamilyNameSuffix());
-		if (ret == 0 && getDateCreated() != null)
-			ret = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
-		
-		// if we've gotten this far, just check all name values. If they are
-		// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
-		// and return that (they are not equal).
-		if (ret == 0 && !equalsContent(other))
-			ret = 1;
-		
-		return ret;
+		DefaultComparator pnDefaultComparator = new DefaultComparator();
+		return pnDefaultComparator.compare(this, other);
 	}
 	
 	/**
