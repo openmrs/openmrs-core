@@ -28,7 +28,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.validation.Validator;
 
 /**
@@ -145,7 +144,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 		User fetchedUser = Context.getUserService().getUser(evictedUser.getUserId());
 		fetchedUser.getPersonName().setGivenName("new username");
 		
-		Context.getUserService().saveUser(fetchedUser, null);
+		Context.getUserService().saveUser(fetchedUser);
 		
 		// sanity check to make sure the cached object wasn't updated already
 		Assert.assertNotSame(Context.getAuthenticatedUser().getGivenName(), fetchedUser.getGivenName());
@@ -229,7 +228,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 		user.addName(new PersonName("givenName", "middleName", "familyName"));
 		user.getPerson().setGender("M");
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, "pt_BR");
-		userService.saveUser(user, "TestPass123");
+		userService.createUser(user, "TestPass123");
 		
 		Context.becomeUser(user.getSystemId());
 		

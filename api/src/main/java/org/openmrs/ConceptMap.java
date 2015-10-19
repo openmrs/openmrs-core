@@ -83,31 +83,7 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-	
-	/**
-	 * Comments on concept maps are no longer supported since version 1.9, therefore a call to this
-	 * methods is useless
-	 *
-	 * @return Returns the comment.
-	 * @deprecated
-	 */
-	@Deprecated
-	public String getComment() {
-		return getConceptReferenceTerm().getDescription();
-	}
-	
-	/**
-	 * Comments on concept maps are no longer supported since version 1.9, therefore a call to this
-	 * results in setting the description of the associated reference term to the specified value
-	 *
-	 * @param comment The comment to set.
-	 * @deprecated
-	 */
-	@Deprecated
-	public void setComment(String comment) {
-		getConceptReferenceTerm().setDescription(comment);
-	}
-	
+
 	/**
 	 * @return Returns the conceptMapId.
 	 */
@@ -122,55 +98,6 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	@Attribute
 	public void setConceptMapId(Integer conceptMapId) {
 		this.conceptMapId = conceptMapId;
-	}
-	
-	/**
-	 * The conceptSource should be accessed from the associated ConceptReferenceTerm since version
-	 * 1.9
-	 *
-	 * @return Returns the source.
-	 * @deprecated
-	 * @see ConceptReferenceTerm#getConceptSource()
-	 */
-	@Deprecated
-	public ConceptSource getSource() {
-		return getConceptReferenceTerm().getConceptSource();
-	}
-	
-	/**
-	 * The conceptSource should be set on the associated ConceptReferenceTerm since version 1.9
-	 *
-	 * @param source The source to set.
-	 * @deprecated
-	 * @see ConceptReferenceTerm#setConceptSource(ConceptSource)
-	 */
-	@Deprecated
-	public void setSource(ConceptSource source) {
-		getConceptReferenceTerm().setConceptSource(source);
-	}
-	
-	/**
-	 * The sourceCode should be accessed from the associated ConceptReferenceTerm since version 1.9
-	 *
-	 * @return Returns the sourceCode.
-	 * @deprecated
-	 * @see ConceptReferenceTerm#getCode()
-	 */
-	@Deprecated
-	public String getSourceCode() {
-		return getConceptReferenceTerm().getCode();
-	}
-	
-	/**
-	 * The sourceCode should be set on the associated ConceptReferenceTerm since version 1.9
-	 *
-	 * @param sourceCode The sourceCode to set.
-	 * @deprecated
-	 * @see ConceptReferenceTerm#setCode(String)
-	 */
-	@Deprecated
-	public void setSourceCode(String sourceCode) {
-		getConceptReferenceTerm().setCode(sourceCode);
 	}
 	
 	/**

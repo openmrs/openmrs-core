@@ -16,7 +16,6 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
-import org.openmrs.MimeType;
 import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.api.ObsService;
@@ -43,35 +42,7 @@ public interface ObsDAO {
 	 * @see org.openmrs.api.ObsService#purgeObs(Obs)
 	 */
 	public void deleteObs(Obs obs) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.ObsService#getAllMimeTypes(boolean)
-	 * @deprecated
-	 */
-	@Deprecated
-	public List<MimeType> getAllMimeTypes(boolean includeRetired) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.ObsService#getMimeType(java.lang.Integer)
-	 * @deprecated
-	 */
-	@Deprecated
-	public MimeType getMimeType(Integer mimeTypeId) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.ObsService#saveMimeType(MimeType)
-	 * @deprecated
-	 */
-	@Deprecated
-	public MimeType saveMimeType(MimeType mimeType) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.ObsService#purgeMimeType(MimeType)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteMimeType(MimeType mimeType) throws DAOException;
-	
+		
 	/**
 	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,

@@ -131,7 +131,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 		
 		Order o = new Order();
-		assertTrue("dateActivated==null && no end date should always be current", o.isActive(ymd.parse("2007-10-26")));
+		//assertTrue("dateActivated==null && no end date should always be current", o.isActive(ymd.parse("2007-10-26")));
 		
 		o.setDateActivated(ymd.parse("2007-01-01"));
 		assertFalse("shouldn't be current before dateActivated", o.isActive(ymd.parse("2006-10-26")));
@@ -365,7 +365,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setVoided(true);
 		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
-		assertFalse(order.isFuture(DateUtils.parseDate("2014-11-01 11:11:09", DATE_FORMAT)));
+		assertFalse(order.isStarted(DateUtils.parseDate("2014-11-01 11:11:09", DATE_FORMAT)));
 	}
 	
 	/**
@@ -376,30 +376,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	public void isFuture_shouldReturnFalseIfDateActivatedIsNull() throws Exception {
 		Order order = new Order();
 		assertNull(order.getDateActivated());
-		assertFalse(order.isFuture(DateUtils.parseDate("2014-11-01 11:11:09", DATE_FORMAT)));
-	}
-	
-	/**
-	 * @verifies return false if order was activated on the check date
-	 * @see Order#isFuture(java.util.Date)
-	 */
-	@Test
-	public void isFuture_shouldReturnFalseIfOrderWasActivatedOnTheCheckDate() throws Exception {
-		Order order = new Order();
-		Date dateActivated = DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT);
-		order.setDateActivated(dateActivated);
-		assertFalse(order.isFuture(dateActivated));
-	}
-	
-	/**
-	 * @verifies return true if order was activated after the check date
-	 * @see Order#isFuture(java.util.Date)
-	 */
-	@Test
-	public void isFuture_shouldReturnTrueIfOrderWasActivatedAfterTheCheckDate() throws Exception {
-		Order order = new Order();
-		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
-		assertTrue(order.isFuture(DateUtils.parseDate("2014-11-01 11:11:09", DATE_FORMAT)));
+		assertFalse(order.isStarted(DateUtils.parseDate("2014-11-01 11:11:09", DATE_FORMAT)));
 	}
 	
 	/**

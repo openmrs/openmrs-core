@@ -195,24 +195,6 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @deprecated This method always returns null. Forms that a Field is on are managed through the
-	 *             {@link FormField} object
-	 */
-	@Deprecated
-	public Set<Form> getForms() {
-		return null;
-	}
-	
-	/**
-	 * @deprecated This method does nothing. Forms that a Field is on are managed through the
-	 *             {@link FormField} object
-	 */
-	@Deprecated
-	public void setForms(Set<Form> forms) {
-		
-	}
-	
-	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */

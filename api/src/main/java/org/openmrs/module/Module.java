@@ -54,8 +54,6 @@ public final class Module {
 	
 	private String downloadURL = null; // will only be populated when the remote file is newer than the current module
 	
-	private Activator activator;
-	
 	private ModuleActivator moduleActivator;
 	
 	private String activatorName;
@@ -89,9 +87,6 @@ public final class Module {
 	private Document config = null;
 	
 	private Document sqldiff = null;
-	
-	@Deprecated
-	private Document log4j = null;
 	
 	private boolean mandatory = Boolean.FALSE;
 	
@@ -144,43 +139,6 @@ public final class Module {
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder().append(getModuleId()).toHashCode();
-	}
-	
-	/**
-	 * @return the activator
-	 * @deprecated replaced by {@link Module#getModuleActivator()}
-	 */
-	@Deprecated
-	public Activator getActivator() {
-		try {
-			if (activator == null) {
-				ModuleClassLoader classLoader = ModuleFactory.getModuleClassLoader(this);
-				if (classLoader == null) {
-					throw new ModuleException("The classloader is null", getModuleId());
-				}
-				
-				Class<?> c = classLoader.loadClass(getActivatorName());
-				setActivator((Activator) c.newInstance());
-			}
-		}
-		catch (ClassNotFoundException e) {
-			throw new ModuleException("Unable to load/find activator: '" + getActivatorName() + "'", name, e);
-		}
-		catch (IllegalAccessException e) {
-			throw new ModuleException("Unable to load/access activator: '" + getActivatorName() + "'", name, e);
-		}
-		catch (InstantiationException e) {
-			throw new ModuleException("Unable to load/instantiate activator: '" + getActivatorName() + "'", name, e);
-		}
-		
-		return activator;
-	}
-	
-	/**
-	 * @param activator the activator to set
-	 */
-	public void setActivator(Activator activator) {
-		this.activator = activator;
 	}
 	
 	/**
@@ -662,22 +620,6 @@ public final class Module {
 	
 	public void setConfig(Document config) {
 		this.config = config;
-	}
-	
-	/**
-	 * @deprecated module should not hardcode it's logging properties
-	 */
-	@Deprecated
-	public Document getLog4j() {
-		return log4j;
-	}
-	
-	/**
-	 * @deprecated module should not hardcode it's logging properties
-	 */
-	@Deprecated
-	public void setLog4j(Document log4j) {
-		this.log4j = log4j;
 	}
 	
 	public Document getSqldiff() {

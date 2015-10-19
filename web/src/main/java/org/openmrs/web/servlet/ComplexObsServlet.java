@@ -52,8 +52,8 @@ public class ComplexObsServlet extends HttpServlet {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.null");
 			return;
 		}
-		if (!Context.hasPrivilege(PrivilegeConstants.VIEW_OBS)) {
-			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + PrivilegeConstants.VIEW_OBS);
+		if (!Context.hasPrivilege(PrivilegeConstants.GET_OBS)) {
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + PrivilegeConstants.GET_OBS);
 			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?"
 			        + request.getQueryString());
 			response.sendRedirect(request.getContextPath() + "/login.htm");

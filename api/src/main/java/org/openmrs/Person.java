@@ -22,13 +22,11 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.UserService;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
-import org.simpleframework.xml.load.Replace;
 import org.springframework.util.StringUtils;
 
 /**
@@ -1032,37 +1030,10 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return true/false whether this person is a user or not
-	 * @deprecated use {@link UserService#getUsersByPerson(Person, boolean)}
-	 */
-	@Deprecated
-	public boolean isUser() {
-		return false;
-	}
-	
-	/**
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
 		return "Person(personId=" + personId + ")";
-	}
-	
-	/**
-	 * If the serializer wishes, don't serialize this entire object, just the important parts
-	 * 
-	 * @param sessionMap serialization session information
-	 * @return Person object to serialize
-	 * @see OpenmrsUtil#isShortSerialization(Map)
-	 */
-	@Replace
-	public Person replaceSerialization(Map<?, ?> sessionMap) {
-		if (OpenmrsUtil.isShortSerialization(sessionMap)) {
-			// only serialize the person id
-			return new Person(getPersonId());
-		}
-		
-		// don't do short serialization
-		return this;
 	}
 	
 	/**

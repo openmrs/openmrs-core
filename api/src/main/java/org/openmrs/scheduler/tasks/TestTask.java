@@ -13,7 +13,6 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.TaskDefinition;
 
 /**
@@ -50,12 +49,6 @@ public class TestTask extends AbstractTask {
 			log.info("Throwing a runtime exception in an attempt to break the scheduler");
 			throw new RuntimeException();
 		}
-		
-		if (!Context.isAuthenticated()) {
-			log.info("Authenticating ...");
-			authenticate();
-		}
-		
 	}
 	
 	/**

@@ -266,7 +266,7 @@ public class ObsTest {
 		ConceptDatatype cdt = new ConceptDatatype();
 		cdt.setHl7Abbreviation("NM");
 		cn.setDatatype(cdt);
-		cn.setPrecise(false);
+		cn.setAllowDecimal(false);
 		obs.setConcept(cn);
 		String str = "25";
 		Assert.assertEquals(str, obs.getValueAsString(Locale.US));

@@ -24,7 +24,7 @@
   <person_name person_name_id="3" preferred="true" person_id="3" given_name="Jane" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="6016899a-54c4-4c8f-9447-4a9297718869"/>
   <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
   <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="b34addab-7343-4d9b-83e7-384dd940a1bb"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="b34addab-7343-4d9b-83e7-384dd940a1bb"/>
   <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="27354e11-2794-4136-99d5-a96c0ec7c203"/>
   <patient_identifier patient_identifier_id="2" patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="1c057603-0f3d-41eb-aafb-f8da0d9bdd13"/>
 </dataset>

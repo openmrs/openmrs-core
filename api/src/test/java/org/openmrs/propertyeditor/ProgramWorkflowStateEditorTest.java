@@ -14,18 +14,7 @@ import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 public class ProgramWorkflowStateEditorTest extends BaseContextSensitiveTest {
-	
-	/**
-	 * @see ProgramWorkflowStateEditor#setAsText(String)
-	 * @verifies set using id
-	 */
-	@Test
-	public void setAsText_shouldSetUsingId() throws Exception {
-		ProgramWorkflowStateEditor editor = new ProgramWorkflowStateEditor();
-		editor.setAsText("1");
-		Assert.assertNotNull(editor.getValue());
-	}
-	
+
 	/**
 	 * @see ProgramWorkflowStateEditor#setAsText(String)
 	 * @verifies set using uuid

@@ -28,7 +28,6 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
-import org.openmrs.MimeType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.Person;
@@ -71,50 +70,6 @@ public class HibernateObsDAO implements ObsDAO {
 	 */
 	public Obs getObs(Integer obsId) throws DAOException {
 		return (Obs) sessionFactory.getCurrentSession().get(Obs.class, obsId);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.ObsDAO#getMimeType(java.lang.Integer)
-	 * @deprecated
-	 */
-	@Deprecated
-	public MimeType getMimeType(Integer mimeTypeId) throws DAOException {
-		return (MimeType) sessionFactory.getCurrentSession().get(MimeType.class, mimeTypeId);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.ObsDAO#getAllMimeTypes(boolean)
-	 * @deprecated
-	 */
-	@Deprecated
-	@SuppressWarnings("unchecked")
-	public List<MimeType> getAllMimeTypes(boolean includeRetired) throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(MimeType.class);
-		
-		if (!includeRetired) {
-			crit.add(Restrictions.eq("retired", Boolean.FALSE));
-		}
-		
-		return crit.list();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.ObsDAO#saveMimeType(org.openmrs.MimeType)
-	 * @deprecated
-	 */
-	@Deprecated
-	public MimeType saveMimeType(MimeType mimeType) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(mimeType);
-		return mimeType;
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.ObsDAO#deleteMimeType(org.openmrs.MimeType)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteMimeType(MimeType mimeType) throws DAOException {
-		sessionFactory.getCurrentSession().delete(mimeType);
 	}
 	
 	/**

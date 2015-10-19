@@ -15,23 +15,18 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.annotation.AllowDirectAccess;
-import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
-import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.Format;
@@ -217,19 +212,6 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		return newObs;
 	}
 	
-	/**
-	 * This method isn't needed anymore. There are handlers that are mapped around the saveObs(obs)
-	 * method that get called automatically. See {@link SaveHandler}, et al.
-	 * 
-	 * @see SaveHandler
-	 * @see OpenmrsObjectSaveHandler
-	 * @deprecated no longer needed. Replaced by handlers.
-	 */
-	@Deprecated
-	public void setRequiredProperties(User creator, Date dateCreated) {
-		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, this, creator, dateCreated, null, null);
-	}
-	
 	// Property accessors
 	
 	/**
@@ -317,30 +299,6 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setObsDatetime(Date obsDatetime) {
 		this.obsDatetime = obsDatetime;
-	}
-	
-	/**
-	 * @return Returns the obsId of the parent obs group
-	 * @deprecated The {@link #getObsGroup()} method should be used
-	 * @see #getObsGroup()
-	 */
-	@Deprecated
-	public Integer getObsGroupId() {
-		if (getObsGroup() == null) {
-			return null;
-		}
-		
-		return obsGroup.getObsId();
-	}
-	
-	/**
-	 * @param obsGroupId The obsGroupId to set.
-	 * @deprecated This method should not be used. The #setObsGroup() method should be used instead
-	 * @see #setObsGroup(Obs)
-	 */
-	@Deprecated
-	public void setObsGroupId(Integer obsGroupId) {
-		throw new APIException("Obs.error.setObsGroupId", (Object[]) null);
 	}
 	
 	/**
@@ -574,26 +532,6 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setOrder(Order order) {
 		this.order = order;
-	}
-	
-	/**
-	 * @deprecated use getPerson()
-	 * @return Returns the patient.
-	 */
-	@Deprecated
-	public Patient getPatient() {
-		return (Patient) getPerson();
-	}
-	
-	/**
-	 * To associate a patient with an obs, use <code>setPerson(org.openmrs.Person)</code>
-	 * 
-	 * @deprecated use setPerson(org.openmrs.Person)
-	 * @param patient
-	 */
-	@Deprecated
-	public void setPatient(Patient patient) {
-		setPerson(patient);
 	}
 	
 	/**
@@ -1007,7 +945,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 				} else {
 					if (getConcept() instanceof ConceptNumeric) {
 						ConceptNumeric cn = (ConceptNumeric) getConcept();
-						if (!cn.isPrecise()) {
+						if (!cn.isAllowDecimal()) {
 							double d = getValueNumeric();
 							int i = (int) d;
 							return Integer.toString(i);
@@ -1121,25 +1059,6 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		} else {
 			throw new RuntimeException("concept is null for " + this);
 		}
-	}
-	
-	/**
-	 * This was a convenience method for obtaining a Map of available locale to observation's value
-	 * as a string This method is a waste and should be not be used. This was used in the web layer
-	 * because jstl can't pass parameters to a method (${obs.valueAsString[locale]} was used instead
-	 * of what would be convenient ${obs.valueAsString(locale)}) Now the openmrs:format tag should
-	 * be used in the web layer: <code>&lt;openmrs:format obsValue="${obs}"/&gt;</code>
-	 * 
-	 * @deprecated
-	 */
-	@Deprecated
-	public Map<Locale, String> getValueAsString() {
-		Map<Locale, String> localeMap = new HashMap<Locale, String>();
-		Locale[] locales = Locale.getAvailableLocales(); // ABKTODO: get actual available locales
-		for (int i = 0; i < locales.length; i++) {
-			localeMap.put(locales[i], getValueAsString(locales[i]));
-		}
-		return localeMap;
 	}
 	
 	/**

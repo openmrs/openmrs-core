@@ -60,24 +60,6 @@ public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializ
 		this.locationTagId = locationTagId;
 	}
 	
-	/**
-	 * @return Returns the tag.
-	 * @deprecated use {@link #getName()} instead
-	 */
-	@Deprecated
-	public String getTag() {
-		return getName();
-	}
-	
-	/**
-	 * @param tag The tag to set.
-	 * @deprecated use {@link #setName(String)} instead
-	 */
-	@Deprecated
-	public void setTag(String tag) {
-		setName(tag);
-	}
-	
 	public String toString() {
 		return getName();
 	}

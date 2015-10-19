@@ -9,12 +9,12 @@
  */
 package org.openmrs;
 
+import java.util.Comparator;
+
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
-
-import java.util.Comparator;
 
 /**
  * PersonAttributeType
@@ -178,10 +178,10 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	}
 	
 	/**
-	 *
-	 * @deprecated since 1.12. Use DefaultComparator instead.
-	 * Note: this comparator imposes orderings that are inconsistent with equals.
-	 */
+	*
+	* @deprecated since 1.12. Use DefaultComparator instead.
+	* Note: this comparator imposes orderings that are inconsistent with equals.
+	*/
 	@Override
 	@SuppressWarnings("squid:S1210")
 	public int compareTo(PersonAttributeType other) {

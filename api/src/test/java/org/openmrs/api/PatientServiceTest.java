@@ -47,7 +47,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentMatcher;
-import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -66,11 +65,6 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.Visit;
-import org.openmrs.Allergy;
-import org.openmrs.AllergenType;
-import org.openmrs.Allergen;
-import org.openmrs.Allergies;
-
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
@@ -352,7 +346,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// patient is actually there
 		String identifier = firstJohnPatient.getPatientIdentifier().getIdentifier();
 		assertNotNull("Uh oh, the patient doesn't have an identifier", identifier);
-		List<Patient> patients = patientService.getPatients(null, identifier, null, false);
+		List<Patient> patients = patientService.getPatients(identifier, null, null, false);
 		assertTrue("Odd. The firstJohnPatient isn't in the list of patients for this identifier", patients
 		        .contains(firstJohnPatient));
 		
@@ -441,19 +435,15 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(new PatientIdentifierType(1));
 		// make sure we get back only one patient
-		List<Patient> patients = patientService.getPatients(null, "1234", types, false);
+		List<Patient> patients = patientService.getPatients("1234", null, types, false);
 		assertEquals(1, patients.size());
 		
 		// make sure we get back only one patient
-		patients = patientService.getPatients(null, "1234", null, false);
+		patients = patientService.getPatients("1234", null, null, false);
 		assertEquals(1, patients.size());
 		
-		// make sure we get back only patient #2 and patient #5
-		patients = patientService.getPatients(null, null, types, false);
-		assertEquals(2, patients.size());
-		
 		// make sure we can search a padded identifier
-		patients = patientService.getPatients(null, "00000001234", null, false);
+		patients = patientService.getPatients("00000001234", null, null, false);
 		assertEquals(1, patients.size());
 	}
 	
@@ -1382,42 +1372,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierTypes(String,String,Boolean,Boolean)
 	 */
 	@Test
-	@Verifies(value = "should fetch patient identifier types with check digit when given has check digit is true", method = "getPatientIdentifierTypes(String,String,Boolean,Boolean)")
-	public void getPatientIdentifierTypes_shouldFetchPatientIdentifierTypesWithCheckDigitWhenGivenHasCheckDigitIsTrue()
-	        throws Exception {
-		executeDataSet("org/openmrs/api/include/PatientServiceTest-createPatientIdentifierType.xml");
-		List<PatientIdentifierType> patientIdentifierTypes = Context.getPatientService().getPatientIdentifierTypes(null,
-		    null, null, true);
-		
-		Assert.assertTrue(!patientIdentifierTypes.isEmpty());
-		
-		for (PatientIdentifierType patientIdentifierType : patientIdentifierTypes) {
-			Assert.assertTrue(patientIdentifierType.hasCheckDigit());
-		}
-	}
-	
-	/**
-	 * @see PatientService#getPatientIdentifierTypes(String,String,Boolean,Boolean)
-	 */
-	@Test
-	@Verifies(value = "should fetch patient identifier types without check digit when given has check digit is false", method = "getPatientIdentifierTypes(String,String,Boolean,Boolean)")
-	public void getPatientIdentifierTypes_shouldFetchPatientIdentifierTypesWithoutCheckDigitWhenGivenHasCheckDigitIsFalse()
-	        throws Exception {
-		executeDataSet("org/openmrs/api/include/PatientServiceTest-createPatientIdentifierType.xml");
-		List<PatientIdentifierType> patientIdentifierTypes = Context.getPatientService().getPatientIdentifierTypes(null,
-		    null, null, false);
-		
-		Assert.assertTrue(!patientIdentifierTypes.isEmpty());
-		
-		for (PatientIdentifierType patientIdentifierType : patientIdentifierTypes) {
-			Assert.assertFalse(patientIdentifierType.hasCheckDigit());
-		}
-	}
-	
-	/**
-	 * @see PatientService#getPatientIdentifierTypes(String,String,Boolean,Boolean)
-	 */
-	@Test
 	@Verifies(value = "should fetch any patient identifier types when given has check digit is null", method = "getPatientIdentifierTypes(String,String,Boolean,Boolean)")
 	public void getPatientIdentifierTypes_shouldFetchAnyPatientIdentifierTypesWhenGivenHasCheckDigitIsNull()
 	        throws Exception {
@@ -2066,64 +2020,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Patient> patients = patientService.getPatients("I am voided", null, null, false);
 		assertEquals(patients.size(), 0);
 	}
-	
-	/**
-	 * @verifies {@link PatientService#exitFromCare(Patient,Date,Concept)} test = should throw error
-	 *           when given date exited is null
-	 */
-	@Test(expected = APIException.class)
-	@Verifies(value = "should throw error when given date exited is null", method = "exitFromCare(Patient,Date,Concept)")
-	public void exitFromCare_shouldThrowErrorWhenGivenDateExitedIsNull() throws Exception {
-		// run with correctly-formed parameters first to make sure that the
-		// null is the problem when running with a null parameter
-		try {
-			patientService.exitFromCare(patientService.getPatient(7), new Date(), new Concept());
-		}
-		catch (Exception e) {
-			fail("failed with correct parameters");
-		}
-		// now try a null date parameter
-		patientService.exitFromCare(patientService.getPatient(8), null, new Concept());
-	}
-	
-	/**
-	 * @verifies {@link PatientService#exitFromCare(Patient,Date,Concept)} test = should throw error
-	 *           when given patient is null
-	 */
-	@Test(expected = APIException.class)
-	@Verifies(value = "should throw error when given patient is null", method = "exitFromCare(Patient,Date,Concept)")
-	public void exitFromCare_shouldThrowErrorWhenGivenPatientIsNull() throws Exception {
-		// run with correctly-formed parameters first to make sure that the
-		// null is the problem when running with a null parameter
-		try {
-			patientService.exitFromCare(patientService.getPatient(7), new Date(), new Concept());
-		}
-		catch (Exception e) {
-			fail("failed with correct parameters");
-		}
-		// now try a null patient parameter
-		patientService.exitFromCare(null, new Date(), new Concept());
-	}
-	
-	/**
-	 * @verifies {@link PatientService#exitFromCare(Patient,Date,Concept)} test = should throw error
-	 *           when given reason for exist is null
-	 */
-	@Test(expected = APIException.class)
-	@Verifies(value = "should throw error when given reason for exist is null", method = "exitFromCare(Patient,Date,Concept)")
-	public void exitFromCare_shouldThrowErrorWhenGivenReasonForExistIsNull() throws Exception {
-		// run with correctly-formed parameters first to make sure that the
-		// null is the problem when running with a null parameter
-		try {
-			patientService.exitFromCare(patientService.getPatient(7), new Date(), new Concept());
-		}
-		catch (Exception e) {
-			fail("failed with correct parameters");
-		}
-		// now try a null reason parameter
-		patientService.exitFromCare(patientService.getPatient(8), new Date(), null);
-	}
-	
+
 	/**
 	 * @see PatientService#getPatients(String, String, java.util.List, boolean)
 	 */
@@ -2658,7 +2555,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		User user = Context.getUserService().getUser(501);
 		user.setPerson(notPreferred);
-		Context.getUserService().saveUser(user, null);
+		Context.getUserService().saveUser(user);
 		
 		//merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
@@ -2960,7 +2857,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//given
 		Patient patient = patientService.getPatient(2);
 		User user = new User(patient);
-		Context.getUserService().saveUser(user, "Admin123");
+		Context.getUserService().createUser(user, "Admin123");
 		Assert.assertFalse(Context.getUserService().getUsersByPerson(patient, false).isEmpty());
 		
 		//when
@@ -2997,7 +2894,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//given
 		Patient patient = patientService.getPatient(2);
 		User user = new User(patient);
-		Context.getUserService().saveUser(user, "Admin123");
+		Context.getUserService().createUser(user, "Admin123");
 		patientService.voidPatient(patient, "reason");
 		
 		//when

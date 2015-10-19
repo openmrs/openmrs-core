@@ -19,7 +19,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.PersonService;
+import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 
 /**
  * Loops over the display attributes for a person. If 'type' is 'patient', only patient display
@@ -46,7 +48,7 @@ public class ForEachDisplayAttributeTag extends LoopTagSupport {
 		
 		try {
 			PersonService ps = Context.getPersonService();
-			List<PersonAttributeType> types = ps.getPersonAttributeTypes(getPersonType(), getDisplayType());
+			List<PersonAttributeType> types = ps.getPersonAttributeTypes(PERSON_TYPE.valueOf(getPersonType()), ATTR_VIEW_TYPE.valueOf(getDisplayType()));
 			
 			attrTypes = types.iterator();
 			setVarStatus("varStatus");

@@ -34,11 +34,6 @@ public class AlertReminderTask extends AbstractTask {
 	 */
 	public void execute() {
 		try {
-			// Authenticate
-			if (!Context.isAuthenticated()) {
-				authenticate();
-			}
-			
 			// Get all unread alerts
 			// TODO Change to getAllAlerts(Boolean includeRead, Boolean includeExpired);
 			Collection<Alert> alerts = Context.getAlertService().getAllAlerts(false);

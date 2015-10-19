@@ -60,9 +60,6 @@
         <property name="retireReason" type="java.lang.String" column="retire_reason"
                   length="255"/>
 
-        <property name="secretQuestion" type="java.lang.String"
-                  column="secret_question" length="255"/>
-
         <!-- Associations -->
 
         <!-- bi-directional many-to-many association to Role -->
