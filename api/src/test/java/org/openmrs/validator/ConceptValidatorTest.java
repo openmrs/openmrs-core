@@ -338,8 +338,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("test name", Context.getLocale()));
 		ConceptMap map = new ConceptMap();
-		map.setSourceCode("unique code");
-		map.setSource(cs.getConceptSource(1));
+		map.getConceptReferenceTerm().setCode("unique code");
+		map.getConceptReferenceTerm().setConceptSource(cs.getConceptSource(1));
 		concept.addConceptMapping(map);
 		ValidateUtil.validate(concept);
 	}
@@ -353,8 +353,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		ConceptService cs = Context.getConceptService();
 		Concept concept = cs.getConcept(5497);
 		ConceptMap map = new ConceptMap();
-		map.setSourceCode("unique code");
-		map.setSource(cs.getConceptSource(1));
+		map.getConceptReferenceTerm().setCode("unique code");
+		map.getConceptReferenceTerm().setConceptSource(cs.getConceptSource(1));
 		concept.addConceptMapping(map);
 		ValidateUtil.validate(concept);
 	}

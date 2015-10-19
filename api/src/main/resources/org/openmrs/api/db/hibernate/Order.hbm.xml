@@ -42,14 +42,16 @@
         <property name="commentToFulfiller" type="string" column="comment_to_fulfiller" length="1024" />
         <property name="scheduledDate" type="java.util.Date" column="scheduled_date" length="19" />
         <property name="urgency" column="urgency" length="50" not-null="true">
-            <type name="org.openmrs.util.HibernateEnumType">
-                <param name="enumClassName">org.openmrs.Order$Urgency</param>
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">org.openmrs.Order$Urgency</param>
+                <param name="type">12</param>
             </type>
         </property>
 
         <property name="action" column="order_action" length="50" not-null="true">
-            <type name="org.openmrs.util.HibernateEnumType">
-                <param name="enumClassName">org.openmrs.Order$Action</param>
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">org.openmrs.Order$Action</param>
+                <param name="type">12</param>
             </type>
         </property>
 
@@ -110,8 +112,9 @@
             <many-to-one name="specimenSource" class="org.openmrs.Concept" column="specimen_source" />
 
             <property name="laterality" column="laterality" length="20" not-null="false">
-                <type name="org.openmrs.util.HibernateEnumType">
-                    <param name="enumClassName">org.openmrs.TestOrder$Laterality</param>
+                <type name="org.hibernate.type.EnumType">
+                    <param name="enumClass">org.openmrs.TestOrder$Laterality</param>
+                    <param name="type">12</param>
                 </type>
             </property>
             <property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />

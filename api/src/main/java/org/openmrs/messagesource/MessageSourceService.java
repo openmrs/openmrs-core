@@ -9,7 +9,6 @@
  */
 package org.openmrs.messagesource;
 
-import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -39,16 +38,6 @@ public interface MessageSourceService extends MutableMessageSource {
 	 * @param activeMessageSource the <code>MutableMessageSource</code> to set
 	 */
 	public void setActiveMessageSource(MutableMessageSource activeMessageSource);
-	
-	/**
-	 * Presumes to append the messages to a message.properties file which is already being monitored
-	 * by the super ReloadableResourceBundleMessageSource. This is a blind, trusting hack.
-	 * 
-	 * @see org.openmrs.messagesource.MessageSourceService#publishProperties(Properties, String,
-	 *      String, String, String)
-	 * @deprecated use {@linkplain #merge(MutableMessageSource, boolean)}
-	 */
-	public void publishProperties(Properties props, String locale, String namespace, String name, String version);
 	
 	/**
 	 * @return the availableMessageSources

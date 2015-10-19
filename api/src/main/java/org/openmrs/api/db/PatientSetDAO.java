@@ -40,16 +40,6 @@ import org.openmrs.api.PatientSetService.TimeModifier;
 
 public interface PatientSetDAO {
 	
-	/**
-	 * @deprecated
-	 */
-	public String exportXml(Cohort ps) throws DAOException;
-	
-	/**
-	 * @deprecated
-	 */
-	public String exportXml(Integer patientId) throws DAOException;
-	
 	public Cohort getAllPatients();
 	
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,

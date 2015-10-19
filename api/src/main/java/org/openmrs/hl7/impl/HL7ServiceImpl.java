@@ -18,7 +18,6 @@ import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -29,7 +28,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -168,15 +166,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#createHL7Source(org.openmrs.hl7.HL7Source)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createHL7Source(HL7Source hl7Source) {
-		Context.getHL7Service().saveHL7Source(hl7Source);
-	}
-	
-	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7Source(java.lang.Integer)
 	 */
 	@Transactional(readOnly = true)
@@ -198,44 +187,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	@Transactional(readOnly = true)
 	public HL7Source getHL7SourceByName(String name) throws APIException {
 		return dao.getHL7SourceByName(name);
-	}
-	
-	/**
-	 * @see org.openmrs.hl7.HL7Service#getHL7Source(java.lang.String)
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public HL7Source getHL7Source(String name) {
-		return Context.getHL7Service().getHL7SourceByName(name);
-	}
-	
-	/**
-	 * @see org.openmrs.hl7.HL7Service#getHL7Sources()
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public Collection<HL7Source> getHL7Sources() {
-		return Context.getHL7Service().getAllHL7Sources();
-	}
-	
-	/**
-	 * @see org.openmrs.hl7.HL7Service#updateHL7Source(org.openmrs.hl7.HL7Source)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void updateHL7Source(HL7Source hl7Source) {
-		Context.getHL7Service().saveHL7Source(hl7Source);
-	}
-	
-	/**
-	 * @see org.openmrs.hl7.HL7Service#deleteHL7Source(org.openmrs.hl7.HL7Source)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteHL7Source(HL7Source hl7Source) {
-		Context.getHL7Service().purgeHL7Source(hl7Source);
 	}
 	
 	/**
@@ -324,15 +275,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#createHL7InQueue(org.openmrs.hl7.HL7InQueue)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createHL7InQueue(HL7InQueue hl7InQueue) {
-		Context.getHL7Service().saveHL7InQueue(hl7InQueue);
-	}
-	
-	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InQueue(java.lang.Integer)
 	 */
 	@Transactional(readOnly = true)
@@ -347,30 +289,11 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#getHL7InQueues()
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public Collection<HL7InQueue> getHL7InQueues() {
-		return Context.getHL7Service().getAllHL7InQueues();
-	}
-	
-	/**
 	 * @see org.openmrs.hl7.HL7Service#getNextHL7InQueue()
 	 */
 	@Transactional(readOnly = true)
 	public HL7InQueue getNextHL7InQueue() {
 		return dao.getNextHL7InQueue();
-	}
-	
-	/**
-	 * @see org.openmrs.hl7.HL7Service#deleteHL7InQueue(org.openmrs.hl7.HL7InQueue)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteHL7InQueue(HL7InQueue hl7InQueue) {
-		Context.getHL7Service().purgeHL7InQueue(hl7InQueue);
 	}
 	
 	/**
@@ -417,48 +340,11 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#createHL7InArchive(org.openmrs.hl7.HL7InArchive)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createHL7InArchive(HL7InArchive hl7InArchive) {
-		Context.getHL7Service().saveHL7InArchive(hl7InArchive);
-	}
-	
-	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InArchive(java.lang.Integer)
 	 */
 	@Transactional(readOnly = true)
 	public HL7InArchive getHL7InArchive(Integer hl7InArchiveId) {
 		return dao.getHL7InArchive(hl7InArchiveId);
-	}
-	
-	/**
-	 * @see org.openmrs.hl7.HL7Service#getHL7InArchives()
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public Collection<HL7InArchive> getHL7InArchives() {
-		return Context.getHL7Service().getAllHL7InArchives();
-	}
-	
-	/**
-	 * @see org.openmrs.hl7.HL7Service#updateHL7InArchive(org.openmrs.hl7.HL7InArchive)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void updateHL7InArchive(HL7InArchive hl7InArchive) {
-		Context.getHL7Service().saveHL7InArchive(hl7InArchive);
-	}
-	
-	/**
-	 * @see org.openmrs.hl7.HL7Service#deleteHL7InArchive(org.openmrs.hl7.HL7InArchive)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteHL7InArchive(HL7InArchive hl7InArchive) {
-		Context.getHL7Service().purgeHL7InArchive(hl7InArchive);
 	}
 	
 	/**
@@ -494,15 +380,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#createHL7InError(org.openmrs.hl7.HL7InError)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createHL7InError(HL7InError hl7InError) {
-		Context.getHL7Service().saveHL7InError(hl7InError);
-	}
-	
-	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InError(java.lang.Integer)
 	 */
 	@Transactional(readOnly = true)
@@ -514,34 +391,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	@Transactional(readOnly = true)
 	public HL7InError getHL7InErrorByUuid(String uuid) throws APIException {
 		return dao.getHL7InErrorByUuid(uuid);
-	}
-	
-	/**
-	 * @see org.openmrs.hl7.HL7Service#getHL7InErrors()
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public Collection<HL7InError> getHL7InErrors() {
-		return dao.getAllHL7InErrors();
-	}
-	
-	/**
-	 * @deprecated
-	 * @see org.openmrs.hl7.HL7Service#updateHL7InError(org.openmrs.hl7.HL7InError)
-	 */
-	@Deprecated
-	public void updateHL7InError(HL7InError hl7InError) {
-		Context.getHL7Service().saveHL7InError(hl7InError);
-	}
-	
-	/**
-	 * @see org.openmrs.hl7.HL7Service#deleteHL7InError(org.openmrs.hl7.HL7InError)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteHL7InError(HL7InError hl7InError) {
-		Context.getHL7Service().purgeHL7InError(hl7InError);
 	}
 	
 	/**
@@ -807,17 +656,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 */
 	public void garbageCollect() {
 		dao.garbageCollect();
-	}
-	
-	/**
-	 * @see org.openmrs.hl7.HL7Service#encounterCreated(org.openmrs.Encounter)
-	 * @deprecated This method is no longer needed. When an encounter is created in the ROUR01
-	 *             handler, it is created with all obs. Any AOP hooking should be done on the
-	 *             EncounterService.createEncounter(Encounter) method
-	 */
-	@Deprecated
-	public void encounterCreated(Encounter encounter) {
-		// nothing is done here in core. Modules override/hook on this method
 	}
 	
 	/**
@@ -1312,17 +1150,17 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	public HL7QueueItem getHl7QueueItemByUuid(String uuid) throws APIException {
 		HL7QueueItem result = getHL7InQueueByUuid(uuid);
 		if (result != null) {
-			Context.hasPrivilege(PrivilegeConstants.PRIV_VIEW_HL7_IN_QUEUE);
+			Context.hasPrivilege(PrivilegeConstants.GET_HL7_IN_QUEUE);
 			return result;
 		}
 		result = getHL7InErrorByUuid(uuid);
 		if (result != null) {
-			Context.hasPrivilege(PrivilegeConstants.PRIV_VIEW_HL7_IN_EXCEPTION);
+			Context.hasPrivilege(PrivilegeConstants.GET_HL7_IN_EXCEPTION);
 			return result;
 		}
 		result = getHL7InArchiveByUuid(uuid);
 		if (result != null) {
-			Context.hasPrivilege(PrivilegeConstants.PRIV_VIEW_HL7_IN_ARCHIVE);
+			Context.hasPrivilege(PrivilegeConstants.GET_HL7_IN_ARCHIVE);
 			return result;
 		}
 		return null;

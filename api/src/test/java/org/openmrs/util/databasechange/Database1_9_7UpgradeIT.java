@@ -119,7 +119,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		testAppDataDir.mkdir();
 		
 		System.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, testAppDataDir.getAbsolutePath());
-		OpenmrsConstants.APPLICATION_DATA_DIRECTORY = testAppDataDir.getAbsolutePath();
+		OpenmrsUtil.setApplicationDataDirectory(testAppDataDir.getAbsolutePath());
 	}
 	
 	@AfterClass

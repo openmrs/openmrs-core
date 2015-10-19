@@ -19,7 +19,7 @@ import java.util.Comparator;
  * @see org.openmrs.Form
  * @see org.openmrs.Field
  */
-public class FormField extends BaseOpenmrsMetadata implements java.io.Serializable, Comparable<FormField> {
+public class FormField extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 3456L;
 	
@@ -56,21 +56,6 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	/** constructor with id */
 	public FormField(Integer formFieldId) {
 		this.formFieldId = formFieldId;
-	}
-	
-	/**
-	 * Sort order for the form fields in the schema. Attempts: 1) sortWeight 2) fieldNumber 3)
-	 * fieldPart 4) fieldName
-	 *
-	 * @param f FormField to compare this object to
-	 * @return -1, 0, or +1 depending on the difference between the FormFields
-	 * @deprecated since 1.12. Use DefaultComparator instead.
-	 * Note: this comparator imposes orderings that are inconsistent with equals.
-	 */
-	@SuppressWarnings("squid:S1210")
-	public int compareTo(FormField f) {
-		DefaultComparator ffDComparator = new DefaultComparator();
-		return ffDComparator.compare(this, f);
 	}
 	
 	// Property accessors

@@ -10,6 +10,7 @@
 package org.openmrs.api.context;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,8 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.WeakHashMap;
-import java.util.Arrays;
+
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -31,7 +31,6 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
@@ -143,12 +142,7 @@ public class Context {
 	private static Properties runtimeProperties = new Properties();
 	
 	private static Properties configProperties = new Properties();
-	
-	// A place to store data that will persist longer than a session, but won't
-	// persist beyond application restart
-	@Deprecated
-	private static Map<User, Map<String, Object>> volatileUserData = new WeakHashMap<User, Map<String, Object>>();
-	
+		
 	/**
 	 * Default public constructor
 	 */
@@ -1036,7 +1030,7 @@ public class Context {
 		// setting core global properties
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-			Context.addProxyPrivilege(PrivilegeConstants.VIEW_GLOBAL_PROPERTIES);
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			Set<String> currentPropNames = new HashSet<String>();
 			Map<String, GlobalProperty> propsMissingDescription = new HashMap<String, GlobalProperty>();
 			Map<String, GlobalProperty> propsMissingDatatype = new HashMap<String, GlobalProperty>();
@@ -1081,7 +1075,7 @@ public class Context {
 		}
 		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_GLOBAL_PROPERTIES);
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
 
 		// setting default validation rule
@@ -1136,51 +1130,6 @@ public class Context {
 	 */
 	public static void updateDatabase(Map<String, Object> userInput) throws DatabaseUpdateException, InputRequiredException {
 		DatabaseUpdater.executeChangelog(null, userInput);
-	}
-	
-	/**
-	 * Get a piece of information for the currently authenticated user. This information is stored
-	 * only temporarily. When a new module is loaded or the server is restarted, this information
-	 * will disappear. If there is not information by this key, null is returned TODO: This needs to
-	 * be refactored/removed
-	 * 
-	 * @param key identifying string for the information
-	 * @return the information stored
-	 */
-	@Deprecated
-	public static Object getVolatileUserData(String key) {
-		User u = getAuthenticatedUser();
-		if (u == null) {
-			throw new APIAuthenticationException();
-		}
-		Map<String, Object> myData = volatileUserData.get(u);
-		if (myData == null) {
-			return null;
-		} else {
-			return myData.get(key);
-		}
-	}
-	
-	/**
-	 * Set a piece of information for the currently authenticated user. This information is stored
-	 * only temporarily. When a new module is loaded or the server is restarted, this information
-	 * will disappear
-	 * 
-	 * @param key identifying string for this information
-	 * @param value information to be stored
-	 */
-	@Deprecated
-	public static void setVolatileUserData(String key, Object value) {
-		User u = getAuthenticatedUser();
-		if (u == null) {
-			throw new APIAuthenticationException();
-		}
-		Map<String, Object> myData = volatileUserData.get(u);
-		if (myData == null) {
-			myData = new HashMap<String, Object>();
-			volatileUserData.put(u, myData);
-		}
-		myData.put(key, value);
 	}
 	
 	/**

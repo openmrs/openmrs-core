@@ -66,69 +66,6 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Test the check digit method
-	 * 
-	 * @see OpenmrsUtil#getCheckDigit(String)
-	 */
-	@Test
-	@Verifies(value = "should get valid check digits", method = "getCheckDigit(String)")
-	public void getCheckDigit_shouldGetValidCheckDigits() throws Exception {
-		
-		String[] ids = { "9", "99", "999", "123MT", "asdf" };
-		int[] cds = { 1, 2, 3, 2, 8 };
-		
-		for (int i = 0; i < ids.length; i++) {
-			assertEquals(OpenmrsUtil.getCheckDigit(ids[i]), cds[i]);
-		}
-		
-	}
-	
-	/**
-	 * Test check digit validation methods
-	 * 
-	 * @see OpenmrsUtil#isValidCheckDigit(String)
-	 */
-	@Test
-	@Verifies(value = "should validate correct check digits", method = "isValidCheckDigit(String)")
-	public void isValidCheckDigit_shouldValidateCorrectCheckDigits() throws Exception {
-		
-		String[] ids2 = { "9-1", "99-2", "999-3", "123MT-2", "asdf-8", "12abd-7" };
-		String[] ids2Char = { "9-b", "99-c", "999-d", "123MT-c", "asdf-i", "12abd-h" };
-		for (int i = 0; i < ids2.length; i++) {
-			assertTrue(OpenmrsUtil.isValidCheckDigit(ids2[i]));
-			assertTrue(OpenmrsUtil.isValidCheckDigit(ids2Char[i]));
-		}
-	}
-	
-	/**
-	 * @see OpenmrsUtil#isValidCheckDigit(String)
-	 */
-	@Test
-	@Verifies(value = "should not validate invalid check digits", method = "isValidCheckDigit(String)")
-	public void isValidCheckDigit_shouldNotValidateInvalidCheckDigits() throws Exception {
-		String[] ids3 = { "asdf-7", "9-2", "9-4" };
-		for (int i = 0; i < ids3.length; i++) {
-			assertFalse(OpenmrsUtil.isValidCheckDigit(ids3[i]));
-		}
-	}
-	
-	/**
-	 * @see OpenmrsUtil#isValidCheckDigit(String)
-	 */
-	@Test
-	@Verifies(value = "should throw error if given an invalid character in id", method = "isValidCheckDigit(String)")
-	public void isValidCheckDigit_shouldThrowErrorIfGivenAnInvalidCharacterInId() throws Exception {
-		String[] ids4 = { "#@!", "234-3-3", "-3", "2134" };
-		for (int i = 0; i < ids4.length; i++) {
-			try {
-				OpenmrsUtil.isValidCheckDigit(ids4[i]);
-				fail("An exception was not thrown for invalid identifier: " + ids4[i]);
-			}
-			catch (Exception e) {}
-		}
-	}
-	
-	/**
 	 * test the collection contains method
 	 * 
 	 * @see OpenmrsUtil#collectionContains(Collection<*>,Object)

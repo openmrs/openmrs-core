@@ -208,7 +208,7 @@ public class DWRConceptServiceTest extends BaseWebContextSensitiveTest {
 		
 		User user = Context.getAuthenticatedUser();
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "en_GB, en_US, pl");
-		Context.getUserService().saveUser(user, null);
+		Context.getUserService().saveUser(user);
 		
 		Concept answer1 = Context.getConceptService().getConcept(7);
 		answer1.addName(new ConceptName("TAK", new Locale("pl")));
@@ -249,7 +249,7 @@ public class DWRConceptServiceTest extends BaseWebContextSensitiveTest {
 		
 		User user = Context.getAuthenticatedUser();
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "en_GB, en_US, pl");
-		Context.getUserService().saveUser(user, null);
+		Context.getUserService().saveUser(user);
 		
 		Concept answer1 = Context.getConceptService().getConcept(7);
 		answer1.addName(new ConceptName("TAK", new Locale("pl")));

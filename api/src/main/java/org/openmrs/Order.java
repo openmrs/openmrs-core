@@ -380,64 +380,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 			checkDate = new Date();
 		}
 		
-		return !isFuture(checkDate) && !isDiscontinued(checkDate) && !isExpired(checkDate);
-	}
-	
-	/**
-	 * Convenience method to determine if order is current
-	 * 
-	 * @see #isActive(java.util.Date)
-	 * @param checkDate - the date on which to check order. if null, will use current date
-	 * @return boolean indicating whether the order was current on the input date
-	 * @deprecated use {@link #isActive(Date)}
-	 */
-	@Deprecated
-	public boolean isCurrent(Date checkDate) {
-		return isActive(checkDate);
-	}
-	
-	/**
-	 * @see #isActive()
-	 * @return boolean indicating whether the order is current
-	 * @deprecated use {@link #isActive()}
-	 */
-	@Deprecated
-	public boolean isCurrent() {
-		return isActive(new Date());
-	}
-	
-	/**
-	 * Convenience method to determine if the order is not yet activated as of the given date
-	 * 
-	 * @deprecated use isStarted(java.util.Date)
-	 * @see #isStarted(java.util.Date)
-	 * @param checkDate - the date on which to check order. if null, will use current date
-	 * @return boolean indicating whether the order was activated after the check date
-	 * @should return false for a voided order
-	 * @should return false if dateActivated is null
-	 * @should return false if order was activated on the check date
-	 * @should return true if order was activated after the check date
-	 */
-	@Deprecated
-	public boolean isFuture(Date checkDate) {
-		if (isVoided()) {
-			return false;
-		}
-		if (checkDate == null) {
-			checkDate = new Date();
-		}
-		
-		return dateActivated != null && checkDate.before(dateActivated);
-	}
-	
-	/**
-	 * @deprecated use isStarted()
-	 * @see #isStarted()
-	 * @return boolean indicating whether the order is in the future
-	 */
-	@Deprecated
-	public boolean isFuture() {
-		return isFuture(new Date());
+		return isStarted(checkDate) && !isDiscontinued(checkDate) && !isExpired(checkDate);
 	}
 	
 	/**
@@ -505,7 +448,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		if (checkDate == null) {
 			checkDate = new Date();
 		}
-		if (dateActivated == null || isFuture(checkDate) || dateStopped == null) {
+		if (dateActivated == null || !isStarted(checkDate) || dateStopped == null) {
 			return false;
 		}
 		return checkDate.after(dateStopped);
@@ -547,7 +490,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		if (checkDate == null) {
 			checkDate = new Date();
 		}
-		if (dateActivated == null || isFuture(checkDate)) {
+		if (dateActivated == null || !isStarted(checkDate)) {
 			return false;
 		}
 		if (isDiscontinued(checkDate) || autoExpireDate == null) {

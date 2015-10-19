@@ -10,7 +10,6 @@
 package org.openmrs.notification.impl;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +24,7 @@ import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.db.AlertDAO;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.RoleConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -53,15 +52,6 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	 */
 	public void setAlertDAO(AlertDAO dao) {
 		this.dao = dao;
-	}
-	
-	/**
-	 * @see org.openmrs.notification.AlertService#createAlert(org.openmrs.notification.Alert)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createAlert(Alert alert) throws APIException {
-		Context.getAlertService().saveAlert(alert);
 	}
 	
 	/**
@@ -93,41 +83,13 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		
 		return dao.saveAlert(alert);
 	}
-	
-	/**
-	 * @see org.openmrs.notification.AlertService#createAlert(java.lang.String, org.openmrs.User)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createAlert(String text, User user) throws APIException {
-		Context.getAlertService().saveAlert(new Alert(text, user));
-	}
-	
-	/**
-	 * @see org.openmrs.notification.AlertService#createAlert(java.lang.String,
-	 *      java.util.Collection)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createAlert(String text, Collection<User> users) throws APIException {
-		Context.getAlertService().saveAlert(new Alert(text, users));
-	}
-	
+
 	/**
 	 * @see org.openmrs.notification.AlertService#getAlert(java.lang.Integer)
 	 */
 	@Transactional(readOnly = true)
 	public Alert getAlert(Integer alertId) throws APIException {
 		return dao.getAlert(alertId);
-	}
-	
-	/**
-	 * @see org.openmrs.notification.AlertService#updateAlert(org.openmrs.notification.Alert)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void updateAlert(Alert alert) throws APIException {
-		Context.getAlertService().saveAlert(alert);
 	}
 	
 	/**
@@ -138,43 +100,12 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	}
 	
 	/**
-	 * @see org.openmrs.notification.AlertService#markAlertRead(org.openmrs.notification.Alert)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void markAlertRead(Alert alert) throws APIException {
-		Context.getAlertService().saveAlert(alert.markAlertRead());
-	}
-	
-	/**
-	 * @see org.openmrs.notification.AlertService#getAllAlerts(org.openmrs.User)
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Alert> getAllAlerts(User user) throws APIException {
-		log.debug("Getting all alerts for user " + user);
-		return Context.getAlertService().getAlerts(user, true, true);
-	}
-	
-	/**
 	 * @see org.openmrs.notification.AlertService#getAllActiveAlerts(org.openmrs.User)
 	 */
 	@Transactional(readOnly = true)
 	public List<Alert> getAllActiveAlerts(User user) throws APIException {
 		log.debug("Getting all active alerts for user " + user);
 		return Context.getAlertService().getAlerts(user, true, false);
-	}
-	
-	/**
-	 * @see org.openmrs.notification.AlertService#getAlerts(org.openmrs.User)
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Alert> getAlerts(User user) throws APIException {
-		log.debug("Getting unread alerts for user " + user);
-		return Context.getAlertService().getAlertsByUser(user);
 	}
 	
 	/**
@@ -194,17 +125,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		
 		return Context.getAlertService().getAlerts(user, false, false);
 	}
-	
-	/**
-	 * @see org.openmrs.notification.AlertService#getAlerts()
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Alert> getAlerts() throws APIException {
-		return Context.getAlertService().getAlertsByUser(null);
-	}
-	
+
 	/**
 	 * @see org.openmrs.notification.AlertService#getAlerts(org.openmrs.User, boolean, boolean)
 	 */
@@ -259,7 +180,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		}
 		
 		//Send an alert to all administrators
-		Alert alert = new Alert(message, Context.getUserService().getUsersByRole(new Role(OpenmrsConstants.SUPERUSER_ROLE)));
+		Alert alert = new Alert(message, Context.getUserService().getUsersByRole(new Role(RoleConstants.SUPERUSER)));
 		
 		// Set the alert so that if any administrator 'reads' it it will be marked as read for everyone who received it
 		alert.setSatisfiedByAny(true);

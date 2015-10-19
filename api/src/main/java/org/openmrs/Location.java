@@ -14,9 +14,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.annotation.Independent;
 
 /**
  * A Location is a physical place, such as a hospital, a room, a clinic, or a district. Locations
@@ -233,24 +233,6 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	}
 	
 	/**
-	 * @deprecated As of 1.8, replaced by {@link #getAddress3()}
-	 * @return Returns the neighborhoodCell.
-	 */
-	@Deprecated
-	public String getNeighborhoodCell() {
-		return getAddress3();
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #setAddress3(String)}
-	 * @param address3 The neighborhoodCell to set.
-	 */
-	@Deprecated
-	public void setNeighborhoodCell(String address3) {
-		this.setAddress3(address3);
-	}
-	
-	/**
 	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
 	 */
 	public List<Location> findPossibleValues(String searchText) {
@@ -302,60 +284,6 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 */
 	public String getDisplayString() {
 		return getName();
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #getAddress6()}
-	 * @return the region
-	 */
-	@Deprecated
-	public String getRegion() {
-		return getAddress6();
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #setAddress6(String)}
-	 * @param address6 the region to set
-	 */
-	@Deprecated
-	public void setRegion(String address6) {
-		this.setAddress6(address6);
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #getAddress5()}
-	 * @return the subregion
-	 */
-	@Deprecated
-	public String getSubregion() {
-		return getAddress5();
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #setAddress5(String)}
-	 * @param address5 the subregion to set
-	 */
-	@Deprecated
-	public void setSubregion(String address5) {
-		this.setAddress5(address5);
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #getAddress4()}
-	 * @return the townshipDivision
-	 */
-	@Deprecated
-	public String getTownshipDivision() {
-		return getAddress4();
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #setAddress4(String)}
-	 * @param address4 the townshipDivision to set
-	 */
-	@Deprecated
-	public void setTownshipDivision(String address4) {
-		this.setAddress4(address4);
 	}
 	
 	/**
