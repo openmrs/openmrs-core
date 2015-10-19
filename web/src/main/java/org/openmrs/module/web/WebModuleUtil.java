@@ -1090,4 +1090,9 @@ public class WebModuleUtil {
 		return servletContext.getRealPath("");
 	}
 	
+	public static void stopModules(Collection<Module> modules, ServletContext servletContext, boolean skipContextRefresh) {
+		for (Module mod : modules) 
+			stopModule(mod, servletContext, skipContextRefresh);
+	}
+	
 }

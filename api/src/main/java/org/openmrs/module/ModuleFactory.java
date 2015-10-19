@@ -1690,4 +1690,17 @@ public class ModuleFactory {
 		}
 		return dependentModules;
 	}
+	
+	public static void stopModules(Collection<Module> modules) {
+		for (Module mod : modules) {
+			if (log.isDebugEnabled()) {
+				log.debug("Stopping module: " + mod.getModuleId());
+			}
+			
+			if (mod.isStarted())
+				ModuleFactory.stopModule(mod);
+		}
+		
+		log.debug("Finished stopping modules");
+	}
 }
