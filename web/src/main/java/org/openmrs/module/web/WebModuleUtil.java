@@ -493,14 +493,14 @@ public class WebModuleUtil {
 		try {
 			// Add the privileges necessary for notifySuperUsers
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
-			Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
 			
 			// Send an alert to all administrators
 			Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", null, mod.getName());
 		}
 		finally {
 			// Remove added privileges
-			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 		}
 	}

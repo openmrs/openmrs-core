@@ -9,17 +9,16 @@
  */
 package org.openmrs.module;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.Before;
+import org.junit.Test;
+import org.openmrs.test.BaseContextSensitiveTest;
 
 public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	
@@ -41,7 +40,7 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	public void shouldResourceBeIncluded_shouldReturnTrueIfFileMatchesAndOpenmrsVersionMatches() throws Exception {
 		ModuleConditionalResource resource = new ModuleConditionalResource();
 		resource.setPath("lib/mockmodule-api-1.10.jar");
-		resource.setOpenmrsVersion("1.7-1.8,1.10-1.11");
+		resource.setOpenmrsPlatformVersion("1.7-1.8,1.10-1.11");
 		
 		mockModule.getConditionalResources().add(resource);
 		
@@ -59,7 +58,7 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	public void shouldResourceBeIncluded_shouldReturnFalseIfFileMatchesButOpenmrsVersionDoesNot() throws Exception {
 		ModuleConditionalResource resource = new ModuleConditionalResource();
 		resource.setPath("lib/mockmodule-api-1.10.jar");
-		resource.setOpenmrsVersion("1.7-1.8, 1.10-1.11");
+		resource.setOpenmrsPlatformVersion("1.7-1.8, 1.10-1.11");
 		
 		mockModule.getConditionalResources().add(resource);
 		
@@ -77,7 +76,7 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	public void shouldResourceBeIncluded_shouldReturnTrueIfFileDoesNotMatchAndOpenmrsVersionDoesNotMatch() throws Exception {
 		ModuleConditionalResource resource = new ModuleConditionalResource();
 		resource.setPath("lib/mockmodule-api.jar");
-		resource.setOpenmrsVersion("1.10-1.11");
+		resource.setOpenmrsPlatformVersion("1.10-1.11");
 		
 		mockModule.getConditionalResources().add(resource);
 		
@@ -144,7 +143,7 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	        throws Exception {
 		ModuleConditionalResource resource = new ModuleConditionalResource();
 		resource.setPath("lib/mockmodule-api-1.10.jar");
-		resource.setOpenmrsVersion("1.10");
+		resource.setOpenmrsPlatformVersion("1.10");
 		
 		ModuleConditionalResource.ModuleAndVersion module = new ModuleConditionalResource.ModuleAndVersion();
 		module.setModuleId("module");

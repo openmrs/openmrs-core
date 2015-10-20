@@ -35,22 +35,6 @@ public class ModuleConditionalResource {
 	}
 	
 	/**
-	 * @deprecated Since 1.11.3, 1.10.2, 1.9.9 use {@link #getOpenmrsPlatformVersion()}.
-	 */
-	@Deprecated
-	public String getOpenmrsVersion() {
-		return openmrsPlatformVersion;
-	}
-	
-	/**
-	 * @deprecated Since 1.11.3, 1.10.2, 1.9.9 use {@link #setOpenmrsPlatformVersion(String)}.
-	 */
-	@Deprecated
-	public void setOpenmrsVersion(String openmrsVersion) {
-		this.openmrsPlatformVersion = openmrsVersion;
-	}
-	
-	/**
 	 * @since 1.11.3, 1.10.2, 1.9.9
 	 */
     public String getOpenmrsPlatformVersion() {

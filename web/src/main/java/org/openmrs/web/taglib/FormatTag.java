@@ -313,7 +313,6 @@ public class FormatTag extends TagSupport {
 		sb.append(" | ");
 		printDate(sb, encounter.getEncounterDatetime());
 		sb.append(" | ");
-		printPerson(sb, encounter.getProvider());
 	}
 	
 	/**

@@ -141,36 +141,6 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	}
 	
 	/**
-	 * Presumes to append the messages to a message.properties file which is already being monitored
-	 * by the super ReloadableResourceBundleMessageSource. This is a blind, trusting hack.
-	 *
-	 * @see org.openmrs.messagesource.MutableMessageSource#publishProperties(java.util.Properties,
-	 *      java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-	 * @deprecated use {@linkplain #merge(MutableMessageSource, boolean)}
-	 */
-	@Deprecated
-	public void publishProperties(Properties props, String locale, String namespace, String name, String version) {
-		
-		String filePrefix = (namespace.length() > 0) ? (namespace + "_") : "";
-		String propertiesPath = "/WEB-INF/" + filePrefix + "messages" + locale + ".properties";
-		
-		Resource propertiesResource = applicationContext.getResource(propertiesPath);
-		try {
-			File propertiesFile = propertiesResource.getFile();
-			
-			if (!propertiesFile.exists()) {
-				propertiesFile.createNewFile();
-			}
-			// append the properties to the appropriate messages file
-			OpenmrsUtil.storeProperties(props, propertiesFile, namespace + ": " + name + " v" + version);
-			
-		}
-		catch (Exception ex) {
-			log.error("Error creating new properties file");
-		}
-	}
-	
-	/**
 	 * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
 	 */
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

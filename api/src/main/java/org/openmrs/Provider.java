@@ -11,7 +11,6 @@ package org.openmrs;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.APIException;
 
 /**
  * Represents a person who may provide care to a patient during an encounter
@@ -115,16 +114,5 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 			log.warn("We no longer support providers who are not linked to person. Set the name on the linked person");
 			return null;
 		}
-	}
-	
-	/**
-	 * @see org.openmrs.BaseOpenmrsMetadata#setName(java.lang.String)
-	 * @deprecated as of 1.12, replaced by {@link org.openmrs.Person#setNames(java.util.Set)}
-	 */
-	@Deprecated
-	@Override
-	public void setName(String name) {
-		throw new APIException(
-		        "We no longer support providers who are not linked to person. Set the name on the linked person");
 	}
 }

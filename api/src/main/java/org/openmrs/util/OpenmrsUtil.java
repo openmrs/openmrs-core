@@ -28,10 +28,8 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -84,7 +82,6 @@ import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
-import org.openmrs.Person;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
@@ -96,13 +93,11 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.InvalidCharactersPasswordException;
 import org.openmrs.api.PasswordException;
-import org.openmrs.api.PatientService;
 import org.openmrs.api.ShortPasswordException;
 import org.openmrs.api.WeakPasswordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
-import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.propertyeditor.CohortEditor;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.DrugEditor;
@@ -112,9 +107,6 @@ import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PersonAttributeTypeEditor;
 import org.openmrs.propertyeditor.ProgramEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
-import org.openmrs.xml.OpenmrsCycleStrategy;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.load.Persister;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.NoSuchMessageException;
@@ -132,80 +124,7 @@ public class OpenmrsUtil {
 	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<Locale, SimpleDateFormat>();
 	
 	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<Locale, SimpleDateFormat>();
-	
-	/**
-	 * @param idWithoutCheckdigit
-	 * @return int - the calculated check digit for the given string
-	 * @throws Exception
-	 * @deprecated Use {@link PatientService#getIdentifierValidator(String)}
-	 * @should get valid check digits
-	 */
-	@Deprecated
-	public static int getCheckDigit(String idWithoutCheckdigit) throws Exception {
-		PatientService ps = Context.getPatientService();
-		IdentifierValidator piv = ps.getDefaultIdentifierValidator();
 		
-		String withCheckDigit = piv.getValidIdentifier(idWithoutCheckdigit);
-		char checkDigitChar = withCheckDigit.charAt(withCheckDigit.length() - 1);
-		
-		if (Character.isDigit(checkDigitChar)) {
-			return Integer.parseInt("" + checkDigitChar);
-		} else {
-			switch (checkDigitChar) {
-				case 'A':
-				case 'a':
-					return 0;
-				case 'B':
-				case 'b':
-					return 1;
-				case 'C':
-				case 'c':
-					return 2;
-				case 'D':
-				case 'd':
-					return 3;
-				case 'E':
-				case 'e':
-					return 4;
-				case 'F':
-				case 'f':
-					return 5;
-				case 'G':
-				case 'g':
-					return 6;
-				case 'H':
-				case 'h':
-					return 7;
-				case 'I':
-				case 'i':
-					return 8;
-				case 'J':
-				case 'j':
-					return 9;
-				default:
-					return 10;
-			}
-		}
-		
-	}
-	
-	/**
-	 * @param id
-	 * @return true/false whether id has a valid check digit
-	 * @throws Exception on invalid characters and invalid id formation
-	 * @deprecated Should be using {@link PatientService#getIdentifierValidator(String)}
-	 * @should validate correct check digits
-	 * @should not validate invalid check digits
-	 * @should throw error if given an invalid character in id
-	 */
-	@Deprecated
-	public static boolean isValidCheckDigit(String id) throws Exception {
-		PatientService ps = Context.getPatientService();
-		IdentifierValidator piv = ps.getDefaultIdentifierValidator();
-		
-		return piv.isValid(id);
-	}
-	
 	/**
 	 * Compares origList to newList returning map of differences
 	 * 
@@ -785,39 +704,6 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * @deprecated this method is not currently used within OpenMRS and is a duplicate of
-	 *             {@link Person#getAge(Date)}
-	 */
-	@Deprecated
-	public static Integer ageFromBirthdate(Date birthdate) {
-		if (birthdate == null) {
-			return null;
-		}
-		
-		Calendar today = Calendar.getInstance();
-		
-		Calendar bday = Calendar.getInstance();
-		bday.setTime(birthdate);
-		
-		int age = today.get(Calendar.YEAR) - bday.get(Calendar.YEAR);
-		
-		// Adjust age when today's date is before the person's birthday
-		int todaysMonth = today.get(Calendar.MONTH);
-		int bdayMonth = bday.get(Calendar.MONTH);
-		int todaysDay = today.get(Calendar.DAY_OF_MONTH);
-		int bdayDay = bday.get(Calendar.DAY_OF_MONTH);
-		
-		if (todaysMonth < bdayMonth) {
-			age--;
-		} else if (todaysMonth == bdayMonth && todaysDay < bdayDay) {
-			// we're only comparing on month and day, not minutes, etc
-			age--;
-		}
-		
-		return age;
-	}
-	
-	/**
 	 * Converts a collection to a String with a specified separator between all elements
 	 * 
 	 * @param c Collection to be joined
@@ -875,16 +761,6 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Also see TRUNK-3665
-	 * 
-	 * @deprecated replaced by {@link #delimitedStringToConceptList(String, String)}
-	 */
-	@Deprecated
-	public static List<Concept> delimitedStringToConceptList(String delimitedString, String delimiter, Context context) {
-		return delimitedStringToConceptList(delimitedString, delimiter);
-	}
-	
-	/**
 	 * Parses and loads a delimited list of concept ids or names
 	 * 
 	 * @param delimitedString the delimited list of concept ids or names
@@ -933,7 +809,7 @@ public class OpenmrsUtil {
 		if (delimitedString != null) {
 			String[] tokens = delimitedString.split(delimiter);
 			for (String token : tokens) {
-				Concept c = OpenmrsUtil.getConceptByIdOrName(token);
+				Concept c = Context.getConceptService().getConcept(token);
 				
 				if (c != null) {
 					if (ret == null) {
@@ -945,28 +821,6 @@ public class OpenmrsUtil {
 		}
 		
 		return ret;
-	}
-	
-	// DEPRECATED: This method should now be replaced with
-	// ConceptService.getConceptByIdOrName()
-	public static Concept getConceptByIdOrName(String idOrName) {
-		Concept c = null;
-		Integer conceptId = null;
-		
-		try {
-			conceptId = Integer.valueOf(idOrName);
-		}
-		catch (NumberFormatException nfe) {
-			conceptId = null;
-		}
-		
-		if (conceptId != null) {
-			c = Context.getConceptService().getConcept(conceptId);
-		} else {
-			c = Context.getConceptService().getConceptByName(idOrName);
-		}
-		
-		return c;
 	}
 	
 	// TODO: properly handle duplicates
@@ -1003,31 +857,6 @@ public class OpenmrsUtil {
 			}
 		}
 		return ret;
-	}
-	
-	/**
-	 * Return a date that is the same day as the passed in date, but the hours and seconds are the
-	 * latest possible for that day.
-	 * 
-	 * @param date date to adjust
-	 * @return a date that is the last possible time in the day
-	 * @deprecated use {@link #getLastMomentOfDay(Date)}
-	 */
-	@Deprecated
-	public static Date lastSecondOfDay(Date date) {
-		if (date == null) {
-			return null;
-		}
-		Calendar c = Calendar.getInstance();
-		c.setTime(date);
-		// TODO: figure out the right way to do this (or at least set
-		// milliseconds to zero)
-		c.set(Calendar.HOUR_OF_DAY, 0);
-		c.set(Calendar.MINUTE, 0);
-		c.set(Calendar.SECOND, 0);
-		c.add(Calendar.DAY_OF_MONTH, 1);
-		c.add(Calendar.SECOND, -1);
-		return c.getTime();
 	}
 	
 	/**
@@ -1208,7 +1037,7 @@ public class OpenmrsUtil {
 	 *         the application (runtime properties, modules, etc)
 	 */
 	public static String getApplicationDataDirectory() {
-		String filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
+		String filepath = null;
 		
 		String systemProperty = System.getProperty("OPENMRS_APPLICATION_DATA_DIRECTORY");
 		//System and runtime property take precedence
@@ -1257,8 +1086,6 @@ public class OpenmrsUtil {
 			folder.mkdirs();
 		}
 		
-		OpenmrsConstants.APPLICATION_DATA_DIRECTORY = filepath;
-		
 		return filepath;
 	}
 	
@@ -1271,7 +1098,7 @@ public class OpenmrsUtil {
 	 * @since 1.11
 	 */
 	public static void setApplicationDataDirectory(String path) {
-		OpenmrsConstants.APPLICATION_DATA_DIRECTORY = path;
+		System.setProperty("OPENMRS_APPLICATION_DATA_DIRECTORY", path);
 	}
 	
 	/**
@@ -1524,18 +1351,6 @@ public class OpenmrsUtil {
 	 * locale.
 	 * 
 	 * @return a simple date format
-	 * @deprecated use {@link Context#getDateFormat()} or {@link #getDateFormat(Locale)} instead
-	 */
-	@Deprecated
-	public static SimpleDateFormat getDateFormat() {
-		return Context.getDateFormat();
-	}
-	
-	/**
-	 * Get the current user's date format Will look similar to "mm-dd-yyyy". Depends on user's
-	 * locale.
-	 * 
-	 * @return a simple date format
 	 * @should return a pattern with four y characters in it
 	 * @should not allow the returned SimpleDateFormat to be modified
 	 * @since 1.5
@@ -1741,49 +1556,6 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Get a serializer that will do the common type of serialization and deserialization. Cycles of
-	 * objects are taken into account
-	 * 
-	 * @return Serializer to do the (de)serialization
-	 * @deprecated - Use OpenmrsSerializer from
-	 *             Context.getSerializationService.getDefaultSerializer() Note, this uses a
-	 *             different Serialization mechanism, so you may need to use this for conversion
-	 */
-	@Deprecated
-	public static Serializer getSerializer() {
-		return new Persister(new OpenmrsCycleStrategy());
-	}
-	
-	/**
-	 * Get a short serializer that will only do the very basic serialization necessary. This is
-	 * controlled by the objects that are being serialized via the @Replace methods
-	 * 
-	 * @return Serializer to do the short (de)serialization
-	 * @see OpenmrsConstants#SHORT_SERIALIZATION
-	 * @deprecated - Use OpenmrsSerializer from
-	 *             Context.getSerializationService.getDefaultSerializer() Note, this uses a
-	 *             different Serialization mechanism, so you may need to use this for conversion
-	 */
-	@Deprecated
-	public static Serializer getShortSerializer() {
-		return new Persister(new OpenmrsCycleStrategy(true));
-	}
-	
-	/**
-	 * True/false whether the current serialization is supposed to be a short serialization. A
-	 * shortened serialization This should be called from methods marked with the @Replace notation
-	 * that take in a single <code>Map</code> parameter.
-	 * 
-	 * @param sessionMap current serialization session
-	 * @return true/false whether or not to do the shortened serialization
-	 * @deprecated - use SerializationService and OpenmrsSerializer implementation for Serialization
-	 */
-	@Deprecated
-	public static boolean isShortSerialization(Map<?, ?> sessionMap) {
-		return sessionMap.containsKey(OpenmrsConstants.SHORT_SERIALIZATION);
-	}
-	
-	/**
 	 * Gets an out File object. If date is not provided, the current timestamp is used. If user is
 	 * not provided, the user id is not put into the filename. Assumes dir is already created
 	 * 
@@ -1861,91 +1633,7 @@ public class OpenmrsUtil {
 	public static String generateUid() {
 		return generateUid(20);
 	}
-	
-	/**
-	 * Post the given map of variables to the given url string
-	 * 
-	 * @param urlString valid http url to post data to
-	 * @param dataToPost Map&lt;String, String&gt; of key value pairs to post to urlString
-	 * @return response from urlString after posting
-	 * @deprecated use org.openmrs.util.HttpClient
-	 */
-	@Deprecated
-	public static String postToUrl(String urlString, Map<String, String> dataToPost) {
-		OutputStreamWriter wr = null;
-		BufferedReader rd = null;
-		StringBuilder response = new StringBuilder("");
-		StringBuffer data = null;
 		
-		try {
-			// Construct data
-			for (Map.Entry<String, String> entry : dataToPost.entrySet()) {
-				
-				// skip over invalid post variables
-				if (entry.getKey() == null || entry.getValue() == null) {
-					continue;
-				}
-				
-				// create the string buffer if this is the first variable
-				if (data == null) {
-					data = new StringBuffer();
-				} else {
-					data.append("&"); // only append this if its _not_ the first
-				}
-				// datum
-				
-				// finally, setup the actual post string
-				data.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-				data.append("=");
-				data.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-			}
-			
-			// Send the data
-			URL url = new URL(urlString);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setDoOutput(true);
-			conn.setDoInput(true);
-			conn.setRequestMethod("POST");
-			conn.setRequestProperty("Content-Length", String.valueOf(data.length()));
-			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			
-			wr = new OutputStreamWriter(conn.getOutputStream());
-			wr.write(data.toString());
-			wr.flush();
-			wr.close();
-			
-			// Get the response
-			rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String line;
-			while ((line = rd.readLine()) != null) {
-				response.append(line).append("\n");
-			}
-			
-		}
-		catch (Exception e) {
-			log.warn("Exception while posting to : " + urlString, e);
-			log.warn("Reponse from server was: " + response);
-		}
-		finally {
-			if (wr != null) {
-				try {
-					wr.close();
-				}
-				catch (Exception e) { /* pass */
-				}
-			}
-			if (rd != null) {
-				try {
-					rd.close();
-				}
-				catch (Exception e) { /* pass */
-				}
-			}
-		}
-		
-		return response.toString();
-	}
-	
 	/**
 	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant <br>
 	 * NOTE: In Java 6, you will be able to pass the load() and store() methods a UTF-8
@@ -2009,35 +1697,12 @@ public class OpenmrsUtil {
 	 * NOTE: In Java 6, you will be able to pass the load() and store() methods a UTF-8
 	 * Reader/Writer object as an argument, making this method unnecessary.
 	 * 
-	 * @deprecated use {@link #loadProperties(Properties, File)}
 	 * @param props the properties object to write into
 	 * @param input the input stream to read from
 	 */
-	@Deprecated
-	public static void loadProperties(Properties props, InputStream input) {
-		try {
-			InputStreamReader reader = new InputStreamReader(input, "UTF-8");
-			props.load(reader);
-			reader.close();
-		}
-		catch (UnsupportedEncodingException uee) {
-			log.error("Unsupported encoding used in properties file " + uee);
-		}
-		catch (IOException ioe) {
-			log.error("Unable to read properties from properties file " + ioe);
-		}
-	}
-	
-	/**
-	 * Convenience method used to load properties from the given file.
-	 * 
-	 * @param props the properties object to be loaded into
-	 * @param propertyFile the properties file to read
-	 */
-	public static void loadProperties(Properties props, File propertyFile) {
+	public static void loadProperties(Properties props, InputStream inputStream) {
 		InputStreamReader reader = null;
 		try {
-			InputStream inputStream = new FileInputStream(propertyFile);
 			reader = new InputStreamReader(inputStream, "UTF-8");
 			props.load(reader);
 		}
@@ -2059,6 +1724,21 @@ public class OpenmrsUtil {
 			catch (IOException ioe) {
 				log.error("Unable to close properties file " + ioe);
 			}
+		}
+	}
+	
+	/**
+	 * Convenience method used to load properties from the given file.
+	 * 
+	 * @param props the properties object to be loaded into
+	 * @param propertyFile the properties file to read
+	 */
+	public static void loadProperties(Properties props, File propertyFile) {
+		try {
+			loadProperties(props, new FileInputStream(propertyFile));
+		}
+		catch (FileNotFoundException fnfe) {
+			log.error("Unable to find properties file" + fnfe);
 		}
 	}
 	

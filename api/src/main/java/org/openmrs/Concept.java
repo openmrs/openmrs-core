@@ -151,31 +151,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * Possibly used for decapitating a ConceptNumeric (to remove the row in concept_numeric)
-	 * 
-	 * @param cn
-	 * @deprecated
-	 */
-	@Deprecated
-	public Concept(ConceptNumeric cn) {
-		conceptId = cn.getConceptId();
-		retired = cn.isRetired();
-		datatype = cn.getDatatype();
-		conceptClass = cn.getConceptClass();
-		version = cn.getVersion();
-		creator = cn.getCreator();
-		dateCreated = cn.getDateCreated();
-		changedBy = cn.getChangedBy();
-		dateChanged = cn.getDateChanged();
-		names = cn.getNames();
-		descriptions = cn.getDescriptions();
-		answers = cn.getAnswers(true);
-		conceptSets = cn.getConceptSets();
-		conceptMappings = cn.getConceptMappings();
-		setUuid(cn.getUuid());
-	}
-	
-	/**
 	 * @return Returns all answers (including retired answers).
 	 * @should return retired and non-retired answers
 	 * @should not return null if answers is null or empty
@@ -186,20 +161,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			answers = new HashSet<ConceptAnswer>();
 		}
 		return answers;
-	}
-	
-	/**
-	 * TODO describe use cases
-	 * 
-	 * @param locale
-	 * @return the answers for this concept sorted according to ConceptAnswerComparator
-	 * @deprecated
-	 */
-	@Deprecated
-	public Collection<ConceptAnswer> getSortedAnswers(Locale locale) {
-		Vector<ConceptAnswer> sortedAnswers = new Vector<ConceptAnswer>(getAnswers(false));
-		Collections.sort(sortedAnswers);
-		return sortedAnswers;
 	}
 	
 	/**
@@ -408,14 +369,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * @deprecated use {@link #setPreferredName(ConceptName)}
-	 */
-	@Deprecated
-	public void setPreferredName(Locale locale, ConceptName preferredName) {
-		setPreferredName(preferredName);
-	}
-	
-	/**
 	 * Sets the preferred name /in this locale/ to the specified conceptName and its Locale, if
 	 * there is an existing preferred name for this concept in the same locale, this one will
 	 * replace the old preferred name. Also, the name is added to the concept if it is not already
@@ -445,51 +398,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		if (preferredName.getConceptNameId() == null || !getNames().contains(preferredName)) {
 			addName(preferredName);
 		}
-	}
-	
-	/**
-	 * Gets the name explicitly marked as preferred in a locale with a matching country code.
-	 * 
-	 * @param country ISO-3166 two letter country code
-	 * @return the preferred name, or null if no match is found
-	 * @deprecated use {@link #getPreferredName(Locale)}
-	 */
-	@Deprecated
-	public ConceptName getPreferredNameForCountry(String country) {
-		//TODO add unit tests
-		if (!StringUtils.isBlank(country)) {
-			//return the first preferred name found in a locale with a matching country code
-			for (ConceptName conceptName : getNames()) {
-				if (conceptName.isPreferred() && conceptName.getLocale() != null
-				        && conceptName.getLocale().getCountry().equals(country)) {
-					return conceptName;
-				}
-			}
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Gets the name explicitly marked as preferred in a locale with a matching language code.
-	 * 
-	 * @param language ISO-3166 two letter language code
-	 * @return the preferred name, or null if no match is found
-	 * @deprecated use {@link #getPreferredName(Locale)}
-	 */
-	@Deprecated
-	public ConceptName getPreferredNameInLanguage(String language) {
-		//TODO add unit tests
-		if (!StringUtils.isBlank(language)) {
-			//return the first preferred name found in a locale with a matching language code
-			for (ConceptName conceptName : getNames()) {
-				if (conceptName.isPreferred() && conceptName.getLocale() != null
-				        && conceptName.getLocale().getLanguage().equals(language)) {
-					return conceptName;
-				}
-			}
-		}
-		return null;
 	}
 	
 	/**
@@ -792,14 +700,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * @deprecated use {@link #getName(Locale, boolean)} with a second parameter of "false"
-	 */
-	@Deprecated
-	public ConceptName getBestName(Locale locale) {
-		return getName(locale, false);
-	}
-	
-	/**
 	 * Convenience method that returns the fully specified name in the locale
 	 * 
 	 * @param locale locale from which to look up the fully specified name
@@ -905,23 +805,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * @deprecated use {@link #getShortNameInLocale(Locale)} or
-	 *             {@link #getShortestName(Locale, Boolean)}
-	 */
-	@Deprecated
-	public ConceptName getBestShortName(Locale locale) {
-		return getShortestName(locale, false);
-	}
-	
-	/**
-	 * @deprecated use {@link #setShortName(ConceptName)}
-	 */
-	@Deprecated
-	public void setShortName(Locale locale, ConceptName shortName) {
-		setShortName(shortName);
-	}
-	
-	/**
 	 * Sets the specified name as the fully specified name for the locale and the current fully
 	 * specified (if any) ceases to be the fully specified name for the locale.
 	 * 
@@ -979,51 +862,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * This method is deprecated, it always returns the shortName from the locale with a matching
-	 * country code.
-	 * 
-	 * @param country ISO-3166 two letter country code
-	 * @return the short name, or null if none has been explicitly set
-	 * @deprecated use {@link #getShortNameInLocale(Locale)} or
-	 *             {@link #getShortestName(Locale, Boolean)}
-	 */
-	@Deprecated
-	public ConceptName getShortNameForCountry(String country) {
-		if (!StringUtils.isBlank(country)) {
-			//return the first short name found in a locale with a matching country code
-			for (ConceptName shortName : getShortNames()) {
-				if (shortName.getLocale() != null && shortName.getLocale().getCountry().equals(country)) {
-					return shortName;
-				}
-			}
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * This method is deprecated, it always returns the shortName from the locale with a matching
-	 * language code.
-	 * 
-	 * @param language ISO-3166 two letter language code
-	 * @return the short name, or null if none has been explicitly set
-	 * @deprecated use {@link #getShortNameInLocale(Locale)} or
-	 *             {@link #getShortestName(Locale, Boolean)}
-	 */
-	@Deprecated
-	public ConceptName getShortNameInLanguage(String language) {
-		if (!StringUtils.isBlank(language)) {
-			//return the first short name found in a locale with a matching language code
-			for (ConceptName shortName : getShortNames()) {
-				if (shortName.getLocale() != null && shortName.getLocale().getLanguage().equals(language)) {
-					return shortName;
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
 	 * Gets the explicitly specified short name for a locale.
 	 * 
 	 * @param locale locale for which to find a short name
@@ -1068,27 +906,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			}
 		}
 		return shortNames;
-	}
-	
-	/**
-	 * This method is deprecated, it returns a list with only one shortName for the locale if any is
-	 * found, otherwise the list will be empty.
-	 * 
-	 * @param locale the locale where to find the shortName
-	 * @return a list containing a single shortName for the locale if any is found
-	 * @deprecated because each concept has only one short name per locale.
-	 * @see #getShortNameInLocale(Locale)
-	 */
-	@Deprecated
-	public Collection<ConceptName> getShortNamesForLocale(Locale locale) {
-		//return a list with only the single short name for the locale if any
-		Vector<ConceptName> shortNamesForLocale = new Vector<ConceptName>();
-		ConceptName shortNameInLocale = getShortNameInLocale(locale);
-		if (shortNameInLocale != null) {
-			shortNamesForLocale.add(shortNameInLocale);
-		}
-		
-		return shortNamesForLocale;
 	}
 	
 	/**
@@ -1465,19 +1282,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public Boolean isRetired() {
 		return retired;
-	}
-	
-	/**
-	 * This method exists to satisfy spring and hibernates slightly bung use of Boolean object
-	 * getters and setters.
-	 * 
-	 * @deprecated Use the "proper" isRetired method.
-	 * @see org.openmrs.Concept#isRetired()
-	 */
-	@Deprecated
-	@Attribute
-	public Boolean getRetired() {
-		return isRetired();
 	}
 	
 	/**

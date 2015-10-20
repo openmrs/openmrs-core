@@ -22,8 +22,6 @@ public class PatientListItem extends PersonListItem {
 	
 	private String identifier = "";
 	
-	private Boolean identifierCheckDigit = false;
-	
 	private String identifierTypeName = "";
 	
 	private String otherIdentifiers = "";
@@ -47,7 +45,6 @@ public class PatientListItem extends PersonListItem {
 			for (PatientIdentifier pi : patient.getIdentifiers()) {
 				if (first) {
 					identifier = pi.getIdentifier();
-					identifierCheckDigit = pi.getIdentifierType().hasCheckDigit();
 					first = false;
 				} else {
 					if (!"".equals(otherIdentifiers)) {
@@ -100,20 +97,6 @@ public class PatientListItem extends PersonListItem {
 	
 	public void setPatientId(Integer patientId) {
 		this.patientId = patientId;
-	}
-	
-	/**
-	 * @return Returns the identifierIdentifierCheckdigit.
-	 */
-	public Boolean getIdentifierCheckDigit() {
-		return identifierCheckDigit;
-	}
-	
-	/**
-	 * @param identifierCheckDigit The identifierIdentifierCheckdigit to set.
-	 */
-	public void setIdentifierCheckDigit(Boolean identifierCheckDigit) {
-		this.identifierCheckDigit = identifierCheckDigit;
 	}
 	
 	/**

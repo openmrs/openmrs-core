@@ -9,9 +9,9 @@
  */
 package org.openmrs;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.io.Serializable;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * PatientIdentifierType
@@ -169,35 +169,6 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements Serial
 	 */
 	public void setPatientIdentifierTypeId(Integer patientIdentifierTypeId) {
 		this.patientIdentifierTypeId = patientIdentifierTypeId;
-	}
-	
-	/**
-	 * @return Returns the checkdigit.
-	 * @deprecated No need to know if it has a check digit now that any validator algorithm can be
-	 *             chosen.
-	 */
-	@Deprecated
-	public Boolean getCheckDigit() {
-		return hasCheckDigit();
-	}
-	
-	/**
-	 * @return Returns the checkdigit.
-	 * @deprecated No need to know if it has a check digit now that any validator algorithm can be
-	 *             chosen.
-	 */
-	@Deprecated
-	public Boolean hasCheckDigit() {
-		return checkDigit;
-	}
-	
-	/**
-	 * @param checkDigit The checkdigit to set.
-	 * @deprecated No need for this field now that any validator algorithm can be chosen.
-	 */
-	@Deprecated
-	public void setCheckDigit(Boolean checkDigit) {
-		this.checkDigit = checkDigit;
 	}
 	
 	public String getValidator() {

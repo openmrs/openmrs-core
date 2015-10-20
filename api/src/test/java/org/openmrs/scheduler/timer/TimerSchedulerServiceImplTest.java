@@ -55,8 +55,7 @@ public class TimerSchedulerServiceImplTest extends BaseContextSensitiveTest {
 		
 		Task clientTask = null;
 		
-		TimerSchedulerServiceImpl t = new TimerSchedulerServiceImpl();
-		clientTask = t.scheduleTask(taskDefinition);
+		clientTask = Context.getSchedulerService().scheduleTask(taskDefinition);
 		
 		// without this commit there seems to be a table lock left on the SCHEDULER_TASK_CONFIG table, see TRUNK-4212
 		Context.flushSession();

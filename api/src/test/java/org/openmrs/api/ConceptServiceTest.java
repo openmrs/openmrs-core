@@ -9,6 +9,33 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.openmrs.test.OpenmrsMatchers.hasConcept;
+import static org.openmrs.test.OpenmrsMatchers.hasId;
+import static org.openmrs.test.TestUtil.containsId;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.dbunit.dataset.IDataSet;
 import org.junit.After;
@@ -51,33 +78,6 @@ import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.Errors;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.openmrs.test.OpenmrsMatchers.hasConcept;
-import static org.openmrs.test.OpenmrsMatchers.hasId;
-import static org.openmrs.test.TestUtil.containsId;
 
 /**
  * This test class (should) contain tests for all of the ConcepService methods TODO clean up and
@@ -1154,7 +1154,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptsByConceptSource_shouldReturnAListOfConceptMapsIfConceptMappingsFound() throws Exception {
 		List<ConceptMap> list = conceptService
-		        .getConceptsByConceptSource(conceptService.getConceptSourceByName("SNOMED CT"));
+		        .getConceptMappingsToSource(conceptService.getConceptSourceByName("SNOMED CT"));
 		assertEquals(2, list.size());
 	}
 	
@@ -1164,7 +1164,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConceptsByConceptSource_shouldReturnEmptyListOfConceptMapsIfNoneFound() throws Exception {
-		List<ConceptMap> list = conceptService.getConceptsByConceptSource(conceptService
+		List<ConceptMap> list = conceptService.getConceptMappingsToSource(conceptService
 		        .getConceptSourceByName("Some invalid name"));
 		assertEquals(0, list.size());
 	}
@@ -1193,8 +1193,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test(expected = Exception.class)
 	public void saveConceptSource_shouldNotSaveAConceptSourceIfVoidedIsNull() throws Exception {
 		ConceptSource source = new ConceptSource();
-		source.setVoided(null);
-		assertNull(source.getVoided());
+		source.setRetired(null);
+		assertNull(source.isRetired());
 		
 		conceptService.saveConceptSource(source);
 		
@@ -2396,8 +2396,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("test name", Context.getLocale()));
 		ConceptMap map = new ConceptMap();
-		map.setSourceCode("unique code");
-		map.setSource(conceptService.getConceptSource(1));
+		map.getConceptReferenceTerm().setCode("unique code");
+		map.getConceptReferenceTerm().setConceptSource(conceptService.getConceptSource(1));
 		concept.addConceptMapping(map);
 		conceptService.saveConcept(concept);
 		Assert.assertNotNull(concept.getId());
@@ -2414,8 +2414,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		int initialTermCount = conceptService.getAllConceptReferenceTerms().size();
 		Concept concept = conceptService.getConcept(5497);
 		ConceptMap map = new ConceptMap();
-		map.setSourceCode("unique code");
-		map.setSource(conceptService.getConceptSource(1));
+		map.getConceptReferenceTerm().setCode("unique code");
+		map.getConceptReferenceTerm().setConceptSource(conceptService.getConceptSource(1));
 		concept.addConceptMapping(map);
 		conceptService.saveConcept(concept);
 		Assert.assertEquals(initialTermCount + 1, conceptService.getAllConceptReferenceTerms().size());
@@ -3058,7 +3058,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugs_shouldReturnUniqueDrugs() throws Exception {
 		//sanity check that drug.name and drug.concept.name will both match the search phrase
-		Drug drug = conceptService.getDrugByNameOrId("ASPIRIN");
+		Drug drug = conceptService.getDrug("ASPIRIN");
 		assertEquals(drug.getName().toLowerCase(), drug.getConcept().getName().getName().toLowerCase());
 		
 		List<Drug> drugs = conceptService.getDrugs("Asp", null, false, false);

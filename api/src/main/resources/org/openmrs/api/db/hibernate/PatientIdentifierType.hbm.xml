@@ -53,8 +53,6 @@
         length="250"
     />
     
-    <property name="checkDigit" type="boolean" column="check_digit" not-null="true"/>
-
     <property name="required" type="boolean" not-null="true"/>
     
     <property name="validator" type="java.lang.String" column="validator" length="200"/>
@@ -68,14 +66,16 @@
     />
     
 	<property name="locationBehavior" column="location_behavior" length="50">
-		<type name="org.openmrs.util.HibernateEnumType">
-			<param name="enumClassName">org.openmrs.PatientIdentifierType$LocationBehavior</param>
+		<type name="org.hibernate.type.EnumType">
+			<param name="enumClass">org.openmrs.PatientIdentifierType$LocationBehavior</param>
+			<param name="type">12</param>
 		</type>
 	</property>
     
     <property name="uniquenessBehavior" column="uniqueness_behavior" length="50">
-    	<type name="org.openmrs.util.HibernateEnumType">
-    		<param name="enumClassName">org.openmrs.PatientIdentifierType$UniquenessBehavior</param>
+    	<type name="org.hibernate.type.EnumType">
+    		<param name="enumClass">org.openmrs.PatientIdentifierType$UniquenessBehavior</param>
+    		<param name="type">12</param>
     	</type>
     </property>
 	

@@ -43,15 +43,6 @@ public class ConceptListItem {
 	 */
 	private String preferredName;
 	
-	/**
-	 * Synonyms don't exist. All synonyms are names with different tags. If the name hit is not the
-	 * preferred name, preferredName will be non-null
-	 *
-	 * @deprecated not used anymore
-	 */
-	@Deprecated
-	private String synonym = "";
-	
 	private Boolean retired;
 	
 	private String hl7Abbreviation;
@@ -239,16 +230,6 @@ public class ConceptListItem {
 	
 	public void setPreferredName(String preferredName) {
 		this.preferredName = preferredName;
-	}
-	
-	@Deprecated
-	public String getSynonym() {
-		return synonym;
-	}
-	
-	@Deprecated
-	public void setSynonym(String synonym) {
-		this.synonym = synonym;
 	}
 	
 	public Boolean getRetired() {

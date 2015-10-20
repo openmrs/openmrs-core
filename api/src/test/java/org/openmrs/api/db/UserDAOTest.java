@@ -9,18 +9,19 @@
  */
 package org.openmrs.api.db;
 
-import java.util.Date;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import static org.junit.Assert.*;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
-import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.UserContext;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.Security;
@@ -87,7 +88,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 			name.setDateCreated(new Date());
 			u.addName(name);
 			u.setUsername(wildcard + "test" + wildcard);
-			Context.getUserService().saveUser(u, "Openmr5xy");
+			Context.getUserService().createUser(u, "Openmr5xy");
 			
 			//we expect only one matching name or or systemId  to be returned
 			int size = dao.getUsers(wildcard + "ca", null, false, null, null).size();

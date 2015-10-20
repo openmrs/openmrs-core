@@ -9,42 +9,31 @@
  */
 package org.openmrs.module;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.openmrs.GlobalProperty;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.test.BaseContextMockTest;
-import org.openmrs.test.Verifies;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.Properties;
 import java.util.jar.JarFile;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
+import org.apache.commons.io.IOUtils;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Test;
+import org.openmrs.GlobalProperty;
+import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
  * Tests methods on the {@link org.openmrs.module.ModuleUtil} class
  */
-public class ModuleUtilTest extends BaseContextMockTest {
-	
-	@Mock
-	MessageSourceService messageSourceService;
-	
-	@Mock
-	AdministrationService administrationService;
+public class ModuleUtilTest extends BaseContextSensitiveTest {
 	
 	Properties initialRuntimeProperties;
 	
@@ -58,7 +47,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		assertThat(ModuleFactory.getStartedModules(), empty());
 		
 		GlobalProperty gp1 = new GlobalProperty("module1.mandatory", "true");
-		when(administrationService.getGlobalPropertiesBySuffix(".mandatory")).thenReturn(Arrays.asList(gp1));
+		Context.getAdministrationService().saveGlobalProperty(gp1);
 		
 		//when
 		ModuleUtil.checkMandatoryModulesStarted();
@@ -83,7 +72,8 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		GlobalProperty gp1 = new GlobalProperty("firstmodule.mandatory", "true");
 		GlobalProperty gp2 = new GlobalProperty("secondmodule.mandatory", "false");
 		
-		when(administrationService.getGlobalPropertiesBySuffix(".mandatory")).thenReturn(Arrays.asList(gp1, gp2));
+		Context.getAdministrationService().saveGlobalProperty(gp1);
+		Context.getAdministrationService().saveGlobalProperty(gp2);
 		
 		//when
 		//then
@@ -569,8 +559,8 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	@Test
 	@Verifies(value = "load file from api as input stream", method = "getResourceFromApi(JarFile,String,String,String)")
 	public void getResourceFromApi_shouldLoadFileFromApiAsInputStream() throws Exception {
-		String moduleId = "basicmodule";
-		String version = "0.1";
+		String moduleId = "test1";
+		String version = "1.0-SNAPSHOT";
 		String resource = "messages.properties";
 		JarFile moduleJarFile = loadModuleJarFile(moduleId, version);
 		Assert.assertNotNull(moduleJarFile);
@@ -599,8 +589,8 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	@Test
 	@Verifies(value = "return null if file is not found in api", method = "getResourceFromApi(JarFile,String,String,String)")
 	public void getResourceFromApi_shouldReturnNullIfFileIsNotFoundInApi() throws Exception {
-		String moduleId = "basicmodule";
-		String version = "0.1";
+		String moduleId = "test1";
+		String version = "1.0-SNAPSHOT";
 		String resource = "messages_doesnotexist.properties";
 		JarFile moduleJarFile = loadModuleJarFile(moduleId, version);
 		Assert.assertNotNull(moduleJarFile);

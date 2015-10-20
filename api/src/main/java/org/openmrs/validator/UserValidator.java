@@ -125,8 +125,7 @@ public class UserValidator implements Validator {
 					errors.rejectValue("username", "error.username.pattern");
 				}
 			}
-			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "username", "systemId", "retireReason",
-			    "secretQuestion");
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "username", "systemId", "retireReason");
 		}
 	}
 	

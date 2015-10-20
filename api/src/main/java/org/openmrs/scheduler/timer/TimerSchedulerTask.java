@@ -68,7 +68,7 @@ public class TimerSchedulerTask extends TimerTask {
 				SchedulerService schedulerService = Context.getSchedulerService();
 				taskDefinition = task.getTaskDefinition();
 				taskDefinition.setLastExecutionTime(new Date());
-				schedulerService.saveTask(taskDefinition);
+				schedulerService.saveTaskDefinition(taskDefinition);
 			} else {
 				log.warn("Unable to save the last execution time for task. Task.taskDefinition is null in "
 				        + task.getClass());

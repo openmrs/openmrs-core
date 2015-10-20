@@ -29,8 +29,6 @@ public class ConceptDrugListItem {
 	
 	private String name;
 	
-	private String units;
-	
 	public ConceptDrugListItem() {
 	}
 	
@@ -43,7 +41,6 @@ public class ConceptDrugListItem {
 			}
 			name = drug.getName();
 			fullName = drug.getFullName(locale);
-			units = drug.getUnits();
 		}
 	}
 	
@@ -76,20 +73,6 @@ public class ConceptDrugListItem {
 	
 	public void setName(String name) {
 		this.name = name;
-	}
-	
-	/**
-	 * @return the units
-	 */
-	public String getUnits() {
-		return units;
-	}
-	
-	/**
-	 * @param units the units to set
-	 */
-	public void setUnits(String units) {
-		this.units = units;
 	}
 	
 	public String getFullName() {

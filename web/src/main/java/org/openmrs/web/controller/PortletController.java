@@ -172,7 +172,7 @@ public class PortletController implements Controller {
 			if (o != null) {
 				String patientVariation = "";
 				Integer patientId = (Integer) o;
-				if (!model.containsKey("patient") && Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)) {
+				if (!model.containsKey("patient") && Context.hasPrivilege(PrivilegeConstants.GET_PATIENTS)) {
 					// we can't continue if the user can't view patients
 					Patient p = Context.getPatientService().getPatient(patientId);
 					model.put("patient", p);
@@ -181,19 +181,19 @@ public class PortletController implements Controller {
 					}
 					
 					// add encounters if this user can view them
-					if (Context.hasPrivilege(PrivilegeConstants.VIEW_ENCOUNTERS)) {
+					if (Context.hasPrivilege(PrivilegeConstants.GET_ENCOUNTERS)) {
 						model.put("patientEncounters", Context.getEncounterService().getEncountersByPatient(p));
 					}
 					
 					// add visits if this user can view them
-					if (Context.hasPrivilege(PrivilegeConstants.VIEW_VISITS)) {
+					if (Context.hasPrivilege(PrivilegeConstants.GET_VISITS)) {
 						model.put("person", p);
 						PortletControllerUtil.addFormToEditAndViewUrlMaps(model);
 						model.put("patientVisits", Context.getVisitService().getVisitsByPatient(p));
 						model.put("activeVisits", Context.getVisitService().getActiveVisitsByPatient(p));
 					}
 					
-					if (Context.hasPrivilege(PrivilegeConstants.VIEW_OBS)) {
+					if (Context.hasPrivilege(PrivilegeConstants.GET_OBS)) {
 						List<Obs> patientObs = Context.getObsService().getObservationsByPerson(p);
 						model.put("patientObs", patientObs);
 						Obs latestWeight = null;
@@ -267,8 +267,8 @@ public class PortletController implements Controller {
 						model.put("patientObs", new HashSet<Obs>());
 					}
 					
-					if (Context.hasPrivilege(PrivilegeConstants.VIEW_PROGRAMS)
-					        && Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENT_PROGRAMS)) {
+					if (Context.hasPrivilege(PrivilegeConstants.GET_PROGRAMS)
+					        && Context.hasPrivilege(PrivilegeConstants.GET_PATIENT_PROGRAMS)) {
 						model.put("patientPrograms", Context.getProgramWorkflowService().getPatientPrograms(p, null, null,
 						    null, null, null, false));
 						model.put("patientCurrentPrograms", Context.getProgramWorkflowService().getPatientPrograms(p, null,
@@ -301,7 +301,7 @@ public class PortletController implements Controller {
 					model.put("person", p);
 				}
 				
-				if (!model.containsKey("personRelationships") && Context.hasPrivilege(PrivilegeConstants.VIEW_RELATIONSHIPS)) {
+				if (!model.containsKey("personRelationships") && Context.hasPrivilege(PrivilegeConstants.GET_RELATIONSHIPS)) {
 					List<Relationship> relationships = new ArrayList<Relationship>();
 					relationships.addAll(Context.getPersonService().getRelationshipsByPerson(p));
 					Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
@@ -322,10 +322,10 @@ public class PortletController implements Controller {
 			// if an encounter id is available, put "encounter" and "encounterObs" in the model
 			o = request.getAttribute("org.openmrs.portlet.encounterId");
 			if (o != null && !model.containsKey("encounterId")) {
-				if (!model.containsKey("encounter") && Context.hasPrivilege(PrivilegeConstants.VIEW_ENCOUNTERS)) {
+				if (!model.containsKey("encounter") && Context.hasPrivilege(PrivilegeConstants.GET_ENCOUNTERS)) {
 					Encounter e = Context.getEncounterService().getEncounter((Integer) o);
 					model.put("encounter", e);
-					if (Context.hasPrivilege(PrivilegeConstants.VIEW_OBS)) {
+					if (Context.hasPrivilege(PrivilegeConstants.GET_OBS)) {
 						model.put("encounterObs", e.getObs());
 					}
 					model.put("encounterId", (Integer) o);
@@ -335,7 +335,7 @@ public class PortletController implements Controller {
 			// if a user id is available, put "user" in the model
 			o = request.getAttribute("org.openmrs.portlet.userId");
 			if (o != null && !model.containsKey("user")) {
-				if (Context.hasPrivilege(PrivilegeConstants.VIEW_USERS)) {
+				if (Context.hasPrivilege(PrivilegeConstants.GET_USERS)) {
 					User u = Context.getUserService().getUser((Integer) o);
 					model.put("user", u);
 				}

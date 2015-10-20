@@ -342,18 +342,6 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
-	 * @see LocationService#getLocations(String, boolean, Integer, Integer)
-	 * @deprecated
-	 */
-	@Override
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
-	        throws APIException {
-		return dao.getLocations(nameFragment, null, null, includeRetired, start, length);
-	}
-	
-	/**
 	 * @see LocationService#getLocations(String, org.openmrs.Location, java.util.Map, boolean,
 	 *      Integer, Integer)
 	 */
