@@ -1815,18 +1815,38 @@ public class OpenmrsUtil {
 	 * @param systemId system id of the user with password to be validated
 	 * @throws PasswordException
 	 * @since 1.5
-	 * @should fail with short password by default
-	 * @should fail with short password if not allowed
-	 * @should pass with short password if allowed
-	 * @should fail with digit only password by default
-	 * @should fail with digit only password if not allowed
-	 * @should pass with digit only password if allowed
-	 * @should fail with char only password by default
-	 * @should fail with char only password if not allowed
-	 * @should pass with char only password if allowed
-	 * @should fail without both upper and lower case password by default
-	 * @should fail without both upper and lower case password if not allowed
-	 * @should pass without both upper and lower case password if allowed
+	 * @should fail with short password and the global properties caseGp, digitGp and nonDigitGp set to true
+	 * @should fail with short password and the global properties digitGp, nonDigitGp set to true and caseGp set to false
+	 * @should fail with short password and the global properties caseGp, nonDigitGp set to true and digitGp set to false
+	 * @should fail with short password and the global properties caseGp, digitGp set to true and nonDigitGp set to false
+	 * @should fail with short password and the global property nonDigitGp set to true and caseGp, digitGp set to false
+	 * @should fail with short password and the global property digitGp set to true and caseGp, nonDigitGp set to false
+	 * @should fail with short password and the global property caseGp set to true and digitGp, nonDigitGp set to false
+	 * @should fail with short password and the global properties caseGp, digitGp and nonDigitGp set to false
+	 * @should fail without both upper and lower case password and the global properties digitGp, nonDigitGp set to true and lengthGp set to some integer value
+	 * @should fail without both upper and lower case password and the global properties digitGp, nonDigitGp set to true and lengthGp left with default value
+	 * @should fail without both upper and lower case password and the global properties nonDigitGp set to true, lengthGp left with default value and digitGp set to true
+	 * @should fail without both upper and lower case password and the global properties digitGp set to true, lengthGp left with default value and nonDigitGp set to true
+	 * @should fail without both upper and lower case password and the global property nonDigitGp set to true and digitGp set to false, lengthGp left with default value
+	 * @should fail without both upper and lower case password and the global property digitGp set to true and nonDigitGp set to false, lengthGp left with default value
+	 * @should fail without both upper and lower case password and the global property lengthGp set to some integer value and digitGp, nonDigitGp set to false
+	 * @should fail without both upper and lower case password and the global properties digitGp, nonDigitGp set to false and lengthGp left with default value
+	 * @should fail with char only password and the global properties caseGp, nonDigitGp set to true and lengthGp set to some integer value
+	 * @should fail with char only password and the global properties nonDigitGp set to true, lengthGp set to some integer value and caseGp set to false
+	 * @should fail with char only password and the global properties caseGp set to true,lengthGp set to some integer value and nonDigitGp set to false
+	 * @should fail with char only password and the global properties caseGp, nonDigitGp set to true and lengthGp left with default value
+	 * @should fail with char only password and the global property nonDigitGp set to true and caseGp set to false, lengthGp left with default value
+	 * @should fail with char only password and the global property caseGp set to true and nonDigitGp set to false, lengthGp left with default value
+	 * @should fail with char only password and the global property lengthGp set to some integer value and caseGp, nonDigitGp set to false
+	 * @should fail with char only password and the global properties caseGp, nonDigitGp set to false and lengthGp left with default value
+	 * @should fail with digit only password and the global properties caseGp, digitGp set to true and lengthGp set to some integer value
+	 * @should fail with digit only password and the global properties digitGp set to true, lengthGp set to some integer value and caseGp set to false
+	 * @should fail with digit only password and the global properties caseGp set to true,lengthGp set to some integer value and digitGp set to false
+	 * @should fail with digit only password and the global properties caseGp, digitGp set to true and lengthGp left with default value
+	 * @should fail with digit only password and the global property digitGp set to true and caseGp set to false, lengthGp left with default value
+	 * @should fail with digit only password and the global property caseGp set to true and digitGp set to false, lengthGp left with default value
+	 * @should fail with digit only password and the global property lengthGp set to some integer value and caseGp, digitGp set to false
+	 * @should fail with digit only password and the global properties caseGp, digitGp set to false and lengthGp left with default value
 	 * @should fail with password equals to user name by default
 	 * @should fail with password equals to user name if not allowed
 	 * @should pass with password equals to user name if allowed
@@ -1841,6 +1861,7 @@ public class OpenmrsUtil {
 	 */
 	public static void validatePassword(String username, String password, String systemId) throws PasswordException {
 		
+		int minLength = 8;
 		// default values for all of the global properties
 		String userGp = "true";
 		String lengthGp = "8";
@@ -1870,20 +1891,10 @@ public class OpenmrsUtil {
 			regexGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX, regexGp);
 		}
 		
-		if (password == null) {
-			throw new WeakPasswordException();
-		}
-		
-		if ("true".equals(userGp) && (password.equals(username) || password.equals(systemId))) {
-			throw new WeakPasswordException();
-		}
-		
 		if (StringUtils.isNotEmpty(lengthGp)) {
 			try {
-				int minLength = Integer.parseInt(lengthGp);
-				if (password.length() < minLength) {
-					throw new ShortPasswordException(getMessage("error.password.length", lengthGp));
-				}
+				minLength = Integer.parseInt(lengthGp);
+				
 			}
 			catch (NumberFormatException nfe) {
 				log
@@ -1892,16 +1903,106 @@ public class OpenmrsUtil {
 			}
 		}
 		
+		if (password == null) {
+			throw new WeakPasswordException();
+		}
+		
+		if ("true".equals(userGp) && (password.equals(username) || password.equals(systemId))) {
+			throw new WeakPasswordException();
+		}
+		
+		if (StringUtils.isNotEmpty(lengthGp) && password.length() < minLength) {
+			
+			if ("true".equals(caseGp) && "true".equals(digitGp) && "true".equals(nonDigitGp)) {
+				throw new ShortPasswordException(getMessage("error.password.short.case_digit_nondigit", lengthGp));
+			} else if ("true".equals(digitGp) && "true".equals(nonDigitGp)) {
+				throw new ShortPasswordException(getMessage("error.password.short.digit_nondigit", lengthGp));
+			} else if ("true".equals(caseGp) && "true".equals(nonDigitGp)) {
+				throw new ShortPasswordException(getMessage("error.password.short.case_nondigit", lengthGp));
+			} else if ("true".equals(caseGp) && "true".equals(digitGp)) {
+				throw new ShortPasswordException(getMessage("error.password.short.case_digit_nondigit", lengthGp));
+			} else if ("true".equals(nonDigitGp)) {
+				throw new ShortPasswordException(getMessage("error.password.short.nondigit", lengthGp));
+			} else if ("true".equals(digitGp)) {
+				throw new ShortPasswordException(getMessage("error.password.short.digit", lengthGp));
+			} else if ("true".equals(caseGp)) {
+				throw new ShortPasswordException(getMessage("error.password.short.case", lengthGp));
+			} else {
+				throw new ShortPasswordException(getMessage("error.password.short", lengthGp));
+			}
+		}
+		
 		if ("true".equals(caseGp) && !containsUpperAndLowerCase(password)) {
-			throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase"));
+			
+			if (StringUtils.isNotEmpty(lengthGp) && "true".equals(digitGp) && "true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage(
+				    "error.password.requireMixedCase.length_digit_nondigit", lengthGp));
+			} else if ("true".equals(digitGp) && "true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase.digit_nondigit"));
+			} else if (StringUtils.isNotEmpty(lengthGp) && "true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase.length", lengthGp));
+			} else if (StringUtils.isNotEmpty(lengthGp) && "true".equals(digitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage(
+				    "error.password.requireMixedCase.length_digit_nondigit", lengthGp));
+			} else if ("true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase.nondigit"));
+			} else if ("true".equals(digitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase.digit"));
+			} else if (StringUtils.isNotEmpty(lengthGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase.length", lengthGp));
+			} else {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase"));
+			}
+			
 		}
 		
 		if ("true".equals(digitGp) && !containsDigit(password)) {
-			throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber"));
+			
+			if (StringUtils.isNotEmpty(lengthGp) && "true".equals(caseGp) && "true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber.length_case_nondigit",
+				    lengthGp));
+			} else if (StringUtils.isNotEmpty(lengthGp) && "true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber.length_nondigit",
+				    lengthGp));
+			} else if (StringUtils.isNotEmpty(lengthGp) && "true".equals(caseGp)) {
+				throw new InvalidCharactersPasswordException(
+				        getMessage("error.password.requireNumber.length_case", lengthGp));
+			} else if (StringUtils.isNotEmpty(caseGp) && "true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber.case"));
+			} else if ("true".equals(nonDigitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber.nondigit"));
+			} else if ("true".equals(caseGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber.case"));
+			} else if (StringUtils.isNotEmpty(lengthGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber.length", lengthGp));
+			} else {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber"));
+			}
 		}
 		
 		if ("true".equals(nonDigitGp) && containsOnlyDigits(password)) {
-			throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter"));
+			
+			if (StringUtils.isNotEmpty(lengthGp) && "true".equals(caseGp) && "true".equals(digitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter.length_case_digit",
+				    lengthGp));
+			} else if (StringUtils.isNotEmpty(lengthGp) && "true".equals(digitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter.length_digit",
+				    lengthGp));
+			} else if (StringUtils.isNotEmpty(lengthGp) && "true".equals(caseGp)) {
+				throw new InvalidCharactersPasswordException(
+				        getMessage("error.password.requireLetter.length_case", lengthGp));
+			} else if (StringUtils.isNotEmpty(caseGp) && "true".equals(digitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter.case_digit"));
+			} else if ("true".equals(digitGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter.digit"));
+			} else if ("true".equals(caseGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter.case"));
+			} else if (StringUtils.isNotEmpty(lengthGp)) {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter.length", lengthGp));
+			} else {
+				throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter"));
+			}
+			
 		}
 		
 		if (StringUtils.isNotEmpty(regexGp)) {

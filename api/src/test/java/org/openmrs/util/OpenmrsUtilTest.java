@@ -141,91 +141,373 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
-	@Verifies(value = "should fail with digit only password by default", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithDigitOnlyPasswordByDefault() throws Exception {
+	@Verifies(value = "should fail with digit only password and the global properties caseGp set to true,lengthGp set to some integer value and digitGp set to false", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithDigitOnlyPasswordAndTheGlobalPropertiesCaseGpSetToTruelengthGpSetToSomeIntegerValueAndDigitGpSetToFalse()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "123456", "1-8");
+		
+	}
+	
+
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with digit only password and the global properties caseGp, digitGp set to false and lengthGp left with default value", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithDigitOnlyPasswordAndTheGlobalPropertiesCaseGpDigitGpSetToFalseAndLengthGpLeftWithDefaultValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
 		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
+		
 	}
 	
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
-	@Verifies(value = "should fail with digit only password if not allowed", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithDigitOnlyPasswordIfNotAllowed() throws Exception {
+	@Verifies(value = "should fail with digit only password and the global properties caseGp, digitGp set to true and lengthGp left with default value", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithDigitOnlyPasswordAndTheGlobalPropertiesCaseGpDigitGpSetToTrueAndLengthGpLeftWithDefaultValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
+		
+	}
+
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with digit only password and the global properties caseGp, digitGp set to true and lengthGp set to some integer value", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithDigitOnlyPasswordAndTheGlobalPropertiesCaseGpDigitGpSetToTrueAndLengthGpSetToSomeIntegerValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "123456", "1-8");
+		
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with digit only password and the global properties digitGp set to true, lengthGp set to some integer value and caseGp set to false", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithDigitOnlyPasswordAndTheGlobalPropertiesDigitGpSetToTrueLengthGpSetToSomeIntegerValueAndCaseGpSetToFalse()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "123456", "1-8");
+		
+	}
+	
+	
+	
+		
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with digit only password and the global property caseGp set to true and digitGp set to false, lengthGp left with default value", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithDigitOnlyPasswordAndTheGlobalPropertyCaseGpSetToTrueAndDigitGpSetToFalseLengthGpLeftWithDefaultValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
+		
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with digit only password and the global property digitGp set to true and caseGp set to false, lengthGp left with default value", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithDigitOnlyPasswordAndTheGlobalPropertyDigitGpSetToTrueAndCaseGpSetToFalseLengthGpLeftWithDefaultValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
 		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
 	}
 	
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
 	 */
-	@Test
-	@Verifies(value = "should pass with digit only password if allowed", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldPassWithDigitOnlyPasswordIfAllowed() throws Exception {
-		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with digit only password and the global property lengthGp set to some integer value and caseGp, digitGp set to false", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithDigitOnlyPasswordAndTheGlobalPropertyLengthGpSetToSomeIntegerValueAndCaseGpDigitGpSetToFalse()
+	        throws Exception {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
-		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
-	}
-	
-	/**
-	 * @see OpenmrsUtil#validatePassword(String,String,String)
-	 */
-	@Test(expected = InvalidCharactersPasswordException.class)
-	@Verifies(value = "should fail with char only password by default", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithCharOnlyPasswordByDefault() throws Exception {
-		OpenmrsUtil.validatePassword("admin", "testonly", "1-8");
-	}
-	
-	/**
-	 * @see OpenmrsUtil#validatePassword(String,String,String)
-	 */
-	@Test(expected = InvalidCharactersPasswordException.class)
-	@Verifies(value = "should fail with char only password if not allowed", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithCharOnlyPasswordIfNotAllowed() throws Exception {
-		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
-		OpenmrsUtil.validatePassword("admin", "testonly", "1-8");
-	}
-	
-	/**
-	 * @see OpenmrsUtil#validatePassword(String,String,String)
-	 */
-	@Test
-	@Verifies(value = "should pass with char only password if allowed", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldPassWithCharOnlyPasswordIfAllowed() throws Exception {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
-		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
-		OpenmrsUtil.validatePassword("admin", "testonly", "1-8");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
+	
 	}
 	
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 *
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
-	@Verifies(value = "should fail without upper and lower case password by default", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithoutUpperAndLowerCasePasswordByDefault() throws Exception {
-		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
-	}
-	
-	/**
-	 * @see OpenmrsUtil#validatePassword(String,String,String)
-	 */
-	@Test(expected = InvalidCharactersPasswordException.class)
-	@Verifies(value = "should fail without upper and lower case password if not allowed", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithoutUpperAndLowerCasePasswordIfNotAllowed() throws Exception {
+	@Verifies(value = "should fail with char only password and the global properties caseGp set to true,lengthGp set to some integer value and nonDigitGp set to false", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithCharOnlyPasswordAndTheGlobalPropertiesCaseGpSetToTruelengthGpSetToSomeIntegerValueAndNonDigitGpSetToFalse()
+	        throws Exception {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
-		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "HelloW", "1-8");
+		
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with char only password and the global properties caseGp, nonDigitGp set to false and lengthGp left with default value", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithCharOnlyPasswordAndTheGlobalPropertiesCaseGpNonDigitGpSetToFalseAndLengthGpLeftWithDefaultValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
+		OpenmrsUtil.validatePassword("admin", "hellowor", "1-8");
+		
+
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with char only password and the global properties caseGp, nonDigitGp set to true and lengthGp left with default value", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithCharOnlyPasswordAndTheGlobalPropertiesCaseGpNonDigitGpSetToTrueAndLengthGpLeftWithDefaultValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		OpenmrsUtil.validatePassword("admin", "HelloWor", "1-8");
+	}
+
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with char only password and the global properties caseGp, nonDigitGp set to true and lengthGp set to some integer value", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithCharOnlyPasswordAndTheGlobalPropertiesCaseGpNonDigitGpSetToTrueAndLengthGpSetToSomeIntegerValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "HelloW", "1-8");
+	}
+
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with char only password and the global properties nonDigitGp set to true, lengthGp set to some integer value and caseGp set to false", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithCharOnlyPasswordAndTheGlobalPropertiesNonDigitGpSetToTrueLengthGpSetToSomeIntegerValueAndCaseGpSetToFalse()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "hellow", "1-8");
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with char only password and the global property caseGp set to true and nonDigitGp set to false, lengthGp left with default value", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithCharOnlyPasswordAndTheGlobalPropertyCaseGpSetToTrueAndNonDigitGpSetToFalseLengthGpLeftWithDefaultValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
+		OpenmrsUtil.validatePassword("admin", "HelloWor", "1-8");
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with char only password and the global property lengthGp set to some integer value and caseGp, nonDigitGp set to false", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithCharOnlyPasswordAndTheGlobalPropertyLengthGpSetToSomeIntegerValueAndCaseGpNonDigitGpSetToFalse()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "hellow", "1-8");
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with char only password and the global property nonDigitGp set to true and caseGp set to false, lengthGp left with default value", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithCharOnlyPasswordAndTheGlobalPropertyNonDigitGpSetToTrueAndCaseGpSetToFalseLengthGpLeftWithDefaultValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		OpenmrsUtil.validatePassword("admin", "hellowor", "1-8");
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 *
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail without both upper and lower case password and the global properties digitGp set to true, lengthGp left with default value and nonDigitGp set to true ", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithoutBothUpperAndLowerCasePasswordAndTheGlobalPropertiesDigitGpSetToTrueLengthGpLeftWithDefaultValueAndNonDigitGpSetToTrue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		OpenmrsUtil.validatePassword("admin", "hellow12", "1-8");
+		
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail without both upper and lower case password and the global properties digitGp, nonDigitGp set to false and lengthGp left with default value", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithoutBothUpperAndLowerCasePasswordAndTheGlobalPropertiesDigitGpNonDigitGpSetToFalseAndLengthGpLeftWithDefaultValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
+		OpenmrsUtil.validatePassword("admin", "hellowor", "1-8");
+		
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail without both upper and lower case password and the global properties digitGp, nonDigitGp set to true and lengthGp left with default value ", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithoutBothUpperAndLowerCasePasswordAndTheGlobalPropertiesDigitGpNonDigitGpSetToTrueAndLengthGpLeftWithDefaultValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		OpenmrsUtil.validatePassword("admin", "hellow12", "1-8");
+		
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail without both upper and lower case password and the global properties digitGp, nonDigitGp set to true and lengthGp set to some integer value ", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithoutBothUpperAndLowerCasePasswordAndTheGlobalPropertiesDigitGpNonDigitGpSetToTrueAndLengthGpSetToSomeIntegerValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "hello1", "1-8");
+		
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail without both upper and lower case password and the global properties nonDigitGp set to true, lengthGp left with default value and digitGp set to true ", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithoutBothUpperAndLowerCasePasswordAndTheGlobalPropertiesNonDigitGpSetToTrueLengthGpLeftWithDefaultValueAndDigitGpSetToTrue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		OpenmrsUtil.validatePassword("admin", "hellowo1", "1-8");
+		
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 *
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail without both upper and lower case password and the global property digitGp set to true and nonDigitGp set to false, lengthGp left with default value ", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithoutBothUpperAndLowerCasePasswordAndTheGlobalPropertyDigitGpSetToTrueAndNonDigitGpSetToFalseLengthGpLeftWithDefaultValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
+		OpenmrsUtil.validatePassword("admin", "hellowo1", "1-8");
+}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail without both upper and lower case password and the global property lengthGp set to some integer value and digitGp, nonDigitGp set to false ", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithoutBothUpperAndLowerCasePasswordAndTheGlobalPropertyLengthGpSetToSomeIntegerValueeAndDigitGpNonDigitGpSetToFalse()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "hellow", "1-8");
 	}
 	
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
-	@Test
-	@Verifies(value = "should pass without upper and lower case password if allowed", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldPassWithoutUpperAndLowerCasePasswordIfAllowed() throws Exception {
-		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
-		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail without both upper and lower case password and the global property nonDigitGp set to true and digitGp set to false, lengthGp left with default value ", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithoutBothUpperAndLowerCasePasswordAndTheGlobalPropertyNonDigitGpSetToTrueAndDigitGpSetToFalseLengthGpLeftWithDefaultValue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		OpenmrsUtil.validatePassword("admin", "hellowor", "1-8");
 	}
 	
 	/**
@@ -287,33 +569,131 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * 
 	 */
 	@Test(expected = ShortPasswordException.class)
-	@Verifies(value = "should fail with short password by default", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithShortPasswordByDefault() throws Exception {
-		OpenmrsUtil.validatePassword("admin", "1234567", "1-8");
+	@Verifies(value = "should fail with short password and the global properties caseGp, digitGp and nonDigitGp set to true", method = "validatePassword(String, String, String)")
+	public void validatePassword_shouldFailWithShortPasswordAndTheGlobalPropertiesCaseGpDigitGpAndNonDigitGpSetToTrue()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "He123", "1-8");
+		
 	}
 	
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
 	 */
 	@Test(expected = ShortPasswordException.class)
-	@Verifies(value = "should fail with short password if not allowed", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithShortPasswordIfNotAllowed() throws Exception {
+	@Verifies(value = "should fail with short password and the global properties digitGp, nonDigitGp set to true and caseGp set to false", method = "validatePassword(String, String, String)")
+	public void validatePassword_shouldFailWithShortPasswordAndTheGlobalPropertiesDigitGpNonDigitGpSetToTrueAndCaseGpSetToFalse()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "he123", "1-8");
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = ShortPasswordException.class)
+	@Verifies(value = "should fail with short password and the global properties caseGp, nonDigitGp set to true and digitGp set to false", method = "validatePassword(String, String, String)")
+	public void validatePassword_shouldFailWithShortPasswordAndTheGlobalPropertiesCaseGpNonDigitGpSetToTrueAndDigitGpSetToFalse()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "Hello", "1-8");
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = ShortPasswordException.class)
+	@Verifies(value = "should fail with short password and the global properties caseGp, digitGp set to true and nonDigitGp set to false", method = "validatePassword(String, String, String)")
+	public void validatePassword_shouldFailWithShortPasswordAndTheGlobalPropertiesCaseGpDigitGpSetToTrueAndNonDigitGpSetToFalse()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "He123", "1-8");
+		
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = ShortPasswordException.class)
+	@Verifies(value = "should fail with short password and the global property nonDigitGp set to true and caseGp, digitGp set to false", method = "validatePassword(String, String, String)")
+	public void validatePassword_shouldFailWithShortPasswordAndTheGlobalPropertyNonDigitGpSetToTrueAndCaseGpDigitGpSetToFalse()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "hello", "1-8");
+		
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = ShortPasswordException.class)
+	@Verifies(value = "should fail with short password and the global property digitGp set to true and caseGp, nonDigitGp set to false", method = "validatePassword(String, String, String)")
+	public void validatePassword_shouldFailWithShortPasswordAndTheGlobalPropertyDigitGpSetToTrueAndCaseGpNonDigitGpSetToFalse()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
 		OpenmrsUtil.validatePassword("admin", "12345", "1-8");
 	}
 	
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
 	 */
-	@Test
-	@Verifies(value = "should pass with short password if allowed", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldPassWithShortPasswordIfAllowed() throws Exception {
-		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "0");
-		OpenmrsUtil.validatePassword("admin", "H4t", "1-8");
+	@Test(expected = ShortPasswordException.class)
+	@Verifies(value = "should fail with short password and the global property caseGp set to true and digitGp, nonDigitGp set to false", method = "validatePassword(String, String, String)")
+	public void validatePassword_shouldFailWithShortPasswordAndTheGlobalPropertyCaseGpSetToTrueAndDigitGpNonDigitGpSetToFalse()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "Hello", "1-8");
+	
 	}
+	
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 * 
+	 */
+	@Test(expected = ShortPasswordException.class)
+	@Verifies(value = "should fail with short password and the global properties caseGp, digitGp and nonDigitGp set to false", method = "validatePassword(String, String, String)")
+	public void validatePassword_shouldFailWithShortPasswordAndTheGlobalPropertiesCaseGpDigitGpAndNonDigitGpSetToFalse()
+	        throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "hello", "1-8");	
+	}	
+
+		
 	
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
@@ -735,4 +1115,5 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		
 		assertThat(actual.toByteArray(), is(expected.toByteArray()));
 	}
+	
 }
