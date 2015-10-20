@@ -52,28 +52,6 @@ public interface AlertService extends OpenmrsService {
 	public Alert saveAlert(Alert alert) throws APIException;
 	
 	/**
-	 * @deprecated use {@link #saveAlert(Alert)}
-	 */
-	@Deprecated
-	public void createAlert(Alert alert) throws APIException;
-	
-	/**
-	 * Use AlertService.saveAlert(new Alert(text, user))
-	 * 
-	 * @deprecated use {@link #saveAlert(Alert)}
-	 */
-	@Deprecated
-	public void createAlert(String text, User user) throws APIException;
-	
-	/**
-	 * Use AlertService.saveAlert(new Alert(text, users))
-	 * 
-	 * @deprecated use {@link #saveAlert(Alert)}
-	 */
-	@Deprecated
-	public void createAlert(String text, Collection<User> users) throws APIException;
-	
-	/**
 	 * Get alert by internal identifier
 	 * 
 	 * @param alertId internal alert identifier
@@ -83,12 +61,6 @@ public interface AlertService extends OpenmrsService {
 	public Alert getAlert(Integer alertId) throws APIException;
 	
 	/**
-	 * @deprecated use {@link #saveAlert(Alert)}
-	 */
-	@Deprecated
-	public void updateAlert(Alert alert) throws APIException;
-	
-	/**
 	 * Completely delete the given alert from the database
 	 * 
 	 * @param alert the Alert to purge/delete
@@ -96,20 +68,6 @@ public interface AlertService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
 	public void purgeAlert(Alert alert) throws APIException;
-	
-	/**
-	 * Use AlertService.saveAlert(alert.markAlertRead())
-	 * 
-	 * @deprecated use {@link #saveAlert(Alert)}
-	 */
-	@Deprecated
-	public void markAlertRead(Alert alert) throws APIException;
-	
-	/**
-	 * @deprecated use #getAlerts(User, boolean, boolean)
-	 */
-	@Deprecated
-	public List<Alert> getAllAlerts(User user) throws APIException;
 	
 	/**
 	 * Find all alerts for a user that have not expired
@@ -122,12 +80,6 @@ public interface AlertService extends OpenmrsService {
 	public List<Alert> getAllActiveAlerts(User user) throws APIException;
 	
 	/**
-	 * @deprecated use {@link #getAlertsByUser(User)}
-	 */
-	@Deprecated
-	public List<Alert> getAlerts(User user) throws APIException;
-	
-	/**
 	 * Find the alerts that are not read and have not expired for a user This will probably be the
 	 * most commonly called method If null is passed in for <code>user</code>, find alerts for the
 	 * currently authenticated user. If no user is authenticated, search on "new
@@ -138,13 +90,6 @@ public interface AlertService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	public List<Alert> getAlertsByUser(User user) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getAlertsByUser(User)} and pass "null" as the parameter for
-	 *             <code>user</code>
-	 */
-	@Deprecated
-	public List<Alert> getAlerts() throws APIException;
 	
 	/**
 	 * Finds alerts for the given user with the given status

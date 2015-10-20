@@ -12,7 +12,6 @@ package org.openmrs.messagesource.impl;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -81,18 +80,6 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 */
 	public Collection<Locale> getLocales() {
 		return activeMessageSource.getLocales();
-	}
-	
-	/**
-	 * Presumes to append the messages to a message.properties file which is already being monitored
-	 * by the super ReloadableResourceBundleMessageSource. This is a blind, trusting hack.
-	 * 
-	 * @see org.openmrs.messagesource.MessageSourceService#publishProperties(Properties, String,
-	 *      String, String, String)
-	 * @deprecated use {@link #merge(MutableMessageSource, boolean)} instead
-	 */
-	public void publishProperties(Properties props, String locale, String namespace, String name, String version) {
-		activeMessageSource.publishProperties(props, locale, namespace, name, version);
 	}
 	
 	/**

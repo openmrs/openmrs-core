@@ -113,16 +113,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * @see #savePatient(Patient)
-	 * @deprecated replaced by #savePatient(Patient)
-	 * @see org.openmrs.api.PatientService#createPatient(org.openmrs.Patient)
-	 */
-	@Deprecated
-	public Patient createPatient(Patient patient) throws APIException {
-		return Context.getPatientService().savePatient(patient);
-	}
-	
-	/**
 	 * @see org.openmrs.api.PatientService#savePatient(org.openmrs.Patient)
 	 */
 	public Patient savePatient(Patient patient) throws APIException {
@@ -228,17 +218,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 		return patient;
 	}
-	
-	/**
-	 * @see #savePatient(Patient)
-	 * @deprecated replaced by #savePatient(Patient)
-	 * @see org.openmrs.api.PatientService#updatePatient(org.openmrs.Patient)
-	 */
-	@Deprecated
-	public Patient updatePatient(Patient patient) throws APIException {
-		return Context.getPatientService().savePatient(patient);
-	}
-	
+
 	/**
 	 * @see org.openmrs.api.PatientService#getAllPatients()
 	 */
@@ -253,18 +233,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public List<Patient> getAllPatients(boolean includeVoided) throws APIException {
 		return dao.getAllPatients(includeVoided);
-	}
-	
-	/**
-	 * @deprecated replaced by {@link #getPatients(String, String, List, boolean)}
-	 * @see org.openmrs.api.PatientService#getPatients(java.lang.String, java.lang.String,
-	 *      java.util.List)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes)
-	        throws APIException {
-		return Context.getPatientService().getPatients(name, identifier, identifierTypes, false);
 	}
 	
 	/**
@@ -309,7 +277,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			}
 			
 			try {
-				checkPatientIdentifier(pi);
+				PatientIdentifierValidator.validateIdentifier(pi);
 			}
 			catch (BlankIdentifierException bie) {
 				patient.removeIdentifier(pi);
@@ -350,93 +318,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			        + missingNames);
 		}
 	}
-	
-	/**
-	 * @see org.openmrs.api.PatientService#checkPatientIdentifier(org.openmrs.PatientIdentifier)
-	 * @deprecated use {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)}
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public void checkPatientIdentifier(PatientIdentifier pi) throws PatientIdentifierException {
-		PatientIdentifierValidator.validateIdentifier(pi);
-	}
-	
-	/**
-	 * @see org.openmrs.api.PatientService#identifierInUse(java.lang.String,
-	 *      org.openmrs.PatientIdentifierType, org.openmrs.Patient)
-	 * @deprecated use getPatientByIdentifier(String) instead
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public Patient identifierInUse(String identifier, PatientIdentifierType type, Patient ignorePatient) {
 		
-		// get all patients with this identifier
-		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
-		types.add(type);
-		List<Patient> patients = Context.getPatientService().getPatients(null, identifier, types, /* exact name+identifier search */
-		true);
-		
-		// ignore this patient (loop until no changes made)
-		while (patients.remove(ignorePatient)) {}
-		
-		if (patients.size() > 0) {
-			return patients.get(0);
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * @deprecated replaced by @deprecated replaced by {@link #getPatients(String, String, List)}
-	 * @see org.openmrs.api.PatientService#getPatientsByIdentifier(java.lang.String, boolean)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws APIException {
-		if (includeVoided) {
-			throw new APIException("Patient.search.voided", (Object[]) null);
-		}
-		
-		return Context.getPatientService().getPatients(null, identifier, null);
-	}
-	
-	/**
-	 * @deprecated replaced by {@link #getPatients(String, String, List, boolean)}
-	 * @see org.openmrs.api.PatientService#getPatientsByIdentifierPattern(java.lang.String, boolean)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws APIException {
-		if (includeVoided) {
-			throw new APIException("Patient.search.voided", (Object[]) null);
-		}
-		
-		return Context.getPatientService().getPatients(null, identifier, null);
-	}
-	
-	/**
-	 * @see org.openmrs.api.PatientService#getPatientsByName(java.lang.String)
-	 * @deprecated replaced by {@link #getPatients(String, String, List, boolean)}
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Patient> getPatientsByName(String name) throws APIException {
-		return Context.getPatientService().getPatients(name, (String) null, null);
-	}
-	
-	/**
-	 * @deprecated replaced by {@link #getPatients(String, String, List, boolean)}
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException {
-		if (includeVoided) {
-			throw new APIException("Patient.search.voided", (Object[]) null);
-		}
-		
-		return Context.getPatientService().getPatients(name, (String) null, null);
-	}
-	
 	/**
 	 * @see org.openmrs.api.PatientService#voidPatient(org.openmrs.Patient, java.lang.String)
 	 */
@@ -461,15 +343,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// patient and patientidentifier attributes taken care of by the BaseUnvoidHandler
 		
 		return dao.savePatient(patient);
-	}
-	
-	/**
-	 * @see #voidPatient(org.openmrs.Patient, java.lang.String)
-	 * @deprecated replaced by {@link #purgePatient(Patient)}
-	 */
-	@Deprecated
-	public void deletePatient(Patient patient) throws APIException {
-		Context.getPatientService().purgePatient(patient);
 	}
 	
 	/**
@@ -504,70 +377,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		return dao.getPatientIdentifiers(identifier, patientIdentifierTypes, locations, patients, isPreferred);
 	}
-	
-	/**
-	 * @deprecated replaced by {@link #getPatientIdentifiers(String, List, List, List, Boolean)}
-	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(org.openmrs.PatientIdentifierType)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<PatientIdentifier> getPatientIdentifiers(PatientIdentifierType pit) throws APIException {
-		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
-		types.add(pit);
-		return Context.getPatientService().getPatientIdentifiers(null, types, null, null, null);
-	}
-	
-	/**
-	 * @deprecated replaced by {@link #getPatientIdentifiers(String, List, List, List, Boolean)}
-	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String,
-	 *      org.openmrs.PatientIdentifierType)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<PatientIdentifier> getPatientIdentifiers(String identifier, PatientIdentifierType pit) throws APIException {
-		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
-		types.add(pit);
-		return Context.getPatientService().getPatientIdentifiers(identifier, types, null, null, null);
-	}
-	
-	/**
-	 * @deprecated replaced by {@link #getPatientIdentifiers(String, List, List, List, Boolean)}
-	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(String, PatientIdentifierType)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<PatientIdentifier> getPatientIdentifiers(String identifier, PatientIdentifierType patientIdentifierType,
-	        boolean includeVoided) throws APIException {
-		if (includeVoided) {
-			throw new APIException("Patient.identifiers.search.voided", (Object[]) null);
-		}
-		
-		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
-		types.add(patientIdentifierType);
-		return Context.getPatientService().getPatientIdentifiers(identifier, types, null, null, null);
-	}
-	
-	/**
-	 * @deprecated patient identifiers should not be updated directly; rather, after changing
-	 *             patient identifiers, use {@link #savePatient(Patient)} to save changes to the
-	 *             database
-	 */
-	@Deprecated
-	public void updatePatientIdentifier(PatientIdentifier pi) throws APIException {
-		// this method allows you change only the Identifier type, so let's do
-		// that and then do a full ID check
-		Patient p = pi.getPatient();
-		Set<PatientIdentifier> identifiers = p.getIdentifiers();
-		for (PatientIdentifier identifier : identifiers) {
-			if (identifier.getIdentifier().equals(pi.getIdentifier()) && identifier.getLocation().equals(pi.getLocation())) {
-				identifier.setIdentifierType(pi.getIdentifierType());
-				break;
-			}
-		}
-		
-		Context.getPatientService().savePatient(p);
-	}
-	
 	// end patient identifier section
 	
 	// patient identifier _type_ section
@@ -580,17 +389,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
 		checkIfPatientIdentifierTypesAreLocked();
 		return dao.savePatientIdentifierType(patientIdentifierType);
-	}
-	
-	/**
-	 * @deprecated replaced by {@link #getAllPatientIdentifierTypes()}
-	 * @see org.openmrs.api.PatientService#getPatientIdentifierTypes()
-	 * @see org.openmrs.api.PatientService#getAllPatientIdentifierTypes()
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<PatientIdentifierType> getPatientIdentifierTypes() throws APIException {
-		return Context.getPatientService().getAllPatientIdentifierTypes();
 	}
 	
 	/**
@@ -625,16 +423,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException {
 		return dao.getPatientIdentifierType(patientIdentifierTypeId);
-	}
-	
-	/**
-	 * @see org.openmrs.api.PatientService#getPatientIdentifierType(java.lang.String)
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public PatientIdentifierType getPatientIdentifierType(String name) throws APIException {
-		return Context.getPatientService().getPatientIdentifierTypeByName(name);
 	}
 	
 	/**
@@ -693,36 +481,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	// end patient identifier _type_ section
 	
 	/**
-	 * @see org.openmrs.api.PatientService#findPatients(java.lang.String, boolean)
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Patient> findPatients(String query, boolean includeVoided) throws APIException {
-		if (includeVoided) {
-			throw new APIException("Patient.search.voided", (Object[]) null);
-		}
-		
-		return Context.getPatientService().getPatients(query);
-	}
-	
-	/**
 	 * @see org.openmrs.api.PatientService#getPatients(java.lang.String)
 	 */
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String query) throws APIException {
 		return Context.getPatientService().getPatients(query, 0, null);
-	}
-	
-	/**
-	 * @see org.openmrs.api.PatientService#findPatient(org.openmrs.Patient)
-	 * @see #getPatientByExample(Patient)
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public Patient findPatient(Patient patientToMatch) throws APIException {
-		return Context.getPatientService().getPatientByExample(patientToMatch);
 	}
 	
 	/**
@@ -739,18 +502,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 		
 		return Context.getPatientService().getPatient(patientToMatch.getPatientId());
-	}
-	
-	/**
-	 * @deprecated use {@link #getDuplicatePatientsByAttributes(List)}
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Patient> findDuplicatePatients(Set<String> attributes) throws APIException {
-		List<String> attributesAsList = new Vector<String>();
-		attributesAsList.addAll(attributes);
-		
-		return Context.getPatientService().getDuplicatePatientsByAttributes(attributesAsList);
 	}
 	
 	/**
@@ -1168,7 +919,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		List<User> users = userService.getUsersByPerson(notPreferred, true);
 		for (User user : users) {
 			user.setPerson(preferred);
-			User persisted = userService.saveUser(user, null);
+			User persisted = userService.saveUser(user);
 			if (mergedData != null) {
 				mergedData.addMovedUser(persisted.getUuid());
 			}
@@ -1207,9 +958,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// need to create an observation to represent this (otherwise how
 		// will we know?)
 		saveReasonForExitObs(patient, dateExited, reasonForExit);
-		
-		// need to terminate any applicable programs
-		Context.getProgramWorkflowService().triggerStateConversion(patient, reasonForExit, dateExited);
 	}
 	
 	/**
@@ -1303,7 +1051,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			patient.setDead(true);
 			patient.setDeathDate(dateDied);
 			patient.setCauseOfDeath(causeOfDeath);
-			this.updatePatient(patient);
+			this.savePatient(patient);
 			saveCauseOfDeathObs(patient, dateDied, causeOfDeath, otherReason);
 			
 			// exit from program
@@ -1818,7 +1566,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			identifierTypes = Collections.emptyList();
 		}
 		
-		return dao.getPatients(name, identifier, identifierTypes, matchIdentifierExactly, start, length, false);
+		return dao.getPatients(name, start, length);
 	}
 	
 	/**

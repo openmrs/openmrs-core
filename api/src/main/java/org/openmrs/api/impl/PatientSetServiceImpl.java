@@ -64,8 +64,8 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	}
 	
 	private PatientSetDAO getPatientSetDAO() {
-		if (!Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENT_COHORTS)) {
-			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.VIEW_PATIENT_COHORTS);
+		if (!Context.hasPrivilege(PrivilegeConstants.GET_PATIENT_COHORTS)) {
+			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.GET_PATIENT_COHORTS);
 		}
 		return dao;
 	}
@@ -81,19 +81,6 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
 	public void onShutdown() {
-	}
-	
-	/**
-	 * @param ps The set you want to export as XML
-	 * @return an XML representation of this patient-set, including patient characteristics, and
-	 *         observations
-	 */
-	public String exportXml(Cohort ps) {
-		return getPatientSetDAO().exportXml(ps);
-	}
-	
-	public String exportXml(Integer patientId) {
-		return getPatientSetDAO().exportXml(patientId);
 	}
 	
 	public Cohort getAllPatients() throws DAOException {
@@ -308,15 +295,7 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	}
 	
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c) {
-		return getObservationsValues(patients, c, null);
-	}
-	
-	/**
-	 * @deprecated
-	 */
-	@Deprecated
-	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes) {
-		return getObservationsValues(patients, c, attributes, null, true);
+		return getObservationsValues(patients, c, null, null, true);
 	}
 	
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes,

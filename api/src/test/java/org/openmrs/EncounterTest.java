@@ -13,9 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -30,7 +28,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ProviderService;
-import org.openmrs.test.BaseContextMockTest;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 /**
@@ -38,7 +36,7 @@ import org.openmrs.test.Verifies;
  * 
  * @see Encounter
  */
-public class EncounterTest extends BaseContextMockTest {
+public class EncounterTest extends BaseContextSensitiveTest {
 	
 	@Mock
 	EncounterService encounterService;
@@ -930,123 +928,6 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see Encounter#getProvider()
-	 * @verifies return null if there is no provider for person
-	 */
-	@Test
-	public void getProvider_shouldReturnNullIfThereIsNoProviderForPerson() throws Exception {
-		//given
-		Encounter encounter = new Encounter();
-		EncounterRole role = new EncounterRole();
-		Provider provider = new Provider();
-		encounter.addProvider(role, provider);
-		
-		//when
-		Person result = encounter.getProvider();
-		
-		//then
-		Assert.assertNull(result);
-	}
-	
-	/**
-	 * @see Encounter#getProvider()
-	 * @verifies return null if there is no providers
-	 */
-	@Test
-	public void getProvider_shouldReturnNullIfThereIsNoProviders() throws Exception {
-		//given
-		Encounter encounter = new Encounter();
-		
-		//when
-		Person result = encounter.getProvider();
-		
-		//then
-		Assert.assertNull(result);
-	}
-	
-	/**
-	 * @see Encounter#getProvider()
-	 * @verifies return provider for person
-	 */
-	@Test
-	public void getProvider_shouldReturnProviderForPerson() throws Exception {
-		//given
-		Encounter encounter = new Encounter();
-		EncounterRole role = new EncounterRole();
-		Provider provider = new Provider();
-		Person person = new Person();
-		provider.setPerson(person);
-		encounter.addProvider(role, provider);
-		
-		//when
-		Person result = encounter.getProvider();
-		
-		//then
-		Assert.assertEquals(person, result);
-	}
-	
-	/**
-	 * @see Encounter#getProvider()
-	 * @verifies should exclude voided providers
-	 */
-	@Test
-	public void getProvider_shouldExcludeVoidedProviders() throws Exception {
-		//given
-		Encounter encounter = new Encounter();
-		EncounterRole role = new EncounterRole();
-		
-		Provider provider = new Provider();
-		Provider anotherProvider = new Provider();
-		
-		Person person = new Person();
-		Person anotherPerson = new Person();
-		
-		provider.setPerson(person);
-		anotherProvider.setPerson(anotherPerson);
-		
-		// add the first provider
-		encounter.setProvider(role, provider);
-		
-		// replace with the second provider
-		encounter.setProvider(role, anotherProvider);
-		
-		//when
-		Person result = encounter.getProvider();
-		
-		//then
-		Assert.assertEquals(anotherPerson, result);
-		
-	}
-	
-	/**
-	 * @see Encounter#getProvider()
-	 * @verifies return same provider for person if called twice
-	 */
-	@Test
-	public void getProvider_shouldReturnSameProviderForPersonIfCalledTwice() throws Exception {
-		//given
-		Encounter encounter = new Encounter();
-		EncounterRole role = new EncounterRole();
-		
-		Provider provider = new Provider();
-		Person person = new Person();
-		provider.setPerson(person);
-		encounter.addProvider(role, provider);
-		
-		Provider provider2 = new Provider();
-		Person person2 = new Person();
-		provider2.setPerson(person2);
-		encounter.addProvider(role, provider2);
-		
-		//when
-		Person result = encounter.getProvider();
-		Person result2 = encounter.getProvider();
-		
-		//then
-		Assert.assertEquals(result, result2);
-	}
-	
-	/**
 	 * @see Encounter#getProvidersByRole(EncounterRole)
 	 * @verifies return empty set for no role
 	 */
@@ -1210,34 +1091,6 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see Encounter#setProvider(Person)
-	 * @verifies set existing provider for unknown role
-	 */
-	@Test
-	public void setProvider_shouldSetExistingProviderForUnknownRole() throws Exception {
-		//given
-		Encounter encounter = new Encounter();
-		EncounterRole unknownRole = new EncounterRole();
-		Person person = new Person();
-		Provider provider = new Provider();
-		provider.setPerson(person);
-		List<Provider> providers = new ArrayList<Provider>();
-		providers.add(provider);
-		
-		when(encounterService.getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).thenReturn(unknownRole);
-		
-		when(providerService.getProvidersByPerson(person)).thenReturn(providers);
-		
-		//when
-		encounter.setProvider(person);
-		
-		//then
-		assertEquals(1, encounter.getProvidersByRoles().size());
-		assertEquals(1, encounter.getProvidersByRole(unknownRole).size());
-		assertEquals(provider, encounter.getProvidersByRole(unknownRole).iterator().next());
-	}
-	
-	/**
 	 * @see Encounter#setProvider(EncounterRole,Provider)
 	 * @verifies void existing EncounterProvider
 	 */
@@ -1262,41 +1115,6 @@ public class EncounterTest extends BaseContextMockTest {
 		
 		//should contain both the first (voided) and second (non voided) providers
 		Assert.assertTrue(encounter.getProvidersByRole(role, true).containsAll(Arrays.asList(provider1, provider2)));
-	}
-	
-	/**
-	 * @see Encounter#setProvider(EncounterRole,Provider)
-	 * @verifies previously voided provider correctly re-added
-	 */
-	@Test
-	public void setProvider_shouldAddPreviouslyVoidedProviderAgain() throws Exception {
-		//given
-		Encounter encounter = new Encounter();
-		EncounterRole role = new EncounterRole();
-		
-		Provider provider = new Provider();
-		Provider anotherProvider = new Provider();
-		
-		Person person = new Person();
-		Person anotherPerson = new Person();
-		
-		provider.setPerson(person);
-		anotherProvider.setPerson(anotherPerson);
-		
-		// add the first provider
-		encounter.setProvider(role, provider);
-		
-		// replace with the second provider
-		encounter.setProvider(role, anotherProvider);
-		
-		// now replace back with the first provider
-		encounter.setProvider(role, provider);
-		
-		//when
-		Person result = encounter.getProvider();
-		
-		//then
-		Assert.assertEquals(person, result);
 	}
 	
 	/**
@@ -1338,6 +1156,7 @@ public class EncounterTest extends BaseContextMockTest {
 		encounter.setDateCreated(new Date());
 		encounter.setChangedBy(new User());
 		encounter.setDateChanged(new Date());
+		encounter.setVoided(true);
 		encounter.setVoidReason("void");
 		encounter.setDateVoided(new Date());
 		
@@ -1355,7 +1174,7 @@ public class EncounterTest extends BaseContextMockTest {
 		
 		encounter.setVisit(new Visit());
 		
-		Patient patient = new Patient(1234);
+		Patient patient = new Patient(7);
 		
 		Encounter encounterCopy = encounter.copyAndAssignToAnotherPatient(patient);
 		

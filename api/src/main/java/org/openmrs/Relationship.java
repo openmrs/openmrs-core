@@ -170,16 +170,6 @@ public class Relationship extends BaseOpenmrsData implements java.io.Serializabl
 		this.endDate = endDate;
 	}
 	
-	/**
-	 * @deprecated Use isVoided()
-	 * @see #isVoided()
-	 * @return Returns the voided.
-	 */
-	@Deprecated
-	public Boolean getVoided() {
-		return isVoided();
-	}
-	
 	public String toString() {
 		String relType = getRelationshipType() == null ? "NULL" : getRelationshipType().getaIsToB();
 		return personA + " is the " + relType + " of " + personB;

@@ -17,17 +17,6 @@ public class ProgramWorkflowEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProgramWorkflowEditor#setAsText(String)
-	 * @verifies set using id
-	 */
-	@Test
-	public void setAsText_shouldSetUsingId() throws Exception {
-		ProgramWorkflowEditor editor = new ProgramWorkflowEditor();
-		editor.setAsText("1");
-		Assert.assertNotNull(editor.getValue());
-	}
-	
-	/**
-	 * @see ProgramWorkflowEditor#setAsText(String)
 	 * @verifies set using uuid
 	 */
 	@Test

@@ -9,21 +9,21 @@
  */
 package org.openmrs.module;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.StartModule;
 import org.openmrs.util.OpenmrsClassLoader;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 /**
  * Tests how modules interact and call each other. Both when loaded by Spring during OpenMRS startup
  * and during normal file usage.
  */
 @SkipBaseSetup
-@StartModule( { "org/openmrs/module/include/dssmodule-1.44.omod", "org/openmrs/module/include/atdproducer-0.51.omod" })
+@StartModule( { "org/openmrs/module/include/test1-1.0-SNAPSHOT.omod", "org/openmrs/module/include/test2-1.0-SNAPSHOT.omod" })
 public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 	
 	/**
@@ -34,27 +34,27 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldAllowModuleAToLoadModuleBIfARequiresB() throws Exception {
 		OpenmrsClassLoader loader = OpenmrsClassLoader.getInstance();
-		Class<?> atdServiceClass = loader.loadClass("org.openmrs.module.atdproducer.service.ATDService");
-		Class<?> dssServiceClass = loader.loadClass("org.openmrs.module.dssmodule.DssService");
-		assertNotNull(atdServiceClass);
-		assertNotNull(dssServiceClass);
+		Class<?> module1ServiceClass = loader.loadClass("org.openmrs.module.test1.api.Test1Service");
+		Class<?> module2ServiceClass = loader.loadClass("org.openmrs.module.test2.api.Test2Service");
+		assertNotNull(module1ServiceClass);
+		assertNotNull(module2ServiceClass);
 		
-		ModuleClassLoader atdClassLoader = (ModuleClassLoader) atdServiceClass.getClassLoader();
-		assertEquals("atdproducer", atdClassLoader.getModule().getModuleId());
+		ModuleClassLoader module1ClassLoader = (ModuleClassLoader) module1ServiceClass.getClassLoader();
+		assertEquals("test1", module1ClassLoader.getModule().getModuleId());
 		
-		ModuleClassLoader dssClassLoader = (ModuleClassLoader) dssServiceClass.getClassLoader();
-		assertEquals("dssmodule", dssClassLoader.getModule().getModuleId());
+		ModuleClassLoader module2ClassLoader = (ModuleClassLoader) module2ServiceClass.getClassLoader();
+		assertEquals("test2", module2ClassLoader.getModule().getModuleId());
 		
-		// load a dss class from the atd classloader.  This simulates a normal class (like a
+		// load a module1 class from the module2 classloader.  This simulates a normal class (like a
 		// controller) in one module loading another class that is located in a separate module 
-		Class<?> dssUtilClass = atdClassLoader.loadClass("org.openmrs.module.dssmodule.util.Util");
-		ModuleClassLoader dssUtilClassLoader = (ModuleClassLoader) dssUtilClass.getClassLoader();
-		assertEquals("dssmodule", dssUtilClassLoader.getModule().getModuleId());
+		Class<?> module1TestClass = module2ClassLoader.loadClass("org.openmrs.module.test1.Test1");
+		ModuleClassLoader module1TestClassLoader = (ModuleClassLoader) module1TestClass.getClassLoader();
+		assertEquals("test1", module1TestClassLoader.getModule().getModuleId());
 		
-		// try the same as above except with an already loaded class (the DssService class)
-		Class<?> dssServiceClass2 = atdClassLoader.loadClass("org.openmrs.module.dssmodule.DssService");
-		ModuleClassLoader dssServiceClassLoader = (ModuleClassLoader) dssServiceClass2.getClassLoader();
-		assertEquals("dssmodule", dssServiceClassLoader.getModule().getModuleId());
+		// try the same as above except with an already loaded class (the Module1Service class)
+		Class<?> module1ServiceClass2 = module2ClassLoader.loadClass("org.openmrs.module.test1.api.Test1Service");
+		ModuleClassLoader module1ServiceClassLoader = (ModuleClassLoader) module1ServiceClass2.getClassLoader();
+		assertEquals("test1", module1ServiceClassLoader.getModule().getModuleId());
 	}
 	
 }

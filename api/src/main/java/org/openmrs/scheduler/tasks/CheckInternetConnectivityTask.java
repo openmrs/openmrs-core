@@ -45,9 +45,6 @@ public class CheckInternetConnectivityTask extends AbstractTask {
 		}
 		catch (IOException ioe) {
 			try {
-				if (!Context.isAuthenticated()) {
-					authenticate();
-				}
 				String text = "At " + new Date() + " there was an error reported connecting to the internet address " + url
 				        + ": " + ioe;
 				// TODO role should be provided as a property to taskconfig

@@ -50,10 +50,10 @@ public class SampleFlowsheetServlet extends HttpServlet {
 			return;
 		}
 		
-		if (!Context.isAuthenticated() || !Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)
-		        || !Context.hasPrivilege(PrivilegeConstants.VIEW_OBS)) {
-			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privileges required: " + PrivilegeConstants.VIEW_PATIENTS
-			        + " and " + PrivilegeConstants.VIEW_OBS);
+		if (!Context.isAuthenticated() || !Context.hasPrivilege(PrivilegeConstants.GET_PATIENTS)
+		        || !Context.hasPrivilege(PrivilegeConstants.GET_OBS)) {
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privileges required: " + PrivilegeConstants.GET_PATIENTS
+			        + " and " + PrivilegeConstants.GET_OBS);
 			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?"
 			        + request.getQueryString());
 			response.sendRedirect(request.getContextPath() + "/login.htm");
@@ -105,7 +105,7 @@ public class SampleFlowsheetServlet extends HttpServlet {
 	
 	private String getName(Concept concept, Locale locale) {
 		String foundName = "";
-		ConceptName shortName = concept.getBestShortName(locale);
+		ConceptName shortName = concept.getShortestName(locale, false);
 		if (shortName != null) {
 			foundName = shortName.getName();
 		} else {

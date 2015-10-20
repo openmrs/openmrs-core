@@ -215,7 +215,7 @@ public class DWREncounterService {
 		
 		try {
 			LocationService ls = Context.getLocationService();
-			List<Location> locations = ls.getLocations(searchValue, includeRetired, start, length);
+			List<Location> locations = ls.getLocations(searchValue, null, null, includeRetired, start, length);
 			locationList = new Vector<Object>(locations.size());
 			
 			for (Location loc : locations) {

@@ -24,8 +24,9 @@
         <many-to-one name="patient" column="patient_id" class="org.openmrs.Patient" not-null="true"/>
         <component name="allergen" class="org.openmrs.Allergen">
             <property name="allergenType" column="allergen_type" length="50" not-null="true">
-                <type name="org.openmrs.util.HibernateEnumType">
-                    <param name="enumClassName">org.openmrs.AllergenType</param>
+                <type name="org.hibernate.type.EnumType">
+                    <param name="enumClass">org.openmrs.AllergenType</param>
+                    <param name="type">12</param>
                 </type>
             </property>
             <many-to-one name="codedAllergen" column="coded_allergen" class="org.openmrs.Concept" not-null="true"/>

@@ -277,7 +277,7 @@ public class DWRPersonService {
 				// also search on patient identifier if the query contains a number
 				if (searchPhrase.matches(".*\\d+.*")) {
 					PatientService patientService = Context.getPatientService();
-					for (Patient p : patientService.getPatients(null, searchPhrase, null, false)) {
+					for (Patient p : patientService.getPatients(searchPhrase, null, null, false)) {
 						personList.add(PersonListItem.createBestMatch(p));
 					}
 				}

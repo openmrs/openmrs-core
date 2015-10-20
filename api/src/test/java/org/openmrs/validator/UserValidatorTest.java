@@ -275,7 +275,6 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		User user = new User();
 		user.setUsername("test");
 		user.setSystemId("systemId");
-		user.setSecretQuestion("secretQuestion");
 		user.setRetireReason("retireReason");
 		user.setPerson(new Person(999));
 		user.getPerson().addName(new PersonName("Users", "Need", "People"));
@@ -297,7 +296,6 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		User user = new User();
 		user.setUsername(STRING_WITH_LENGTH_GREATER_THAN_50);
 		user.setSystemId(STRING_WITH_LENGTH_GREATER_THAN_50);
-		user.setSecretQuestion(STRING_WITH_LENGTH_GREATER_THAN_50);
 		user.setRetireReason(STRING_WITH_LENGTH_GREATER_THAN_50);
 		user.setPerson(new Person(999));
 		user.getPerson().addName(new PersonName(STRING_WITH_LENGTH_GREATER_THAN_50, STRING_WITH_LENGTH_GREATER_THAN_50, STRING_WITH_LENGTH_GREATER_THAN_50));
@@ -308,7 +306,6 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(errors.hasFieldErrors("username"));
 		Assert.assertTrue(errors.hasFieldErrors("systemId"));
-		Assert.assertTrue(errors.hasFieldErrors("secretQuestion"));
 		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 		Assert.assertTrue(errors.hasFieldErrors("person.names[0].givenName"));
 		Assert.assertTrue(errors.hasFieldErrors("person.names[0].middleName"));

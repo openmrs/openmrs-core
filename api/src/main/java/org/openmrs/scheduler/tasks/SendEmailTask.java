@@ -28,10 +28,6 @@ public class SendEmailTask extends AbstractTask {
 		try {
 			Context.openSession();
 			log.info("****************************** SEND EMAIL TASK:  Executing task ...");
-			if (!Context.isAuthenticated()) {
-				authenticate();
-			}
-			
 		}
 		finally {
 			Context.closeSession();

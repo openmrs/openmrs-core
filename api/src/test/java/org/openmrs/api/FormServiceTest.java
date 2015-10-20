@@ -213,7 +213,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(INITIAL_FIELDS_XML);
 		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
 		
-		FormField ff = Context.getFormService().getFormField(new Form(1), new Concept(1));
+		FormField ff = Context.getFormService().getFormField(new Form(1), new Concept(1), null, false);
 		assertNotNull(ff); // sanity check
 		
 		// test that the first formfield is ignored when a second fetch
@@ -420,7 +420,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should simply return null for nonexistent concepts", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
 	public void getFormField_shouldSimplyReturnNullForNonexistentConcepts() throws Exception {
 		// test a non existent concept
-		assertNull(Context.getFormService().getFormField(new Form(1), new Concept(293934)));
+		assertNull(Context.getFormService().getFormField(new Form(1), new Concept(293934), null, false));
 	}
 	
 	/**
@@ -430,7 +430,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should simply return null for nonexistent forms", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
 	public void getFormField_shouldSimplyReturnNullForNonexistentForms() throws Exception {
 		// test a non existent form
-		assertNull(Context.getFormService().getFormField(new Form(12343), new Concept(293934)));
+		assertNull(Context.getFormService().getFormField(new Form(12343), new Concept(293934), null, false));
 	}
 	
 	/**

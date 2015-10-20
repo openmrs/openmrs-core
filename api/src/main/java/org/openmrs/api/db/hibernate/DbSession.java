@@ -417,41 +417,11 @@ public class DbSession {
 	 *
 	 * @param theClass a persistent class
 	 * @param id a valid identifier of an existing persistent instance of the class
-	 * @param lockMode the lock level
-	 * @return the persistent instance or proxy
-	 * @deprecated LockMode parameter should be replaced with LockOptions
-	 */
-	@Deprecated
-	public Object load(Class theClass, Serializable id, LockMode lockMode) {
-		return getSession().load(theClass, id, lockMode);
-	}
-	
-	/**
-	 * Return the persistent instance of the given entity class with the given identifier, obtaining
-	 * the specified lock mode, assuming the instance exists.
-	 *
-	 * @param theClass a persistent class
-	 * @param id a valid identifier of an existing persistent instance of the class
 	 * @param lockOptions contains the lock level
 	 * @return the persistent instance or proxy
 	 */
 	public Object load(Class theClass, Serializable id, LockOptions lockOptions) {
 		return getSession().load(theClass, id, lockOptions);
-	}
-	
-	/**
-	 * Return the persistent instance of the given entity class with the given identifier, obtaining
-	 * the specified lock mode, assuming the instance exists.
-	 *
-	 * @param entityName a persistent class
-	 * @param id a valid identifier of an existing persistent instance of the class
-	 * @param lockMode the lock level
-	 * @return the persistent instance or proxy
-	 * @deprecated LockMode parameter should be replaced with LockOptions
-	 */
-	@Deprecated
-	public Object load(String entityName, Serializable id, LockMode lockMode) {
-		return getSession().load(entityName, id, lockMode);
 	}
 	
 	/**
@@ -708,40 +678,6 @@ public class DbSession {
 	}
 	
 	/**
-	 * Obtain the specified lock level upon the given object. This may be used to perform a version
-	 * check (<tt>LockMode.READ</tt>), to upgrade to a pessimistic lock (
-	 * <tt>LockMode.PESSIMISTIC_WRITE</tt>), or to simply reassociate a transient instance with a
-	 * session (<tt>LockMode.NONE</tt>). This operation cascades to associated instances if the
-	 * association is mapped with <tt>cascade="lock"</tt>.
-	 *
-	 * @param object a persistent or transient instance
-	 * @param lockMode the lock level
-	 * @deprecated instead call buildLockRequest(LockMode).lock(object)
-	 */
-	@Deprecated
-	public void lock(Object object, LockMode lockMode) {
-		getSession().lock(object, lockMode);
-	}
-	
-	/**
-	 * Obtain the specified lock level upon the given object. This may be used to perform a version
-	 * check (<tt>LockMode.OPTIMISTIC</tt>), to upgrade to a pessimistic lock (
-	 * <tt>LockMode.PESSIMISTIC_WRITE</tt>), or to simply reassociate a transient instance with a
-	 * session (<tt>LockMode.NONE</tt>). This operation cascades to associated instances if the
-	 * association is mapped with <tt>cascade="lock"</tt>.
-	 *
-	 * @param entityName The name of the entity
-	 * @param object a persistent or transient instance
-	 * @param lockMode the lock level
-	 * @deprecated instead call buildLockRequest(LockMode).lock(entityName, object)
-	 */
-	@SuppressWarnings({ "JavaDoc" })
-	@Deprecated
-	public void lock(String entityName, Object object, LockMode lockMode) {
-		getSession().lock(entityName, object, lockMode);
-	}
-	
-	/**
 	 * Build a LockRequest that specifies the LockMode, pessimistic lock timeout and lock scope.
 	 * timeout and scope is ignored for optimistic locking. After building the LockRequest, call
 	 * LockRequest.lock to perform the requested locking.
@@ -787,20 +723,6 @@ public class DbSession {
 	 */
 	public void refresh(String entityName, Object object) {
 		getSession().refresh(entityName, object);
-	}
-	
-	/**
-	 * Re-read the state of the given instance from the underlying database, with the given
-	 * <tt>LockMode</tt>. It is inadvisable to use this to implement long-running sessions that span
-	 * many business tasks. This method is, however, useful in certain special circumstances.
-	 *
-	 * @param object a persistent or detached instance
-	 * @param lockMode the lock mode to use
-	 * @deprecated LockMode parameter should be replaced with LockOptions
-	 */
-	@Deprecated
-	public void refresh(Object object, LockMode lockMode) {
-		getSession().refresh(object, lockMode);
 	}
 	
 	/**
@@ -882,23 +804,6 @@ public class DbSession {
 	 *
 	 * @param clazz a persistent class
 	 * @param id an identifier
-	 * @param lockMode the lock mode
-	 * @return a persistent instance or null
-	 * @deprecated LockMode parameter should be replaced with LockOptions
-	 */
-	@Deprecated
-	public Object get(Class clazz, Serializable id, LockMode lockMode) {
-		return getSession().get(clazz, id, lockMode);
-	}
-	
-	/**
-	 * Return the persistent instance of the given entity class with the given identifier, or null
-	 * if there is no such persistent instance. (If the instance is already associated with the
-	 * session, return that instance. This method never returns an uninitialized instance.) Obtain
-	 * the specified lock mode if the instance exists.
-	 *
-	 * @param clazz a persistent class
-	 * @param id an identifier
 	 * @param lockOptions the lock mode
 	 * @return a persistent instance or null
 	 */
@@ -917,23 +822,6 @@ public class DbSession {
 	 */
 	public Object get(String entityName, Serializable id) {
 		return getSession().get(entityName, id);
-	}
-	
-	/**
-	 * Return the persistent instance of the given entity class with the given identifier, or null
-	 * if there is no such persistent instance. (If the instance is already associated with the
-	 * session, return that instance. This method never returns an uninitialized instance.) Obtain
-	 * the specified lock mode if the instance exists.
-	 *
-	 * @param entityName the entity name
-	 * @param id an identifier
-	 * @param lockMode the lock mode
-	 * @return a persistent instance or null
-	 * @deprecated LockMode parameter should be replaced with LockOptions
-	 */
-	@Deprecated
-	public Object get(String entityName, Serializable id, LockMode lockMode) {
-		return getSession().get(entityName, id, lockMode);
 	}
 	
 	/**

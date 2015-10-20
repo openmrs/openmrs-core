@@ -47,9 +47,6 @@ public class ProcessHL7InQueueTask extends AbstractTask {
 		Context.openSession();
 		try {
 			log.debug("Processing HL7 queue ... ");
-			if (!Context.isAuthenticated()) {
-				authenticate();
-			}
 			processor.processHL7InQueue();
 		}
 		catch (HL7Exception e) {

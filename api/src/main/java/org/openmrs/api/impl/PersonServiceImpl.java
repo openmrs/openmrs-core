@@ -12,8 +12,6 @@ package org.openmrs.api.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,7 +21,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
-import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -31,7 +28,6 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
-import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PersonAttributeTypeLockedException;
@@ -80,17 +76,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer,
-	 *      java.lang.String, java.lang.String)
-	 * @deprecated @see #getSimilarPeople(String, Integer, String)
-	 */
-	@Transactional(readOnly = true)
-	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType)
-	        throws APIException {
-		return Context.getPersonService().getSimilarPeople(nameSearch, birthyear, gender);
-	}
-	
-	/**
 	 * @see org.openmrs.api.PersonService#getPeople(String, Boolean)
 	 */
 	@Transactional(readOnly = true)
@@ -102,63 +87,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public List<Person> getPeople(String searchPhrase, Boolean dead, Boolean voided) throws APIException {
 		
 		return dao.getPeople(searchPhrase, dead, voided);
-	}
-	
-	/**
-	 * @deprecated use {@link #getPeople(String, Boolean)}
-	 */
-	@Transactional(readOnly = true)
-	public Set<Person> findPeople(String searchPhrase, boolean includeVoided) {
-		if (includeVoided) {
-			throw new APIException("Person.should.consider.voided", (Object[]) null);
-		}
-		
-		// convert the list to a set
-		Set<Person> matchingPersons = new LinkedHashSet<Person>();
-		matchingPersons.addAll(Context.getPersonService().getPeople(searchPhrase, null));
-		
-		return matchingPersons;
-	}
-	
-	/**
-	 * @deprecated use {@link #getPeople(String, Boolean)}
-	 */
-	@Transactional(readOnly = true)
-	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, String roles) {
-		List<String> roleList = null;
-		
-		if (roles != null && roles.length() > 0) {
-			String[] splitRoles = roles.split(",");
-			for (String role : splitRoles) {
-				if (roleList == null) {
-					roleList = new ArrayList<String>();
-				}
-				roleList.add(role);
-			}
-		}
-		
-		return Context.getPersonService().findPeople(searchPhrase, includeVoided, roleList);
-	}
-	
-	/**
-	 * @deprecated use {@link #getPeople(String, Boolean)}
-	 */
-	@Transactional(readOnly = true)
-	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, List<String> roles) {
-		Set<Person> people = new HashSet<Person>();
-		
-		// If no rules *are not* defined then find all matching persons (users and patients).
-		if (roles == null) {
-			people.addAll(Context.getPersonService().getPeople(searchPhrase, includeVoided));
-		}
-		// If roles *are* defined then find matching users who have the given roles.
-		else {
-			for (User u : Context.getUserService().findUsers(searchPhrase, roles, includeVoided)) {
-				people.add(u.getPerson());
-			}
-		}
-		
-		return people;
 	}
 	
 	/**
@@ -259,20 +187,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @deprecated use {@link #savePersonAttributeType(PersonAttributeType)}
-	 */
-	public void createPersonAttributeType(PersonAttributeType type) throws APIException {
-		Context.getPersonService().savePersonAttributeType(type);
-	}
-	
-	/**
-	 * @deprecated use {@link #savePersonAttributeType(PersonAttributeType)}
-	 */
-	public void updatePersonAttributeType(PersonAttributeType type) throws APIException {
-		Context.getPersonService().savePersonAttributeType(type);
-	}
-	
-	/**
 	 * @see org.openmrs.api.PersonService#getPersonAttributeTypes(java.lang.String,
 	 *      java.lang.String, java.lang.Integer, java.lang.Boolean)
 	 */
@@ -280,20 +194,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
 	        Boolean searchable) throws APIException {
 		return dao.getPersonAttributeTypes(exactName, format, foreignKey, searchable);
-	}
-	
-	/**
-	 * @deprecated use {@link #purgePersonAttributeType(PersonAttributeType)}
-	 */
-	public void deletePersonAttributeType(Integer attrTypeId) {
-		Context.getPersonService().deletePersonAttributeType(getPersonAttributeType(attrTypeId));
-	}
-	
-	/**
-	 * @deprecated use {@link #purgePersonAttributeType(PersonAttributeType)}
-	 */
-	public void deletePersonAttributeType(PersonAttributeType type) {
-		dao.deletePersonAttributeType(type);
 	}
 	
 	public void unretirePersonAttributeType(PersonAttributeType type) throws APIException {
@@ -304,14 +204,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		type.setRetireReason(null);
 		dao.savePersonAttributeType(type);
 		
-	}
-	
-	/**
-	 * @deprecated use {@link #getAllPersonAttributeTypes()}
-	 */
-	@Transactional(readOnly = true)
-	public List<PersonAttributeType> getPersonAttributeTypes() {
-		return Context.getPersonService().getAllPersonAttributeTypes();
 	}
 	
 	/**
@@ -331,14 +223,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @deprecated use {@link #getPersonAttributeTypeByName(String)}
-	 */
-	@Transactional(readOnly = true)
-	public PersonAttributeType getPersonAttributeType(String s) {
-		return Context.getPersonService().getPersonAttributeTypeByName(s);
-	}
-	
-	/**
 	 * @see org.openmrs.api.PersonService#getRelationship(java.lang.Integer)
 	 */
 	@Transactional(readOnly = true)
@@ -347,63 +231,11 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @deprecated use {@link #getAllRelationships()}
-	 */
-	@Transactional(readOnly = true)
-	public List<Relationship> getRelationships() throws APIException {
-		return Context.getPersonService().getAllRelationships();
-	}
-	
-	/**
-	 * @deprecated use {@link #getRelationshipsByPerson(Person)}
-	 */
-	@Transactional(readOnly = true)
-	public List<Relationship> getRelationships(Person p, boolean showVoided) throws APIException {
-		if (showVoided) {
-			throw new APIException("Relationship.voided.should.be.considered", (Object[]) null);
-		}
-		
-		return Context.getPersonService().getRelationshipsByPerson(p);
-	}
-	
-	/**
-	 * @deprecated use {@link #getRelationshipsByPerson(Person)}
-	 */
-	@Transactional(readOnly = true)
-	public List<Relationship> getRelationships(Person p) throws APIException {
-		return Context.getPersonService().getRelationshipsByPerson(p);
-	}
-	
-	/**
-	 * @deprecated use {@link #getRelationships(Person, Person, RelationshipType)}
-	 */
-	@Transactional(readOnly = true)
-	public List<Relationship> getRelationshipsTo(Person toPerson, RelationshipType relType) throws APIException {
-		return Context.getPersonService().getRelationships(null, toPerson, relType);
-	}
-	
-	/**
-	 * @deprecated use {@link #getAllRelationshipTypes()}
-	 */
-	@Transactional(readOnly = true)
-	public List<RelationshipType> getRelationshipTypes() throws APIException {
-		return Context.getPersonService().getAllRelationshipTypes();
-	}
-	
-	/**
 	 * @see org.openmrs.api.PersonService#getRelationshipType(java.lang.Integer)
 	 */
 	@Transactional(readOnly = true)
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws APIException {
 		return dao.getRelationshipType(relationshipTypeId);
-	}
-	
-	/**
-	 * @deprecated use {@link #getRelationshipTypeByName(String)}
-	 */
-	@Transactional(readOnly = true)
-	public RelationshipType findRelationshipType(String relationshipTypeName) throws APIException {
-		return Context.getPersonService().getRelationshipTypeByName(relationshipTypeName);
 	}
 	
 	/**
@@ -470,28 +302,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		return dao.savePerson(person);
 	}
-	
-	/**
-	 * @deprecated use {@link #savePerson(Person)}
-	 */
-	public Person createPerson(Person person) throws APIException {
-		return Context.getPersonService().savePerson(person);
-	}
-	
-	/**
-	 * @deprecated use {@link #savePerson(Person)}
-	 */
-	public void updatePerson(Person person) throws APIException {
-		Context.getPersonService().savePerson(person);
-	}
-	
-	/**
-	 * @deprecated use {@link #purgePerson(Person)}
-	 */
-	public void deletePerson(Person person) throws APIException {
-		Context.getPersonService().purgePerson(person);
-	}
-	
+		
 	/**
 	 * @see org.openmrs.api.PersonService#voidPerson(org.openmrs.Person, java.lang.String)
 	 */
@@ -523,28 +334,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			return null;
 		}
 		return dao.getPerson(personId);
-	}
-	
-	/**
-	 * @deprecated use {@link #getPerson(Integer)}
-	 */
-	@Transactional(readOnly = true)
-	public Person getPerson(Patient pat) throws APIException {
-		if (pat == null) {
-			return null;
-		}
-		return Context.getPersonService().getPerson(pat.getPatientId());
-	}
-	
-	/**
-	 * @deprecated use {@link #getPerson(Integer)}
-	 */
-	@Transactional(readOnly = true)
-	public Person getPerson(User user) throws APIException {
-		if (user == null) {
-			return null;
-		}
-		return Context.getPersonService().getPerson(user.getUserId());
 	}
 	
 	/**
@@ -641,27 +430,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @deprecated use {@link #saveRelationship(Relationship)}
-	 */
-	public void createRelationship(Relationship relationship) throws APIException {
-		Context.getPersonService().saveRelationship(relationship);
-	}
-	
-	/**
-	 * @deprecated use {@link #saveRelationship(Relationship)}
-	 */
-	public void updateRelationship(Relationship relationship) throws APIException {
-		Context.getPersonService().saveRelationship(relationship);
-	}
-	
-	/**
-	 * @deprecated use {@link #purgeRelationship(Relationship)}
-	 */
-	public void deleteRelationship(Relationship relationship) throws APIException {
-		Context.getPersonService().purgeRelationship(relationship);
-	}
-	
-	/**
 	 * @see org.openmrs.api.PersonService#voidRelationship(org.openmrs.Relationship,
 	 *      java.lang.String)
 	 */
@@ -693,28 +461,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		return Context.getPersonService().saveRelationship(relationship);
 	}
-	
-	/**
-	 * @deprecated use {@link #saveRelationshipType(RelationshipType)}
-	 */
-	public void createRelationshipType(RelationshipType relationshipType) throws APIException {
-		Context.getPersonService().saveRelationshipType(relationshipType);
-	}
-	
-	/**
-	 * @deprecated use {@link #saveRelationshipType(RelationshipType)}
-	 */
-	public void updateRelationshipType(RelationshipType relationshipType) throws APIException {
-		Context.getPersonService().saveRelationshipType(relationshipType);
-	}
-	
-	/**
-	 * @deprecated use {@link #purgeRelationshipType(RelationshipType)}
-	 */
-	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException {
-		Context.getPersonService().purgeRelationshipType(relationshipType);
-	}
-	
+		
 	/**
 	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes()
 	 */
@@ -841,49 +588,14 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 				if (nameOrId.matches("\\d")) {
 					attrObjects.add(Context.getPersonService().getPersonAttributeType(Integer.valueOf(nameOrId)));
 				} else {
-					attrObjects.add(getPersonAttributeType(nameOrId));
+					attrObjects.add(getPersonAttributeTypeByName(nameOrId));
 				}
 			}
 		}
 		
 		return attrObjects;
 	}
-	
-	/**
-	 * @deprecated see
-	 *             {@link org.openmrs.api.PersonService#getPersonAttributeTypes(java.lang.String, java.lang.String)}
-	 */
-	@Transactional(readOnly = true)
-	public List<PersonAttributeType> getPersonAttributeTypes(String personTypeStr, String displayTypeStr)
-	        throws APIException {
 		
-		PERSON_TYPE personType = null;
-		if ("patient".equals(personTypeStr)) {
-			personType = PERSON_TYPE.PATIENT;
-		} else if ("user".equals(personTypeStr)) {
-			personType = PERSON_TYPE.USER;
-		} else if (StringUtils.isEmpty(personTypeStr)) {
-			personType = null;
-		} else {
-			throw new APIException("Person.invalid.personType.attribute", new Object[] { personTypeStr });
-		}
-		
-		ATTR_VIEW_TYPE attrDisplayType = null;
-		if ("listing".equals(displayTypeStr)) {
-			attrDisplayType = ATTR_VIEW_TYPE.LISTING;
-		} else if ("viewing".equals(displayTypeStr)) {
-			attrDisplayType = ATTR_VIEW_TYPE.VIEWING;
-		} else if ("header".equals(displayTypeStr)) {
-			attrDisplayType = ATTR_VIEW_TYPE.HEADER;
-		} else if ("all".equals(displayTypeStr)) {
-			attrDisplayType = null;
-		} else {
-			throw new APIException("Person.invalid.displayType.attribute", new Object[] { displayTypeStr });
-		}
-		
-		return Context.getPersonService().getPersonAttributeTypes(personType, attrDisplayType);
-	}
-	
 	/**
 	 * @see org.openmrs.api.PersonService#parsePersonName(java.lang.String)
 	 */
@@ -948,13 +660,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @deprecated see #parsePersonName(String)
-	 */
-	public PersonName splitPersonName(String name) {
-		return Context.getPersonService().parsePersonName(name);
-	}
-	
-	/**
 	 * @see org.openmrs.api.PersonService#voidPersonName(org.openmrs.PersonName, String)
 	 */
 	public PersonName voidPersonName(PersonName personName, String voidReason) throws APIException {
@@ -1005,14 +710,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		}
 		
 		return ret;
-	}
-	
-	/**
-	 * @deprecated use {@link #getRelationshipMap(RelationshipType)}
-	 */
-	@Transactional(readOnly = true)
-	public Map<Person, List<Person>> getRelationships(RelationshipType relType) throws APIException {
-		return Context.getPersonService().getRelationshipMap(relType);
 	}
 	
 	/**

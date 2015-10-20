@@ -9,8 +9,6 @@
  */
 package org.openmrs.web.controller.concept;
 
-import java.util.Locale;
-
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -26,7 +24,6 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 
 /**
  * This is the controlling class for the conceptStopWordForm.jsp page. This class used to

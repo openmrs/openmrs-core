@@ -22,7 +22,6 @@ import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.springframework.test.annotation.NotTransactional;
 
 /**
  * Contains methods to test behavior of OpenmrsService methods
@@ -40,7 +39,6 @@ public class OpenmrsServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Ignore
-	@NotTransactional
 	public void shouldCheckThatAMethodIsNotRolledBackInCaseOfAnErrorInAnotherInvokedInsideIt() throws Exception {
 		//TODO FIx why this test fails when run with other tests
 		PatientService patientService = Context.getPatientService();

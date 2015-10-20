@@ -208,7 +208,7 @@ public class FormUtil {
 	 * @return String representation of the given concept
 	 */
 	public static String conceptToString(Concept concept, Locale locale) {
-		ConceptName localizedName = concept.getBestName(locale);
+		ConceptName localizedName = concept.getName(locale, false);
 		return conceptToString(concept, localizedName);
 	}
 	

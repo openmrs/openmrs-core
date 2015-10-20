@@ -12,7 +12,6 @@ package org.openmrs.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -24,7 +23,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
@@ -43,14 +41,6 @@ import org.openmrs.scheduler.SchedulerConstants;
 public final class OpenmrsConstants {
 	
 	private static final Log log = LogFactory.getLog(OpenmrsConstants.class);
-	
-	/**
-	 * This is the hard coded primary key of the order type for DRUG. This has to be done because
-	 * some logic in the API acts on this order type
-	 * 
-	 * @deprecated
-	 */
-	public static final int ORDERTYPE_DRUG = 2;
 	
 	/**
 	 * This is the hard coded primary key of the concept class for DRUG. This has to be done because
@@ -132,30 +122,10 @@ public final class OpenmrsConstants {
 		
 		return null;
 	}
-	
-	/**
-	 * See {@link DatabaseUpdater#updatesRequired()} to see what changesets in the
-	 * liquibase-update-to-latest.xml file in the openmrs api jar file need to be run to bring the
-	 * db up to date with what the api requires.
-	 * 
-	 * @deprecated the database doesn't have just one main version now that we are using liquibase.
-	 */
-	@Deprecated
-	public static final String DATABASE_VERSION_EXPECTED = THIS_PACKAGE.getImplementationVersion();
-	
+		
 	public static String DATABASE_NAME = "openmrs";
 	
 	public static String DATABASE_BUSINESS_NAME = "openmrs";
-	
-	/**
-	 * See {@link DatabaseUpdater#updatesRequired()} to see what changesets in the
-	 * liquibase-update-to-latest.xml file in the openmrs api jar file need to be run to bring the
-	 * db up to date with what the api requires.
-	 * 
-	 * @deprecated the database doesn't have just one main version now that we are using liquibase.
-	 */
-	@Deprecated
-	public static String DATABASE_VERSION = null;
 	
 	/**
 	 * Set true from runtime configuration to obscure patients for system demonstrations
@@ -173,23 +143,6 @@ public final class OpenmrsConstants {
 	public static final String REGEX_SMALL = "[!\"#\\$%&'\\(\\)\\*,\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
 	
 	public static final Integer CIVIL_STATUS_CONCEPT_ID = 1054;
-	
-	/**
-	 * The directory that will store filesystem data about openmrs like module omods, generated data
-	 * exports, etc. This shouldn't be accessed directory, the
-	 * OpenmrsUtil.getApplicationDataDirectory() should be used. This should be null here. This
-	 * constant will hold the value of the user's runtime property for the
-	 * application_data_directory and is set programmatically at startup. This value is set in the
-	 * openmrs startup method. If this is null, the getApplicationDataDirectory() uses some OS
-	 * heuristics to determine where to put an app data dir.
-	 * 
-	 * @see #APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY
-	 * @see OpenmrsUtil#getApplicationDataDirectory()
-	 * @see OpenmrsUtil#startup(java.util.Properties)
-	 * @deprecated as of 1.11 use {@link OpenmrsUtil#getApplicationDataDirectory()}
-	 */
-	@Deprecated
-	public static String APPLICATION_DATA_DIRECTORY = null;
 	
 	/**
 	 * The directory which OpenMRS should attempt to use as its application data directory
@@ -250,481 +203,7 @@ public final class OpenmrsConstants {
 		genders.put("F", "Female");
 		return genders;
 	}
-	
-	// Baked in Privileges:
-	@Deprecated
-	public static final String PRIV_VIEW_CONCEPTS = PrivilegeConstants.VIEW_CONCEPTS;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_CONCEPTS = PrivilegeConstants.MANAGE_CONCEPTS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_CONCEPTS = PrivilegeConstants.PURGE_CONCEPTS;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_CONCEPT_NAME_TAGS = PrivilegeConstants.MANAGE_CONCEPT_NAME_TAGS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_CONCEPT_PROPOSALS = PrivilegeConstants.VIEW_CONCEPT_PROPOSALS;
-	
-	@Deprecated
-	public static final String PRIV_ADD_CONCEPT_PROPOSALS = PrivilegeConstants.ADD_CONCEPT_PROPOSALS;
-	
-	@Deprecated
-	public static final String PRIV_EDIT_CONCEPT_PROPOSALS = PrivilegeConstants.EDIT_CONCEPT_PROPOSALS;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_CONCEPT_PROPOSALS = PrivilegeConstants.DELETE_CONCEPT_PROPOSALS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_CONCEPT_PROPOSALS = PrivilegeConstants.PURGE_CONCEPT_PROPOSALS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_USERS = PrivilegeConstants.VIEW_USERS;
-	
-	@Deprecated
-	public static final String PRIV_ADD_USERS = PrivilegeConstants.ADD_USERS;
-	
-	@Deprecated
-	public static final String PRIV_EDIT_USERS = PrivilegeConstants.EDIT_USERS;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_USERS = PrivilegeConstants.DELETE_USERS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_USERS = PrivilegeConstants.PURGE_USERS;
-	
-	@Deprecated
-	public static final String PRIV_EDIT_USER_PASSWORDS = PrivilegeConstants.EDIT_USER_PASSWORDS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_ENCOUNTERS = PrivilegeConstants.VIEW_ENCOUNTERS;
-	
-	@Deprecated
-	public static final String PRIV_ADD_ENCOUNTERS = PrivilegeConstants.ADD_ENCOUNTERS;
-	
-	@Deprecated
-	public static final String PRIV_EDIT_ENCOUNTERS = PrivilegeConstants.EDIT_ENCOUNTERS;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_ENCOUNTERS = PrivilegeConstants.DELETE_ENCOUNTERS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_ENCOUNTERS = PrivilegeConstants.PURGE_ENCOUNTERS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_ENCOUNTER_TYPES = PrivilegeConstants.VIEW_ENCOUNTER_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_ENCOUNTER_TYPES = PrivilegeConstants.MANAGE_ENCOUNTER_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_ENCOUNTER_TYPES = PrivilegeConstants.PURGE_ENCOUNTER_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_LOCATIONS = PrivilegeConstants.VIEW_LOCATIONS;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_LOCATIONS = PrivilegeConstants.MANAGE_LOCATIONS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_LOCATIONS = PrivilegeConstants.PURGE_LOCATIONS;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_LOCATION_TAGS = PrivilegeConstants.MANAGE_LOCATION_TAGS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_LOCATION_TAGS = PrivilegeConstants.PURGE_LOCATION_TAGS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_OBS = PrivilegeConstants.VIEW_OBS;
-	
-	@Deprecated
-	public static final String PRIV_ADD_OBS = PrivilegeConstants.ADD_OBS;
-	
-	@Deprecated
-	public static final String PRIV_EDIT_OBS = PrivilegeConstants.EDIT_OBS;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_OBS = PrivilegeConstants.DELETE_OBS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_OBS = PrivilegeConstants.PURGE_OBS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_MIME_TYPES = "View Mime Types";
-	
-	@Deprecated
-	public static final String PRIV_PURGE_MIME_TYPES = "Purge Mime Types";
-	
-	@Deprecated
-	public static final String PRIV_VIEW_PATIENTS = PrivilegeConstants.VIEW_PATIENTS;
-	
-	@Deprecated
-	public static final String PRIV_ADD_PATIENTS = PrivilegeConstants.ADD_PATIENTS;
-	
-	@Deprecated
-	public static final String PRIV_EDIT_PATIENTS = PrivilegeConstants.EDIT_PATIENTS;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_PATIENTS = PrivilegeConstants.DELETE_PATIENTS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_PATIENTS = PrivilegeConstants.PURGE_PATIENTS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_PATIENT_IDENTIFIERS = PrivilegeConstants.VIEW_PATIENT_IDENTIFIERS;
-	
-	@Deprecated
-	public static final String PRIV_ADD_PATIENT_IDENTIFIERS = PrivilegeConstants.ADD_PATIENT_IDENTIFIERS;
-	
-	@Deprecated
-	public static final String PRIV_EDIT_PATIENT_IDENTIFIERS = PrivilegeConstants.EDIT_PATIENT_IDENTIFIERS;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_PATIENT_IDENTIFIERS = PrivilegeConstants.DELETE_PATIENT_IDENTIFIERS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_PATIENT_IDENTIFIERS = PrivilegeConstants.PURGE_PATIENT_IDENTIFIERS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_PATIENT_COHORTS = PrivilegeConstants.VIEW_PATIENT_COHORTS;
-	
-	@Deprecated
-	public static final String PRIV_ADD_COHORTS = PrivilegeConstants.ADD_COHORTS;
-	
-	@Deprecated
-	public static final String PRIV_EDIT_COHORTS = PrivilegeConstants.EDIT_COHORTS;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_COHORTS = PrivilegeConstants.DELETE_COHORTS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_COHORTS = PrivilegeConstants.PURGE_COHORTS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_ORDERS = PrivilegeConstants.VIEW_ORDERS;
-	
-	@Deprecated
-	public static final String PRIV_ADD_ORDERS = PrivilegeConstants.ADD_ORDERS;
-	
-	@Deprecated
-	public static final String PRIV_EDIT_ORDERS = PrivilegeConstants.EDIT_ORDERS;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_ORDERS = PrivilegeConstants.DELETE_ORDERS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_ORDERS = PrivilegeConstants.PURGE_ORDERS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_FORMS = PrivilegeConstants.VIEW_FORMS;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_FORMS = PrivilegeConstants.MANAGE_FORMS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_FORMS = PrivilegeConstants.PURGE_FORMS;
-	
-	// This name is historic, since that's what it was originally called in the infopath formentry module
-	
-	@Deprecated
-	public static final String PRIV_FORM_ENTRY = PrivilegeConstants.FORM_ENTRY;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_REPORTS = "View Reports";
-	
-	@Deprecated
-	public static final String PRIV_ADD_REPORTS = "Add Reports";
-	
-	@Deprecated
-	public static final String PRIV_EDIT_REPORTS = "Edit Reports";
-	
-	@Deprecated
-	public static final String PRIV_DELETE_REPORTS = "Delete Reports";
-	
-	@Deprecated
-	public static final String PRIV_RUN_REPORTS = "Run Reports";
-	
-	@Deprecated
-	public static final String PRIV_VIEW_REPORT_OBJECTS = "View Report Objects";
-	
-	@Deprecated
-	public static final String PRIV_ADD_REPORT_OBJECTS = "Add Report Objects";
-	
-	@Deprecated
-	public static final String PRIV_EDIT_REPORT_OBJECTS = "Edit Report Objects";
-	
-	@Deprecated
-	public static final String PRIV_DELETE_REPORT_OBJECTS = "Delete Report Objects";
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_IDENTIFIER_TYPES = PrivilegeConstants.MANAGE_IDENTIFIER_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_IDENTIFIER_TYPES = PrivilegeConstants.VIEW_IDENTIFIER_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_IDENTIFIER_TYPES = PrivilegeConstants.PURGE_IDENTIFIER_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_MIME_TYPES = "Manage Mime Types";
-	
-	@Deprecated
-	public static final String PRIV_VIEW_CONCEPT_CLASSES = PrivilegeConstants.VIEW_CONCEPT_CLASSES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_CONCEPT_CLASSES = PrivilegeConstants.MANAGE_CONCEPT_CLASSES;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_CONCEPT_CLASSES = PrivilegeConstants.PURGE_CONCEPT_CLASSES;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_CONCEPT_DATATYPES = PrivilegeConstants.VIEW_CONCEPT_DATATYPES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_CONCEPT_DATATYPES = PrivilegeConstants.MANAGE_CONCEPT_DATATYPES;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_CONCEPT_DATATYPES = PrivilegeConstants.PURGE_CONCEPT_DATATYPES;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_PRIVILEGES = PrivilegeConstants.VIEW_PRIVILEGES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_PRIVILEGES = PrivilegeConstants.MANAGE_PRIVILEGES;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_PRIVILEGES = PrivilegeConstants.PURGE_PRIVILEGES;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_ROLES = PrivilegeConstants.VIEW_ROLES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_ROLES = PrivilegeConstants.MANAGE_ROLES;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_ROLES = PrivilegeConstants.PURGE_ROLES;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_FIELD_TYPES = PrivilegeConstants.VIEW_FIELD_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_FIELD_TYPES = PrivilegeConstants.MANAGE_FIELD_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_FIELD_TYPES = PrivilegeConstants.PURGE_FIELD_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_ORDER_TYPES = PrivilegeConstants.VIEW_ORDER_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_ORDER_TYPES = PrivilegeConstants.MANAGE_ORDER_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_ORDER_TYPES = PrivilegeConstants.PURGE_ORDER_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_RELATIONSHIP_TYPES = PrivilegeConstants.VIEW_RELATIONSHIP_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_RELATIONSHIP_TYPES = PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_RELATIONSHIP_TYPES = PrivilegeConstants.PURGE_RELATIONSHIP_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_ALERTS = PrivilegeConstants.MANAGE_ALERTS;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_CONCEPT_SOURCES = PrivilegeConstants.MANAGE_CONCEPT_SOURCES;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_CONCEPT_SOURCES = PrivilegeConstants.VIEW_CONCEPT_SOURCES;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_CONCEPT_SOURCES = PrivilegeConstants.PURGE_CONCEPT_SOURCES;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_NAVIGATION_MENU = PrivilegeConstants.VIEW_NAVIGATION_MENU;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_ADMIN_FUNCTIONS = PrivilegeConstants.VIEW_ADMIN_FUNCTIONS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_UNPUBLISHED_FORMS = PrivilegeConstants.VIEW_UNPUBLISHED_FORMS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_PROGRAMS = PrivilegeConstants.VIEW_PROGRAMS;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_PROGRAMS = PrivilegeConstants.MANAGE_PROGRAMS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_PATIENT_PROGRAMS = PrivilegeConstants.VIEW_PATIENT_PROGRAMS;
-	
-	@Deprecated
-	public static final String PRIV_ADD_PATIENT_PROGRAMS = PrivilegeConstants.ADD_PATIENT_PROGRAMS;
-	
-	@Deprecated
-	public static final String PRIV_EDIT_PATIENT_PROGRAMS = PrivilegeConstants.EDIT_PATIENT_PROGRAMS;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_PATIENT_PROGRAMS = PrivilegeConstants.DELETE_PATIENT_PROGRAMS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_PATIENT_PROGRAMS = PrivilegeConstants.PURGE_PATIENT_PROGRAMS;
-	
-	@Deprecated
-	public static final String PRIV_DASHBOARD_OVERVIEW = PrivilegeConstants.DASHBOARD_OVERVIEW;
-	
-	@Deprecated
-	public static final String PRIV_DASHBOARD_REGIMEN = PrivilegeConstants.DASHBOARD_REGIMEN;
-	
-	@Deprecated
-	public static final String PRIV_DASHBOARD_ENCOUNTERS = PrivilegeConstants.DASHBOARD_ENCOUNTERS;
-	
-	@Deprecated
-	public static final String PRIV_DASHBOARD_DEMOGRAPHICS = PrivilegeConstants.DASHBOARD_DEMOGRAPHICS;
-	
-	@Deprecated
-	public static final String PRIV_DASHBOARD_GRAPHS = PrivilegeConstants.DASHBOARD_GRAPHS;
-	
-	@Deprecated
-	public static final String PRIV_DASHBOARD_FORMS = PrivilegeConstants.DASHBOARD_FORMS;
-	
-	@Deprecated
-	public static final String PRIV_DASHBOARD_SUMMARY = PrivilegeConstants.DASHBOARD_SUMMARY;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_GLOBAL_PROPERTIES = PrivilegeConstants.VIEW_GLOBAL_PROPERTIES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_GLOBAL_PROPERTIES = PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_GLOBAL_PROPERTIES = PrivilegeConstants.PURGE_GLOBAL_PROPERTIES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_MODULES = PrivilegeConstants.MANAGE_MODULES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_SCHEDULER = PrivilegeConstants.MANAGE_SCHEDULER;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_PERSON_ATTRIBUTE_TYPES = PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES = PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_PERSON_ATTRIBUTE_TYPES = PrivilegeConstants.PURGE_PERSON_ATTRIBUTE_TYPES;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_PERSONS = PrivilegeConstants.VIEW_PERSONS;
-	
-	@Deprecated
-	public static final String PRIV_ADD_PERSONS = PrivilegeConstants.ADD_PERSONS;
-	
-	@Deprecated
-	public static final String PRIV_EDIT_PERSONS = PrivilegeConstants.EDIT_PERSONS;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_PERSONS = PrivilegeConstants.DELETE_PERSONS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_PERSONS = PrivilegeConstants.PURGE_PERSONS;
-	
-	/**
-	 * @deprecated replacing with ADD/EDIT/DELETE privileges
-	 */
-	@Deprecated
-	public static final String PRIV_MANAGE_RELATIONSHIPS = "Manage Relationships";
-	
-	@Deprecated
-	public static final String PRIV_VIEW_RELATIONSHIPS = PrivilegeConstants.VIEW_RELATIONSHIPS;
-	
-	@Deprecated
-	public static final String PRIV_ADD_RELATIONSHIPS = PrivilegeConstants.ADD_RELATIONSHIPS;
-	
-	@Deprecated
-	public static final String PRIV_EDIT_RELATIONSHIPS = PrivilegeConstants.EDIT_RELATIONSHIPS;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_RELATIONSHIPS = PrivilegeConstants.DELETE_RELATIONSHIPS;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_RELATIONSHIPS = PrivilegeConstants.PURGE_RELATIONSHIPS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_DATABASE_CHANGES = PrivilegeConstants.VIEW_DATABASE_CHANGES;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_IMPLEMENTATION_ID = PrivilegeConstants.MANAGE_IMPLEMENTATION_ID;
-	
-	@Deprecated
-	public static final String PRIV_SQL_LEVEL_ACCESS = PrivilegeConstants.SQL_LEVEL_ACCESS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_PROBLEMS = PrivilegeConstants.VIEW_PROBLEMS;
-	
-	@Deprecated
-	public static final String PRIV_ADD_PROBLEMS = PrivilegeConstants.ADD_PROBLEMS;
-	
-	@Deprecated
-	public static final String PRIV_EDIT_PROBLEMS = PrivilegeConstants.EDIT_PROBLEMS;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_PROBLEMS = PrivilegeConstants.DELETE_PROBLEMS;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_ALLERGIES = PrivilegeConstants.VIEW_ALLERGIES;
-	
-	@Deprecated
-	public static final String PRIV_ADD_ALLERGIES = PrivilegeConstants.ADD_ALLERGIES;
-	
-	@Deprecated
-	public static final String PRIV_EDIT_ALLERGIES = PrivilegeConstants.EDIT_ALLERGIES;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_ALLERGIES = PrivilegeConstants.DELETE_ALLERGIES;
-	
-	/**
-	 * These are the privileges that are required by OpenMRS. Upon startup, if any of these
-	 * privileges do not exist in the database, they are inserted. These privileges are not allowed
-	 * to be deleted. They are marked as 'locked' in the administration screens.
-	 * 
-	 * @return privileges core to the system
-	 */
-	@Deprecated
-	public static final Map<String, String> CORE_PRIVILEGES() {
-		return OpenmrsUtil.getCorePrivileges();
-	}
-	
-	// Baked in Roles:
-	@Deprecated
-	public static final String SUPERUSER_ROLE = RoleConstants.SUPERUSER;
-	
-	@Deprecated
-	public static final String ANONYMOUS_ROLE = RoleConstants.ANONYMOUS;
-	
-	@Deprecated
-	public static final String AUTHENTICATED_ROLE = RoleConstants.AUTHENTICATED;
-	
-	@Deprecated
-	public static final String PROVIDER_ROLE = RoleConstants.PROVIDER;
-	
-	/**
-	 * All roles returned by this method are inserted into the database if they do not exist
-	 * already. These roles are also forbidden to be deleted from the administration screens.
-	 * 
-	 * @return roles that are core to the system
-	 */
-	@Deprecated
-	public static final Map<String, String> CORE_ROLES() {
-		return OpenmrsUtil.getCoreRoles();
-	}
-	
+		
 	/**
 	 * These roles are given to a user automatically and cannot be assigned
 	 * 
@@ -733,8 +212,8 @@ public final class OpenmrsConstants {
 	public static final Collection<String> AUTO_ROLES() {
 		List<String> roles = new Vector<String>();
 		
-		roles.add(ANONYMOUS_ROLE);
-		roles.add(AUTHENTICATED_ROLE);
+		roles.add(RoleConstants.ANONYMOUS);
+		roles.add(RoleConstants.AUTHENTICATED);
 		
 		return roles;
 	}
@@ -800,9 +279,6 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS = "concept.medicalRecordObservations";
 	
 	public static final String GLOBAL_PROPERTY_PROBLEM_LIST = "concept.problemList";
-	
-	@Deprecated
-	public static final String GLOBAL_PROPERTY_REPORT_XML_MACROS = "report.xmlMacros";
 	
 	public static final String GLOBAL_PROPERTY_SHOW_PATIENT_NAME = "dashboard.showPatientName";
 	
@@ -1291,9 +767,6 @@ public final class OpenmrsConstants {
 		                "false",
 		                "Set to 'true' to turn on OpenMRS's gzip filter, and have the webapp compress data before sending it to any client that supports it. Generally use this if you are running Tomcat standalone. If you are running Tomcat behind Apache, then you'd want to use Apache to do gzip compression.",
 		                BooleanDatatype.class, null));
-		props
-		        .add(new GlobalProperty(GLOBAL_PROPERTY_REPORT_XML_MACROS, "",
-		                "Macros that will be applied to Report Schema XMLs when they are interpreted. This should be java.util.properties format."));
 		
 		props
 		        .add(new GlobalProperty(
@@ -1626,70 +1099,6 @@ public final class OpenmrsConstants {
 	
 	public static Locale ITALIAN_LANGUAGE = new Locale("it");
 	
-	/**
-	 * @return Collection of locales available to openmrs
-	 * @deprecated
-	 */
-	public static final Collection<Locale> OPENMRS_LOCALES() {
-		List<Locale> languages = new Vector<Locale>();
-		
-		languages.add(Locale.US);
-		languages.add(Locale.UK);
-		languages.add(Locale.FRENCH);
-		languages.add(SPANISH_LANGUAGE);
-		languages.add(PORTUGUESE_LANGUAGE);
-		languages.add(ITALIAN_LANGUAGE);
-		
-		return languages;
-	}
-	
-	/**
-	 * @deprecated use {@link LocaleUtility#getDefaultLocale()}
-	 */
-	public static final Locale GLOBAL_DEFAULT_LOCALE = LocaleUtility.DEFAULT_LOCALE;
-	
-	/**
-	 * @return Collection of locales that the concept dictionary should be aware of
-	 * @see ConceptService#getLocalesOfConceptNames()
-	 * @deprecated
-	 */
-	public static final Collection<Locale> OPENMRS_CONCEPT_LOCALES() {
-		List<Locale> languages = new Vector<Locale>();
-		
-		languages.add(Locale.ENGLISH);
-		languages.add(Locale.FRENCH);
-		languages.add(SPANISH_LANGUAGE);
-		languages.add(PORTUGUESE_LANGUAGE);
-		languages.add(ITALIAN_LANGUAGE);
-		
-		return languages;
-	}
-	
-	@Deprecated
-	private static Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS = null;
-	
-	/**
-	 * @return Mapping of Locales to locale specific date pattern
-	 * @deprecated use the {@link org.openmrs.api.context.Context#getDateFormat()}
-	 */
-	public static final Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS() {
-		if (OPENMRS_LOCALE_DATE_PATTERNS == null) {
-			Map<String, String> patterns = new HashMap<String, String>();
-			
-			patterns.put(Locale.US.toString().toLowerCase(), "MM/dd/yyyy");
-			patterns.put(Locale.UK.toString().toLowerCase(), "dd/MM/yyyy");
-			patterns.put(Locale.FRENCH.toString().toLowerCase(), "dd/MM/yyyy");
-			patterns.put(Locale.GERMAN.toString().toLowerCase(), "MM.dd.yyyy");
-			patterns.put(SPANISH_LANGUAGE.toString().toLowerCase(), "dd/MM/yyyy");
-			patterns.put(PORTUGUESE_LANGUAGE.toString().toLowerCase(), "dd/MM/yyyy");
-			patterns.put(ITALIAN_LANGUAGE.toString().toLowerCase(), "dd/MM/yyyy");
-			
-			OPENMRS_LOCALE_DATE_PATTERNS = patterns;
-		}
-		
-		return OPENMRS_LOCALE_DATE_PATTERNS;
-	}
-	
 	/*
 	 * User property names
 	 */
@@ -1728,18 +1137,6 @@ public final class OpenmrsConstants {
 	 * <code>proficientLocales = en_US, en_GB, en, fr_RW</code>
 	 */
 	public static final String USER_PROPERTY_PROFICIENT_LOCALES = "proficientLocales";
-	
-	/**
-	 * Report object properties
-	 */
-	@Deprecated
-	public static final String REPORT_OBJECT_TYPE_PATIENTFILTER = "Patient Filter";
-	
-	@Deprecated
-	public static final String REPORT_OBJECT_TYPE_PATIENTSEARCH = "Patient Search";
-	
-	@Deprecated
-	public static final String REPORT_OBJECT_TYPE_PATIENTDATAPRODUCER = "Patient Data Producer";
 	
 	// Used for differences between windows/linux upload capabilities)
 	// Used for determining where to find runtime properties
@@ -1837,24 +1234,6 @@ public final class OpenmrsConstants {
 	
 	//Patient Identifier Validators
 	public static final String LUHN_IDENTIFIER_VALIDATOR = LuhnIdentifierValidator.class.getName();
-	
-	// ComplexObsHandler views
-	
-	/**
-	 * org.openmrs.obs.ComplexObsHandler views are now defined in the interface itself.
-	 * 
-	 * @deprecated complex observation view types are defined in org.openmrs.obs.ComplexObsHandler
-	 */
-	@Deprecated
-	public static final String RAW_VIEW = "RAW_VIEW";
-	
-	/**
-	 * org.openmrs.obs.ComplexObsHandler views are now defined in the interface itself.
-	 * 
-	 * @deprecated complex observation view types are defined in org.openmrs.obs.ComplexObsHandler
-	 */
-	@Deprecated
-	public static final String TEXT_VIEW = "TEXT_VIEW";
 	
 	/** The data type to return on failing to load a custom data type. */
 	public static final String DEFAULT_CUSTOM_DATATYPE = FreeTextDatatype.class.getName();
