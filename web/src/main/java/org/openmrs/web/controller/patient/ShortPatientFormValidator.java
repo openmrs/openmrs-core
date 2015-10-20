@@ -89,12 +89,14 @@ public class ShortPatientFormValidator implements Validator {
 			if (OpenmrsUtil.nullSafeEquals(possibleDuplicate.getId(), personName.getId())) {
 				continue;
 			}
-			
-			if (OpenmrsUtil.nullSafeEqualsIgnoreCase(possibleDuplicate.getGivenName(), personName.getGivenName())
-			        && OpenmrsUtil.nullSafeEqualsIgnoreCase(possibleDuplicate.getMiddleName(), personName.getMiddleName())
-			        && OpenmrsUtil.nullSafeEqualsIgnoreCase(possibleDuplicate.getFamilyName(), personName.getFamilyName())) {
-				errors.reject("Patient.duplicateName", new Object[] { personName.getFullName() }, personName.getFullName()
-				        + " is a duplicate name for the same patient");
+
+			if (!possibleDuplicate.isVoided()) {
+				if (OpenmrsUtil.nullSafeEqualsIgnoreCase(possibleDuplicate.getGivenName(), personName.getGivenName())
+						&& OpenmrsUtil.nullSafeEqualsIgnoreCase(possibleDuplicate.getMiddleName(), personName.getMiddleName())
+						&& OpenmrsUtil.nullSafeEqualsIgnoreCase(possibleDuplicate.getFamilyName(), personName.getFamilyName())) {
+					errors.reject("Patient.duplicateName", new Object[] { personName.getFullName() }, personName.getFullName()
+							+ " is a duplicate name for the same patient");
+				}
 			}
 		}
 		
