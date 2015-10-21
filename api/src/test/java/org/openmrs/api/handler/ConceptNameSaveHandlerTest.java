@@ -44,13 +44,13 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 	public void handle_shouldReplaceTagsWithoutIdsWithDatabaseFetchedTag() throws Exception {
 		ConceptNameSaveHandler handler = new ConceptNameSaveHandler();
 		ConceptName name = new ConceptName();
-		name.addTag(ConceptNameTag.PREFERRED); // this tag has a null id
-		name.addTag(ConceptNameTag.SHORT); // this tag has a null id
+		name.addTag("preferred"); // this tag has a null id
+		name.addTag("short"); // this tag has a null id
 		handler.handle(name, null, null, null);
 		for (ConceptNameTag tag : name.getTags()) {
-			if (tag.getTag().equals(ConceptNameTag.PREFERRED)) {
+			if (tag.getTag().equals("preferred")) {
 				Assert.assertEquals(4, tag.getConceptNameTagId().intValue());
-			} else if (tag.getTag().equals(ConceptNameTag.SHORT)) {
+			} else if (tag.getTag().equals("short")) {
 				Assert.assertEquals(2, tag.getConceptNameTagId().intValue());
 			}
 		}

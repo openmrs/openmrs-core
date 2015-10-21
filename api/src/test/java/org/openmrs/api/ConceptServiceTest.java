@@ -1154,7 +1154,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptsByConceptSource_shouldReturnAListOfConceptMapsIfConceptMappingsFound() throws Exception {
 		List<ConceptMap> list = conceptService
-		        .getConceptsByConceptSource(conceptService.getConceptSourceByName("SNOMED CT"));
+		        .getConceptMappingsToSource(conceptService.getConceptSourceByName("SNOMED CT"));
 		assertEquals(2, list.size());
 	}
 	
@@ -1164,7 +1164,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConceptsByConceptSource_shouldReturnEmptyListOfConceptMapsIfNoneFound() throws Exception {
-		List<ConceptMap> list = conceptService.getConceptsByConceptSource(conceptService
+		List<ConceptMap> list = conceptService.getConceptMappingsToSource(conceptService
 		        .getConceptSourceByName("Some invalid name"));
 		assertEquals(0, list.size());
 	}
@@ -1193,8 +1193,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test(expected = Exception.class)
 	public void saveConceptSource_shouldNotSaveAConceptSourceIfVoidedIsNull() throws Exception {
 		ConceptSource source = new ConceptSource();
-		source.setVoided(null);
-		assertNull(source.getVoided());
+		source.setRetired(null);
+		assertNull(source.isRetired());
 		
 		conceptService.saveConceptSource(source);
 		
@@ -1830,7 +1830,21 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//So we should see 2 results only
 		Assert.assertEquals(2, searchResults.size());
 	}
-	
+
+    /**
+     * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)
+     */
+    @Test
+    @Verifies(value = "should return concept search results that match unique concepts", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
+    public void getConcepts_shouldReturnConceptSearchResultsThatMatchUniqueConceptsEvenIfDifferentMatchingWords() throws Exception {
+        executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+        List<ConceptSearchResult> searchResults = conceptService.getConcepts("now", Collections
+                .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+        // "now matches both concept names "TRUST NOW" and "TRUST NOWHERE", but these are for the same concept (4000), so there should only be one item in the result set
+        Assert.assertEquals(1, searchResults.size());
+        Assert.assertEquals(new Integer(4000), searchResults.get(0).getConcept().getId());
+	}
+
 	/**
 	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)
 	 */
@@ -2382,8 +2396,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("test name", Context.getLocale()));
 		ConceptMap map = new ConceptMap();
-		map.setSourceCode("unique code");
-		map.setSource(conceptService.getConceptSource(1));
+		map.getConceptReferenceTerm().setCode("unique code");
+		map.getConceptReferenceTerm().setConceptSource(conceptService.getConceptSource(1));
 		concept.addConceptMapping(map);
 		conceptService.saveConcept(concept);
 		Assert.assertNotNull(concept.getId());
@@ -2400,8 +2414,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		int initialTermCount = conceptService.getAllConceptReferenceTerms().size();
 		Concept concept = conceptService.getConcept(5497);
 		ConceptMap map = new ConceptMap();
-		map.setSourceCode("unique code");
-		map.setSource(conceptService.getConceptSource(1));
+		map.getConceptReferenceTerm().setCode("unique code");
+		map.getConceptReferenceTerm().setConceptSource(conceptService.getConceptSource(1));
 		concept.addConceptMapping(map);
 		conceptService.saveConcept(concept);
 		Assert.assertEquals(initialTermCount + 1, conceptService.getAllConceptReferenceTerms().size());
@@ -3044,7 +3058,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugs_shouldReturnUniqueDrugs() throws Exception {
 		//sanity check that drug.name and drug.concept.name will both match the search phrase
-		Drug drug = conceptService.getDrugByNameOrId("ASPIRIN");
+		Drug drug = conceptService.getDrug("ASPIRIN");
 		assertEquals(drug.getName().toLowerCase(), drug.getConcept().getName().getName().toLowerCase());
 		
 		List<Drug> drugs = conceptService.getDrugs("Asp", null, false, false);

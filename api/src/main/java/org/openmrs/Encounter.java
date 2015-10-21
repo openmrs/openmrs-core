@@ -11,7 +11,6 @@ package org.openmrs;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
@@ -401,24 +400,6 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return the patientId
-	 * @deprecated due to duplication. Use Encounter.Patient instead
-	 */
-	@Deprecated
-	public Integer getPatientId() {
-		return patientId;
-	}
-	
-	/**
-	 * @param patientId the patientId to set
-	 * @deprecated due to duplication. Use Encounter.Patient instead
-	 */
-	@Deprecated
-	public void setPatientId(Integer patientId) {
-		this.patientId = patientId;
-	}
-	
-	/**
 	 * Basic property accessor for encounterProviders. The convenience methods getProvidersByRoles
 	 * and getProvidersByRole are the preferred methods for getting providers. This getter is 
 	 * provided as a convenience for treating this like a DTO
@@ -467,60 +448,6 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
         }
         return activeEncounterProviders;
     }
-
-	/**
-	 * @return Returns the provider.
-	 * @since 1.6 (used to return User)
-	 * @deprecated since 1.9, use {@link #getProvidersByRole(EncounterRole)}
-	 * @should return null if there is no providers
-	 * @should return provider for person
-	 * @should return null if there is no provider for person
-	 * @should return same provider for person if called twice
-	 * @should not return a voided provider
-	 */
-	@Deprecated
-	public Person getProvider() {
-		if (encounterProviders == null || encounterProviders.isEmpty()) {
-			return null;
-		} else {
-			for (EncounterProvider encounterProvider : encounterProviders) {
-				// Return the first non-voided provider associated with a person in the list
-				if (!encounterProvider.isVoided() && encounterProvider.getProvider().getPerson() != null) {
-					return encounterProvider.getProvider().getPerson();
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * @param provider The provider to set.
-	 * @deprecated use {@link #setProvider(Person)}
-	 */
-	@Deprecated
-	public void setProvider(User provider) {
-		setProvider(provider.getPerson());
-	}
-	
-	/**
-	 * @param provider The provider to set.
-	 * @deprecated since 1.9, use {@link #setProvider(EncounterRole, Provider)}
-	 * @should set existing provider for unknown role
-	 */
-	@Deprecated
-	public void setProvider(Person provider) {
-		EncounterRole unknownRole = Context.getEncounterService().getEncounterRoleByUuid(
-		    EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID);
-		if (unknownRole == null) {
-			throw new IllegalStateException("No 'Unknown' encounter role with uuid "
-			        + EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID + ".");
-		}
-		Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(provider);
-		if (providers == null || providers.isEmpty()) {
-			throw new IllegalArgumentException("No provider with personId " + provider.getPersonId());
-		}
-		setProvider(unknownRole, providers.iterator().next());
-	}
 	
 	/**
 	 * @return Returns the form.

@@ -24,13 +24,11 @@ import org.hibernate.search.annotations.AnalyzerDef;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
-import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.TokenFilterDef;
 import org.hibernate.search.annotations.TokenizerDef;
 import org.openmrs.api.ConceptNameType;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.bridge.LocaleFieldBridge;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
@@ -106,37 +104,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	}
 	
 	/**
-	 * Short name and description are no longer attributes of ConceptName.
-	 *
-	 * @param name
-	 * @param shortName
-	 * @param description
-	 * @param locale
-	 * @deprecated
-	 */
-	@Deprecated
-	public ConceptName(String name, String shortName, String description, Locale locale) {
-		setName(name);
-		setLocale(locale);
-	}
-	
-	/**
-	 * @deprecated Use {@link Concept#getShortestName(Locale, Boolean)} instead.
-	 * @return Returns the appropriate short name
-	 */
-	@Deprecated
-	public String getShortestName() {
-		if (concept != null) {
-			ConceptName bestShortName = concept.getShortestName(this.locale, false);
-			if (bestShortName != null) {
-				return bestShortName.getName();
-			}
-		}
-		
-		return getName();
-	}
-	
-	/**
 	 * @return Returns the conceptId.
 	 */
 	@Attribute
@@ -195,39 +162,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
-	
-	/**
-	 * @deprecated
-	 * @return Returns the shortName.
-	 */
-	@Deprecated
-	public String getShortName() {
-		if (concept != null) {
-			ConceptName bestShortName = concept.getShortNameInLocale(Context.getLocale());
-			if (bestShortName != null) {
-				return bestShortName.getName();
-			}
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * @deprecated
-	 * @return Returns the description.
-	 */
-	@Deprecated
-	public String getDescription() {
-		if (concept != null) {
-			ConceptDescription description = concept.getDescription();
-			if (description != null) {
-				return description.getDescription();
-			}
-		}
-		
-		return null;
-	}
-	
+
 	/**
 	 * @return Returns the creator.
 	 */
@@ -625,42 +560,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 */
 	public Boolean isSynonym() {
 		return getConceptNameType() == null;
-	}
-	
-	/**
-	 * Checks if this conceptName is a short name in a locale with a matching language
-	 *
-	 * @deprecated as of version 1.7
-	 * @see Concept#getShortNameInLocale(Locale)
-	 * @see Concept#getShortestName(Locale, Boolean)
-	 * @param language ISO 639 2-letter code for a language
-	 * @return true if the name is a short name in a locale with a matching language code, otherwise
-	 *         false
-	 */
-	@Deprecated
-	public Boolean isPreferredShortInLanguage(String language) {
-		if (!StringUtils.isBlank(language) && this.locale != null && isShort() && this.locale.getLanguage().equals(language)) {
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Checks if this conceptName is a short name in a locale with a matching country
-	 *
-	 * @deprecated since version 1.7
-	 * @see Concept#getShortNameInLocale(Locale)
-	 * @see Concept#getShortestName(Locale, Boolean)
-	 * @param country ISO 639 2-letter code for a country
-	 * @return true if the name is a short name in a locale with a matching country code, otherwise
-	 *         false
-	 */
-	@Deprecated
-	public Boolean isPreferredShortInCountry(String country) {
-		if (!StringUtils.isBlank(country) && this.locale != null && isShort() && this.locale.getCountry().equals(country)) {
-			return true;
-		}
-		return false;
 	}
 	
 	/**

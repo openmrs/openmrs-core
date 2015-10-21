@@ -87,7 +87,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 			List<Cohort> cohorts = Context.getCohortService().getAllCohorts();
 			records = cohorts.iterator();
 		} else if (name.equals("conceptSource")) {
-			List<ConceptSource> conceptSources = Context.getConceptService().getAllConceptSources();
+			List<ConceptSource> conceptSources = Context.getConceptService().getAllConceptSources(false);
 			records = conceptSources.iterator();
 		} else if (name.equals("form")) {
 			List<Form> forms = Context.getFormService().getAllForms();
@@ -108,7 +108,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 				
 				Map<String, String> opts = new HashMap<String, String>();
 				for (ConceptAnswer a : civilStatus.getAnswers(false)) {
-					opts.put(a.getAnswerConcept().getConceptId().toString(), a.getAnswerConcept().getBestName(locale)
+					opts.put(a.getAnswerConcept().getConceptId().toString(), a.getAnswerConcept().getShortestName(locale, false)
 					        .getName());
 				}
 				records = opts.entrySet().iterator();
@@ -123,7 +123,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 				select = select.toString() + "=" + opts.get(select);
 			}
 		} else if (name.equals("workflowStatus")) {
-			List<ProgramWorkflowState> ret = Context.getProgramWorkflowService().getStates();
+			List<ProgramWorkflowState> ret = new ArrayList<ProgramWorkflowState>();
 			records = ret.iterator();
 		} else if (name.equals("workflowProgram")) {
 			List<org.openmrs.Program> ret = Context.getProgramWorkflowService().getAllPrograms();
@@ -135,7 +135,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 			if (conceptSet == null) {
 				throw new IllegalArgumentException("Must specify conceptSet");
 			}
-			Concept c = OpenmrsUtil.getConceptByIdOrName(conceptSet);
+			Concept c = Context.getConceptService().getConcept(conceptSet);
 			if (c == null) {
 				throw new IllegalArgumentException("Can't find conceptSet " + conceptSet);
 			}
@@ -145,7 +145,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 			if (concept == null) {
 				throw new IllegalArgumentException("Must specify concept");
 			}
-			Concept c = OpenmrsUtil.getConceptByIdOrName(concept);
+			Concept c = Context.getConceptService().getConcept(concept);
 			if (c == null) {
 				log.error("Can't find concept with name or id of: " + concept + " and so no answers will be returned");
 				records = null;

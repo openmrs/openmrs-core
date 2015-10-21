@@ -11,7 +11,6 @@ package org.openmrs.scheduler.tasks;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Daemon;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 
@@ -90,13 +89,5 @@ public abstract class AbstractTask implements Task {
 	 */
 	public void stopExecuting() {
 		this.isExecuting = false;
-	}
-	
-	/**
-	 * @deprecated this method is not used anymore. All threads are run as the {@link Daemon} user
-	 */
-	@Deprecated
-	protected void authenticate() {
-		// do nothing
 	}
 }

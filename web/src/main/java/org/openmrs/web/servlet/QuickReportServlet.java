@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -39,6 +40,9 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
+import org.openmrs.parameter.EncounterSearchCriteria;
+import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 
@@ -58,8 +62,8 @@ public class QuickReportServlet extends HttpServlet {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.null");
 			return;
 		}
-		if (!Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)) {
-			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + PrivilegeConstants.VIEW_PATIENTS);
+		if (!Context.hasPrivilege(PrivilegeConstants.GET_PATIENTS)) {
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + PrivilegeConstants.GET_PATIENTS);
 			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?"
 			        + request.getQueryString());
 			response.sendRedirect(request.getContextPath() + "/login.htm");
@@ -146,12 +150,24 @@ public class QuickReportServlet extends HttpServlet {
 		
 		List<Obs> allObs = null;
 		
+		List<String> sort = new ArrayList<String>();
+		sort.add("location.locationId asc");
+		sort.add("obs.valueDatetime asc");
+		
+		List<Concept> questions = new ArrayList<Concept>();
+		questions.add(c);
+		
+		List<OpenmrsConstants.PERSON_TYPE> personTypes = new ArrayList<OpenmrsConstants.PERSON_TYPE>();
+		personTypes.add(OpenmrsConstants.PERSON_TYPE.PATIENT);
+		
 		if (location == null || "".equals(location)) {
-			allObs = os.getObservations(c, "location.locationId asc, obs.valueDatetime asc", ObsService.PATIENT, true);
+			allObs = os.getObservations(null, null, questions, null, personTypes, null, sort, null, null, null, null, true);
 		} else {
-			Location locationObj = es.getLocation(Integer.valueOf(location));
-			allObs = os.getObservations(c, locationObj, "location.locationId asc, obs.valueDatetime asc",
-			    ObsService.PATIENT, true);
+			Location locationObj = Context.getLocationService().getLocation(Integer.valueOf(location));
+			List<Location> locations = new ArrayList<Location>();
+			locations.add(locationObj);
+			
+			allObs = os.getObservations(null, null, questions, null, personTypes, locations, sort, null, null, null, null, true);
 		}
 		
 		List<Obs> obs = new Vector<Obs>();
@@ -216,10 +232,21 @@ public class QuickReportServlet extends HttpServlet {
 		Collection<Encounter> encounters = null;
 		
 		if (location == null || "".equals(location)) {
-			encounters = es.getEncounters(null, null, start, end, null, null, null, true);
+			EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+			.setIncludeVoided(true)
+			.setFromDate(start)
+			.setToDate(end)
+			.createEncounterSearchCriteria();
+			encounters = es.getEncounters(encounterSearchCriteria);
 		} else {
 			Location locationObj = ls.getLocation(Integer.valueOf(location));
-			encounters = es.getEncounters(null, locationObj, start, end, null, null, null, true);
+			EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+			.setIncludeVoided(true)
+			.setLocation(locationObj)
+			.setFromDate(start)
+			.setToDate(end)
+			.createEncounterSearchCriteria();
+			encounters = es.getEncounters(encounterSearchCriteria);
 		}
 		
 		if (encounters != null) {

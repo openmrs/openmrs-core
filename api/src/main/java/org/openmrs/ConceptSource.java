@@ -20,7 +20,7 @@ import org.simpleframework.xml.Root;
  * ICD9, ICD10, SNOMED, or any other OpenMRS implementation
  */
 @Root
-public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java.io.Serializable {
+public class ConceptSource extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 375L;
 	
@@ -83,26 +83,6 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 		super.setDateCreated(dateCreated);
 	}
 	
-	/**
-	 * @return Returns the dateVoided.
-	 * @deprecated
-	 */
-	@Deprecated
-	@Element(required = false)
-	public Date getDateVoided() {
-		return getDateRetired();
-	}
-	
-	/**
-	 * @param dateVoided The dateVoided to set.
-	 * @deprecated
-	 */
-	@Deprecated
-	@Element(required = false)
-	public void setDateVoided(Date dateVoided) {
-		setDateRetired(dateVoided);
-	}
-	
 	@Element(data = true)
 	public String getDescription() {
 		return super.getDescription();
@@ -137,78 +117,6 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	@Element(data = true)
 	public void setName(String name) {
 		super.setName(name);
-	}
-	
-	/**
-	 * @return the voided status
-	 * @deprecated use isRetired
-	 */
-	@Deprecated
-	public Boolean isVoided() {
-		return isRetired();
-	}
-	
-	/**
-	 * This method exists to satisfy spring and hibernates slightly bung use of Boolean object
-	 * getters and setters.
-	 * 
-	 * @deprecated Use the "proper" isRetired method.
-	 * @see #isVoided()
-	 */
-	@Deprecated
-	@Attribute
-	public Boolean getVoided() {
-		return isVoided();
-	}
-	
-	/**
-	 * @param voided The voided status
-	 * @deprecated use setRetired
-	 */
-	@Deprecated
-	@Attribute
-	public void setVoided(Boolean voided) {
-		setRetired(voided);
-	}
-	
-	/**
-	 * @return Returns the openmrs user that voided this source
-	 * @deprecated use getRetiredBy
-	 */
-	@Deprecated
-	@Element(required = false)
-	public User getVoidedBy() {
-		return getRetiredBy();
-	}
-	
-	/**
-	 * @param voidedBy The openmrs user that voided this source
-	 * @deprecated use setRetiredBy
-	 */
-	@Deprecated
-	@Element(required = false)
-	public void setVoidedBy(User voidedBy) {
-		setRetiredBy(voidedBy);
-	}
-	
-	/**
-	 * @return Returns the reason this source was voided
-	 * @deprecated use getRetireReason
-	 */
-	@Deprecated
-	@Element(data = true, required = false)
-	public String getVoidReason() {
-		return getRetireReason();
-	}
-	
-	/**
-	 * @param voidReason The reason this source is voided
-	 * @deprecated use setRetireReason
-	 */
-	@Deprecated
-	@Element(data = true, required = false)
-	public void setVoidReason(String voidReason) {
-		setRetireReason(voidReason);
 	}
 	
 	/**

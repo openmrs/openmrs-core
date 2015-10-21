@@ -300,7 +300,7 @@ public class DWRObsService {
 			p = Context.getPersonService().getPerson(pId);
 		}
 		if (conceptId != null) {
-			c = OpenmrsUtil.getConceptByIdOrName(conceptId);
+			c = Context.getConceptService().getConcept(conceptId);
 		}
 		if (eId != null) {
 			e = Context.getEncounterService().getEncounter(eId);

@@ -113,16 +113,6 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 	}
 	
 	/**
-	 * @deprecated use isPreferred(). This method is kept around for Spring/Hibernate's use
-	 * @return the preferred status
-	 */
-	@Deprecated
-	@SuppressWarnings("unused")
-	private Boolean getPreferred() {
-		return isPreferred();
-	}
-	
-	/**
 	 * "Preferred" relationship types are those that should be shown as default types when
 	 * adding/editing a person's relationships
 	 * 

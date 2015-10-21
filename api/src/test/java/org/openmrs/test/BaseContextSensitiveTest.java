@@ -573,7 +573,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		 * Hbm2ddl used in tests creates primary key columns, which are not auto incremented, if
 		 * NativeIfNotAssignedIdentityGenerator is used. We need to alter those columns in tests.
 		 */
-		List<String> tables = Arrays.asList("concept", "active_list");
+		List<String> tables = Arrays.asList("concept");
 		for (String table : tables) {
 			getConnection().prepareStatement("ALTER TABLE " + table + " ALTER COLUMN " + table + "_id INT AUTO_INCREMENT")
 			        .execute();

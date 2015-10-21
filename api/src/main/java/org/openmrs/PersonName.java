@@ -9,12 +9,14 @@
  */
 package org.openmrs;
 
+import static org.apache.commons.lang.StringUtils.defaultString;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import org.apache.commons.lang.builder.EqualsBuilder;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
@@ -23,8 +25,6 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 import org.springframework.util.StringUtils;
-
-import static org.apache.commons.lang.StringUtils.defaultString;
 
 /**
  * A Person can have zero to n PersonName(s).
@@ -517,10 +517,18 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	}
 	
 	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getPersonNameId();
+	}
+	
+	/**
 	 * TODO: the behavior of this method needs to be controlled by some sort of global property
 	 * because an implementation can define how they want their names to look (which fields to
 	 * show/hide)
-	 *
+	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 * @should return negative if other name is voided
 	 * @should return negative if this name is preferred
@@ -531,21 +539,11 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @should return negative if other familynamePrefix is greater
 	 * @should return negative if other familyNameSuffix is greater
 	 * @should return negative if other dateCreated is greater
-	 * @deprecated since 1.12. Use DefaultComparator instead.
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
-	@SuppressWarnings("squid:S1210")
 	public int compareTo(PersonName other) {
 		DefaultComparator pnDefaultComparator = new DefaultComparator();
 		return pnDefaultComparator.compare(this, other);
-	}
-	
-	/**
-	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#getId()
-	 */
-	public Integer getId() {
-		return getPersonNameId();
 	}
 	
 	/**

@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -86,65 +84,11 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#createForm(org.openmrs.Form)
-	 * @deprecated
-	 */
-	@Deprecated
-	public Form createForm(Form form) throws APIException {
-		return Context.getFormService().saveForm(form);
-	}
-	
-	/**
 	 * @see org.openmrs.api.FormService#getForm(java.lang.Integer)
 	 */
 	@Transactional(readOnly = true)
 	public Form getForm(Integer formId) throws APIException {
 		return dao.getForm(formId);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#getForms(boolean, boolean)
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Form> getForms(boolean publishedOnly) throws APIException {
-		if (publishedOnly) {
-			return Context.getFormService().getPublishedForms();
-		} else {
-			return Context.getFormService().getAllForms();
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#getForms(boolean, boolean)
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Form> getForms(boolean publishedOnly, boolean includeRetired) throws APIException {
-		if (publishedOnly && includeRetired) {
-			log.warn("Should probably not be searching for published forms, but including retired ones");
-			List<Form> ret = new ArrayList<Form>();
-			ret.addAll(Context.getFormService().getPublishedForms());
-			ret.addAll(Context.getFormService().getForms(null, true, null, true, null, null, null));
-			return ret;
-		} else {
-			if (publishedOnly) {
-				return Context.getFormService().getPublishedForms();
-			} else {
-				return Context.getFormService().getAllForms(includeRetired);
-			}
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#updateForm(org.openmrs.Form)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void updateForm(Form form) throws APIException {
-		Context.getFormService().saveForm(form);
 	}
 	
 	/**
@@ -208,25 +152,6 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#deleteForm(org.openmrs.Form)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteForm(Form form) throws APIException {
-		Context.getFormService().purgeForm(form, false);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#getFieldTypes()
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<FieldType> getFieldTypes() throws APIException {
-		return Context.getFormService().getAllFieldTypes();
-	}
-	
-	/**
 	 * @see org.openmrs.api.FormService#getAllFieldTypes()
 	 */
 	@Transactional(readOnly = true)
@@ -251,123 +176,19 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#getForms()
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Form> getForms() throws APIException {
-		return Context.getFormService().getAllForms();
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#getForms(org.openmrs.Concept)
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public Set<Form> getForms(Concept c) throws APIException {
-		return new HashSet<Form>(Context.getFormService().getFormsContainingConcept(c));
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#getFormFields(org.openmrs.Form)
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<FormField> getFormFields(Form form) throws APIException {
-		List<FormField> formFields = new Vector<FormField>();
-		
-		if (form != null && form.getFormFields() != null) {
-			formFields.addAll(form.getFormFields());
-		}
-		
-		return formFields;
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#findFields(java.lang.String)
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Field> findFields(String searchPhrase) throws APIException {
-		return Context.getFormService().getFields(searchPhrase);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#findFields(org.openmrs.Concept)
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Field> findFields(Concept concept) throws APIException {
-		return Context.getFormService().getFieldsByConcept(concept);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#getFields()
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Field> getFields() throws APIException {
-		return Context.getFormService().getAllFields();
-	}
-	
-	/**
 	 * @see org.openmrs.api.FormService#getField(java.lang.Integer)
 	 */
 	@Transactional(readOnly = true)
 	public Field getField(Integer fieldId) throws APIException {
 		return dao.getField(fieldId);
 	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#createField(org.openmrs.Field)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createField(Field field) throws APIException {
-		Context.getFormService().saveField(field);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#updateField(org.openmrs.Field)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void updateField(Field field) throws APIException {
-		Context.getFormService().saveField(field);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#deleteField(org.openmrs.Field)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteField(Field field) throws APIException {
-		Context.getFormService().purgeField(field);
-	}
-	
+		
 	/**
 	 * @see org.openmrs.api.FormService#getFormField(java.lang.Integer)
 	 */
 	@Transactional(readOnly = true)
 	public FormField getFormField(Integer formFieldId) throws APIException {
 		return dao.getFormField(formFieldId);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#getFormField(org.openmrs.Form, org.openmrs.Concept)
-	 * @see #getFormField(Form, Concept, Collection, boolean)
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public FormField getFormField(Form form, Concept concept) throws APIException {
-		return Context.getFormService().getFormField(form, concept, null, false);
 	}
 	
 	/**
@@ -383,33 +204,6 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		}
 		
 		return dao.getFormField(form, concept, ignoreFormFields, force);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#createFormField(org.openmrs.FormField)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createFormField(FormField formField) throws APIException {
-		Context.getFormService().saveFormField(formField);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#updateFormField(org.openmrs.FormField)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void updateFormField(FormField formField) throws APIException {
-		Context.getFormService().saveFormField(formField);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#deleteFormField(org.openmrs.FormField)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteFormField(FormField formField) throws APIException {
-		Context.getFormService().purgeFormField(formField);
 	}
 	
 	/**
@@ -455,20 +249,6 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Transactional(readOnly = true)
 	public FormField getFormFieldByUuid(String uuid) throws APIException {
 		return dao.getFormFieldByUuid(uuid);
-	}
-	
-	/**
-	 * @see org.openmrs.api.FormService#findForms(java.lang.String, boolean, boolean)
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
-		if (includeUnpublished) {
-			return Context.getFormService().getForms(text, null, null, includeRetired, null, null, null);
-		} else {
-			return Context.getFormService().getForms(text, true, null, includeRetired, null, null, null);
-		}
 	}
 	
 	/**
@@ -596,20 +376,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		}
 		return forms;
 	}
-	
-	/**
-	 * @deprecated see
-	 *             {@link #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)}
-	 */
-	@Transactional(readOnly = true)
-	@Deprecated
-	public List<Form> getForms(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
-	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields) {
-		
-		return Context.getFormService().getForms(partialName, published, encounterTypes, retired, containingAnyFormField,
-		    containingAllFormFields, null);
-	}
-	
+
 	/**
 	 * @see org.openmrs.api.FormService#getForms(java.lang.String, java.lang.Boolean,
 	 *      java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection,

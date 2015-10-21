@@ -9,9 +9,12 @@
  */
 package org.openmrs.api.handler;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
@@ -20,13 +23,11 @@ import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
+import org.openmrs.parameter.EncounterSearchCriteria;
+import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Contains the tests for the {@link PatientDataUnvoidHandler}
@@ -44,7 +45,11 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(patient.isVoided());
 		
 		EncounterService es = Context.getEncounterService();
-		List<Encounter> encounters = es.getEncounters(patient, null, null, null, null, null, null, true);
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+			.setPatient(patient)
+			.setIncludeVoided(true)
+			.createEncounterSearchCriteria();
+		List<Encounter> encounters = es.getEncounters(encounterSearchCriteria);
 		Assert.assertTrue(CollectionUtils.isNotEmpty(encounters));
 		//all encounters void related fields should be null
 		for (Encounter encounter : encounters) {

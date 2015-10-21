@@ -9,13 +9,6 @@
  */
 package org.openmrs.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hibernate.Session;
-import org.hibernate.jdbc.Work;
-import org.openmrs.api.db.DAOException;
-import org.springframework.util.StringUtils;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,6 +19,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Session;
+import org.hibernate.jdbc.Work;
+import org.openmrs.api.db.DAOException;
+import org.springframework.util.StringUtils;
+
 /**
  * Utility class that provides database related methods
  *
@@ -34,21 +34,6 @@ import java.util.Set;
 public class DatabaseUtil {
 	
 	private final static Log log = LogFactory.getLog(DatabaseUtil.class);
-	
-	/**
-	 * Load the jdbc driver class for the database which is specified by the connectionUrl parameter <br>
-	 * This is only needed when loading up a jdbc connection manually for the first time. This is
-	 * not needed by most users and development practices with the openmrs API.
-	 *
-	 * @param connectionUrl the connection url for the database, such as
-	 *                      "jdbc:mysql://localhost:3306/..."
-	 * @throws ClassNotFoundException
-	 * @deprecated
-	 */
-	@Deprecated
-	public static void loadDatabaseDriver(String connectionUrl) throws ClassNotFoundException {
-		loadDatabaseDriver(connectionUrl, null);
-	}
 
 	public final static String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
 

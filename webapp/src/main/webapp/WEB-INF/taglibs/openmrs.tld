@@ -973,50 +973,6 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 </tag>
-	
-<tag>
-	<description>
-		Generate an 'active list' from obs of a start concept and a stop concept
-	</description>
-	<name>activeList</name>
-	<tag-class>org.openmrs.web.taglib.ActiveListWidget</tag-class>
-	<body-content>empty</body-content>
-	<attribute>
-		<name>observations</name>
-		<required>true</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>onDate</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>addConcept</name>
-		<required>true</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>removeConcept</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>otherGroupedConcepts</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>showDate</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>displayStyle</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-</tag>
 
 <tag>
 	<description>

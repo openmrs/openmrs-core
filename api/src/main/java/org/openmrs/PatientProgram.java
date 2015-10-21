@@ -15,8 +15,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.openmrs.util.OpenmrsUtil;
 
@@ -252,14 +250,6 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 			}
 		}
 		return currentState;
-	}
-	
-	/**
-	 * @deprecated use {@link #getCurrentState(ProgramWorkflow)}
-	 */
-	@Deprecated
-	public PatientState getCurrentState() {
-		return getCurrentState(null);
 	}
 	
 	/**

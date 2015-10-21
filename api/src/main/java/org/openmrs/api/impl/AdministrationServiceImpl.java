@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -32,22 +31,10 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
-import org.openmrs.ConceptClass;
-import org.openmrs.ConceptDatatype;
-import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSource;
-import org.openmrs.EncounterType;
-import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
-import org.openmrs.Location;
-import org.openmrs.MimeType;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.Privilege;
-import org.openmrs.Role;
-import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -62,7 +49,6 @@ import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
@@ -105,334 +91,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void setEventListeners(EventListeners eventListeners) {
 		this.eventListeners = eventListeners;
 	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#createEncounterType(org.openmrs.EncounterType)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createEncounterType(EncounterType encounterType) throws APIException {
-		Context.getEncounterService().saveEncounterType(encounterType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#updateEncounterType(org.openmrs.EncounterType)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void updateEncounterType(EncounterType encounterType) throws APIException {
-		Context.getEncounterService().saveEncounterType(encounterType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#deleteEncounterType(org.openmrs.EncounterType)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteEncounterType(EncounterType encounterType) throws APIException {
-		Context.getEncounterService().purgeEncounterType(encounterType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.PatientService#savePatientIdentifierType(PatientIdentifierType)
-	 * @deprecated replaced by
-	 *             {@link org.openmrs.api.PatientService#savePatientIdentifierType(PatientIdentifierType)}
-	 */
-	@Deprecated
-	public void createPatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
-		Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.PatientService#savePatientIdentifierType(PatientIdentifierType)
-	 * @deprecated replaced by
-	 *             {@link org.openmrs.api.PatientService#savePatientIdentifierType(PatientIdentifierType)}
-	 */
-	@Deprecated
-	public void updatePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
-		Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.PatientService#purgePatientIdentifierType(PatientIdentifierType)
-	 * @deprecated replaced by
-	 *             {@link org.openmrs.api.PatientService#purgePatientIdentifierType(PatientIdentifierType)}
-	 */
-	@Deprecated
-	public void deletePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
-		Context.getPatientService().purgePatientIdentifierType(patientIdentifierType);
-	}
-	
-	/**
-	 * Create a new Tribe
-	 * 
-	 * @param tribe Tribe to create
-	 * @throws APIException
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createTribe(Tribe tribe) throws APIException {
-		throw new APIException("Tribe.object.not.supported", (Object[]) null);
-	}
-	
-	/**
-	 * Update Tribe
-	 * 
-	 * @param tribe Tribe to update
-	 * @throws APIException
-	 * @deprecated
-	 */
-	@Deprecated
-	public void updateTribe(Tribe tribe) throws APIException {
-		throw new APIException("Tribe.object.not.supported", (Object[]) null);
-	}
-	
-	/**
-	 * Delete Tribe
-	 * 
-	 * @param tribe Tribe to delete
-	 * @throws APIException
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteTribe(Tribe tribe) throws APIException {
-		throw new APIException("Tribe.object.not.supported", (Object[]) null);
-	}
-	
-	/**
-	 * Retire Tribe
-	 * 
-	 * @param tribe Tribe to retire
-	 * @throws APIException
-	 * @deprecated
-	 */
-	@Deprecated
-	public void retireTribe(Tribe tribe) throws APIException {
-		throw new APIException("Tribe.object.not.supported", (Object[]) null);
-	}
-	
-	/**
-	 * Unretire Tribe
-	 * 
-	 * @param tribe Tribe to unretire
-	 * @throws APIException
-	 * @deprecated
-	 */
-	@Deprecated
-	public void unretireTribe(Tribe tribe) throws APIException {
-		throw new APIException("Tribe.object.not.supported", (Object[]) null);
-	}
-	
-	/**
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createFieldType(FieldType fieldType) throws APIException {
-		Context.getFormService().saveFieldType(fieldType);
-	}
-	
-	/**
-	 * @deprecated
-	 */
-	@Deprecated
-	public void updateFieldType(FieldType fieldType) throws APIException {
-		Context.getFormService().saveFieldType(fieldType);
-	}
-	
-	/**
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteFieldType(FieldType fieldType) throws APIException {
-		Context.getFormService().purgeFieldType(fieldType);
-	}
-	
-	/**
-	 * @deprecated use {@link org.openmrs.api.ObsService#saveMimeType(MimeType)}
-	 */
-	@Deprecated
-	public void createMimeType(MimeType mimeType) throws APIException {
-		Context.getObsService().saveMimeType(mimeType);
-	}
-	
-	/**
-	 * @deprecated use {@link org.openmrs.api.ObsService#saveMimeType(MimeType)}
-	 */
-	@Deprecated
-	public void updateMimeType(MimeType mimeType) throws APIException {
-		Context.getObsService().saveMimeType(mimeType);
-	}
-	
-	/**
-	 * @deprecated use {@link org.openmrs.api.ObsService#purgeMimeType(MimeType)}
-	 */
-	@Deprecated
-	public void deleteMimeType(MimeType mimeType) throws APIException {
-		Context.getObsService().purgeMimeType(mimeType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#createLocation(org.openmrs.Location)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createLocation(Location location) throws APIException {
-		Context.getLocationService().saveLocation(location);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#updateLocation(org.openmrs.Location)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void updateLocation(Location location) throws APIException {
-		Context.getLocationService().saveLocation(location);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#deleteLocation(org.openmrs.Location)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteLocation(Location location) throws APIException {
-		Context.getLocationService().purgeLocation(location);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#createRole(org.openmrs.Role)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createRole(Role role) throws APIException {
-		Context.getUserService().saveRole(role);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#updateRole(org.openmrs.Role)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void updateRole(Role role) throws APIException {
-		Context.getUserService().saveRole(role);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#deleteRole(org.openmrs.Role)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteRole(Role role) throws APIException {
-		Context.getUserService().purgeRole(role);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#createPrivilege(org.openmrs.Privilege)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void createPrivilege(Privilege privilege) throws APIException {
-		Context.getUserService().savePrivilege(privilege);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#updatePrivilege(org.openmrs.Privilege)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void updatePrivilege(Privilege privilege) throws APIException {
-		Context.getUserService().savePrivilege(privilege);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#deletePrivilege(org.openmrs.Privilege)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deletePrivilege(Privilege privilege) throws APIException {
-		Context.getUserService().purgePrivilege(privilege);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
-	public void createConceptClass(ConceptClass cc) throws APIException {
-		Context.getConceptService().saveConceptClass(cc);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
-	public void updateConceptClass(ConceptClass cc) throws APIException {
-		Context.getConceptService().saveConceptClass(cc);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
-	public void deleteConceptClass(ConceptClass cc) throws APIException {
-		Context.getConceptService().purgeConceptClass(cc);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
-	public void createConceptDatatype(ConceptDatatype cd) throws APIException {
-		Context.getConceptService().saveConceptDatatype(cd);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
-	public void updateConceptDatatype(ConceptDatatype cd) throws APIException {
-		Context.getConceptService().saveConceptDatatype(cd);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
-	public void deleteConceptDatatype(ConceptDatatype cd) throws APIException {
-		Context.getConceptService().purgeConceptDatatype(cd);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
-	public void createConceptProposal(ConceptProposal cp) throws APIException {
-		Context.getConceptService().saveConceptProposal(cp);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
-	public void updateConceptProposal(ConceptProposal cp) throws APIException {
-		Context.getConceptService().saveConceptProposal(cp);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
-	public void mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept) throws APIException {
-		Context.getConceptService().mapConceptProposalToConcept(cp, mappedConcept);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 * @see org.openmrs.api.AdministrationService#rejectConceptProposal(org.openmrs.ConceptProposal)
-	 */
-	@Deprecated
-	public void rejectConceptProposal(ConceptProposal cp) {
-		Context.getConceptService().rejectConceptProposal(cp);
-	}
-	
+		
 	/**
 	 * Static-ish variable used to cache the system variables. This is not static so that every time
 	 * a module is loaded or removed the variable is destroyed (along with the administration
@@ -512,34 +171,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	}
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#getGlobalProperties()
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<GlobalProperty> getGlobalProperties() throws APIException {
-		return Context.getAdministrationService().getAllGlobalProperties();
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#setGlobalProperties(java.util.List)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void setGlobalProperties(List<GlobalProperty> props) throws APIException {
-		Context.getAdministrationService().saveGlobalProperties(props);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#deleteGlobalProperty(java.lang.String)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void deleteGlobalProperty(String propertyName) throws APIException {
-		Context.getAdministrationService().purgeGlobalProperty(new GlobalProperty(propertyName));
-	}
-	
-	/**
 	 * @see org.openmrs.api.AdministrationService#setGlobalProperty(java.lang.String,
 	 *      java.lang.String)
 	 */
@@ -564,35 +195,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		gp.setPropertyValue(propertyValue);
 		dao.saveGlobalProperty(gp);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#setGlobalProperty(org.openmrs.GlobalProperty)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void setGlobalProperty(GlobalProperty gp) throws APIException {
-		Context.getAdministrationService().saveGlobalProperty(gp);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#addGlobalProperty(org.openmrs.GlobalProperty)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void addGlobalProperty(GlobalProperty gp) {
-		Context.getAdministrationService().setGlobalProperty(gp);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#addGlobalProperty(java.lang.String,
-	 *      java.lang.String)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void addGlobalProperty(String propertyName, String propertyValue) throws APIException {
-		//dao.addGlobalProperty(propertyName, propertyValue);
-		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty(propertyName, propertyValue));
 	}
 	
 	/**
@@ -750,8 +352,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		try {
-			ImplementationId implId = OpenmrsUtil.getSerializer().read(ImplementationId.class, property);
-			
+			ImplementationId implId = Context.getSerializationService().getDefaultSerializer().deserialize(property, ImplementationId.class);
 			return implId;
 		}
 		catch (Exception e) {
@@ -782,7 +383,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			
 			boolean foundMatchingSource = false;
 			// loop over the concept sources to make sure one exists for this hl7Code/implementationId
-			List<ConceptSource> sources = Context.getConceptService().getAllConceptSources();
+			List<ConceptSource> sources = Context.getConceptService().getAllConceptSources(false);
 			if (sources != null) {
 				for (ConceptSource source : sources) {
 					if (implementationId.getImplementationId().equals(source.getHl7Code())) {
@@ -806,10 +407,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			}
 			
 			// serialize and save the ImplementationId to the global properties table
-			StringWriter stringWriter = new StringWriter();
-			OpenmrsUtil.getSerializer().write(implementationId, stringWriter);
+			String value = Context.getSerializationService().getDefaultSerializer().serialize(implementationId);
 			Context.getAdministrationService().saveGlobalProperty(
-			    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID, stringWriter.toString()));
+			    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID, value));
 		}
 		catch (APIException e) {
 			throw e;
@@ -1221,6 +821,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Override
 	public boolean isDatabaseStringComparisonCaseSensitive() {
-		return Boolean.valueOf(getGlobalProperty(OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON, "true"));
+		return dao.isDatabaseStringComparisonCaseSensitive();
 	}
 }

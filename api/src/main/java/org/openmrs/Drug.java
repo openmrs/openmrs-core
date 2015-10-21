@@ -125,50 +125,6 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * Gets the dose strength of this drug
-	 *
-	 * @return Double
-	 * @deprecated
-	 */
-	@Deprecated
-	public Double getDoseStrength() {
-		return this.doseStrength;
-	}
-	
-	/**
-	 * Sets the dose strength
-	 *
-	 * @param doseStrength
-	 * @deprecated
-	 */
-	@Deprecated
-	public void setDoseStrength(Double doseStrength) {
-		this.doseStrength = doseStrength;
-	}
-	
-	/**
-	 * Gets the units
-	 *
-	 * @return String
-	 * @deprecated
-	 */
-	@Deprecated
-	public String getUnits() {
-		return this.units;
-	}
-	
-	/**
-	 * Sets the units
-	 *
-	 * @param units
-	 * @deprecated
-	 */
-	@Deprecated
-	public void setUnits(String units) {
-		this.units = units;
-	}
-	
-	/**
 	 * Gets the strength
 	 *
 	 * @return String
@@ -228,22 +184,6 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public void setMinimumDailyDose(Double minimumDailyDose) {
 		this.minimumDailyDose = minimumDailyDose;
-	}
-	
-	/**
-	 * @deprecated moving it to order entry where it belongs.
-	 */
-	@Deprecated
-	public Concept getRoute() {
-		return route;
-	}
-	
-	/**
-	 * @deprecated moving it to order entry where it belongs.
-	 */
-	@Deprecated
-	public void setRoute(Concept route) {
-		this.route = route;
 	}
 	
 	/**

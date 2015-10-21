@@ -12,7 +12,7 @@
 -->
 <dataset>
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="5d2c63de-6601-49e6-9341-41adcd640086"/>
-  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="b54ba198-3b96-4b0c-b4b7-da98ae17f6a2"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="b54ba198-3b96-4b0c-b4b7-da98ae17f6a2"/>
   <person person_id="2" gender="M" dead="false" creator="1" date_created="1999-01-01 00:00:00.0" voided="false" uuid="2cce0fac-f0ad-4bdf-842f-84b1ae57fc61"/>
   <person person_id="3" gender="M" dead="false" creator="1" date_created="1999-01-01 00:00:00.0" voided="false" uuid="989eef59-7285-4425-ad1a-28e554c4c8a6"/>
   <person person_id="4" gender="M" dead="false" creator="1" date_created="1999-01-01 00:00:00.0" voided="false" uuid="d6bbf055-cc4c-4814-8608-5fb1422bde88"/>

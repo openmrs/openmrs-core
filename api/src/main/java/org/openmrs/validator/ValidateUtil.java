@@ -10,7 +10,6 @@
 package org.openmrs.validator;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -21,7 +20,6 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-import org.springframework.validation.Validator;
 
 /**
  * This class should be used in the *Services to validate objects before saving them. <br>
@@ -45,15 +43,6 @@ public class ValidateUtil {
 	 * This is set in {@link Context#checkCoreDataset()} class
 	 */
 	private static Boolean disableValidation = false;
-	
-	/**
-	 * @deprecated in favor of using HandlerUtil to reflexively get validators
-	 * @param newValidators the validators to set
-	 */
-	@Deprecated
-	public void setValidators(List<Validator> newValidators) {
-		
-	}
 	
 	/**
 	 * Test the given object against all validators that are registered as compatible with the

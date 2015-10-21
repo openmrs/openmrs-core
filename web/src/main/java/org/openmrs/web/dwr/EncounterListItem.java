@@ -65,9 +65,6 @@ public class EncounterListItem {
 					personName += " " + pn.getFamilyName();
 				}
 			}
-			if (encounter.getProvider() != null) {
-				providerName = encounter.getProvider().getPersonName().getFullName();
-			}
 			if (encounter.getLocation() != null) {
 				location = encounter.getLocation().getName();
 			}

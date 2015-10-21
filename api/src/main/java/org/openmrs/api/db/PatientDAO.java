@@ -15,7 +15,9 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.api.PatientService;
+
+import org.openmrs.Allergy;
+import org.openmrs.Allergies;
 
 /**
  * Database methods for the PatientService
@@ -49,74 +51,6 @@ public interface PatientDAO {
 	 * @see org.openmrs.api.PatientService#getAllPatients(boolean)
 	 */
 	public List<Patient> getAllPatients(boolean includeVoided) throws DAOException;
-	
-	/**
-	 * @param searchOnNamesOrIdentifiers specifies if the logic should find patients that match the
-	 *            name or identifier otherwise find patients that match both the name and identifier
-	 * @see org.openmrs.api.PatientService#getPatients(String, String, List, boolean, Integer,
-	 *      Integer)
-	 *
-	 * @deprecated replaced by {@link org.openmrs.api.db.PatientDAO#getPatients(String, Integer, Integer)}
-	 *
-	 * @should escape percentage character in name phrase
-	 * @should escape underscore character in name phrase
-	 * @should escape an asterix character in name phrase
-	 * @should escape percentage character in identifier phrase
-	 * @should escape underscore character in identifier phrase
-	 * @should escape an asterix character in identifier phrase
-	 * @should get patients with a matching identifier and type
-	 * @should not search on voided patients
-	 *
-	 * @should not match voided patients _ signature no 1
-	 * @should not match voided patient names _ signature no 1
-	 *
-	 * @should get patient by given name _ signature no 1
-	 * @should get patient by middle name _ signature no 1
-	 * @should get patient by family name _ signature no 1
-	 * @should get patient by family2 name _ signature no 1
-	 * @should get patient by whole name _ signature no 1
-	 *
-	 * @should not get patient by non-existing single name _ signature no 1
-	 * @should not get patient by non-existing name parts _ signature no 1
-	 * @should not get patient by mix of existing and non-existing name parts _ signature no 1
-	 * @should not get patient by voided name _ signature no 1
-	 *
-	 * @should not get patients by empty name _ signature no 1
-	 * @should not get patients by null name _ signature no 1
-	 *
-	 * @should get patient by short given name _ signature no 1
-	 * @should get patient by short middle name _ signature no 1
-	 * @should get patient by short family name _ signature no 1
-	 * @should get patient by short family2 name _ signature no 1
-	 * @should get patient by whole name made up of short names _ signature no 1
-	 * @should get patients by multiple short name parts _ signature no 1
-	 *
-	 * @should not get patient by non-existing single short name _ signature no 1
-	 * @should not get patient by non-existing short name parts _ signature no 1
-	 * @should not get patient by mix of existing and non-existing short name parts _ signature no 1
-	 * @should not get patient by voided short name _ signature no 1
-	 *
-	 * @should get patients with match mode start _ signature no 1
-	 * @should get patients with match mode anywhere _ signature no 1
-	 * @should not get patients with match mode start _ signature no 1
-	 * @should not get patients with match mode anywhere _ signature no 1
-	 *
-	 * @should get patient by identifier _ signature no 1
-	 * @should not get patient by non-existing identifier _ signature no 1
-	 * @should not get patient by voided identifier _ signature no 1
-	 *
-	 * @should not get patient by empty identifier _ signature no 1
-	 * @should not get patient by null identifier _ signature no 1
-	 *
-	 * @should get patient by searching on names or identifiers and using name value as identifier parameter _ signature no 1
-	 * @should get patient by searching on names or identifiers and using identifier value as name parameter _ signature no 1
-	 *
-	 * @should get one patient by multiple name parts _ signature no 1
-	 *
-	 */
-	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly, Integer start, Integer length, boolean searchOnNamesOrIdentifiers)
-	        throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatients(String, Integer, Integer)
@@ -278,28 +212,6 @@ public interface PatientDAO {
 	public void deletePatientIdentifier(PatientIdentifier patientIdentifier) throws DAOException;
 	
 	/**
-	 * @param searchOnNamesOrIdentifiers specifies if the logic should find patients that match the
-	 *            name or identifier otherwise find patients that match both the name and identifier
-	 * @see PatientService#getCountOfPatients(String)
-	 *
-	 * @deprecated replaced by {@link org.openmrs.api.db.PatientDAO#getCountOfPatients(String)}
-	 *
-	 * @should count zero patients when name and identifier and list of identifier types are empty _ signature no 1
-	 * @should count zero patients when name and identifier and list of identifier types are null _ signature no 1
-	 *
-	 * @should count zero patients for non-matching query _ signature no 1
-	 *
-	 * @should not count voided patients _ signature no 1
-	 * @should count single patient _ signature no 1
-	 * @should count multiple patients _ signature no 1
-	 *
-	 * @should count patients by name _ signature no 1
-	 * @should count patients by identifier _ signature no 1
-	 */
-	public Long getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly, boolean searchOnNamesOrIdentifiers);
-	
-	/**
 	 * @see org.openmrs.api.PatientService#getCountOfPatients(String)
 	 *
 	 * @should count zero patients when query is empty _ signature no 2
@@ -321,5 +233,46 @@ public interface PatientDAO {
 	 * @see org.openmrs.api.PatientService#getCountOfPatients(String, boolean)
 	 */
 	public Long getCountOfPatients(String query, boolean includeVoided);
+	
+	/**
+	 * Gets a list of allergies that a patient has
+	 * 
+	 * @param patient the patient
+	 * @return the allergy list
+	 */
+	public List<Allergy> getAllergies(Patient patient);
+	
+	/**
+	 * Gets a patient's allergy status
+	 * 
+	 * @param patient the patient
+	 * @return the allergy status
+	 */
+	public String getAllergyStatus(Patient patient);
+	
+	/**
+	 * Saves patient allergies to the database.
+	 * 
+	 * @param patient the patient
+	 * @param allergies the allergies
+	 * @return the saved allergies
+	 */
+	public Allergies saveAllergies(Patient patient, Allergies allergies);
+	
+	/**
+	 * Gets a allergy
+	 * 
+	 * @param allergyId
+	 * @return allergy
+	 */
+	public Allergy getAllergy(Integer allergyId);
+	
+	/**
+	 * Saves an allergy to the database
+	 * 
+	 * @param allergy the allergy to save
+	 * @return the saved allergy
+	 */
+	public Allergy saveAllergy(Allergy allergy);
 	
 }

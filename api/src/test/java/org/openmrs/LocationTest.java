@@ -103,5 +103,4 @@ public class LocationTest {
 		
 		Assert.assertThat(descendantLocations, equalTo(expectedLocations));
 	}
-	
 }

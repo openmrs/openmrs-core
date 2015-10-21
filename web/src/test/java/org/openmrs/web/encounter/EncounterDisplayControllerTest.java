@@ -9,6 +9,8 @@
  */
 package org.openmrs.web.encounter;
 
+import static org.openmrs.web.WebUtilTest.containsId;
+
 import java.util.List;
 import java.util.Map;
 
@@ -17,15 +19,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Obs;
-import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.web.controller.encounter.EncounterDisplayController;
 import org.openmrs.web.controller.encounter.EncounterDisplayController.FieldHolder;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
-
-import static org.openmrs.web.WebUtilTest.containsId;
 
 /**
  * Test the methods on the org.openmrs.web.controller.encounter.EncounterDisplayController

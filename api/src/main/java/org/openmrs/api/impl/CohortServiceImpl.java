@@ -62,30 +62,11 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	}
 	
 	/**
-	 * @see org.openmrs.api.CohortService#createCohort(org.openmrs.Cohort)
-	 * @deprecated
-	 */
-	@Deprecated
-	public Cohort createCohort(Cohort cohort) {
-		return Context.getCohortService().saveCohort(cohort);
-	}
-	
-	/**
 	 * @see org.openmrs.api.CohortService#getCohort(java.lang.Integer)
 	 */
 	@Transactional(readOnly = true)
 	public Cohort getCohort(Integer id) {
 		return dao.getCohort(id);
-	}
-	
-	/**
-	 * @see org.openmrs.api.CohortService#getCohorts()
-	 * @deprecated
-	 */
-	@Transactional(readOnly = true)
-	@Deprecated
-	public List<Cohort> getCohorts() {
-		return Context.getCohortService().getAllCohorts();
 	}
 	
 	/**
@@ -126,15 +107,6 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 			Context.getCohortService().saveCohort(cohort);
 		}
 		return cohort;
-	}
-	
-	/**
-	 * @see org.openmrs.api.CohortService#updateCohort(org.openmrs.Cohort)
-	 * @deprecated
-	 */
-	@Deprecated
-	public Cohort updateCohort(Cohort cohort) {
-		return Context.getCohortService().saveCohort(cohort);
 	}
 	
 	/**

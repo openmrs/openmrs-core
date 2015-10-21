@@ -9,23 +9,22 @@
  */
 package org.openmrs.module;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertThat;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Tests ModuleFileParser
@@ -53,11 +52,11 @@ public class ModuleFileParserTest {
 		
 		ModuleConditionalResource htmlformentry = new ModuleConditionalResource();
 		htmlformentry.setPath("/lib/htmlformentry-api-1.10*");
-		htmlformentry.setOpenmrsVersion("1.10");
+		htmlformentry.setOpenmrsPlatformVersion("1.10");
 		
 		ModuleConditionalResource metadatasharing = new ModuleConditionalResource();
 		metadatasharing.setPath("/lib/metadatasharing-api-1.9*");
-		metadatasharing.setOpenmrsVersion("1.9");
+		metadatasharing.setOpenmrsPlatformVersion("1.9");
 		ModuleConditionalResource.ModuleAndVersion metadatamapping = new ModuleConditionalResource.ModuleAndVersion();
 		metadatamapping.setModuleId("metadatamapping");
 		metadatamapping.setVersion("1.0");
@@ -134,7 +133,7 @@ public class ModuleFileParserTest {
 		
 		ModuleConditionalResource htmlformentry = new ModuleConditionalResource();
 		htmlformentry.setPath("/lib/htmlformentry-api-1.10*");
-		htmlformentry.setOpenmrsVersion("1.10");
+		htmlformentry.setOpenmrsPlatformVersion("1.10");
 		
 		assertThat(conditionalResources, contains(htmlformentry));
 	}

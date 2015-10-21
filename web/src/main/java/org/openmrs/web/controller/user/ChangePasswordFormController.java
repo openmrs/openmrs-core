@@ -86,6 +86,7 @@ public class ChangePasswordFormController {
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	public String handleSubmission(HttpSession httpSession,
+			@RequestParam(required = true, value = "oldPassword") String oldPassword,
 	        @RequestParam(required = true, value = "password") String password,
 	        @RequestParam(required = true, value = "confirmPassword") String confirmPassword,
 	        @RequestParam(required = false, value = "question") String question,
@@ -102,7 +103,7 @@ public class ChangePasswordFormController {
 			return showForm(httpSession);
 		}
 		
-		changeUserPasswordAndQuestion(user, newPassword, newQuestionAnswer);
+		changeUserPasswordAndQuestion(user, oldPassword, newPassword, newQuestionAnswer);
 		httpSession.removeAttribute(WebConstants.OPENMRS_MSG_ATTR);
 		return "redirect:/index.htm";
 		
@@ -115,19 +116,19 @@ public class ChangePasswordFormController {
 	 * @param password new password
 	 * @param questionAnswer (optional) security question and answer
 	 */
-	private void changeUserPasswordAndQuestion(User user, NewPassword password, NewQuestionAnswer questionAnswer) {
+	private void changeUserPasswordAndQuestion(User user, String oldPassword, NewPassword password, NewQuestionAnswer questionAnswer) {
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-			Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
 			Context.addProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
 			
 			UserService userService = Context.getUserService();
 			User currentUser = userService.getUser(user.getId());
 			
-			userService.changePassword(currentUser, password.getPassword());
+			userService.changePassword(oldPassword, password.getPassword());
 			
 			new UserProperties(currentUser.getUserProperties()).setSupposedToChangePassword(false);
-			userService.saveUser(currentUser, password.getPassword());
+			userService.saveUser(currentUser);
 			if (StringUtils.isNotBlank(questionAnswer.getQuestion()) || StringUtils.isNotBlank(questionAnswer.getAnswer())) {
 				userService.changeQuestionAnswer(currentUser, questionAnswer.getQuestion(), questionAnswer.getAnswer());
 			}
@@ -136,7 +137,7 @@ public class ChangePasswordFormController {
 		}
 		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
 			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
 		}
 	}

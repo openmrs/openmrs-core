@@ -282,7 +282,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 				log.debug("Task dump 1: " + task);
 			}
 			int size = tasks.size();
-			service.saveTask(def);
+			service.saveTaskDefinition(def);
 			tasks = service.getRegisteredTasks();
 			for (TaskDefinition task : tasks) {
 				log.debug("Task dump 2:" + task);
