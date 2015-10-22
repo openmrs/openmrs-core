@@ -15,6 +15,7 @@ import java.util.List;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.jstl.core.LoopTagSupport;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PersonAttributeType;
@@ -48,7 +49,18 @@ public class ForEachDisplayAttributeTag extends LoopTagSupport {
 		
 		try {
 			PersonService ps = Context.getPersonService();
-			List<PersonAttributeType> types = ps.getPersonAttributeTypes(PERSON_TYPE.valueOf(getPersonType()), ATTR_VIEW_TYPE.valueOf(getDisplayType()));
+			
+			PERSON_TYPE personType = null;
+			if (StringUtils.isNotBlank(getPersonType())) {
+				personType = PERSON_TYPE.valueOf(getPersonType());
+			}
+			
+			ATTR_VIEW_TYPE viewType = null;
+			if (StringUtils.isNotBlank(getDisplayType())) {
+				viewType = ATTR_VIEW_TYPE.valueOf(getDisplayType());
+			}
+			
+			List<PersonAttributeType> types = ps.getPersonAttributeTypes(personType, viewType);
 			
 			attrTypes = types.iterator();
 			setVarStatus("varStatus");
@@ -93,7 +105,7 @@ public class ForEachDisplayAttributeTag extends LoopTagSupport {
 	 * @param type the type to set
 	 */
 	public void setPersonType(String type) {
-		this.personType = type.toLowerCase();
+		this.personType = type.toUpperCase();
 	}
 	
 	/**
@@ -107,7 +119,7 @@ public class ForEachDisplayAttributeTag extends LoopTagSupport {
 	 * @param displayType the displayType to set
 	 */
 	public void setDisplayType(String displayType) {
-		this.displayType = displayType.toLowerCase();
+		this.displayType = displayType.toUpperCase();
 	}
 	
 }
