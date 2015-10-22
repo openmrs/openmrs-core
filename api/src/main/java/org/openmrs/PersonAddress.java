@@ -54,6 +54,24 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	
 	private String address6;
 	
+	private String address7;
+	
+	private String address8;
+	
+	private String address9;
+	
+	private String address10;
+	
+	private String address11;
+	
+	private String address12;
+	
+	private String address13;
+	
+	private String address14;
+
+	private String address15;
+	
 	private String cityVillage;
 	
 	private String countyDistrict;
@@ -111,6 +129,15 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 		    defaultString(otherAddress.getAddress4()), defaultString(address4)).append(
 		    defaultString(otherAddress.getAddress5()), defaultString(address5)).append(
 		    defaultString(otherAddress.getAddress6()), defaultString(address6)).append(
+		    defaultString(otherAddress.getAddress7()), defaultString(address7)).append(
+		    defaultString(otherAddress.getAddress8()), defaultString(address8)).append(
+		    defaultString(otherAddress.getAddress9()), defaultString(address9)).append(
+		    defaultString(otherAddress.getAddress10()), defaultString(address10)).append(
+		    defaultString(otherAddress.getAddress11()), defaultString(address11)).append(
+		    defaultString(otherAddress.getAddress12()), defaultString(address12)).append(
+		    defaultString(otherAddress.getAddress13()), defaultString(address13)).append(
+		    defaultString(otherAddress.getAddress14()), defaultString(address14)).append(
+		    defaultString(otherAddress.getAddress15()), defaultString(address15)).append(
 		    defaultString(otherAddress.getCityVillage()), defaultString(cityVillage)).append(
 		    defaultString(otherAddress.getCountyDistrict()), defaultString(countyDistrict)).append(
 		    defaultString(otherAddress.getStateProvince()), defaultString(stateProvince)).append(
@@ -524,5 +551,131 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 */
 	public void activate() {
 		setEndDate(null);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress7() {
+		return address7;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress7(String address7) {
+		this.address7 = address7;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress8() {
+		return address8;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress8(String address8) {
+		this.address8 = address8;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress9() {
+		return address9;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress9(String address9) {
+		this.address9 = address9;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress10() {
+		return address10;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress10(String address10) {
+		this.address10 = address10;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress11() {
+		return address11;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress11(String address11) {
+		this.address11 = address11;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress12() {
+		return address12;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress12(String address12) {
+		this.address12 = address12;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress13() {
+		return address13;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress13(String address13) {
+		this.address13 = address13;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress14() {
+		return address14;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress14(String address14) {
+		this.address14 = address14;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress15() {
+		return address15;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress15(String address15) {
+		this.address15 = address15;
 	}
 }

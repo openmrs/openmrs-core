@@ -61,6 +61,24 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	
 	private String address5;
 	
+	private String address7;
+	
+	private String address8;
+	
+	private String address9;
+	
+	private String address10;
+	
+	private String address11;
+	
+	private String address12;
+	
+	private String address13;
+	
+	private String address14;
+
+	private String address15;
+
 	private Location parentLocation;
 	
 	private Set<Location> childLocations;
@@ -577,5 +595,130 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 		setLocationId(id);
 		
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress7() {
+		return address7;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress7(String address7) {
+		this.address7 = address7;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress8() {
+		return address8;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress8(String address8) {
+		this.address8 = address8;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress9() {
+		return address9;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress9(String address9) {
+		this.address9 = address9;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress10() {
+		return address10;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress10(String address10) {
+		this.address10 = address10;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress11() {
+		return address11;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress11(String address11) {
+		this.address11 = address11;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress12() {
+		return address12;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress12(String address12) {
+		this.address12 = address12;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress13() {
+		return address13;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress13(String address13) {
+		this.address13 = address13;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress14() {
+		return address14;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress14(String address14) {
+		this.address14 = address14;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress15() {
+		return address15;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress15(String address15) {
+		this.address15 = address15;
+	}
 }
