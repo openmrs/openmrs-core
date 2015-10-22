@@ -179,38 +179,32 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		Location location = new Location();
-		location
-		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setAddress1("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setAddress2("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setAddress3("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setAddress4("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setAddress5("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setAddress6("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setCityVillage("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setStateProvince("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setCountry("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setPostalCode("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setLatitude("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setLongitude("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setCountyDistrict("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		location
-		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		String longString = "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text";
+		location.setName(longString);
+		location.setDescription(longString);
+		location.setAddress1(longString);
+		location.setAddress2(longString);
+		location.setAddress3(longString);
+		location.setAddress4(longString);
+		location.setAddress5(longString);
+		location.setAddress6(longString);
+		location.setAddress7(longString);
+		location.setAddress8(longString);
+		location.setAddress9(longString);
+		location.setAddress10(longString);
+		location.setAddress11(longString);
+		location.setAddress12(longString);
+		location.setAddress13(longString);
+		location.setAddress14(longString);
+		location.setAddress15(longString);
+		location.setCityVillage(longString);
+		location.setStateProvince(longString);
+		location.setCountry(longString);
+		location.setPostalCode(longString);
+		location.setLatitude(longString);
+		location.setLongitude(longString);
+		location.setCountyDistrict(longString);
+		location.setRetireReason(longString);
 		
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
@@ -223,6 +217,15 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors("address4"));
 		Assert.assertTrue(errors.hasFieldErrors("address5"));
 		Assert.assertTrue(errors.hasFieldErrors("address6"));
+		Assert.assertTrue(errors.hasFieldErrors("address7"));
+		Assert.assertTrue(errors.hasFieldErrors("address8"));
+		Assert.assertTrue(errors.hasFieldErrors("address9"));
+		Assert.assertTrue(errors.hasFieldErrors("address10"));
+		Assert.assertTrue(errors.hasFieldErrors("address11"));
+		Assert.assertTrue(errors.hasFieldErrors("address12"));
+		Assert.assertTrue(errors.hasFieldErrors("address13"));
+		Assert.assertTrue(errors.hasFieldErrors("address14"));
+		Assert.assertTrue(errors.hasFieldErrors("address15"));
 		Assert.assertTrue(errors.hasFieldErrors("cityVillage"));
 		Assert.assertTrue(errors.hasFieldErrors("stateProvince"));
 		Assert.assertTrue(errors.hasFieldErrors("country"));

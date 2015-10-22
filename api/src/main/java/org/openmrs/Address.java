@@ -66,4 +66,113 @@ public interface Address {
 	public String getLongitude();
 	
 	public void setLongitude(String longitude);
+	
+	/**
+	 * @since 2.0
+	 * @return the address7
+	 */
+	String getAddress7();
+	
+	/**
+	 * @since 2.0
+	 * @param address7
+	 */
+	void setAddress7(String address7);
+	
+	/**
+	 * @since 2.0
+	 * @return the address8
+	 */
+	String getAddress8();
+	
+	/**
+	 * @since 2.0
+	 * @param address8
+	 */
+	void setAddress8(String address8);
+	
+	/**
+	 * @since 2.0
+	 * @return the address9
+	 */
+	String getAddress9();
+	
+	/**
+	 * @since 2.0
+	 * @param address9
+	 */
+	void setAddress9(String address9);
+	
+	/**
+	 * @since 2.0
+	 * @return the address10
+	 */
+	String getAddress10();
+	
+	/**
+	 * @since 2.0
+	 * @param address10
+	 */
+	void setAddress10(String address10);
+	
+	/**
+	 * @since 2.0
+	 * @return the address11
+	 */
+	String getAddress11();
+	
+	/**
+	 * @since 2.0
+	 * @param address11
+	 */
+	void setAddress11(String address11);
+	
+	/**
+	 * @since 2.0
+	 * @return the address12
+	 */
+	String getAddress12();
+	
+	/**
+	 * @since 2.0
+	 * @param address12
+	 */
+	void setAddress12(String address12);
+	
+	/**
+	 * @since 2.0
+	 * @return the address13
+	 */
+	String getAddress13();
+	
+	/**
+	 * @since 2.0
+	 * @param address13
+	 */
+	void setAddress13(String address13);
+	
+	/**
+	 * @since 2.0
+	 * @return the address14
+	 */
+	String getAddress14();
+	
+	/**
+	 * @since 2.0
+	 * @param address14
+	 */
+	void setAddress14(String address14);
+	
+	/**
+	 * @since 2.0
+	 * @return the address15
+	 */
+	String getAddress15();
+	
+	/**
+	 * @since 2.0
+	 * @param address15
+	 */
+	void setAddress15(String address15);
+	
 }

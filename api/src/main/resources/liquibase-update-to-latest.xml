@@ -8918,4 +8918,32 @@
 			<column name="drug_non_coded" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
+    
+    <changeSet id="20151022-TRUNK-4750" author="gwasilwa">
+        <comment>
+            Adding address columns (7-15) to person_address and location
+        </comment>
+        <addColumn tableName="person_address">
+            <column name="address7" type="varchar(255)"></column>
+            <column name="address8" type="varchar(255)"></column>
+            <column name="address9" type="varchar(255)"></column>
+            <column name="address10" type="varchar(255)"></column>
+            <column name="address11" type="varchar(255)"></column>
+            <column name="address12" type="varchar(255)"></column>
+            <column name="address13" type="varchar(255)"></column>
+            <column name="address14" type="varchar(255)"></column>
+            <column name="address15" type="varchar(255)"></column>
+        </addColumn>
+        <addColumn tableName="location">
+            <column name="address7" type="varchar(255)"></column>
+            <column name="address8" type="varchar(255)"></column>
+            <column name="address9" type="varchar(255)"></column>
+            <column name="address10" type="varchar(255)"></column>
+            <column name="address11" type="varchar(255)"></column>
+            <column name="address12" type="varchar(255)"></column>
+            <column name="address13" type="varchar(255)"></column>
+            <column name="address14" type="varchar(255)"></column>
+            <column name="address15" type="varchar(255)"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
