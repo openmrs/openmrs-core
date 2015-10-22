@@ -14,6 +14,7 @@ import java.util.Calendar;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Address;
 import org.openmrs.PersonAddress;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
@@ -142,7 +143,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail if required fields are empty", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfRequiredFieldsAreEmpty() throws Exception {
 		executeDataSet(PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH);
-		PersonAddress personAddress = new PersonAddress();
+		Address personAddress = new PersonAddress();
 		
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
@@ -156,7 +157,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass if required fields are not empty", method = "validate(Object,Errors)")
 	public void validate_shouldPassIfRequiredFieldsAreNotEmpty() throws Exception {
 		executeDataSet(PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH);
-		PersonAddress personAddress = new PersonAddress();
+		Address personAddress = new PersonAddress();
 		personAddress.setAddress1("Address1");
 		
 		Errors errors = new BindException(personAddress, "personAddress");
@@ -200,32 +201,30 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		PersonAddress personAddress = new PersonAddress();
 		personAddress.setStartDate(null);
 		personAddress.setEndDate(null);
-		personAddress
-		        .setAddress1("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		personAddress
-		        .setAddress2("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		personAddress
-		        .setCityVillage("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		personAddress
-		        .setStateProvince("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		personAddress
-		        .setPostalCode("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		personAddress
-		        .setCountry("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		personAddress
-		        .setLatitude("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		personAddress
-		        .setLongitude("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		personAddress
-		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		personAddress
-		        .setCountyDistrict("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		personAddress
-		        .setAddress3("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		personAddress
-		        .setAddress4("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		personAddress
-		        .setAddress5("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		String longString = "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text";
+		personAddress.setAddress1(longString);
+		personAddress.setAddress2(longString);
+		personAddress.setCityVillage(longString);
+		personAddress.setStateProvince(longString);
+		personAddress.setPostalCode(longString);
+		personAddress.setCountry(longString);
+		personAddress.setLatitude(longString);
+		personAddress.setLongitude(longString);
+		personAddress.setVoidReason(longString);
+		personAddress.setCountyDistrict(longString);
+		personAddress.setAddress3(longString);
+		personAddress.setAddress4(longString);
+		personAddress.setAddress5(longString);
+		personAddress.setAddress6(longString);
+		personAddress.setAddress7(longString);
+		personAddress.setAddress8(longString);
+		personAddress.setAddress9(longString);
+		personAddress.setAddress10(longString);
+		personAddress.setAddress11(longString);
+		personAddress.setAddress12(longString);
+		personAddress.setAddress13(longString);
+		personAddress.setAddress14(longString);
+		personAddress.setAddress15(longString);
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
 		Assert.assertEquals(true, errors.hasFieldErrors("address1"));
@@ -241,5 +240,15 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(true, errors.hasFieldErrors("address3"));
 		Assert.assertEquals(true, errors.hasFieldErrors("address4"));
 		Assert.assertEquals(true, errors.hasFieldErrors("address5"));
+		Assert.assertEquals("address6 missing in errors", true, errors.hasFieldErrors("address6"));
+		Assert.assertEquals("address7 missing in errors", true, errors.hasFieldErrors("address7"));
+		Assert.assertEquals("address8 missing in errors", true, errors.hasFieldErrors("address8"));
+		Assert.assertEquals("address9 missing in errors", true, errors.hasFieldErrors("address9"));
+		Assert.assertEquals("address10 missing in errors", true, errors.hasFieldErrors("address10"));
+		Assert.assertEquals("address11 missing in errors", true, errors.hasFieldErrors("address11"));
+		Assert.assertEquals("address12 missing in errors", true, errors.hasFieldErrors("address12"));
+		Assert.assertEquals("address13 missing in errors", true, errors.hasFieldErrors("address13"));
+		Assert.assertEquals("address14 missing in errors", true, errors.hasFieldErrors("address14"));
+		Assert.assertEquals("address15 missing in errors", true, errors.hasFieldErrors("address15"));
 	}
 }
