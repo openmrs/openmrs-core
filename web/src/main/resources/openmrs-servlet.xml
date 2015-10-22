@@ -216,45 +216,6 @@
 			</props>
 		</property>
 	</bean>
-
-    <!--  COMPLEX OBS HANDLER SECTION -->
-    <bean parent="obsServiceTarget" >
-        <property name="handlers">
-            <map>
-                <entry>
-                    <key><value>BinaryDataHandler</value></key>
-                    <bean class="org.openmrs.web.controller.observation.handler.WebBinaryDataHandler"/>
-                </entry>
-                <entry>
-                    <key><value>BinaryStreamHandler</value></key>
-                    <bean class="org.openmrs.web.controller.observation.handler.WebBinaryStreamHandler"/>
-                </entry>
-                <entry>
-                    <key><value>ImageHandler</value></key>
-                    <bean class="org.openmrs.web.controller.observation.handler.WebImageHandler"/>
-                </entry>
-                <entry>
-                    <key><value>TextHandler</value></key>
-                    <bean class="org.openmrs.web.controller.observation.handler.WebTextHandler"/>
-                </entry>
-				<entry>
-					<key><value>MediaHandler</value></key>
-					<bean class="org.openmrs.web.controller.observation.handler.WebMediaHandler"/>
-				</entry>
-            </map>
-        </property>
-    </bean>
-
-	<!-- Add global property listeners -->
-	<bean id="webEventListeners" parent="openmrsEventListeners">
-	    <property name="globalPropertyListeners">
-	        <list value-type="org.openmrs.api.GlobalPropertyListener">
-	            <bean class="org.openmrs.web.controller.PseudoStaticContentController" />
-	            <bean class="org.openmrs.web.dwr.DWRPatientService" />
-	            <bean class="org.openmrs.web.WebUtil" />
-	        </list>
-	    </property>
-	</bean>
 	
 	<!-- Find/replace strings after errant 'contrl-shift-f':
 		>\r\n			<value>(.*)</value>\r\n		</property>

@@ -12,6 +12,6 @@ package org.openmrs.web.filter;
 import org.openmrs.util.OpenmrsConstants;
 
 public class StatusFilterModel {
-
+	
 	public static final String OPENMRS_VERSION = OpenmrsConstants.OPENMRS_VERSION_SHORT;
 }

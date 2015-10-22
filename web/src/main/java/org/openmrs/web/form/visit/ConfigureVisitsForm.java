@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmrs.VisitType;
-import org.openmrs.web.controller.visit.ConfigureVisitsFormController;
 
 /**
  * Form used by {@link ConfigureVisitsFormController}.
