@@ -10,9 +10,7 @@
 package org.openmrs.api.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +27,6 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.Privilege;
-import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.api.APIException;
@@ -37,7 +34,6 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.EncounterTypeLockedException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
-import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.handler.EncounterVisitHandler;
@@ -264,24 +260,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		return Context.getEncounterService().filterEncountersByViewPermissions(encs, null);
 	}
 		
-	/**
-	 * Helper method that finds the corresponding providers for a collection of users
-	 * 
-	 * @param users
-	 * @return a collection of providers, with 0-n for each item in users
-	 */
-	private Collection<Provider> usersToProviders(Collection<User> users) {
-		if (users == null) {
-			return null;
-		}
-		ProviderService providerService = Context.getProviderService();
-		Collection<Provider> ret = new HashSet<Provider>();
-		for (User u : users) {
-			ret.addAll(providerService.getProvidersByPerson(u.getPerson()));
-		}
-		return ret;
-	}
-	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)
 	 */

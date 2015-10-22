@@ -14,12 +14,10 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -29,7 +27,6 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
-
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
@@ -580,23 +577,6 @@ public class DWRPatientService implements GlobalPropertyListener {
 		*/
 
 		return ret;
-	}
-	
-	/**
-	 * Simple utility method to parse the date object into the correct, local format
-	 *
-	 * @param date
-	 * @return
-	 */
-	private Date parseDate(String date) {
-		if (date != null) {
-			SimpleDateFormat sdf = Context.getDateFormat();
-			try {
-				return sdf.parse(date);
-			}
-			catch (ParseException e) {}
-		}
-		return null;
 	}
 	
 	@Override

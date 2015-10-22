@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -56,7 +55,6 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.PatientSetService;
@@ -66,8 +64,6 @@ import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientSetDAO;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 /**
  * Hibernate specific implementation of the PatientSetDAO. <br>
@@ -98,72 +94,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 
 	DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
-	private Element obsElementHelper(Document doc, Locale locale, Obs obs) {
-		Element obsNode = doc.createElement("obs");
-		Concept c = obs.getConcept();
-		
-		obsNode.setAttribute("obs_id", obs.getObsId().toString());
-		obsNode.setAttribute("concept_id", c.getConceptId().toString());
-		obsNode.setAttribute("concept_name", c.getName(locale).getName());
-		
-		if (obs.getObsDatetime() != null) {
-			obsNode.setAttribute("datetime", df.format(obs.getObsDatetime()));
-		}
-		if (obs.getAccessionNumber() != null) {
-			obsNode.setAttribute("accession_number", obs.getAccessionNumber());
-		}
-		if (obs.getComment() != null) {
-			obsNode.setAttribute("comment", obs.getComment());
-		}
-		if (obs.getObsGroup() != null) {
-			obsNode.setAttribute("obs_group_id", obs.getObsGroup().getObsId().toString());
-		}
-		if (obs.getValueGroupId() != null) {
-			obsNode.setAttribute("value_group_id", obs.getValueGroupId().toString());
-		}
-		
-		String value = null;
-		String dataType = null;
-		
-		if (obs.getValueCoded() != null) {
-			Concept valueConcept = obs.getValueCoded();
-			obsNode.setAttribute("value_coded_id", valueConcept.getConceptId().toString());
-			obsNode.setAttribute("value_coded", valueConcept.getName(locale).getName());
-			dataType = "coded";
-			value = valueConcept.getName(locale).getName();
-		}
-		if (obs.getValueAsBoolean() != null) {
-			obsNode.setAttribute("value_boolean", obs.getValueAsBoolean().toString());
-			dataType = "boolean";
-			value = obs.getValueAsBoolean().toString();
-		}
-		if (obs.getValueDatetime() != null) {
-			obsNode.setAttribute("value_datetime", df.format(obs.getValueDatetime()));
-			dataType = "datetime";
-			value = obs.getValueDatetime().toString();
-		}
-		if (obs.getValueNumeric() != null) {
-			obsNode.setAttribute("value_numeric", obs.getValueNumeric().toString());
-			dataType = "numeric";
-			value = obs.getValueNumeric().toString();
-		}
-		if (obs.getValueText() != null) {
-			obsNode.setAttribute("value_text", obs.getValueText());
-			dataType = "text";
-			value = obs.getValueText();
-		}
-		if (obs.getValueModifier() != null) {
-			obsNode.setAttribute("value_modifier", obs.getValueModifier());
-			if (value != null) {
-				value = obs.getValueModifier() + " " + value;
-			}
-		}
-		obsNode.setAttribute("data_type", dataType);
-		obsNode.appendChild(doc.createTextNode(value));
-		
-		return obsNode;
-	}
 	
 	@SuppressWarnings("unchecked")
 	public Cohort getAllPatients() {
@@ -2059,10 +1989,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		ids.addAll(query.list());
 		
 		return new Cohort("Batch of " + size + " patients starting at " + start, "", ids);
-	}
-	
-	private String formatProvider(Provider p) {
-		return p.getName();
 	}
 	
 }

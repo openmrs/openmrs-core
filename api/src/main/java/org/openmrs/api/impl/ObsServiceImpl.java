@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
@@ -348,35 +347,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * Convenience method for turning a string like "location.locationId asc, obs.valueDatetime
-	 * desc" into a list of strings to sort on
-	 * 
-	 * @param sort string
-	 * @return simple list of strings to sort on without asc/desc
-	 */
-	private List<String> makeSortList(String sort) {
-		List<String> sortList = new Vector<String>();
-		if (StringUtils.isNotEmpty(sort)) {
-			for (String sortPart : sort.split(",")) {
-				
-				sortPart = sortPart.trim();
-				
-				// split out the asc/desc part if applicable
-				if (sortPart.contains(" ")) {
-					sortPart = sortPart.substring(0, sortPart.indexOf(" "));
-				}
-				
-				// add the current sort to the list of things to sort on
-				if (!"".equals(sort)) {
-					sortList.add(sortPart);
-				}
-			}
-		}
-		
-		return sortList;
-	}
-	
-	/**
 	 * @see org.openmrs.api.ObsService#getObservationsByPersonAndConcept(org.openmrs.Person,
 	 *      org.openmrs.Concept)
 	 */
@@ -505,10 +475,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * @see org.openmrs.api.ObsService#registerHandler(String, String)
 	 */
-	@SuppressWarnings("unchecked")
 	public void registerHandler(String key, String handlerClass) throws APIException {
 		try {
-			Class loadedClass = OpenmrsClassLoader.getInstance().loadClass(handlerClass);
+			Class<?> loadedClass = OpenmrsClassLoader.getInstance().loadClass(handlerClass);
 			registerHandler(key, (ComplexObsHandler) loadedClass.newInstance());
 			
 		}
