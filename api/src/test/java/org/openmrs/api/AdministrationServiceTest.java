@@ -461,9 +461,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return all global properties in the database", method = "getAllGlobalProperties()")
 	public void getAllGlobalProperties_shouldReturnAllGlobalPropertiesInTheDatabase() throws Exception {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
-		Assert.assertEquals(20, Context.getAdministrationService().getAllGlobalProperties().size());
+		Assert.assertEquals(19, Context.getAdministrationService().getAllGlobalProperties().size());
 	}
-	
+
 	/**
 	 * @see {@link AdministrationService#getAllowedLocales()}
 	 */
@@ -472,7 +472,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void getAllowedLocales_shouldReturnAtLeastOneLocaleIfNoLocalesDefinedInDatabaseYet() throws Exception {
 		Assert.assertTrue(Context.getAdministrationService().getAllowedLocales().size() > 0);
 	}
-	
+
 	/**
 	 * @see {@link AdministrationService#getGlobalPropertyObject(String)}
 	 */
@@ -482,7 +482,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		Assert.assertNull(Context.getAdministrationService().getGlobalPropertyObject("magicResistSkill"));
 	}
-	
+
 	/**
 	 * @see {@link AdministrationService#getImplementationId()}
 	 */
@@ -492,7 +492,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		Assert.assertNull(Context.getAdministrationService().getImplementationId());
 	}
-	
+
 	/**
 	 * @see {@link AdministrationService#getPresentationLocales()}
 	 */
@@ -503,7 +503,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void getPresentationLocales_shouldReturnAtLeastOneLocaleIfNoLocalesDefinedInDatabaseYet() throws Exception {
 		Assert.assertTrue(Context.getAdministrationService().getPresentationLocales().size() > 0);
 	}
-	
+
 	/**
 	 * @see {@link AdministrationService#getPresentationLocales()}
 	 */
@@ -513,7 +513,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(Context.getAdministrationService().getPresentationLocales().size() > Context
 		        .getMessageSourceService().getLocales().size());
 	}
-	
+
 	/**
 	 * @see {@link AdministrationService#getSystemVariables()}
 	 */
@@ -523,7 +523,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// The method implementation adds 11 system variables
 		Assert.assertEquals(11, Context.getAdministrationService().getSystemVariables().size());
 	}
-	
+
 	/**
 	 * @see {@link AdministrationService#purgeGlobalProperty(GlobalProperty)}
 	 */
@@ -532,10 +532,10 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void purgeGlobalProperty_shouldDeleteGlobalPropertyFromDatabase() throws Exception {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		AdministrationService as = Context.getAdministrationService();
-		
-		Assert.assertEquals(20, as.getAllGlobalProperties().size());
-		as.purgeGlobalProperty(as.getGlobalPropertyObject("a_valid_gp_key"));
+
 		Assert.assertEquals(19, as.getAllGlobalProperties().size());
+		as.purgeGlobalProperty(as.getGlobalPropertyObject("a_valid_gp_key"));
+		Assert.assertEquals(18, as.getAllGlobalProperties().size());
 	}
 	
 	/**

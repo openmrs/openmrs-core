@@ -344,8 +344,6 @@ public class DrugOrderTest {
 	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndHaveDifferentDrugNonCoded() throws Exception {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
-		Drug drug1 = new Drug();
-		drug1.setConcept(concept);
 		order.setDrugNonCoded("Chrocine");
 
 		DrugOrder otherOrder = new DrugOrder();
@@ -384,8 +382,6 @@ public class DrugOrderTest {
 	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndEitherOfDrugNonCodedIsNull() throws Exception {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
-		Drug drug1 = new Drug();
-		drug1.setConcept(concept);
 		order.setDrugNonCoded("Chrocine");
 
 		DrugOrder otherOrder = new DrugOrder();
@@ -395,19 +391,18 @@ public class DrugOrderTest {
 	}
 
 	/**
-	 * @verifies return false if the concepts match and both of drug non coded is null
+	 * @verifies return True if the concepts match and both of the drug non coded is null
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndBothDrugNonCodedIsNull() throws Exception {
+	public void hasSameOrderableAs_shouldReturnTrueIfTheConceptsMatchAndBothDrugNonCodedIsNull() throws Exception {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
-		Drug drug1 = new Drug();
-		drug1.setConcept(concept);
+		order.setConcept(concept);
 
 		DrugOrder otherOrder = new DrugOrder();
 		otherOrder.setConcept(concept);
 
-		assertFalse(order.hasSameOrderableAs(otherOrder));
+		assertTrue(order.hasSameOrderableAs(otherOrder));
 	}
 }

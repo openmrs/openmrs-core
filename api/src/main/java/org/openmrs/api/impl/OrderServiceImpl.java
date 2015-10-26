@@ -184,16 +184,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 			
 			//concept should be the same as on previous order, same applies to drug for drug orders
-			boolean isDrugOrderAndHasADrug = isDrugOrder && (((DrugOrder) order).getDrug() != null || ((DrugOrder) order).isNonCodedDrug()) ;
-			if (!OpenmrsUtil.nullSafeEquals(order.getConcept(), previousOrder.getConcept())) {
-				throw new APIException("The concept of the previous order and the new one order don't match");
-			} else if (isDrugOrderAndHasADrug) {
-				DrugOrder drugOrder1 = (DrugOrder) order;
-				DrugOrder drugOrder2 = (DrugOrder) previousOrder;
-				if (!drugOrder1.hasSameOrderableAs(drugOrder2)) {
-					throw new APIException("The drug of the previous order and the new one order don't match");
-				}
-			} else if (!order.getOrderType().equals(previousOrder.getOrderType())) {
+			if(!order.hasSameOrderableAs(previousOrder)){
+				throw new APIException("The orderable of the previous order and the new one order don't match");
+			}
+			else if (!order.getOrderType().equals(previousOrder.getOrderType())) {
 				throw new APIException("The order type does not match that of the previous order");
 			} else if (!order.getCareSetting().equals(previousOrder.getCareSetting())) {
 				throw new APIException("The care setting does not match that of the previous order");
@@ -334,7 +328,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<? extends Order> orders = getActiveOrders(order.getPatient(), order.getOrderType(), order.getCareSetting(),
 		    null);
 		boolean isDrugOrderAndHasADrug = DrugOrder.class.isAssignableFrom(getActualType(order))
-		        && ((DrugOrder) order).getDrug() != null;
+		        && (((DrugOrder) order).getDrug() != null || ((DrugOrder) order).isNonCodedDrug());
 		Order orderToBeDiscontinued = null;
 		for (Order activeOrder : orders) {
 			if (!getActualType(order).equals(getActualType(activeOrder))) {
@@ -342,7 +336,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 			//For drug orders, the drug must match if the order has a drug
 			if (isDrugOrderAndHasADrug) {
-				Order existing = checkDrugOrdersForDiscontinuing((DrugOrder) order, (DrugOrder) activeOrder);
+				Order existing = order.hasSameOrderableAs(activeOrder) ? activeOrder : null;
 				if (existing != null) {
 					if (orderToBeDiscontinued == null) {
 						orderToBeDiscontinued = existing;
@@ -362,13 +356,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			order.setPreviousOrder(orderToBeDiscontinued);
 			stopOrder(orderToBeDiscontinued, aMomentBefore(order.getDateActivated()));
 		}
-	}
-	
-	private DrugOrder checkDrugOrdersForDiscontinuing(DrugOrder drugOrder1, DrugOrder drugOrder2) {
-		if (drugOrder1.hasSameOrderableAs(drugOrder2)) {
-			return drugOrder2;
-		}
-		return null;
 	}
 	
 	/**
@@ -948,8 +935,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 
 	@Override
 	public Concept getNonCodedDrugConcept() {
-		String conceptUuid = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_DRUG_NON_CODED_CONCEPT_UUID);
-		return Context.getConceptService().getConceptByUuid(conceptUuid);
+		String conceptUuid = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_DRUG_ORDER_DRUG_OTHER);
+		if(!StringUtils.isEmpty(conceptUuid)){
+			return Context.getConceptService().getConceptByUuid(conceptUuid);
+		}
+		return null;
 	}
 
 	private List<Concept> getSetMembersOfConceptSetFromGP(String globalProperty) {

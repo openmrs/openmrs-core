@@ -771,7 +771,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setConcept(newConcept);
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("The concept of the previous order and the new one order don't match");
+		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -868,7 +868,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderReasonNonCoded("Discontinue this");
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("The drug of the previous order and the new one order don't match");
+		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -2309,7 +2309,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setConcept(newConcept);
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("The concept of the previous order and the new one order don't match");
+		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -2336,7 +2336,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setDrug(discontinuationOrderDrug);
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("The drug of the previous order and the new one order don't match");
+		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -2976,7 +2976,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getNonCodedDrugConcept_shouldReturnNullIfNothingIsConfigured() throws Exception {
-		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_DRUG_NON_CODED_CONCEPT_UUID, ""));
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_DRUG_ORDER_DRUG_OTHER, ""));
 		assertNull(orderService.getNonCodedDrugConcept());
 	}
 	
@@ -2986,6 +2986,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getNonCodedDrugConcept_shouldReturnAConceptIfGPIsSet() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
 		Concept nonCodedDrugConcept = orderService.getNonCodedDrugConcept();
 		assertNotNull(nonCodedDrugConcept);
 		assertThat(nonCodedDrugConcept.getConceptId(), is(5584));
@@ -3066,4 +3067,81 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		expectedException.expectMessage("Cannot have more than one active order for the same orderable and care setting");
 		orderService.saveOrder(drugOrder, null);
 	}
+
+	@Test
+	@Verifies(value = "should discontinue previousNonCodedOrder if it is not already discontinued", method = "saveOrder(Order)")
+	public void saveOrder_shouldDiscontinuePreviousNonCodedOrderIfItIsNotAlreadyDiscontinued() throws Exception {
+		//We are trying to discontinue order id 584 in OrderServiceTest-nonCodedDrugs.xml
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
+		DrugOrder previousOrder = (DrugOrder) orderService.getOrder(584);
+		DrugOrder drugOrder = previousOrder.cloneForDiscontinuing();
+		drugOrder.setPreviousOrder(previousOrder);
+		drugOrder.setDateActivated(new Date());
+		drugOrder.setOrderer(providerService.getProvider(1));
+		drugOrder.setEncounter(encounterService.getEncounter(6));
+
+
+		Order saveOrder = orderService.saveOrder(drugOrder, null);
+		Assert.assertNotNull("previous order should be discontinued", previousOrder.getDateStopped());
+		assertNotNull(orderService.getOrder(saveOrder.getOrderId()));
+	}
+
+	@Test
+	@Verifies(value = "should fail discontinue previousNonCodedDrugOrder if the orderable of the previous order and the new one order don't match ", method = "saveOrder(Order)")
+	public void saveOrder_shouldFailDiscontinueNonCodedDrugOrderIfOrderableOfPreviousAndNewOrderDontMatch() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
+		DrugOrder previousOrder = (DrugOrder) orderService.getOrder(584);
+		DrugOrder drugOrder = previousOrder.cloneForDiscontinuing();
+		drugOrder.setDrugNonCoded("non coded drug paracetemol");
+		drugOrder.setPreviousOrder(previousOrder);
+		drugOrder.setDateActivated(new Date());
+		drugOrder.setOrderer(providerService.getProvider(1));
+		drugOrder.setEncounter(encounterService.getEncounter(6));
+
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
+		orderService.saveOrder(drugOrder, null);
+	}
+
+
+	@Test
+	@Verifies(value = "should fail revising previousNonCodedDrugOrder if the orderable of the previous order and the new one order don't match ", method = "saveOrder(Order)")
+	public void saveOrder_shouldFailIfDrugNonCodedInPreviousDrugOrderDoesNotMatchThatOfTheRevisedDrugOrder() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
+		DrugOrder previousOrder = (DrugOrder)orderService.getOrder(584);
+		DrugOrder order = previousOrder.cloneForRevision();
+		String drugNonCodedParacetemol = "non coded paracetemol";
+
+		order.setDateActivated(new Date());
+		order.setOrderer(providerService.getProvider(1));
+		order.setEncounter(encounterService.getEncounter(6));
+		assertFalse(previousOrder.getDrugNonCoded().equals(drugNonCodedParacetemol));
+		order.setDrugNonCoded(drugNonCodedParacetemol);
+		order.setPreviousOrder(previousOrder);
+
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
+		orderService.saveOrder(order, null);
+	}
+
+	@Test
+	@Verifies(value = "should revise previousNonCodedOrder if it is already existing", method = "saveOrder(Order)")
+	public void saveOrder_shouldRevisePreviousNonCodedOrderIfItIsAlreadyExisting() throws Exception {
+		//We are trying to discontinue order id 584 in OrderServiceTest-nonCodedDrugs.xml
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
+		DrugOrder previousOrder = (DrugOrder)orderService.getOrder(584);
+		DrugOrder order = previousOrder.cloneForRevision();
+		String drugNonCodedParacetemol = "non coded paracetemol";
+
+		order.setDateActivated(new Date());
+		order.setOrderer(providerService.getProvider(1));
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setAsNeeded(true);
+		order.setPreviousOrder(previousOrder);
+
+		DrugOrder saveOrder = (DrugOrder) orderService.saveOrder(order, null);
+		Assert.assertTrue(saveOrder.getAsNeeded());
+		assertNotNull(orderService.getOrder(saveOrder.getOrderId()));
+	}
+
 }

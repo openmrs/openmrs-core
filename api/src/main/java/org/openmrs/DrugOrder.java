@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.apache.commons.lang.StringUtils;
 import static org.openmrs.Order.Action.DISCONTINUE;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -486,7 +487,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	public String toString() {
 		String prefix = DISCONTINUE == getAction() ? "DC " : "";
 		return prefix + "DrugOrder(" + getDose() + getDoseUnits() + " of "
-		        + (getDrugNonCoded() != null ? getDrugNonCoded() : (getDrug() != null ? getDrug().getName() : "[no drug]")) + " from " + getDateActivated() + " to "
+		        + (isNonCodedDrug() ? getDrugNonCoded() : (getDrug() != null ? getDrug().getName() : "[no drug]")) + " from " + getDateActivated() + " to "
 		        + (isDiscontinuedRightNow() ? getDateStopped() : getAutoExpireDate()) + ")";
 	}
 
@@ -544,7 +545,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * sets drugNonCoded
 	 */
 	public void setDrugNonCoded(String drugNonCoded) {
-		this.drugNonCoded = drugNonCoded != null ? drugNonCoded.trim() : drugNonCoded;
+		this.drugNonCoded = StringUtils.isNotBlank(drugNonCoded) ? drugNonCoded.trim() : drugNonCoded;
 	}
 
 	/**
@@ -552,6 +553,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * return true if a drug is non coded
 	 */
 	public boolean isNonCodedDrug() {
-		return getDrugNonCoded() != null;
+		return StringUtils.isNotBlank(this.drugNonCoded);
 	}
 }

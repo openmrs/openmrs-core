@@ -81,7 +81,6 @@
   <concept concept_id="792" retired="false" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2004-04-08 00:00:00.0" version="" changed_by="1" date_changed="2008-08-15 14:05:56.0" uuid="d144d24f-6913-4b63-9660-a9108c2bebef"/>
   <concept concept_id="5089" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="c607c80f-1ea9-4da3-bb88-6276ce8868dd"/>
   <concept concept_id="5497" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="0.1" changed_by="1" date_changed="2006-06-09 14:57:33.0" uuid="a09ab2c5-878e-4905-b25d-5784167d0216"/>
-  <concept concept_id="5584" retired="false" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="0.1" changed_by="1" date_changed="2006-08-12 00:00:00.0" uuid="6584d845-7584-11e4-945f-0858400c9s89"/>
   <concept_answer concept_answer_id="1" concept_id="21" answer_concept="7" creator="1" date_created="2008-08-18 12:34:26.0" uuid="b1230431-2fe5-49fc-b535-ae42bc849747"/>
   <concept_answer concept_answer_id="2" concept_id="21" answer_concept="8" creator="1" date_created="2008-08-18 12:34:26.0" uuid="f67e537b-d9f9-45c4-846b-79ed1ba88778"/>
   <concept_answer concept_answer_id="3" concept_id="21" answer_concept="22" creator="1" date_created="2008-08-18 12:34:58.0" uuid="11e15f3b-3237-40e9-9c24-cb7916a4868b"/>
@@ -182,7 +181,6 @@
   <concept_name concept_id="29" name="Test Specimen Sources" concept_name_id="6050" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="45f24a00-7969-11e3-981f-0800211c9a68"/>
   <concept_name concept_id="30" name="Drug Routes" concept_name_id="6051" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="98f24a00-7969-11e3-981f-0800211c9a68"/>
   <concept_name concept_id="113" name="1/day x 7 days/week" concept_name_id="1131" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="83f24a00-7869-11e3-981f-0800200c9a66"/>
-  <concept_name concept_id="5584" name="DRUG OTHER" concept_name_id="1584" locale="en" creator="1" date_created="2015-09-30 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="85844a00-7669-81e3-991f-08i0200c9u66"/>
   <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="9e9df183-2328-4117-acd8-fb9bf400911d"/>
   <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="57396ec9-fb90-44b2-b59a-21bc5631bf3d"/>
   <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="cb6bc7cf-d5d3-4d51-a05b-5ea656c7413a"/>
@@ -397,7 +395,6 @@
   <global_property property="order.durationUnitsConceptUuid" property_value="54d29840-d9e6-11e3-9c1a-0800200c9a66" uuid="3e26c300-d9e6-11e3-9c1a-0800200c9a66"/>
   <global_property property="order.testSpecimenSourcesConceptUuid" property_value="5e02d1a0-7869-11e4-981f-0800200c9a73" uuid="56466f40-d9c5-11e3-9c1a-0800200c9a66"/>
   <global_property property="order.drugRoutesConceptUuid" property_value="6e02d1a0-7869-11e4-981f-0800200c9a89" uuid="67466f40-d9c5-22e3-9c1a-0800200c9a66"/>
-  <global_property property="order.drugNonCodedConceptUuid" property_value="6584d845-7584-11e4-945f-0858400c9s89" uuid="65846f40-s9b5-2ae3-9q1a-0858400o9a6i"/>
   <concept_stop_word concept_stop_word_id="1" word="A" locale="en" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972eb"/>
   <concept_stop_word concept_stop_word_id="2" word="AN" locale="en" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ec"/>
   <concept_stop_word concept_stop_word_id="3" word="BUT" locale="en_GB" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ed"/>

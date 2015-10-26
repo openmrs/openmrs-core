@@ -119,19 +119,22 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 				OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, false);
 		OrderService orderService = Context.getOrderService();
 
-		if (order.isNonCodedDrug()) {
-			if (OpenmrsUtil.nullSafeEquals(orderService.getNonCodedDrugConcept(), order.getConcept())) {
-				ValidationUtils.rejectIfEmpty(errors, "drugNonCoded", "DrugOrder.error.drugNonCodedIsRequired");
-			}
-			if (order.getDrug() != null) {
-				errors.rejectValue("drug", "DrugOrder.error.onlyOneOfDrugOrNonCodedShouldBeSet");
-			}
-		} else {
-			if (requireDrug) {
-				ValidationUtils.rejectIfEmpty(errors, "drug", "DrugOrder.error.drugIsRequired");
-			}
-			if (OpenmrsUtil.nullSafeEquals(orderService.getNonCodedDrugConcept(), order.getConcept())) {
-				errors.rejectValue("concept", "DrugOrder.error.cannotSetBothDrugAndNonCodedDrug");
+
+		if(requireDrug){
+			if(order.getConcept() != null && OpenmrsUtil.nullSafeEquals(orderService.getNonCodedDrugConcept(), order.getConcept())){
+				if(order.getDrug() == null && !order.isNonCodedDrug()){
+					errors.rejectValue("drugNonCoded", "DrugOrder.error.drugNonCodedIsRequired");
+				}
+				else if(order.getDrug() != null){
+					errors.rejectValue("concept", "DrugOrder.error.onlyOneOfDrugOrNonCodedShouldBeSet");
+				}
+			}else{
+				if(order.getDrug() == null && !order.isNonCodedDrug()){
+					errors.rejectValue("drug", "DrugOrder.error.drugIsRequired");
+				}
+				else if(order.getDrug() != null && order.isNonCodedDrug()){
+					errors.rejectValue("concept", "DrugOrder.error.onlyOneOfDrugOrNonCodedShouldBeSet");
+				}
 			}
 		}
 	}
