@@ -259,15 +259,6 @@
 	</filter-mapping>
 	<!--  End third filter -->
 	
-	<filter>
-        <filter-name>statusFilter</filter-name>
-        <filter-class>org.openmrs.web.filter.PlatformStatusFilter</filter-class>
-    </filter>
-    <filter-mapping>
-		<filter-name>statusFilter</filter-name> 
-		<url-pattern>/index.htm</url-pattern> 
-	</filter-mapping>
-	
 	<!--  Should be the second filter so that all requests are first wrapped by a 
 	      hibernate filter (to help with lazy loading) -->
 	<filter>
