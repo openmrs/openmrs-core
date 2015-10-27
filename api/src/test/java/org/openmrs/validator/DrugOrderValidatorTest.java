@@ -763,4 +763,31 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors());
 		assertEquals("DrugOrder.error.drugIsRequired", errors.getFieldError("drug").getCode());
 	}
+
+	@Test
+	@Verifies(value = "should pass validation if neither drug non coded nor drug are not set for a drug order when drug is not required", method = "validate(Object,Errors)")
+	public void saveOrder_shouldPassDrugOrderWithNeitherDrugNonCodedNorDrugAreSetForDrugOrderWhenDrugRequiredISNotSet() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");Patient patient = Context.getPatientService().getPatient(7);
+		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
+		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
+
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, "false");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		//place drug order
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		order.setEncounter(encounter);
+		order.setPatient(patient);
+		order.setCareSetting(careSetting);
+		order.setConcept(Context.getOrderService().getNonCodedDrugConcept());
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDateActivated(encounter.getEncounterDatetime());
+		order.setOrderType(orderType);
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setInstructions("None");
+		order.setDosingInstructions("Test Instruction");
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertFalse(errors.hasFieldErrors());
+	}
 }

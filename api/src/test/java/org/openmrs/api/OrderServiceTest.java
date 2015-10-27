@@ -3131,7 +3131,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
 		DrugOrder previousOrder = (DrugOrder)orderService.getOrder(584);
 		DrugOrder order = previousOrder.cloneForRevision();
-		String drugNonCodedParacetemol = "non coded paracetemol";
 
 		order.setDateActivated(new Date());
 		order.setOrderer(providerService.getProvider(1));
