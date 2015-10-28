@@ -195,10 +195,6 @@
 			<param-value>false</param-value>
 		</init-param>
 		<init-param>
-			<param-name>config-base</param-name>
-			<param-value>/WEB-INF/dwr.xml</param-value>
-		</init-param>
-		<init-param>
 			<param-name>config-modules</param-name>
 			<param-value>/WEB-INF/dwr-modules.xml</param-value>
 		</init-param>
