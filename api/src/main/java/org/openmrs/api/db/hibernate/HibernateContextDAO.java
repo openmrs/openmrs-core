@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -471,9 +472,8 @@ public class HibernateContextDAO implements ContextDAO {
 		try {
 			log.info("Updating the search index... It may take a few minutes.");
 			Search.getFullTextSession(sessionFactory.getCurrentSession()).createIndexer().startAndWait();
-			
 			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
-			    OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
+					OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
 			if (gp == null) {
 				gp = new GlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
 			}
@@ -485,5 +485,19 @@ public class HibernateContextDAO implements ContextDAO {
 			throw new RuntimeException("Failed to update the search index", e);
 		}
 	}
-	
+
+	/**
+	 * @see ContextDAO#updateSearchIndexAsync()
+	 */
+	@Override
+	public Future<?> updateSearchIndexAsync() {
+		try {
+			log.info("Started asynchronously updating the search index...");
+			return Search.getFullTextSession(sessionFactory.getCurrentSession()).createIndexer().start();
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Failed to start asynchronous search index update", e);
+		}
+	}
+
 }

@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
@@ -288,7 +289,7 @@ public class Context {
 		
 		if (Daemon.isDaemonThread()) {
 			log.error("Authentication attempted while operating on a "
-			        + "daemon thread, authenticating is not necessary or allowed");
+					+ "daemon thread, authenticating is not necessary or allowed");
 			return;
 		}
 		
@@ -1271,6 +1272,19 @@ public class Context {
 	 */
 	public static void updateSearchIndex() {
 		getContextDAO().updateSearchIndex();
+	}
+
+	/**
+	 * Updates the search index. It is an asynchronous operation.
+	 * <p>
+	 * There is no need to call this method in normal usage since the index is automatically updated
+	 * whenever DB transactions are committed.
+	 * <p>
+	 *
+	 * @return object representing the result of the started asynchronous operation
+	 */
+	public static Future<?> updateSearchIndexAsync() {
+		return getContextDAO().updateSearchIndexAsync();
 	}
 	
 	/**
