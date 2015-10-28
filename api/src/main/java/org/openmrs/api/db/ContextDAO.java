@@ -10,6 +10,7 @@
 package org.openmrs.api.db;
 
 import java.util.Properties;
+import java.util.concurrent.Future;
 
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -131,6 +132,11 @@ public interface ContextDAO {
 	 * @see Context#updateSearchIndex()
 	 */
 	public void updateSearchIndex();
+
+	/**
+	 * @see Context#updateSearchIndexAsync()
+	 */
+	public Future<?> updateSearchIndexAsync();
 	
 	/**
 	 * @see Context#updateSearchIndexForObject(Object)
