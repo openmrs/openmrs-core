@@ -10,7 +10,6 @@
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -21,8 +20,6 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.JFreeChart;
-import org.openmrs.web.servlet.AbstractGraphServlet;
-import org.openmrs.web.servlet.DisplayChartServlet;
 
 public class DisplayChartTag extends BodyTagSupport {
 	
@@ -35,6 +32,12 @@ public class DisplayChartTag extends BodyTagSupport {
 	 * Log
 	 */
 	private final Log log = LogFactory.getLog(DisplayChartTag.class);
+	
+	public static final String SERVLET_NAME = "displayChartServlet";
+	
+	public static final String CHART_KEY = "chartKey";
+	
+	public static final String PNG_MIME_TYPE = "image/png";
 	
 	/**
 	 * Tag properties
@@ -62,8 +65,8 @@ public class DisplayChartTag extends BodyTagSupport {
 				session.setAttribute(key, chart);
 				
 				pageContext.getOut().write(
-				    "<img src=\"" + request.getContextPath() + "/" + DisplayChartServlet.SERVLET_NAME + "?"
-				            + DisplayChartServlet.CHART_KEY + "=" + key + "&mimeType=" + AbstractGraphServlet.PNG_MIME_TYPE
+				    "<img src=\"" + request.getContextPath() + "/" + SERVLET_NAME + "?"
+				            + CHART_KEY + "=" + key + "&mimeType=" + PNG_MIME_TYPE
 				            + "&width=" + width + "&height=" + height + "\" />");
 				
 			}
