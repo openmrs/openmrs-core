@@ -396,38 +396,6 @@
 		<url-pattern>*.jsp</url-pattern>
 	</servlet-mapping>
 	
-	<jsp-config>
-		<taglib>
-			<taglib-uri>/spring</taglib-uri>
-			<taglib-location>/WEB-INF/taglibs/spring.tld</taglib-location>
-		</taglib>
-	
-		<taglib>
-			<taglib-uri>/core-rt</taglib-uri>
-			<taglib-location>/WEB-INF/taglibs/c-rt.tld</taglib-location>
-		</taglib>
-		
-		<taglib>
-			<taglib-uri>/openmrs</taglib-uri>
-			<taglib-location>/WEB-INF/taglibs/openmrs.tld</taglib-location>
-		</taglib>
-		
-		<taglib>
-			<taglib-uri>/page</taglib-uri>
-			<taglib-location>/WEB-INF/taglibs/page.tld</taglib-location>
-		</taglib>
-	
-		<taglib>
-			<taglib-uri>/request</taglib-uri>
-			<taglib-location>/WEB-INF/taglibs/request.tld</taglib-location>
-		</taglib>
-	
-		<taglib>
-			<taglib-uri>/response</taglib-uri>
-			<taglib-location>/WEB-INF/taglibs/response.tld</taglib-location>
-		</taglib>
-	</jsp-config>
-	
 	<error-page>
 		<exception-type>java.lang.Exception</exception-type>
 		<location>/uncaughtException</location>
