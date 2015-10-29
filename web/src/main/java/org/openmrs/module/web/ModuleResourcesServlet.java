@@ -102,6 +102,13 @@ public class ModuleResourcesServlet extends HttpServlet {
 		
 		File f = new File(realPath);
 		if (!f.exists()) {
+			if (realPath.endsWith("openmrsmessages.js") || realPath.endsWith("drugOrder.js")) {
+				f = new File(realPath + ".withjstl");
+				if (f.exists()) {
+					return f;
+				}
+			}
+			
 			log.warn("No file with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
 			return null;
 		}
