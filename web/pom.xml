@@ -88,10 +88,6 @@
          <artifactId>spring-oxm</artifactId>
        </dependency>
       <dependency>
-         <groupId>jfree</groupId>
-         <artifactId>jfreechart</artifactId>
-      </dependency>
-      <dependency>
          <groupId>mysql</groupId>
          <artifactId>mysql-connector-java</artifactId>
       </dependency>
