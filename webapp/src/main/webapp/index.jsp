@@ -1,3 +1,3 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
-
-<c:redirect url="/index.htm"/>
+<script language="javascript">
+    window.location.href = "index.htm"
+</script>
