@@ -140,44 +140,7 @@
 		to override the application MessageSource, which must be named "messageSource".
 	-->	
 	<alias name="messageSourceServiceTarget" alias="messageSource"/>
-	
-	<bean id="fieldGenHandlerFactory"
-		class="org.openmrs.web.taglib.fieldgen.FieldGenHandlerFactory">
-		<property name="handlers">
-			<props>
-				<prop key="java.lang.String">org.openmrs.web.taglib.fieldgen.StringHandler</prop>
-				<prop key="org.openmrs.Patient">
-					org.openmrs.web.taglib.fieldgen.PatientHandler
-				</prop>
-				<prop key="org.openmrs.Person">
-					org.openmrs.web.taglib.fieldgen.PersonHandler
-				</prop>
-				<prop key="org.openmrs.Concept">
-					org.openmrs.web.taglib.fieldgen.ConceptHandler
-				</prop>
-				<prop key="org.openmrs.Encounter">
-					org.openmrs.web.taglib.fieldgen.EncounterHandler
-				</prop>
-				<prop key="org.openmrs.User">org.openmrs.web.taglib.fieldgen.UserHandler</prop>
-				<prop key="org.openmrs.Drug">org.openmrs.web.taglib.fieldgen.DrugHandler</prop>
-				<prop key="org.openmrs.Location">
-					org.openmrs.web.taglib.fieldgen.LocationHandler
-				</prop>
-				<prop key="org.openmrs.ProgramWorkflow">
-					org.openmrs.web.taglib.fieldgen.ProgramWorkflowHandler
-				</prop>
-				<prop key="org.openmrs.Patient.exitReason">
-					org.openmrs.web.taglib.fieldgen.GenericReasonHandler
-				</prop>
-				<prop key="java.util.Date">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
-				<prop key="org.openmrs.util.AttributableDate">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
-				<prop key="org.openmrs.Provider">
-					org.openmrs.web.taglib.fieldgen.ProviderHandler
-				</prop>
-			</props>
-		</property>
-	</bean>
-	
+		
 	<!-- Find/replace strings after errant 'contrl-shift-f':
 		>\r\n			<value>(.*)</value>\r\n		</property>
 		><value>$1</value></property>
