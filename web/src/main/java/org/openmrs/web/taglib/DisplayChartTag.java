@@ -65,9 +65,8 @@ public class DisplayChartTag extends BodyTagSupport {
 				session.setAttribute(key, chart);
 				
 				pageContext.getOut().write(
-				    "<img src=\"" + request.getContextPath() + "/" + SERVLET_NAME + "?"
-				            + CHART_KEY + "=" + key + "&mimeType=" + PNG_MIME_TYPE
-				            + "&width=" + width + "&height=" + height + "\" />");
+				    "<img src=\"" + request.getContextPath() + "/" + SERVLET_NAME + "?" + CHART_KEY + "=" + key
+				            + "&mimeType=" + PNG_MIME_TYPE + "&width=" + width + "&height=" + height + "\" />");
 				
 			}
 			catch (IOException e) {
