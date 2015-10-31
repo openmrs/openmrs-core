@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +51,15 @@ public class ModuleResourcesServlet extends HttpServlet {
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		String path = request.getPathInfo();
 		log.debug("In service method for module servlet: " + request.getPathInfo());
+		
+		if (path.endsWith("openmrsmessages.js") || path.endsWith(("drugOrder.js"))) {
+			RequestDispatcher rd = request.getRequestDispatcher(getPathWithJstl(path));
+			rd.forward(request, response);
+			return;
+		}
 		
 		File f = getFile(request);
 		if (f == null) {
@@ -70,6 +79,13 @@ public class ModuleResourcesServlet extends HttpServlet {
 		finally {
 			OpenmrsUtil.closeStream(is);
 		}
+	}
+	
+	private String getPathWithJstl(String path) {
+		//String pathWithJstl = "/WEB-INF/view/module/legacyui/resources/scripts/openmrsmessages.js.withjstl";
+		Module module = ModuleUtil.getModuleForPath(path);
+		String relativePath = ModuleUtil.getPathForResource(module, path);
+		return MODULE_PATH + module.getModuleIdAsPath() + "/resources" + relativePath + ".withjstl";
 	}
 	
 	/**
@@ -97,18 +113,11 @@ public class ModuleResourcesServlet extends HttpServlet {
 		if (devDir != null) {
 			realPath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources" + relativePath;
 		}
-				
+		
 		realPath = realPath.replace("/", File.separator);
 		
 		File f = new File(realPath);
 		if (!f.exists()) {
-			if (realPath.endsWith("openmrsmessages.js") || realPath.endsWith("drugOrder.js")) {
-				f = new File(realPath + ".withjstl");
-				if (f.exists()) {
-					return f;
-				}
-			}
-			
 			log.warn("No file with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
 			return null;
 		}
