@@ -936,7 +936,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public Concept getNonCodedDrugConcept() {
 		String conceptUuid = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_DRUG_ORDER_DRUG_OTHER);
-		if(!StringUtils.isEmpty(conceptUuid)){
+		if(org.apache.commons.lang.StringUtils.isNotBlank(conceptUuid)){
 			return Context.getConceptService().getConceptByUuid(conceptUuid);
 		}
 		return null;

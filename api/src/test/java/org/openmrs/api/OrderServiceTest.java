@@ -3002,32 +3002,16 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveOrder_shouldPassForANewNonCodedDrugOrderIfAnotherActiveNonCodedDrugOrderAlreadyExists()
 	        throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
-		final Patient patient = patientService.getPatient(2);
-		final Concept nonCodedConcept = conceptService.getConcept(5584);
+		final Concept nonCodedConcept = orderService.getNonCodedDrugConcept();
 		//sanity check that we have an active order for the same concept
 		DrugOrder duplicateOrder = (DrugOrder) orderService.getOrder(584);
 		assertTrue(duplicateOrder.isActive());
 		assertEquals(nonCodedConcept, duplicateOrder.getConcept());
-		
-		DrugOrder drugOrder = new DrugOrder();
-		drugOrder.setPatient(patient);
-		drugOrder.setCareSetting(orderService.getCareSetting(1));
-		drugOrder.setConcept(nonCodedConcept);
+
+		DrugOrder drugOrder = duplicateOrder.copy();
 		drugOrder.setDrugNonCoded("non coded drug paracetemol");
-		drugOrder.setEncounter(encounterService.getEncounter(6));
-		drugOrder.setOrderer(providerService.getProvider(1));
-		drugOrder.setCareSetting(duplicateOrder.getCareSetting());
-		drugOrder.setDrug(duplicateOrder.getDrug());
-		drugOrder.setDose(duplicateOrder.getDose());
-		drugOrder.setDoseUnits(duplicateOrder.getDoseUnits());
-		drugOrder.setRoute(duplicateOrder.getRoute());
-		drugOrder.setFrequency(duplicateOrder.getFrequency());
-		drugOrder.setQuantity(duplicateOrder.getQuantity());
-		drugOrder.setQuantityUnits(duplicateOrder.getQuantityUnits());
-		drugOrder.setNumRefills(duplicateOrder.getNumRefills());
 
 		Order savedOrder = orderService.saveOrder(drugOrder, null);
-
 		assertNotNull(orderService.getOrder(savedOrder.getOrderId()));
 	}
 
@@ -3039,29 +3023,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveOrder_shouldFailIfAnActiveDrugOrderForTheSameConceptAndDrugNonCodedAndCareSettingExists()
 			throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
-		final Patient patient = patientService.getPatient(2);
-		final Concept nonCodedConcept = conceptService.getConcept(5584);
+		final Concept nonCodedConcept = orderService.getNonCodedDrugConcept();
 		//sanity check that we have an active order for the same concept
 		DrugOrder duplicateOrder = (DrugOrder) orderService.getOrder(584);
 		assertTrue(duplicateOrder.isActive());
 		assertEquals(nonCodedConcept, duplicateOrder.getConcept());
 
-		DrugOrder drugOrder = new DrugOrder();
-		drugOrder.setPatient(patient);
-		drugOrder.setCareSetting(orderService.getCareSetting(1));
-		drugOrder.setConcept(nonCodedConcept);
-		drugOrder.setDrugNonCoded("non coded drug Crocine");
-		drugOrder.setEncounter(encounterService.getEncounter(6));
-		drugOrder.setOrderer(providerService.getProvider(1));
-		drugOrder.setCareSetting(duplicateOrder.getCareSetting());
-		drugOrder.setDrug(duplicateOrder.getDrug());
-		drugOrder.setDose(duplicateOrder.getDose());
-		drugOrder.setDoseUnits(duplicateOrder.getDoseUnits());
-		drugOrder.setRoute(duplicateOrder.getRoute());
-		drugOrder.setFrequency(duplicateOrder.getFrequency());
-		drugOrder.setQuantity(duplicateOrder.getQuantity());
-		drugOrder.setQuantityUnits(duplicateOrder.getQuantityUnits());
-		drugOrder.setNumRefills(duplicateOrder.getNumRefills());
+		DrugOrder drugOrder = duplicateOrder.copy();
+		drugOrder.setDrugNonCoded("non coded drug crocine");
 
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("Cannot have more than one active order for the same orderable and care setting");
@@ -3077,8 +3046,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		DrugOrder drugOrder = previousOrder.cloneForDiscontinuing();
 		drugOrder.setPreviousOrder(previousOrder);
 		drugOrder.setDateActivated(new Date());
-		drugOrder.setOrderer(providerService.getProvider(1));
-		drugOrder.setEncounter(encounterService.getEncounter(6));
+		drugOrder.setOrderer(previousOrder.getOrderer());
+		drugOrder.setEncounter(previousOrder.getEncounter());
 
 
 		Order saveOrder = orderService.saveOrder(drugOrder, null);
@@ -3092,7 +3061,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
 		DrugOrder previousOrder = (DrugOrder) orderService.getOrder(584);
 		DrugOrder drugOrder = previousOrder.cloneForDiscontinuing();
-		drugOrder.setDrugNonCoded("non coded drug paracetemol");
+		drugOrder.setDrugNonCoded("non coded drug citrigine");
 		drugOrder.setPreviousOrder(previousOrder);
 		drugOrder.setDateActivated(new Date());
 		drugOrder.setOrderer(providerService.getProvider(1));
@@ -3110,7 +3079,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
 		DrugOrder previousOrder = (DrugOrder)orderService.getOrder(584);
 		DrugOrder order = previousOrder.cloneForRevision();
-		String drugNonCodedParacetemol = "non coded paracetemol";
+		String drugNonCodedParacetemol = "non coded aspirin";
 
 		order.setDateActivated(new Date());
 		order.setOrderer(providerService.getProvider(1));
