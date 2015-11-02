@@ -323,6 +323,10 @@ public class DrugOrderTest {
 	public void hasSameOrderableAs_shouldReturnTrueIfTheConceptsMatchAndHaveSameDrugNonCoded() throws Exception {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
+		ConceptClass drugClass = new ConceptClass();
+		drugClass.setName("Drug");
+		concept.setConceptClass(drugClass);
+
 		order.setConcept(concept);
 		order.setDrugNonCoded("Chrocine");
 
@@ -341,6 +345,10 @@ public class DrugOrderTest {
 	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndHaveDifferentDrugNonCoded() throws Exception {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
+		ConceptClass drugClass = new ConceptClass();
+		drugClass.setName("Drug");
+		concept.setConceptClass(drugClass);
+
 		order.setConcept(concept);
 		order.setDrugNonCoded("Chrocine");
 
@@ -358,7 +366,10 @@ public class DrugOrderTest {
 	@Test
 	public void hasSameOrderableAs_shouldReturnTrueIfTheConceptsMatchAndHaveSameDrugNonCodedTrimmingSpaces() throws Exception {
 		DrugOrder order = new DrugOrder();
-		Concept concept = new Concept();
+		Concept concept = new Concept();ConceptClass drugClass = new ConceptClass();
+		drugClass.setName("Drug");
+		concept.setConceptClass(drugClass);
+
 		order.setConcept(concept);
 		order.setDrugNonCoded("Chrocine");
 
@@ -377,6 +388,10 @@ public class DrugOrderTest {
 	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndEitherOfDrugNonCodedIsNull() throws Exception {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
+		ConceptClass drugClass = new ConceptClass();
+		drugClass.setName("Drug");
+		concept.setConceptClass(drugClass);
+
 		order.setDrugNonCoded("Chrocine");
 
 		DrugOrder otherOrder = new DrugOrder();
@@ -393,6 +408,10 @@ public class DrugOrderTest {
 	public void hasSameOrderableAs_shouldReturnTrueIfTheConceptsMatchAndBothDrugNonCodedIsNull() throws Exception {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
+		ConceptClass drugClass = new ConceptClass();
+		drugClass.setName("Drug");
+		concept.setConceptClass(drugClass);
+
 		order.setConcept(concept);
 
 		DrugOrder otherOrder = new DrugOrder();
