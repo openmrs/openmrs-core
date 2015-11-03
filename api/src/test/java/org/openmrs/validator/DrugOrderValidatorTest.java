@@ -658,7 +658,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
 		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
-
+		
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, "true");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		//place drug order
@@ -679,7 +679,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors());
 		assertEquals("DrugOrder.error.drugNonCodedIsRequired", errors.getFieldError("drugNonCoded").getCode());
 	}
-
+	
 	@Test
 	@Verifies(value = "should pass validation if drug non coded is set for non coded drug order", method = "validate(Object,Errors)")
 	public void saveOrder_shouldPassDrugOrderWithADrugNonCodedWhenDrugOrderIsNonCoded() throws Exception {
@@ -687,7 +687,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
 		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
-
+		
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, "true");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		//place drug order
@@ -708,7 +708,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		Assert.assertFalse(errors.hasFieldErrors());
 	}
-
+	
 	@Test
 	@Verifies(value = "should fail validation if both drug non coded and drug are set for a drug order", method = "validate(Object,Errors)")
 	public void saveOrder_shouldFailDrugOrderWithBothDrugNonCodedAndDrugAreSetForDrugOrder() throws Exception {
@@ -736,14 +736,15 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors());
 		assertEquals("DrugOrder.error.onlyOneOfDrugOrNonCodedShouldBeSet", errors.getFieldError("concept").getCode());
 	}
-
+	
 	@Test
 	@Verifies(value = "should fail validation if neither drug non coded nor drug are not set for a drug order when drug is required", method = "validate(Object,Errors)")
-	public void saveOrder_shouldFailDrugOrderWithNeitherDrugNonCodedNorDrugAreSetForDrugOrderWhenDrugRequiredSet() throws Exception {
+	public void saveOrder_shouldFailDrugOrderWithNeitherDrugNonCodedNorDrugAreSetForDrugOrderWhenDrugRequiredSet()
+	        throws Exception {
 		Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
 		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
-
+		
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, "true");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		//place drug order
@@ -763,14 +764,16 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors());
 		assertEquals("DrugOrder.error.drugIsRequired", errors.getFieldError("drug").getCode());
 	}
-
+	
 	@Test
 	@Verifies(value = "should pass validation if neither drug non coded nor drug are not set for a drug order when drug is not required", method = "validate(Object,Errors)")
-	public void saveOrder_shouldPassDrugOrderWithNeitherDrugNonCodedNorDrugAreSetForDrugOrderWhenDrugRequiredISNotSet() throws Exception {
-		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");Patient patient = Context.getPatientService().getPatient(7);
+	public void saveOrder_shouldPassDrugOrderWithNeitherDrugNonCodedNorDrugAreSetForDrugOrderWhenDrugRequiredISNotSet()
+	        throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
+		Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
 		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
-
+		
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, "false");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		//place drug order

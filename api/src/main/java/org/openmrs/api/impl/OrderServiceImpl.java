@@ -184,10 +184,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 			
 			//concept should be the same as on previous order, same applies to drug for drug orders
-			if(!order.hasSameOrderableAs(previousOrder)){
+			if (!order.hasSameOrderableAs(previousOrder)) {
 				throw new APIException("The orderable of the previous order and the new one order don't match");
-			}
-			else if (!order.getOrderType().equals(previousOrder.getOrderType())) {
+			} else if (!order.getOrderType().equals(previousOrder.getOrderType())) {
 				throw new APIException("The order type does not match that of the previous order");
 			} else if (!order.getCareSetting().equals(previousOrder.getCareSetting())) {
 				throw new APIException("The care setting does not match that of the previous order");
@@ -932,16 +931,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public List<Concept> getTestSpecimenSources() {
 		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID);
 	}
-
+	
 	@Override
 	public Concept getNonCodedDrugConcept() {
 		String conceptUuid = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_DRUG_ORDER_DRUG_OTHER);
-		if(org.apache.commons.lang.StringUtils.isNotBlank(conceptUuid)){
+		if (org.apache.commons.lang.StringUtils.isNotBlank(conceptUuid)) {
 			return Context.getConceptService().getConceptByUuid(conceptUuid);
 		}
 		return null;
 	}
-
+	
 	private List<Concept> getSetMembersOfConceptSetFromGP(String globalProperty) {
 		String conceptUuid = Context.getAdministrationService().getGlobalProperty(globalProperty);
 		Concept concept = Context.getConceptService().getConceptByUuid(conceptUuid);

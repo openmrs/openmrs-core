@@ -1100,7 +1100,7 @@ public final class OpenmrsConstants {
 	 * @since 1.11
 	 */
 	public static final Integer SEARCH_INDEX_VERSION = 3;
-
+	
 	/**
 	 * @since 1.12
 	 * Specifies the uuid of the concept which represents drug non coded
@@ -1610,9 +1610,9 @@ public final class OpenmrsConstants {
 		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
 		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_EXACT,
 		                "Specifies how person attributes are matched while searching person. Valid values are 'ANYWHERE' or 'EXACT'. Defaults to exact if missing or invalid value is present."));
-
-		props
-				.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "", "Specifies the uuid of the concept which represents drug other non coded"));
+		
+		props.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "",
+		        "Specifies the uuid of the concept which represents drug other non coded"));
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
