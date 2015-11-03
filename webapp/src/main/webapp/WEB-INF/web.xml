@@ -91,26 +91,6 @@
 	<listener>
 		<listener-class>org.openmrs.web.SessionListener</listener-class>
 	</listener>
-
-    <servlet>
-		<servlet-name>dwr-invoker</servlet-name>
-		<servlet-class>org.openmrs.web.dwr.OpenmrsDWRServlet</servlet-class>
-		<!--  debug parameter exposes DWR methods via [webapp]/dwr url  -->
-		<!--  good for testing, bad for security...so make sure to turn -->
-		<!--  this off (set value to "false") in production mode        -->
-		<init-param>
-			<param-name>debug</param-name>
-			<param-value>false</param-value>
-		</init-param>
-		<init-param>
-			<param-name>config-modules</param-name>
-			<param-value>/WEB-INF/dwr-modules.xml</param-value>
-		</init-param>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>dwr-invoker</servlet-name>
-		<url-pattern>/dwr/*</url-pattern>
-	</servlet-mapping>
 	
 	<!--  This charsetFilter MUST BE THE FIRST FILTER so that all UTF-8 characters are caught -->
 	<filter>

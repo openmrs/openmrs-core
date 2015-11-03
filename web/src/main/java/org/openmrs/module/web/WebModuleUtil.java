@@ -65,7 +65,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.DispatcherServlet;
 import org.openmrs.web.StaticDispatcherServlet;
-import org.openmrs.web.dwr.OpenmrsDWRServlet;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.w3c.dom.Document;
@@ -84,8 +83,6 @@ public class WebModuleUtil {
 	private static DispatcherServlet dispatcherServlet = null;
 	
 	private static StaticDispatcherServlet staticDispatcherServlet = null;
-	
-	private static OpenmrsDWRServlet dwrServlet = null;
 	
 	// caches all of the modules' mapped servlets
 	private static Map<String, HttpServlet> moduleServlets = Collections.synchronizedMap(new HashMap<String, HttpServlet>());
@@ -914,8 +911,6 @@ public class WebModuleUtil {
 			//try {
 			//	if (dispatcherServlet != null)
 			//		dispatcherServlet.reInitFrameworkServlet();
-			//	if (dwrServlet != null)
-			//		dwrServlet.reInitServlet();
 			//}
 			//catch (ServletException se) {
 			//	log.warn("Unable to reinitialize webapplicationcontext for dispatcherservlet for module: " + mod.getName(), se);
@@ -968,15 +963,6 @@ public class WebModuleUtil {
 			log.warn("Caught a servlet exception while refreshing the dispatcher servlet", se);
 		}
 		
-		try {
-			if (dwrServlet != null) {
-				dwrServlet.reInitServlet();
-			}
-		}
-		catch (ServletException se) {
-			log.warn("Cause a servlet exception while refreshing the dwr servlet", se);
-		}
-		
 		return newAppContext;
 	}
 	
@@ -998,18 +984,6 @@ public class WebModuleUtil {
 	public static void setStaticDispatcherServlet(StaticDispatcherServlet ds) {
 		log.debug("Setting dispatcher servlet for static content: " + ds);
 		staticDispatcherServlet = ds;
-	}
-	
-	/**
-	 * Save the dwr servlet for use later (reinitializing things)
-	 *
-	 * @param ds
-	 */
-	public static void setDWRServlet(OpenmrsDWRServlet ds) {
-		log.debug("Setting dwr servlet: " + ds);
-		dwrServlet = ds;
-		//new NewCreator();
-		//SessionFactoryUtils.processDeferredClose(null);
 	}
 	
 	/**
