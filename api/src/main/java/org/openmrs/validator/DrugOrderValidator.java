@@ -23,6 +23,7 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -108,16 +109,31 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			validateFieldsForOutpatientCareSettingType(order, errors);
 			validatePairedFields(order, errors);
 			validateUnitsAreAmongAllowedConcepts(errors, order);
-			validateForRequireDrug(errors);
+			validateForRequireDrug(errors, order);
 		}
 	}
-	
-	private void validateForRequireDrug(Errors errors) {
+
+	private void validateForRequireDrug(Errors errors, DrugOrder order) {
 		//Reject if global property is set to specify a formulation for drug order
 		boolean requireDrug = Context.getAdministrationService().getGlobalPropertyValue(
 		    OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, false);
+		OrderService orderService = Context.getOrderService();
+		
 		if (requireDrug) {
-			ValidationUtils.rejectIfEmpty(errors, "drug", "DrugOrder.error.drugIsRequired");
+			if (order.getConcept() != null
+			        && OpenmrsUtil.nullSafeEquals(orderService.getNonCodedDrugConcept(), order.getConcept())) {
+				if (order.getDrug() == null && !order.isNonCodedDrug()) {
+					errors.rejectValue("drugNonCoded", "DrugOrder.error.drugNonCodedIsRequired");
+				} else if (order.getDrug() != null) {
+					errors.rejectValue("concept", "DrugOrder.error.onlyOneOfDrugOrNonCodedShouldBeSet");
+				}
+			} else {
+				if (order.getDrug() == null && !order.isNonCodedDrug()) {
+					errors.rejectValue("drug", "DrugOrder.error.drugIsRequired");
+				} else if (order.getDrug() != null && order.isNonCodedDrug()) {
+					errors.rejectValue("concept", "DrugOrder.error.onlyOneOfDrugOrNonCodedShouldBeSet");
+				}
+			}
 		}
 	}
 	
