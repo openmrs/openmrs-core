@@ -526,7 +526,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
         }
         DrugOrder otherDrugOrder = (DrugOrder) otherOrder;
 
-        if (isNonCodedDrug() && otherDrugOrder.isNonCodedDrug()) {
+        if (isNonCodedDrug() || otherDrugOrder.isNonCodedDrug()) {
             return OpenmrsUtil.nullSafeEqualsIgnoreCase(this.getDrugNonCoded(), otherDrugOrder.getDrugNonCoded());
         }
         return OpenmrsUtil.nullSafeEquals(this.getDrug(), otherDrugOrder.getDrug());

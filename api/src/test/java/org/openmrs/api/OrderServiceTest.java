@@ -2999,8 +2999,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#saveOrder(Order, OrderContext)
 	 */
 	@Test
-	public void saveOrder_shouldPassForANewNonCodedDrugOrderIfAnotherActiveNonCodedDrugOrderAlreadyExists()
-	        throws Exception {
+	public void saveOrder_shouldPassIfAnActiveDrugOrderForTheSameConceptAndDifferentDrugNonCodedExists() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
 		final Concept nonCodedConcept = orderService.getNonCodedDrugConcept();
 		//sanity check that we have an active order for the same concept
@@ -3049,7 +3048,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		drugOrder.setOrderer(previousOrder.getOrderer());
 		drugOrder.setEncounter(previousOrder.getEncounter());
 
-
 		Order saveOrder = orderService.saveOrder(drugOrder, null);
 		Assert.assertNotNull("previous order should be discontinued", previousOrder.getDateStopped());
 		assertNotNull(orderService.getOrder(saveOrder.getOrderId()));
@@ -3072,12 +3070,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderService.saveOrder(drugOrder, null);
 	}
 
-
 	@Test
 	@Verifies(value = "should fail revising previousNonCodedDrugOrder if the orderable of the previous order and the new one order don't match ", method = "saveOrder(Order)")
-	public void saveOrder_shouldFailIfDrugNonCodedInPreviousDrugOrderDoesNotMatchThatOfTheRevisedDrugOrder() throws Exception {
+	public void saveOrder_shouldFailIfDrugNonCodedInPreviousDrugOrderDoesNotMatchThatOfTheRevisedDrugOrder()
+	        throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
-		DrugOrder previousOrder = (DrugOrder)orderService.getOrder(584);
+		DrugOrder previousOrder = (DrugOrder) orderService.getOrder(584);
 		DrugOrder order = previousOrder.cloneForRevision();
 		String drugNonCodedParacetemol = "non coded aspirin";
 
@@ -3098,7 +3096,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveOrder_shouldRevisePreviousNonCodedOrderIfItIsAlreadyExisting() throws Exception {
 		//We are trying to discontinue order id 584 in OrderServiceTest-nonCodedDrugs.xml
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
-		DrugOrder previousOrder = (DrugOrder)orderService.getOrder(584);
+		DrugOrder previousOrder = (DrugOrder) orderService.getOrder(584);
 		DrugOrder order = previousOrder.cloneForRevision();
 
 		order.setDateActivated(new Date());
