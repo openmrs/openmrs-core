@@ -52,10 +52,6 @@
          <artifactId>jstl</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.openmrs.directwebremoting</groupId>
-         <artifactId>dwr</artifactId>
-      </dependency>
-      <dependency>
          <groupId>commons-beanutils</groupId>
          <artifactId>commons-beanutils</artifactId>
       </dependency>
