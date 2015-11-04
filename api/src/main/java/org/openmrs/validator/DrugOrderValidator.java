@@ -112,7 +112,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			validateForRequireDrug(errors, order);
 		}
 	}
-
+	
 	private void validateForRequireDrug(Errors errors, DrugOrder order) {
 		//Reject if global property is set to specify a formulation for drug order
 		boolean requireDrug = Context.getAdministrationService().getGlobalPropertyValue(
