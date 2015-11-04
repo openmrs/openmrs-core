@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class FormResourceController {
-	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	@RequestMapping(method = RequestMethod.GET, value = "admin/forms/formResources")
@@ -76,30 +75,28 @@ public class FormResourceController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value = "admin/forms/addFormResource")
-	public String handleAddFormResource(@ModelAttribute("resource") FormResource resource, Errors errors,
-	        HttpServletRequest request) {
+	public String handleAddFormResource(@ModelAttribute("resource") FormResource resource, Errors errors, HttpServletRequest request) {
 		HttpSession session = request.getSession();
-		
+	
 		try {
-			Object value = WebAttributeUtil.getValue(request, resource, "resourceValue");
-			resource.setValue(value);
+		    Object value = WebAttributeUtil.getValue(request, resource, "resourceValue");
+		    resource.setValue(value);
 		}
 		catch (Exception ex) {
-			errors.rejectValue("value", "error.general");
+		    errors.rejectValue("value", "error.general");
 		}
 		if (errors.hasErrors()) {
-			throw new RuntimeException("Error handling not yet implemented");
+		    throw new RuntimeException("Error handling not yet implemented");
 		} else {
-			try {
-				Context.getFormService().saveFormResource(resource);
-			}
-			catch (InvalidFileTypeException ex) {
-				log.error(ex.getMessage(), ex);
-				session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.file.upload.expected.text.file");
-				return "redirect:addFormResource.form?formId=" + resource.getForm().getId() + "&datatype="
-				        + resource.getDatatypeClassname() + "&handler=" + resource.getPreferredHandlerClassname();
-			}
-			return "redirect:formResources.form?formId=" + resource.getForm().getId();
+		    try {
+			Context.getFormService().saveFormResource(resource);
+		    }
+		    catch (InvalidFileTypeException ex) {
+			log.error(ex.getMessage(), ex);
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.file.upload.expected.text.file");
+			return "redirect:addFormResource.form?formId=" + resource.getForm().getId() + "&datatype=" + resource.getDatatypeClassname() + "&handler=" + resource.getPreferredHandlerClassname();
+		    }
+		    return "redirect:formResources.form?formId=" + resource.getForm().getId();
 		}
 	}
 }

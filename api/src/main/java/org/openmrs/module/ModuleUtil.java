@@ -308,7 +308,8 @@ public class ModuleUtil {
 					}
 				}
 			}
-		} else {
+		}
+		else {
 			//no version checking if required version is not specified
 			return true;
 		}

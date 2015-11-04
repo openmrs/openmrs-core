@@ -18,15 +18,15 @@ import org.openmrs.test.BaseContextSensitiveTest;
 
 import static org.mockito.Mockito.*;
 
-public class FormServiceImplTest extends BaseContextSensitiveTest {
+public class FormServiceImplTest extends BaseContextSensitiveTest{
+   
+    @Test(expected = InvalidFileTypeException.class)
+    public void saveFormResource_shouldThrowAnInvalidFileTypeExceptionWhenUsedWithNonTextFiles() throws Exception {
+	FormResource formResource = mock(FormResource.class);
+	when(formResource.getName()).thenReturn("some resource");
+	when(formResource.isDirty()).thenThrow(new ConstraintViolationException("some message", null, "for testing"));
 	
-	@Test(expected = InvalidFileTypeException.class)
-	public void saveFormResource_shouldThrowAnInvalidFileTypeExceptionWhenUsedWithNonTextFiles() throws Exception {
-		FormResource formResource = mock(FormResource.class);
-		when(formResource.getName()).thenReturn("some resource");
-		when(formResource.isDirty()).thenThrow(new ConstraintViolationException("some message", null, "for testing"));
-		
-		Context.getFormService().saveFormResource(formResource);
-	}
-	
+	Context.getFormService().saveFormResource(formResource);
+    }
+  
 }

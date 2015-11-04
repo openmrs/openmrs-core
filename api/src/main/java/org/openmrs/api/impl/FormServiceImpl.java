@@ -954,7 +954,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Override
 	public FormResource saveFormResource(FormResource formResource) throws APIException {
-		if (formResource == null) {
+	    	if (formResource == null) {
 			return null;
 		}
 		// If a form resource with same name exists, replace it with current value
@@ -969,10 +969,10 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 			toPersist = original;
 		}
 		try {
-			CustomDatatypeUtil.saveIfDirty(toPersist);
+		    CustomDatatypeUtil.saveIfDirty(toPersist);
 		}
 		catch (ConstraintViolationException ex) {
-			throw new InvalidFileTypeException(ex.getMessage(), ex);
+		    throw new InvalidFileTypeException(ex.getMessage(), ex);
 		}
 		
 		return dao.saveFormResource(toPersist);

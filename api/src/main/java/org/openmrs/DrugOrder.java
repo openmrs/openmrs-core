@@ -9,13 +9,12 @@
  */
 package org.openmrs;
 
-import org.apache.commons.lang.StringUtils;
 import static org.openmrs.Order.Action.DISCONTINUE;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * DrugOrder
- *
+ * 
  * @version 1.0
  */
 public class DrugOrder extends Order implements java.io.Serializable {
@@ -55,8 +54,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	private String brandName;
 	
 	private Boolean dispenseAsWritten = Boolean.FALSE;
-	
-	private String drugNonCoded;
 	
 	// Constructors
 	
@@ -98,7 +95,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.setRoute(getRoute());
 		target.setBrandName(getBrandName());
 		target.setDispenseAsWritten(getDispenseAsWritten());
-		target.setDrugNonCoded(getDrugNonCoded());
 		return target;
 	}
 	
@@ -426,7 +422,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		newOrder.setPatient(getPatient());
 		newOrder.setDrug(getDrug());
 		newOrder.setOrderType(getOrderType());
-		newOrder.setDrugNonCoded(getDrugNonCoded());
 		return newOrder;
 	}
 	
@@ -465,7 +460,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.setNumRefills(getNumRefills());
 		target.setBrandName(getBrandName());
 		target.setDispenseAsWritten(getDispenseAsWritten());
-		target.setDrugNonCoded(getDrugNonCoded());
 		
 		return target;
 	}
@@ -487,8 +481,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	public String toString() {
 		String prefix = DISCONTINUE == getAction() ? "DC " : "";
 		return prefix + "DrugOrder(" + getDose() + getDoseUnits() + " of "
-		        + (isNonCodedDrug() ? getDrugNonCoded() : (getDrug() != null ? getDrug().getName() : "[no drug]"))
-		        + " from " + getDateActivated() + " to "
+		        + (getDrug() != null ? getDrug().getName() : "[no drug]") + " from " + getDateActivated() + " to "
 		        + (isDiscontinuedRightNow() ? getDateStopped() : getAutoExpireDate()) + ")";
 	}
 	
@@ -526,34 +519,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 			return false;
 		}
 		DrugOrder otherDrugOrder = (DrugOrder) otherOrder;
-		
-		if (isNonCodedDrug() || otherDrugOrder.isNonCodedDrug()) {
-			return OpenmrsUtil.nullSafeEqualsIgnoreCase(this.getDrugNonCoded(), otherDrugOrder.getDrugNonCoded());
-		}
 		return OpenmrsUtil.nullSafeEquals(this.getDrug(), otherDrugOrder.getDrug());
-	}
-	
-	/**
-	 * @since 1.12
-	 * @return drugNonCoded
-	 */
-	public String getDrugNonCoded() {
-		return drugNonCoded;
-	}
-	
-	/**
-	 * @since 1.12
-	 * sets drugNonCoded
-	 */
-	public void setDrugNonCoded(String drugNonCoded) {
-		this.drugNonCoded = StringUtils.isNotBlank(drugNonCoded) ? drugNonCoded.trim() : drugNonCoded;
-	}
-	
-	/**
-	 * @since 1.12
-	 * return true if a drug is non coded
-	 */
-	public boolean isNonCodedDrug() {
-		return StringUtils.isNotBlank(this.drugNonCoded);
 	}
 }

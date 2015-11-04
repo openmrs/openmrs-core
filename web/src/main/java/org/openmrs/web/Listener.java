@@ -178,7 +178,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
 				
 				WebDaemon.startOpenmrs(event.getServletContext());
-			} else {
+			}
+			else {
 				setupNeeded = true;
 			}
 			
