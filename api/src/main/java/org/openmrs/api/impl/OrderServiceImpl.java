@@ -356,7 +356,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			stopOrder(orderToBeDiscontinued, aMomentBefore(order.getDateActivated()));
 		}
 	}
-
+	
 	/**
 	 * Returns the class object of the specified persistent object returning the actual persistent
 	 * class in case it is a hibernate proxy

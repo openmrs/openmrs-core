@@ -771,7 +771,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setConcept(newConcept);
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("The concept of the previous order and the new one order don't match");
+		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -868,7 +868,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderReasonNonCoded("Discontinue this");
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("The drug of the previous order and the new one order don't match");
+		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -2309,7 +2309,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setConcept(newConcept);
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("The concept of the previous order and the new one order don't match");
+		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -2336,7 +2336,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setDrug(discontinuationOrderDrug);
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("The drug of the previous order and the new one order don't match");
+		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -2969,7 +2969,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderService.saveOrder(order, orderContext);
 		assertNotNull(orderService.getOrder(order.getOrderId()));
 	}
-
+	
 	/**
 	 * @see OrderService#getNonCodedDrugConcept()
 	 * @verifies return an null if nothing is configured
