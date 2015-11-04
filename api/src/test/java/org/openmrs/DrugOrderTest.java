@@ -314,7 +314,7 @@ public class DrugOrderTest {
 		
 		assertEquals(expectedAutoExpireDate, drugOrder.getAutoExpireDate());
 	}
-	
+
 	/**
 	 * @verifies return true if the drugs match and drug non coded match
 	 * @see DrugOrder#hasSameOrderableAs(Order)

@@ -649,7 +649,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		assertEquals("DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode", errors.getFieldError("durationUnits")
 		        .getCode());
 	}
-	
+
 	@Test
 	@Verifies(value = "should fail validation if drug non coded is not set for non coded drug order", method = "validate(Object,Errors)")
 	public void saveOrder_shouldFailDrugOrderWithoutADrugNonCodedWhenDrugOrderIsNonCoded() throws Exception {

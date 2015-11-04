@@ -99,7 +99,6 @@
             <many-to-one name="route" class="org.openmrs.Concept" />
             <property name="brandName" type="string" column="brand_name" length="255" />
             <property name="dispenseAsWritten" type="boolean" column="dispense_as_written" length="1" not-null="true" />
-            <property name="drugNonCoded" type="string" column="drug_non_coded" length="255" />
 		</joined-subclass>
 
         <joined-subclass name="org.openmrs.TestOrder" table="test_order" lazy="false">

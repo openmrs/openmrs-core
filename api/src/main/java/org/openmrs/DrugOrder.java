@@ -98,7 +98,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.setRoute(getRoute());
 		target.setBrandName(getBrandName());
 		target.setDispenseAsWritten(getDispenseAsWritten());
-		target.setDrugNonCoded(getDrugNonCoded());
 		return target;
 	}
 	
@@ -426,7 +425,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		newOrder.setPatient(getPatient());
 		newOrder.setDrug(getDrug());
 		newOrder.setOrderType(getOrderType());
-		newOrder.setDrugNonCoded(getDrugNonCoded());
 		return newOrder;
 	}
 	
@@ -466,7 +464,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.setBrandName(getBrandName());
 		target.setDispenseAsWritten(getDispenseAsWritten());
 		target.setDrugNonCoded(getDrugNonCoded());
-		
+
 		return target;
 	}
 	
@@ -526,7 +524,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 			return false;
 		}
 		DrugOrder otherDrugOrder = (DrugOrder) otherOrder;
-		
+
 		if (isNonCodedDrug() || otherDrugOrder.isNonCodedDrug()) {
 			return OpenmrsUtil.nullSafeEqualsIgnoreCase(this.getDrugNonCoded(), otherDrugOrder.getDrugNonCoded());
 		}

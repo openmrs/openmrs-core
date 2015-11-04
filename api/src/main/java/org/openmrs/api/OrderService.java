@@ -712,7 +712,7 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getTestSpecimenSources();
-	
+
 	/**
 	 * Gets the non coded drug concept, i.e the concept that matches the
 	 * uuid specified as the value for the global property
@@ -723,6 +723,6 @@ public interface OrderService extends OpenmrsService {
 	 * @should return null if nothing is configured
 	 * @should return a concept if GP is set
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getNonCodedDrugConcept();
 }

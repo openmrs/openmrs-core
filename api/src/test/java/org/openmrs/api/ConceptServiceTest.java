@@ -1682,19 +1682,18 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//So we should see 2 results only
 		Assert.assertEquals(2, searchResults.size());
 	}
-	
-	@Test
-	@Verifies(value = "should return concept search results that match unique concepts", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
-	public void getConcepts_shouldReturnConceptSearchResultsThatMatchUniqueConceptsEvenIfDifferentConceptWords()
-	        throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
-		List<ConceptSearchResult> searchResults = conceptService.getConcepts("now", Collections
-		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
-		// "now matches both concept names "TRUST NOW" and "TRUST NOWHERE", but these are for the same concept (4000), so there should only be one item in the result set
-		Assert.assertEquals(1, searchResults.size());
-		Assert.assertEquals(new Integer(4000), searchResults.get(0).getConcept().getId());
-	}
-	
+
+    @Test
+    @Verifies(value = "should return concept search results that match unique concepts", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
+    public void getConcepts_shouldReturnConceptSearchResultsThatMatchUniqueConceptsEvenIfDifferentConceptWords() throws Exception {
+        executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+        List<ConceptSearchResult> searchResults = conceptService.getConcepts("now", Collections
+                .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+        // "now matches both concept names "TRUST NOW" and "TRUST NOWHERE", but these are for the same concept (4000), so there should only be one item in the result set
+        Assert.assertEquals(1, searchResults.size());
+        Assert.assertEquals(new Integer(4000), searchResults.get(0).getConcept().getId());
+    }
+
 	/**
 	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
@@ -1730,7 +1729,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getConceptReferenceTermByCode_shouldReturnAConceptReferenceTermThatMatchesTheGivenCodeFromTheGivenSource()
 	        throws Exception {
 		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTermByCode("2332523",
-		    new ConceptSource(2));
+                new ConceptSource(2));
 		Assert.assertNotNull(term);
 		Assert.assertEquals("2332523", term.getCode());
 	}
