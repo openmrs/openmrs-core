@@ -81,6 +81,10 @@ public class ModuleResourcesServlet extends HttpServlet {
 		}
 	}
 	
+	private boolean isJstlFile(String path) {
+		return path.endsWith("openmrsmessages.js") || path.endsWith("drugOrder.js");
+	}
+	
 	private String getPathWithJstl(String path) {
 		//String pathWithJstl = "/WEB-INF/view/module/legacyui/resources/scripts/openmrsmessages.js.withjstl";
 		Module module = ModuleUtil.getModuleForPath(path);
@@ -118,6 +122,12 @@ public class ModuleResourcesServlet extends HttpServlet {
 		
 		File f = new File(realPath);
 		if (!f.exists()) {
+			if (isJstlFile(path)) {
+				f =  new File(realPath + ".withjstl");
+				if (f.exists()) {
+					return f;
+				}
+			}
 			log.warn("No file with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
 			return null;
 		}
