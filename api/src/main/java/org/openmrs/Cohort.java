@@ -305,7 +305,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	@ElementList(required = true)
 	public void setMemberIds(Set<Integer> memberIds) {
-		this.memberIds = memberIds;
+		this.memberIds = new TreeSet<Integer>(memberIds);
 	}
 	
 	/**
