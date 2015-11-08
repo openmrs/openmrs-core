@@ -2056,7 +2056,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return all the concept reference terms if includeRetired is set to true", method = "getConceptReferenceTerms(null)")
 	public void getConceptReferenceTerms_shouldReturnAllTheConceptReferenceTermsIfIncludeRetiredIsSetToTrue()
 	        throws Exception {
-		Assert.assertEquals(11, Context.getConceptService().getConceptReferenceTerms(true).size());
+		Assert.assertEquals(12, Context.getConceptService().getConceptReferenceTerms(true).size());
 	}
 	
 	/**
@@ -2066,7 +2066,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return only un retired concept reference terms if includeRetired is set to false", method = "getConceptReferenceTerms(null)")
 	public void getConceptReferenceTerms_shouldReturnOnlyUnRetiredConceptReferenceTermsIfIncludeRetiredIsSetToFalse()
 	        throws Exception {
-		Assert.assertEquals(10, Context.getConceptService().getConceptReferenceTerms(false).size());
+		Assert.assertEquals(11, Context.getConceptService().getConceptReferenceTerms(false).size());
 	}
 	
 	/**
@@ -2209,7 +2209,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return all concept reference terms in the database", method = "getAllConceptReferenceTerms()")
 	public void getAllConceptReferenceTerms_shouldReturnAllConceptReferenceTermsInTheDatabase() throws Exception {
-		Assert.assertEquals(11, Context.getConceptService().getAllConceptReferenceTerms().size());
+		Assert.assertEquals(12, Context.getConceptService().getAllConceptReferenceTerms().size());
 	}
 	
 	/**
@@ -2309,7 +2309,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should include retired terms if includeRetired is set to true", method = "getCountOfConceptReferenceTerms(String,ConceptSource,null)")
 	public void getCountOfConceptReferenceTerms_shouldIncludeRetiredTermsIfIncludeRetiredIsSetToTrue() throws Exception {
-		Assert.assertEquals(11, conceptService.getCountOfConceptReferenceTerms("", null, true).intValue());
+		Assert.assertEquals(12, conceptService.getCountOfConceptReferenceTerms("", null, true).intValue());
 	}
 	
 	/**
@@ -2318,7 +2318,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should not include retired terms if includeRetired is set to false", method = "getCountOfConceptReferenceTerms(String,ConceptSource,null)")
 	public void getCountOfConceptReferenceTerms_shouldNotIncludeRetiredTermsIfIncludeRetiredIsSetToFalse() throws Exception {
-		Assert.assertEquals(10, conceptService.getCountOfConceptReferenceTerms("", null, false).intValue());
+		Assert.assertEquals(11, conceptService.getCountOfConceptReferenceTerms("", null, false).intValue());
 	}
 	
 	/**
