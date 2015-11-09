@@ -1285,6 +1285,18 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
+	 * This method delegates to {@link #isRetired()}. This is only needed for jstl syntax like
+	 * ${concept.retired} because the return type is a Boolean object instead of a boolean
+	 * primitive type.
+	 * 
+	 * @see org.openmrs.Retireable#isRetired()
+	 * @since 2.0.0
+	 */
+	public Boolean getRetired() {
+		return isRetired();
+	}
+	
+	/**
 	 * @param retired The retired to set.
 	 */
 	@Attribute
