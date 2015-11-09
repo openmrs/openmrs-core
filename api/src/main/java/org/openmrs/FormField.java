@@ -19,7 +19,7 @@ import java.util.Comparator;
  * @see org.openmrs.Form
  * @see org.openmrs.Field
  */
-public class FormField extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class FormField extends BaseOpenmrsMetadata implements java.io.Serializable, Comparable<FormField> {
 	
 	public static final long serialVersionUID = 3456L;
 	
@@ -247,6 +247,11 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	public void setId(Integer id) {
 		setFormFieldId(id);
 		
+	}
+	
+	public int compareTo(FormField other) {
+		DefaultComparator pnDefaultComparator = new DefaultComparator();
+		return pnDefaultComparator.compare(this, other);
 	}
 	
 	/**
