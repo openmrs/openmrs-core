@@ -1290,7 +1290,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * primitive type.
 	 * 
 	 * @see org.openmrs.Retireable#isRetired()
-	 * @since 2.0.0
 	 */
 	public Boolean getRetired() {
 		return isRetired();
