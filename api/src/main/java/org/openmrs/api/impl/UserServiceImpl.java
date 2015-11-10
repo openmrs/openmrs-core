@@ -638,7 +638,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 
 	@Override
 	public void changePassword(User user, String newPassword) throws APIException {
-		dao.changePassword(user, newPassword);
+		updatePassword(user, newPassword);
 	}
 
 	@Override
