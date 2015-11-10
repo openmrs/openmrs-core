@@ -628,8 +628,26 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			throw new APIException("old.password.not.correct", (Object[]) null);
 		}
 	
+		updatePassword(user, newPassword);
+	}
+
+	private void updatePassword(User user, String newPassword) {
 		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
 		dao.changePassword(user, newPassword);
+	}
+
+	@Override
+	public void changePassword(User user, String newPassword) throws APIException {
+		dao.changePassword(user, newPassword);
+	}
+
+	@Override
+	public void changePasswordUsingSecretAnswer(String secretAnswer, String pw) throws APIException {
+		User user = Context.getAuthenticatedUser();
+		if(!isSecretAnswer(user, secretAnswer)) {
+			throw new APIException("secret.answer.not.correct", (Object[]) null);
+		}
+		updatePassword(user, pw);
 	}
 	
 }

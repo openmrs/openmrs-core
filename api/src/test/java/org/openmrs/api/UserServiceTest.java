@@ -1325,4 +1325,60 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
         Context.getUserService().changePassword("test", "");
     }
+    
+	@Test
+	@Verifies(value = "should update password of given user when logged in user has edit users password privilege", method = "changePassword(User,String)")
+	public void changePassword_shouldUpdatePasswordOfGivenUserWhenLoggedInUserHasEditUsersPasswordPrivilege() throws Exception {
+		UserService userService = Context.getUserService();
+		User user = userService.getUserByUsername("admin");
+		assertNotNull("There needs to be a user with username 'admin' in the database", user);
+		
+		userService.changePassword(user, "testTest123");
+		
+		Context.authenticate(user.getUsername(), "testTest123");
+	}
+	
+	@Test
+	@Verifies(value = "should not update password of given user when logged in user does not have edit users password privilege", method = "changePassword(User,String)")
+	public void changePassword_shouldNotUpdatePasswordOfGivenUserWhenLoggedInUserDoesNotHaveEditUsersPasswordPrivilege() throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		UserService userService = Context.getUserService();
+		User user = userService.getUser(6001);
+		assertFalse(user.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
+		Context.authenticate(user.getUsername(), "userServiceTest");
+		
+		expectedException.expect(APIAuthenticationException.class);
+		expectedException.expectMessage("error.privilegesRequired");
+		
+		userService.changePassword(user, "testTest123");
+	}
+	
+	@Test
+	@Verifies(value = "should update password if secret is correct", method = "changePasswordUsingSecretAnswer(String,String)")
+	public void changePasswordUsingSecretAnswer_shouldUpdatePasswordIfSecretIsCorrect() throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		UserService userService = Context.getUserService();
+		User user = userService.getUser(6001);
+		assertFalse(user.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
+		Context.authenticate(user.getUsername(), "userServiceTest");
+		
+		userService.changePasswordUsingSecretAnswer("answer", "userServiceTest2");
+		
+		Context.authenticate(user.getUsername(), "userServiceTest2");
+	}
+
+	@Test
+	@Verifies(value = "should not update password if secret is not correct", method = "changePasswordUsingSecretAnswer(String,String)")
+	public void changePasswordUsingSecretAnswer_shouldNotUpdatePasswordIfSecretIsNotCorrect() throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		UserService userService = Context.getUserService();
+		User user = userService.getUser(6001);
+		assertFalse(user.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
+		Context.authenticate(user.getUsername(), "userServiceTest");
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("secret.answer.not.correct");
+		
+		userService.changePasswordUsingSecretAnswer("wrong answer", "userServiceTest2");
+	}
 }

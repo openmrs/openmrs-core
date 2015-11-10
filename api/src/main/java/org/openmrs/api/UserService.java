@@ -52,7 +52,7 @@ public interface UserService extends OpenmrsService {
 	 * Change user password.
 	 *
 	 * @param user the user to update password
-	 * @param oldPassword the user password to update
+	 * @param oldPassword the user password  to update
 	 * @param newPassword the new user password
 	 * @throws APIException for not existing user and if old password is weak
 	 * @since 1.12
@@ -311,6 +311,17 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Logging(ignoredArgumentIndexes = { 0, 1 })
 	public void changePassword(String pw, String pw2) throws APIException;
+
+	/**
+	 * Changes password of {@link User} passed in
+	 * @param user user whose password is to be changed
+	 * @param newPassword new password to set
+	 * @throws APIException
+	 * @should update password of given user when logged in user has edit users password privilege
+	 * @should not update password of given user when logged in user does not have edit users password privilege
+	 */
+	@Authorized({PrivilegeConstants.EDIT_USER_PASSWORDS})
+	public void changePassword(User user, String newPassword) throws APIException;
 	
 	/**
 	 * Changes the current user's password directly. This is most useful if migrating users from
@@ -520,4 +531,15 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Authorized
 	public User saveUserProperties(Map<String, String> properties);
+	
+	/**
+	 * Change user password given the answer to the secret question
+	 * @param secretAnswer the answer to secret question
+	 * @param pw the new password
+	 * @should update password if secret is correct
+	 * @should not update password if secret is not correct
+	 */
+	@Authorized
+	public void changePasswordUsingSecretAnswer(String secretAnswer, String pw) throws APIException;
+
 }
