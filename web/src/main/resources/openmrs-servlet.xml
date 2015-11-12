@@ -126,11 +126,6 @@
 	
 	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="order"><value>99</value></property>
-		<property name="mappings">
- 			<props>
- 				<prop key="**/*.htm">springController</prop>
- 			</props>
- 		</property>
 	</bean>
 	
 	<!--<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>-->
