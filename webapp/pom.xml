@@ -95,6 +95,7 @@
                      <directory>src/main/webapp</directory>
                      <includes>
                         <include>WEB-INF/web.xml</include>
+                         <include>index.htm</include>
                      </includes>
                      <filtering>true</filtering>
                   </resource>

@@ -253,7 +253,7 @@
 	</filter-mapping>
 		
 	<welcome-file-list>
-		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>index.htm</welcome-file>
 	</welcome-file-list>
 	
 	<servlet>
@@ -344,11 +344,6 @@
  		<url-pattern>*.json</url-pattern>
 	</servlet-mapping>
 
-	<servlet-mapping>
- 		<servlet-name>openmrs</servlet-name>
- 		<url-pattern>*.htm</url-pattern>
-	</servlet-mapping>
-	
 	<servlet-mapping>
  		<servlet-name>openmrs</servlet-name>
  		<url-pattern>*.portlet</url-pattern>
