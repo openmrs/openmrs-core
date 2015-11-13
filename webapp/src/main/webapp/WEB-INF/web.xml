@@ -321,37 +321,12 @@
 	
 	<servlet-mapping>
  		<servlet-name>openmrs</servlet-name>
- 		<url-pattern>*.form</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
- 		<servlet-name>openmrs</servlet-name>
- 		<url-pattern>*.list</url-pattern>
-	</servlet-mapping>
-	
-	<servlet-mapping>
- 		<servlet-name>openmrs</servlet-name>
  		<url-pattern>*.page</url-pattern>
 	</servlet-mapping>
 	
 	<servlet-mapping>
  		<servlet-name>openmrs</servlet-name>
  		<url-pattern>*.action</url-pattern>
-	</servlet-mapping>
-	
-	<servlet-mapping>
- 		<servlet-name>openmrs</servlet-name>
- 		<url-pattern>*.json</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
- 		<servlet-name>openmrs</servlet-name>
- 		<url-pattern>*.portlet</url-pattern>
-	</servlet-mapping>
-		
-	<servlet-mapping>
- 		<servlet-name>openmrs</servlet-name>
- 		<url-pattern>*.field</url-pattern>
 	</servlet-mapping>
 	
 	<servlet-mapping>
