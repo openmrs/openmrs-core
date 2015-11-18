@@ -40,7 +40,7 @@
 <openmrs:concept conceptId="${conceptId}" var="c" nameVar="n" numericVar="num">
 
 	<c:choose>
-		<c:when test="${c.datatype.boolean}">
+		<c:when test="${c.datatype['boolean']}">
 			<span id="valueBooleanRow${conceptId}" class="obsValue">
 				<select name="${formFieldName}" id="valueBooleanField${conceptId}">
 					<option value="" <c:if test="${initialValue == null}">selected</c:if>></option>
