@@ -14,6 +14,11 @@ import org.openmrs.Patient;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.converters.extended.DynamicProxyConverter;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
@@ -59,6 +64,7 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 		if (customXstream == null) {
 			
 			xstream = new XStream(new DomDriver());
+			xstream.registerConverter(new OpenmrsDynamicProxyConverter(), XStream.PRIORITY_VERY_HIGH);
 			
 		} else {
 			this.xstream = customXstream;
@@ -89,6 +95,7 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	
 	/**
 	 * @see OpenmrsSerializer#deserialize(String, Class)
+	 * @should not deserialize dynamic proxies
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> clazz) throws SerializationException {
@@ -99,5 +106,29 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 		catch (XStreamException e) {
 			throw new SerializationException("Unable to deserialize class: " + clazz.getName(), e);
 		}
+	}
+	
+	/**
+	 * An instance of this converter needs to be registered with a higher priority than the rest so
+	 * that it's called early in the converter chain. This way, we can make sure we never get to
+	 * xstream's DynamicProxyConverter that can deserialize proxies which can be a channel for
+	 * attacks.
+	 */
+	private class OpenmrsDynamicProxyConverter extends DynamicProxyConverter {
+		
+		OpenmrsDynamicProxyConverter() {
+			super(null);
+		}
+		
+		public void marshal(Object value, HierarchicalStreamWriter writer, MarshallingContext context) {
+            //Should we serialize proxies?
+		}
+		
+		public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+			//This ensures that a NPE exception is encountered when any ensuing code calls a
+			//method on a deserialized object in it is a proxy
+			return null;
+		}
+		
 	}
 }

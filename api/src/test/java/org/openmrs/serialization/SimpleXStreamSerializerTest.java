@@ -9,17 +9,16 @@
  */
 package org.openmrs.serialization;
 
-import org.apache.commons.lang.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.test.Verifies;
-
-import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.junit.Assert;
+import org.junit.Test;
+import org.openmrs.OpenmrsObject;
+import org.openmrs.test.Verifies;
 
 public class SimpleXStreamSerializerTest {
 	
@@ -90,5 +89,19 @@ public class SimpleXStreamSerializerTest {
 		Assert.assertTrue(newMap.get(20).equals("fooBar"));
 		Assert.assertTrue(newMap.get(30).equals("bar"));
 		
+	}
+	
+	/**
+	 * @see SimpleXStreamSerializer#deserialize(String,Class)
+	 * @verifies not deserialize dynamic proxies
+	 */
+	@Test
+	public void deserialize_shouldNotDeserializeDynamicProxies() throws Exception {
+		String serialized = "<dynamic-proxy>" + "<interface>org.openmrs.OpenmrsObject</interface>"
+		        + "<handler class=\"java.beans.EventHandler\">" + "<target class=\"java.lang.ProcessBuilder\">"
+		        + "<command>" + "<string>someApp</string>" + "</command></target>" + "<action>start</action>" + "</handler>"
+		        + "</dynamic-proxy>";
+		OpenmrsObject openmrsObj = new SimpleXStreamSerializer().deserialize(serialized, OpenmrsObject.class);
+		Assert.assertNull(openmrsObj);
 	}
 }
