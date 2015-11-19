@@ -13,7 +13,7 @@
 <openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
 
 <script type="text/javascript">
-	
+
 	function validateNumericRange(conceptId, field) {
 		var errorTag = document.getElementById('numericRangeError'+conceptId);
 		if (field.value != '') {
@@ -40,7 +40,7 @@
 <openmrs:concept conceptId="${conceptId}" var="c" nameVar="n" numericVar="num">
 
 	<c:choose>
-		<c:when test="${c.datatype.boolean}">
+		<c:when test="${c.datatype['boolean']}">
 			<span id="valueBooleanRow${conceptId}" class="obsValue">
 				<select name="${formFieldName}" id="valueBooleanField${conceptId}">
 					<option value="" <c:if test="${initialValue == null}">selected</c:if>></option>
@@ -93,7 +93,7 @@
 					</c:otherwise>
 				</c:choose>
 			</span>
-		</c:when>					
+		</c:when>
 		<c:otherwise>
 			<span id="unsupportedRow${conceptId}" class="obsValue">Not Yet Supported</span>
 		</c:otherwise>
