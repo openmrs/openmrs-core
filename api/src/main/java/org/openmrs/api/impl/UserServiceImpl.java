@@ -33,6 +33,7 @@ import org.openmrs.api.CannotDeleteRoleWithChildrenException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsUtil;
@@ -649,5 +650,15 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		}
 		updatePassword(user, pw);
 	}
+
+	@Override
+    public String getSecretQuestion(User user) throws APIException {
+		if (user.getUserId() != null) {
+			LoginCredential loginCredential = dao.getLoginCredential(user);
+			return loginCredential.getSecretQuestion();
+		} else {
+			return null;
+		}
+    }
 	
 }

@@ -366,6 +366,16 @@ public interface UserService extends OpenmrsService {
 	public void changeQuestionAnswer(String pw, String q, String a) throws APIException;
 	
 	/**
+	 * Returns secret question for the given user.
+	 * 
+	 * @param user
+	 * @return
+	 * @throws APIException
+	 * @since 2.0
+	 */
+	public String getSecretQuestion(User user) throws APIException;
+	
+	/**
 	 * Compares <code>answer</code> against the <code>user</code>'s secret answer.
 	 * 
 	 * @param u user
