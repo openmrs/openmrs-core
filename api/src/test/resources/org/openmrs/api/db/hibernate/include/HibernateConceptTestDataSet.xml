@@ -42,4 +42,5 @@
   <drug drug_id="5" concept_id="12" name="Pirition" combination="true" creator="1" date_created="2008-08-15 15:34:03.0" retired="false" uuid="8e2323fa-0fa0-461f-9b59-6765997d367e"/>
   <drug drug_id="14" concept_id="14" name="TEST_DRUG_NAME" combination="true" creator="1" date_created="2008-08-15 15:34:03.0" retired="false" uuid="8e2323fa-0fa0-461f-9b59-9765997d849e"/>
   <drug drug_id="15" concept_id="15" name="TEST_DRUG_NAME_RETIRED" combination="true" creator="1" date_created="2014-05-27 15:48:00.0" retired="true" uuid="8e2323fa-0fa0-461f-9b59-9765997d849f"/>
+  <drug drug_id="1584" concept_id="15" name="TEST_DRUG_NAME_WITH_SPECIAL_CHARACTERS (" combination="true" creator="1" date_created="2015-11-24 15:48:00.0" retired="false" uuid="8e2574fa-0fa0-461f-9b59-9765997d846"/>
 </dataset>
