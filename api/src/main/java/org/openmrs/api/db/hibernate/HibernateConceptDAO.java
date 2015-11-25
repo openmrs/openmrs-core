@@ -1291,8 +1291,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		StringBuilder query = new StringBuilder();
 		if (!StringUtils.isBlank(drugName)) {
+			List<String> tokenizedName = Arrays.asList(drugName.trim().split("\\+"));
 			String escapedName = LuceneQuery.escapeQuery(drugName);
-			List<String> tokenizedName = Arrays.asList(escapedName.trim().split("\\+"));
 			query.append("(");
 			query.append(newNameQuery(tokenizedName, escapedName, searchKeywords));
 			query.append(")^0.3 OR drugReferenceMaps.conceptReferenceTerm.code:(\"").append(escapedName).append("\")^0.6");
