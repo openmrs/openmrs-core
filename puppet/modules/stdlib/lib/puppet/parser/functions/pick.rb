@@ -21,7 +21,7 @@ EOS
    args.delete(:undefined)
    args.delete("")
    if args[0].to_s.empty? then
-     fail "Must provide non empty value."
+     fail Puppet::ParseError, "pick(): must receive at last one non empty value"
    else
      return args[0]
    end
