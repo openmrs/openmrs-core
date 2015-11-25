@@ -45,12 +45,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 
 /**
  * Tests methods on the {@link DrugOrderValidator} class.
  */
 public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
-	
+
 	@Autowired
 	@Qualifier("adminService")
 	AdministrationService adminService;
@@ -655,8 +656,13 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDurationUnits(cs.getConcept(28));
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		assertEquals("DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode", errors.getFieldError("durationUnits")
-		        .getCode());
+
+		FieldError fieldError = errors.getFieldError("durationUnits");
+		if (fieldError != null) {
+			assertEquals("DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode", fieldError.getCode());
+		} else {
+			Assert.fail("duration unit _is_ mapped to SNOMED Ct duration code");
+		}
 	}
 
 	/**
@@ -707,30 +713,30 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
         order.setConcept(Context.getConceptService().getConcept(88));
         order.setOrderer(Context.getProviderService().getProvider(1));
         order.setDosingType(FreeTextDosingInstructions.class);
-        order.setInstructions("Instructions");
+		order.setInstructions("Instructions");
         order.setDosingInstructions("Test Instruction");
         order.setPatient(patient);
         encounter.setPatient(patient);
         order.setEncounter(encounter);
-        Calendar cal = Calendar.getInstance();
+		Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
-        order.setDateActivated(cal.getTime());
-        order.setAutoExpireDate(new Date());
-        order.setOrderType(Context.getOrderService().getOrderTypeByName("Drug order"));
-        order.setDrug(Context.getConceptService().getDrug(3));
-        order.setCareSetting(Context.getOrderService().getCareSetting(1));
+		order.setDateActivated(cal.getTime());
+		order.setAutoExpireDate(new Date());
+		order.setOrderType(Context.getOrderService().getOrderTypeByName("Drug order"));
+		order.setDrug(Context.getConceptService().getDrug(3));
+		order.setCareSetting(Context.getOrderService().getCareSetting(1));
         order.setQuantity(2.00);
-        order.setQuantityUnits(Context.getConceptService().getConcept(51));
+		order.setQuantityUnits(Context.getConceptService().getConcept(51));
         order.setNumRefills(10);
 
         order
-                .setAsNeededCondition("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-        order
-                .setBrandName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+				.setAsNeededCondition("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		order
+				.setBrandName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 
         Errors errors = new BindException(order, "order");
         new DrugOrderValidator().validate(order, errors);
-        Assert.assertTrue(errors.hasFieldErrors("asNeededCondition"));
+		Assert.assertTrue(errors.hasFieldErrors("asNeededCondition"));
         Assert.assertTrue(errors.hasFieldErrors("brandName"));
     }
 

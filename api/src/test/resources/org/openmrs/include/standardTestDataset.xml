@@ -117,6 +117,7 @@
   <concept_reference_term concept_reference_term_id="9" concept_source_id="1" code="127cd4689" name="cd4died term2" description="died" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="SSTRM-127689_3"/>
   <concept_reference_term concept_reference_term_id="10" concept_source_id="1" code="454545" name="no term name3" description="" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="SSTRM-454545"/>
   <concept_reference_term concept_reference_term_id="11" concept_source_id="1" code="retired code" name="retired name" description="test duplicate term that is retired" retired="1" retired_by="1" retire_reason="test reason" date_retired="2004-08-12 12:00:00" creator="1" date_created="2004-08-12 00:00:00.0" uuid="SSTRM-retired code"/>
+  <concept_reference_term concept_reference_term_id="12" concept_source_id="2" code="258703001" name="day" description="Non-SI unit of time" retired="0" creator="1" date_created="2002-01-31 00:00:00.0" uuid="SNOMED CT-258703001"/>
   <concept_map_type concept_map_type_id="1" name="is a" is_hidden="0" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="1ce7a784-7d8f-11e1-909d-c80aa9edcf4e"/>
   <concept_map_type concept_map_type_id="2" name="same-as" description="Indicates similarity" is_hidden="0" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="35543629-7d8c-11e1-909d-c80aa9edcf4e"/>
   <concept_map_type concept_map_type_id="3" name="broader-than" is_hidden="0" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="4b9d9421-7d8c-11e1-909d-c80aa9edcf4e"/>
@@ -135,6 +136,11 @@
   <concept_reference_map concept_map_id="8" concept_id="24" concept_reference_term_id="8" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="ac10cce0-49d8-11e0-8fed-18a905e044dc"/>
   <concept_reference_map concept_map_id="9" concept_id="16" concept_reference_term_id="9" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="b61bc708-49d8-11e0-8fed-18a905e044dc"/>
   <concept_reference_map concept_map_id="10" concept_id="24" concept_reference_term_id="10" concept_map_type_id="6" creator="1" date_created="2004-08-12 00:00:00.0" uuid="beafba1e-49d8-11e0-8fed-18a905e044dc"/>
+
+  <!-- https://issues.openmrs.org/browse/TRUNK-4575, uncomment to demonstrate that this mapping breaks org.openmrs.validator.DrugOrderValidatorTest
+  <concept_reference_map concept_map_id="11" concept_id="28" concept_reference_term_id="12" concept_map_type_id="2" creator="1" date_created="2015-11-08 00:00:00.0" uuid="A8E1C22C-CB3B-4E77-AD2E-EA68F65397A3"/>
+  -->
+
   <concept_reference_term_map concept_reference_term_map_id="1" term_a_id="1" term_b_id="2" a_is_to_b_id="4" creator="1" date_created="2004-08-12 00:00:00.0" uuid="dff198e4-562d-11e0-b169-18a905e044dc"/>
   <concept_reference_term_map concept_reference_term_map_id="2" term_a_id="1" term_b_id="4" a_is_to_b_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="f7edaa46-562d-11e0-b169-18a905e044dc"/>
   <concept_reference_term_map concept_reference_term_map_id="3" term_a_id="2" term_b_id="4" a_is_to_b_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="756c5a64-d36d-11e0-a71a-00248140a5eb"/>
