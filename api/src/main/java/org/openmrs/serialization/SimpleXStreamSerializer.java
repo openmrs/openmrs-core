@@ -74,7 +74,7 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 		this.xstream.useAttributeFor(ImplementationId.class, "implementationId");
 		
 	}
-
+	
 	/**
 	 * Expose the xstream object, so that module can config with xstream as need
 	 *
