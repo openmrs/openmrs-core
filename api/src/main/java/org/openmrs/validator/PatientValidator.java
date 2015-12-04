@@ -22,7 +22,7 @@ import org.springframework.validation.Errors;
 /**
  * This class validates a Patient object.
  */
-@Handler(supports = { Patient.class }, order = 50)
+@Handler(supports = { Patient.class }, order = 25)
 public class PatientValidator extends PersonValidator {
 	
 	private static Log log = LogFactory.getLog(PersonNameValidator.class);
