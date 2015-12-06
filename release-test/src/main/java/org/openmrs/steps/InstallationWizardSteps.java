@@ -75,7 +75,7 @@ public class InstallationWizardSteps extends Steps {
     	String port = System.getProperty(portProp, "3336");
 
         type("jdbc:mysql://localhost:" + port + "/@DBNAME@?"
-                + "autoReconnect=true&sessionVariables=storage_engine=InnoDB"
+                + "autoReconnect=true&sessionVariables=default_storage_engine=InnoDB"
                 + "&useUnicode=true&characterEncoding=UTF-8&server.initialize-user=true"
                 + "&createDatabaseIfNotExist=true&server.basedir=target/database&server.datadir=target/database/data"
                 + "&server.collation-server=utf8_general_ci&server.character-set-server=utf8",

@@ -413,7 +413,7 @@ public class DatabaseUpdater {
 		
 		// hack for mysql to make sure innodb tables are created
 		if (url.contains("mysql") && !url.contains("InnoDB")) {
-			url = url + "&sessionVariables=storage_engine=InnoDB";
+			url = url + "&sessionVariables=default_storage_engine=InnoDB";
 		}
 		
 		Class.forName(driver);
