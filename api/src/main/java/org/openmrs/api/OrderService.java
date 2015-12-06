@@ -9,10 +9,6 @@
  */
 package org.openmrs.api;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
@@ -26,6 +22,10 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Orders
@@ -98,7 +98,18 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order, OrderContext orderContext) throws APIException;
-	
+
+	/**
+	 * Save or update the given retrospective <code>order</code> in the database. If the OrderType for the order
+	 * is not specified, then it will be set to the one set on the OrderContext if any, if none
+	 * exists on the orderContext, then it will be set to the one associated to the ConceptClass of
+	 * the ordered concept otherwise the save fails. If the CareSetting field of the order is not
+	 * specified then it will default to the one set on the passed in OrderContext if any otherwise
+	 * the save fails.
+	 */
+	@Authorized({PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS})
+	public Order saveRetrospectiveOrder(Order order, OrderContext orderContext);
+
 	/**
 	 * Completely delete an order from the database. This should not typically be used unless
 	 * desperately needed. Most orders should just be voided. See {@link #voidOrder(Order, String)}
