@@ -97,7 +97,7 @@ public class InitializationWizardModel {
 	/**
 	 * Filled out by user on the databasesetup.vm page Looks like:
 	 */
-	public String databaseConnection = "jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
+	public String databaseConnection = "jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=default_storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
 	
 	/**
 	 * Optional Database Driver string filled in on databasesetup.vm
