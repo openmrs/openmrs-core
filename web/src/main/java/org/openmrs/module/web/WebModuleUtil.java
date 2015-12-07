@@ -780,9 +780,12 @@ public class WebModuleUtil {
 		
 		if (folder.exists()) {
 			Properties emptyProperties = new Properties();
-			for (File f : folder.listFiles()) {
-				if (f.getName().startsWith("module_messages")) {
-					OpenmrsUtil.storeProperties(emptyProperties, f, "");
+			Files[] files = folder.listFiles();
+			if(files != null) {
+				for (File f : files) {
+					if (f.getName().startsWith("module_messages")) {
+						OpenmrsUtil.storeProperties(emptyProperties, f, "");
+					}
 				}
 			}
 		}
