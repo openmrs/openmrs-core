@@ -165,7 +165,11 @@ public class ModuleFactory {
 		}
 		
 		if (modulesFolder.isDirectory()) {
-			loadModules(Arrays.asList(modulesFolder.listFiles()));
+			File[] files = modulesFolder.listFiles();
+			if (files != null) {
+				throw new ModuleException("Modules from " + modulesFolder.getAbsolutePath() + " could not be listed.");
+			}
+			loadModules(Arrays.asList(files));
 		} else {
 			log.error("modules folder: '" + modulesFolder.getAbsolutePath() + "' is not a valid directory");
 		}
@@ -1169,10 +1173,6 @@ public class ModuleFactory {
 						String extId = ext.getExtensionId();
 						try {
 							List<Extension> tmpExtensions = getExtensions(extId);
-							if (tmpExtensions == null) {
-								tmpExtensions = new Vector<Extension>();
-							}
-							
 							tmpExtensions.remove(ext);
 							getExtensionMap().put(extId, tmpExtensions);
 						}
