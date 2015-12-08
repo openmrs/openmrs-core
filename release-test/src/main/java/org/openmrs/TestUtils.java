@@ -13,7 +13,7 @@ public class TestUtils {
     public static String prepareJdbcConnectionUrl(String port, String databaseName) {
         return "jdbc:mysql://localhost:" + port + "/"+databaseName+"?"
                 + "autoReconnect=true"
-                + "&sessionVariables=storage_engine=InnoDB"
+                + "&sessionVariables=default_storage_engine=InnoDB"
                 + "&useUnicode=true&characterEncoding=UTF-8"
                 + "&server.basedir=target/database&server.datadir=target/database/data"
                 + "&server.collation-server=utf8_general_ci&server.character-set-server=utf8";
