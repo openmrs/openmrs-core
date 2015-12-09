@@ -157,5 +157,13 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, drugList.size());
 		
 	}
+
+	@Test
+	@Verifies(value = "return a drug if drug name is passed with special character", method = "getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)")
+	public void getDrugs_shouldReturnDrugEvenIf_DrugNameHasSpecialCharacters() throws Exception {
+		List<Drug> drugList1 = dao.getDrugs("DRUG_NAME_WITH_SPECIAL_CHARACTERS (", null, true);
+		Assert.assertEquals(1, drugList1.size());
+
+	}
 	
 }

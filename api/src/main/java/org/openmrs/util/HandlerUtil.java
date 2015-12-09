@@ -162,6 +162,8 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 	 * @should return the preferred handler for the passed handlerType and type
 	 * @should throw a APIException if no handler is found
 	 * @should throw a APIException if multiple preferred handlers are found
+	 * @should should return patient validator for patient
+	 * @should should return person validator for person
 	 */
 	public static <H, T> H getPreferredHandler(Class<H> handlerType, Class<T> type) {
 		

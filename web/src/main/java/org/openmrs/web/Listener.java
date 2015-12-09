@@ -222,9 +222,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 
 		// start openmrs
 		try {
-			Context.openSession();
-			PersonName.setFormat(Context.getAdministrationService().getGlobalProperty(
-			    OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT));
 			// load bundled modules that are packaged into the webapp
 			Listener.loadBundledModules(servletContext);
 			
