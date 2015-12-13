@@ -30,6 +30,7 @@ import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
@@ -951,5 +952,34 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			return concept.getSetMembers();
 		}
 		return Collections.emptyList();
+	}
+
+	@Override
+	public List<DrugIngredient> getAllDrugIngredients() {
+		return dao.getAllDrugIngredients();
+	}
+
+	@Override
+	public void saveDrugIngredient(DrugIngredient drugIngredient) {
+		dao.saveDrugIngredient(drugIngredient);
+	}
+
+	@Override
+	public void purgeDrugIngredient(DrugIngredient drugIngredient) {
+		dao.purgeDrugIngredient(drugIngredient);
+	}
+	
+	public DrugIngredient getDrugIngredientByUuid(String uuid) {
+		return dao.getDrugIngredientByUuid(uuid);
+	}
+
+	@Override
+	public void deleteDrugIngredient(DrugIngredient drugIngredient) {
+		dao.deleteDrugIngredient(drugIngredient);
+	}
+
+	@Override
+	public DrugIngredient getDrugIngredient(Integer id) {
+		return dao.getDrugIngredient(id);
 	}
 }

@@ -16,6 +16,7 @@ import java.util.Locale;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
+import org.openmrs.DrugIngredient;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
@@ -233,4 +234,16 @@ public interface OrderDAO {
 	 * @return a list of orders from the database
 	 */
 	public List<Object[]> getOrderFromDatabase(Order order, boolean isOrderADrugOrder) throws APIException;
+	
+	public DrugIngredient getDrugIngredient(Integer id);
+	
+	public List<DrugIngredient> getAllDrugIngredients();
+	
+	public DrugIngredient getDrugIngredientByUuid(String uuid);
+	
+	public void saveDrugIngredient(DrugIngredient drugIngredient);
+	
+	public void purgeDrugIngredient(DrugIngredient drugIngredient);
+	
+	public void deleteDrugIngredient(DrugIngredient drugIngredient); 
 }

@@ -16,6 +16,7 @@ import java.util.Locale;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
+import org.openmrs.DrugIngredient;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
@@ -725,4 +726,17 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getNonCodedDrugConcept();
+	
+	/*TODO Identify what we don't need so that we can get that out*/
+	public List<DrugIngredient> getAllDrugIngredients();
+	
+	public DrugIngredient getDrugIngredientByUuid(String uuid);
+	
+	public DrugIngredient getDrugIngredient(Integer id);
+	
+	public void saveDrugIngredient(DrugIngredient drugIngredient);
+	
+	public void purgeDrugIngredient(DrugIngredient drugIngredient);
+	
+	public void deleteDrugIngredient(DrugIngredient drugIngredient); 
 }
