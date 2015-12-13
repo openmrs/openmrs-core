@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -115,18 +116,30 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
 		if (devDir != null) {
-			File dir = new File(devDir, "api" + File.separator + "target" + File.separator + "classes" + File.separator);
-			Collection<File> files = FileUtils.listFiles(dir, new String[] { "class" }, true);
-			addClassFilePackages(files, dir.getAbsolutePath().length() + 1);
+			List<String> sourceDirs = getSourceDirectories(devDir);
+			for (String dirName : sourceDirs) {
+				File dir = new File(devDir, dirName + File.separator + "target" + File.separator + "classes"
+				        + File.separator);
+				Collection<File> files = FileUtils.listFiles(dir, new String[] { "class" }, true);
+				addClassFilePackages(files, dir.getAbsolutePath().length() + 1);
+			}
 			
-			dir = new File(devDir, "omod" + File.separator + "target" + File.separator + "classes" + File.separator);
-			files = FileUtils.listFiles(dir, new String[] { "class" }, true);
-			addClassFilePackages(files, dir.getAbsolutePath().length() + 1);
 		} else {
 			for (URL url : urls) {
 				providedPackages.addAll(ModuleUtil.getPackagesFromFile(OpenmrsUtil.url2file(url)));
 			}
 		}
+	}
+	
+	private static List<String> getSourceDirectories(File devDir) {
+		List<String> directories = new ArrayList<String>();
+		String[] folders = devDir.list(FileFilterUtils.directoryFileFilter());
+		for (String folder : folders) {
+			if (folder.startsWith("api") || folder.startsWith("omod")) {
+				directories.add(folder);
+			}
+		}
+		return directories;
 	}
 	
 	private void addClassFilePackages(Collection<File> files, int dirLength) {
@@ -205,11 +218,12 @@ public class ModuleClassLoader extends URLClassLoader {
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
 		try {
 			if (devDir != null) {
-				File dir = new File(devDir, "omod" + File.separator + "target" + File.separator + "classes" + File.separator);
-				result.add(dir.toURI().toURL());
-				
-				dir = new File(devDir, "api" + File.separator + "target" + File.separator + "classes" + File.separator);
-				result.add(dir.toURI().toURL());
+				List<String> sourceDirs = getSourceDirectories(devDir);
+				for (String dirName : sourceDirs) {
+					File dir = new File(devDir, dirName + File.separator + "target" + File.separator + "classes"
+					        + File.separator);
+					result.add(dir.toURI().toURL());
+				}
 			}
 		}
 		catch (MalformedURLException ex) {
