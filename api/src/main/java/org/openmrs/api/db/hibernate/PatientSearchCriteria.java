@@ -308,8 +308,9 @@ public class PatientSearchCriteria {
 			}
 		}
 		
-		// TODO add a junit test for patientIdentifierType restrictions	
-		
+		/**
+		* @should add a junit test for patientIdentifierType restrictions	
+		*/
 		// do the type restriction
 		if (!CollectionUtils.isEmpty(identifierTypes)) {
 			criteria.add(Restrictions.in("ids.identifierType", identifierTypes));

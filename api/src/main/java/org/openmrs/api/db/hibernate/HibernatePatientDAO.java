@@ -300,7 +300,9 @@ public class HibernatePatientDAO implements PatientDAO {
 			criteria.add(Restrictions.eq("identifier", identifier));
 		}
 		
-		// TODO add junit test for getting by identifier type
+		/**
+	  * @should add junit test for getting by identifier type
+	  */
 		if (patientIdentifierTypes.size() > 0) {
 			criteria.add(Restrictions.in("identifierType", patientIdentifierTypes));
 		}
@@ -309,7 +311,9 @@ public class HibernatePatientDAO implements PatientDAO {
 			criteria.add(Restrictions.in("location", locations));
 		}
 		
-		// TODO add junit test for getting by patients
+		/**
+		* @should add junit test for getting by patients
+		*/
 		if (patients.size() > 0) {
 			criteria.add(Restrictions.in("patient", patients));
 		}
