@@ -322,9 +322,4 @@
 		<url-pattern>*.jsp</url-pattern>
 	</servlet-mapping>
 
-	<error-page>
-		<exception-type>org.springframework.web.HttpSessionRequiredException</exception-type>
-		<location>/login.htm</location>
-	</error-page>
-
 </web-app>
