@@ -27,4 +27,5 @@
     <drug_order order_id="2000" drug_inventory_id="3001" dose="3" dose_units="50" as_needed="false" frequency="1"
                 dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10"
                 dispense_as_written="0"/>
+    <drug_ingredient ingredient_id="1" drug="3001" date_created="2015-14-12 10:26:00.0" ingredient="1100" uuid="5b85136c-a207-11e5-bf7f-feff819cdc9f" />            
 </dataset>

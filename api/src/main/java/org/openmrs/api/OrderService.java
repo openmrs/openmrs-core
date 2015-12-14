@@ -727,15 +727,29 @@ public interface OrderService extends OpenmrsService {
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getNonCodedDrugConcept();
 	
-	/*TODO Identify what we don't need so that we can get that out*/
+	/**
+	 * @should return all existing Drug Ingredients
+	 */
 	public List<DrugIngredient> getAllDrugIngredients();
 	
+	/**
+	 * @should fetch drug ingredient using its uuid
+	 */
 	public DrugIngredient getDrugIngredientByUuid(String uuid);
 	
+	/**
+	 * @should get a drug ingredient using its identifier
+	 */
 	public DrugIngredient getDrugIngredient(Integer id);
 	
+	/**
+	 * @should save a new drug ingredient
+	 */
 	public void saveDrugIngredient(DrugIngredient drugIngredient);
 	
+	/**
+	 * @should permanently delete an existing drug ingredient
+	 */
 	public void purgeDrugIngredient(DrugIngredient drugIngredient);
 	
 	public void deleteDrugIngredient(DrugIngredient drugIngredient); 
