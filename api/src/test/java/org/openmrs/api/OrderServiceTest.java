@@ -3112,4 +3112,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(orderService.getOrder(saveOrder.getOrderId()));
 	}
 
+	@Test
+	@Verifies(value = "should get a drug ingredient using its identifier", method = "getDrugIngredient(Integer)")
+	public void getDrugIngredient_shouldgetADrugIngredientUsingItsIdentifier() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-DrugOrders.xml");
+		
+		Assert.assertNotNull(orderService.getDrugIngredient(1));
+	}
 }

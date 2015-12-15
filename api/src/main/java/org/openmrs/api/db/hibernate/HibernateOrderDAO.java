@@ -33,6 +33,7 @@ import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
+import org.openmrs.DrugIngredient;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
@@ -553,5 +554,51 @@ public class HibernateOrderDAO implements OrderDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Order.class);
 		criteria.add(Restrictions.eq("orderType", orderType));
 		return criteria.list().size() > 0;
+	}
+
+	@Override
+	public DrugIngredient getDrugIngredient(Integer id) {
+		return (DrugIngredient) sessionFactory.getCurrentSession().get(DrugIngredient.class, id);
+	}
+
+	/**
+	 * Returns all existing DrugIngredient
+	 */
+	@Override
+	public List<DrugIngredient> getAllDrugIngredients() {
+		return sessionFactory.getCurrentSession()
+		        .createCriteria(DrugIngredient.class).list();
+	}
+
+	/**
+	 * Saves a DrugIngredient
+	 */
+	@Override
+	public void saveDrugIngredient(DrugIngredient drugIngredient) {
+		sessionFactory.getCurrentSession().save(drugIngredient);
+	}
+
+	/**
+	 * Permanently deletes an existing DrugIngredient object
+	 */
+	@Override
+	public void purgeDrugIngredient(DrugIngredient drugIngredient) {
+		sessionFactory.getCurrentSession().delete(drugIngredient);
+	}
+	
+	/**
+	 * Gets DrugIngredient using its unique identifier
+	 */
+	public DrugIngredient getDrugIngredientByUuid(String uuid) {
+		return (DrugIngredient) sessionFactory.getCurrentSession().createQuery("from DrugIngredient di where di.uuid = :uuid").setString("uuid",
+		    uuid).uniqueResult();
+	}
+
+	@Override
+	/**
+	 * Voids DrugIngredient
+	 */
+	public void deleteDrugIngredient(DrugIngredient drugIngredient) {
+		//TODO void not supported
 	}
 }
