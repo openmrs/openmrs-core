@@ -126,6 +126,7 @@ public class PersonAddressValidator implements Validator {
 		
 		ValidateUtil.validateFieldLengths(errors, object.getClass(), "address1", "address2", "cityVillage", "stateProvince",
 		    "postalCode", "country", "latitude", "longitude", "voidReason", "countyDistrict", "address3", "address4",
-		    "address5", "address6");
+		    "address5", "address6", "address7", "address8", "address9", "address10", "address11", "address12", "address13", 
+		    "address14", "address15");
 	}
 }
