@@ -367,4 +367,68 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		assertEquals(stopDate, order.getDateStopped());
 		assertEquals(stopDate, dcOrder.getAutoExpireDate());
 	}
+
+	@Test
+	public void shouldAllowRevisionOfOrdersInRetrospectiveDataEntry() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrderAutoExpireDate.xml");
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_WEEK, -20);
+
+		Encounter encounter = new Encounter();
+		encounter.setEncounterDatetime(cal.getTime());
+		Patient patient = patientService.getPatient(6);
+		encounter.setPatient(patient);
+		encounter.setEncounterType(encounterService.getEncounterType(1));
+		encounterService.saveEncounter(encounter);
+
+		DrugOrder order = new DrugOrder();
+		order.setEncounter(encounter);
+		order.setPatient(patient);
+		order.setCareSetting(orderService.getCareSetting(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDateActivated(encounter.getEncounterDatetime());
+		order.setDrug(conceptService.getDrug(2));
+		order.setDosingType(SimpleDosingInstructions.class);
+		order.setDose(300.0);
+		order.setDoseUnits(conceptService.getConcept(50));
+		order.setQuantity(20.0);
+		order.setOrderType(orderService.getOrderType(1));
+		order.setQuantityUnits(conceptService.getConcept(51));
+		order.setFrequency(orderService.getOrderFrequency(1));
+		order.setRoute(conceptService.getConcept(22));
+		order.setDuration(10);
+		order.setDurationUnits(conceptService.getConcept(1001));
+		orderService.saveOrder(order, null);
+
+		cal.add(Calendar.DAY_OF_WEEK, 4);
+		Encounter encounter2 = new Encounter();
+		encounter2.setEncounterDatetime(cal.getTime());
+		encounter2.setPatient(patient);
+		encounter2.setEncounterType(encounterService.getEncounterType(1));
+		encounterService.saveEncounter(encounter2);
+
+		DrugOrder order2 = new DrugOrder();
+		order2.setEncounter(encounter2);
+		order2.setPatient(patient);
+		order2.setCareSetting(orderService.getCareSetting(2));
+		order2.setOrderer(Context.getProviderService().getProvider(1));
+		order2.setDateActivated(encounter2.getEncounterDatetime());
+		order2.setDrug(conceptService.getDrug(2));
+		order2.setDosingType(SimpleDosingInstructions.class);
+		order2.setDose(300.0);
+		order2.setDoseUnits(conceptService.getConcept(50));
+		order2.setQuantity(20.0);
+		order2.setOrderType(orderService.getOrderType(1));
+		order2.setQuantityUnits(conceptService.getConcept(51));
+		order2.setFrequency(orderService.getOrderFrequency(1));
+		order2.setRoute(conceptService.getConcept(22));
+		order2.setDuration(20);
+		order2.setDurationUnits(conceptService.getConcept(1001));
+		order2.setAction(Order.Action.REVISE);
+		order2.setPreviousOrder(order);
+		orderService.saveRetrospectiveOrder(order2, null);
+
+		assertEquals(DateUtils.addSeconds(order2.getDateActivated(), -1), order.getDateStopped());
+	}
+
 }
