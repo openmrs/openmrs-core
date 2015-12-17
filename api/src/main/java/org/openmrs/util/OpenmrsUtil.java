@@ -335,11 +335,12 @@ public class OpenmrsUtil {
 		if (folder == null) {
 			return false;
 		}
-		if (!folder.isDirectory()) {
-			return false;
-		}
 		
-		for (File f : folder.listFiles()) {
+        	File[] fileList = folder.listFiles();
+        	if (fileList == null) {
+            		return false;
+        	}
+		for (File f : fileList) {
 			if (f.getName().equals(filename)) {
 				return true;
 			}
@@ -915,38 +916,39 @@ public class OpenmrsUtil {
 		if (!dir.exists() || !dir.isDirectory()) {
 			throw new IOException("Could not delete directory '" + dir.getAbsolutePath() + "' (not a directory)");
 		}
-		
+
 		if (log.isDebugEnabled()) {
 			log.debug("Deleting directory " + dir.getAbsolutePath());
 		}
-		
+
 		File[] fileList = dir.listFiles();
-		for (File f : fileList) {
-			if (f.isDirectory()) {
-				deleteDirectory(f);
-			}
-			boolean success = f.delete();
-			
-			if (log.isDebugEnabled()) {
-				log.debug("   deleting " + f.getName() + " : " + (success ? "ok" : "failed"));
-			}
-			
-			if (!success) {
-				f.deleteOnExit();
-			}
-		}
-		
+        	if (fileList != null) {
+            		for (File f : fileList) {
+                		if (f.isDirectory()) {
+                    			deleteDirectory(f);
+                		}
+                		boolean success = f.delete();
+
+                		if (log.isDebugEnabled()) {
+                    			log.debug("   deleting " + f.getName() + " : " + (success ? "ok" : "failed"));
+                		}
+
+                		if (!success) {
+                    			f.deleteOnExit();
+                		}
+            		}
+        	}
 		boolean success = dir.delete();
-		
+
 		if (!success) {
 			log.warn("   ...could not remove directory: " + dir.getAbsolutePath());
 			dir.deleteOnExit();
 		}
-		
+
 		if (success && log.isDebugEnabled()) {
 			log.debug("   ...and directory itself");
 		}
-		
+
 		return success;
 	}
 	
