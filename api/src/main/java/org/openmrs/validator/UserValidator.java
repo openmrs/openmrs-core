@@ -40,7 +40,7 @@ public class UserValidator implements Validator {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private static final Pattern EMAIL_PATTERN = Pattern
-	        .compile("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+	        .compile("^.+@.+\\..+$");
 	
 	@Autowired
 	private PersonValidator personValidator;
