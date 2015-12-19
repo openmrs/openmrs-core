@@ -196,9 +196,8 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isUserNameAsEmailValid_shouldReturnFalseIfEmailInvalid() throws Exception {
-		String[] invalids = new String[] { "mkyong", "mkyong@.com.my", "mkyong123@gmail.a", "mkyong123@.com",
-		        "mkyong123@.com.com", ".mkyong@mkyong.com", "mkyong()*@gmail.com", "mkyong@%*.com",
-		        "mkyong..2002@gmail.com", "mkyong.@gmail.com", "mkyong@mkyong@gmail.com", "mkyong@gmail.com.1a" };
+		String[] invalids = new String[] { "mkyong", "mkyong123@.com", "my@kong", "my.kong", 
+				"my.@kong", "@kong.my" };
 		for (String email : invalids) {
 			Assert.assertFalse(validator.isUserNameAsEmailValid(email));
 		}
@@ -212,7 +211,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	public void isUserNameAsEmailValid_shouldReturnTrueIfEmailValid() throws Exception {
 		String[] valids = new String[] { "mkyong@yahoo.com", "mkyong-100@yahoo.com", "mkyong.100@yahoo.com",
 		        "mkyong111@mkyong.com", "mkyong-100@mkyong.net", "mkyong.100@mkyong.com.au", "mkyong@1.com",
-		        "mkyong@gmail.com.com" };
+		        "mkyong@gmail.com.com", "mk@t-yong.de" };
 		for (String email : valids) {
 			Assert.assertTrue(validator.isUserNameAsEmailValid(email));
 		}
