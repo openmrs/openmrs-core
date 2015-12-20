@@ -9,15 +9,14 @@
  */
 package org.openmrs.validator;
 
-import java.util.Calendar;
-import java.util.Locale;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateConceptNameException;
@@ -27,11 +26,14 @@ import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import java.util.Calendar;
+import java.util.Locale;
+
 /**
  * Tests methods on the {@link ConceptValidator} class.
  */
 public class ConceptValidatorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @verifies {@link ConceptValidator#validate(Object,Errors)} test = should fail if there is a
 	 *           duplicate unretired concept name in the locale
@@ -42,7 +44,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Context.setLocale(new Locale("en"));
 		Concept concept = Context.getConceptService().getConcept(5497);
 		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
-		
+
 		ConceptName newName = new ConceptName(duplicateName, Context.getLocale());
 		newName.setDateCreated(Calendar.getInstance().getTime());
 		newName.setCreator(Context.getAuthenticatedUser());
@@ -50,7 +52,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should fail if the object parameter is null", method = "validate(Concept)")
 	public void validate_shouldFailIfTheObjectParameterIsNull() throws Exception {
@@ -58,19 +60,19 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		new ConceptValidator().validate(null, errors);
 		Assert.assertTrue(errors.hasErrors());
 	}
-	
+
 	@Test
 	@Verifies(value = "should pass if the concept is being updated with no name change", method = "validate(Concept)")
 	public void validate_shouldPassIfTheConceptIsBeingUpdatedWithNoNameChange() throws Exception {
-		
+
 		Concept conceptToUpdate = Context.getConceptService().getConcept(5497);
 		conceptToUpdate.setCreator(Context.getAuthenticatedUser());
 		Errors errors = new BindException(conceptToUpdate, "concept");
 		new ConceptValidator().validate(conceptToUpdate, errors);
 		Assert.assertFalse(errors.hasErrors());
-		
+
 	}
-	
+
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
@@ -84,7 +86,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertEquals(true, errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
@@ -98,10 +100,10 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertEquals(true, errors.hasErrors());
 	}
-	
+
 	/**
 	 * Tests for duplicate names for the same concept and not with names for other concepts
-	 * 
+	 *
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
 	@Test(expected = DuplicateConceptNameException.class)
@@ -113,10 +115,10 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 	}
-	
+
 	/**
 	 * Tests for uniqueness amongst all fully specified names in the same locale
-	 * 
+	 *
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
 	@Test(expected = DuplicateConceptNameException.class)
@@ -126,16 +128,16 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Concept concept = Context.getConceptService().getConcept(5497);
 		Assert.assertEquals(true, concept.getFullySpecifiedName(Context.getLocale()).isFullySpecifiedName());
 		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
-		
+
 		Concept anotherConcept = Context.getConceptService().getConcept(5089);
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName);
 		Errors errors = new BindException(anotherConcept, "concept");
 		new ConceptValidator().validate(anotherConcept, errors);
 	}
-	
+
 	/**
 	 * Tests for uniqueness amongst all preferred names in the same locale
-	 * 
+	 *
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
 	@Test(expected = DuplicateConceptNameException.class)
@@ -147,14 +149,14 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		concept.setPreferredName(preferredName);
 		Context.getConceptService().saveConcept(concept);
 		Assert.assertEquals("preferred name", concept.getPreferredName(Context.getLocale()).getName());
-		
+
 		Concept anotherConcept = Context.getConceptService().getConcept(5089);
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName("preferred name");
-		
+
 		Errors errors = new BindException(anotherConcept, "concept");
 		new ConceptValidator().validate(anotherConcept, errors);
 	}
-	
+
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
@@ -164,12 +166,12 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Concept concept = Context.getConceptService().getConcept(5497);
 		for (ConceptName name : concept.getNames())
 			name.setConceptNameType(null);
-		
+
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertEquals(true, errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
@@ -182,7 +184,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertEquals(false, errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
@@ -194,14 +196,14 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		//use a synonym as the duplicate name
 		ConceptName duplicateName = concept.getSynonyms(Context.getLocale()).iterator().next();
 		Assert.assertEquals(true, duplicateName.isSynonym());
-		
+
 		Concept anotherConcept = Context.getConceptService().getConcept(5089);
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName.getName());
 		Errors errors = new BindException(anotherConcept, "concept");
 		new ConceptValidator().validate(anotherConcept, errors);
 		Assert.assertEquals(false, errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
@@ -213,14 +215,14 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		concept.setRetired(true);
 		Context.getConceptService().saveConcept(concept);
 		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
-		
+
 		Concept anotherConcept = Context.getConceptService().getConcept(5089);
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName);
 		Errors errors = new BindException(anotherConcept, "concept");
 		new ConceptValidator().validate(anotherConcept, errors);
 		Assert.assertEquals(false, errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see ConceptValidator#validate(Object,Errors)
 	 * @verifies pass if the concept being validated is retired and has a duplicate name
@@ -231,7 +233,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Concept concept = Context.getConceptService().getConcept(5497);
 		Context.getConceptService().saveConcept(concept);
 		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
-		
+
 		Concept anotherConcept = Context.getConceptService().getConcept(5089);
 		anotherConcept.setRetired(true);
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName);
@@ -239,7 +241,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		new ConceptValidator().validate(anotherConcept, errors);
 		Assert.assertEquals(false, errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
@@ -248,7 +250,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassIfTheConceptHasASynonymThatIsAlsoAShortName() throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("CD4", Context.getLocale()));
-		// Add the short name. Because the short name is not counted as a Synonym. 
+		// Add the short name. Because the short name is not counted as a Synonym.
 		// ConceptValidator will not record any errors.
 		ConceptName name = new ConceptName("CD4", Context.getLocale());
 		name.setConceptNameType(ConceptNameType.SHORT);
@@ -257,7 +259,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
@@ -271,14 +273,14 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		concept.addConceptMapping(map1);
 		ConceptMap map2 = new ConceptMap(cs.getConceptReferenceTerm(1), cs.getConceptMapType(1));
 		concept.addConceptMapping(map2);
-		
+
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
-		
+
 		//the second mapping should be rejected
 		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[1]"));
 	}
-	
+
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
@@ -291,7 +293,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(otherName.isFullySpecifiedName() || otherName.isPreferred());
 		Assert.assertFalse(otherName.isVoided());
 		Assert.assertFalse(otherName.getConcept().isRetired());
-		
+
 		//change to a duplicate name in the same locale
 		ConceptName duplicateName = cs.getConceptName(2477);
 		duplicateName.setName(otherName.getName());
@@ -301,12 +303,12 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(duplicateName, concept.getPreferredName(duplicateName.getLocale()));
 		Assert.assertTrue(duplicateName.isPreferred());
 		duplicateName.setVoided(true);
-		
+
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see ConceptValidator#validate(Object,Errors)
 	 * @verifies fail if there is a duplicate unretired concept name in the same locale different
@@ -320,13 +322,13 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Concept concept = Context.getConceptService().getConcept(5497);
 		Assert.assertEquals(true, concept.getFullySpecifiedName(en).isFullySpecifiedName());
 		String duplicateName = concept.getFullySpecifiedName(en).getName();
-		
+
 		Concept anotherConcept = Context.getConceptService().getConcept(5089);
 		anotherConcept.getFullySpecifiedName(en).setName(duplicateName);
 		Errors errors = new BindException(anotherConcept, "concept");
 		new ConceptValidator().validate(anotherConcept, errors);
 	}
-	
+
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
@@ -342,7 +344,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		concept.addConceptMapping(map);
 		ValidateUtil.validate(concept);
 	}
-	
+
 	/**
 	 * @see {@link ConceptValidator#validate(Object,Errors)}
 	 */
@@ -357,7 +359,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		concept.addConceptMapping(map);
 		ValidateUtil.validate(concept);
 	}
-	
+
 	/**
 	 * @see ConceptValidator#validate(Object,Errors)
 	 * @verifies not fail if a term has two new mappings on it
@@ -374,11 +376,25 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		        "term one two three four five");
 		ConceptMap map2 = new ConceptMap(newTermTwo, cs.getConceptMapType(1));
 		concept.addConceptMapping(map2);
-		
+
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
-		
+
 		//the second mapping should be rejected
 		Assert.assertEquals(false, errors.hasFieldErrors("conceptMappings[1]"));
+	}
+
+	@Test(expected = APIException.class)
+	public void validate_shouldFailIfCodedConceptContainsItselfAsAnAnswer() {
+		Context.setLocale(new Locale("en"));
+		Concept concept = Context.getConceptService().getConcept(30);
+
+		ConceptAnswer conceptAnswer = new ConceptAnswer(concept);
+		concept.addAnswer(conceptAnswer);
+
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+
+		Assert.assertEquals(true, errors.hasErrors());
 	}
 }
