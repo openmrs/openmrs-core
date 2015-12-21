@@ -293,11 +293,6 @@
 	</servlet-mapping>
 	
 	<servlet-mapping>
-		<servlet-name>jsp</servlet-name>
-		<url-pattern>*.withjstl</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
  		<servlet-name>openmrs_static_content</servlet-name>
  		<url-pattern>/scripts/*</url-pattern>
 	</servlet-mapping>
