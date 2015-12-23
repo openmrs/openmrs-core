@@ -10,6 +10,7 @@
 package org.openmrs.api.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -22,13 +23,16 @@ import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.Privilege;
+import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.EncounterTypeLockedException;
@@ -258,6 +262,34 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			encs.addAll(Context.getEncounterService().getEncountersByPatientId(p.getPatientId()));
 		}
 		return Context.getEncounterService().filterEncountersByViewPermissions(encs, null);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
+	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
+	 *      
+	 * @deprecated As of 2.0, replaced by {@link #getEncounters(EncounterSearchCriteria)}
+	 */
+	@Deprecated
+	@Override
+	@Transactional(readOnly = true)
+	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
+	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
+	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
+		EncounterSearchCriteriaBuilder encounterSearchCriteriaBuilder = new EncounterSearchCriteriaBuilder()
+				.setPatient(who)
+				.setLocation(loc)
+				.setFromDate(fromDate)
+				.setToDate(toDate)
+				.setEnteredViaForms(enteredViaForms)
+				.setEncounterTypes(encounterTypes)
+				.setProviders(providers)
+				.setVisitTypes(visitTypes)
+				.setVisits(visits)
+				.setIncludeVoided(includeVoided);
+
+		return getEncounters(encounterSearchCriteriaBuilder.createEncounterSearchCriteria());
 	}
 		
 	/**

@@ -9,6 +9,8 @@
  */
 package org.openmrs.api;
 
+import java.util.Date;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -16,9 +18,13 @@ import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
+import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.handler.EncounterVisitHandler;
@@ -126,7 +132,42 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> getEncountersByPatientIdentifier(String identifier) throws APIException;
-			
+		
+	/**
+	 * Get all encounters that match a variety of (nullable) criteria. Each extra value for a
+	 * parameter that is provided acts as an "and" and will reduce the number of results returned
+	 * 
+	 * @param who the patient the encounter is for
+	 * @param loc the location this encounter took place
+	 * @param fromDate the minimum date (inclusive) this encounter took place
+	 * @param toDate the maximum date (exclusive) this encounter took place
+	 * @param enteredViaForms the form that entered this encounter must be in this list
+	 * @param encounterTypes the type of encounter must be in this list
+	 * @param providers the provider of this encounter must be in this list
+	 * @param visitTypes the visit types of this encounter must be in this list
+	 * @param visits the visits of this encounter must be in this list
+	 * @param includeVoided true/false to include the voided encounters or not
+	 * @return a list of encounters ordered by increasing encounterDatetime
+	 * @since 1.9
+	 * @should get encounters by location
+	 * @should get encounters on or after date
+	 * @should get encounters on or up to a date
+	 * @should get encounters by form
+	 * @should get encounters by type
+	 * @should get encounters by provider
+	 * @should get encounters by visit type
+	 * @should get encounters by visit
+	 * @should exclude voided encounters
+	 * @should include voided encounters
+	 * 
+	 * @deprecated As of 2.0, replaced by {@link #getEncounters(EncounterSearchCriteria)}
+	 */
+	@Deprecated
+	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
+	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
+	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
+	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided);
+	
 	/**
 	 * Get all encounters that match a variety of (nullable) criteria contained in the parameter object.
 	 * Each extra value for a parameter that is provided acts as an "and" and will reduce the number of results returned
