@@ -174,7 +174,7 @@ public class WebUtil implements GlobalPropertyListener {
 	}
 
 	/**
-	 * Encoder for XML and XHTML.
+	 * Encodes for XML and XHTML.
 	 *
 	 * @param s
 	 * @return Encoded String
@@ -184,7 +184,7 @@ public class WebUtil implements GlobalPropertyListener {
 	}
 
 	/**
-	 * Encoder for XML and XHTML attribute content.
+	 * Encodes for XML and XHTML attribute content.
 	 *
 	 * @param s
 	 * @return Encoded String
@@ -194,7 +194,7 @@ public class WebUtil implements GlobalPropertyListener {
 	}
 
 	/**
-	 * Encoder for XML comments.
+	 * Encodes for XML comments.
 	 *
 	 * @param s
 	 * @return Encoded String
@@ -204,7 +204,7 @@ public class WebUtil implements GlobalPropertyListener {
 	}
 
 	/**
-	 * Encoder for XML and XHTML text content.
+	 * Encodes for XML and XHTML text content.
 	 *
 	 * @param s
 	 * @return Encoded String
