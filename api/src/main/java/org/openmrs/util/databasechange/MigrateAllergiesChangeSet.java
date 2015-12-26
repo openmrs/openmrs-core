@@ -23,7 +23,6 @@ import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 
 import org.openmrs.Concept;
-import org.openmrs.Allergy;
 import org.openmrs.AllergySeverity;
 import org.openmrs.api.context.Context;
 
