@@ -300,8 +300,24 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * Note: this comparator imposes orderings that are inconsistent with equals
 	 */
 	public int compareTo(PersonAttribute other) {
-		DefaultComparator paDComparator = new DefaultComparator();
-		return paDComparator.compare(this, other);
+	int retValue;
+	if ((retValue = OpenmrsUtil.compareWithNullAsGreatest(this.getAttributeType(), other.getAttributeType())) != 0) {
+		return retValue;
+	}
+
+	if ((retValue = this.isVoided().compareTo(other.isVoided())) != 0) {
+		return retValue;
+	}
+			
+	if ((retValue = OpenmrsUtil.compareWithNullAsLatest(this.getDateCreated(), other.getDateCreated())) != 0) {
+		return retValue;
+	}
+			
+	if ((retValue = OpenmrsUtil.compareWithNullAsGreatest(this.getValue(), other.getValue())) != 0) {
+		return retValue;
+	}
+			
+	return OpenmrsUtil.compareWithNullAsGreatest(this.getPersonAttributeId(), other.getPersonAttributeId());
 	}
 	
 	/**
