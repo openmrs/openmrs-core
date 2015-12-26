@@ -117,8 +117,8 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	private boolean changeProperties(Object[] currentState, String[] propertyNames, boolean objectWasChanged,
 	        Map<String, Object> propertyValues, Boolean setNullOnly) {
 		
-		for (Entry<String, Object> entry : propertyValues.entrySet()) {
-			if (changePropertyValue(currentState, propertyNames, property, entry.getValue(), setNullOnly)) {
+		for (Map.Entry<String, Object> entry : propertyValues.entrySet()) {
+			if (changePropertyValue(currentState, propertyNames, entry.getKey(), entry.getValue(), setNullOnly)) {
 				objectWasChanged = true;
 			}
 		}
