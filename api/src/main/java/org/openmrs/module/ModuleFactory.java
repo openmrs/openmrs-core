@@ -34,6 +34,7 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 import org.aopalliance.aop.Advice;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -216,7 +217,7 @@ public class ModuleFactory {
 	public static void startModules() {
 		
 		// loop over and try starting each of the loaded modules
-		if (getLoadedModules().size() > 0) {
+		if (CollectionUtils.isNotEmpty(getLoadedModules())) {
 			
 			try {
 				List<Module> modules = getModulesThatShouldStart();
@@ -756,7 +757,7 @@ public class ModuleFactory {
 				// make sure they are added to the database
 				// (Unfortunately, placing the call here will duplicate work
 				// done at initial app startup)
-				if (module.getPrivileges().size() > 0 || module.getGlobalProperties().size() > 0) {
+				if (CollectionUtils.isNotEmpty(module.getPrivileges()) || CollectionUtils.isNotEmpty(module.getGlobalProperties())) {
 					log.debug("Updating core dataset");
 					Context.checkCoreDataset();
 					// checkCoreDataset() currently doesn't throw an error. If

@@ -96,7 +96,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 			
 		}
 		
-		if (foundLocales.size() == 0) {
+		if (foundLocales.isEmpty()) {
 			log.warn("no locales found.");
 		}
 		return foundLocales;
@@ -302,7 +302,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		catch (IOException e) {
 			log.error("Error generated", e);
 		}
-		if (log.isWarnEnabled() && (propertiesFiles.size() == 0)) {
+		if (log.isWarnEnabled() && propertiesFiles.isEmpty()) {
 			log.warn("No properties files found.");
 		}
 		return propertiesFiles;

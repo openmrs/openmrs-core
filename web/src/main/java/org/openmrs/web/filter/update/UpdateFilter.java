@@ -523,10 +523,10 @@ public class UpdateFilter extends StartupFilter {
 					setUpdatesRequired(false);
 				} else {
 					if (log.isDebugEnabled()) {
-						log.debug("Setting updates required to " + (model.changes.size() > 0)
+						log.debug("Setting updates required to " + (CollectionUtils.isNotEmpty(model.changes))
 						        + " because of the size of unrun changes");
 					}
-					setUpdatesRequired(model.changes.size() > 0);
+					setUpdatesRequired(CollectionUtils.isNotEmpty(model.changes));
 				}
 			}
 			catch (Exception e) {

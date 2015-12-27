@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -210,7 +211,7 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 		}
 		PatientState last = null;
 		PatientState nextToLast = null;
-		if (states.size() > 0) {
+		if (CollectionUtils.isNotEmpty(states)) {
 			last = states.get(states.size() - 1);
 		}
 		if (states.size() > 1) {

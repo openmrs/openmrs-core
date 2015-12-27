@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.RoleConstants;
@@ -182,7 +183,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @return true/false whether this role inherits from other roles
 	 */
 	public boolean inheritsRoles() {
-		return getInheritedRoles() != null && getInheritedRoles().size() > 0;
+		return CollectionUtils.isNotEmpty(getInheritedRoles());
 	}
 	
 	/**
@@ -274,7 +275,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @since 1.9
 	 */
 	public boolean hasChildRoles() {
-		return getChildRoles() != null && getChildRoles().size() > 0;
+		return CollectionUtils.isNotEmpty(getChildRoles());
 	}
 	
 	/**

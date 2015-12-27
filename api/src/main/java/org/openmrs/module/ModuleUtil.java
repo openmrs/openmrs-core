@@ -39,6 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -130,7 +131,7 @@ public class ModuleUtil {
 		// some debugging info
 		if (log.isDebugEnabled()) {
 			Collection<Module> modules = ModuleFactory.getStartedModules();
-			if (modules == null || modules.size() == 0) {
+			if (CollectionUtils.isEmpty(modules)) {
 				log.debug("No modules loaded");
 			} else {
 				log.debug("Found and loaded " + modules.size() + " module(s)");
@@ -919,7 +920,7 @@ public class ModuleUtil {
 		mandatoryModuleIds.removeAll(startedModuleIds);
 		
 		// any module ids left in the list are not started
-		if (mandatoryModuleIds.size() > 0) {
+		if (CollectionUtils.isNotEmpty(mandatoryModuleIds)) {
 			throw new MandatoryModuleException(mandatoryModuleIds);
 		}
 	}

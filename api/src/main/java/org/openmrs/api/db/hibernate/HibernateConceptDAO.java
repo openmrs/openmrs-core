@@ -662,7 +662,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		List<Concept> concepts = sessionFactory.getCurrentSession().createCriteria(Concept.class).add(
 		    Restrictions.lt("conceptId", i)).addOrder(Order.desc("conceptId")).setFetchSize(1).list();
 		
-		if (concepts.size() < 1) {
+		if (concepts.isEmpty()) {
 			return null;
 		}
 		return concepts.get(0);
@@ -678,7 +678,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		List<Concept> concepts = sessionFactory.getCurrentSession().createCriteria(Concept.class).add(
 		    Restrictions.gt("conceptId", i)).addOrder(Order.asc("conceptId")).setMaxResults(1).list();
 		
-		if (concepts.size() < 1) {
+		if (concepts.isEmpty()) {
 			return null;
 		}
 		return concepts.get(0);
@@ -838,7 +838,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptNameTag.class).add(
 		    Restrictions.eq("tag", name));
 		
-		if (crit.list().size() < 1) {
+		if (crit.list().isEmpty()) {
 			return null;
 		}
 		
@@ -1509,7 +1509,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Restrictions.ilike("name", name, MatchMode.EXACT));
 		criteria.add(Restrictions.eq("conceptSource", conceptSource));
 		List terms = criteria.list();
-		if (terms.size() == 0) {
+		if (terms.isEmpty()) {
 			return null;
 		} else if (terms.size() > 1) {
 			throw new APIException("ConceptReferenceTerm.foundMultipleTermsWithNameInSource", new Object[] { name,
@@ -1529,7 +1529,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Restrictions.eq("code", code));
 		criteria.add(Restrictions.eq("conceptSource", conceptSource));
 		List terms = criteria.list();
-		if (terms.size() == 0) {
+		if (terms.isEmpty()) {
 			return null;
 		} else if (terms.size() > 1) {
 			throw new APIException("ConceptReferenceTerm.foundMultipleTermsWithCodeInSource", new Object[] { code,
@@ -1826,7 +1826,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		Criteria criteria = createSearchDrugByMappingCriteria(code, conceptSource, includeRetired);
 		// match with any of the supplied collection of conceptMapTypes
-		if (withAnyOfTheseTypes.size() > 0) {
+		if (CollectionUtils.isNotEmpty(withAnyOfTheseTypes)) {
 			criteria.add(Restrictions.in("map.conceptMapType", withAnyOfTheseTypes));
 		}
 		//check whether retired on not retired drugs
@@ -1842,7 +1842,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria criteria = createSearchDrugByMappingCriteria(code, conceptSource, true);
 		
 		// match with any of the supplied collection or order of preference of conceptMapTypes
-		if (withAnyOfTheseTypesOrOrderOfPreference.size() > 0) {
+		if (CollectionUtils.isNotEmpty(withAnyOfTheseTypesOrOrderOfPreference)) {
 			for (ConceptMapType conceptMapType : withAnyOfTheseTypesOrOrderOfPreference) {
 				criteria.add(Restrictions.eq("map.conceptMapType", conceptMapType));
 				List<Drug> drugs = criteria.list();

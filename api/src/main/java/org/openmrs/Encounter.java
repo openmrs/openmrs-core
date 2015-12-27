@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.context.Context;
@@ -439,7 +440,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
     public Set<EncounterProvider> getActiveEncounterProviders() {
         Set<EncounterProvider> activeEncounterProviders = new LinkedHashSet<EncounterProvider>();
         Set<EncounterProvider> providers = getEncounterProviders();
-        if (providers != null && providers.size() > 0) {
+        if (CollectionUtils.isNotEmpty(providers)) {
             for (EncounterProvider provider : providers) {
                 if (provider.isVoided() == false) {
                     activeEncounterProviders.add(provider);

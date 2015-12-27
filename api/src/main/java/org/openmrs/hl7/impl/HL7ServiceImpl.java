@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -474,7 +475,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			List<Person> persons = Context.getPersonService().getPeople(givenName + " " + familyName, null);
 			if (persons.size() == 1) {
 				return persons.get(0).getPersonId();
-			} else if (persons.size() == 0) {
+			} else if (persons.isEmpty()) {
 				log.error("Couldn't find a person named " + givenName + " " + familyName);
 				return null;
 			} else {
@@ -617,7 +618,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 					}
 					List<PatientIdentifier> matchingIds = Context.getPatientService().getPatientIdentifiers(hl7PersonId,
 					    Collections.singletonList(pit), null, null, null);
-					if (matchingIds == null || matchingIds.size() < 1) {
+					if (CollectionUtils.isEmpty(matchingIds)) {
 						// no matches
 						log.warn("NO matches found for " + hl7PersonId);
 						continue; // try next identifier
@@ -1022,7 +1023,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		
 		// while we still we have any archives to be processed, process them
 		while (Hl7InArchivesMigrateThread.isActive() && Hl7InArchivesMigrateThread.getTransferStatus() == Status.RUNNING
-		        && hl7InArchives != null && hl7InArchives.size() > 0) {
+		        && CollectionUtils.isNotEmpty(hl7InArchives)) {
 			
 			Iterator<HL7InArchive> iterator = hl7InArchives.iterator();
 			

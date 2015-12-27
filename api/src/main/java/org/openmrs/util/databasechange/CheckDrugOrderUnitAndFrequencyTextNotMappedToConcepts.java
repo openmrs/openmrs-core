@@ -18,6 +18,7 @@ import liquibase.exception.CustomPreconditionErrorException;
 import liquibase.exception.CustomPreconditionFailedException;
 import liquibase.precondition.CustomPrecondition;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.UpgradeUtil;
@@ -37,7 +38,7 @@ public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements Cu
 			Set<String> doseUnits = DatabaseUtil.getUniqueNonNullColumnValues("units", "drug_order", String.class,
 			    connection.getUnderlyingConnection());
 			Set<String> unmappedDoseUnits = getUnMappedText(doseUnits, connection);
-			if (unmappedDoseUnits.size() > 0) {
+			if (CollectionUtils.isNotEmpty(unmappedDoseUnits)) {
 				throw new CustomPreconditionFailedException(
 				        "Upgrade failed because of the following unmapped drug order dose units that were found: ["
 				                + StringUtils.join(unmappedDoseUnits, ", ")
@@ -49,7 +50,7 @@ public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements Cu
 			Set<String> frequencies = DatabaseUtil.getUniqueNonNullColumnValues("frequency", "drug_order", String.class,
 			    connection.getUnderlyingConnection());
 			Set<String> unmappedFrequencies = getUnMappedText(frequencies, connection);
-			if (unmappedFrequencies.size() > 0) {
+			if (CollectionUtils.isNotEmpty(unmappedFrequencies)) {
 				throw new CustomPreconditionFailedException(
 				        "Upgrade failed because of the following unmapped drug order frequencies that were found: ["
 				                + StringUtils.join(unmappedFrequencies, ", ")

@@ -11,6 +11,7 @@ package org.openmrs.api.handler;
 
 import java.util.Date;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -40,21 +41,21 @@ public class PersonSaveHandler implements SaveHandler<Person> {
 	public void handle(Person person, User creator, Date dateCreated, String other) {
 		
 		// address collection
-		if (person.getAddresses() != null && person.getAddresses().size() > 0) {
+		if (CollectionUtils.isNotEmpty(person.getAddresses())) {
 			for (PersonAddress pAddress : person.getAddresses()) {
 				pAddress.setPerson(person);
 			}
 		}
 		
 		// name collection
-		if (person.getNames() != null && person.getNames().size() > 0) {
+		if (CollectionUtils.isNotEmpty(person.getNames())) {
 			for (PersonName pName : person.getNames()) {
 				pName.setPerson(person);
 			}
 		}
 		
 		// attribute collection
-		if (person.getAttributes() != null && person.getAttributes().size() > 0) {
+		if (CollectionUtils.isNotEmpty(person.getAttributes())) {
 			for (PersonAttribute pAttr : person.getAttributes()) {
 				pAttr.setPerson(person);
 			}

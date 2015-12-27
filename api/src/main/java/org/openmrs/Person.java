@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
@@ -752,7 +753,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	public PersonName getPersonName() {
 		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
 		// has fetched a Person, changed their names around, and then calls this method, so we have to be careful.
-		if (getNames() != null && getNames().size() > 0) {
+		if (CollectionUtils.isNotEmpty(getNames())) {
 			for (PersonName name : getNames()) {
 				if (name.isPreferred() && !name.isVoided()) {
 					return name;
@@ -834,7 +835,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	public PersonAddress getPersonAddress() {
 		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
 		// has fetched a Person, changed their addresses around, and then calls this method, so we have to be careful.
-		if (getAddresses() != null && getAddresses().size() > 0) {
+		if (CollectionUtils.isNotEmpty(getAddresses())) {
 			for (PersonAddress addr : getAddresses()) {
 				if (addr.isPreferred() && !addr.isVoided()) {
 					return addr;

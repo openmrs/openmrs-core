@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -121,22 +122,22 @@ public class HibernateOrderDAO implements OrderDAO {
 			crit.add(Restrictions.eq("orderType", orderType));
 		}
 		
-		if (patients.size() > 0) {
+		if (CollectionUtils.isNotEmpty(patients)) {
 			crit.add(Restrictions.in("patient", patients));
 		}
 		
-		if (concepts.size() > 0) {
+		if (CollectionUtils.isNotEmpty(concepts)) {
 			crit.add(Restrictions.in("concept", concepts));
 		}
 		
 		// we are not checking the other status's here because they are
 		// algorithm dependent  
 		
-		if (orderers.size() > 0) {
+		if (CollectionUtils.isNotEmpty(orderers)) {
 			crit.add(Restrictions.in("orderer", orderers));
 		}
 		
-		if (encounters.size() > 0) {
+		if (CollectionUtils.isNotEmpty(encounters)) {
 			crit.add(Restrictions.in("encounter", encounters));
 		}
 		
@@ -299,7 +300,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		if (careSetting != null) {
 			criteria.add(Restrictions.eq("careSetting", careSetting));
 		}
-		if (orderTypes != null && orderTypes.size() > 0) {
+		if (CollectionUtils.isNotEmpty(orderTypes)) {
 			criteria.add(Restrictions.in("orderType", orderTypes));
 		}
 		if (!includeVoided) {
@@ -461,7 +462,7 @@ public class HibernateOrderDAO implements OrderDAO {
 					Criteria criteria = sessionFactory.getCurrentSession().createCriteria(entityClass);
 					criteria.add(Restrictions.eq(name, orderFrequency));
 					criteria.setMaxResults(1);
-					if (criteria.list().size() > 0) {
+					if (CollectionUtils.isNotEmpty(criteria.list())) {
 						return true;
 					}
 				}
@@ -552,6 +553,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	public boolean isOrderTypeInUse(OrderType orderType) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Order.class);
 		criteria.add(Restrictions.eq("orderType", orderType));
-		return criteria.list().size() > 0;
+		return CollectionUtils.isNotEmpty(criteria.list());
 	}
 }
