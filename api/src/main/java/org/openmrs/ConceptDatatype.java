@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Indexed;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 

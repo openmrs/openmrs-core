@@ -525,10 +525,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	}
 	
 	/**
-	 * TODO: the behavior of this method needs to be controlled by some sort of global property
-	 * because an implementation can define how they want their names to look (which fields to
-	 * show/hide)
-	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 * @should return negative if other name is voided
 	 * @should return negative if this name is preferred
@@ -542,8 +538,40 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
 	public int compareTo(PersonName other) {
-		DefaultComparator pnDefaultComparator = new DefaultComparator();
-		return pnDefaultComparator.compare(this, other);
+		int ret = this.isVoided().compareTo(other.isVoided());
+		if (ret == 0) {
+			ret = other.isPreferred().compareTo(this.isPreferred());
+		}
+		if (ret == 0) {
+			ret = OpenmrsUtil.compareWithNullAsGreatest(this.getFamilyName(), other.getFamilyName());
+		}
+		if (ret == 0) {
+			ret = OpenmrsUtil.compareWithNullAsGreatest(this.getFamilyName2(), other.getFamilyName2());
+		}
+		if (ret == 0) {
+			ret = OpenmrsUtil.compareWithNullAsGreatest(this.getGivenName(), other.getGivenName());
+		}
+		if (ret == 0) {
+			ret = OpenmrsUtil.compareWithNullAsGreatest(this.getMiddleName(), other.getMiddleName());
+		}
+		if (ret == 0) {
+			ret = OpenmrsUtil.compareWithNullAsGreatest(this.getFamilyNamePrefix(), other.getFamilyNamePrefix());
+		}
+		if (ret == 0) {
+			ret = OpenmrsUtil.compareWithNullAsGreatest(this.getFamilyNameSuffix(), other.getFamilyNameSuffix());
+		}
+		if (ret == 0 && this.getDateCreated() != null) {
+			ret = OpenmrsUtil.compareWithNullAsLatest(this.getDateCreated(), other.getDateCreated());
+		}
+			
+		// if we've gotten this far, just check all name values. If they are
+		// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
+		// and return that (they are not equal).
+		if (ret == 0 && !this.equalsContent(other)) {
+			ret = 1;
+		}
+			
+		return ret;
 	}
 	
 	/**

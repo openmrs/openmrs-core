@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import org.openmrs.api.APIException;
 
 /**
  * Defines a Patient in the system. A patient is simply an extension of a person and all that that
