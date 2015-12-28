@@ -250,9 +250,72 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	}
 	
 	public int compareTo(FormField other) {
-		DefaultComparator pnDefaultComparator = new DefaultComparator();
-		return pnDefaultComparator.compare(this, other);
+	if (this.getSortWeight() != null || other.getSortWeight() != null) {
+		if (this.getSortWeight() == null) {
+			return -1;
+		}
+		if (other.getSortWeight() == null) {
+			return 1;
+		}
+		int c = this.getSortWeight().compareTo(other.getSortWeight());
+		if (c != 0) {
+			return c;
+		}
 	}
+	if (this.getPageNumber() != null || other.getPageNumber() != null) {
+		if (this.getPageNumber() == null) {
+			return -1;
+		}
+		if (other.getPageNumber() == null) {
+			return 1;
+		}
+		int c = this.getPageNumber().compareTo(other.getPageNumber());
+		if (c != 0) {
+			return c;
+		}
+	}
+	if (this.getFieldNumber() != null || other.getFieldNumber() != null) {
+		if (this.getFieldNumber() == null) {
+			return -1;
+		}
+		if (other.getFieldNumber() == null) {
+			return 1;
+		}
+		int c = this.getFieldNumber().compareTo(other.getFieldNumber());
+		if (c != 0) {	
+			return c;
+		}
+	}
+	if (this.getFieldPart() != null || other.getFieldPart() != null) {
+		if (this.getFieldPart() == null) {
+			return -1;
+		}
+		if (other.getFieldPart() == null) {
+			return 1;
+		}
+		int c = this.getFieldPart().compareTo(other.getFieldPart());
+		if (c != 0) {
+			return c;
+		}
+	}
+	if (this.getField() != null && other.getField() != null) {
+		int c = this.getField().getName().compareTo(other.getField().getName());
+		if (c != 0) {
+			return c;
+		}
+	}
+	if (this.getFormFieldId() == null && other.getFormFieldId() != null) {
+		return -1;
+	}
+	if (this.getFormFieldId() != null && other.getFormFieldId() == null) {
+		return 1;
+	}
+	if (this.getFormFieldId() == null && other.getFormFieldId() == null) {
+		return 1;
+	}
+			
+	return this.getFormFieldId().compareTo(other.getFormFieldId());
+ 	}
 	
 	/**
 	 Provides a default comparator.
