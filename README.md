@@ -7,7 +7,7 @@ Read more at http://openmrs.org/about
 
 Find documentation on our wiki: http://wiki.openmrs.org
 
-The project tre is set up as follows:
+The project tree is set up as follows:
 
 <table>
  <tr>
