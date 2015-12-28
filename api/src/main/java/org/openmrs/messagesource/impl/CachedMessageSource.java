@@ -10,11 +10,11 @@
 package org.openmrs.messagesource.impl;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Vector;
 
 import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.PresentationMessage;
@@ -54,13 +54,11 @@ public class CachedMessageSource extends AbstractMessageSource implements Mutabl
 	 * @see org.openmrs.messagesource.MutableMessageSource#getPresentations()
 	 */
 	public Collection<PresentationMessage> getPresentations() {
-		Collection<PresentationMessage> allMessages = new Vector<PresentationMessage>();
+		Collection<PresentationMessage> allMessages = new ArrayList<PresentationMessage>();
 		
-		for (Locale locale : localizedMap.keySet()) {
-			PresentationMessageMap codeMessageMap = localizedMap.get(locale);
-			allMessages.addAll(codeMessageMap.values());
+		for (PresentationMessageMap messageMap: localizedMap.values()) {
+			allMessages.addAll(messageMap.values());
 		}
-		
 		return allMessages;
 	}
 	

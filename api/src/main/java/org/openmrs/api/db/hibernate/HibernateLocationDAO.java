@@ -332,7 +332,7 @@ public class HibernateLocationDAO implements LocationDAO {
 		    Projections.rowCount()).add(Restrictions.eqProperty("alias.locationId", "outer.locationId"));
 		
 		return sessionFactory.getCurrentSession().createCriteria(Location.class, "outer").add(
-		    Restrictions.eq("retired", false)).add(Subqueries.eq(new Long(tags.size()), numberOfMatchingTags)).list();
+		    Restrictions.eq("retired", false)).add(Subqueries.eq(Long.valueOf(tags.size()), numberOfMatchingTags)).list();
 	}
 	
 	/**
