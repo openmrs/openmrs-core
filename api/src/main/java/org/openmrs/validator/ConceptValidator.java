@@ -93,7 +93,7 @@ public class ConceptValidator implements Validator {
 		
 		Concept conceptToValidate = (Concept) obj;
 		//no name to validate, but why is this the case?
-		if (conceptToValidate.getNames().size() == 0) {
+		if (conceptToValidate.getNames().isEmpty()) {
 			errors.reject("Concept.name.atLeastOneRequired");
 			return;
 		}

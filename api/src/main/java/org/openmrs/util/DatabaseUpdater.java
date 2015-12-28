@@ -49,6 +49,7 @@ import liquibase.resource.CompositeResourceAccessor;
 import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -252,7 +253,7 @@ public class DatabaseUpdater {
 		// or someone is executing db updates right now. either way
 		// returning true here stops the openmrs startup and shows
 		// the user the maintenance wizard for updates
-		if (isLocked() && changesets.size() == 0) {
+		if (isLocked() && changesets.isEmpty()) {
 			// if there is a db lock but there are no db changes we undo the
 			// lock
 			DatabaseUpdater.releaseDatabaseLock();
@@ -260,7 +261,7 @@ public class DatabaseUpdater {
 			return false;
 		}
 		
-		return changesets.size() > 0;
+		return CollectionUtils.isNotEmpty(changesets);
 	}
 	
 	/**
@@ -274,7 +275,7 @@ public class DatabaseUpdater {
 		log.debug("checking for updates");
 		
 		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges(changeLogFilenames);
-		return changesets.size() > 0;
+		return CollectionUtils.isNotEmpty(changesets);
 	}
 	
 	/**

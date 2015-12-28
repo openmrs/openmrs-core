@@ -181,7 +181,7 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	public Cohort getPatientsHavingDrugOrder(Collection<Integer> patientIds, Collection<Integer> takingIds, Date onDate) {
 		Map<Integer, Collection<Integer>> activeDrugs = getPatientSetDAO().getActiveDrugIds(patientIds, onDate, onDate);
 		Set<Integer> ret = new HashSet<Integer>();
-		boolean takingAny = takingIds != null && takingIds.size() == 0;
+		boolean takingAny = takingIds != null && takingIds.isEmpty();
 		boolean takingNone = takingIds == null;
 		if (takingAny) {
 			ret.addAll(activeDrugs.keySet());
@@ -214,7 +214,7 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 			drugIds = new ArrayList<Integer>();
 		}
 		
-		if (drugIds.size() == 0) {
+		if (drugIds.isEmpty()) {
 			if (groupMethod == GroupMethod.NONE) {
 				// Patients taking no drugs
 				if (patientIds == null) {
@@ -305,7 +305,7 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 		}
 		
 		// add null for the actual obs value
-		if (attributes.size() < 1 || attributes.get(0) != null) {
+		if (attributes.isEmpty() || attributes.get(0) != null) {
 			attributes.add(0, null);
 		}
 		

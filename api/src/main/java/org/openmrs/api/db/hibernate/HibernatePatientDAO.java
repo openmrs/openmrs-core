@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -301,16 +302,16 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		
 		// TODO add junit test for getting by identifier type
-		if (patientIdentifierTypes.size() > 0) {
+		if (CollectionUtils.isNotEmpty(patientIdentifierTypes)) {
 			criteria.add(Restrictions.in("identifierType", patientIdentifierTypes));
 		}
 		
-		if (locations.size() > 0) {
+		if (CollectionUtils.isNotEmpty(locations)) {
 			criteria.add(Restrictions.in("location", locations));
 		}
 		
 		// TODO add junit test for getting by patients
-		if (patients.size() > 0) {
+		if (CollectionUtils.isNotEmpty(patients)) {
 			criteria.add(Restrictions.in("patient", patients));
 		}
 		
@@ -423,7 +424,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) {
 		List<Patient> patients = new Vector<Patient>();
 		
-		if (attributes.size() > 0) {
+		if (CollectionUtils.isNotEmpty(attributes)) {
 			String select = "select distinct p1 from Patient p1, Patient p2";
 			String where = " where p1 <> p2 ";
 			String orderBy = " order by ";

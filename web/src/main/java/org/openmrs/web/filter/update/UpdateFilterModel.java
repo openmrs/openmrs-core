@@ -11,6 +11,7 @@ package org.openmrs.web.filter.update;
 
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.DatabaseUpdater;
@@ -50,7 +51,7 @@ public class UpdateFilterModel {
 		updateChanges();
 		
 		try {
-			if (changes != null && changes.size() > 0) {
+			if (CollectionUtils.isNotEmpty(changes)) {
 				updateRequired = true;
 			} else {
 				updateRequired = DatabaseUpdater.updatesRequired();

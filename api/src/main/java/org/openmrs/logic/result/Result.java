@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
@@ -111,7 +112,7 @@ public class Result extends ArrayList<Result> {
 	 * @should not fail with empty list
 	 */
 	public Result(List<Result> list) {
-		if (!(list == null || list.size() < 1)) {
+		if (CollectionUtils.isNotEmpty(list)) {
 			this.addAll(list);
 		}
 	}

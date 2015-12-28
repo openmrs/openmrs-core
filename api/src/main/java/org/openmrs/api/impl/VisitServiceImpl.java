@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
@@ -209,7 +210,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		if (visit.getVisitId() == null) {
 			return;
 		}
-		if (Context.getEncounterService().getEncountersByVisit(visit, true).size() > 0) {
+		if (CollectionUtils.isNotEmpty(Context.getEncounterService().getEncountersByVisit(visit, true))) {
 			throw new APIException("Visit.purge.inUse", (Object[]) null);
 		}
 		dao.deleteVisit(visit);
@@ -366,7 +367,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 				}
 			}
 			
-			if (visitTypesToStop.size() > 0) {
+			if (CollectionUtils.isNotEmpty(visitTypesToStop)) {
 				int counter = 0;
 				Date stopDate = new Date();
 				Visit nextVisit = dao.getNextVisit(null, visitTypesToStop, maximumStartDate);

@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.CacheMode;
@@ -122,7 +123,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	        Date toDate) {
 		Integer programId = program == null ? null : program.getProgramId();
 		List<Integer> stateIds = null;
-		if (stateList != null && stateList.size() > 0) {
+		if (CollectionUtils.isNotEmpty(stateList)) {
 			stateIds = new ArrayList<Integer>();
 			for (ProgramWorkflowState state : stateList) {
 				stateIds.add(state.getProgramWorkflowStateId());
@@ -405,7 +406,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	public Cohort getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form,
 	        Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
 		List<Integer> encTypeIds = null;
-		if (encounterTypeList != null && encounterTypeList.size() > 0) {
+		if (CollectionUtils.isNotEmpty(encounterTypeList)) {
 			encTypeIds = new ArrayList<Integer>();
 			for (EncounterType t : encounterTypeList) {
 				encTypeIds.add(t.getEncounterTypeId());
@@ -961,7 +962,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		criteria.add(Restrictions.eq("voided", false));
 		
-		if (encTypes != null && encTypes.size() > 0) {
+		if (CollectionUtils.isNotEmpty(encTypes)) {
 			criteria.add(Restrictions.in("encounterType", encTypes));
 		}
 		
@@ -1001,7 +1002,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		criteria.add(Restrictions.eq("voided", false));
 		
-		if (forms != null && forms.size() > 0) {
+		if (CollectionUtils.isNotEmpty(forms)) {
 			criteria.add(Restrictions.in("form", forms));
 		}
 		
@@ -1028,7 +1029,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		criteria.add(Restrictions.eq("voided", false));
 		
-		if (encTypes != null && encTypes.size() > 0) {
+		if (CollectionUtils.isNotEmpty(encTypes)) {
 			criteria.add(Restrictions.in("encounterType", encTypes));
 		}
 		
@@ -1102,7 +1103,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		criteria.add(Restrictions.eq("voided", false));
 		
-		if (types != null && types.size() > 0) {
+		if (CollectionUtils.isNotEmpty(types)) {
 			criteria.add(Restrictions.in("encounterType", types));
 		}
 		
@@ -1477,7 +1478,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	public Map<Integer, PatientState> getCurrentStates(Cohort ps, ProgramWorkflow wf) throws DAOException {
 		Map<Integer, PatientState> ret = new HashMap<Integer, PatientState>();
 		
-		if (ps == null || ps.getMemberIds().size() > 0) {
+		if (ps == null || CollectionUtils.isNotEmpty(ps.getMemberIds())) {
 			Date now = new Date();
 			
 			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientState.class);
@@ -1719,10 +1720,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	public Cohort getPatientsHavingDrugOrder(List<Drug> drugList, List<Concept> drugConceptList, Date startDateFrom,
 	        Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued, List<Concept> orderReason) {
-		if (drugList != null && drugList.size() == 0) {
+		if (drugList != null && drugList.isEmpty()) {
 			drugList = null;
 		}
-		if (drugConceptList != null && drugConceptList.size() == 0) {
+		if (drugConceptList != null && drugConceptList.isEmpty()) {
 			drugConceptList = null;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -1743,7 +1744,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				sb.append(" and dateActivated <= :startDateTo ");
 			}
 		}
-		if (orderReason != null && orderReason.size() > 0) {
+		if (CollectionUtils.isNotEmpty(orderReason)) {
 			sb.append(" and orderReason.id in (:orderReasonIdList) ");
 		}
 		if (discontinued != null) {
@@ -1814,7 +1815,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		if (discontinued != null) {
 			query.setBoolean("discontinued", discontinued);
 		}
-		if (orderReason != null && orderReason.size() > 0) {
+		if (CollectionUtils.isNotEmpty(orderReason)) {
 			List<Integer> ids = new ArrayList<Integer>();
 			for (Concept c : orderReason) {
 				ids.add(c.getConceptId());
@@ -1854,7 +1855,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		criteria.add(Restrictions.eq("voided", false));
 		
 		// Add identifier type filter
-		if (types != null && types.size() > 0) {
+		if (CollectionUtils.isNotEmpty(types)) {
 			criteria.add(Restrictions.in("identifierType", types));
 		}
 		

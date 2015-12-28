@@ -218,7 +218,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		concept.setChangedBy(Context.getAuthenticatedUser());
 		
 		// force isSet when concept has members
-		if (!concept.isSet() && (concept.getSetMembers().size() > 0)) {
+		if (!concept.isSet() && CollectionUtils.isNotEmpty(concept.getSetMembers())) {
                     concept.setSet(true);
 		}
 
@@ -448,7 +448,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			if (drugs.size() > 1) {
 				log.warn("more than one drug name returned with name:" + drugNameOrId);
 			}
-			if (drugs.size() == 0) {
+			if (drugs.isEmpty()) {
 				return null;
 			}
 			return drugs.get(0);
@@ -1032,7 +1032,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public Concept getConceptByMapping(String code, String sourceName, Boolean includeRetired) throws APIException {
 		List<Concept> concepts = Context.getConceptService().getConceptsByMapping(code, sourceName, includeRetired);
 		
-		if (concepts.size() == 0) {
+		if (concepts.isEmpty()) {
 			return null;
 		}
 		// we want to throw an exception if there is more than one non-retired concept; 

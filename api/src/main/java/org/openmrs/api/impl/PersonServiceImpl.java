@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -112,7 +113,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public PersonAttributeType getPersonAttributeTypeByName(String typeName) throws APIException {
 		List<PersonAttributeType> types = Context.getPersonService().getPersonAttributeTypes(typeName, null, null, null);
 		
-		if (types.size() < 1) {
+		if (types.isEmpty()) {
 			return null;
 		} else {
 			return types.get(0);
@@ -134,7 +135,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		checkIfPersonAttributeTypesAreLocked();
 		if (type.getSortWeight() == null) {
 			List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
-			if (allTypes.size() > 0) {
+			if (CollectionUtils.isNotEmpty(allTypes)) {
 				type.setSortWeight(allTypes.get(allTypes.size() - 1).getSortWeight() + 1);
 			} else {
 				type.setSortWeight(1.0);
@@ -245,7 +246,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public RelationshipType getRelationshipTypeByName(String relationshipTypeName) throws APIException {
 		List<RelationshipType> types = dao.getRelationshipTypes(relationshipTypeName, null);
 		
-		if (types.size() < 1) {
+		if (types.isEmpty()) {
 			return null;
 		} else {
 			return types.get(0);
@@ -583,7 +584,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		List<PersonAttributeType> attrObjects = new Vector<PersonAttributeType>();
 		
 		// get the PersonAttribute objects for each name/id
-		if (attrNames.size() > 0) {
+		if (CollectionUtils.isNotEmpty(attrNames)) {
 			for (String nameOrId : attrNames) {
 				if (nameOrId.matches("\\d")) {
 					attrObjects.add(Context.getPersonService().getPersonAttributeType(Integer.valueOf(nameOrId)));

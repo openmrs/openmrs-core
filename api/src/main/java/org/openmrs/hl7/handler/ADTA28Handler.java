@@ -255,7 +255,7 @@ public class ADTA28Handler implements Application {
 				continue;
 			}
 		}
-		if (goodIdentifiers.size() == 0) {
+		if (goodIdentifiers.isEmpty()) {
 			throw new HL7Exception("PID segment has no recognizable patient identifiers.");
 		}
 		patient.addIdentifiers(goodIdentifiers);

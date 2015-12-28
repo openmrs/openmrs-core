@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.api.DatatypeService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ClobDatatypeStorage;
@@ -183,7 +184,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 			prioritizedHandlerClasses = new LinkedHashMap<Class<? extends CustomDatatype>, Class<? extends CustomDatatypeHandler>>();
 			for (Class dt : getAllDatatypeClasses()) {
 				List<Class<? extends CustomDatatypeHandler>> handlerClasses = getHandlerClasses(dt);
-				if (handlerClasses == null || handlerClasses.size() == 0) {
+				if (CollectionUtils.isEmpty(handlerClasses)) {
 					prioritizedHandlerClasses.put(dt, null);
 				} else {
 					prioritizedHandlerClasses.put(dt, handlerClasses.get(0));

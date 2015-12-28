@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.api.APIException;
 
 /**
@@ -192,7 +193,7 @@ public class Patient extends Person implements java.io.Serializable {
 	public PatientIdentifier getPatientIdentifier() {
 		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
 		// has fetched a Patient, changed their identifiers around, and then calls this method, so we have to be careful.
-		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
+		if (CollectionUtils.isNotEmpty(getIdentifiers())) {
 			for (PatientIdentifier id : getIdentifiers()) {
 				if (id.isPreferred() && !id.isVoided()) {
 					return id;
@@ -217,7 +218,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 * @return Returns a PatientIdentifier of the specified type.
 	 */
 	public PatientIdentifier getPatientIdentifier(PatientIdentifierType pit) {
-		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
+		if (CollectionUtils.isNotEmpty(getIdentifiers())) {
 			for (PatientIdentifier id : getIdentifiers()) {
 				if (id.isPreferred() && !id.isVoided() && pit.equals(id.getIdentifierType())) {
 					return id;
@@ -240,7 +241,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 * @return preferred patient identifier
 	 */
 	public PatientIdentifier getPatientIdentifier(Integer identifierTypeId) {
-		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
+		if (CollectionUtils.isNotEmpty(getIdentifiers())) {
 			for (PatientIdentifier id : getIdentifiers()) {
 				if (id.isPreferred() && !id.isVoided()
 				        && identifierTypeId.equals(id.getIdentifierType().getPatientIdentifierTypeId())) {
@@ -265,7 +266,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 * @return preferred patient identifier
 	 */
 	public PatientIdentifier getPatientIdentifier(String identifierTypeName) {
-		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
+		if (CollectionUtils.isNotEmpty(getIdentifiers())) {
 			for (PatientIdentifier id : getIdentifiers()) {
 				if (id.isPreferred() && !id.isVoided() && identifierTypeName.equals(id.getIdentifierType().getName())) {
 					return id;

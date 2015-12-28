@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Program;
@@ -113,7 +114,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	@SuppressWarnings("unchecked")
 	public String getAsText() {
 		Collection<ProgramWorkflow> pws = (Collection<ProgramWorkflow>) getValue();
-		if (pws == null || pws.size() == 0) {
+		if (CollectionUtils.isEmpty(pws)) {
 			return ":";
 		} else {
 			Integer progId = null;
