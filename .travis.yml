@@ -7,6 +7,7 @@ matrix:
 branches:
   only:
     - master
+    - gci-2015
 notifications:
   email: false
   irc:
