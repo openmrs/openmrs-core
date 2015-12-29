@@ -675,11 +675,11 @@ public class WebModuleUtil {
 			log.debug("Module: " + module.getModuleId() + " successfully unloaded " + filters.size() + " filters.");
 			moduleFilters.remove(module);
 			
-			for (Iterator<String> i = moduleFiltersByName.keySet().iterator(); i.hasNext();) {
-				String filterName = i.next();
-				Filter filterVal = moduleFiltersByName.get(filterName);
-				if (filters.contains(filterVal)) {
-					i.remove();
+			for (Iterator<Entry<String, Filter>> iter = moduleFiltersByName.entrySet().iterator(); iter.hasNext();) {
+				
+				Entry<String, Filter> entry = iter.next();
+				if (filters.contains(entry.getValue())) {
+					 iter.remove();
 				}
 			}
 		}
