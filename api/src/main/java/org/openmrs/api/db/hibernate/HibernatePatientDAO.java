@@ -40,7 +40,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
 
-import org.openmrs.api.APIException;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 

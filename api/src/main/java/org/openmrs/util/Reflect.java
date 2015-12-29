@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.azeckoski.reflectutils.ClassData;
 import org.azeckoski.reflectutils.ClassDataCacher;
 import org.azeckoski.reflectutils.ClassFields;
 import org.azeckoski.reflectutils.exceptions.FieldnameNotFoundException;
