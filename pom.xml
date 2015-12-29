@@ -228,6 +228,11 @@
 				<version>${springVersion}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context-support</artifactId>
+				<version>${springVersion}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr-runtime</artifactId>
 				<version>3.4</version>
