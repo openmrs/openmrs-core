@@ -34,7 +34,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
