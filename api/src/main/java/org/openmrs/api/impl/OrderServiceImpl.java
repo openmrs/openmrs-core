@@ -88,6 +88,18 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
 	 */
 	public synchronized Order saveOrder(Order order, OrderContext orderContext) throws APIException {
+		return saveOrder(order, orderContext, false);
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
+	 */
+	@Override
+	public synchronized Order saveRetrospectiveOrder(Order order, OrderContext orderContext) {
+		return saveOrder(order, orderContext, true);
+	}
+
+	private Order saveOrder(Order order, OrderContext orderContext, boolean isRetrospective) {
 		if (order.getOrderId() != null) {
 			throw new APIException("Order.cannot.edit.existing");
 		}
@@ -156,7 +168,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			if (previousOrder == null) {
 				throw new APIException("Order.previous.required");
 			}
-			stopOrder(previousOrder, aMomentBefore(order.getDateActivated()));
+			stopOrder(previousOrder, aMomentBefore(order.getDateActivated()), isRetrospective);
 		} else if (DISCONTINUE == order.getAction()) {
 			discontinueExistingOrdersIfNecessary(order);
 		}
@@ -181,7 +193,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 					throw new APIException("Order.cannot.change.drug");
 				}
 			}
-			
+
 			//concept should be the same as on previous order, same applies to drug for drug orders
 			if(!order.hasSameOrderableAs(previousOrder)){
 				throw new APIException("The orderable of the previous order and the new one order don't match");
@@ -208,7 +220,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
  				}
  			}
  		}
-		
 		return saveOrderInternal(order, orderContext);
 	}
 	
@@ -316,7 +327,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		//Mark previousOrder as discontinued if it is not already
 		Order previousOrder = order.getPreviousOrder();
 		if (previousOrder != null) {
-			stopOrder(previousOrder, aMomentBefore(order.getDateActivated()));
+			stopOrder(previousOrder, aMomentBefore(order.getDateActivated()), false);
 			return;
 		}
 		
@@ -350,14 +361,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		if (orderToBeDiscontinued != null) {
 			order.setPreviousOrder(orderToBeDiscontinued);
-			stopOrder(orderToBeDiscontinued, aMomentBefore(order.getDateActivated()));
+			stopOrder(orderToBeDiscontinued, aMomentBefore(order.getDateActivated()), false);
 		}
 	}
-	
+
 	/**
 	 * Returns the class object of the specified persistent object returning the actual persistent
 	 * class in case it is a hibernate proxy
-	 * 
+	 *
 	 * @param persistentObject
 	 * @return the Class object
 	 */
@@ -413,7 +424,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				final String action = DISCONTINUE == order.getAction() ? "discontinuation" : "revision";
 				throw new APIException("Order.action.cannot.unvoid", new Object[] { action });
 			}
-			stopOrder(previousOrder, aMomentBefore(order.getDateActivated()));
+			stopOrder(previousOrder, aMomentBefore(order.getDateActivated()), false);
 		}
 		
 		return saveOrderInternal(order, null);
@@ -653,7 +664,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (discontinueDate == null) {
 			discontinueDate = aMomentBefore(new Date());
 		}
-		stopOrder(orderToDiscontinue, discontinueDate);
+		stopOrder(orderToDiscontinue, discontinueDate, false);
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setOrderReason(reasonCoded);
 		newOrder.setOrderer(orderer);
@@ -672,7 +683,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (discontinueDate == null) {
 			discontinueDate = aMomentBefore(new Date());
 		}
-		stopOrder(orderToDiscontinue, discontinueDate);
+		stopOrder(orderToDiscontinue, discontinueDate, false);
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setOrderReasonNonCoded(reasonNonCoded);
 		newOrder.setOrderer(orderer);
@@ -688,11 +699,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * Make necessary checks, set necessary fields for discontinuing <code>orderToDiscontinue</code>
 	 * and save.
-	 * 
+	 *
 	 * @param orderToStop
 	 * @param discontinueDate
 	 */
-	private void stopOrder(Order orderToStop, Date discontinueDate) {
+	private void stopOrder(Order orderToStop, Date discontinueDate, boolean isRetrospective) {
 		if (discontinueDate == null) {
 			discontinueDate = new Date();
 		}
@@ -702,9 +713,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (DISCONTINUE == orderToStop.getAction()) {
 			throw new APIException("Order.action.cannot.discontinued", new Object[] { DISCONTINUE });
 		}
-		if (!orderToStop.isActive()) {
+		if (isRetrospective && !orderToStop.isActive(orderToStop.getDateActivated())) {
+			throw new APIException("Order.retrospective.stopped.cannot.discontinued"	);
+		}
+		else if (!isRetrospective && !orderToStop.isActive()) {
 			throw new APIException("Order.stopped.cannot.discontinued");
 		}
+
 		setProperty(orderToStop, "dateStopped", discontinueDate);
 		saveOrderInternal(orderToStop, null);
 	}
