@@ -97,7 +97,11 @@ public class ConceptValidator implements Validator {
 			errors.reject("Concept.name.atLeastOneRequired");
 			return;
 		}
-		
+		if (conceptToValidate.getDescriptions().size() == 0) {
+			errors.rejectValue("descriptions","Concept.description.atLeastOneRequired");
+			return;
+		}
+
 		boolean hasFullySpecifiedName = false;
 		for (Locale conceptNameLocale : conceptToValidate.getAllConceptNameLocales()) {
 			boolean fullySpecifiedNameForLocaleFound = false;
