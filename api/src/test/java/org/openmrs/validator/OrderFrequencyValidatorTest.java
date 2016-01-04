@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.OrderFrequency;
 import org.openmrs.api.APIException;
@@ -99,6 +100,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		ConceptName cn = new ConceptName("new name", Context.getLocale());
 		concept.setConceptClass(cs.getConceptClass(19));
 		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("some description",null));
 		cs.saveConcept(concept);
 		
 		OrderFrequency orderFrequency = new OrderFrequency();
@@ -148,6 +150,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		ConceptName cn = new ConceptName("new name", Context.getLocale());
 		concept.setConceptClass(cs.getConceptClass(19));
 		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("some description",null));
 		cs.saveConcept(concept);
 		
 		OrderFrequency orderFrequency = new OrderFrequency();
@@ -172,6 +175,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		ConceptName cn = new ConceptName("new name", Context.getLocale());
 		concept.setConceptClass(cs.getConceptClass(19));
 		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("some description",null));
 		cs.saveConcept(concept);
 		
 		OrderFrequency orderFrequency = new OrderFrequency();
