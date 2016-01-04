@@ -1088,5 +1088,17 @@ public class ConceptTest {
 		concept.addName(new ConceptName("Test Concept", locale));
 		Assert.assertEquals((concept.getName(locale, false).toString()), (concept.getName(localeToSearch, false).toString()));
 	}
-	
+
+	/**
+	 * @see Concept#getDescriptions()
+	 */
+	@Test
+	@Verifies(value = "not return null if no descriptions defined", method = "getDescriptions()")
+	public void getDescriptions_shouldNotReturnNullIfDescriptionsListIsNull() throws Exception {
+		Concept c = new Concept();
+		c.setDescriptions(null);
+		Assert.assertTrue(c.getDescriptions().isEmpty());
+		Assert.assertNotNull(c.getDescriptions());
+	}
+
 }
