@@ -16,7 +16,7 @@ import org.openmrs.api.context.Context;
 /**
  * This is a class for custom datatypes for programs
  *
- * @since 1.12
+ * @since 2.0
  */
 public class ProgramDatatype extends BaseMetadataDatatype<Program> {
 

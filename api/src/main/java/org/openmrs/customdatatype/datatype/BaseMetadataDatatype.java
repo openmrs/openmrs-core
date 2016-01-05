@@ -15,7 +15,7 @@ import org.openmrs.customdatatype.CustomDatatype;
 /**
  * This is a superclass for custom datatypes for OpenmrsMetadata
  * 
- * @since 1.12
+ * @since 2.0
  */
 public abstract class BaseMetadataDatatype<T extends OpenmrsMetadata> extends BaseOpenmrsDatatype<T> {
 	
