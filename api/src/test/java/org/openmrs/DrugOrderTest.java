@@ -314,7 +314,7 @@ public class DrugOrderTest {
 		
 		assertEquals(expectedAutoExpireDate, drugOrder.getAutoExpireDate());
 	}
-
+	
 	/**
 	 * @verifies return true if the drugs match and drug non coded match
 	 * @see DrugOrder#hasSameOrderableAs(Order)
@@ -325,14 +325,14 @@ public class DrugOrderTest {
 		Concept concept = new Concept();
 		order.setConcept(concept);
 		order.setDrugNonCoded("Chrocine");
-
+		
 		DrugOrder otherOrder = new DrugOrder();
 		otherOrder.setConcept(concept);
 		otherOrder.setDrugNonCoded("chrocine");
-
+		
 		assertTrue(order.hasSameOrderableAs(otherOrder));
 	}
-
+	
 	/**
 	 * @verifies return false if the concepts match and drug non coded do not match
 	 * @see DrugOrder#hasSameOrderableAs(Order)
@@ -343,32 +343,33 @@ public class DrugOrderTest {
 		Concept concept = new Concept();
 		order.setConcept(concept);
 		order.setDrugNonCoded("Chrocine");
-
+		
 		DrugOrder otherOrder = new DrugOrder();
 		otherOrder.setConcept(concept);
 		otherOrder.setDrugNonCoded("paracetemol");
-
+		
 		assertFalse(order.hasSameOrderableAs(otherOrder));
 	}
-
+	
 	/**
 	 * @verifies return true if the concepts match and drug non coded match trimming spaces
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnTrueIfTheConceptsMatchAndHaveSameDrugNonCodedTrimmingSpaces() throws Exception {
+	public void hasSameOrderableAs_shouldReturnTrueIfTheConceptsMatchAndHaveSameDrugNonCodedTrimmingSpaces()
+	        throws Exception {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		order.setConcept(concept);
 		order.setDrugNonCoded("Chrocine");
-
+		
 		DrugOrder otherOrder = new DrugOrder();
 		otherOrder.setConcept(concept);
 		otherOrder.setDrugNonCoded(" Chrocine ");
-
+		
 		assertTrue(order.hasSameOrderableAs(otherOrder));
 	}
-
+	
 	/**
 	 * @verifies return false if the concepts match and either of drug non coded is null
 	 * @see DrugOrder#hasSameOrderableAs(Order)
@@ -379,13 +380,13 @@ public class DrugOrderTest {
 		Concept concept = new Concept();
 		order.setConcept(concept);
 		order.setDrugNonCoded("Chrocine");
-
+		
 		DrugOrder otherOrder = new DrugOrder();
 		otherOrder.setConcept(concept);
-
+		
 		assertFalse(order.hasSameOrderableAs(otherOrder));
 	}
-
+	
 	/**
 	 * @verifies return True if the concepts match and both of the drug non coded is null
 	 * @see DrugOrder#hasSameOrderableAs(Order)
@@ -395,10 +396,10 @@ public class DrugOrderTest {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		order.setConcept(concept);
-
+		
 		DrugOrder otherOrder = new DrugOrder();
 		otherOrder.setConcept(concept);
-
+		
 		assertTrue(order.hasSameOrderableAs(otherOrder));
 	}
 }

@@ -415,7 +415,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion, boolean cascade)
 	        throws APIException;
-		
+	
 	/**
 	 * Retrieves the ConceptStateConversion that matches the passed <code>ProgramWorkflow</code> and
 	 * <code>Concept</code>
@@ -441,7 +441,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should throw an error when multiple states with same uuid are found
 	 */
 	public ProgramWorkflowState getStateByUuid(String uuid);
-					
+	
 	/**
 	 * Get a patient program by its uuid. There should be only one of these in the database. If
 	 * multiple are found, an error is thrown.
@@ -473,7 +473,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs);
-		
+	
 	/**
 	 * Returns a list of Programs that are using a particular concept.
 	 * 

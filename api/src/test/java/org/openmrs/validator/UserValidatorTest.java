@@ -30,7 +30,7 @@ import org.springframework.validation.Errors;
 public class UserValidatorTest extends BaseContextSensitiveTest {
 	
 	private static final String STRING_WITH_LENGTH_GREATER_THAN_50 = "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text";
-
+	
 	@Autowired
 	private UserValidator validator;
 	
@@ -101,7 +101,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(username.length() > 50);
 		Assert.assertFalse(validator.isUserNameValid(username));
 	}
-
+	
 	/**
 	 * @see UserValidator#validate(Object,Errors)
 	 */
@@ -111,7 +111,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		String retireReason = null;
 		invokeValidateAndAssertHasErrorRetireReason(retireReason);
 	}
-
+	
 	/**
 	 * @see UserValidator#validate(Object,Errors)
 	 */
@@ -142,7 +142,7 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(user, errors);
 		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 	}
-
+	
 	/**
 	 * @see UserValidator#validate(Object,Errors)
 	 */
@@ -298,7 +298,9 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		user.setSystemId(STRING_WITH_LENGTH_GREATER_THAN_50);
 		user.setRetireReason(STRING_WITH_LENGTH_GREATER_THAN_50);
 		user.setPerson(new Person(999));
-		user.getPerson().addName(new PersonName(STRING_WITH_LENGTH_GREATER_THAN_50, STRING_WITH_LENGTH_GREATER_THAN_50, STRING_WITH_LENGTH_GREATER_THAN_50));
+		user.getPerson().addName(
+		    new PersonName(STRING_WITH_LENGTH_GREATER_THAN_50, STRING_WITH_LENGTH_GREATER_THAN_50,
+		            STRING_WITH_LENGTH_GREATER_THAN_50));
 		user.getPerson().setGender(STRING_WITH_LENGTH_GREATER_THAN_50);
 		
 		Errors errors = new BindException(user, "user");

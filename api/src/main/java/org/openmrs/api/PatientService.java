@@ -48,7 +48,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param dao DAO for this service
 	 */
 	public void setPatientDAO(PatientDAO dao);
-		
+	
 	/**
 	 * Saved the given <code>patient</code> to the database
 	 * 
@@ -139,7 +139,7 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_PATIENTS })
 	public List<Patient> getAllPatients(boolean includeVoided) throws APIException;
-		
+	
 	/**
 	 * Get patients based on given criteria The identifier is matched with the regex
 	 * <code>OpenmrsConstants.PATIENT_IDENTIFIER_REGEX</code> All parameters are optional and
@@ -201,7 +201,7 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.DELETE_PATIENTS })
 	public Patient unvoidPatient(Patient patient) throws APIException;
-		
+	
 	/**
 	 * Delete patient from database. This <b>should not be called</b> except for testing and
 	 * administration purposes. Use the void method instead.
@@ -213,7 +213,7 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_PATIENTS })
 	public void purgePatient(Patient patient) throws APIException;
-		
+	
 	/**
 	 * Get all patientIdentifiers that match all of the given criteria Voided identifiers are not
 	 * returned
@@ -240,7 +240,7 @@ public interface PatientService extends OpenmrsService {
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
 	        List<PatientIdentifierType> patientIdentifierTypes, List<Location> locations, List<Patient> patients,
 	        Boolean isPreferred) throws APIException;
-		
+	
 	/**
 	 * Create or update a PatientIdentifierType
 	 * 
@@ -254,7 +254,7 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException;
-		
+	
 	/**
 	 * Get all patientIdentifier types
 	 * <p>
@@ -333,7 +333,7 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_IDENTIFIER_TYPES })
 	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) throws APIException;
-		
+	
 	/**
 	 * Get patientIdentifierType by exact name
 	 * 
@@ -390,7 +390,7 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_IDENTIFIER_TYPES })
 	public void purgePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException;
-		
+	
 	/**
 	 * Convenience method to validate all identifiers for a given patient
 	 * 
@@ -409,7 +409,7 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_PATIENT_IDENTIFIERS })
 	public void checkPatientIdentifiers(Patient patient) throws PatientIdentifierException;
-		
+	
 	/**
 	 * Generic search on patients based on the given string. Implementations can use this string to
 	 * search on name, identifier, etc Voided patients are not returned in search results
@@ -455,7 +455,7 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_PATIENTS })
 	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws APIException;
-		
+	
 	/**
 	 * This method tries to find a patient in the database given the attributes on the given
 	 * <code>patientToMatch</code> object. Assumes there could be a PersonAttribute on this Patient
@@ -470,7 +470,7 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_PATIENTS })
 	public Patient getPatientByExample(Patient patientToMatch) throws APIException;
-		
+	
 	/**
 	 * Search the database for patients that both share the given attributes. Each attribute that is
 	 * passed in must be identical to what is stored for at least one other patient for both
@@ -559,7 +559,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should merge all non Preferred patients in the the notPreferred list to preferred patient
 	 */
 	public void mergePatients(Patient preferred, List<Patient> notPreferred) throws APIException, SerializationException;
-		
+	
 	/**
 	 * Convenience method to establish that a patient has died. In addition to exiting the patient
 	 * from care (see above), this method will also set the appropriate patient characteristics to
@@ -730,7 +730,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should void allergies with edited reaction non coded
 	 * @should void allergies with removed reactions
 	 * @should void allergies with added reactions
-     * @should set the non coded concept for non coded allergen if not specified
+	 * @should set the non coded concept for non coded allergen if not specified
 	 */
 	Allergies setAllergies(Patient patient, Allergies allergies);
 	

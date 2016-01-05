@@ -43,7 +43,7 @@ public class Allergy extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * Default constructor
 	 */
-	public Allergy(){
+	public Allergy() {
 	}
 	
 	/**
@@ -65,20 +65,20 @@ public class Allergy extends BaseOpenmrsData implements java.io.Serializable {
 		}
 	}
 	
-    /**
-     * @return the allergyId
-     */
-    public Integer getAllergyId() {
-    	return allergyId;
-    }
-
-    /**
-     * @param allergyId the allergyId to set
-     */
-    public void setAllergyId(Integer allergyId) {
-    	this.allergyId = allergyId;
-    }
-
+	/**
+	 * @return the allergyId
+	 */
+	public Integer getAllergyId() {
+		return allergyId;
+	}
+	
+	/**
+	 * @param allergyId the allergyId to set
+	 */
+	public void setAllergyId(Integer allergyId) {
+		this.allergyId = allergyId;
+	}
+	
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -95,7 +95,6 @@ public class Allergy extends BaseOpenmrsData implements java.io.Serializable {
 		this.allergyId = allergyId;
 	}
 	
-	
 	/**
 	 * @return Returns the patient
 	 */
@@ -109,6 +108,7 @@ public class Allergy extends BaseOpenmrsData implements java.io.Serializable {
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
+	
 	/**
 	 * @return the allergyType
 	 */
@@ -145,6 +145,7 @@ public class Allergy extends BaseOpenmrsData implements java.io.Serializable {
 	public void setAllergen(Allergen allergen) {
 		this.allergen = allergen;
 	}
+	
 	/**
 	 * @return Returns the severity
 	 */
@@ -172,6 +173,7 @@ public class Allergy extends BaseOpenmrsData implements java.io.Serializable {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+	
 	/**
 	 * @return Returns the reactions
 	 */
@@ -186,12 +188,11 @@ public class Allergy extends BaseOpenmrsData implements java.io.Serializable {
 		//we do not allow to be in a state where reactions is null
 		if (reactions != null) {
 			this.reactions = reactions;
-		}
-		else {
+		} else {
 			this.reactions.clear();
 		}
 	}
-
+	
 	/**
 	 * Adds a new allergy reaction
 	 * 
@@ -199,9 +200,9 @@ public class Allergy extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return true if the reaction was added, else false
 	 */
 	public boolean addReaction(AllergyReaction reaction) {
-        if(getReactionConcepts().contains(reaction.getReaction())){
-            return false;
-        }
+		if (getReactionConcepts().contains(reaction.getReaction())) {
+			return false;
+		}
 		reaction.setAllergy(this);
 		return getReactions().add(reaction);
 	}
@@ -239,19 +240,18 @@ public class Allergy extends BaseOpenmrsData implements java.io.Serializable {
 				if (!OpenmrsUtil.nullSafeEquals(getPatient().getPatientId(), allergy.getPatient().getPatientId())) {
 					return false;
 				}
-			}
-			else {
+			} else {
 				return false;
 			}
 		}
 		if (!OpenmrsUtil.nullSafeEquals(getAllergen().getCodedAllergen(), allergy.getAllergen().getCodedAllergen())) {
 			//if object instances are different but with the same concept id, then not changed
 			if (getAllergen().getCodedAllergen() != null && allergy.getAllergen().getCodedAllergen() != null) {
-				if (!OpenmrsUtil.nullSafeEquals(getAllergen().getCodedAllergen().getConceptId(), allergy.getAllergen().getCodedAllergen().getConceptId())) {
+				if (!OpenmrsUtil.nullSafeEquals(getAllergen().getCodedAllergen().getConceptId(), allergy.getAllergen()
+				        .getCodedAllergen().getConceptId())) {
 					return false;
 				}
-			}
-			else {
+			} else {
 				return false;
 			}
 		}
@@ -264,8 +264,7 @@ public class Allergy extends BaseOpenmrsData implements java.io.Serializable {
 				if (!OpenmrsUtil.nullSafeEquals(getSeverity().getConceptId(), allergy.getSeverity().getConceptId())) {
 					return false;
 				}
-			}
-			else {
+			} else {
 				return false;
 			}
 		}
@@ -339,16 +338,16 @@ public class Allergy extends BaseOpenmrsData implements java.io.Serializable {
 			reaction.setUuid(UUID.randomUUID().toString());
 		}
 	}
-
-    private List<Concept> getReactionConcepts(){
-        List<Concept> reactionConcepts = new ArrayList<Concept>(getReactions().size());
-        for (AllergyReaction ar : getReactions()) {
-            reactionConcepts.add(ar.getReaction());
-        }
-        return reactionConcepts;
-    }
-    
-    /**
+	
+	private List<Concept> getReactionConcepts() {
+		List<Concept> reactionConcepts = new ArrayList<Concept>(getReactions().size());
+		for (AllergyReaction ar : getReactions()) {
+			reactionConcepts.add(ar.getReaction());
+		}
+		return reactionConcepts;
+	}
+	
+	/**
 	 * @return Returns the reactionNonCoded
 	 */
 	public String getReactionNonCoded() {

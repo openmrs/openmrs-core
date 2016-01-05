@@ -302,7 +302,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		return dao.savePerson(person);
 	}
-		
+	
 	/**
 	 * @see org.openmrs.api.PersonService#voidPerson(org.openmrs.Person, java.lang.String)
 	 */
@@ -461,7 +461,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		return Context.getPersonService().saveRelationship(relationship);
 	}
-		
+	
 	/**
 	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes()
 	 */
@@ -595,7 +595,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		return attrObjects;
 	}
-		
+	
 	/**
 	 * @see org.openmrs.api.PersonService#parsePersonName(java.lang.String)
 	 */

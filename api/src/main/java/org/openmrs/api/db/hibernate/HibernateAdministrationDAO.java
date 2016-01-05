@@ -237,7 +237,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	
 	@Override
 	public boolean isDatabaseStringComparisonCaseSensitive() {
-		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class, OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON);
+		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class,
+		    OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON);
 		if (gp != null) {
 			return Boolean.valueOf(gp.getPropertyValue());
 		} else {

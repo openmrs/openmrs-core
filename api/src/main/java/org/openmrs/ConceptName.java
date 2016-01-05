@@ -162,7 +162,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
-
+	
 	/**
 	 * @return Returns the creator.
 	 */

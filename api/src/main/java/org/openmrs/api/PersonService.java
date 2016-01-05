@@ -95,7 +95,7 @@ public interface PersonService extends OpenmrsService {
 	// TODO: make gender a (definable?) constant
 	@Authorized( { PrivilegeConstants.GET_PERSONS })
 	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender) throws APIException;
-		
+	
 	/**
 	 * Find a person matching the <tt>searchPhrase</tt> search string
 	 * 
@@ -110,7 +110,7 @@ public interface PersonService extends OpenmrsService {
 	
 	@Authorized( { PrivilegeConstants.GET_PERSONS })
 	public List<Person> getPeople(String searchPhrase, Boolean dead, Boolean voided) throws APIException;
-		
+	
 	/**
 	 * Save the given person attribute type in the database. <br>
 	 * If the given type's Id is not empty, then also need to change any global property which is in
@@ -203,7 +203,7 @@ public interface PersonService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public Person unvoidPerson(Person person) throws APIException;
-		
+	
 	/**
 	 * Get all PersonAttributeTypes in the database
 	 * 
@@ -333,7 +333,7 @@ public interface PersonService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_RELATIONSHIPS })
 	public List<Relationship> getAllRelationships(boolean includeVoided) throws APIException;
-		
+	
 	/**
 	 * Get list of relationships that include Person in person_id or relative_id Does not include
 	 * voided relationships
@@ -366,7 +366,7 @@ public interface PersonService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_RELATIONSHIPS })
 	public List<Relationship> getRelationshipsByPerson(Person p, Date effectiveDate) throws APIException;
-		
+	
 	/**
 	 * Get relationships stored in the database that
 	 * 

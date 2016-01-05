@@ -61,11 +61,10 @@ import org.xml.sax.SAXException;
 public class MigrationHelper {
 	
 	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
-
+	
 	protected final static Log log = LogFactory.getLog(MigrationHelper.class);
 	
 	static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	
 	
 	public static Date parseDate(String s) throws ParseException {
 		if (s == null || s.length() == 0) {

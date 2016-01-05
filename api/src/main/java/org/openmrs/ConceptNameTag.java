@@ -22,7 +22,7 @@ import org.simpleframework.xml.Root;
 public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 33226787L;
-		
+	
 	// Fields
 	private Integer conceptNameTagId;
 	

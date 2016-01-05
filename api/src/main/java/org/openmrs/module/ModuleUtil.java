@@ -312,8 +312,7 @@ public class ModuleUtil {
 					}
 				}
 			}
-		}
-		else {
+		} else {
 			//no version checking if required version is not specified
 			return true;
 		}
@@ -1183,7 +1182,7 @@ public class ModuleUtil {
 		finally {
 			IOUtils.closeQuietly(tempOut);
 			IOUtils.closeQuietly(innerInputStream);
-
+			
 			// close inner jar file before attempting to delete temporary file
 			try {
 				if (innerJarFile != null) {
@@ -1193,7 +1192,7 @@ public class ModuleUtil {
 			catch (IOException e) {
 				log.warn("Unable to close inner jarfile: " + innerJarFile, e);
 			}
-
+			
 			// delete temporary file
 			if (tempFile != null && !tempFile.delete()) {
 				log.warn("Could not delete temporary jarfile: " + tempFile);

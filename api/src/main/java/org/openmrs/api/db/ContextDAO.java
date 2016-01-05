@@ -132,7 +132,7 @@ public interface ContextDAO {
 	 * @see Context#updateSearchIndex()
 	 */
 	public void updateSearchIndex();
-
+	
 	/**
 	 * @see Context#updateSearchIndexAsync()
 	 */

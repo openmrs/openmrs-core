@@ -143,7 +143,7 @@ public class Context {
 	private static Properties runtimeProperties = new Properties();
 	
 	private static Properties configProperties = new Properties();
-		
+	
 	/**
 	 * Default public constructor
 	 */
@@ -289,7 +289,7 @@ public class Context {
 		
 		if (Daemon.isDaemonThread()) {
 			log.error("Authentication attempted while operating on a "
-					+ "daemon thread, authenticating is not necessary or allowed");
+			        + "daemon thread, authenticating is not necessary or allowed");
 			return;
 		}
 		
@@ -1078,7 +1078,7 @@ public class Context {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
-
+		
 		// setting default validation rule
 		AdministrationService as = Context.getAdministrationService();
 		Boolean disableValidation = Boolean.valueOf(as.getGlobalProperty(OpenmrsConstants.GP_DISABLE_VALIDATION, "false"));
@@ -1273,7 +1273,7 @@ public class Context {
 	public static void updateSearchIndex() {
 		getContextDAO().updateSearchIndex();
 	}
-
+	
 	/**
 	 * Updates the search index. It is an asynchronous operation.
 	 * <p>

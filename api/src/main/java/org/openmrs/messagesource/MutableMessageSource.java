@@ -29,7 +29,7 @@ public interface MutableMessageSource extends MessageSource, HierarchicalMessage
 	 * @return available message locales
 	 */
 	public Collection<Locale> getLocales();
-		
+	
 	/**
 	 * Gets all of the available messages, packaged as PresentationMessages.
 	 * 

@@ -219,7 +219,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	public void setUnits(String units) {
 		this.units = units;
 	}
-
+	
 	/**
 	 * This method will <i>always</i> return true for ConceptNumeric objects that have a datatype of
 	 * Numeric
@@ -237,7 +237,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	public Integer getDisplayPrecision() {
 		return displayPrecision;
 	}
-
+	
 	/**
 	 * @param displayPrecision sets displayPrecision to be used for the display of a numeric value
 	 */

@@ -53,7 +53,7 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 		l = HandlerUtil.getHandlersForType(Validator.class, DrugOrder.class);
 		Assert.assertEquals(2, l.size());
 	}
-
+	
 	/**
 	 * @see HandlerUtil#getHandlerForType(Class, Class)
 	 */

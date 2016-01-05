@@ -218,7 +218,7 @@ public interface LogicService {
 	 */
 	public Map<LogicCriteria, Result> eval(Integer patientId, Map<String, Object> parameters, LogicCriteria... criteria)
 	        throws LogicException;
-		
+	
 	/**
 	 * Evaluates a query over a list of patients
 	 * 
@@ -337,14 +337,14 @@ public interface LogicService {
 	 * @return list of parameters
 	 */
 	public Set<RuleParameterInfo> getParameterList(String token);
-		
+	
 	/**
 	 * Get all registered logic data sources
 	 * 
 	 * @return all registered logic data sources
 	 */
 	public Map<String, LogicDataSource> getLogicDataSources();
-		
+	
 	/**
 	 * Get a logic data source by name
 	 * 

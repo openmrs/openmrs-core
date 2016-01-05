@@ -19,16 +19,16 @@ import org.openmrs.api.context.Context;
  * @since 1.12
  */
 public class ProgramDatatype extends BaseMetadataDatatype<Program> {
-
-    /**
-     * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(java.lang.String)
-     * @should return the object by given uuid string
-     * @override
-     */
-    public Program deserialize(String uuid) {
-        if (StringUtils.isBlank(uuid)) {
-            return null;
-        }
-        return Context.getProgramWorkflowService().getProgramByUuid(uuid);
-    }
+	
+	/**
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(java.lang.String)
+	 * @should return the object by given uuid string
+	 * @override
+	 */
+	public Program deserialize(String uuid) {
+		if (StringUtils.isBlank(uuid)) {
+			return null;
+		}
+		return Context.getProgramWorkflowService().getProgramByUuid(uuid);
+	}
 }

@@ -32,14 +32,14 @@ public class Allergies implements List<Allergy> {
 	private String allergyStatus = UNKNOWN;
 	
 	private List<Allergy> allergies = new ArrayList<Allergy>();
-
+	
 	/**
-     * @return the allergyStatus
-     */
-    public String getAllergyStatus() {
-    	return allergyStatus;
-    }
-
+	 * @return the allergyStatus
+	 */
+	public String getAllergyStatus() {
+		return allergyStatus;
+	}
+	
 	public boolean add(Allergy allergy) {
 		throwExceptionIfHasDuplicateAllergen(allergy);
 		allergyStatus = SEE_LIST;

@@ -122,7 +122,7 @@ public final class OpenmrsConstants {
 		
 		return null;
 	}
-		
+	
 	public static String DATABASE_NAME = "openmrs";
 	
 	public static String DATABASE_BUSINESS_NAME = "openmrs";
@@ -203,7 +203,7 @@ public final class OpenmrsConstants {
 		genders.put("F", "Female");
 		return genders;
 	}
-		
+	
 	/**
 	 * These roles are given to a user automatically and cannot be assigned
 	 * 
@@ -574,18 +574,18 @@ public final class OpenmrsConstants {
 	 * @since 1.11
 	 */
 	public static final Integer SEARCH_INDEX_VERSION = 3;
-
+	
 	/**
 	 * @since 1.12
 	 */
 	public static final String GP_DISABLE_VALIDATION = "validation.disable";
-
-    /**
-     * @since 1.12
+	
+	/**
+	 * @since 1.12
 	 * Specifies the uuid of the concept which represents drug non coded
 	 */
 	public static final String GP_DRUG_ORDER_DRUG_OTHER = "drugOrder.drugOther";
-
+	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
@@ -1037,11 +1037,13 @@ public final class OpenmrsConstants {
 		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
 		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_EXACT,
 		                "Specifies how person attributes are matched while searching person. Valid values are 'ANYWHERE' or 'EXACT'. Defaults to exact if missing or invalid value is present."));
-
-		props.add(new GlobalProperty(GP_DISABLE_VALIDATION, "false",
-				"Disables validation of OpenMRS Objects. Only takes affect on next restart. Warning: only do this is you know what you are doing!"));
-
-
+		
+		props
+		        .add(new GlobalProperty(
+		                GP_DISABLE_VALIDATION,
+		                "false",
+		                "Disables validation of OpenMRS Objects. Only takes affect on next restart. Warning: only do this is you know what you are doing!"));
+		
 		props.add(new GlobalProperty("allergy.concept.severity.mild", "1498AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 		        "UUID for the MILD severity concept"));
 		
@@ -1069,8 +1071,8 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty("allergy.concept.unknown", "1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 		        "UUID for the allergy unknown concept"));
 		
-		props
-				.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "", "Specifies the uuid of the concept which represents drug other non coded"));
+		props.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "",
+		        "Specifies the uuid of the concept which represents drug other non coded"));
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
@@ -1254,5 +1256,5 @@ public final class OpenmrsConstants {
 	
 	/** Value for the long person name format */
 	public static final String PERSON_NAME_FORMAT_LONG = "long";
-
+	
 }

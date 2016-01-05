@@ -311,7 +311,7 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Logging(ignoredArgumentIndexes = { 0, 1 })
 	public void changePassword(String pw, String pw2) throws APIException;
-
+	
 	/**
 	 * Changes password of {@link User} passed in
 	 * @param user user whose password is to be changed
@@ -320,7 +320,7 @@ public interface UserService extends OpenmrsService {
 	 * @should update password of given user when logged in user has edit users password privilege
 	 * @should not update password of given user when logged in user does not have edit users password privilege
 	 */
-	@Authorized({PrivilegeConstants.EDIT_USER_PASSWORDS})
+	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
 	public void changePassword(User user, String newPassword) throws APIException;
 	
 	/**
@@ -551,5 +551,5 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Authorized
 	public void changePasswordUsingSecretAnswer(String secretAnswer, String pw) throws APIException;
-
+	
 }

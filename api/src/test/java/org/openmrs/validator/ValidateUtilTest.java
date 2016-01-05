@@ -53,7 +53,7 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		}
 		
 	}
-
+	
 	/**
 	 * @see ValidateUtil#validate(Object)
 	 */
@@ -62,15 +62,16 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	public void validate_shouldReturnImmediatelyIfValidationIsDisabled() {
 		Boolean prevVal = ValidateUtil.getDisableValidation();
 		ValidateUtil.setDisableValidation(true);
-
+		
 		try {
 			ValidateUtil.validate(new Patient());
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			ValidateUtil.setDisableValidation(prevVal);
 			e.printStackTrace();
 			fail("An unexpected exception occurred");
 		}
-
+		
 		ValidateUtil.setDisableValidation(prevVal);
 	}
 	
@@ -101,7 +102,7 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		ValidateUtil.validateFieldLengths(errors, PatientIdentifierType.class, "name");
 		assertFalse(errors.hasFieldErrors("name"));
 	}
-
+	
 	/**
 	 * @see ValidateUtil#validateFieldLengths(org.springframework.validation.Errors, Class, String...)
 	 */
@@ -110,14 +111,14 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	public void validateFieldLength_shouldReturnImmediatelyIfValidationIsDisabledAndHaveNoErrors() {
 		Boolean prevVal = ValidateUtil.getDisableValidation();
 		ValidateUtil.setDisableValidation(true);
-
+		
 		PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
 		patientIdentifierType.setName("asdfghjkl asdfghjkl asdfghjkl asdfghjkl asdfghjkl +1");
-
+		
 		BindException errors = new BindException(patientIdentifierType, "patientIdentifierType");
 		ValidateUtil.validateFieldLengths(errors, PatientIdentifierType.class, "name");
 		assertFalse(errors.hasFieldErrors("name"));
-
+		
 		ValidateUtil.setDisableValidation(prevVal);
 	}
 	
@@ -133,7 +134,7 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		
 		assertTrue(errors.hasErrors());
 	}
-
+	
 	/**
 	 * @see ValidateUtil#validate(Object,Errors)
 	 */
@@ -142,18 +143,19 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	public void validate_shouldReturnImmediatelyIfValidationIsDisabledAndHaveNoErrors() {
 		Boolean prevVal = ValidateUtil.getDisableValidation();
 		ValidateUtil.setDisableValidation(true);
-
+		
 		try {
 			Patient patient = new Patient();
 			Errors errors = new BindException(patient, "patient");
 			ValidateUtil.validate(patient, errors);
 			assertFalse(errors.hasErrors());
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			ValidateUtil.setDisableValidation(prevVal);
 			e.printStackTrace();
 			fail("An unexpected exception occurred");
 		}
-
+		
 		ValidateUtil.setDisableValidation(prevVal);
 	}
 }

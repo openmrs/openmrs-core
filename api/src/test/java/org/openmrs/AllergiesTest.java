@@ -26,7 +26,7 @@ public class AllergiesTest {
 	Allergies allergies;
 	
 	@Before
-	public void setup(){
+	public void setup() {
 		allergies = new Allergies();
 	}
 	
@@ -38,7 +38,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#indexOf(Object)}
 	 */
 	@Test
-	public void shouldAddAllergyAndSetCorrectStatus(){
+	public void shouldAddAllergyAndSetCorrectStatus() {
 		Assert.assertEquals(allergies.getAllergyStatus(), Allergies.UNKNOWN);
 		Allergy allergy = new Allergy();
 		
@@ -65,7 +65,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#addAll(int, java.util.Collection)}
 	 */
 	@Test
-	public void shouldAddAllergyCollectionAndSetCorrectStatus(){
+	public void shouldAddAllergyCollectionAndSetCorrectStatus() {
 		Assert.assertEquals(allergies.getAllergyStatus(), Allergies.UNKNOWN);
 		List<Allergy> allergyList = new ArrayList<Allergy>();
 		for (int i = 0; i < 5; i++) {
@@ -86,12 +86,13 @@ public class AllergiesTest {
 		Assert.assertEquals(allergies.get(3), allergy);
 		Assert.assertEquals(allergies.getAllergyStatus(), Allergies.SEE_LIST);
 	}
+	
 	/**
 	 * @see {@link Allergies#remove(Allergy)}
 	 * @see {@link Allergies#remove(int)}
 	 */
 	@Test
-	public void shouldRemoveAllergyAndSetCorrectStatus(){
+	public void shouldRemoveAllergyAndSetCorrectStatus() {
 		Assert.assertEquals(allergies.getAllergyStatus(), Allergies.UNKNOWN);
 		Allergy allergy1 = new Allergy();
 		Allergy allergy2 = new Allergy();
@@ -111,8 +112,8 @@ public class AllergiesTest {
 	/**
 	 * @see {@link Allergies#clear()}
 	 */
-	@Test 
-	public void shouldClearAllergyAndSetCorrectStatus(){
+	@Test
+	public void shouldClearAllergyAndSetCorrectStatus() {
 		allergies.add(new Allergy());
 		allergies.add(new Allergy());
 		Assert.assertEquals(allergies.size(), 2);
@@ -127,7 +128,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#confirmNoKnownAllergies()}
 	 */
 	@Test
-	public void shouldConfirmNoKnownAllergies(){
+	public void shouldConfirmNoKnownAllergies() {
 		allergies.confirmNoKnownAllergies();
 		Assert.assertEquals(allergies.getAllergyStatus(), Allergies.NO_KNOWN_ALLERGIES);
 	}
@@ -136,7 +137,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#confirmNoKnownAllergies()}
 	 */
 	@Test(expected = APIException.class)
-	public void shouldThrowAnErrorWhenTryingConfirmNoKnowAllergiesWhileAllergiesIsNotEmpty(){
+	public void shouldThrowAnErrorWhenTryingConfirmNoKnowAllergiesWhileAllergiesIsNotEmpty() {
 		allergies.add(new Allergy());
 		allergies.confirmNoKnownAllergies();
 	}
@@ -145,9 +146,9 @@ public class AllergiesTest {
 	 * @see {@link Allergies#add(Allergy)}
 	 */
 	@Test(expected = APIException.class)
-	public void add_shouldNotAllowDuplicateCodedAllergen(){
+	public void add_shouldNotAllowDuplicateCodedAllergen() {
 		Allergy allergy1 = new Allergy();
-        Concept concept = new Concept();
+		Concept concept = new Concept();
 		allergy1.setAllergen(new Allergen(null, concept, null));
 		
 		Allergy allergy2 = new Allergy();
@@ -161,7 +162,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#add(Allergy)}
 	 */
 	@Test
-	public void add_shouldAllowNonDuplicateCodedAllergen(){
+	public void add_shouldAllowNonDuplicateCodedAllergen() {
 		Allergy allergy1 = new Allergy();
 		allergy1.setAllergen(new Allergen(null, new Concept(1), null));
 		
@@ -176,7 +177,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#add(Allergy)}
 	 */
 	@Test(expected = APIException.class)
-	public void add_shouldNotAllowDuplicateNonCodedAllergen(){
+	public void add_shouldNotAllowDuplicateNonCodedAllergen() {
 		Concept concept = new Concept();
 		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
@@ -194,7 +195,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#add(Allergy)}
 	 */
 	@Test
-	public void add_shouldAllowNonDuplicateNonCodedAllergen(){
+	public void add_shouldAllowNonDuplicateNonCodedAllergen() {
 		Concept concept = new Concept();
 		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
@@ -212,9 +213,9 @@ public class AllergiesTest {
 	 * @see {@link Allergies#add(int, Allergy)}
 	 */
 	@Test(expected = APIException.class)
-	public void add2_shouldNotAllowDuplicateCodedAllergen(){
+	public void add2_shouldNotAllowDuplicateCodedAllergen() {
 		Allergy allergy1 = new Allergy();
-        Concept concept = new Concept();
+		Concept concept = new Concept();
 		allergy1.setAllergen(new Allergen(null, concept, null));
 		
 		Allergy allergy2 = new Allergy();
@@ -228,7 +229,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#add(int, Allergy)}
 	 */
 	@Test
-	public void add2_shouldAllowNonDuplicateCodedAllergen(){
+	public void add2_shouldAllowNonDuplicateCodedAllergen() {
 		Allergy allergy1 = new Allergy();
 		allergy1.setAllergen(new Allergen(null, new Concept(1), null));
 		
@@ -243,7 +244,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#add(int, Allergy)}
 	 */
 	@Test(expected = APIException.class)
-	public void add2_shouldNotAllowDuplicateNonCodedAllergen(){
+	public void add2_shouldNotAllowDuplicateNonCodedAllergen() {
 		Concept concept = new Concept();
 		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
@@ -261,7 +262,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#add(int, Allergy)}
 	 */
 	@Test
-	public void add2_shouldAllowNonDuplicateNonCodedAllergen(){
+	public void add2_shouldAllowNonDuplicateNonCodedAllergen() {
 		Concept concept = new Concept();
 		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
@@ -279,7 +280,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#addAll(java.util.Collection)}
 	 */
 	@Test(expected = APIException.class)
-	public void addAll_shouldNotAllowDuplicateCodedAllergen(){
+	public void addAll_shouldNotAllowDuplicateCodedAllergen() {
 		Allergy allergy1 = new Allergy();
 		allergy1.setAllergen(new Allergen(null, new Concept(1), null));
 		
@@ -297,7 +298,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#addAll(java.util.Collection)}
 	 */
 	@Test(expected = APIException.class)
-	public void addAll_shouldAllowNonDuplicateCodedAllergen(){
+	public void addAll_shouldAllowNonDuplicateCodedAllergen() {
 		Allergy allergy1 = new Allergy();
 		allergy1.setAllergen(new Allergen(null, new Concept(1), null));
 		
@@ -315,7 +316,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#addAll(java.util.Collection)}
 	 */
 	@Test(expected = APIException.class)
-	public void addAll_shouldNotAllowDuplicateNonCodedAllergen(){
+	public void addAll_shouldNotAllowDuplicateNonCodedAllergen() {
 		Concept concept = new Concept();
 		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
@@ -336,7 +337,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#addAll(java.util.Collection)}
 	 */
 	@Test(expected = APIException.class)
-	public void addAll_shouldAllowNonDuplicateNonCodedAllergen(){
+	public void addAll_shouldAllowNonDuplicateNonCodedAllergen() {
 		Concept concept = new Concept();
 		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
@@ -357,7 +358,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#addAll(int, java.util.Collection)}
 	 */
 	@Test(expected = APIException.class)
-	public void addAll2_shouldNotAllowDuplicateCodedAllergen(){
+	public void addAll2_shouldNotAllowDuplicateCodedAllergen() {
 		Allergy allergy1 = new Allergy();
 		allergy1.setAllergen(new Allergen(null, new Concept(1), null));
 		
@@ -375,7 +376,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#addAll(int, java.util.Collection)}
 	 */
 	@Test(expected = APIException.class)
-	public void addAll2_shouldAllowNonDuplicateCodedAllergen(){
+	public void addAll2_shouldAllowNonDuplicateCodedAllergen() {
 		Allergy allergy1 = new Allergy();
 		allergy1.setAllergen(new Allergen(null, new Concept(1), null));
 		
@@ -393,7 +394,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#addAll(int, java.util.Collection)}
 	 */
 	@Test(expected = APIException.class)
-	public void addAll2_shouldNotAllowDuplicateNonCodedAllergen(){
+	public void addAll2_shouldNotAllowDuplicateNonCodedAllergen() {
 		Concept concept = new Concept();
 		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
@@ -414,7 +415,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#addAll(int, java.util.Collection)}
 	 */
 	@Test(expected = APIException.class)
-	public void addAll2_shouldAllowNonDuplicateNonCodedAllergen(){
+	public void addAll2_shouldAllowNonDuplicateNonCodedAllergen() {
 		Concept concept = new Concept();
 		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
@@ -435,9 +436,9 @@ public class AllergiesTest {
 	 * @see {@link Allergies#addAll(java.util.Collection)}
 	 */
 	@Test(expected = APIException.class)
-	public void addAll4_shouldNotAllowDuplicateCodedAllergen(){
+	public void addAll4_shouldNotAllowDuplicateCodedAllergen() {
 		Allergy allergy1 = new Allergy();
-        Concept concept = new Concept();
+		Concept concept = new Concept();
 		allergy1.setAllergen(new Allergen(null, concept, null));
 		
 		Allergy allergy2 = new Allergy();
@@ -454,9 +455,9 @@ public class AllergiesTest {
 	 * @see {@link Allergies#addAll(int, java.util.Collection)}
 	 */
 	@Test(expected = APIException.class)
-	public void addAll5_shouldNotAllowDuplicateCodedAllergen(){
+	public void addAll5_shouldNotAllowDuplicateCodedAllergen() {
 		Allergy allergy1 = new Allergy();
-        Concept concept = new Concept();
+		Concept concept = new Concept();
 		allergy1.setAllergen(new Allergen(null, concept, null));
 		
 		Allergy allergy2 = new Allergy();
@@ -473,7 +474,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#addAll(java.util.Collection)}
 	 */
 	@Test(expected = APIException.class)
-	public void addAll6_shouldNotAllowDuplicateNonCodedAllergen(){
+	public void addAll6_shouldNotAllowDuplicateNonCodedAllergen() {
 		Concept concept = new Concept();
 		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
@@ -494,7 +495,7 @@ public class AllergiesTest {
 	 * @see {@link Allergies#addAll(int, java.util.Collection)}
 	 */
 	@Test(expected = APIException.class)
-	public void addAll7_shouldNotAllowDuplicateNonCodedAllergen(){
+	public void addAll7_shouldNotAllowDuplicateNonCodedAllergen() {
 		Concept concept = new Concept();
 		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		

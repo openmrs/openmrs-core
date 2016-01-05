@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 public class ProgramWorkflowStateEditorTest extends BaseContextSensitiveTest {
-
+	
 	/**
 	 * @see ProgramWorkflowStateEditor#setAsText(String)
 	 * @verifies set using uuid

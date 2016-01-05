@@ -16,7 +16,7 @@ import java.util.Map;
  * Constants used by the hl7 package
  */
 public class HL7Constants {
-		
+	
 	public static final Integer HL7_STATUS_PENDING = 0;
 	
 	public static final Integer HL7_STATUS_PROCESSING = 1;

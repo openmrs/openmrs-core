@@ -17,11 +17,10 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Represent allergy reactions
  */
-public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serializable{
+public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 1;
-
-
+	
 	private Integer allergyReactionId;
 	
 	private Allergy allergy;
@@ -33,7 +32,7 @@ public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serial
 	/**
 	 * Default constructor
 	 */
-	public AllergyReaction(){
+	public AllergyReaction() {
 		
 	}
 	
@@ -51,11 +50,11 @@ public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serial
 	public Integer getAllergyReactionId() {
 		return allergyReactionId;
 	}
-
+	
 	public void setAllergyReactionId(Integer allergyReactionId) {
 		this.allergyReactionId = allergyReactionId;
 	}
-
+	
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -63,7 +62,7 @@ public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serial
 	public Integer getId() {
 		return allergyReactionId;
 	}
-
+	
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
@@ -115,12 +114,12 @@ public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serial
 	}
 	
 	@Override
-    public String toString() {
-	    if (StringUtils.isNotBlank(reactionNonCoded)) {
-	    	return reactionNonCoded;
-	    }
-	    return reaction.getName().getName();
-    }
+	public String toString() {
+		if (StringUtils.isNotBlank(reactionNonCoded)) {
+			return reactionNonCoded;
+		}
+		return reaction.getName().getName();
+	}
 	
 	/**
 	 * Checks if this reaction has the same values as the given one
@@ -138,8 +137,7 @@ public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serial
 				if (!OpenmrsUtil.nullSafeEquals(getReaction().getConceptId(), reaction.getReaction().getConceptId())) {
 					return false;
 				}
-			}
-			else {
+			} else {
 				return false;
 			}
 		}

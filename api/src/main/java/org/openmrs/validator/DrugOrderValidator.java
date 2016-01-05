@@ -110,31 +110,29 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			validateFieldsForOutpatientCareSettingType(order, errors);
 			validatePairedFields(order, errors);
 			validateUnitsAreAmongAllowedConcepts(errors, order);
-            validateForRequireDrug(errors, order);
+			validateForRequireDrug(errors, order);
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "asNeededCondition", "brandName");
 		}
 	}
-
+	
 	private void validateForRequireDrug(Errors errors, DrugOrder order) {
 		//Reject if global property is set to specify a formulation for drug order
 		boolean requireDrug = Context.getAdministrationService().getGlobalPropertyValue(
-				OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, false);
+		    OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, false);
 		OrderService orderService = Context.getOrderService();
-
-
-		if(requireDrug){
-			if(order.getConcept() != null && OpenmrsUtil.nullSafeEquals(orderService.getNonCodedDrugConcept(), order.getConcept())){
-				if(order.getDrug() == null && !order.isNonCodedDrug()){
+		
+		if (requireDrug) {
+			if (order.getConcept() != null
+			        && OpenmrsUtil.nullSafeEquals(orderService.getNonCodedDrugConcept(), order.getConcept())) {
+				if (order.getDrug() == null && !order.isNonCodedDrug()) {
 					errors.rejectValue("drugNonCoded", "DrugOrder.error.drugNonCodedIsRequired");
-				}
-				else if(order.getDrug() != null){
+				} else if (order.getDrug() != null) {
 					errors.rejectValue("concept", "DrugOrder.error.onlyOneOfDrugOrNonCodedShouldBeSet");
 				}
-			}else{
-				if(order.getDrug() == null && !order.isNonCodedDrug()){
+			} else {
+				if (order.getDrug() == null && !order.isNonCodedDrug()) {
 					errors.rejectValue("drug", "DrugOrder.error.drugIsRequired");
-				}
-				else if(order.getDrug() != null && order.isNonCodedDrug()){
+				} else if (order.getDrug() != null && order.isNonCodedDrug()) {
 					errors.rejectValue("concept", "DrugOrder.error.onlyOneOfDrugOrNonCodedShouldBeSet");
 				}
 			}

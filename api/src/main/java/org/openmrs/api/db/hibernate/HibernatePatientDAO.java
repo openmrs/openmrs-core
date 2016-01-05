@@ -642,9 +642,10 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	//@Override
 	public String getAllergyStatus(Patient patient) {
-
+		
 		return (String) sessionFactory.getCurrentSession().createSQLQuery(
-			    "select allergy_status from Patient where patient_id = :patientId").setInteger("patientId", patient.getPatientId()).uniqueResult();
+		    "select allergy_status from Patient where patient_id = :patientId").setInteger("patientId",
+		    patient.getPatientId()).uniqueResult();
 	}
 	
 	/**
@@ -653,17 +654,15 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@Override
 	public Allergies saveAllergies(Patient patient, Allergies allergies) {
-
+		
 		sessionFactory.getCurrentSession().createSQLQuery(
-			    "update Patient set allergy_status = :allergyStatus where patient_id = :patientId")
-			    .setInteger("patientId", patient.getPatientId())
-			    .setString("allergyStatus", allergies.getAllergyStatus())
-			    .executeUpdate();
+		    "update Patient set allergy_status = :allergyStatus where patient_id = :patientId").setInteger("patientId",
+		    patient.getPatientId()).setString("allergyStatus", allergies.getAllergyStatus()).executeUpdate();
 		
 		for (Allergy allergy : allergies) {
 			sessionFactory.getCurrentSession().save(allergy);
 		}
-			
+		
 		return allergies;
 	}
 	
@@ -672,15 +671,15 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	public Allergy getAllergy(Integer allergyId) {
 		return (Allergy) sessionFactory.getCurrentSession().createQuery("from Allergy a where a.allergyId = :allergyId")
-				.setInteger("allergyId", allergyId).uniqueResult();
+		        .setInteger("allergyId", allergyId).uniqueResult();
 	}
-
+	
 	/**
-     * @see org.openmrs.api.db.PatientDAO#saveAllergy(org.openmrs.Allergy)
-     */
-    @Override
-    public Allergy saveAllergy(Allergy allergy) {
-    	sessionFactory.getCurrentSession().save(allergy);
-    	return allergy;
-    }
+	 * @see org.openmrs.api.db.PatientDAO#saveAllergy(org.openmrs.Allergy)
+	 */
+	@Override
+	public Allergy saveAllergy(Allergy allergy) {
+		sessionFactory.getCurrentSession().save(allergy);
+		return allergy;
+	}
 }

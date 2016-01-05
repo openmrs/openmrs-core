@@ -95,7 +95,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			throw new IllegalArgumentException("Parent must not be ModuleClassLoader");
 		}
 		
-		if (log.isDebugEnabled()){
+		if (log.isDebugEnabled()) {
 			log.debug("URLs length: " + urls.size());
 		}
 		this.module = module;
@@ -351,7 +351,8 @@ public class ModuleClassLoader extends URLClassLoader {
 				include = false; //if a resource matches a path of contidionalResource then it must meet all conditions
 				
 				if (StringUtils.isNotBlank(conditionalResource.getOpenmrsPlatformVersion())) { //openmrsPlatformVersion is optional
-					include = ModuleUtil.matchRequiredVersions(openmrsVersion, conditionalResource.getOpenmrsPlatformVersion());
+					include = ModuleUtil.matchRequiredVersions(openmrsVersion, conditionalResource
+					        .getOpenmrsPlatformVersion());
 					
 					if (!include) {
 						return false;
@@ -680,15 +681,15 @@ public class ModuleClassLoader extends URLClassLoader {
 		if (this == requestor) {
 			return;
 		}
-
+		
 		URL lib = getClassBaseUrl(cls);
-
+		
 		if (lib == null) {
 			return; // cls is a system class
 		}
-
+		
 		ClassLoader loader = cls.getClassLoader();
-
+		
 		if (!(loader instanceof ModuleClassLoader)) {
 			return;
 		}
@@ -937,13 +938,13 @@ public class ModuleClassLoader extends URLClassLoader {
 			if (seenModules.contains(publicImport.getModuleId())) {
 				continue;
 			}
-
+			
 			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
-
+			
 			if (mcl != null) {
 				result = mcl.findResource(name, requestor, seenModules);
 			}
-
+			
 			if (result != null) {
 				return result; // found resource in aware of module
 			}

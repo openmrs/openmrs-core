@@ -45,10 +45,8 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(patient.isVoided());
 		
 		EncounterService es = Context.getEncounterService();
-		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-			.setPatient(patient)
-			.setIncludeVoided(true)
-			.createEncounterSearchCriteria();
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setPatient(patient)
+		        .setIncludeVoided(true).createEncounterSearchCriteria();
 		List<Encounter> encounters = es.getEncounters(encounterSearchCriteria);
 		Assert.assertTrue(CollectionUtils.isNotEmpty(encounters));
 		//all encounters void related fields should be null

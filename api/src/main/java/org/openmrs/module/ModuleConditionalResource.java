@@ -37,17 +37,17 @@ public class ModuleConditionalResource {
 	/**
 	 * @since 1.11.3, 1.10.2, 1.9.9
 	 */
-    public String getOpenmrsPlatformVersion() {
-    	return openmrsPlatformVersion;
-    }
-
-    /**
+	public String getOpenmrsPlatformVersion() {
+		return openmrsPlatformVersion;
+	}
+	
+	/**
 	 * @since 1.11.3, 1.10.2, 1.9.9
 	 */
-    public void setOpenmrsPlatformVersion(String openmrsPlatformVersion) {
-    	this.openmrsPlatformVersion = openmrsPlatformVersion;
-    }
-
+	public void setOpenmrsPlatformVersion(String openmrsPlatformVersion) {
+		this.openmrsPlatformVersion = openmrsPlatformVersion;
+	}
+	
 	public List<ModuleAndVersion> getModules() {
 		return modules;
 	}
@@ -69,7 +69,8 @@ public class ModuleConditionalResource {
 		if (modules != null ? !modules.equals(that.modules) : that.modules != null) {
 			return false;
 		}
-		if (openmrsPlatformVersion != null ? !openmrsPlatformVersion.equals(that.openmrsPlatformVersion) : that.openmrsPlatformVersion != null) {
+		if (openmrsPlatformVersion != null ? !openmrsPlatformVersion.equals(that.openmrsPlatformVersion)
+		        : that.openmrsPlatformVersion != null) {
 			return false;
 		}
 		if (path != null ? !path.equals(that.path) : that.path != null) {
@@ -81,8 +82,8 @@ public class ModuleConditionalResource {
 	
 	@Override
 	public String toString() {
-		return "ModuleConditionalResource{" + "path='" + path + '\'' + ", openmrsPlatformVersion='" + openmrsPlatformVersion + '\''
-		        + ", modules=" + modules + '}';
+		return "ModuleConditionalResource{" + "path='" + path + '\'' + ", openmrsPlatformVersion='" + openmrsPlatformVersion
+		        + '\'' + ", modules=" + modules + '}';
 	}
 	
 	@Override

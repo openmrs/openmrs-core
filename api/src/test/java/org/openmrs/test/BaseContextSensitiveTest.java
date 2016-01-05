@@ -318,8 +318,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			
 			// automatically create the tables defined in the hbm files
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
-		}
-		else {
+		} else {
 			String url = System.getProperty("databaseUrl");
 			String username = System.getProperty("databaseUsername");
 			String password = System.getProperty("databasePassword");
@@ -865,8 +864,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 				
 				if (useInMemoryDatabase()) {
 					initializeInMemoryDatabase();
-				}
-				else {
+				} else {
 					executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 				}
 				

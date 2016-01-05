@@ -1086,7 +1086,9 @@ public class ConceptTest {
 		Locale localeToSearch = new Locale("en", "UK");
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("Test Concept", locale));
-		Assert.assertEquals((concept.getName(locale, false).toString()), (concept.getName(localeToSearch, false).toString()));
+		Assert
+		        .assertEquals((concept.getName(locale, false).toString()), (concept.getName(localeToSearch, false)
+		                .toString()));
 	}
 	
 }

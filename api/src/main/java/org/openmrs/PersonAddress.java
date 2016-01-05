@@ -354,7 +354,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 		        && StringUtils.isBlank(getLongitude());
 		
 	}
-			
+	
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 * Note: this comparator imposes orderings that are inconsistent with equals.

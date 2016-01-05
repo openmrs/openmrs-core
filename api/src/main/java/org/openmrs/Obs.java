@@ -64,11 +64,11 @@ import org.openmrs.util.Format.FORMAT_TYPE;
 public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";
-
+	
 	private static final String TIME_PATTERN = "HH:mm";
-
+	
 	private static final String DATE_PATTERN = "yyyy-MM-dd";
-
+	
 	public static final long serialVersionUID = 112342333L;
 	
 	private static final Log log = LogFactory.getLog(Obs.class);

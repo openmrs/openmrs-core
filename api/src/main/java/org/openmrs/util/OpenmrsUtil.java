@@ -124,7 +124,7 @@ public class OpenmrsUtil {
 	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<Locale, SimpleDateFormat>();
 	
 	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<Locale, SimpleDateFormat>();
-		
+	
 	/**
 	 * Compares origList to newList returning map of differences
 	 * 
@@ -1633,7 +1633,7 @@ public class OpenmrsUtil {
 	public static String generateUid() {
 		return generateUid(20);
 	}
-		
+	
 	/**
 	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant <br>
 	 * NOTE: In Java 6, you will be able to pass the load() and store() methods a UTF-8

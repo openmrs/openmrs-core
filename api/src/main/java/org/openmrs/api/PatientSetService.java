@@ -392,7 +392,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @return Map&lt;Integer,Map&lt;String,Object&gt;&gt; with characteristics of specified patients
 	 */
 	public Map<Integer, Map<String, Object>> getCharacteristics(Cohort patients);
-		
+	
 	/**
 	 * Gets a map of patient identifiers values by identifier type, indexed by patient primary key.
 	 * 

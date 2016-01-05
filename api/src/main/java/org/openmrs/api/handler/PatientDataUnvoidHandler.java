@@ -47,10 +47,8 @@ public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 		if (patient.getId() != null) {
 			//unvoid all the encounter that got voided as a result of the patient getting voided
 			EncounterService es = Context.getEncounterService();
-			EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-				.setPatient(patient)
-				.setIncludeVoided(true)
-				.createEncounterSearchCriteria();
+			EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setPatient(patient)
+			        .setIncludeVoided(true).createEncounterSearchCriteria();
 			List<Encounter> encounters = es.getEncounters(encounterSearchCriteria);
 			if (CollectionUtils.isNotEmpty(encounters)) {
 				for (Encounter encounter : encounters) {

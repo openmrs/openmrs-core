@@ -526,7 +526,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	public Set<PersonName> getNames() {
 		return person.getNames();
 	}
-		
+	
 	/**
 	 * Returns a list of Locales for which the User is considered proficient.
 	 * 

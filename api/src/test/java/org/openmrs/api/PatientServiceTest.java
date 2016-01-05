@@ -2020,7 +2020,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Patient> patients = patientService.getPatients("I am voided", null, null, false);
 		assertEquals(patients.size(), 0);
 	}
-
+	
 	/**
 	 * @see PatientService#getPatients(String, String, java.util.List, boolean)
 	 */
@@ -2214,7 +2214,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(patientService.getPatient(7).isVoided());
 		Assert.assertTrue(patientService.getPatient(8).isVoided());
 	}
-		
+	
 	private void assertEqualsInt(int expected, Integer actual) throws Exception {
 		Assert.assertEquals(Integer.valueOf(expected), actual);
 	}

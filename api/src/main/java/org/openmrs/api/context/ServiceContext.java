@@ -73,7 +73,7 @@ import org.springframework.context.ApplicationContextAware;
 public class ServiceContext implements ApplicationContextAware {
 	
 	private static final Log log = LogFactory.getLog(ServiceContext.class);
-
+	
 	private ApplicationContext applicationContext;
 	
 	private static boolean refreshingContext = false;
@@ -117,6 +117,7 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	private static class ServiceContextHolder {
+		
 		private static ServiceContext instance = null;
 	}
 	

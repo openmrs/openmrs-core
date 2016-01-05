@@ -194,7 +194,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public List<User> getAllUsers() throws APIException {
 		return dao.getAllUsers();
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#getAllPrivileges()
 	 */
@@ -228,7 +228,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public Privilege savePrivilege(Privilege privilege) throws APIException {
 		return dao.savePrivilege(privilege);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#getAllRoles()
 	 */
@@ -628,37 +628,37 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		} else if (!dao.getLoginCredential(user).checkPassword(oldPassword)) {
 			throw new APIException("old.password.not.correct", (Object[]) null);
 		}
-	
+		
 		updatePassword(user, newPassword);
 	}
-
+	
 	private void updatePassword(User user, String newPassword) {
 		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
 		dao.changePassword(user, newPassword);
 	}
-
+	
 	@Override
 	public void changePassword(User user, String newPassword) throws APIException {
 		updatePassword(user, newPassword);
 	}
-
+	
 	@Override
 	public void changePasswordUsingSecretAnswer(String secretAnswer, String pw) throws APIException {
 		User user = Context.getAuthenticatedUser();
-		if(!isSecretAnswer(user, secretAnswer)) {
+		if (!isSecretAnswer(user, secretAnswer)) {
 			throw new APIException("secret.answer.not.correct", (Object[]) null);
 		}
 		updatePassword(user, pw);
 	}
-
+	
 	@Override
-    public String getSecretQuestion(User user) throws APIException {
+	public String getSecretQuestion(User user) throws APIException {
 		if (user.getUserId() != null) {
 			LoginCredential loginCredential = dao.getLoginCredential(user);
 			return loginCredential.getSecretQuestion();
 		} else {
 			return null;
 		}
-    }
+	}
 	
 }

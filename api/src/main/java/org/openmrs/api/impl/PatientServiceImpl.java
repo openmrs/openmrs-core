@@ -218,7 +218,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 		return patient;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.PatientService#getAllPatients()
 	 */
@@ -318,7 +318,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			        + missingNames);
 		}
 	}
-		
+	
 	/**
 	 * @see org.openmrs.api.PatientService#voidPatient(org.openmrs.Patient, java.lang.String)
 	 */
@@ -377,6 +377,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		return dao.getPatientIdentifiers(identifier, patientIdentifierTypes, locations, patients, isPreferred);
 	}
+	
 	// end patient identifier section
 	
 	// patient identifier _type_ section
@@ -627,11 +628,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// change all encounters. This will cascade to obs and orders contained in those encounters
 		// TODO: this should be a copy, not a move
 		EncounterService es = Context.getEncounterService();
-
+		
 		EncounterSearchCriteria notPreferredPatientEncounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-				.setIncludeVoided(true)
-				.setPatient(notPreferred)
-				.createEncounterSearchCriteria();
+		        .setIncludeVoided(true).setPatient(notPreferred).createEncounterSearchCriteria();
 		for (Encounter e : es.getEncounters(notPreferredPatientEncounterSearchCriteria)) {
 			e.setPatient(preferred);
 			log.debug("Merging encounter " + e.getEncounterId() + " to " + preferred.getPatientId());
@@ -1472,7 +1471,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#saveAllergy(org.openmrs.Allergy)
 	 */
 	public void saveAllergy(Allergy allergy) throws APIException {
-
+		
 		dao.saveAllergy(allergy);
 	}
 	
@@ -1489,7 +1488,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 *      java.lang.String)
 	 */
 	public void voidAllergy(Allergy allergy, String reason) throws APIException {
-
+		
 		allergy.setVoided(true);
 		allergy.setVoidedBy(Context.getAuthenticatedUser());
 		allergy.setDateVoided(new Date());

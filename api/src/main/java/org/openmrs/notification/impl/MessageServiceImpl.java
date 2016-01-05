@@ -285,5 +285,5 @@ public class MessageServiceImpl implements MessageService {
 	@Transactional(readOnly = true)
 	public List getTemplatesByName(String name) throws MessageException {
 		return templateDAO.getTemplatesByName(name);
-	}	
+	}
 }

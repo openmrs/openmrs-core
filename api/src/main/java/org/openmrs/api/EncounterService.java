@@ -126,7 +126,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> getEncountersByPatientIdentifier(String identifier) throws APIException;
-			
+	
 	/**
 	 * Get all encounters that match a variety of (nullable) criteria contained in the parameter object.
 	 * Each extra value for a parameter that is provided acts as an "and" and will reduce the number of results returned
@@ -316,7 +316,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTER_TYPES })
 	public void purgeEncounterType(EncounterType encounterType) throws APIException;
-		
+	
 	/**
 	 * Search for encounters by patient name or patient identifier.
 	 * 

@@ -96,7 +96,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	
 	@Before
 	public void setUp() {
-
+		
 		context.setUserContext(userContext);
 		context.setServiceContext(serviceContext);
 		context.setContext(serviceContext);

@@ -56,7 +56,8 @@ public class OpenmrsProfileExcludeFilter implements TypeFilter {
 		}
 		
 		if (StringUtils.isNotBlank((String) openmrsPlatformVersion)
-		        && !ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, (String) openmrsPlatformVersion)) {
+		        && !ModuleUtil
+		                .matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, (String) openmrsPlatformVersion)) {
 			return false;
 		}
 		

@@ -17,6 +17,7 @@ import org.openmrs.Concept;
  * Tests methods in {@link org.openmrs.Allergen}.
  */
 public class AllergenTest {
+	
 	Allergen allergen;
 	
 	@Test
@@ -48,33 +49,38 @@ public class AllergenTest {
 	
 	@Test
 	public void isSameAllergen_shouldReturnTrueForSameCodedAllergen() {
-        Concept c = new Concept();
+		Concept c = new Concept();
 		Assert.assertTrue(new Allergen(null, c, null).isSameAllergen(new Allergen(null, c, null)));
 	}
 	
 	@Test
 	public void isSameAllergen_shouldReturnFalseForDifferentCodedAllergen() {
-		Assert.assertFalse(new Allergen(null, new Concept(1), null).isSameAllergen(new Allergen(null, new Concept(2), null)));
+		Assert
+		        .assertFalse(new Allergen(null, new Concept(1), null)
+		                .isSameAllergen(new Allergen(null, new Concept(2), null)));
 	}
 	
 	@Test
 	public void isSameAllergen_shouldReturnTrueForSameNonCodedAllergen() {
 		Concept concept = new Concept();
 		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
-		Assert.assertTrue(new Allergen(null, concept, "OTHER VALUE").isSameAllergen(new Allergen(null, concept, "OTHER VALUE")));
+		Assert.assertTrue(new Allergen(null, concept, "OTHER VALUE").isSameAllergen(new Allergen(null, concept,
+		        "OTHER VALUE")));
 	}
 	
 	@Test
 	public void isSameAllergen_shouldBeCaseInsensitiveForNonCodedAllergen() {
 		Concept concept = new Concept();
 		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
-		Assert.assertTrue(new Allergen(null, concept, "other value").isSameAllergen(new Allergen(null, concept, "OTHER VALUE")));
+		Assert.assertTrue(new Allergen(null, concept, "other value").isSameAllergen(new Allergen(null, concept,
+		        "OTHER VALUE")));
 	}
 	
 	@Test
 	public void isSameAllergen_shouldReturnFalseForDifferentNonCodedAllergen() {
 		Concept concept = new Concept();
 		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
-		Assert.assertFalse(new Allergen(null, concept, "OTHER VALUE1").isSameAllergen(new Allergen(null, concept, "OTHER VALUE2")));
+		Assert.assertFalse(new Allergen(null, concept, "OTHER VALUE1").isSameAllergen(new Allergen(null, concept,
+		        "OTHER VALUE2")));
 	}
 }

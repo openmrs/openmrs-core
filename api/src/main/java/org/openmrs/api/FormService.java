@@ -176,7 +176,7 @@ public interface FormService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Form> getPublishedForms() throws APIException;
-		
+	
 	/**
 	 * Audit form, consolidate similar fields
 	 * 
@@ -245,7 +245,7 @@ public interface FormService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void purgeForm(Form form, boolean cascade) throws APIException;
-		
+	
 	/**
 	 * Get all field types in the database including the retired ones
 	 * 

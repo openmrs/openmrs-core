@@ -215,10 +215,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			throw new IllegalArgumentException("The 'patient' parameter is requred and cannot be null");
 		}
 		
-		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-			.setPatient(patient)
-			.setIncludeVoided(false)
-			.createEncounterSearchCriteria();
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setPatient(patient)
+		        .setIncludeVoided(false).createEncounterSearchCriteria();
 		
 		return Context.getEncounterService().getEncounters(encounterSearchCriteria);
 	}
@@ -259,7 +257,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 		return Context.getEncounterService().filterEncountersByViewPermissions(encs, null);
 	}
-		
+	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)
 	 */
@@ -476,7 +474,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		dao.deleteEncounterType(encounterType);
 	}
-		
+	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounterByUuid(java.lang.String)
 	 */

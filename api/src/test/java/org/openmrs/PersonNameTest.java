@@ -76,7 +76,7 @@ public class PersonNameTest {
 		Assert.assertEquals(voidedBy, copy.getVoidedBy());
 		Assert.assertEquals(voidReason, copy.getVoidReason());
 	}
-
+	
 	/**
 	 * @see PersonName#equalsContent(PersonName)
 	 */

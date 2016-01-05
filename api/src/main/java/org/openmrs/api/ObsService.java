@@ -158,7 +158,7 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.DELETE_OBS)
 	public void purgeObs(Obs obs, boolean cascade) throws APIException;
-
+	
 	/**
 	 * Get all Observations for the given person, sorted by obsDatetime ascending. Does not return
 	 * voided observations.

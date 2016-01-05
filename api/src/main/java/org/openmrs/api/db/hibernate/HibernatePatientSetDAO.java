@@ -92,7 +92,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-
+	
 	DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	@SuppressWarnings("unchecked")
@@ -1423,8 +1423,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@SuppressWarnings("unchecked")
 	public Map<Integer, Collection<Integer>> getActiveDrugIds(Collection<Integer> patientIds, Date fromDate, Date toDate)
 	        throws DAOException {
-		Set<Integer> idsLookup = patientIds == null ? null
-		        : (patientIds instanceof HashSet ? (HashSet<Integer>) patientIds : new HashSet<Integer>(patientIds));
+		Set<Integer> idsLookup = patientIds == null ? null : (patientIds instanceof HashSet ? (HashSet<Integer>) patientIds
+		        : new HashSet<Integer>(patientIds));
 		
 		Map<Integer, Collection<Integer>> ret = new HashMap<Integer, Collection<Integer>>();
 		

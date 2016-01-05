@@ -28,7 +28,7 @@ public class Allergen {
 	/**
 	 * Default constructor
 	 */
-	public Allergen(){
+	public Allergen() {
 	}
 	
 	/**
@@ -56,56 +56,56 @@ public class Allergen {
 		this.allergenType = allergenType;
 	}
 	
-    /**
-     * @return the codedAllergen
-     */
-    public Concept getCodedAllergen() {
-    	return codedAllergen;
-    }
-
-    /**
-     * @param codedAllergen the codedAllergen to set
-     */
-    public void setCodedAllergen(Concept codedAllergen) {
+	/**
+	 * @return the codedAllergen
+	 */
+	public Concept getCodedAllergen() {
+		return codedAllergen;
+	}
+	
+	/**
+	 * @param codedAllergen the codedAllergen to set
+	 */
+	public void setCodedAllergen(Concept codedAllergen) {
 		this.codedAllergen = codedAllergen;
 		if (codedAllergen != null && !codedAllergen.getUuid().equals(OTHER_NON_CODED_UUID)) {
 			nonCodedAllergen = null;
 		}
-    }
+	}
 	
-    /**
-     * @return the nonCodedAllergen
-     */
-    public String getNonCodedAllergen() {
-    	return nonCodedAllergen;
-    }
-
-    /**
-     * @param nonCodedAllergen the nonCodedAllergen to set
-     */
-    public void setNonCodedAllergen(String nonCodedAllergen) {
+	/**
+	 * @return the nonCodedAllergen
+	 */
+	public String getNonCodedAllergen() {
+		return nonCodedAllergen;
+	}
+	
+	/**
+	 * @param nonCodedAllergen the nonCodedAllergen to set
+	 */
+	public void setNonCodedAllergen(String nonCodedAllergen) {
 		this.nonCodedAllergen = nonCodedAllergen;
 		if (StringUtils.isNotBlank(nonCodedAllergen)) {
 			if (codedAllergen != null && !codedAllergen.getUuid().equals(OTHER_NON_CODED_UUID)) {
 				codedAllergen = null;
 			}
 		}
-    }
-
-	public boolean isCoded(){
+	}
+	
+	public boolean isCoded() {
 		if (codedAllergen == null || codedAllergen.getUuid().equals(OTHER_NON_CODED_UUID)) {
 			return false;
 		}
 		return true;
 	}
-
+	
 	@Override
-    public String toString() {
-	    if (StringUtils.isNotBlank(nonCodedAllergen)) {
-	    	return nonCodedAllergen;
-	    }
-	    return codedAllergen.getName().getName();
-    }
+	public String toString() {
+		if (StringUtils.isNotBlank(nonCodedAllergen)) {
+			return nonCodedAllergen;
+		}
+		return codedAllergen.getName().getName();
+	}
 	
 	/**
 	 * Checks if this allergen is the same as the given one
@@ -127,8 +127,7 @@ public class Allergen {
 			if (!codedAllergen.equals(allergen.getCodedAllergen())) {
 				return false;
 			}
-		}
-		else {
+		} else {
 			if (nonCodedAllergen == null || allergen.getNonCodedAllergen() == null) {
 				return false;
 			}

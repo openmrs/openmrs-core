@@ -473,7 +473,7 @@ public class HibernateContextDAO implements ContextDAO {
 			log.info("Updating the search index... It may take a few minutes.");
 			Search.getFullTextSession(sessionFactory.getCurrentSession()).createIndexer().startAndWait();
 			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
-					OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
+			    OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
 			if (gp == null) {
 				gp = new GlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
 			}
@@ -485,7 +485,7 @@ public class HibernateContextDAO implements ContextDAO {
 			throw new RuntimeException("Failed to update the search index", e);
 		}
 	}
-
+	
 	/**
 	 * @see ContextDAO#updateSearchIndexAsync()
 	 */
@@ -499,5 +499,5 @@ public class HibernateContextDAO implements ContextDAO {
 			throw new RuntimeException("Failed to start asynchronous search index update", e);
 		}
 	}
-
+	
 }

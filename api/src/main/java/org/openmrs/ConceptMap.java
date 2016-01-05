@@ -83,7 +83,7 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-
+	
 	/**
 	 * @return Returns the conceptMapId.
 	 */

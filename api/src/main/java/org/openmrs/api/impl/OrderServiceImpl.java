@@ -183,10 +183,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 			
 			//concept should be the same as on previous order, same applies to drug for drug orders
-			if(!order.hasSameOrderableAs(previousOrder)){
+			if (!order.hasSameOrderableAs(previousOrder)) {
 				throw new APIException("The orderable of the previous order and the new one order don't match");
-			}
-			else if (!order.getOrderType().equals(previousOrder.getOrderType())) {
+			} else if (!order.getOrderType().equals(previousOrder.getOrderType())) {
 				throw new APIException("Order.type.does.not.match");
 			} else if (!order.getCareSetting().equals(previousOrder.getCareSetting())) {
 				throw new APIException("Order.care.setting.does.not.match");
@@ -196,27 +195,29 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		if (DISCONTINUE != order.getAction()) {
- 			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), null);
+			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), null);
 			List<String> parallelOrders = Collections.emptyList();
-			if(orderContext!=null && orderContext.getAttribute(PARALLEL_ORDERS)!=null){
-				parallelOrders= Arrays.asList((String[])orderContext.getAttribute(PARALLEL_ORDERS));
+			if (orderContext != null && orderContext.getAttribute(PARALLEL_ORDERS) != null) {
+				parallelOrders = Arrays.asList((String[]) orderContext.getAttribute(PARALLEL_ORDERS));
 			}
- 			for (Order activeOrder : activeOrders) {
- 				//Reject if there is an active drug order for the same orderable with overlapping schedule
-				if (!parallelOrders.contains(activeOrder.getUuid()) && areDrugOrdersOfSameOrderableAndOverlappingSchedule(order, activeOrder)) {
+			for (Order activeOrder : activeOrders) {
+				//Reject if there is an active drug order for the same orderable with overlapping schedule
+				if (!parallelOrders.contains(activeOrder.getUuid())
+				        && areDrugOrdersOfSameOrderableAndOverlappingSchedule(order, activeOrder)) {
 					throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
- 				}
- 			}
- 		}
+				}
+			}
+		}
 		
 		return saveOrderInternal(order, orderContext);
 	}
 	
 	private boolean areDrugOrdersOfSameOrderableAndOverlappingSchedule(Order firstOrder, Order secondOrder) {
 		return firstOrder.hasSameOrderableAs(secondOrder)
-				&& !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
-				&& OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
-				&& firstOrder.getOrderType().equals(Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID));
+		        && !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
+		        && OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
+		        && firstOrder.getOrderType().equals(
+		            Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID));
 	}
 	
 	/**
@@ -934,16 +935,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public List<Concept> getTestSpecimenSources() {
 		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID);
 	}
-
+	
 	@Override
 	public Concept getNonCodedDrugConcept() {
 		String conceptUuid = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_DRUG_ORDER_DRUG_OTHER);
-		if(org.apache.commons.lang.StringUtils.isNotBlank(conceptUuid)){
+		if (org.apache.commons.lang.StringUtils.isNotBlank(conceptUuid)) {
 			return Context.getConceptService().getConceptByUuid(conceptUuid);
 		}
 		return null;
 	}
-
+	
 	private List<Concept> getSetMembersOfConceptSetFromGP(String globalProperty) {
 		String conceptUuid = Context.getAdministrationService().getGlobalProperty(globalProperty);
 		Concept concept = Context.getConceptService().getConceptByUuid(conceptUuid);

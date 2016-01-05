@@ -34,7 +34,9 @@ import org.openmrs.api.context.Context;
 public class MigrateAllergiesChangeSet implements CustomTaskChange {
 	
 	private Concept mildConcept;
+	
 	private Concept moderateConcept;
+	
 	private Concept severeConcept;
 	
 	@Override
@@ -72,12 +74,11 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 			}
 			int allergyTypeId = rs.getInt(1);
 			
-			sql = "insert into allergy (patient_id, coded_allergen, severity_concept_id, creator, date_created, uuid, comment, allergen_type) " +
-					"values(?,?,?,?,?,?,?,?)";
+			sql = "insert into allergy (patient_id, coded_allergen, severity_concept_id, creator, date_created, uuid, comment, allergen_type) "
+			        + "values(?,?,?,?,?,?,?,?)";
 			PreparedStatement allergyInsertStatement = connection.prepareStatement(sql);
 			
-			sql = "insert into allergy_reaction (allergy_id, reaction_concept_id, uuid) " +
-					"values (?,?,?)";
+			sql = "insert into allergy_reaction (allergy_id, reaction_concept_id, uuid) " + "values (?,?,?)";
 			PreparedStatement reactionInsertStatement = connection.prepareStatement(sql);
 			
 			sql = "select allergy_id from allergy where uuid = ?";
@@ -90,7 +91,7 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 			selectStatement = connection.createStatement();
 			rs = selectStatement.executeQuery(sql);
 			while (rs.next()) {
-				String uuid = rs.getString("uuid");	
+				String uuid = rs.getString("uuid");
 				
 				//insert allergy
 				allergyInsertStatement.setInt(1, rs.getInt("person_id"));
@@ -100,11 +101,9 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 				String severity = rs.getString("severity");
 				if (AllergySeverity.MILD.name().equals(severity)) {
 					severityConcept = mildConcept;
-				}
-				else if (AllergySeverity.MODERATE.name().equals(severity)) {
+				} else if (AllergySeverity.MODERATE.name().equals(severity)) {
 					severityConcept = moderateConcept;
-				}
-				else if (AllergySeverity.SEVERE.name().equals(severity)) {
+				} else if (AllergySeverity.SEVERE.name().equals(severity)) {
 					severityConcept = severeConcept;
 				}
 				//TODO what do we do with the other severities?

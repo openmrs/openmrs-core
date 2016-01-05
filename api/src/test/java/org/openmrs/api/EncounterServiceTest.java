@@ -781,10 +781,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get encounters by location", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldGetEncountersByLocation() throws Exception {
-		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-		.setLocation(new Location(1))
-		.setIncludeVoided(true)
-		.createEncounterSearchCriteria();
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setLocation(new Location(1))
+		        .setIncludeVoided(true).createEncounterSearchCriteria();
 		
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(6, encounters.size());
@@ -803,27 +801,21 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 		
 		// test for a min date long before all dates
-		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-		.setFromDate(ymd.parse("2004-12-31"))
-		.setIncludeVoided(false)
-		.createEncounterSearchCriteria();
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setFromDate(
+		    ymd.parse("2004-12-31")).setIncludeVoided(false).createEncounterSearchCriteria();
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(5, encounters.size());
 		assertEquals(1, encounters.get(0).getEncounterId().intValue());
 		
 		// test for exact date search
-		encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-		.setFromDate(ymd.parse("2005-01-01"))
-		.setIncludeVoided(false)
-		.createEncounterSearchCriteria();
+		encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setFromDate(ymd.parse("2005-01-01"))
+		        .setIncludeVoided(false).createEncounterSearchCriteria();
 		encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(5, encounters.size());
 		
 		// test for one day later
-		encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-		.setFromDate(ymd.parse("2005-01-02"))
-		.setIncludeVoided(false)
-		.createEncounterSearchCriteria();
+		encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setFromDate(ymd.parse("2005-01-02"))
+		        .setIncludeVoided(false).createEncounterSearchCriteria();
 		encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(4, encounters.size());
 		assertEquals(3, encounters.get(0).getEncounterId().intValue());
@@ -838,10 +830,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should get encounters on or up to a date", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldGetEncountersOnOrUpToADate() throws Exception {
 		Date toDate = new SimpleDateFormat("yyyy-dd-MM").parse("2006-01-01");
-		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-		.setToDate(toDate)
-		.setIncludeVoided(true)
-		.createEncounterSearchCriteria();
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setToDate(toDate)
+		        .setIncludeVoided(true).createEncounterSearchCriteria();
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(2, encounters.size());
 		assertEquals(15, encounters.get(0).getEncounterId().intValue());
@@ -856,10 +846,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldGetEncountersByForm() throws Exception {
 		List<Form> forms = new Vector<Form>();
 		forms.add(new Form(1));
-		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-		.setEnteredViaForms(forms)
-		.setIncludeVoided(true)
-		.createEncounterSearchCriteria();
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setEnteredViaForms(forms)
+		        .setIncludeVoided(true).createEncounterSearchCriteria();
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(8, encounters.size());
 	}
@@ -872,10 +860,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldGetEncountersByType() throws Exception {
 		List<EncounterType> types = new Vector<EncounterType>();
 		types.add(new EncounterType(1));
-		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-		.setEncounterTypes(types)
-		.setIncludeVoided(true)
-		.createEncounterSearchCriteria();
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setEncounterTypes(types)
+		        .setIncludeVoided(true).createEncounterSearchCriteria();
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(7, encounters.size());
 	}
@@ -886,9 +872,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should exclude voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldExcludeVoidedEncounters() throws Exception {
-		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-		.setIncludeVoided(false)
-		.createEncounterSearchCriteria();
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setIncludeVoided(false)
+		        .createEncounterSearchCriteria();
 		assertEquals(6, Context.getEncounterService().getEncounters(encounterSearchCriteria).size());
 	}
 	
@@ -899,23 +884,19 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should get encounters modified after specified date", method = "getEncounters(EncounterSearchParameter)")
 	public void getEncounters_shouldGetEncountersModifiedAfterSpecifiedDate() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
-		Assert.assertEquals(7, encounterService.getEncounters(
-				encounterSearchForVoidedWithDateChanged("2006-01-01")).size());
-		Assert.assertEquals(5, encounterService.getEncounters(
-				encounterSearchForVoidedWithDateChanged("2008-06-01")).size());
-		Assert.assertEquals(1, encounterService.getEncounters(
-				encounterSearchForVoidedWithDateChanged("2010-01-01")).size());
+		Assert.assertEquals(7, encounterService.getEncounters(encounterSearchForVoidedWithDateChanged("2006-01-01")).size());
+		Assert.assertEquals(5, encounterService.getEncounters(encounterSearchForVoidedWithDateChanged("2008-06-01")).size());
+		Assert.assertEquals(1, encounterService.getEncounters(encounterSearchForVoidedWithDateChanged("2010-01-01")).size());
 	}
-
+	
 	/**
 	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
 	@Verifies(value = "should include voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldIncludeVoidedEncounters() throws Exception {
-		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-		.setIncludeVoided(true)
-		.createEncounterSearchCriteria();
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setIncludeVoided(true)
+		        .createEncounterSearchCriteria();
 		assertEquals(8, Context.getEncounterService().getEncounters(encounterSearchCriteria).size());
 	}
 	
@@ -1044,29 +1025,29 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should set audit info if any item in EncounterType is Edited", method = "saveEncounterType(EncounterType)")
 	public void saveEncounterType_shouldSetAuditInfoIfAnyItemInEncounterTypeIsEdited() throws Exception {
 		EncounterService es = Context.getEncounterService();
-
+		
 		// Create encounter type, ensure creator/dateCreated are set, and changedBy and dateChanged are not setDateCreated.
 		EncounterType encounterType = es.saveEncounterType(new EncounterType("testing", "desc"));
 		User creator = encounterType.getCreator();
 		Date dateCreated = encounterType.getDateCreated();
-
+		
 		assertNotNull("creator should be set after saving", creator);
 		assertNotNull("date creates should be set after saving", dateCreated);
 		assertNull("changed by should not be set after creation", encounterType.getChangedBy());
 		assertNull("date changed should not be set after creation", encounterType.getDateChanged());
-
+		
 		// Edit encounter type.
 		encounterType.setDescription("This has been a test!");
 		EncounterType editedEt = es.saveEncounterType(encounterType);
 		Context.flushSession();
-
+		
 		// Ensure creator/dateCreated remain unchanged, and changedBy and dateChanged are set.
 		assertTrue("creator should not change during edit", creator.equals(editedEt.getCreator()));
 		assertTrue("date created should not changed during edit", dateCreated.equals(editedEt.getDateCreated()));
 		assertNotNull("changed by should be set after edit", editedEt.getChangedBy());
 		assertNotNull("date changed should be set after edit", editedEt.getDateChanged());
 	}
-
+	
 	/**
 	 * @see EncounterService#getEncounterType(String)
 	 */
@@ -1503,10 +1484,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldGetEncountersByVisit() throws Exception {
 		List<Visit> visits = new ArrayList<Visit>();
 		visits.add(new Visit(1));
-		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-		.setVisits(visits)
-		.setIncludeVoided(true)
-		.createEncounterSearchCriteria();
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setVisits(visits)
+		        .setIncludeVoided(true).createEncounterSearchCriteria();
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(2, encounters.size());
 	}
@@ -1519,10 +1498,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldGetEncountersByVisitType() throws Exception {
 		List<VisitType> visitTypes = new Vector<VisitType>();
 		visitTypes.add(new VisitType(2));
-		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-		.setVisitTypes(visitTypes)
-		.setIncludeVoided(true)
-		.createEncounterSearchCriteria();
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setVisitTypes(visitTypes)
+		        .setIncludeVoided(true).createEncounterSearchCriteria();
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(2, encounters.size());
 	}
@@ -1602,7 +1579,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNotNull("We should get back an encounter role", newSavedEncounterRole);
 		assertEquals(encounterRole, newSavedEncounterRole);
 		assertTrue("The created encounter role needs to equal the pojo encounter role", encounterRole
-				.equals(newSavedEncounterRole));
+		        .equals(newSavedEncounterRole));
 		
 	}
 	
@@ -2818,15 +2795,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Visit visit = Context.getVisitService().getVisit(200);
 		Assert.assertTrue(visit.isVoided());
 	}
-
+	
 	private EncounterSearchCriteria encounterSearchForVoidedWithDateChanged(String dateChanged) throws Exception {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		return new EncounterSearchCriteriaBuilder()
-				.setIncludeVoided(true)
-				.setDateChanged(sdf.parse(dateChanged))
-				.createEncounterSearchCriteria();
+		return new EncounterSearchCriteriaBuilder().setIncludeVoided(true).setDateChanged(sdf.parse(dateChanged))
+		        .createEncounterSearchCriteria();
 	}
-
+	
 	private Person newPerson(String name) {
 		Person person = new Person();
 		Set<PersonName> personNames = new TreeSet<PersonName>();

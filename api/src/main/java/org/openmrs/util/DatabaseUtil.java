@@ -34,9 +34,9 @@ import org.springframework.util.StringUtils;
 public class DatabaseUtil {
 	
 	private final static Log log = LogFactory.getLog(DatabaseUtil.class);
-
+	
 	public final static String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
-
+	
 	/**
 	 * Executes the passed SQL query, enforcing select only if that parameter is set Load the jdbc
 	 * driver class for the database which is specified by the connectionUrl and connectionDriver

@@ -44,7 +44,7 @@ public class UserValidator implements Validator {
 	
 	@Autowired
 	private PersonValidator personValidator;
-
+	
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 *
@@ -97,10 +97,11 @@ public class UserValidator implements Validator {
 				errors.pushNestedPath("person");
 				try {
 					personValidator.validate(person, errors);
-				} finally {
+				}
+				finally {
 					errors.popNestedPath();
 				}
-					
+				
 			}
 			
 			AdministrationService as = Context.getAdministrationService();

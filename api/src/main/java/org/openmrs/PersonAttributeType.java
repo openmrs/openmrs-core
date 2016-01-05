@@ -178,10 +178,10 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	}
 	
 	/**
-	*
-	* @deprecated since 1.12. Use DefaultComparator instead.
-	* Note: this comparator imposes orderings that are inconsistent with equals.
-	*/
+	 *
+	 * @deprecated since 1.12. Use DefaultComparator instead.
+	 * Note: this comparator imposes orderings that are inconsistent with equals.
+	 */
 	@Override
 	@SuppressWarnings("squid:S1210")
 	public int compareTo(PersonAttributeType other) {
