@@ -36,6 +36,10 @@ public class EncounterSaveHandler implements SaveHandler<Encounter> {
 		
 		for (Obs obs : object.getAllObs()) {
 			try {
+				if (obs.getConcept() == null) {
+					throw new NullPointerException("No concept found.");
+				}
+				
 				if (obs.getConcept().getDatatype().isComplex()) {
 					String handlerString = Context.getConceptService().getConceptComplex(obs.getConcept().getConceptId())
 					        .getHandler();
