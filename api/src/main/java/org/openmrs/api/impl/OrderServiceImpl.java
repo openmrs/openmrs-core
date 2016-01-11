@@ -170,7 +170,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 			stopOrder(previousOrder, aMomentBefore(order.getDateActivated()), isRetrospective);
 		} else if (DISCONTINUE == order.getAction()) {
-			discontinueExistingOrdersIfNecessary(order);
+			discontinueExistingOrdersIfNecessary(order, isRetrospective);
 		}
 		
 		if (previousOrder != null) {
@@ -317,9 +317,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * exception
 	 * 
 	 * @param order
+	 * @param isRetrospective
 	 */
 	//Ignore and return if this is not an order to discontinue
-	private void discontinueExistingOrdersIfNecessary(Order order) {
+	private void discontinueExistingOrdersIfNecessary(Order order, Boolean isRetrospective) {
 		if (DISCONTINUE != order.getAction()) {
 			return;
 		}
@@ -327,7 +328,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		//Mark previousOrder as discontinued if it is not already
 		Order previousOrder = order.getPreviousOrder();
 		if (previousOrder != null) {
-			stopOrder(previousOrder, aMomentBefore(order.getDateActivated()), false);
+			stopOrder(previousOrder, aMomentBefore(order.getDateActivated()), isRetrospective);
 			return;
 		}
 		
@@ -361,7 +362,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		if (orderToBeDiscontinued != null) {
 			order.setPreviousOrder(orderToBeDiscontinued);
-			stopOrder(orderToBeDiscontinued, aMomentBefore(order.getDateActivated()), false);
+			stopOrder(orderToBeDiscontinued, aMomentBefore(order.getDateActivated()), isRetrospective);
 		}
 	}
 
