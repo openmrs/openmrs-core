@@ -16,7 +16,7 @@ import org.openmrs.api.context.Context;
 /**
  * This is a class for custom datatypes for locations
  *
- * @since 2.0
+ * @since 2.0.0
  */
 public class LocationDatatype extends BaseMetadataDatatype<Location> {
 	

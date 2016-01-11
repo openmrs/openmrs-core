@@ -17,7 +17,7 @@ import org.openmrs.customdatatype.CustomDatatype;
 /**
  * This is a class for custom datatypes for concepts
  *
- * @since 2.0
+ * @since 2.0.0
  */
 public class ConceptDatatype extends BaseOpenmrsDatatype<Concept> {
 	
