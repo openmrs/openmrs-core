@@ -15,7 +15,7 @@ import org.openmrs.customdatatype.SerializingCustomDatatype;
 /**
  * This is a superclass for custom datatypes for OpenmrsObjects
  * 
- * @since 2.0
+ * @since 2.0.0
  */
 public abstract class BaseOpenmrsDatatype<T extends OpenmrsObject> extends SerializingCustomDatatype<T> {
 	

@@ -16,7 +16,7 @@ import org.openmrs.api.context.Context;
 /**
  * This is a class for custom datatypes for providers
  *
- * @since 2.0
+ * @since 2.0.0
  */
 public class ProviderDatatype extends BaseMetadataDatatype<Provider> {
 	
