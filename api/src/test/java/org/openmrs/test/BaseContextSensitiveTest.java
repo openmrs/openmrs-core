@@ -386,6 +386,22 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			}
 		}
 		
+		// possible use of @DirtiesContext so reload database
+		isBaseSetup = false;
+		baseSetupWithStandardDataAndAuthentication();
+		try {
+			Context.authenticate("admin", "test");
+			authenticatedUser = Context.getAuthenticatedUser();
+			return;
+		}
+		catch (ContextAuthenticationException wrongCredentialsError) {
+			if (useInMemoryDatabase()) {
+				// if we get here the user is using some database other than the standard
+				// in-memory database, prompt the user for input
+				log.error("For some reason we couldn't auth after database setup as admin:test ?!", wrongCredentialsError);
+			}
+		}
+		
 		Integer attempts = 0;
 		
 		// TODO: how to make this a locale specific message for the user to see?
