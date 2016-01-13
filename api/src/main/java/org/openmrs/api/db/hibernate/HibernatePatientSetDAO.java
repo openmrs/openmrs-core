@@ -831,9 +831,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				throw new DAOException("Attribute: " + attribute + " is not recognized. Please add reference in "
 				        + this.getClass());
 			}
-			
-			for (String className : classNames) { // if aliasing is necessary
-				if (!aliases.contains(className)) { // if we haven't aliased this already
+			// if aliasing is necessary
+			for (String className : classNames) {
+				// if we haven't aliased this already
+				if (!aliases.contains(className)) {
 					criteria.createAlias(className, className.split("\\.")[1]);
 					aliases.add(className);
 				}
@@ -902,7 +903,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 							row.add(rowArray[index]);
 						}
 						tmpConditional = false;
-						index++; // increment counter for next column.  (Skips over value_concept)
+						// increment counter for next column.  (Skips over value_concept)
+						index++;
 					} else {
 						row.add(value == null ? "" : value);
 					}

@@ -44,7 +44,8 @@ public class OpenmrsProfileExcludeFilter implements TypeFilter {
 		if (openmrsProfileAttributes != null) {
 			return !matchOpenmrsProfileAttributes(openmrsProfileAttributes);
 		} else {
-			return false; //do not exclude
+			//do not exclude
+			return false;
 		}
 	}
 	
