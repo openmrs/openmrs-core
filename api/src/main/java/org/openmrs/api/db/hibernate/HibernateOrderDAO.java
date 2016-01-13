@@ -448,11 +448,13 @@ public class HibernateOrderDAO implements OrderDAO {
 			ClassMetadata classMetadata = i.next();
 			Class<?> entityClass = classMetadata.getMappedClass();
 			if (Order.class.equals(entityClass)) {
-				continue; //ignore the org.openmrs.Order class itself
+				//ignore the org.openmrs.Order class itself
+				continue;
 			}
 			
 			if (!Order.class.isAssignableFrom(entityClass)) {
-				continue; //not a sub class of Order
+				//not a sub class of Order
+				continue;
 			}
 			
 			String[] names = classMetadata.getPropertyNames();

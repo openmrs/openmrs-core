@@ -427,10 +427,13 @@ public class HibernateContextDAO implements ContextDAO {
 			int index = 0;
 			while (results.next()) {
 				index++;
-				session.index(results.get(0)); //index each element
+				//index each element
+				session.index(results.get(0));
 				if (index % 1000 == 0) {
-					session.flushToIndexes(); //apply changes to indexes
-					session.clear(); //free memory since the queue is processed
+					//apply changes to indexes
+					session.flushToIndexes();
+					//free memory since the queue is processed
+					session.clear();
 				}
 			}
 			session.flushToIndexes();
