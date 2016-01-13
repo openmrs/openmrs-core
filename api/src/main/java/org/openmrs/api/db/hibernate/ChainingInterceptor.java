@@ -115,7 +115,8 @@ public class ChainingInterceptor implements Interceptor {
 	}
 	
 	public Boolean isTransient(Object entity) {
-		Boolean returnValue = null; // by default let hibernate figure it out
+		// by default let hibernate figure it out
+		Boolean returnValue = null;
 		
 		for (Interceptor i : interceptors) {
 			Boolean tmpReturnValue = i.isTransient(entity);

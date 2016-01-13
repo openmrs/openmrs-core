@@ -126,10 +126,12 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		
 		if (stubInsertNeeded) {
-			if (patient.getCreator() == null) { //If not yet persisted
+			//If not yet persisted
+			if (patient.getCreator() == null) {
 				patient.setCreator(Context.getAuthenticatedUser());
 			}
-			if (patient.getDateCreated() == null) { //If not yet persisted
+			//If not yet persisted
+			if (patient.getDateCreated() == null) {
 				patient.setDateCreated(new Date());
 			}
 			
@@ -359,10 +361,12 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (!includeRetired) {
 			criteria.add(Restrictions.eq("retired", false));
 		} else {
-			criteria.addOrder(Order.asc("retired")); //retired last
+			//retired last
+			criteria.addOrder(Order.asc("retired"));
 		}
 		
-		criteria.addOrder(Order.desc("required")); //required first
+		//required first
+		criteria.addOrder(Order.desc("required"));
 		criteria.addOrder(Order.asc("name"));
 		criteria.addOrder(Order.asc("patientIdentifierTypeId"));
 		
@@ -409,7 +413,8 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		criteria.add(Restrictions.eq("retired", false));
 		
-		criteria.addOrder(Order.desc("required")); //required first
+		//required first
+		criteria.addOrder(Order.desc("required"));
 		criteria.addOrder(Order.asc("name"));
 		criteria.addOrder(Order.asc("patientIdentifierTypeId"));
 		
