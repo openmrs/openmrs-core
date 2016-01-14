@@ -1,9 +1,4 @@
-/errorhandler.jsp
-/memoryUsage.jsp
-/openmrs_green.css
-/openmrs_legacy.css
-/openmrs_orange.css
-/openmrs_purple.css
-/openmrs.css
-/openmrs.js
-/style.css
+*.jsp
+/*.css
+/*.js
+
