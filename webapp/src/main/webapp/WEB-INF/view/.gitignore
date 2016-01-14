@@ -5,16 +5,3 @@
 /fieldGen/
 /portlets/
 /remotecommunication/
-/authorizationHandlerInclude.jsp
-/feedback.jsp
-/findPatient.jsp
-/forgotPasswordForm.jsp
-/help.jsp
-/index.jsp
-/login.jsp
-/missing.jsp
-/optionsForm.jsp
-/patientDashboardForm.jsp
-/patientGraphJsonForm.jsp
-/personDashboardForm.jsp
-/uncaughtException.jsp
