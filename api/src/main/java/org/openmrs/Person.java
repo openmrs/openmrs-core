@@ -23,10 +23,6 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
 import org.springframework.util.StringUtils;
 
 /**
@@ -37,7 +33,6 @@ import org.springframework.util.StringUtils;
  * 
  * @see org.openmrs.Patient
  */
-@Root(strict = false)
 public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;
@@ -159,7 +154,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return Returns the personId.
 	 */
-	@Attribute(required = true)
 	public Integer getPersonId() {
 		return personId;
 	}
@@ -167,7 +161,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @param personId The personId to set.
 	 */
-	@Attribute(required = true)
 	public void setPersonId(Integer personId) {
 		this.personId = personId;
 	}
@@ -175,7 +168,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return person's gender
 	 */
-	@Attribute(required = false)
 	public String getGender() {
 		return this.gender;
 	}
@@ -183,7 +175,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @param gender person's gender
 	 */
-	@Attribute(required = false)
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
@@ -191,7 +182,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return person's date of birth
 	 */
-	@Element(required = false)
 	public Date getBirthdate() {
 		return this.birthdate;
 	}
@@ -199,7 +189,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @param birthdate person's date of birth
 	 */
-	@Element(required = false)
 	public void setBirthdate(Date birthdate) {
 		this.birthdate = birthdate;
 	}
@@ -214,7 +203,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		return this.birthdateEstimated;
 	}
 	
-	@Attribute(required = true)
 	public Boolean getBirthdateEstimated() {
 		return isBirthdateEstimated();
 	}
@@ -222,7 +210,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @param birthdateEstimated true if person's birthdate is estimated
 	 */
-	@Attribute(required = true)
 	public void setBirthdateEstimated(Boolean birthdateEstimated) {
 		this.birthdateEstimated = birthdateEstimated;
 	}
@@ -241,7 +228,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @param birthtime person's time of birth
 	 */
-	@Element(required = false)
 	public void setBirthtime(Date birthtime) {
 		this.birthtime = birthtime;
 	}
@@ -249,7 +235,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return person's time of birth with the date portion set to the date from person's birthdate
 	 */
-	@Element(required = false)
 	public Date getBirthDateTime() {
         if(birthdate != null && birthtime != null){
             String birthDateString = new SimpleDateFormat("yyyy-MM-dd").format(birthdate);
@@ -267,7 +252,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return person's time of birth.
 	 */
-	@Element(required = false)
 	public Date getBirthtime() {
         return this.birthtime;
     }
@@ -282,7 +266,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return Returns the death status.
 	 */
-	@Attribute(required = true)
 	public Boolean getDead() {
 		return isDead();
 	}
@@ -290,7 +273,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @param dead The dead to set.
 	 */
-	@Attribute(required = true)
 	public void setDead(Boolean dead) {
 		this.dead = dead;
 	}
@@ -298,7 +280,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return date of person's death
 	 */
-	@Element(required = false)
 	public Date getDeathDate() {
 		return this.deathDate;
 	}
@@ -306,7 +287,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @param deathDate date of person's death
 	 */
-	@Element(required = false)
 	public void setDeathDate(Date deathDate) {
 		this.deathDate = deathDate;
 	}
@@ -314,7 +294,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return cause of person's death
 	 */
-	@Element(required = false)
 	public Concept getCauseOfDeath() {
 		return this.causeOfDeath;
 	}
@@ -322,7 +301,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @param causeOfDeath cause of person's death
 	 */
-	@Element(required = false)
 	public void setCauseOfDeath(Concept causeOfDeath) {
 		this.causeOfDeath = causeOfDeath;
 	}
@@ -333,7 +311,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should not get voided addresses
 	 * @should not fail with null addresses
 	 */
-	@ElementList(required = false)
 	public Set<PersonAddress> getAddresses() {
 		if (addresses == null) {
 			addresses = new TreeSet<PersonAddress>();
@@ -345,7 +322,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @param addresses Set&lt;PersonAddress&gt; list of known addresses for person
 	 * @see org.openmrs.PersonAddress
 	 */
-	@ElementList(required = false)
 	public void setAddresses(Set<PersonAddress> addresses) {
 		this.addresses = addresses;
 	}
@@ -356,7 +332,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should not get voided names
 	 * @should not fail with null names
 	 */
-	@ElementList
 	public Set<PersonName> getNames() {
 		if (names == null) {
 			names = new TreeSet<PersonName>();
@@ -368,7 +343,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @param names update all known names for person
 	 * @see org.openmrs.PersonName
 	 */
-	@ElementList
 	public void setNames(Set<PersonName> names) {
 		this.names = names;
 	}
@@ -379,7 +353,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should not get voided attributes
 	 * @should not fail with null attributes
 	 */
-	@ElementList
 	public Set<PersonAttribute> getAttributes() {
 		if (attributes == null) {
 			attributes = new TreeSet<PersonAttribute>();
@@ -408,7 +381,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @param attributes update all known attributes for person
 	 * @see org.openmrs.PersonAttribute
 	 */
-	@ElementList
 	public void setAttributes(Set<PersonAttribute> attributes) {
 		this.attributes = attributes;
 		attributeMap = null;

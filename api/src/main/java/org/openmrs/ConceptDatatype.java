@@ -11,13 +11,10 @@ package org.openmrs;
 
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Indexed;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Root;
 
 /**
  * ConceptDatatype
  */
-@Root
 public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 473L;
@@ -85,15 +82,10 @@ public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Seri
 	
 	// Property accessors
 	
-	/**
-	 * 
-	 */
-	@Attribute
 	public Integer getConceptDatatypeId() {
 		return this.conceptDatatypeId;
 	}
 	
-	@Attribute
 	public void setConceptDatatypeId(Integer conceptDatatypeId) {
 		this.conceptDatatypeId = conceptDatatypeId;
 	}
@@ -101,7 +93,6 @@ public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Seri
 	/**
 	 * @return Returns the hl7Abbreviation.
 	 */
-	@Attribute
 	public String getHl7Abbreviation() {
 		return hl7Abbreviation;
 	}
@@ -109,7 +100,6 @@ public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Seri
 	/**
 	 * @param hl7Abbreviation The hl7Abbreviation to set.
 	 */
-	@Attribute
 	public void setHl7Abbreviation(String hl7Abbreviation) {
 		this.hl7Abbreviation = hl7Abbreviation;
 	}

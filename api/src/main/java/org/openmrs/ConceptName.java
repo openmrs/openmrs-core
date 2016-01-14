@@ -31,16 +31,11 @@ import org.hibernate.search.annotations.TokenizerDef;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.db.hibernate.search.bridge.LocaleFieldBridge;
 import org.openmrs.util.OpenmrsUtil;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
 
 /**
  * ConceptName is the real world term used to express a Concept within the idiom of a particular
  * locale.
  */
-@Root
 @Indexed
 @AnalyzerDef(name = "ConceptNameAnalyzer", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
         @TokenFilterDef(factory = StandardFilterFactory.class), @TokenFilterDef(factory = LowerCaseFilterFactory.class) })
@@ -106,7 +101,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	/**
 	 * @return Returns the conceptId.
 	 */
-	@Attribute
 	public Integer getConceptNameId() {
 		return conceptNameId;
 	}
@@ -114,33 +108,22 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	/**
 	 * @param conceptNameId The conceptId to set.
 	 */
-	@Attribute
 	public void setConceptNameId(Integer conceptNameId) {
 		this.conceptNameId = conceptNameId;
 	}
 	
-	/**
-	 *
-	 */
-	@Element
 	public Concept getConcept() {
 		return concept;
 	}
 	
-	@Element
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
 	
-	/**
-	 *
-	 */
-	@Element(data = true)
 	public String getName() {
 		return name;
 	}
 	
-	@Element(data = true)
 	public void setName(String name) {
 		if (name != null && StringUtils.isBlank(name) && StringUtils.isNotBlank(this.name)
 		        && this.getConceptNameType().equals(ConceptNameType.SHORT)) {
@@ -150,15 +133,10 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 		}
 	}
 	
-	/**
-	 *
-	 */
-	@Element
 	public Locale getLocale() {
 		return locale;
 	}
 	
-	@Element
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
@@ -166,7 +144,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	/**
 	 * @return Returns the creator.
 	 */
-	@Element
 	public User getCreator() {
 		return creator;
 	}
@@ -174,7 +151,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	/**
 	 * @param creator The creator to set.
 	 */
-	@Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -182,7 +158,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	/**
 	 * @return Returns the dateCreated.
 	 */
-	@Element
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -190,7 +165,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
-	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -209,7 +183,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @return true if the ConceptName has been voided, false otherwise.
 	 */
-	@Attribute
 	public Boolean getVoided() {
 		return isVoided();
 	}
@@ -219,7 +192,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @param voided the voided status to set.
 	 */
-	@Attribute
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
@@ -229,7 +201,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @return the User who voided this ConceptName, or null if not set
 	 */
-	@Element(required = false)
 	public User getVoidedBy() {
 		return voidedBy;
 	}
@@ -239,7 +210,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @param voidedBy the user who voided this ConceptName.
 	 */
-	@Element(required = false)
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
@@ -249,7 +219,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @return the Date this ConceptName was voided.
 	 */
-	@Element(required = false)
 	public Date getDateVoided() {
 		return dateVoided;
 	}
@@ -259,7 +228,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @param dateVoided the date the ConceptName was voided.
 	 */
-	@Element(required = false)
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
@@ -269,7 +237,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @return the reason this ConceptName was voided
 	 */
-	@Element(required = false)
 	public String getVoidReason() {
 		return voidReason;
 	}
@@ -279,7 +246,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @param voidReason the reason this ConceptName was voided
 	 */
-	@Element(required = false)
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
@@ -289,7 +255,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @return the tags.
 	 */
-	@ElementList
 	public Collection<ConceptNameTag> getTags() {
 		return tags;
 	}
@@ -302,7 +267,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @see Concept#setShortName(ConceptName)
 	 * @param tags the tags to set.
 	 */
-	@ElementList
 	public void setTags(Collection<ConceptNameTag> tags) {
 		this.tags = tags;
 	}

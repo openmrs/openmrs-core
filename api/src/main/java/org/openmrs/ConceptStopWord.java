@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import org.openmrs.api.context.Context;
-import org.simpleframework.xml.Root;
 import org.springframework.util.StringUtils;
 
 import java.util.Locale;
@@ -22,7 +21,6 @@ import java.util.Locale;
  * 
  * @since 1.8
  */
-@Root
 public class ConceptStopWord extends BaseOpenmrsObject implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 3671020002642184656L;
