@@ -20,9 +20,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
 
 /**
  * A PersonAttribute is meant as way for implementations to add arbitrary information about a
@@ -35,7 +32,6 @@ import org.simpleframework.xml.Root;
  * @see org.openmrs.PersonAttributeType
  * @see org.openmrs.Attributable
  */
-@Root(strict = false)
 public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializable, Comparable<PersonAttribute> {
 	
 	public static final long serialVersionUID = 11231211232111L;
@@ -154,7 +150,6 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	/**
 	 * @return Returns the person.
 	 */
-	@Element(required = true)
 	public Person getPerson() {
 		return person;
 	}
@@ -162,7 +157,6 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	/**
 	 * @param person The person to set.
 	 */
-	@Element(required = true)
 	public void setPerson(Person person) {
 		this.person = person;
 	}
@@ -170,7 +164,6 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	/**
 	 * @return the attributeType
 	 */
-	@Element(required = true)
 	public PersonAttributeType getAttributeType() {
 		return attributeType;
 	}
@@ -178,7 +171,6 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	/**
 	 * @param attributeType the attributeType to set
 	 */
-	@Element(required = true)
 	public void setAttributeType(PersonAttributeType attributeType) {
 		this.attributeType = attributeType;
 	}
@@ -186,7 +178,6 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	/**
 	 * @return the value
 	 */
-	@Element(data = true, required = false)
 	public String getValue() {
 		return value;
 	}
@@ -194,7 +185,6 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	/**
 	 * @param value the value to set
 	 */
-	@Element(data = true, required = false)
 	public void setValue(String value) {
 		this.value = value;
 	}
@@ -218,7 +208,6 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	/**
 	 * @return the personAttributeId
 	 */
-	@Attribute(required = true)
 	public Integer getPersonAttributeId() {
 		return personAttributeId;
 	}
@@ -226,7 +215,6 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	/**
 	 * @param personAttributeId the personAttributeId to set
 	 */
-	@Attribute(required = true)
 	public void setPersonAttributeId(Integer personAttributeId) {
 		this.personAttributeId = personAttributeId;
 	}

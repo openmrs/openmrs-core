@@ -40,10 +40,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.TermsFilterFactory;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -68,7 +64,6 @@ import org.springframework.util.ObjectUtils;
  * @see ConceptMap
  * @see ConceptService
  */
-@Root
 @FullTextFilterDefs( { @FullTextFilterDef(name = "termsFilterFactory", impl = TermsFilterFactory.class) })
 public class Concept extends BaseOpenmrsObject implements Auditable, Retireable, java.io.Serializable, Attributable<Concept> {
 	
@@ -155,7 +150,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return retired and non-retired answers
 	 * @should not return null if answers is null or empty
 	 */
-	@ElementList
 	public Collection<ConceptAnswer> getAnswers() {
 		if (answers == null) {
 			answers = new HashSet<ConceptAnswer>();
@@ -194,7 +188,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * 
 	 * @param answers The answers to set.
 	 */
-	@ElementList
 	public void setAnswers(Collection<ConceptAnswer> answers) {
 		this.answers = answers;
 	}
@@ -239,7 +232,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the changedBy.
 	 */
-	@Element(required = false)
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -247,7 +239,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param changedBy The changedBy to set.
 	 */
-	@Element(required = false)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -255,7 +246,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the conceptClass.
 	 */
-	@Element
 	public ConceptClass getConceptClass() {
 		return conceptClass;
 	}
@@ -263,7 +253,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param conceptClass The conceptClass to set.
 	 */
-	@Element
 	public void setConceptClass(ConceptClass conceptClass) {
 		this.conceptClass = conceptClass;
 	}
@@ -278,12 +267,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param set whether or not this concept is a set
 	 */
-	@Attribute
 	public void setSet(Boolean set) {
 		this.set = set;
 	}
 	
-	@Attribute
 	public Boolean getSet() {
 		return isSet();
 	}
@@ -291,7 +278,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the conceptDatatype.
 	 */
-	@Element
 	public ConceptDatatype getDatatype() {
 		return datatype;
 	}
@@ -299,7 +285,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param conceptDatatype The conceptDatatype to set.
 	 */
-	@Element
 	public void setDatatype(ConceptDatatype conceptDatatype) {
 		this.datatype = conceptDatatype;
 	}
@@ -307,7 +292,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the conceptId.
 	 */
-	@Attribute(required = true)
 	public Integer getConceptId() {
 		return conceptId;
 	}
@@ -315,7 +299,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param conceptId The conceptId to set.
 	 */
-	@Attribute(required = true)
 	public void setConceptId(Integer conceptId) {
 		this.conceptId = conceptId;
 	}
@@ -323,7 +306,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the creator.
 	 */
-	@Element
 	public User getCreator() {
 		return creator;
 	}
@@ -331,7 +313,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param creator The creator to set.
 	 */
-	@Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -339,7 +320,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the dateChanged.
 	 */
-	@Element(required = false)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -347,7 +327,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param dateChanged The dateChanged to set.
 	 */
-	@Element(required = false)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
@@ -355,7 +334,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the dateCreated.
 	 */
-	@Element
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -363,7 +341,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
-	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -1011,7 +988,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the names.
 	 */
-	@ElementList
 	public Collection<ConceptName> getNames() {
 		return getNames(false);
 	}
@@ -1043,7 +1019,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param names The names to set.
 	 */
-	@ElementList
 	public void setNames(Collection<ConceptName> names) {
 		this.names = names;
 	}
@@ -1230,7 +1205,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the descriptions.
 	 */
-	@ElementList
 	public Collection<ConceptDescription> getDescriptions() {
 		return descriptions;
 	}
@@ -1240,7 +1214,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * 
 	 * @param descriptions the collection of descriptions
 	 */
-	@ElementList
 	public void setDescriptions(Collection<ConceptDescription> descriptions) {
 		this.descriptions = descriptions;
 	}
@@ -1298,7 +1271,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param retired The retired to set.
 	 */
-	@Attribute
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
@@ -1353,7 +1325,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the version.
 	 */
-	@Attribute(required = false)
 	public String getVersion() {
 		return version;
 	}
@@ -1361,7 +1332,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param version The version to set.
 	 */
-	@Attribute(required = false)
 	public void setVersion(String version) {
 		this.version = version;
 	}
@@ -1369,7 +1339,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the conceptSets.
 	 */
-	@ElementList(required = false)
 	public Collection<ConceptSet> getConceptSets() {
 		return conceptSets;
 	}
@@ -1377,7 +1346,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param conceptSets The conceptSets to set.
 	 */
-	@ElementList(required = false)
 	public void setConceptSets(Collection<ConceptSet> conceptSets) {
 		this.conceptSets = conceptSets;
 	}
@@ -1395,7 +1363,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return the conceptMappings for this concept
 	 */
-	@ElementList(required = false)
 	public Collection<ConceptMap> getConceptMappings() {
 		if (conceptMappings == null) {
 			conceptMappings = new HashSet<ConceptMap>();
@@ -1406,7 +1373,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param conceptMappings the conceptMappings to set
 	 */
-	@ElementList(required = false)
 	public void setConceptMappings(Collection<ConceptMap> conceptMappings) {
 		this.conceptMappings = conceptMappings;
 	}

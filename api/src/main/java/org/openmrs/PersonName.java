@@ -21,15 +21,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
 import org.springframework.util.StringUtils;
 
 /**
  * A Person can have zero to n PersonName(s).
  */
-@Root(strict = false)
 public class PersonName extends BaseOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName> {
 	
 	public static final long serialVersionUID = 4353L;
@@ -173,27 +169,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	}
 	
 	/**
-	 * This still exists on PersonName for the SimpleFramework annotation
-	 *
-	 * @return Returns the dateVoided.
-	 */
-	@Element(required = false)
-	public Date getDateVoided() {
-		return super.getDateVoided();
-	}
-	
-	/**
-	 * @param dateVoided The dateVoided to set.
-	 */
-	@Element(required = false)
-	public void setDateVoided(Date dateVoided) {
-		super.setDateVoided(dateVoided);
-	}
-	
-	/**
 	 * @return Returns the degree.
 	 */
-	@Element(data = true, required = false)
 	public String getDegree() {
 		return degree;
 	}
@@ -201,7 +178,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @param degree The degree to set.
 	 */
-	@Element(data = true, required = false)
 	public void setDegree(String degree) {
 		this.degree = degree;
 	}
@@ -210,7 +186,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @return Returns the familyName.
 	 * @should return obscured name if obscure_patients is set to true
 	 */
-	@Element(data = true, required = false)
 	public String getFamilyName() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
 			return OpenmrsConstants.OBSCURE_PATIENTS_FAMILY_NAME;
@@ -221,7 +196,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @param familyName The familyName to set.
 	 */
-	@Element(data = true, required = false)
 	public void setFamilyName(String familyName) {
 		this.familyName = familyName;
 	}
@@ -230,7 +204,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @return Returns the familyName2.
 	 * @should return null if obscure_patients is set to true
 	 */
-	@Element(data = true, required = false)
 	public String getFamilyName2() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
 			return null;
@@ -241,7 +214,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @param familyName2 The familyName2 to set.
 	 */
-	@Element(data = true, required = false)
 	public void setFamilyName2(String familyName2) {
 		this.familyName2 = familyName2;
 	}
@@ -250,7 +222,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @return Returns the familyNamePrefix.
 	 * @should return null if obscure_patients is set to true
 	 */
-	@Element(data = true, required = false)
 	public String getFamilyNamePrefix() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
 			return null;
@@ -261,7 +232,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @param familyNamePrefix The familyNamePrefix to set.
 	 */
-	@Element(data = true, required = false)
 	public void setFamilyNamePrefix(String familyNamePrefix) {
 		this.familyNamePrefix = familyNamePrefix;
 	}
@@ -270,7 +240,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @return Returns the familyNameSuffix.
 	 * @should return null if obscure_patients is set to true
 	 */
-	@Element(data = true, required = false)
 	public String getFamilyNameSuffix() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
 			return null;
@@ -281,7 +250,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @param familyNameSuffix The familyNameSuffix to set.
 	 */
-	@Element(data = true, required = false)
 	public void setFamilyNameSuffix(String familyNameSuffix) {
 		this.familyNameSuffix = familyNameSuffix;
 	}
@@ -290,7 +258,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @return Returns the givenName.
 	 * @should return obscured name if obscure_patients is set to true
 	 */
-	@Element(data = true, required = false)
 	public String getGivenName() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
 			return OpenmrsConstants.OBSCURE_PATIENTS_GIVEN_NAME;
@@ -301,7 +268,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @param givenName The givenName to set.
 	 */
-	@Element(data = true, required = false)
 	public void setGivenName(String givenName) {
 		this.givenName = givenName;
 	}
@@ -310,7 +276,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @return Returns the middleName.
 	 * @should return obscured name if obscure_patients is set to true
 	 */
-	@Element(data = true, required = false)
 	public String getMiddleName() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
 			return OpenmrsConstants.OBSCURE_PATIENTS_MIDDLE_NAME;
@@ -321,7 +286,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @param middleName The middleName to set.
 	 */
-	@Element(data = true, required = false)
 	public void setMiddleName(String middleName) {
 		this.middleName = middleName;
 	}
@@ -329,7 +293,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @return Returns the person.
 	 */
-	@Element(required = true)
 	public Person getPerson() {
 		return person;
 	}
@@ -337,7 +300,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @param person The person to set.
 	 */
-	@Element(required = true)
 	public void setPerson(Person person) {
 		this.person = person;
 	}
@@ -345,7 +307,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @return Returns the personNameId.
 	 */
-	@Attribute(required = true)
 	public Integer getPersonNameId() {
 		return personNameId;
 	}
@@ -353,7 +314,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @param personNameId The personNameId to set.
 	 */
-	@Attribute(required = true)
 	public void setPersonNameId(Integer personNameId) {
 		this.personNameId = personNameId;
 	}
@@ -368,7 +328,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 		return preferred;
 	}
 	
-	@Attribute(required = true)
 	public Boolean getPreferred() {
 		return isPreferred();
 	}
@@ -376,7 +335,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @param preferred The preferred to set.
 	 */
-	@Attribute(required = true)
 	public void setPreferred(Boolean preferred) {
 		this.preferred = preferred;
 	}
@@ -385,7 +343,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @return Returns the prefix.
 	 * @should return null if obscure_patients is set to true
 	 */
-	@Element(data = true, required = false)
 	public String getPrefix() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS) {
 			return null;
@@ -396,67 +353,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * @param prefix The prefix to set.
 	 */
-	@Element(data = true, required = false)
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
-	}
-	
-	/**
-	 * @see #isVoided()
-	 */
-	@Attribute(required = true)
-	public Boolean getVoided() {
-		return isVoided();
-	}
-	
-	/**
-	 * This still exists on PersonName for the SimpleFramework annotation
-	 *
-	 * @param voided The voided to set.
-	 */
-	@Attribute(required = true)
-	public void setVoided(Boolean voided) {
-		super.setVoided(voided);
-	}
-	
-	/**
-	 * This still exists on PersonName for the SimpleFramework annotation
-	 *
-	 * @return Returns the voidedBy.
-	 */
-	@Element(required = false)
-	public User getVoidedBy() {
-		return super.getVoidedBy();
-	}
-	
-	/**
-	 * This still exists on PersonName for the SimpleFramework annotation
-	 *
-	 * @param voidedBy The voidedBy to set.
-	 */
-	@Element(required = false)
-	public void setVoidedBy(User voidedBy) {
-		super.setVoidedBy(voidedBy);
-	}
-	
-	/**
-	 * This still exists on PersonName for the SimpleFramework annotation
-	 *
-	 * @return Returns the voidReason.
-	 */
-	@Element(data = true, required = false)
-	public String getVoidReason() {
-		return super.getVoidReason();
-	}
-	
-	/**
-	 * This still exists on PersonName for the SimpleFramework annotation
-	 *
-	 * @param voidReason The voidReason to set.
-	 */
-	@Element(data = true, required = false)
-	public void setVoidReason(String voidReason) {
-		super.setVoidReason(voidReason);
 	}
 	
 	/**

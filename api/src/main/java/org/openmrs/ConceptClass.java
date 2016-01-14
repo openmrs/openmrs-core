@@ -10,13 +10,10 @@
 package org.openmrs;
 
 import org.hibernate.search.annotations.DocumentId;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Root;
 
 /**
  * ConceptClass
  */
-@Root(strict = false)
 public class ConceptClass extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 33473L;
@@ -74,15 +71,10 @@ public class ConceptClass extends BaseOpenmrsMetadata implements java.io.Seriali
 	
 	// Property accessors
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = true)
 	public Integer getConceptClassId() {
 		return this.conceptClassId;
 	}
 	
-	@Attribute(required = true)
 	public void setConceptClassId(Integer conceptClassId) {
 		this.conceptClassId = conceptClassId;
 	}

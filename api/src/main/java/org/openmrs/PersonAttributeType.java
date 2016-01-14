@@ -12,14 +12,10 @@ package org.openmrs;
 import java.util.Comparator;
 
 import org.openmrs.util.OpenmrsUtil;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
 
 /**
  * PersonAttributeType
  */
-@Root(strict = false)
 public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.Serializable, Comparable<PersonAttributeType> {
 	
 	public static final long serialVersionUID = 2112313431211L;
@@ -50,7 +46,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @return Returns the format.
 	 */
-	@Element(data = true, required = false)
 	public String getFormat() {
 		return format;
 	}
@@ -58,7 +53,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @param format The format to set.
 	 */
-	@Element(data = true, required = false)
 	public void setFormat(String format) {
 		this.format = format;
 	}
@@ -66,7 +60,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @return the foreignKey
 	 */
-	@Attribute(required = false)
 	public Integer getForeignKey() {
 		return foreignKey;
 	}
@@ -74,7 +67,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @param foreignKey the foreignKey to set
 	 */
-	@Attribute(required = false)
 	public void setForeignKey(Integer foreignKey) {
 		this.foreignKey = foreignKey;
 	}
@@ -96,7 +88,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @return Returns the PersonAttributeTypeId.
 	 */
-	@Attribute(required = false)
 	public Integer getPersonAttributeTypeId() {
 		return personAttributeTypeId;
 	}
@@ -104,7 +95,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @param newPersonAttributeTypeId The PersonAttributeTypeId to set.
 	 */
-	@Attribute(required = false)
 	public void setPersonAttributeTypeId(Integer newPersonAttributeTypeId) {
 		this.personAttributeTypeId = newPersonAttributeTypeId;
 	}
@@ -119,7 +109,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @return the searchable status
 	 */
-	@Attribute(required = false)
 	public Boolean getSearchable() {
 		return searchable;
 	}
@@ -127,7 +116,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @param searchable the searchable to set
 	 */
-	@Attribute(required = false)
 	public void setSearchable(Boolean searchable) {
 		this.searchable = searchable;
 	}

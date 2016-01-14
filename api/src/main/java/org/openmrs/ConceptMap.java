@@ -12,15 +12,11 @@ package org.openmrs;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.IndexedEmbedded;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
 
 /**
  * The concept map object represents a mapping of Concept to ConceptSource. A concept can have 0 to
  * N mappings to any and all concept sources in the database.
  */
-@Root
 public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 754677L;
@@ -71,7 +67,6 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	/**
 	 * @return the concept
 	 */
-	@Element
 	public Concept getConcept() {
 		return concept;
 	}
@@ -79,7 +74,6 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	/**
 	 * @param concept the concept to set
 	 */
-	@Element
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
@@ -87,7 +81,6 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	/**
 	 * @return Returns the conceptMapId.
 	 */
-	@Attribute
 	public Integer getConceptMapId() {
 		return conceptMapId;
 	}
@@ -95,7 +88,6 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	/**
 	 * @param conceptMapId The conceptMapId to set.
 	 */
-	@Attribute
 	public void setConceptMapId(Integer conceptMapId) {
 		this.conceptMapId = conceptMapId;
 	}

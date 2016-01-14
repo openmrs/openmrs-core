@@ -14,13 +14,10 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.openmrs.annotation.AllowDirectAccess;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Root;
 
 /**
  * Program
  */
-@Root
 public class Program extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 3214567L;
@@ -141,12 +138,10 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 		this.outcomesConcept = concept;
 	}
 	
-	@Attribute(required = true)
 	public Integer getProgramId() {
 		return programId;
 	}
 	
-	@Attribute(required = true)
 	public void setProgramId(Integer programId) {
 		this.programId = programId;
 	}
