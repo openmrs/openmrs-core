@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.TreeSet;
 
 import org.hibernate.search.annotations.Indexed;
-import org.simpleframework.xml.Attribute;
 
 /**
  * The ConceptNumeric extends upon the Concept object by adding some number range values
@@ -129,93 +128,58 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	
 	// Property accessors
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = false)
 	public Double getHiAbsolute() {
 		return this.hiAbsolute;
 	}
 	
-	@Attribute(required = false)
 	public void setHiAbsolute(Double hiAbsolute) {
 		this.hiAbsolute = hiAbsolute;
 	}
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = false)
 	public Double getHiCritical() {
 		return this.hiCritical;
 	}
 	
-	@Attribute(required = false)
 	public void setHiCritical(Double hiCritical) {
 		this.hiCritical = hiCritical;
 	}
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = false)
 	public Double getHiNormal() {
 		return this.hiNormal;
 	}
 	
-	@Attribute(required = false)
 	public void setHiNormal(Double hiNormal) {
 		this.hiNormal = hiNormal;
 	}
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = false)
 	public Double getLowAbsolute() {
 		return this.lowAbsolute;
 	}
 	
-	@Attribute(required = false)
 	public void setLowAbsolute(Double lowAbsolute) {
 		this.lowAbsolute = lowAbsolute;
 	}
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = false)
 	public Double getLowCritical() {
 		return this.lowCritical;
 	}
 	
-	@Attribute(required = false)
 	public void setLowCritical(Double lowCritical) {
 		this.lowCritical = lowCritical;
 	}
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = false)
 	public Double getLowNormal() {
 		return this.lowNormal;
 	}
 	
-	@Attribute(required = false)
 	public void setLowNormal(Double lowNormal) {
 		this.lowNormal = lowNormal;
 	}
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = false)
 	public String getUnits() {
 		return this.units;
 	}
 	
-	@Attribute(required = false)
 	public void setUnits(String units) {
 		this.units = units;
 	}
@@ -245,12 +209,10 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		this.displayPrecision = displayPrecision;
 	}
 	
-	@Attribute
 	public Boolean getAllowDecimal() {
 		return isAllowDecimal();
 	}
 	
-	@Attribute
 	public void setAllowDecimal(Boolean allowDecimal) {
 		this.allowDecimal = allowDecimal;
 	}

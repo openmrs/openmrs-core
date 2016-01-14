@@ -365,11 +365,6 @@
 				<version>2.0</version>
 			</dependency>
 			<dependency>
-				<groupId>org.openmrs.simpleframework</groupId>
-				<artifactId>simple-xml</artifactId>
-				<version>1.6.1-mod</version>
-			</dependency>
-			<dependency>
 				<groupId>stax</groupId>
 				<artifactId>stax</artifactId>
 				<version>1.2.0</version>

@@ -19,15 +19,10 @@ import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
 
 /**
  * This class represents a list of patientIds.
  */
-@Root(strict = false)
 public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	public static final long serialVersionUID = 0L;
@@ -256,42 +251,34 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	// getters and setters
 	
-	@Attribute(required = false)
 	public Integer getCohortId() {
 		return cohortId;
 	}
 	
-	@Attribute(required = false)
 	public void setCohortId(Integer cohortId) {
 		this.cohortId = cohortId;
 	}
 	
-	@Element(required = false)
 	public String getDescription() {
 		return description;
 	}
 	
-	@Element(required = false)
 	public void setDescription(String description) {
 		this.description = description;
 	}
 	
-	@Element(required = false)
 	public String getName() {
 		return name;
 	}
 	
-	@Element(required = false)
 	public void setName(String name) {
 		this.name = name;
 	}
 	
-	@ElementList(required = true)
 	public Set<Integer> getMemberIds() {
 		return memberIds;
 	}
 	
-	@ElementList(required = true)
 	public void setMemberIds(Set<Integer> memberIds) {
 		this.memberIds = new TreeSet<Integer>(memberIds);
 	}

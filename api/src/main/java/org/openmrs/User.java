@@ -28,7 +28,6 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
-import org.simpleframework.xml.Attribute;
 
 /**
  * Defines a User Account in the system. This account belongs to a {@link Person} in the system,
@@ -347,7 +346,6 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @return Returns the systemId.
 	 */
-	@Attribute(required = false)
 	public String getSystemId() {
 		return systemId;
 	}
@@ -355,7 +353,6 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @param systemId The systemId to set.
 	 */
-	@Attribute(required = false)
 	public void setSystemId(String systemId) {
 		this.systemId = systemId;
 	}
@@ -363,7 +360,6 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @return Returns the userId.
 	 */
-	@Attribute(required = true)
 	public Integer getUserId() {
 		return userId;
 	}
@@ -371,7 +367,6 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @param userId The userId to set.
 	 */
-	@Attribute(required = true)
 	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
@@ -405,7 +400,6 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @return Returns the username.
 	 */
-	@Attribute(required = false)
 	public String getUsername() {
 		return username;
 	}
@@ -413,7 +407,6 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @param username The username to set.
 	 */
-	@Attribute(required = false)
 	public void setUsername(String username) {
 		this.username = username;
 	}

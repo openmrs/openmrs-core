@@ -12,14 +12,10 @@ package org.openmrs;
 import java.util.Date;
 
 import org.openmrs.util.OpenmrsUtil;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
 
 /**
  * This represents a single concept within a concept set.
  */
-@Root
 public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.Serializable, Comparable<ConceptSet> {
 	
 	public static final long serialVersionUID = 3787L;
@@ -68,28 +64,18 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 		this.conceptSetId = conceptSetId;
 	}
 	
-	/**
-	 *
-	 */
-	@Element
 	public Concept getConcept() {
 		return concept;
 	}
 	
-	@Element
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
 	
-	/**
-	 *
-	 */
-	@Element
 	public Concept getConceptSet() {
 		return conceptSet;
 	}
 	
-	@Element
 	public void setConceptSet(Concept set) {
 		this.conceptSet = set;
 	}
@@ -97,7 +83,6 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	/**
 	 * @return Returns the sortWeight.
 	 */
-	@Attribute
 	public Double getSortWeight() {
 		return sortWeight;
 	}
@@ -105,7 +90,6 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	/**
 	 * @param sortWeight The sortWeight to set.
 	 */
-	@Attribute
 	public void setSortWeight(Double sortWeight) {
 		this.sortWeight = sortWeight;
 	}
@@ -113,7 +97,6 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	/**
 	 * @return Returns the creator.
 	 */
-	@Element
 	public User getCreator() {
 		return creator;
 	}
@@ -121,7 +104,6 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	/**
 	 * @param creator The creator to set.
 	 */
-	@Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -129,7 +111,6 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	/**
 	 * @return Returns the dateCreated.
 	 */
-	@Element
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -137,7 +118,6 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
-	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
