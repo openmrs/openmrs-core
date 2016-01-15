@@ -44,10 +44,6 @@
          <artifactId>javax.servlet-api</artifactId>
       </dependency>
       <dependency>
-         <groupId>commons-beanutils</groupId>
-         <artifactId>commons-beanutils</artifactId>
-      </dependency>
-      <dependency>
          <groupId>commons-io</groupId>
          <artifactId>commons-io</artifactId>
       </dependency>
@@ -86,11 +82,6 @@
       <dependency>
 		 <groupId>org.apache.velocity</groupId>
 		 <artifactId>velocity-tools</artifactId>
-	  </dependency>
-      <dependency>
-		 <groupId>com.mysql</groupId>
-		 <artifactId>mysql-connector-mxj</artifactId>
-		 <scope>provided</scope>
 	  </dependency>
       <dependency>
          <groupId>org.owasp.encoder</groupId>
