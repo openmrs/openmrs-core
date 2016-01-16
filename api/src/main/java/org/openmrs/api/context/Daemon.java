@@ -39,6 +39,8 @@ public class Daemon {
 	
 	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<Boolean>();
 	
+	protected static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<User>();
+	
 	/**
 	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext)
 	 */
@@ -352,5 +354,22 @@ public class Daemon {
 	 */
 	public static boolean isDaemonUser(User user) {
 		return DAEMON_USER_UUID.equals(user.getUuid());
+	}
+	
+	/**
+	 * @return the current thread daemon user or null if not assigned
+	 * @since 2.0.0, 1.12.0, 1.11.6, 1.10.5, 1.9.11
+	 */
+	public static User getDaemonThreadUser() {
+		if (isDaemonThread()) {
+			User user = daemonThreadUser.get();
+			if (user == null) {
+				user = Context.getContextDAO().getUserByUuid(DAEMON_USER_UUID);
+				daemonThreadUser.set(user);
+			}
+			return user;
+		} else {
+			return null;
+		}
 	}
 }
