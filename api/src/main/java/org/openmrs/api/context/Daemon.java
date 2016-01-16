@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.context;
 
+import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
@@ -32,6 +33,8 @@ public class Daemon {
 	protected static final String DAEMON_USER_UUID = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB";
 	
 	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<Boolean>();
+	
+	protected static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<User>();
 	
 	/**
 	 * This method should not be called directly. The {@link ModuleFactory#startModule(Module)}
@@ -309,6 +312,23 @@ public class Daemon {
 		 */
 		public Throwable getExceptionThrown() {
 			return exceptionThrown;
+		}
+	}
+	
+	/**
+	 * @return the current thread daemon user or null if not assigned
+	 * @since 2.0.0, 1.12.0, 1.11.6, 1.10.4, 1.9.11
+	 */
+	public static User getDaemonThreadUser() {
+		if (isDaemonThread()) {
+			User user = daemonThreadUser.get();
+			if (user == null) {
+				user = Context.getContextDAO().getUserByUuid(DAEMON_USER_UUID);
+				daemonThreadUser.set(user);
+			}
+			return user;
+		} else {
+			return null;
 		}
 	}
 }

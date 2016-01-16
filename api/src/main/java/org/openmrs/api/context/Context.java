@@ -612,9 +612,10 @@ public class Context {
 	 * @return "active" user who has been authenticated, otherwise <code>null</code>
 	 */
 	public static User getAuthenticatedUser() {
-		if (Daemon.isDaemonThread())
-			return contextDAO.getUserByUuid(Daemon.DAEMON_USER_UUID);
-		
+		if (Daemon.isDaemonThread()) {
+			return Daemon.getDaemonThreadUser();
+		}
+
 		return getUserContext().getAuthenticatedUser();
 	}
 	
