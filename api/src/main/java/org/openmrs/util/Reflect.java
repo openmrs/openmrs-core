@@ -90,7 +90,8 @@ public class Reflect {
 		ClassFields<?> classFields = ClassDataCacher.getInstance().getClassFields(fieldClass);
 		try {
 			return classFields.getFieldAnnotation(annotation, fieldName) != null;
-		} catch (FieldnameNotFoundException e) {
+		}
+		catch (FieldnameNotFoundException e) {
 			return false;
 		}
 	}
