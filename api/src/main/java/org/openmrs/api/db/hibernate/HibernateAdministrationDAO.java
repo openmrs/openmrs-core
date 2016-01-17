@@ -21,8 +21,13 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PersistentClass;
+import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.type.StringType;
+import org.hibernate.type.TextType;
+import org.hibernate.type.Type;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.APIException;
@@ -34,7 +39,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -99,8 +103,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	}
 	
 	public GlobalProperty getGlobalPropertyByUuid(String uuid) throws DAOException {
-		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().createQuery(
-		    "from GlobalProperty t where t.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession()
+		        .createQuery("from GlobalProperty t where t.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 		
 		return gp;
 	}
@@ -119,8 +123,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 */
 	@SuppressWarnings("unchecked")
 	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix) {
-		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class).add(
-		    Restrictions.ilike("property", prefix, MatchMode.START)).list();
+		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class)
+		        .add(Restrictions.ilike("property", prefix, MatchMode.START)).list();
 	}
 	
 	/**
@@ -128,8 +132,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 */
 	@SuppressWarnings("unchecked")
 	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix) {
-		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class).add(
-		    Restrictions.ilike("property", suffix, MatchMode.END)).list();
+		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class)
+		        .add(Restrictions.ilike("property", suffix, MatchMode.END)).list();
 	}
 	
 	/**
@@ -200,19 +204,62 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#validate(java.lang.Object, Errors)
+	 * @should Pass validation if field lengths are correct
+	 * @should Fail validation if field lengths are not correct
+	 * @should Fail validation for location class if field lengths are not correct
+	 * @should Pass validation for location class if field lengths are correct
 	 */
+	
+	//@SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
 	@Override
 	public void validate(Object object, Errors errors) throws DAOException {
+		Class entityClass = object.getClass();
+		ClassMetadata metadata = sessionFactory.getClassMetadata(entityClass);
+		if (metadata != null) {
+			String[] propNames = metadata.getPropertyNames();
+			Object IdentifierTpye = metadata.getIdentifierType();
+			String identifierName = metadata.getIdentifierPropertyName();
+			if (IdentifierTpye instanceof StringType || IdentifierTpye instanceof TextType) {
+				int maxLength = getMaximumPropertyLength(entityClass, identifierName);
+				String identifierValue = (String) metadata.getIdentifier(object,
+				    (SessionImplementor) sessionFactory.getCurrentSession());
+				if (identifierValue != null) {
+					int identifierLength = identifierValue.length();
+					if (identifierLength > maxLength) {
+						
+						errors.rejectValue(identifierName, "error.exceededMaxLengthOfField", new Object[] { maxLength },
+						    null);
+					}
+				}
+			}
+			for (int i = 0; i < propNames.length; i++) {
+				Type propType = metadata.getPropertyType(propNames[i]);
+				if (propType instanceof StringType || propType instanceof TextType) {
+					String propertyValue = (String) metadata.getPropertyValue(object, propNames[i]);
+					if (propertyValue != null) {
+						int maxLength = getMaximumPropertyLength(entityClass, propNames[i]);
+						int propertyValueLength = propertyValue.length();
+						if (propertyValueLength > maxLength) {
+							errors.rejectValue(propNames[i], "error.exceededMaxLengthOfField", new Object[] { maxLength },
+							    null);
+						}
+					}
+				}
+			}
+		}
 		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getFlushMode();
 		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
 		try {
 			for (Validator validator : getValidators(object)) {
 				validator.validate(object, errors);
 			}
+			
 		}
+		
 		finally {
 			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
 		}
+		
 	}
 	
 	/**
@@ -237,7 +284,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	
 	@Override
 	public boolean isDatabaseStringComparisonCaseSensitive() {
-		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class, OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON);
+		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class,
+		    OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON);
 		if (gp != null) {
 			return Boolean.valueOf(gp.getPropertyValue());
 		} else {
