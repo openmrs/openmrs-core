@@ -1,6 +1,4 @@
-*.gif
-*.png
-*.jpg
+*
 !/back_button.jpg
 !/checkmark.png
 !/forward_button.png
@@ -9,4 +7,5 @@
 !/openmrs_barx.gif
 !/openmrs_logo_text.gif
 !/openmrs_logo_white.gif
-!/optnmrs-favicon.png
+!/openmrs-favicon.png
+!/openmrs-favicon.ico
