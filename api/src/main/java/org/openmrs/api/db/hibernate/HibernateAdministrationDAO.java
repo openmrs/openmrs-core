@@ -14,6 +14,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.SessionFactory;
@@ -203,18 +204,37 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 */
 	@Override
 	public void validate(Object object, Errors errors) throws DAOException {
+		// String clz = String.valueOf(object.getClass());
+		Class entityClass = object.getClass();
+		ClassMetadata metadata = sessionFactory.getClassMetadata(entityClass);
+		String[] propNames = metadata.getPropertyNames();
+		for (int i = 0; i < propNames.length; i++) {
+			String propType = metadata.getPropertyType(propNames[i]).getName();
+			if (propType.equalsIgnoreCase("String") || propType.equalsIgnoreCase("java.lang.String")) {
+				int p1 = getMaximumPropertyLength(entityClass, propNames[i]);
+				String str = (String) metadata.getPropertyValue(object, propNames[i]);
+				int p2 = str.length();
+				if (p2 > p1) {
+					errors.rejectValue(propNames[i], " can be at max [" + p1 + "] characters in length.");
+				}
+			}
+
+		}
 		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getFlushMode();
 		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
 		try {
 			for (Validator validator : getValidators(object)) {
 				validator.validate(object, errors);
 			}
+
 		}
+
 		finally {
 			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
 		}
+
 	}
-	
+
 	/**
 	 * Fetches all validators that are registered
 	 *
@@ -237,7 +257,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	
 	@Override
 	public boolean isDatabaseStringComparisonCaseSensitive() {
-		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class, OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON);
+		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class,
+				OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON);
 		if (gp != null) {
 			return Boolean.valueOf(gp.getPropertyValue());
 		} else {
