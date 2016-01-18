@@ -23,6 +23,8 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import java.lang.reflect.Method;
+
 /**
  * Tests methods on the {@link PersonNameValidator} class.
  */
@@ -731,4 +733,24 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors("middleName"));
 		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
 	}
+
+    /**
+     * @see PersonNameValidator#validate(Object,Errors)
+     * @verifies validate should report on correct field names
+     */
+    @Test
+    public void validate_shouldReportErrorOnCorrectFieldNames() throws Exception {
+		PersonName personName = new PersonName("", "reb", "feb");
+		Errors errors = new BindException(personName, "personName");
+		new PersonNameValidator().validate(personName, errors);
+		Class personNameValidatorClass = PersonNameValidator.class;
+		Object obj = personNameValidatorClass.newInstance();
+		Method method = personNameValidatorClass.getDeclaredMethod("getFieldKey", new Class[]{String.class, boolean.class, boolean.class});
+		method.setAccessible(true);
+		String string1 = (String) method.invoke(obj,"givenName", false, true);
+		String string2 = (String) method.invoke(obj,"givenName", true, false);
+		Assert.assertEquals("givenName", string1);
+		Assert.assertEquals("names[0].givenName", string2);
+		Assert.assertTrue(errors.hasFieldErrors("givenName"));
+    }
 }
