@@ -177,22 +177,21 @@ public class WebModuleUtilTest {
 		
 		ModuleFactory.getStartedModulesMap().clear();
 	}
-	
+
 	/**
 	 * @see WebModuleUtil#copyModuleMessagesIntoWebapp(org.openmrs.module.Module, String)
 	 * @verifies prefix messages with module id
 	 */
 	@Test
-	public void copyModuleMessagesIntoWebapp_shouldPrefixMessagesWithModuleId() throws Exception {
+	public void copyModuleMessagesIntoWebapp_shouldNotPrefixMessagesWithModuleId() throws Exception {
 		Module mod = buildModuleForMessageTest();
 		partialMockWebModuleUtilForMessagesTests();
 		WebModuleUtil.copyModuleMessagesIntoWebapp(mod, "unused/real/path");
-		
-		assertThat(propertiesWritten.getProperty("mymodule.title"), is("My Module"));
-		assertThat(propertiesWritten.getProperty("mymodule.withoutPrefix"), is("Without prefix"));
-		assertNull(propertiesWritten.getProperty("withoutPrefix"));
+
+		assertThat(propertiesWritten.getProperty("withoutPrefix"), is("Without prefix"));
+		assertNull(propertiesWritten.getProperty("mymodule.withoutPrefix"));
 	}
-	
+
 	/**
 	 * @see WebModuleUtil#copyModuleMessagesIntoWebapp(org.openmrs.module.Module, String)
 	 * @verifies not prefix messages with module id if override setting is specified
@@ -207,7 +206,6 @@ public class WebModuleUtilTest {
 		partialMockWebModuleUtilForMessagesTests();
 		WebModuleUtil.copyModuleMessagesIntoWebapp(mod, "unused/real/path");
 		
-		assertThat(propertiesWritten.getProperty("mymodule.title"), is("My Module"));
 		assertThat(propertiesWritten.getProperty("withoutPrefix"), is("Without prefix"));
 		assertNull(propertiesWritten.getProperty("mymodule.withoutPrefix"));
 	}
@@ -229,7 +227,6 @@ public class WebModuleUtilTest {
 	
 	private Module buildModuleForMessageTest() throws ParserConfigurationException {
 		Properties englishMessages = new Properties();
-		englishMessages.put("mymodule.title", "My Module");
 		englishMessages.put("withoutPrefix", "Without prefix");
 		
 		Module mod = new Module("My Module");
