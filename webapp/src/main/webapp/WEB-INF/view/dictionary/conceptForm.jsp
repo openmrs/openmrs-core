@@ -542,7 +542,7 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
                  
-            <!-- All handler key to class mappings
+            <%-- All handler key to class mappings
             <table>
              <c:forEach var="h" items="${handlers }">
                 <tr name="handlerRow" id="handler_${h.key}">
@@ -555,7 +555,7 @@
                 </tr>
              </c:forEach>
             </table>
-            -->
+            --%>
         </td>
     </tr>
 	<tr id="conceptMapRow">
@@ -661,7 +661,7 @@
 				<tr id="newConceptMapping" style="display: none">
 					<td valign="top">
 						<c:set var="groupOpen" value="false" />
-						<select name="${status.expression}">
+						<select name="type.name">
 							<openmrs:forEachRecord name="conceptMapType">
 								<c:if test="${record.retired && !groupOpen}">
 									<optgroup label="<openmrs:message code="Encounter.type.retired"/>">
