@@ -51,7 +51,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
-import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
@@ -417,28 +416,14 @@ public class WebModuleUtil {
 			if (log.isDebugEnabled()) {
 				log.debug("Copying message property file: " + localeEntry.getKey());
 			}
-			
+
 			Properties props = localeEntry.getValue();
-			
-			if (!"true".equalsIgnoreCase(props
-			        .getProperty(ModuleConstants.MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE))) {
-				// set all properties to start with 'moduleName.' if not already
-				List<Object> keys = new Vector<Object>();
-				keys.addAll(props.keySet());
-				for (Object obj : keys) {
-					String key = (String) obj;
-					if (!key.startsWith(mod.getModuleId())) {
-						props.put(mod.getModuleId() + "." + key, props.get(key));
-						props.remove(key);
-					}
-				}
-			}
-			
+
 			String lang = "_" + localeEntry.getKey();
 			if (lang.equals("_en") || lang.equals("_")) {
 				lang = "";
 			}
-			
+
 			insertIntoModuleMessagePropertiesFile(realPath, props, lang);
 		}
 	}
