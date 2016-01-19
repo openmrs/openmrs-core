@@ -44,6 +44,10 @@
          <artifactId>javax.servlet-api</artifactId>
       </dependency>
       <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>jsp-api</artifactId>
+      </dependency>
+      <dependency>
          <groupId>commons-io</groupId>
          <artifactId>commons-io</artifactId>
       </dependency>
@@ -71,6 +75,22 @@
          <groupId>postgresql</groupId>
          <artifactId>postgresql</artifactId>
       </dependency>
+       <dependency>
+           <groupId>taglibs</groupId>
+           <artifactId>request</artifactId>
+       </dependency>
+       <dependency>
+           <groupId>taglibs</groupId>
+           <artifactId>response</artifactId>
+       </dependency>
+       <dependency>
+           <groupId>taglibs</groupId>
+           <artifactId>standard</artifactId>
+       </dependency>
+       <dependency>
+           <groupId>taglibs</groupId>
+           <artifactId>page</artifactId>
+       </dependency>
       <dependency>
          <groupId>org.liquibase</groupId>
          <artifactId>liquibase-core</artifactId>
