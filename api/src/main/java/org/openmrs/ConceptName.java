@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.standard.StandardFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.AnalyzerDef;
@@ -173,9 +174,13 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * Returns whether the ConceptName has been voided.
 	 *
 	 * @return true if the ConceptName has been voided, false otherwise.
+	 * 
+	 * @deprecated as of 2.0, use {@link #getVoided()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isVoided() {
-		return voided;
+		return getVoided();
 	}
 	
 	/**
@@ -184,7 +189,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @return true if the ConceptName has been voided, false otherwise.
 	 */
 	public Boolean getVoided() {
-		return isVoided();
+		return voided;
 	}
 	
 	/**
@@ -289,9 +294,13 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * Getter for localePreferred
 	 *
 	 * @return localPreferred
+	 * 
+	 * @deprecated as of 2.0, use {@link #getLocalePreferred()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isLocalePreferred() {
-		return localePreferred;
+		return getLocalePreferred();
 	}
 	
 	/**

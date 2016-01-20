@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
@@ -106,13 +107,17 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * Gets whether or not this is a combination drug
 	 *
 	 * @return Boolean
+	 * 
+	 * @deprecated as of 2.0, use {@link #getCombination()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isCombination() {
-		return this.combination;
+		return getCombination();
 	}
 	
 	public Boolean getCombination() {
-		return isCombination();
+		return combination;
 	}
 	
 	/**

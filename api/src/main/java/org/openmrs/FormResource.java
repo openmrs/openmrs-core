@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.InvalidCustomValueException;
@@ -248,10 +249,17 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#isDirty()
+	 *
+	 * @deprecated as of 2.0, use {@link #getDirty()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	@Override
 	public boolean isDirty() {
-		return dirty;
+		return getDirty();
 	}
 	
+	public boolean getDirty() {
+		return dirty;
+	}
 }
