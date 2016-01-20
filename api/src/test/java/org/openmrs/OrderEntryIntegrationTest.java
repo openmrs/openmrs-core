@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -433,7 +432,6 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-    @Ignore
 	public void shouldAllowStopOfOrdersInRetrospectiveDataEntry() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrderAutoExpireDate.xml");
 		Calendar cal = Calendar.getInstance();
