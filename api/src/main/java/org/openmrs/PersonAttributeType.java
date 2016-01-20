@@ -11,6 +11,7 @@ package org.openmrs;
 
 import java.util.Comparator;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -101,7 +102,11 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	
 	/**
 	 * @return the searchable status
+	 * 
+	 * @deprecated as of 2.0, use {@link #getSearchable()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isSearchable() {
 		return getSearchable();
 	}

@@ -19,6 +19,7 @@ import java.util.List;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
@@ -320,16 +321,20 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	/**
 	 * @return Returns the preferred.
+	 *
+	 * @deprecated as of 2.0, use {@link #getPreferred()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isPreferred() {
+		return getPreferred();
+	}
+	
+	public Boolean getPreferred() {
 		if (preferred == null) {
 			return Boolean.FALSE;
 		}
 		return preferred;
-	}
-	
-	public Boolean getPreferred() {
-		return isPreferred();
 	}
 	
 	/**

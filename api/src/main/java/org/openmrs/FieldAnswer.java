@@ -11,6 +11,8 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * FieldAnswer
  * 
@@ -40,8 +42,19 @@ public class FieldAnswer extends BaseOpenmrsObject implements java.io.Serializab
 	
 	/**
 	 * @return boolean whether or not this fieldAnswer has been modified
+	 *
+	 * @deprecated as of 2.0, use {@link #getDirty()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public boolean isDirty() {
+		return getDirty();
+	}
+	
+	/**
+	 * @return boolean whether or not this fieldAnswer has been modified
+	 */
+	public boolean getDirty() {
 		return dirty;
 	}
 	

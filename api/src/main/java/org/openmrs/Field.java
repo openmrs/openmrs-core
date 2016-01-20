@@ -12,6 +12,8 @@ package org.openmrs;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * Field
  *
@@ -137,15 +139,20 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 		this.defaultValue = defaultValue;
 	}
 	
+	/**
+	 * @deprecated as of 2.0, use {@link #getSelectMultiple()}
+	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isSelectMultiple() {
-		return selectMultiple;
+		return getSelectMultiple();
 	}
 	
 	/**
 	 * @return Returns the selectMultiple.
 	 */
 	public Boolean getSelectMultiple() {
-		return isSelectMultiple();
+		return selectMultiple;
 	}
 	
 	/**

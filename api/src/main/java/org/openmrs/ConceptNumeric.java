@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.HashSet;
 import java.util.TreeSet;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.Indexed;
 
 /**
@@ -210,14 +211,19 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	}
 	
 	public Boolean getAllowDecimal() {
-		return isAllowDecimal();
+		return allowDecimal == null ? false : allowDecimal;
 	}
 	
 	public void setAllowDecimal(Boolean allowDecimal) {
 		this.allowDecimal = allowDecimal;
 	}
 	
+	/**
+	 * @deprecated as of 2.0, use {@link #getAllowDecimal()}
+	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isAllowDecimal() {
-		return allowDecimal == null ? false : allowDecimal;
+		return getAllowDecimal();
 	}
 }
