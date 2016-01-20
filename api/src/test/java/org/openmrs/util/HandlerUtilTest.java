@@ -53,7 +53,7 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 		l = HandlerUtil.getHandlersForType(Validator.class, DrugOrder.class);
 		Assert.assertEquals(2, l.size());
 	}
-
+	
 	/**
 	 * @see {@link HandlerUtil#getHandlerForType(Class, Class)}
 	 */
@@ -82,7 +82,8 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should throw a APIException if no handler is found", method = "getPreferredHandler(Class, Class)")
 	public void getPreferredHandler_shouldThrowAAPIExceptionExceptionIfNoHandlerIsFound() throws Exception {
 		thrown.expect(APIException.class);
-		thrown.expectMessage("No interface org.springframework.validation.Validator is found that is able to handle a class java.lang.Integer");
+		thrown
+		        .expectMessage("No interface org.springframework.validation.Validator is found that is able to handle a class java.lang.Integer");
 		
 		HandlerUtil.getPreferredHandler(Validator.class, Integer.class);
 	}

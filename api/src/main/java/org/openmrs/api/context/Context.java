@@ -82,8 +82,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.aop.Advisor;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to authenticate to the database and
@@ -110,7 +108,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * </ol>
  * <br/>
  * Example usage:
- * 
+ *
  * <pre>
  * 	public static void main(String[] args) {
  * 		Context.startup("jdbc:mysql://localhost:3306/db-name?autoReconnect=true", "openmrs-db-user", "3jknfjkn33ijt", new Properties());
@@ -127,7 +125,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  *        }
  *    }
  * </pre>
- * 
+ *
  * @see org.openmrs.api.context.UserContext
  * @see org.openmrs.api.context.ServiceContext
  */
@@ -163,7 +161,7 @@ public class Context {
 	
 	/**
 	 * Gets the context's data access object
-	 * 
+	 *
 	 * @return ContextDAO
 	 */
 	static ContextDAO getContextDAO() {
@@ -175,7 +173,7 @@ public class Context {
 	
 	/**
 	 * Used to set the context's DAO for the application.
-	 * 
+	 *
 	 * @param dao ContextDAO to set
 	 */
 	public void setContextDAO(ContextDAO dao) {
@@ -189,7 +187,7 @@ public class Context {
 	/**
 	 * Loads a class with an instance of the OpenmrsClassLoader. Convenience method equivalent to
 	 * OpenmrsClassLoader.getInstance().loadClass(className);
-	 * 
+	 *
 	 * @param className the class to load
 	 * @return the class that was loaded
 	 * @throws ClassNotFoundException
@@ -204,7 +202,7 @@ public class Context {
 	 * authentication/authorization checks.<br/>
 	 * <br />
 	 * This is thread safe since it stores the given user context in ThreadLocal.
-	 * 
+	 *
 	 * @param ctx UserContext to set
 	 */
 	public static void setUserContext(UserContext ctx) {
@@ -230,7 +228,7 @@ public class Context {
 	/**
 	 * Gets the user context from the thread local. This might be accessed by several threads at the
 	 * same time.
-	 * 
+	 *
 	 * @return The current UserContext for this thread.
 	 * @should fail if session hasnt been opened
 	 */
@@ -252,7 +250,7 @@ public class Context {
 	/**
 	 * Gets the currently defined service context. If one is not defined, one will be created and
 	 * then returned.
-	 * 
+	 *
 	 * @return the current ServiceContext
 	 */
 	static ServiceContext getServiceContext() {
@@ -270,7 +268,7 @@ public class Context {
 	
 	/**
 	 * Sets the service context.
-	 * 
+	 *
 	 * @param ctx
 	 */
 	public void setServiceContext(ServiceContext ctx) {
@@ -283,7 +281,7 @@ public class Context {
 	
 	/**
 	 * Used to authenticate user within the context
-	 * 
+	 *
 	 * @param username user's identifier token for login
 	 * @param password user's password for authenticating to context
 	 * @throws ContextAuthenticationException
@@ -311,7 +309,7 @@ public class Context {
 	 * Refresh the authenticated user object in the current UserContext. This should be used when
 	 * updating information in the database about the current user and it needs to be reflecting in
 	 * the (cached) {@link #getAuthenticatedUser()} User object.
-	 * 
+	 *
 	 * @since 1.5
 	 * @should get fresh values from the database
 	 */
@@ -329,7 +327,7 @@ public class Context {
 	
 	/**
 	 * Become a different user. (You should only be able to do this as a superuser.)
-	 * 
+	 *
 	 * @param systemId
 	 * @throws ContextAuthenticationException
 	 * @should change locale when become another user
@@ -356,7 +354,7 @@ public class Context {
 	
 	/**
 	 * Get the runtime properties that this OpenMRS instance was started with
-	 * 
+	 *
 	 * @return copy of the runtime properties
 	 */
 	public static Properties getRuntimeProperties() {
@@ -372,7 +370,7 @@ public class Context {
 	
 	/**
 	 * Set the runtime properties to be used by this OpenMRS instance
-	 * 
+	 *
 	 * @param props runtime properties
 	 */
 	public static void setRuntimeProperties(Properties props) {
@@ -553,7 +551,7 @@ public class Context {
 	
 	/**
 	 * Get the message service.
-	 * 
+	 *
 	 * @return message service
 	 */
 	public static MessageService getMessageService() {
@@ -585,7 +583,7 @@ public class Context {
 	/**
 	 * Gets the mail session required by the mail message service. This function forces
 	 * authentication via the getAdministrationService() method call
-	 * 
+	 *
 	 * @return a java mail session
 	 */
 	private static javax.mail.Session getMailSession() {
@@ -617,7 +615,7 @@ public class Context {
 	/**
 	 * Convenience method to allow us to change the configuration more easily. TODO Ideally, we
 	 * would be using Spring's method injection to set the dependencies for the message service.
-	 * 
+	 *
 	 * @return the ServiceContext
 	 */
 	private static MessageSender getMessageSender() {
@@ -627,7 +625,7 @@ public class Context {
 	/**
 	 * Convenience method to allow us to change the configuration more easily. TODO See todo for
 	 * message sender.
-	 * 
+	 *
 	 * @return
 	 */
 	private static MessagePreparator getMessagePreparator() throws MessageException {
@@ -639,7 +637,7 @@ public class Context {
 	 */
 	public static User getAuthenticatedUser() {
 		if (Daemon.isDaemonThread()) {
-			return contextDAO.getUserByUuid(Daemon.DAEMON_USER_UUID);
+			return Daemon.getDaemonThreadUser();
 		}
 		
 		return getUserContext().getAuthenticatedUser();
@@ -658,7 +656,7 @@ public class Context {
 	
 	/**
 	 * logs out the "active" (authenticated) user within context
-	 * 
+	 *
 	 * @see #authenticate
 	 * @should not fail if session hasnt been opened yet
 	 */
@@ -687,7 +685,7 @@ public class Context {
 	
 	/**
 	 * Convenience method. Passes through to userContext.hasPrivilege(String)
-	 * 
+	 *
 	 * @should give daemon user full privileges
 	 */
 	public static boolean hasPrivilege(String privilege) {
@@ -702,7 +700,7 @@ public class Context {
 	/**
 	 * Throws an exception if the currently authenticated user does not have the specified
 	 * privilege.
-	 * 
+	 *
 	 * @param privilege
 	 * @throws ContextAuthenticationException
 	 */
@@ -744,7 +742,7 @@ public class Context {
 	
 	/**
 	 * Convenience method. Passes through to {@link UserContext#getLocale()}
-	 * 
+	 *
 	 * @should not fail if session hasnt been opened
 	 */
 	public static Locale getLocale() {
@@ -782,7 +780,7 @@ public class Context {
 	 * Used to define a unit of work which does not require clearing out the currently authenticated
 	 * user. Remember to call closeSessionWithCurrentUser in a, preferably, finally block after this
 	 * work.
-	 * 
+	 *
 	 * @since 1.10
 	 */
 	public static void openSessionWithCurrentUser() {
@@ -792,7 +790,7 @@ public class Context {
 	/**
 	 * Used when the a unit of work which started with a call for openSessionWithCurrentUser has
 	 * finished. This should be in a, preferably, finally block.
-	 * 
+	 *
 	 * @since 1.10
 	 */
 	public static void closeSessionWithCurrentUser() {
@@ -812,7 +810,7 @@ public class Context {
 	
 	/**
 	 * Forces any changes made so far in this unit of work to be written to the database
-	 * 
+	 *
 	 * @since 1.6
 	 */
 	public static void flushSession() {
@@ -823,7 +821,7 @@ public class Context {
 	/**
 	 * This method tells whether {@link #openSession()} has been called or not already. If it hasn't
 	 * been called, some methods won't work correctly because a {@link UserContext} isn't available.
-	 * 
+	 *
 	 * @return true if {@link #openSession()} has been called already.
 	 * @since 1.5
 	 * @should return true if session is closed
@@ -836,7 +834,7 @@ public class Context {
 	 * Used to clear a cached object out of a session in the middle of a unit of work. Future
 	 * updates to this object will not be saved. Future gets of this object will not fetch this
 	 * cached copy
-	 * 
+	 *
 	 * @param obj The object to evict/remove from the session
 	 */
 	public static void evictFromSession(Object obj) {
@@ -850,7 +848,7 @@ public class Context {
 	 * If an {@link InputRequiredException} is thrown, a call to {@link DatabaseUpdater#update(Map)}
 	 * will be required with a mapping from question prompt to user answer before startup can be
 	 * called again.
-	 * 
+	 *
 	 * @param props Runtime properties to use for startup
 	 * @throws InputRequiredException if the {@link DatabaseUpdater} has determined that updates
 	 *             cannot continue without input from the user
@@ -894,7 +892,7 @@ public class Context {
 	 * <b>Note:</b> This method calls {@link Context#openSession()}, so you must call
 	 * {@link Context#closeSession()} somewhere on the same thread of this application so as to not
 	 * leak memory.
-	 * 
+	 *
 	 * @param url database url like "jdbc:mysql://localhost:3306/openmrs?autoReconnect=true"
 	 * @param username Connection username
 	 * @param password Connection password
@@ -970,7 +968,7 @@ public class Context {
 	
 	/**
 	 * Used for getting services not in the previous get*Service() calls
-	 * 
+	 *
 	 * @param cls The Class of the service to get
 	 * @return The requested Service
 	 * @should return the same object when called multiple times for the same class
@@ -983,7 +981,7 @@ public class Context {
 	 * Adds an AOP advisor around the given Class <code>cls</code>
 	 * <p>
 	 * Advisors can wrap around a method and effect the method before or after
-	 * 
+	 *
 	 * @param cls
 	 * @param advisor
 	 */
@@ -996,7 +994,7 @@ public class Context {
 	 * Adds an AOP advice object around the given Class <code>cls</code>
 	 * <p>
 	 * Advice comes in the form of before or afterReturning methods
-	 * 
+	 *
 	 * @param cls
 	 * @param advice
 	 */
@@ -1007,7 +1005,7 @@ public class Context {
 	
 	/**
 	 * Removes the given AOP advisor from Class <code>cls</code>
-	 * 
+	 *
 	 * @param cls
 	 * @param advisor
 	 */
@@ -1018,7 +1016,7 @@ public class Context {
 	
 	/**
 	 * Removes the given AOP advice object from Class <code>cls</code>
-	 * 
+	 *
 	 * @param cls
 	 * @param advice
 	 */
@@ -1143,7 +1141,7 @@ public class Context {
 	 * <br/>
 	 * If an {@link InputRequiredException} is thrown, a call to {@link #updateDatabase(Map)} is
 	 * required with a mapping from question prompt to user answer.
-	 * 
+	 *
 	 * @param props the runtime properties
 	 * @throws InputRequiredException if the {@link DatabaseUpdater} has determined that updates
 	 *             cannot continue without input from the user
@@ -1175,7 +1173,7 @@ public class Context {
 	 * <br/>
 	 * The typical use-case would be: Try to {@link #startup(String, String, String, Properties)},
 	 * if that fails, call this method to get the database up to speed.
-	 * 
+	 *
 	 * @param userInput (can be null) responses from the user about needed input
 	 * @throws DatabaseUpdateException if an error occurred while updating
 	 * @throws InputRequiredException if user input is required
@@ -1190,7 +1188,7 @@ public class Context {
 	 * only temporarily. When a new module is loaded or the server is restarted, this information
 	 * will disappear. If there is not information by this key, null is returned TODO: This needs to
 	 * be refactored/removed
-	 * 
+	 *
 	 * @param key identifying string for the information
 	 * @return the information stored
 	 */
@@ -1212,7 +1210,7 @@ public class Context {
 	 * Set a piece of information for the currently authenticated user. This information is stored
 	 * only temporarily. When a new module is loaded or the server is restarted, this information
 	 * will disappear
-	 * 
+	 *
 	 * @param key identifying string for this information
 	 * @param value information to be stored
 	 */
@@ -1233,7 +1231,7 @@ public class Context {
 	/**
 	 * Gets the simple date format for the current user's locale. The format will be similar in size
 	 * to mm/dd/yyyy
-	 * 
+	 *
 	 * @return SimpleDateFormat for the user's current locale
 	 * @see org.openmrs.util.OpenmrsUtil#getDateFormat(Locale)
 	 * @should return a pattern with four y characters in it
@@ -1245,7 +1243,7 @@ public class Context {
 	/**
 	 * Gets the simple time format for the current user's locale. The format will be similar to
 	 * hh:mm a
-	 * 
+	 *
 	 * @return SimpleDateFormat for the user's current locale
 	 * @see org.openmrs.util.OpenmrsUtil#getTimeFormat(Locale)
 	 * @should return a pattern with two h characters in it
@@ -1257,7 +1255,7 @@ public class Context {
 	/**
 	 * Gets the simple datetime format for the current user's locale. The format will be similar to
 	 * mm/dd/yyyy hh:mm a
-	 * 
+	 *
 	 * @return SimpleDateFormat for the user's current locale
 	 * @see org.openmrs.util.OpenmrsUtil#getDateTimeFormat(Locale)
 	 * @should return a pattern with four y characters and two h characters in it
@@ -1324,7 +1322,7 @@ public class Context {
 	
 	/**
 	 * Add or replace a property in the config properties list
-	 * 
+	 *
 	 * @param key name of the property
 	 * @param value value of the property
 	 * @since 1.9
@@ -1335,7 +1333,7 @@ public class Context {
 	
 	/**
 	 * Remove a property from the list of config properties
-	 * 
+	 *
 	 * @param key name of the property
 	 * @since 1.9
 	 */
@@ -1345,7 +1343,7 @@ public class Context {
 	
 	/**
 	 * Get the config properties that have been added to this OpenMRS instance
-	 * 
+	 *
 	 * @return copy of the module properties
 	 * @since 1.9
 	 */
@@ -1364,7 +1362,7 @@ public class Context {
 	 * <p>
 	 * The method is designated to be used in tests, which rollback transactions. Note that if the
 	 * transaction is rolled back, changes to the index will not be reverted.
-	 * 
+	 *
 	 * @since 1.11
 	 */
 	public static void updateSearchIndex() {
@@ -1373,7 +1371,7 @@ public class Context {
 	
 	/**
 	 * Updates the search index for objects of the given type.
-	 * 
+	 *
 	 * @see #updateSearchIndex()
 	 * @param type
 	 * @since 1.11
@@ -1384,7 +1382,7 @@ public class Context {
 	
 	/**
 	 * Updates the search index for the given object.
-	 * 
+	 *
 	 * @see #updateSearchIndex()
 	 * @param object
 	 * @since 1.11
