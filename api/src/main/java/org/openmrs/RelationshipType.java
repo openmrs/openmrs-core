@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * Defines a type of relationship between two people in the database. <br>
  * <br>
@@ -117,8 +119,16 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 	 * adding/editing a person's relationships
 	 * 
 	 * @return the preferred status
+	 * 
+	 * @deprecated as of 2.0, use {@link #getPrefered()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isPreferred() {
+		return getPreferred();
+	}
+	
+	public Boolean getPreferred() {
 		return preferred;
 	}
 	

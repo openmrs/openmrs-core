@@ -11,6 +11,8 @@ package org.openmrs;
 
 import java.util.Comparator;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * The FormField object relates/orders the <code>fields</code> on a <code>form</code> A form can
  * have many 0 to n fields associated with it in a hierarchical manor. This FormField object governs
@@ -188,16 +190,20 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	
 	/**
 	 * @return Returns the required status.
+	 * 
+	 * @deprecated as of 2.0, use {@link #getRequired()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isRequired() {
-		return required == null ? false : required;
+		return getRequired();
 	}
 	
 	/**
 	 * @return same as isRequired()
 	 */
 	public Boolean getRequired() {
-		return isRequired();
+		return required == null ? false : required;
 	}
 	
 	/**

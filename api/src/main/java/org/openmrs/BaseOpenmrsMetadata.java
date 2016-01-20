@@ -11,11 +11,12 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.hibernate.search.annotations.Field;
-
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.search.annotations.Field;
 
 /**
  * In OpenMRS, we distinguish between data and metadata within our data model. Metadata represent
@@ -160,10 +161,14 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	}
 	
 	/**
+	 * @deprecated as of 2.0, use {@link #getRetired()}
+	 * 
 	 * @see org.openmrs.Retireable#isRetired()
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isRetired() {
-		return retired;
+		return getRetired();
 	}
 	
 	/**
@@ -174,7 +179,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 * @see org.openmrs.Retireable#isRetired()
 	 */
 	public Boolean getRetired() {
-		return isRetired();
+		return retired;
 	}
 	
 	/**

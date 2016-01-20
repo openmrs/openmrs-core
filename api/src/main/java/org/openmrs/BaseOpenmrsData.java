@@ -9,11 +9,13 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
-import java.util.Date;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * In OpenMRS, we distinguish between data and metadata within our data model. Data (as opposed to
@@ -121,10 +123,14 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	}
 	
 	/**
+	 * @deprecated as of 2.0, use {@link #getVoided()}
+	 * 
 	 * @see org.openmrs.Voidable#isVoided()
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isVoided() {
-		return voided;
+		return getVoided();
 	}
 	
 	/**
@@ -135,7 +141,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * @see org.openmrs.Voidable#isVoided()
 	 */
 	public Boolean getVoided() {
-		return isVoided();
+		return voided;
 	}
 	
 	/**

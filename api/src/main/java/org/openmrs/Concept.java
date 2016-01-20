@@ -26,6 +26,7 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
@@ -259,9 +260,13 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	/**
 	 * whether or not this concept is a set
+	 * 
+	 * @deprecated as of 2.0, use {@link #getSet()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isSet() {
-		return set;
+		return getSet();
 	}
 	
 	/**
@@ -272,7 +277,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	public Boolean getSet() {
-		return isSet();
+		return set;
 	}
 	
 	/**
@@ -1255,9 +1260,13 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	/**
 	 * @return Returns the retired.
+	 * 
+	 * @deprecated as of 2.0, use {@link #getRetired()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isRetired() {
-		return retired;
+		return getRetired();
 	}
 	
 	/**
@@ -1268,7 +1277,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @see org.openmrs.Retireable#isRetired()
 	 */
 	public Boolean getRetired() {
-		return isRetired();
+		return retired;
 	}
 	
 	/**
