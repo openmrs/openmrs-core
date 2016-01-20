@@ -287,10 +287,16 @@
 					<td valign="top">
 						<c:set var="behavior" value="${id.identifierType.locationBehavior}"/>
 						<div id="initialLocationBox${varStatus.index}" style="${(behavior == 'NOT_USED' || empty id.identifierType) ? 'display:none;' : ''}">
-							<form:select path="location">
-								<form:option value=""></form:option>
-								<form:options items="${locations}" itemValue="locationId" itemLabel="name" />
-							</form:select>
+						
+							<!-- Using spring:bind because Form:options caused: https://issues.openmrs.org/browse/LUI-32 -->
+							<spring:bind path="location">
+								<select id="locationId" name="${status.expression}">
+									<option></option>
+									<c:forEach items="${locations}" var="loc"> 
+										<option value="${loc.locationId}">${loc.name}</option>
+									</c:forEach> 
+								</select>
+							</spring:bind>
 						</div>
 						<div id="initialLocationBox${varStatus.index}_NA" style="${behavior == 'NOT_USED' ? '' : 'display:none;'}">
 							<c:if test="${identifierLocationUsed}">
