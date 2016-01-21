@@ -12,12 +12,14 @@ package org.openmrs.customdatatype.datatype;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
+import org.springframework.stereotype.Component;
 
 /**
  * This is a class for custom datatypes for locations
  *
  * @since 2.0.0
  */
+@Component
 public class LocationDatatype extends BaseMetadataDatatype<Location> {
 	
 	/**
