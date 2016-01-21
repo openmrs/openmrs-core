@@ -13,12 +13,14 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatype;
+import org.springframework.stereotype.Component;
 
 /**
  * This is a class for custom datatypes for concepts
  *
  * @since 2.0.0
  */
+@Component
 public class ConceptDatatype extends BaseOpenmrsDatatype<Concept> {
 	
 	/**
