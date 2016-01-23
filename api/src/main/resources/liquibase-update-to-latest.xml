@@ -8956,7 +8956,7 @@
 			</sqlCheck>
 		</and>
 	</preConditions
-	<comment>
+	 <comment>
 	      Removing a column value_boolean from obs table
 	</comment>
 	<dropColumn columnName="value_boolean" tableName="obs"/>
