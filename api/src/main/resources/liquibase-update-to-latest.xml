@@ -8946,19 +8946,20 @@
             <column name="address15" type="varchar(255)"></column>
         </addColumn>
     </changeSet>
-
-	<changeSet id="20160201-TRUNK-1505" author="mnagasowmya">
-	    <preConditions onFail="MARK_RAN">
-		   <and>
-			   <columnExists tableName="obs"columnName="value_boolean"/>
-			   <sqlCheck expectedResult="0">
-					select count(*) from obs where value_boolean is NOT NULL
-			   </sqlCheck>
-		   </and>
-		</preConditions>
-	    <comment>
-		    Removing a column value_boolean from obs table
-		</comment>
-		<dropColumn columnName="value_boolean" tableName="obs"/>
+    
+    <changeSet id="20160201-TRUNK-1505" author="mnagasowmya">
+        <preConditions onFail="MARK_RAN">
+		<and>
+			<columnExists tableName="obs"columnName="value_boolean"/>
+			<sqlCheck expectedResult="0">
+		                select count(*) from obs where value_boolean is NOT NULL
+			</sqlCheck>
+		</and>
+	</preConditions
+	<comment>
+	      Removing a column value_boolean from obs table
+	</comment>
+	<dropColumn columnName="value_boolean" tableName="obs"/>
     </changeSet>
+    
 </databaseChangeLog>
