@@ -8961,5 +8961,4 @@
 		</comment>
 	     <dropColumn columnName="value_boolean" tableName="obs"/>
 	 </changeSet>
-
 </databaseChangeLog>
