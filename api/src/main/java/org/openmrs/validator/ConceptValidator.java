@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.annotation.Handler;
@@ -239,6 +240,13 @@ public class ConceptValidator implements Validator {
 				}
 				
 				index++;
+			}
+		}
+		if (CollectionUtils.isNotEmpty(conceptToValidate.getAnswers())) {
+			for (ConceptAnswer conceptAnswer : conceptToValidate.getAnswers()) {
+				if (conceptAnswer.getAnswerConcept().equals(conceptToValidate)) {
+					errors.reject("Concept.contains.itself.as.answer");
+				}
 			}
 		}
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "version", "retireReason");
