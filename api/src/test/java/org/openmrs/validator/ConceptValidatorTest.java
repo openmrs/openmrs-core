@@ -16,6 +16,7 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
@@ -465,5 +466,21 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertEquals(false, errors.hasErrors());
+	}
+
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 */
+	@Test
+	@Verifies(value="should fail if coded concept contains itself as answer ",method = "validate(Object,Errors)")
+	public void validate_shouldFailIfCodedConceptContainsItselfAsAnAnswer() {
+		Concept concept = Context.getConceptService().getConcept(30);
+
+		ConceptAnswer conceptAnswer = new ConceptAnswer(concept);
+		concept.addAnswer(conceptAnswer);
+
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(true, errors.hasErrors());
 	}
 }
