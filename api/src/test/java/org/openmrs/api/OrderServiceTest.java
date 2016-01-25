@@ -3115,4 +3115,103 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(orderService.getOrder(saveOrder.getOrderId()));
 	}
 
+    @Test
+    @Verifies(value = "should discontinue order in retrospective entry", method = "saveRetrospectiveOrder(Order)")
+    public void saveRetrospectiveOrder_shouldDiscontinueOrderInRetrospectiveEntry() throws Exception {
+        executeDataSet("org/openmrs/api/include/OrderServiceTest-ordersWithAutoExpireDate.xml");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
+        Date originalOrderDateActivated = dateFormat.parse("2008-11-19 09:24:10.0");
+        Date discontinuationOrderDate = DateUtils.addDays(originalOrderDateActivated, 2);
+
+        Order originalOrder = orderService.getOrder(201);
+        assertNull(originalOrder.getDateStopped());
+        assertEquals(dateFormat.parse("2008-11-23 09:24:09.0"), originalOrder.getAutoExpireDate());
+        assertFalse(originalOrder.isActive());
+        assertTrue(originalOrder.isActive(discontinuationOrderDate));
+
+        Order discontinueationOrder = originalOrder.cloneForDiscontinuing();
+        discontinueationOrder.setPreviousOrder(originalOrder);
+        discontinueationOrder.setEncounter(encounterService.getEncounter(17));
+        discontinueationOrder.setOrderer(providerService.getProvider(1));
+        discontinueationOrder.setDateActivated(discontinuationOrderDate);
+        orderService.saveRetrospectiveOrder(discontinueationOrder, null);
+
+        assertNotNull(originalOrder.getDateStopped());
+        assertEquals(discontinueationOrder.getAutoExpireDate(), discontinueationOrder.getDateActivated());
+    }
+
+    @Test
+    @Verifies(value = "should get active orders for discontinue date and discontinue order in retrospective entry", method = "saveRetrospectiveOrder(Order)")
+    public void saveRetrospectiveOrder_shouldDiscontinueAndStopActiveOrderInRetrospectiveEntry() throws Exception {
+        executeDataSet("org/openmrs/api/include/OrderServiceTest-ordersWithAutoExpireDate.xml");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
+        Date originalOrderDateActivated = dateFormat.parse("2008-11-19 09:24:10.0");
+        Date discontinuationOrderDate = DateUtils.addDays(originalOrderDateActivated, 2);
+
+        Order originalOrder = orderService.getOrder(202);
+        assertNull(originalOrder.getDateStopped());
+        assertEquals(dateFormat.parse("2008-11-23 09:24:09.0"), originalOrder.getAutoExpireDate());
+        assertFalse(originalOrder.isActive());
+        assertTrue(originalOrder.isActive(discontinuationOrderDate));
+
+        Order discontinuationOrder = originalOrder.cloneForDiscontinuing();
+        discontinuationOrder.setPreviousOrder(null);
+        discontinuationOrder.setEncounter(encounterService.getEncounter(17));
+        discontinuationOrder.setOrderer(providerService.getProvider(1));
+        discontinuationOrder.setDateActivated(discontinuationOrderDate);
+        orderService.saveRetrospectiveOrder(discontinuationOrder, null);
+
+        assertNotNull(originalOrder.getDateStopped());
+        assertEquals(discontinuationOrder.getAutoExpireDate(), discontinuationOrder.getDateActivated());
+    }
+
+    @Test
+    @Verifies(value = "should not revise previousOrder if it is already stopped", method = "saveRetrospectiveOrder(Order)")
+    public void saveOrder_shouldNotRevisePreviousIfAlreadyStopped() throws Exception {
+        executeDataSet("org/openmrs/api/include/OrderServiceTest-ordersWithAutoExpireDate.xml");
+        Order previousOrder = orderService.getOrder(203);
+        Date dateActivated = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2008-10-19 13:00:00");
+        Order order = previousOrder.cloneForRevision();
+
+        order.setDateActivated(dateActivated);
+        order.setOrderer(providerService.getProvider(1));
+        order.setEncounter(encounterService.getEncounter(18));
+        order.setPreviousOrder(previousOrder);
+
+        expectedException.expect(APIException.class);
+        expectedException.expectMessage("Order.retrospective.stopped.cannot.discontinued");
+        orderService.saveRetrospectiveOrder(order, null);
+    }
+
+    @Test
+    public void saveRetrospectiveOrder_shouldFailIfAnActiveDrugOrderForTheSameConceptAndCareSettingExistsAtOrderDateActivated() throws Exception {
+        executeDataSet("org/openmrs/api/include/OrderServiceTest-ordersWithAutoExpireDate.xml");
+        Date newOrderDateActivated = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2008-11-19 13:00:10");
+        final Patient patient = patientService.getPatient(12);
+        final Concept orderConcept = conceptService.getConcept(88);
+        //sanity check that we have an active order for the same concept
+        DrugOrder duplicateOrder = (DrugOrder) orderService.getOrder(202);
+        assertTrue(duplicateOrder.isActive(newOrderDateActivated));
+        assertEquals(orderConcept, duplicateOrder.getConcept());
+
+        DrugOrder order = new DrugOrder();
+        order.setPatient(patient);
+        order.setConcept(orderConcept);
+        order.setEncounter(encounterService.getEncounter(17));
+        order.setOrderer(providerService.getProvider(1));
+        order.setCareSetting(duplicateOrder.getCareSetting());
+        order.setDateActivated(newOrderDateActivated);
+        order.setDrug(duplicateOrder.getDrug());
+        order.setDose(duplicateOrder.getDose());
+        order.setDoseUnits(duplicateOrder.getDoseUnits());
+        order.setRoute(duplicateOrder.getRoute());
+        order.setFrequency(duplicateOrder.getFrequency());
+        order.setQuantity(duplicateOrder.getQuantity());
+        order.setQuantityUnits(duplicateOrder.getQuantityUnits());
+        order.setNumRefills(duplicateOrder.getNumRefills());
+
+        expectedException.expect(APIException.class);
+        expectedException.expectMessage("Cannot have more than one active order for the same orderable and care setting");
+        orderService.saveRetrospectiveOrder(order, null);
+    }
 }
