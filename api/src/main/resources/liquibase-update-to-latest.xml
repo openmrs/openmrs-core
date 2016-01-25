@@ -8946,4 +8946,54 @@
             <column name="address15" type="varchar(255)"></column>
         </addColumn>
     </changeSet>
+
+
+    <changeSet id="TRUNK-3422-adding-Get-Visits-Privilege" author="PralayRamteke" >
+            <preConditions  onFail="MARK_RAN">
+                <not>
+                    <sqlCheck expectedResult="0">
+                    SELECT count(*) FROM role_privilege  WHERE privilege='View Encounters';
+                    </sqlCheck>
+                </not>
+            </preConditions>
+            <comment>
+                Add "Get Visits" privilege to the roles having "View Encounter"
+            </comment>
+                <sql>
+                    INSERT INTO role_privilege (role, privilege) 
+                    SELECT role, 'Get Visits' from role_privilege rp
+                    WHERE rp.privilege = 'View Encounters'
+                    AND NOT EXISTS (SELECT role, privilege FROM role_privilege rp2 WHERE rp2.privilege='Get Visits' AND rp2.role=rp.role);
+
+                </sql>
+		</changeSet>
+
+
+        <changeSet id="TRUNK-3422-adding-Get-Encounter-Provider-Privilege" author="PralayRamteke" >
+            <preConditions  onFail="MARK_RAN">
+                <not>
+                    <sqlCheck expectedResult="0">
+                    SELECT count(*) FROM role_privilege  WHERE privilege='View Encounters';
+                    </sqlCheck>
+                </not>
+            </preConditions>
+            <comment>
+                Add "Get Encounter Provider" privilege to the roles having "View Encounter"
+            </comment>
+                <sql>
+                    INSERT INTO privilege (privilege,description)
+                    SELECT 'Get Encounter Provider','Able to view Encounter Provider'
+                    FROM privilege
+                    WHERE NOT EXISTS (
+                    SELECT * 
+                    FROM privilege 
+                    WHERE privilege='Get Encounter Provider') limit 1;
+
+                    INSERT INTO role_privilege (role, privilege) 
+                    SELECT role, 'Get Encounter Provider' from role_privilege rp
+                    WHERE rp.privilege = 'View Encounters'
+                    AND NOT EXISTS (SELECT role, privilege FROM role_privilege rp2 WHERE rp2.privilege='Get Encounter Provider' AND rp2.role=rp.role);
+                </sql>
+        </changeSet>
+
 </databaseChangeLog>
