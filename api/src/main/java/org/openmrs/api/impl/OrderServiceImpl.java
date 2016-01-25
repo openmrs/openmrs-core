@@ -208,7 +208,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 
 		if (DISCONTINUE != order.getAction()) {
-			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), null);
+            Date asOfDate = new Date();
+            if(isRetrospective) {
+                asOfDate = order.getDateActivated();
+            }
+            List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), asOfDate);
 			List<String> parallelOrders = Collections.emptyList();
 
 			if (orderContext != null && orderContext.getAttribute(PARALLEL_ORDERS) != null) {
@@ -338,8 +342,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 
 		//Mark first order found corresponding to this DC order as discontinued.
+        Date asOfDate = null;
+        if (isRetrospective) {
+            asOfDate = order.getDateActivated();
+        }
 		List<? extends Order> orders = getActiveOrders(order.getPatient(), order.getOrderType(), order.getCareSetting(),
-		    null);
+                asOfDate);
 		boolean isDrugOrderAndHasADrug = DrugOrder.class.isAssignableFrom(getActualType(order))
 		        && (((DrugOrder) order).getDrug() != null || ((DrugOrder) order).isNonCodedDrug());
 		Order orderToBeDiscontinued = null;
@@ -719,12 +727,15 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (DISCONTINUE == orderToStop.getAction()) {
 			throw new APIException("An order with action " + DISCONTINUE + " cannot be discontinued.");
 		}
-		if (!isRetrospective && !orderToStop.isActive()) {
-			throw new APIException("Cannot discontinue an order that is already stopped, expired or voided");
-		}
-		else if (isRetrospective && !orderToStop.isActive(orderToStop.getDateActivated())) {
-			throw new APIException("Order.retrospective.stopped.cannot.discontinued");
-		}
+        if (isRetrospective && orderToStop.getDateStopped() != null) {
+            throw new APIException("Order.retrospective.stopped.cannot.discontinued");
+        }
+        if (!isRetrospective && !orderToStop.isActive()) {
+            throw new APIException("Cannot discontinue an order that is already stopped, expired or voided");
+        }
+		else if (isRetrospective && !orderToStop.isActive(discontinueDate)) {
+            throw new APIException("Order.retrospective.stopped.cannot.discontinued");
+        }
 
 		setProperty(orderToStop, "dateStopped", discontinueDate);
 		saveOrderInternal(orderToStop, null);
