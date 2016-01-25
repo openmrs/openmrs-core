@@ -105,7 +105,14 @@ public interface OrderService extends OpenmrsService {
 	 * exists on the orderContext, then it will be set to the one associated to the ConceptClass of
 	 * the ordered concept otherwise the save fails. If the CareSetting field of the order is not
 	 * specified then it will default to the one set on the passed in OrderContext if any otherwise
-	 * the save fails.
+	 * the save fails. Retrospective entry of orders can affect downstream systems that acts on orders created.
+     * Orders cannot be stopped if they are already stopped in retrospective entry.
+     *
+     * @param order the Order to save
+     * @param orderContext the OrderContext object
+     * @return the Order that was saved
+     * @throws APIException
+     * @see #saveOrder(Order, OrderContext)
 	 */
 	@Authorized({PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS})
 	public Order saveRetrospectiveOrder(Order order, OrderContext orderContext);
