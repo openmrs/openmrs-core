@@ -6,7 +6,7 @@ matrix:
     - jdk: oraclejdk8
 branches:
   only:
-    - master
+    - 2.0.x
 notifications:
   email: false
   irc:
