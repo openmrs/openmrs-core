@@ -115,13 +115,17 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
 		if (devDir != null) {
-			File dir = new File(devDir, "api" + File.separator + "target" + File.separator + "classes" + File.separator);
-			Collection<File> files = FileUtils.listFiles(dir, new String[] { "class" }, true);
-			addClassFilePackages(files, dir.getAbsolutePath().length() + 1);
-			
-			dir = new File(devDir, "omod" + File.separator + "target" + File.separator + "classes" + File.separator);
-			files = FileUtils.listFiles(dir, new String[] { "class" }, true);
-			addClassFilePackages(files, dir.getAbsolutePath().length() + 1);
+			File[] fileList = devDir.listFiles();
+			for (File file : fileList) {
+				if (!file.isDirectory()) {
+					continue;
+				}
+				File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
+				if (dir.exists()) {
+					Collection<File> files = FileUtils.listFiles(dir, new String[] { "class" }, true);
+					addClassFilePackages(files, dir.getAbsolutePath().length() + 1);
+				}
+			}
 		} else {
 			for (URL url : urls) {
 				providedPackages.addAll(ModuleUtil.getPackagesFromFile(OpenmrsUtil.url2file(url)));
@@ -205,11 +209,16 @@ public class ModuleClassLoader extends URLClassLoader {
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
 		try {
 			if (devDir != null) {
-				File dir = new File(devDir, "omod" + File.separator + "target" + File.separator + "classes" + File.separator);
-				result.add(dir.toURI().toURL());
-				
-				dir = new File(devDir, "api" + File.separator + "target" + File.separator + "classes" + File.separator);
-				result.add(dir.toURI().toURL());
+				File[] fileList = devDir.listFiles();
+				for (File file : fileList) {
+					if (!file.isDirectory()) {
+						continue;
+					}
+					File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
+					if (dir.exists()) {
+						result.add(dir.toURI().toURL());
+					}
+				}
 			}
 		}
 		catch (MalformedURLException ex) {
