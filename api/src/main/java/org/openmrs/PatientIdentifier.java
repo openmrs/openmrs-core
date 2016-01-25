@@ -15,6 +15,7 @@ import java.util.Comparator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -177,7 +178,7 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	 * @return Returns the preferred.
 	 */
 	public Boolean getPreferred() {
-		return isPreferred();
+		return preferred;
 	}
 	
 	/**
@@ -189,9 +190,13 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	
 	/**
 	 * @return the preferred status
+	 * 
+	 * @deprecated as of 2.0, use {@link #getPreferred()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isPreferred() {
-		return preferred;
+		return getPreferred();
 	}
 	
 	/**

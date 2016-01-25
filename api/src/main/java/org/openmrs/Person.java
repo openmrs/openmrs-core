@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
 
@@ -195,16 +196,20 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @return true if person's birthdate is estimated
+	 * 
+	 * @deprecated as of 2.0, use {@link #getBirthdateEstimated()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isBirthdateEstimated() {
 		// if (this.birthdateEstimated == null) {
 		// return new Boolean(false);
 		// }
-		return this.birthdateEstimated;
+		return getBirthdateEstimated();
 	}
 	
 	public Boolean getBirthdateEstimated() {
-		return isBirthdateEstimated();
+		return birthdateEstimated;
 	}
 	
 	/**
@@ -258,16 +263,20 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 
 	/**
 	 * @return Returns the death status.
+	 * 
+	 * @deprecated as of 2.0, use {@link #getDead()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isDead() {
-		return dead;
+		return getDead();
 	}
 	
 	/**
 	 * @return Returns the death status.
 	 */
 	public Boolean getDead() {
-		return isDead();
+		return dead;
 	}
 	
 	/**
@@ -958,11 +967,16 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	public Boolean getPersonVoided() {
-		return isPersonVoided();
+		return personVoided;
 	}
 	
+	/**
+	 * @deprecated as of 2.0, use {@link #getPersonVoided()}
+	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isPersonVoided() {
-		return personVoided;
+		return getPersonVoided();
 	}
 	
 	public User getPersonVoidedBy() {
@@ -985,11 +999,18 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @return true/false whether this person is a patient or not
+	 *
+	 * @deprecated as of 2.0, use {@link #getIsPatient()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public boolean isPatient() {
-		return isPatient;
+		return getIsPatient();
 	}
 	
+	public boolean getIsPatient() {
+		return isPatient;
+	}
 	/**
 	 * This should only be set by the database layer by looking at whether a row exists in the
 	 * patient table

@@ -11,6 +11,8 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * ConceptNameTag is a textual tag which can be applied to a ConceptName.
  */
@@ -126,9 +128,13 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * Returns whether the ConceptName has been voided.
 	 * 
 	 * @return true if the ConceptName has been voided, false otherwise.
+	 * 
+	 * @deprecated as of 2.0, use {@link #getVoided()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isVoided() {
-		return voided;
+		return getVoided();
 	}
 	
 	/**
@@ -137,7 +143,7 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * @return true if the ConceptName has been voided, false otherwise.
 	 */
 	public Boolean getVoided() {
-		return isVoided();
+		return voided;
 	}
 	
 	/**
