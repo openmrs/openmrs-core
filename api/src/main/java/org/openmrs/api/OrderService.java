@@ -105,7 +105,55 @@ public interface OrderService extends OpenmrsService {
 	 * exists on the orderContext, then it will be set to the one associated to the ConceptClass of
 	 * the ordered concept otherwise the save fails. If the CareSetting field of the order is not
 	 * specified then it will default to the one set on the passed in OrderContext if any otherwise
-	 * the save fails.
+	 * the save fails. Retrospective entry of orders can affect downstream systems that acts on orders created.
+     * Orders cannot be stopped if they are already stopped in retrospective entry.
+     *
+     * @param order the Order to save
+     * @param orderContext the OrderContext object
+     * @return the Order that was saved
+     * @throws APIException
+     * @should not save order if order doesnt validate
+     * @should discontinue existing active order as of discontinue date if new order being saved with action to discontinue
+     * @should pass if the existing drug order matches the concept and drug of the DC order
+     * @should fail if the existing drug order matches the concept and not drug of the DC order
+     * @should discontinue previousOrder if it is not already discontinued
+     * @should fail if concept in previous order does not match this concept
+     * @should not allow editing an existing order
+     * @should not allow revising a voided order
+     * @should not allow revising a stopped order
+     * @should not allow revising an expired order
+     * @should not allow revising an order with no previous order
+     * @should save a revised order
+     * @should set order number specified in the context if specified
+     * @should set the order number returned by the configured generator
+     * @should set order type if null but mapped to the concept class
+     * @should fail if order type is null and not mapped to the concept class
+     * @should default to care setting and order type defined in the order context if null
+     * @should not allow changing the patient of the previous order when revising an order
+     * @should not allow changing the careSetting of the previous order when revising an order
+     * @should not allow changing the concept of the previous order when revising an order
+     * @should not allow changing the drug of the previous drug order when revising an order
+     * @should fail if concept in previous order does not match that of the revised order
+     * @should fail if the existing drug order matches the concept and not drug of the revised order
+     * @should fail if the order type of the previous order does not match
+     * @should fail if the java type of the previous order does not match
+     * @should fail if the careSetting of the previous order does not match
+     * @should set concept for drug orders if null
+     * @should pass for a discontinuation order with no previous order
+     * @should fail if an active drug order for the same concept and care setting exists on order date activated
+     * @should pass if an active test order for the same concept and care setting exists on order date activated
+     * @should pass if an active order for the same concept exists in a different care setting on order date activated
+     * @should set Order type of Drug Order to drug order if not set and concept not mapped
+     * @should set Order type of Test Order to test order if not set and concept not mapped
+     * @should throw AmbiguousOrderException if an active drug order for the same drug formulation exists
+     * @should pass if an active order for the same concept exists in a different care setting on order date activated
+     * @should fail for revision order if an active drug order for the same concept and care settings exists on order date activated
+     * @should pass for revision order if an active test order for the same concept and care settings exists on order date activated
+     * @should roll the autoExpireDate to the end of the day if it has no time component
+     * @should not change the autoExpireDate if it has a time component
+     * @should throw AmbiguousOrderException if disconnecting multiple active orders for the given concept
+     * @should throw AmbiguousOrderException if disconnecting multiple active drug orders with the same drug
+     * @should throw APIException if trying to revise or discontinue already stopped order
 	 */
 	@Authorized({PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS})
 	public Order saveRetrospectiveOrder(Order order, OrderContext orderContext);
