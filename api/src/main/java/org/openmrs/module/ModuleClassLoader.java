@@ -206,6 +206,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		List<URL> result = new LinkedList<URL>();
 		
 		//if in dev mode, add development folder to the classpath
+		List<String> devFolderNames = new ArrayList<String>();
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
 		try {
 			if (devDir != null) {
@@ -217,6 +218,7 @@ public class ModuleClassLoader extends URLClassLoader {
 					File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
 					if (dir.exists()) {
 						result.add(dir.toURI().toURL());
+						devFolderNames.add(file.getName());
 					}
 				}
 			}
@@ -295,10 +297,20 @@ public class ModuleClassLoader extends URLClassLoader {
 				Collection<File> files = (Collection<File>) FileUtils.listFiles(libdir, new String[] { "jar" }, true);
 				for (File file : files) {
 					
-					//if in dev mode, do not put the api jar file in the class path
+					//if in dev mode, do not put the module source jar files in the class path
 					if (devDir != null) {
-						if (file.getName().equals(module.getModuleId() + "-api-" + module.getVersion() + ".jar")) {
-							continue; //e.g uiframework-api-3.3-SNAPSHOT.jar
+						boolean jarForDevFolder = false;
+						for (String folderName : devFolderNames) {
+							if (file.getName().startsWith(module.getModuleId() + "-" + folderName + "-")) {
+								//e.g uiframework-api-3.3-SNAPSHOT.jar, webservices.rest-omod-common-2.14-SNAPSHOT.jar
+								//webservices.rest-omod-1.11-2.14-SNAPSHOT.jar, webservices.rest-omod-1.10-2.14-SNAPSHOT.jar, etc
+								jarForDevFolder = true;
+								break;
+							}
+						}
+						
+						if (jarForDevFolder) {
+							continue;
 						}
 					}
 					
