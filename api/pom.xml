@@ -98,6 +98,12 @@
       <dependency>
          <groupId>ca.uhn.hapi</groupId>
          <artifactId>hapi-base</artifactId>
+         <exclusions>
+         	<exclusion>
+         		<artifactId>xml-apis</artifactId>
+         		<groupId>xml-apis</groupId>
+         	</exclusion>
+         </exclusions>
       </dependency>
       <dependency>
          <groupId>ca.uhn.hapi</groupId>
@@ -138,6 +144,12 @@
       <dependency>
          <groupId>dom4j</groupId>
          <artifactId>dom4j</artifactId>
+         <exclusions>
+         	<exclusion>
+         		<artifactId>xml-apis</artifactId>
+         		<groupId>xml-apis</groupId>
+         	</exclusion>
+         </exclusions>
       </dependency>
       <dependency>
          <groupId>c3p0</groupId>
@@ -186,6 +198,12 @@
        <dependency>
            <groupId>xerces</groupId>
            <artifactId>xercesImpl</artifactId>
+           <exclusions>
+           	<exclusion>
+           		<artifactId>xml-apis</artifactId>
+           		<groupId>xml-apis</groupId>
+           	</exclusion>
+           </exclusions>
        </dependency>
        <dependency>
            <groupId>javax.validation</groupId>

@@ -25,6 +25,12 @@
       <dependency>
          <groupId>org.openmrs.api</groupId>
          <artifactId>openmrs-api</artifactId>
+         <exclusions>
+         	<exclusion>
+         		<artifactId>xml-apis</artifactId>
+         		<groupId>xml-apis</groupId>
+         	</exclusion>
+         </exclusions>
       </dependency>
       <dependency>
          <groupId>org.openmrs.test</groupId>
