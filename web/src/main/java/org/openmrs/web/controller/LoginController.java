@@ -44,8 +44,10 @@ public class LoginController {
 			webRequest.removeAttribute(WebConstants.INSUFFICIENT_PRIVILEGES, WebRequest.SCOPE_SESSION);
 		}
 		
-		//If there is a currently logged in user and they failed a privilege check, else go to login in page
-		if (Context.getAuthenticatedUser() != null && failedPrivilegeCheck) {
+		//If the user is logged in and there are no privilege problems, he should be redirected to home
+		if (Context.getAuthenticatedUser() != null && !failedPrivilegeCheck) {
+			return "redirect:/index.htm";
+		} else if (Context.getAuthenticatedUser() != null && failedPrivilegeCheck) { //If there is a currently logged in user and they failed a privilege check, else go to login in page
 			model.addAttribute("foundMissingPrivileges", true);
 			webRequest.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.insufficientPrivileges",
 			    WebRequest.SCOPE_SESSION);
