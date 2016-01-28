@@ -727,7 +727,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
             throw new APIException("Order.retrospective.stopped.cannot.discontinued");
         }
         if (!isRetrospective && !orderToStop.isActive()) {
-            throw new APIException("Cannot discontinue an order that is already stopped, expired or voided");
+            throw new APIException("Order.stopped.cannot.discontinued");
         }
 		else if (isRetrospective && !orderToStop.isActive(discontinueDate)) {
             throw new APIException("Order.retrospective.stopped.cannot.discontinued");
