@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.Hibernate;
 
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Column;
@@ -84,6 +85,12 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 		// Need to call getUuid to make sure the hibernate proxy objects return the correct uuid.
 		// The private member may not be set for a hibernate proxy.
 		if (getUuid() == null) {
+			return false;
+		}
+		//In case of hibernate proxy objects we need to get real classes
+		Class<?> thisClass = Hibernate.getClass(this);
+		Class<?> objClass = Hibernate.getClass(obj);
+		if (!(thisClass.isAssignableFrom(objClass) || objClass.isAssignableFrom(thisClass))){
 			return false;
 		}
 		return getUuid().equals(other.getUuid());
