@@ -11,6 +11,7 @@ package org.openmrs.api.handler;
 
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptDescription;
@@ -20,6 +21,7 @@ import org.openmrs.ConceptSet;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
+import org.openmrs.api.context.Context;
 
 /**
  * This class deals with {@link Concept} objects when they are saved via a save* method in an
@@ -44,7 +46,6 @@ public class ConceptSaveHandler implements SaveHandler<Concept> {
 				cn.setConcept(concept);
 			}
 		}
-		
 		if (concept.getConceptSets() != null) {
 			for (ConceptSet set : concept.getConceptSets()) {
 				set.setConceptSet(concept);
@@ -57,6 +58,12 @@ public class ConceptSaveHandler implements SaveHandler<Concept> {
 		}
 		if (concept.getDescriptions() != null) {
 			for (ConceptDescription cd : concept.getDescriptions()) {
+				if(cd.getLocale()==null){
+					cd.setLocale(Context.getLocale());
+				}
+				if(StringUtils.isBlank(cd.getDescription())){
+					concept.removeDescription(cd);
+				}
 				cd.setConcept(concept);
 			}
 		}

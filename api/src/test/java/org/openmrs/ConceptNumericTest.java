@@ -122,6 +122,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	public void shouldSaveAConceptNumericWithAllowDecimalValue() throws Exception {
 		Concept c = Context.getConceptService().getConcept(22);
 		ConceptNumeric cn = new ConceptNumeric(c);
+		cn.addDescription(new ConceptDescription("some description", null));
 		
 		Context.getConceptService().saveConcept(cn);
 		Assert.assertFalse(Context.getConceptService().getConceptNumeric(22).getAllowDecimal());
