@@ -3211,7 +3211,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
         order.setNumRefills(duplicateOrder.getNumRefills());
 
         expectedException.expect(APIException.class);
-        expectedException.expectMessage("Cannot have more than one active order for the same orderable and care setting");
+        expectedException.expectMessage("Order.cannot.have.more.than.one");
         orderService.saveRetrospectiveOrder(order, null);
     }
 }
