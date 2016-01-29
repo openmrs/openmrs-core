@@ -927,4 +927,41 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue("en", presentationLocales.contains(new Locale("en")));
 		Assert.assertTrue("es", presentationLocales.contains(new Locale("es")));
 	}
+	
+	/**
+	 * @see AdministrationService#getPresentationLocales()
+	 */
+	@Test
+	@Verifies(value = "should preserve insertion order in Set returned by method", method = "getPresentationLocales()")
+	public void getPresentationLocales_shouldPreserveInsertionOrderInSetReturnedByMethod()
+			throws Exception {
+		String globalPropertyLocaleListAllowedData = "en_GB, es, ja_JP, it_IT, pl_PL";
+		//The order of languages and locales is described above and should be followed bt `presentationLocales` Set
+		Context.getAdministrationService().saveGlobalProperty(
+				new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, globalPropertyLocaleListAllowedData));
+		
+		List<Locale> locales = new ArrayList<Locale>();
+		//Add data in random order and verify that order is maintained in the end by checking against order in global property
+		locales.add(new Locale("pl", "PL"));
+		locales.add(new Locale("es"));
+		locales.add(new Locale("en"));
+		locales.add(new Locale("it", "IT"));
+		
+		MutableResourceBundleMessageSource mutableResourceBundleMessageSource = Mockito
+				.mock(MutableResourceBundleMessageSource.class);
+		Mockito.when(mutableResourceBundleMessageSource.getLocales()).thenReturn(locales);
+		
+		MutableMessageSource mutableMessageSource = Context.getMessageSourceService().getActiveMessageSource();
+		Context.getMessageSourceService().setActiveMessageSource(mutableResourceBundleMessageSource);
+		
+		List<Locale> presentationLocales = new ArrayList<Locale>(Context.getAdministrationService().getPresentationLocales());
+		
+		Context.getMessageSourceService().setActiveMessageSource(mutableMessageSource);
+		
+		//Assert Locales in expected order as set by global property
+		Assert.assertEquals(new Locale("en"), presentationLocales.get(0));
+		Assert.assertEquals(new Locale("es"), presentationLocales.get(1));
+		Assert.assertEquals(new Locale("it", "IT"), presentationLocales.get(2));
+		Assert.assertEquals(new Locale("pl", "PL"), presentationLocales.get(3));
+	}
 }

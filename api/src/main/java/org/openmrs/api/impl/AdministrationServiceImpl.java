@@ -522,7 +522,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Transactional(readOnly = true)
 	public Set<Locale> getPresentationLocales() {
 		if (presentationLocales == null) {
-			presentationLocales = new HashSet<Locale>();
+			presentationLocales = new LinkedHashSet<Locale>();
 			Collection<Locale> messageLocales = Context.getMessageSourceService().getLocales();
 			List<Locale> allowedLocales = getAllowedLocales();
 			
