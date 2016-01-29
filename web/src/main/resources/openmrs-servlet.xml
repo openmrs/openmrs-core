@@ -127,9 +127,6 @@
 	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="order"><value>99</value></property>
 	</bean>
-	
-	<!--<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>-->
-	<bean id="springController" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
 
 	<!-- Use an alias to the messageSourceService (defined in applicationContext-service.xml)
 		to override the application MessageSource, which must be named "messageSource".
