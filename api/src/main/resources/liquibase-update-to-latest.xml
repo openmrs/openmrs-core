@@ -2355,10 +2355,13 @@
 			Add default sortWeights to all current PersonAttributeTypes
 		</comment>
 		<sql>
+		   <![CDATA[CREATE TEMPORARY table temp as(SELECT * from person_attribute_type);
+		    ]]>
 			<![CDATA[
-			UPDATE  person_attribute_type as A JOIN person_attribute_type as B ON A.name = B.name  SET A.sort_weight = (select count(*) from (select * from person_attribute_type) pat where pat.name < A.name) WHERE A.sort_weight is null;
+			UPDATE  person_attribute_type as A JOIN person_attribute_type as B ON A.name = B.name  SET A.sort_weight = (select count(*) from (select * from temp) pat where pat.name < A.name) WHERE A.sort_weight is null;
 			]]>
 		</sql>
+		<dropTable tableName="temp"/>
 	</changeSet>
 	
 	<changeSet id="200906301606" author="bwolfe" dbms="mysql">
