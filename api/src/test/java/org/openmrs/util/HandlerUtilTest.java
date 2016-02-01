@@ -25,6 +25,7 @@ import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.validator.DrugOrderValidator;
@@ -82,7 +83,7 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should throw a APIException if no handler is found", method = "getPreferredHandler(Class, Class)")
 	public void getPreferredHandler_shouldThrowAAPIExceptionExceptionIfNoHandlerIsFound() throws Exception {
 		thrown.expect(APIException.class);
-		thrown.expectMessage("handler.type.not.found");
+		thrown.expectMessage(Context.getMessageSourceService().getMessage("handler.type.not.found", new Object[] { Validator.class.toString(), Integer.class }, null));
 		
 		HandlerUtil.getPreferredHandler(Validator.class, Integer.class);
 	}

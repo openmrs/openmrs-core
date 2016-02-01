@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 public class DurationTest extends BaseContextSensitiveTest {
@@ -98,7 +99,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 		OrderFrequency frequency = null;
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers.is("Duration.error.frequency.null"));
+		expectedException.expectMessage(Matchers.is(Context.getMessageSourceService().getMessage("Duration.error.frequency.null")));
 		duration.addToDate(startDate, frequency);
 	}
 	
@@ -107,7 +108,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 		Duration duration = new Duration(3, "J");
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers.is("Duration.unknown.code"));
+		expectedException.expectMessage(Matchers.is(Context.getMessageSourceService().getMessage("Duration.unknown.code", new Object[] { "J" }, null)));
 		duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 	}
 	

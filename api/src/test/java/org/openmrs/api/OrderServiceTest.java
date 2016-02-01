@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.openmrs.Order.Action.DISCONTINUE;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
 
@@ -630,7 +631,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(Action.DISCONTINUE, discontinuationOrder.getAction());
 		Encounter encounter = encounterService.getEncounter(3);
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Order.action.cannot.discontinued");
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Order.action.cannot.discontinued", new Object[] { DISCONTINUE }, null));
 		orderService.discontinueOrder(discontinuationOrder, "Test if I can discontinue this", null, null, encounter);
 	}
 	
@@ -646,7 +647,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(Action.DISCONTINUE, discontinuationOrder.getAction());
 		Encounter encounter = encounterService.getEncounter(3);
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Order.action.cannot.discontinued");
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Order.action.cannot.discontinued", new Object[] { DISCONTINUE }, null));
 		orderService.discontinueOrder(discontinuationOrder, (Concept) null, null, null, encounter);
 	}
 	
@@ -2594,7 +2595,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Thread.sleep(10);
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Order.action.cannot.unvoid");
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Order.action.cannot.unvoid", new Object[] { "discontinuation" }, null));
 		orderService.unvoidOrder(order);
 	}
 	
@@ -2623,7 +2624,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Thread.sleep(10);
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Order.action.cannot.unvoid");
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Order.action.cannot.unvoid", new Object[] { "revision" }, null));
 		orderService.unvoidOrder(order);
 	}
 	

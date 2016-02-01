@@ -63,6 +63,6 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 		Alert alertOne = Context.getAlertService().getAlertsByUser(null).iterator().next();
 		
 		//Test that alert contains the expected content
-		Assert.assertTrue(alertOne.getText().equals("Module.startupError.notification.message"));
+		Assert.assertTrue(alertOne.getText().equals(Context.getMessageSourceService().getMessage("Module.startupError.notification.message", new Object[] { "test" }, null)));
 	}
 }

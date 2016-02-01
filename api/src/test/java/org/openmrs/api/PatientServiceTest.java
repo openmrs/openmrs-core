@@ -69,6 +69,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
 import org.openmrs.patient.IdentifierValidator;
+import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.person.PersonMergeLogData;
 import org.openmrs.serialization.SerializationException;
@@ -286,7 +287,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		catch (InvalidCheckDigitException ex) {}
 		catch (APIException e) {
 			if (!(e.getMessage() != null && e.getMessage().contains(
-			    "failed to validate with reason: PatientIdentifier.error.checkDigitWithParameter"))) {
+			    "failed to validate with reason: " + Context.getMessageSourceService().getMessage("PatientIdentifier.error.checkDigitWithParameter", new Object[] { ident1.getIdentifier() }, null)))) {
 				fail("Patient creation should have failed with identifier " + ident1.getIdentifier());
 			}
 		}
@@ -302,8 +303,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		catch (InvalidCheckDigitException ex) {}
 		catch (APIException e) {
 			if (!(e.getMessage() != null && e.getMessage().contains(
-			    "failed to validate with reason: PatientIdentifier.error.unallowedIdentifier"))) {
-				fail("Patient creation should have failed with identifier " + ident1.getIdentifier());
+			    "failed to validate with reason: " + Context.getMessageSourceService().getMessage("PatientIdentifier.error.unallowedIdentifier", new Object[] { ident2.getIdentifier(), new LuhnIdentifierValidator().getName() }, null)))) {
+				fail("Patient creation should have failed with identifier " + ident2.getIdentifier());
 			}
 		}
 		
@@ -3302,7 +3303,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void mergePatients_shouldFailIfNotPreferredPatientHasUnvoidedOrders() throws Exception {
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers.is("Patient.cannot.merge"));
+		expectedException.expectMessage(Matchers.is(Context.getMessageSourceService().getMessage("Patient.cannot.merge")));
 		Patient preferredPatient = patientService.getPatient(8);
 		Patient notPreferredPatient = patientService.getPatient(7);
 		patientService.mergePatients(preferredPatient, notPreferredPatient);

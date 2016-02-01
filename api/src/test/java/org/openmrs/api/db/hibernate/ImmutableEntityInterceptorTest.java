@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openmrs.Order;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
@@ -69,7 +70,7 @@ public class ImmutableEntityInterceptorTest extends BaseContextSensitiveTest {
 		String[] currentState = new String[] { "new" };
 		ImmutableEntityInterceptor interceptor = new SomeImmutableEntityInterceptor();
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(is("editing.fields.not.allowed"));
+		expectedException.expectMessage(is(Context.getMessageSourceService().getMessage("editing.fields.not.allowed", new Object[] { Order.class.getSimpleName() },  null)));
 		interceptor.onFlushDirty(new Order(), null, currentState, previousState, propertyNames, null);
 	}
 	
@@ -99,7 +100,7 @@ public class ImmutableEntityInterceptorTest extends BaseContextSensitiveTest {
 		String[] currentState = new String[] { "new" };
 		ImmutableEntityInterceptor interceptor = new SomeImmutableEntityInterceptor();
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(is("editing.fields.not.allowed"));
+		expectedException.expectMessage(is(Context.getMessageSourceService().getMessage("editing.fields.not.allowed", new Object[] { Order.class.getSimpleName() },  null)));
 		Order order = new Order();
 		order.setVoided(true);
 		interceptor.onFlushDirty(order, null, currentState, previousState, propertyNames, null);

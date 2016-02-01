@@ -202,7 +202,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		OrderType orderType = orderService.getOrderType(1);
 		orderType.setName(null);
 		expectedException.expect(APIException.class);
-		String expectedMsg = "'" + orderType + "' failed to validate with reason: name: error.name";
+		String expectedMsg = "'" + orderType + "' failed to validate with reason: name: " + Context.getMessageSourceService().getMessage("error.name");
 		expectedException.expectMessage(expectedMsg);
 		orderService.saveOrderType(orderType);
 	}
