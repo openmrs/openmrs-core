@@ -336,9 +336,9 @@
 		<property name="basenames">
 			<!--  ABKTODO: Ugh. Presumes to be in a web application... -->
 			<list>
-				<value>/WEB-INF/custom_messages</value>
+				<value>classpath:custom_messages</value>
+				<value>classpath:messages</value>
 				<value>/WEB-INF/module_messages</value>
-				<value>/WEB-INF/messages</value>
 			</list>
 		</property>
 		<property name="useCodeAsDefaultMessage"><value>true</value></property>

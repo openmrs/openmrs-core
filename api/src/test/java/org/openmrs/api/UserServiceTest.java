@@ -1259,7 +1259,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate(user6001.getUsername(), "userServiceTest");
 		
 		expectedException.expect(APIAuthenticationException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.privilegesRequired"));
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null));
 		userService.changePassword(user6001, wrongPassword, newPassword);
 	}
 	
@@ -1281,7 +1281,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate(user6001.getUsername(), "userServiceTest");
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.privilegesRequired"));
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null));
 		userService.changePassword(user6001, oldPassword, newPassword);
 	}
 	
@@ -1298,7 +1298,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		String oldPassword = "userServiceTest";
 		String weakPassword = "weak";
 		
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.password.length"));
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.password.length", new Object[] {"8"}, null));
 		userService.changePassword(user6001, oldPassword, weakPassword);
 	}
 	
@@ -1314,14 +1314,14 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		String anyString = "anyString";
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("user.must.exist");
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("user.must.exist"));
 		userService.changePassword(notExistingUser, anyString, anyString);
 	}
 
     @Test
     public void changePassword_shouldThrowShortPasswordExceptionWithShortPassword() throws Exception {
         expectedException.expect(ShortPasswordException.class);
-        expectedException.expectMessage("error.password.length");
+        expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.password.length", new Object[] {"8"}, null));
 
         Context.getUserService().changePassword("test", "");
     }
@@ -1348,7 +1348,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate(user.getUsername(), "userServiceTest");
 		
 		expectedException.expect(APIAuthenticationException.class);
-		expectedException.expectMessage("error.privilegesRequired");
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null));
 		
 		userService.changePassword(user, "testTest123");
 	}
@@ -1377,7 +1377,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate(user.getUsername(), "userServiceTest");
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("secret.answer.not.correct");
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("secret.answer.not.correct"));
 		
 		userService.changePasswordUsingSecretAnswer("wrong answer", "userServiceTest2");
 	}
