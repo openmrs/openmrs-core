@@ -9,8 +9,7 @@
  */
 package org.openmrs.web.filter.util;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,10 +21,11 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.LocaleUtility;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 /**
  * This class is responsible for loading messages resources from file system
@@ -36,9 +36,6 @@ public class CustomResourceLoader {
 	
 	/** */
 	public static final String PREFIX = "messages";
-	
-	/** */
-	public static final String SUFFIX = ".properties";
 	
 	/** the map that contains resource bundles for each locale */
 	private Map<Locale, ResourceBundle> resources = null;
@@ -54,17 +51,20 @@ public class CustomResourceLoader {
 	private CustomResourceLoader(HttpServletRequest httpRequest) {
 		this.resources = new HashMap<Locale, ResourceBundle>();
 		this.availablelocales = new HashSet<Locale>();
-		String basePath = null;
-		if (httpRequest != null) {
-			basePath = httpRequest.getSession().getServletContext().getRealPath("/WEB-INF");
+		
+		try {
+			PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
+			Resource[] localResources = patternResolver.getResources("classpath*:messages*.properties");
+			for (Resource localeResource : localResources) {
+				Locale locale = parseLocaleFrom(localeResource.getFilename(), PREFIX);
+				ResourceBundle rb = new PropertyResourceBundle(new InputStreamReader(localeResource.getInputStream(), "UTF-8"));
+				getResource().put(locale, rb);
+				getAvailablelocales().add(locale);
+			}
 		}
-		File basedir = null;
-		if (StringUtils.isBlank(basePath)) {
-			basedir = new File(getClass().getClassLoader().getResource("").getPath()).getParentFile();
-		} else {
-			basedir = new File(basePath);
+		catch (IOException ex) {
+			log.error(ex.getMessage(), ex);
 		}
-		loadResources(basedir.getAbsolutePath());
 	}
 	
 	/**
@@ -80,57 +80,6 @@ public class CustomResourceLoader {
 			instance = new CustomResourceLoader(httpRequest);
 		}
 		return instance;
-	}
-	
-	/**
-	 * This method is intended to load resource bundle from the file system by specified messages
-	 * properties file path and for specified locale
-	 *
-	 * @param path location of the resource on the file system
-	 * @param basename the name prefix for resource file
-	 * @param locale the location parameter
-	 * @return resource bundle object if success, otherwise null. Error message is passed out
-	 *         through <code>errorMsg</code> property
-	 */
-	protected ResourceBundle getFileSystemResource(String path, String basename, Locale locale) {
-		File resourceFile = new File(path);
-		try {
-			FileInputStream fileInputStream = new FileInputStream(resourceFile);
-			return new PropertyResourceBundle(new InputStreamReader(fileInputStream, "UTF-8"));
-		}
-		catch (Exception e) {
-			log.warn("Unable to load bundle by path " + path + ", because of ", e);
-		}
-		return null;
-	}
-	
-	/**
-	 * Searches under the base directory on the file system for possible message properties files
-	 * and loads them. <br>
-	 * <br>
-	 * It iterates over each file, nested to the base directory, and decides if this file is a
-	 * messages properties. Then, if file is suitable, it parses the locale from its name. And
-	 * finally, it loads resource bundle for that file and associates it with locale, derived from
-	 * the file's name.
-	 *
-	 * @param basedir the absolute path of base directory to search files (e.g. $CONTEXT_ROOT +
-	 *            /WEB_INF/)
-	 */
-	private void loadResources(String basedir) {
-		File propertiesDir = new File(basedir);
-		for (File possibleFile : propertiesDir.listFiles()) {
-			if (possibleFile.getName().startsWith(PREFIX) && possibleFile.getName().endsWith(SUFFIX)) {
-				Locale locale = parseLocaleFrom(possibleFile.getName(), PREFIX);
-				ResourceBundle rb = getFileSystemResource(possibleFile.getAbsolutePath(), PREFIX, locale);
-				if (rb != null) {
-					getResource().put(locale, rb);
-					getAvailablelocales().add(locale);
-				}
-			}
-		}
-		if (log.isWarnEnabled() && (getResource().size() == 0)) {
-			log.warn("No properties files found.");
-		}
 	}
 	
 	/**
