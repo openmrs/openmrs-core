@@ -36,6 +36,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -161,7 +162,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		expectedException.expect(IOException.class);
 		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
 		expectedException.expectMessage(errorMsgSubString1);
-		String errorMsgSubString2 = "upgrade.settings.file.not.have.mapping";
+		String errorMsgSubString2 = Context.getMessageSourceService().getMessage("upgrade.settings.file.not.have.mapping", new Object[] { "mg" }, null);
 		expectedException.expectMessage(errorMsgSubString2);
 		upgradeTestUtil.upgrade();
 	}
