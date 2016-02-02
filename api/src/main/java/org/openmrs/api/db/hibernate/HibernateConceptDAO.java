@@ -1167,7 +1167,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	public Concept getConceptByUuid(String uuid) {
 		return (Concept) sessionFactory.getCurrentSession().createQuery("from Concept c where c.uuid = :uuid").setString(
-                "uuid", uuid).uniqueResult();
+		    "uuid", uuid).uniqueResult();
 	}
 	
 	/**
@@ -1571,7 +1571,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria searchCriteria = createConceptWordSearchCriteria(phrase, locales, includeRetired, requireClasses,
 		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
 		
-		Map<Concept,ConceptSearchResult> results = new HashMap<Concept, ConceptSearchResult>();
+		Map<Concept, ConceptSearchResult> results = new HashMap<Concept, ConceptSearchResult>();
 		
 		if (searchCriteria != null) {
 			ProjectionList pl = Projections.projectionList();
@@ -1597,13 +1597,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 			
 			for (Object obj : resultObjects) {
 				List list = (List) obj;
-
-                if (!results.containsKey(list.get(0)) || (Double) list.get(2) > results.get(list.get(0)).getTransientWeight())
-                    results.put((Concept) list.get(0), new ConceptSearchResult((String) list.get(1), (Concept) list.get(0), (ConceptName) list.get(3),
-				        (Double) list.get(2)));
+				
+				if (!results.containsKey(list.get(0))
+				        || (Double) list.get(2) > results.get(list.get(0)).getTransientWeight())
+					results.put((Concept) list.get(0), new ConceptSearchResult((String) list.get(1), (Concept) list.get(0),
+					        (ConceptName) list.get(3), (Double) list.get(2)));
 			}
 		}
-        return new Vector<ConceptSearchResult>(results.values());
+		return new Vector<ConceptSearchResult>(results.values());
 	}
 	
 	/**
@@ -1765,7 +1766,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public ConceptReferenceTerm getConceptReferenceTerm(Integer conceptReferenceTermId) throws DAOException {
 		return (ConceptReferenceTerm) sessionFactory.getCurrentSession().get(ConceptReferenceTerm.class,
-                conceptReferenceTermId);
+		    conceptReferenceTermId);
 	}
 	
 	/**
