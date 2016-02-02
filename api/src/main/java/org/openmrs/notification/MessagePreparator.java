@@ -20,6 +20,6 @@ public interface MessagePreparator {
 	 * @param template
 	 * @return the prepared <code>Message</code>
 	 */
-	public Message prepare(Template template) throws MessageException;
+	//public Message prepare(Template template) throws MessageException;
 	
 }

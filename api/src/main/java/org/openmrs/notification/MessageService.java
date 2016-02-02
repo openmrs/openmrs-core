@@ -77,20 +77,6 @@ public interface MessageService {
 	public Message createMessage(String recipients, String sender, String subject, String message, String attachment,
 	        String attachmentContentType, String attachmentFileName) throws MessageException;
 	
-	@SuppressWarnings("unchecked")
-	public Message prepareMessage(String templateName, Map data) throws MessageException;
-	
-	public Message prepareMessage(Template template) throws MessageException;
-	
-	// Template methods
-	@SuppressWarnings("unchecked")
-	public List getAllTemplates() throws MessageException;
-	
-	public Template getTemplate(Integer id) throws MessageException;
-	
-	@SuppressWarnings("unchecked")
-	public List getTemplatesByName(String name) throws MessageException;
-	
 	/* Begin Deprecated methods */
 
 	// Old send message methods
@@ -124,12 +110,5 @@ public interface MessageService {
 	
 	@Deprecated
 	public Message create(String recipients, String sender, String subject, String message) throws MessageException;
-	
-	@Deprecated
-	@SuppressWarnings("unchecked")
-	public Message prepare(String templateName, Map data) throws MessageException;
-	
-	@Deprecated
-	public Message prepare(Template template) throws MessageException;
 	
 }

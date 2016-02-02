@@ -11,7 +11,6 @@ package org.openmrs.notification.impl;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -19,13 +18,11 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.TemplateDAO;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
-import org.openmrs.notification.Template;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,15 +31,9 @@ public class MessageServiceImpl implements MessageService {
 	
 	private static final Log log = LogFactory.getLog(MessageServiceImpl.class);
 	
-	private TemplateDAO templateDAO;
-	
 	private MessageSender messageSender; // Delivers message 
 	
 	private MessagePreparator messagePreparator; // Prepares message for delivery 
-	
-	public void setTemplateDAO(TemplateDAO dao) {
-		this.templateDAO = dao;
-	}
 	
 	/**
 	 * Public constructor Required for use with spring's method injection. Be careful because this
@@ -223,71 +214,6 @@ public class MessageServiceImpl implements MessageService {
 	}
 	
 	/**
-	 * Prepare a message given the template. The template should be populated with all necessary
-	 * data including the variable name-value pairs
-	 *
-	 * @param template the given <code>Template</code>
-	 * @return the prepared <code>Message</code>
-	 */
-	public Message prepareMessage(Template template) throws MessageException {
-		return messagePreparator.prepare(template);
-	}
-	
-	/**
-	 * Prepare a message based on a template and data used for variable subsitution within template.
-	 *
-	 * @param templateName name of the template to be used
-	 * @param data data mapping used for variable substitution within template
-	 * @return the prepared Message
-	 */
-	@SuppressWarnings("unchecked")
-	@Transactional(readOnly = true)
-	public Message prepareMessage(String templateName, Map data) throws MessageException {
-		try {
-			Template template = (Template) getTemplatesByName(templateName).get(0);
-			template.setData(data);
-			return Context.getMessageService().prepareMessage(template);
-		}
-		catch (Exception e) {
-			throw new MessageException("Could not prepare message with template " + templateName, e);
-		}
-	}
-	
-	/**
-	 * Get all templates in the database.
-	 *
-	 * @return list of Templates
-	 */
-	@SuppressWarnings("unchecked")
-	@Transactional(readOnly = true)
-	public List getAllTemplates() throws MessageException {
-		return templateDAO.getTemplates();
-	}
-	
-	/**
-	 * Get template by identifier.
-	 *
-	 * @param id template identifier
-	 * @return Template
-	 */
-	@Transactional(readOnly = true)
-	public Template getTemplate(Integer id) throws MessageException {
-		return templateDAO.getTemplate(id);
-	}
-	
-	/**
-	 * Get templates by name.
-	 *
-	 * @param name the name of the template
-	 * @return list of Templates
-	 */
-	@SuppressWarnings("unchecked")
-	@Transactional(readOnly = true)
-	public List getTemplatesByName(String name) throws MessageException {
-		return templateDAO.getTemplatesByName(name);
-	}
-	
-	/**
 	 * @see org.openmrs.notification.MessageService#create(java.lang.String, java.lang.String)
 	 * @deprecated
 	 */
@@ -311,25 +237,6 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	public Message create(String recipients, String sender, String subject, String message) throws MessageException {
 		return Context.getMessageService().createMessage(recipients, sender, subject, message);
-	}
-	
-	/**
-	 * @see org.openmrs.notification.MessageService#prepare(java.lang.String, java.util.Map)
-	 * @deprecated
-	 */
-	@SuppressWarnings("unchecked")
-	@Transactional(readOnly = true)
-	public Message prepare(String templateName, Map data) throws MessageException {
-		return Context.getMessageService().prepareMessage(templateName, data);
-	}
-	
-	/**
-	 * @see org.openmrs.notification.MessageService#prepare(org.openmrs.notification.Template)
-	 * @deprecated
-	 */
-	@Transactional(readOnly = true)
-	public Message prepare(Template template) throws MessageException {
-		return Context.getMessageService().prepareMessage(template);
 	}
 	
 	/**
