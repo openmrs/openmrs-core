@@ -8961,4 +8961,99 @@
 		</comment>
 		<dropColumn columnName="value_boolean" tableName="obs"/>
 	</changeSet>
+	
+	<changeSet id="20160202-1743" author="rkorytkowski">
+		<comment>
+			Set uuid columns to "NOT NULL", if not set already for 1.9.x tables
+		</comment>
+		<!-- clob_data_storage does not have uuid -->
+		<addNotNullConstraint tableName="cohort" columnName="uuid" columnDataType="char(38)"/>
+		<!-- cohort_memeber does not have uuid -->
+		<addNotNullConstraint tableName="concept" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_answer" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_class" columnName="uuid" columnDataType="char(38)" />
+		<!-- concept_complex does not have uuid -->
+		<addNotNullConstraint tableName="concept_datatype" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_description" columnName="uuid" columnDataType="char(38)" />
+		<!-- concept_map_type has not null constraint on uuid -->
+		<addNotNullConstraint tableName="concept_name" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_name_tag" columnName="uuid" columnDataType="char(38)" />
+		<!-- concept_name_tag_map does not have uuid -->
+		<addNotNullConstraint tableName="concept_proposal" columnName="uuid" columnDataType="char(38)" />
+		<!-- concept_proposal_tag_map does not have uuid -->
+		<addNotNullConstraint tableName="concept_reference_map" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_reference_source" columnName="uuid" columnDataType="char(38)" />
+		<!-- concept_reference_term has not null constraint on uuid -->
+		<!-- concept_reference_term_map has not null constraint on uuid -->
+		<addNotNullConstraint tableName="concept_set" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_state_conversion" columnName="uuid" columnDataType="char(38)" />
+		<!-- concept_stop_word has not null constraint on uuid -->
+		<addNotNullConstraint tableName="drug" columnName="uuid" columnDataType="char(38)" />
+		<!-- drug_ingredient has not null constraint on uuid -->
+		<!-- drug_order does not have uuid -->
+		<!-- drug_reference_map has not null constraint on uuid -->
+		<addNotNullConstraint tableName="encounter" columnName="uuid" columnDataType="char(38)" />
+		<!-- encounter_provider has not null constraint on uuid -->
+		<!-- encounter_role has not null constraint on uuid -->
+		<addNotNullConstraint tableName="encounter_type" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="field" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="field_answer" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="field_type" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="form" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="form_field" columnName="uuid" columnDataType="char(38)" />
+		<!-- form_resource has not null constraint on uuid -->
+		<addNotNullConstraint tableName="global_property" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="hl7_in_archive" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="hl7_in_error" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="hl7_in_queue" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="hl7_source" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="location" columnName="uuid" columnDataType="char(38)" />
+		<!-- location_attribute has not null constraint on uuid -->
+		<!-- location_attribute_type has not null constraint on uuid -->
+		<addNotNullConstraint tableName="location_tag" columnName="uuid" columnDataType="char(38)" />
+		<!-- location_tag_map does not have uuid -->
+		<addNotNullConstraint tableName="note" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="notification_alert" columnName="uuid" columnDataType="char(38)" />
+		<!-- notification_alert_recipient has not null constraint on uuid -->
+		<addNotNullConstraint tableName="notification_template" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="obs" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="order_type" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="orders" columnName="uuid" columnDataType="char(38)" />
+		<!-- patient does not have uuid -->
+		<addNotNullConstraint tableName="patient_identifier" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="patient_identifier_type" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="patient_program" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="patient_state" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="person" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="person_address" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="person_attribute" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="person_attribute_type" columnName="uuid" columnDataType="char(38)" />
+		<!-- person_merge_log has not null constraint on uuid -->
+		<addNotNullConstraint tableName="person_name" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="privilege" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="program" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="program_workflow" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="program_workflow_state" columnName="uuid" columnDataType="char(38)" />
+		<!-- provider has not null constraint on uuid -->
+		<!-- provider_attribute has not null constraint on uuid -->
+		<!-- provider_attribute_type has not null constraint on uuid -->
+		<addNotNullConstraint tableName="relationship" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="relationship_type" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="report_object" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="report_schema_xml" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="role" columnName="uuid" columnDataType="char(38)" />
+		<!-- role_privilege does not have uuid -->
+		<!-- role_role does not have uuid -->
+		<!-- scheduler_task_config has not null constraint on uuid -->
+		<!-- scheduler_task_config_property does not have uuid -->
+		<addNotNullConstraint tableName="serialized_object" columnName="uuid" columnDataType="char(38)" />
+		<!-- test_order does not have uuid -->
+		<!-- user_property does not have uuid -->
+		<!-- user_role does not have uuid -->
+		<!-- users has not null constraint on uuid -->
+		<!-- visit has not null constraint on uuid -->
+		<!-- visit_attribute has not null constraint on uuid -->
+		<!-- visit_attribute_type has not null constraint on uuid -->
+		<!-- visit_type has not null constraint on uuid -->
+	</changeSet>
 </databaseChangeLog>
