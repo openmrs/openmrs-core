@@ -22,8 +22,9 @@ import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.MapBindingResult;
 
-import java.lang.reflect.Method;
+import java.util.HashMap;
 
 /**
  * Tests methods on the {@link PersonNameValidator} class.
@@ -735,22 +736,28 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 
     /**
-     * @see PersonNameValidator#validate(Object,Errors)
-     * @verifies validate should report on correct field names
+     * @see PersonNameValidator#validatePersonName(PersonName, Errors, Boolean, Boolean)
+     * @verifies validate should report errors with nonstandard prefix when called in historic way
      */
     @Test
-    public void validate_shouldReportErrorOnCorrectFieldNames() throws Exception {
+    public void validatePersonName_shouldReportErrorsWithNonStandardPrefixWhenCalledInHistoricWay() throws Exception {
 		PersonName personName = new PersonName("", "reb", "feb");
-		Errors errors = new BindException(personName, "personName");
-		new PersonNameValidator().validate(personName, errors);
-		Class personNameValidatorClass = PersonNameValidator.class;
-		Object obj = personNameValidatorClass.newInstance();
-		Method method = personNameValidatorClass.getDeclaredMethod("getFieldKey", new Class[]{String.class, boolean.class, boolean.class});
-		method.setAccessible(true);
-		String string1 = (String) method.invoke(obj,"givenName", false, true);
-		String string2 = (String) method.invoke(obj,"givenName", true, false);
-		Assert.assertEquals("givenName", string1);
-		Assert.assertEquals("names[0].givenName", string2);
-		Assert.assertTrue(errors.hasFieldErrors("givenName"));
+		MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(), "personName");
+		PersonNameValidator personNameValidator = new PersonNameValidator();
+		personNameValidator.validatePersonName(personName, errors, true, false);
+		Assert.assertTrue(errors.hasFieldErrors("names[0]." + "givenName"));
     }
+
+	/**
+	 * @see PersonNameValidator#validate(Object, Errors)
+	 * @verifies validate should report on correct field names
+	 */
+	@Test
+	public void validate_shouldReportErrorsOnCorrectFieldNames() throws Exception {
+		PersonName personName = new PersonName("", "reb", "feb");
+		MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(), "personName");
+		PersonNameValidator personNameValidator = new PersonNameValidator();
+		personNameValidator.validate(personName, errors);
+		Assert.assertTrue(errors.hasFieldErrors("givenName"));
+	}
 }
