@@ -9,6 +9,9 @@
  */
 package org.openmrs.messagesource;
 
+import java.util.HashMap;
+import java.util.Locale;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
@@ -18,30 +21,26 @@ import org.openmrs.test.Verifies;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.validation.MapBindingResult;
 
-import java.util.HashMap;
-import java.util.Locale;
-
 /**
  *
  */
 public class MessageSourceServiceTest extends BaseContextSensitiveTest {
-
-    /**
-     * MessageSourceServiceImpl.getMessage()should return last error code if no localization found
-     *
-     * @see MessageSourceServiceImpl#getMessage(MessageSourceResolvable resolvable, Locale locale)
-     */
-    @Test
-    @Verifies(value = "getMessage_shouldReturnTheLastErrorCodeIfnoLocalizationIsFound", method = "getMessage(MessageSourceResolvable resolvable, Locale locale)")
-    public void getMessage_shouldReturnTheLastErrorCodeIfnoLocalizationIsFound() throws Exception {
-        MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(), "request");
-        errors.rejectValue("myField", "myErrorCode");
-        MessageSourceResolvable fieldError = errors.getFieldError("myField");
-        Assert.assertEquals(3, fieldError.getCodes().length);
-        Assert.assertEquals("myErrorCode.request.myField", fieldError.getCodes()[0]);
-        Assert.assertEquals("myErrorCode.myField", fieldError.getCodes()[1]);
-        Assert.assertEquals("myErrorCode", fieldError.getCodes()[2]);
-        Assert.assertNotEquals("myErrorCode.request.myField", Context.getMessageSourceService().getMessage(fieldError, Context.getLocale()));
-        Assert.assertEquals("myErrorCode", Context.getMessageSourceService().getMessage(fieldError, Context.getLocale()));
-    }
+	
+	/**
+	 * MessageSourceServiceImpl.getMessage()should return last error code if no localization found
+	 *
+	 * @see MessageSourceServiceImpl#getMessage(MessageSourceResolvable resolvable, Locale locale)
+	 */
+	@Test
+	@Verifies(value = "getMessage_shouldReturnTheLastErrorCodeIfnoLocalizationIsFound", method = "getMessage(MessageSourceResolvable resolvable, Locale locale)")
+	public void getMessage_shouldReturnTheLastErrorCodeIfnoLocalizationIsFound() throws Exception {
+		MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(), "request");
+		errors.rejectValue("myField", "myErrorCode");
+		MessageSourceResolvable fieldError = errors.getFieldError("myField");
+		Assert.assertEquals(3, fieldError.getCodes().length);
+		Assert.assertEquals("myErrorCode.request.myField", fieldError.getCodes()[0]);
+		Assert.assertEquals("myErrorCode.myField", fieldError.getCodes()[1]);
+		Assert.assertEquals("myErrorCode", fieldError.getCodes()[2]);
+		Assert.assertEquals("myErrorCode", Context.getMessageSourceService().getMessage(fieldError, Context.getLocale()));
+	}
 }
