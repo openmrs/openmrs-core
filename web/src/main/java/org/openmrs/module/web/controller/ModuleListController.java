@@ -134,10 +134,10 @@ public class ModuleListController extends SimpleFormController {
 									dependentModulesStopped = ModuleFactory.stopModule(existingModule, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
 									
 									for (Module depMod : dependentModulesStopped) {
-										WebModuleUtil.stopModule(depMod, getServletContext());
+										WebModuleUtil.stopModule(depMod, getServletContext(), true);
 									}
 									
-									WebModuleUtil.stopModule(existingModule, getServletContext());
+									WebModuleUtil.stopModule(existingModule, getServletContext(), true);
 									ModuleFactory.unloadModule(existingModule);
 								}
 								inputStream = new FileInputStream(tmpModule.getFile());
@@ -173,16 +173,23 @@ public class ModuleListController extends SimpleFormController {
 				
 				// if we didn't have trouble loading the module, start it
 				if (module != null) {
+					boolean someModuleNeedsARefresh = false;
 					ModuleFactory.startModule(module);
-					WebModuleUtil.startModule(module, getServletContext(), false);
+					WebModuleUtil.startModule(module, getServletContext(), true);
 					if (module.isStarted()) {
 						success = msa.getMessage("Module.loadedAndStarted", new String[] { module.getName() });
 						
 						if (updateModule && dependentModulesStopped != null) {
 							for (Module depMod : sortStartupOrder(dependentModulesStopped)) {
 								ModuleFactory.startModule(depMod);
-								WebModuleUtil.startModule(depMod, getServletContext(), false);
+								boolean thisModuleCausesRefresh = WebModuleUtil.startModule(depMod, getServletContext(),
+								    true);
+								someModuleNeedsARefresh = someModuleNeedsARefresh || thisModuleCausesRefresh;
 							}
+						}
+						
+						if (someModuleNeedsARefresh) {
+							WebModuleUtil.refreshWAC(getServletContext(), false, module);
 						}
 						
 					} else {
