@@ -823,7 +823,7 @@ public class WebModuleUtil {
 	 * @param servletContext
 	 * @param skipRefresh
 	 */
-	private static void stopModule(Module mod, ServletContext servletContext, boolean skipRefresh) {
+	public static void stopModule(Module mod, ServletContext servletContext, boolean skipRefresh) {
 		
 		String moduleId = mod.getModuleId();
 		String modulePackage = mod.getPackageName();
