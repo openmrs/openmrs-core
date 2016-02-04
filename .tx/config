@@ -1,0 +1,26 @@
+[main]
+host = https://www.transifex.com/
+
+[OpenMRS.openmrs-core]
+source_file = api/src/main/resources/messages.properties
+source_lang = en
+trans.fr = api/src/main/resources/messages_fr.properties
+trans.ht = api/src/main/resources/messages_ht.properties
+trans.pt = api/src/main/resources/messages_pt.properties
+trans.de = api/src/main/resources/messages_de.properties
+trans.es = api/src/main/resources/messages_es.properties
+trans.fa = api/src/main/resources/messages_fa.properties
+trans.si = api/src/main/resources/messages_si.properties
+trans.hi = api/src/main/resources/messages_hi.properties
+trans.ht = api/src/main/resources/messages_ht.properties
+trans.ar = api/src/main/resources/messages_ar.properties
+trans.pl = api/src/main/resources/messages_pl.properties
+trans.it = api/src/main/resources/messages_it.properties
+trans.el = api/src/main/resources/messages_el.properties
+trans.ru = api/src/main/resources/messages_ru.properties
+trans.lt = api/src/main/resources/messages_lt.properties
+trans.hy = api/src/main/resources/messages_hy.properties
+trans.te = api/src/main/resources/messages_te.properties
+trans.sw = api/src/main/resources/messages_sw.properties
+trans.ku = api/src/main/resources/messages_ku.properties
+trans.id_ID = api/src/main/resources/messages_id_ID.properties
