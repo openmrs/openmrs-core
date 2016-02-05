@@ -9,14 +9,9 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.Concept;
 import org.openmrs.ConceptNameTag;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -92,5 +87,23 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 		new ConceptNameTagValidator().validate(cnt, errors);
 		Assert.assertTrue(errors.hasErrors());
 		Assert.assertEquals(true, errors.hasFieldErrors("tag"));
+	}
+	
+	/**
+	 * @see ConceptNameTagValidator#validate(Object,Errors)
+	 */
+	@Test
+	@Verifies(value = "pass validation if the concept name tag being validated is the same as the test one", method = "validate(Object,Errors)")
+	public void validate_shouldNotFailIfTheConceptNameTagIsTheSame() throws Exception {
+		String objectName = "duplicate concept name tag";
+		
+		ConceptNameTag existing = Context.getConceptService().getConceptNameTag(1);
+		
+		ConceptNameTag cnt = existing;
+		
+		Errors errors = new BindException(cnt, objectName);
+		new ConceptNameTagValidator().validate(cnt, errors);
+		Assert.assertFalse(errors.hasErrors());
+		Assert.assertEquals(false, errors.hasFieldErrors("tag"));
 	}
 }
