@@ -139,7 +139,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			Integer indexOfLastSlash = name.lastIndexOf(File.separator);
 			if (indexOfLastSlash > 0) {
 				String packageName = name.substring(0, indexOfLastSlash);
-				packageName = packageName.replaceAll(File.separator, ".");
+				packageName = packageName.replace(File.separator, ".");
 				providedPackages.add(packageName);
 			}
 		}
