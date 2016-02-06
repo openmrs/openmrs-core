@@ -737,12 +737,23 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Returns the Allergy
 	 * 
-	 * @param allergyListId
+	 * @param allergyListId identifies allergy by internal Ingerger Id
 	 * @return the allergy
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.GET_ALLERGIES })
 	public Allergy getAllergy(Integer allergyListId) throws APIException;
+	
+	/**
+	 * Returns the Allergy
+	 * 
+	 * @since 2.0
+	 * @param uuid identifies the allergy
+	 * @return the allergy
+	 * @throws APIException
+	 */
+	@Authorized( { PrivilegeConstants.GET_ALLERGIES })
+	public Allergy getAllergyByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Creates an AllergyListItem to the Patient's Allergy Active List. Sets the start date to now,

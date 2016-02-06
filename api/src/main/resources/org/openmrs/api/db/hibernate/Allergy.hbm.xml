@@ -29,7 +29,7 @@
                     <param name="type">12</param>
                 </type>
             </property>
-            <many-to-one name="codedAllergen" column="coded_allergen" class="org.openmrs.Concept" not-null="true"/>
+            <many-to-one name="codedAllergen" column="coded_allergen" class="org.openmrs.Concept" not-null="false"/>
             <property name="nonCodedAllergen" type="java.lang.String" column="non_coded_allergen" length="255"/>
         </component>
         <many-to-one name="severity" column="severity_concept_id" class="org.openmrs.Concept"/>

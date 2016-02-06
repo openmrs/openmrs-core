@@ -29,7 +29,7 @@ import org.openmrs.api.APIException;
 /**
  * Tests allergy methods in {@link $ PatientService} .
  */
-public class AllergyServiceTest extends BaseContextSensitiveTest {
+public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	private static final String ALLERGY_TEST_DATASET = "org/openmrs/api/include/allergyTestDataset.xml";
 	
@@ -43,13 +43,25 @@ public class AllergyServiceTest extends BaseContextSensitiveTest {
 			allergyService = Context.getPatientService();
 		}
 		
+		/*
 		if (!statusFieldAdded) {
 			String sql = "alter table patient add column allergy_status varchar(50)";
 			Context.getAdministrationService().executeSQL(sql, false);
 			statusFieldAdded = true;
 		}
+		*/
 		
 		executeDataSet(ALLERGY_TEST_DATASET);
+	}
+	
+	/**
+	 * @see PatientService#getAllergies(Patient)
+	 * @verifies get the allergy list and status
+	 */
+	@Test
+	public void getAllergyByUuid_shouldGetAllergyByUuid() throws Exception {
+		Allergy allergy = allergyService.getAllergyByUuid("21543629-7d8c-11e1-909d-c80aa9edcf4e");		
+		Assert.assertNotNull(allergy);
 	}
 	
 	/**
@@ -336,7 +348,6 @@ public class AllergyServiceTest extends BaseContextSensitiveTest {
 		//clear any cache for this object such that the next calls fetch it from the database
 		Context.evictFromSession(editedAllergy);
 		//edit non coded allergen
-		editedAllergy.getAllergen().getCodedAllergen().setUuid(Allergen.OTHER_NON_CODED_UUID);
 		editedAllergy.getAllergen().setNonCodedAllergen("some non coded allergen");
 		
 		Assert.assertTrue(allergies.contains(editedAllergy));
@@ -496,6 +507,6 @@ public class AllergyServiceTest extends BaseContextSensitiveTest {
         Allergies allergies = allergyService.getAllergies(patient);
         allergies.add(allergy);
         allergyService.setAllergies(patient, allergies);
-        Assert.assertEquals(Allergen.OTHER_NON_CODED_UUID, allergy.getAllergen().getCodedAllergen().getUuid());
+        Assert.assertNull(allergy.getAllergen().getCodedAllergen());
     }
 }
