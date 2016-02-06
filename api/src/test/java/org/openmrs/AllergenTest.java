@@ -11,13 +11,27 @@ package org.openmrs;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Before;
 import org.openmrs.Concept;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
  * Tests methods in {@link org.openmrs.Allergen}.
  */
-public class AllergenTest {
+public class AllergenTest extends BaseContextSensitiveTest {
+	
+	private static final String ALLERGY_OTHER_NONCODED_TEST_DATASET = "org/openmrs/api/include/otherNonCodedConcept.xml";
+	
 	Allergen allergen;
+	
+	@Before
+	public void setup() throws Exception {
+		executeDataSet(ALLERGY_OTHER_NONCODED_TEST_DATASET);
+		Allergen.setOtherNonCodedConceptUuid(Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GP_ALLERGEN_OTHER_NON_CODED_UUID));
+	}
 	
 	@Test
 	public void shouldEitherBeCodedOrFreeText() {
@@ -35,7 +49,7 @@ public class AllergenTest {
 	}
 	
 	private void assertCoded() {
-		Assert.assertNotEquals(allergen.getCodedAllergen().getUuid(), Allergen.OTHER_NON_CODED_UUID);
+		Assert.assertNotEquals(allergen.getCodedAllergen().getUuid(), Allergen.getOtherNonCodedConceptUuid());
 		Assert.assertNull(allergen.getNonCodedAllergen());
 		Assert.assertTrue(allergen.isCoded());
 	}
@@ -59,22 +73,19 @@ public class AllergenTest {
 	
 	@Test
 	public void isSameAllergen_shouldReturnTrueForSameNonCodedAllergen() {
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
+		Concept concept = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
 		Assert.assertTrue(new Allergen(null, concept, "OTHER VALUE").isSameAllergen(new Allergen(null, concept, "OTHER VALUE")));
 	}
 	
 	@Test
 	public void isSameAllergen_shouldBeCaseInsensitiveForNonCodedAllergen() {
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
+		Concept concept = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
 		Assert.assertTrue(new Allergen(null, concept, "other value").isSameAllergen(new Allergen(null, concept, "OTHER VALUE")));
 	}
 	
 	@Test
 	public void isSameAllergen_shouldReturnFalseForDifferentNonCodedAllergen() {
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
+		Concept concept = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
 		Assert.assertFalse(new Allergen(null, concept, "OTHER VALUE1").isSameAllergen(new Allergen(null, concept, "OTHER VALUE2")));
 	}
 }

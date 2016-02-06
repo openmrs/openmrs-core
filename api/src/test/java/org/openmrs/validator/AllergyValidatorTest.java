@@ -12,6 +12,7 @@ package org.openmrs.validator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -57,6 +58,10 @@ public class AllergyValidatorTest {
 		when(concept.getUuid()).thenReturn(uuid != null ? uuid : "some uuid");
 		when(concept.getName()).thenReturn(new ConceptName());
 		return concept;
+	}
+	
+	private String getOtherNonCodedConceptUuid() {
+		return "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	}
 	
 	/**
@@ -129,7 +134,7 @@ public class AllergyValidatorTest {
 	@Test
 	public void validate_shouldFailIfNonCodedAllergenIsNullAndAllergenIsSetToOtherNonCoded() throws Exception {
 		Allergy allergy = new Allergy();
-		allergy.setAllergen(new Allergen(null, createMockConcept(Allergen.OTHER_NON_CODED_UUID), null));
+		allergy.setAllergen(new Allergen(null, createMockConcept(getOtherNonCodedConceptUuid()), null));
 		Errors errors = new BindException(allergy, "allergy");
 		validator.validate(allergy, errors);
 		assertTrue(errors.hasFieldErrors("allergen"));
@@ -170,7 +175,7 @@ public class AllergyValidatorTest {
 		when(Context.getMessageSourceService()).thenReturn(ms);
 		
 		Allergies allergies = new Allergies();
-		Concept nonCodedConcept = createMockConcept(Allergen.OTHER_NON_CODED_UUID);
+		Concept nonCodedConcept = createMockConcept(getOtherNonCodedConceptUuid());
 		final String freeText = "some text";
 		Allergen allergen1 = new Allergen(AllergenType.DRUG, nonCodedConcept, freeText);
 		allergies.add(new Allergy(null, allergen1, null, null, null));

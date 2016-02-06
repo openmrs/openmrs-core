@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PersonName;
+import org.openmrs.Allergen;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -1089,6 +1090,9 @@ public class Context {
 
 		PersonName.setFormat(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT));
+
+		Allergen.setOtherNonCodedConceptUuid(Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GP_ALLERGEN_OTHER_NON_CODED_UUID));
 	}
 
 	/**
