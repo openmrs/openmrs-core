@@ -69,6 +69,7 @@ import org.openmrs.orders.TimestampOrderNumberGenerator;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 
@@ -1379,10 +1380,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order = orderService.saveOrder(order, null);
 		Order newOrder = orderService.getOrder(order.getOrderId());
 		assertNotNull(order);
-		assertEquals(scheduledDate, order.getScheduledDate());
+		assertEquals(DateUtil.truncateToSeconds(scheduledDate), order.getScheduledDate());
 		assertNotNull(newOrder);
-		assertEquals(scheduledDate, newOrder.getScheduledDate());
-		
+		assertEquals(DateUtil.truncateToSeconds(scheduledDate), newOrder.getScheduledDate());
 	}
 	
 	/**
@@ -1738,7 +1738,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		orderService.saveOrder(order, null);
 		dateformat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.S");
-		assertEquals(dateformat.parse("18/08/2014 23:59:59.999"), order.getAutoExpireDate());
+		assertEquals(dateformat.parse("18/08/2014 23:59:59.000"), order.getAutoExpireDate());
 	}
 	
 	/**
