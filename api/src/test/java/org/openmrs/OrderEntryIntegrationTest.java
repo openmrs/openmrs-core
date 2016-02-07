@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -38,6 +37,7 @@ import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -365,8 +365,9 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		cal.add(Calendar.HOUR_OF_DAY, -1);
 		Date stopDate = cal.getTime();
 		Order dcOrder = orderService.discontinueOrder(order, "Testing", stopDate, order.getOrderer(), order.getEncounter());
-		assertEquals(stopDate, order.getDateStopped());
-		assertEquals(stopDate, dcOrder.getAutoExpireDate());
+		Context.flushSession(); // ensures that order is flushed and that the drop milliseconds interceptor is called
+		assertEquals(DateUtil.truncateToSeconds(stopDate), order.getDateStopped());
+		assertEquals(DateUtil.truncateToSeconds(stopDate), dcOrder.getAutoExpireDate());
 	}
 
 	@Test

@@ -9,6 +9,26 @@
  */
 package org.openmrs.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Vector;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -42,28 +62,9 @@ import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
-
-import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -146,7 +147,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertFalse("The enc should have changed", origEncType.equals(encType2));
 		assertTrue("The enc type needs to have been set", newestEnc.getEncounterType().equals(encType2));
 		assertFalse("Make sure the dates changed slightly", origDate.equals(d2));
-		assertTrue("The date needs to have been set", newestEnc.getEncounterDatetime().equals(d2));
+		assertTrue("The date needs to have been set", newestEnc.getEncounterDatetime().equals(DateUtil.truncateToSeconds(d2)));
 		assertFalse("The patient should be different", origPatient.equals(pat2));
 		assertTrue("The patient should have been set", newestEnc.getPatient().equals(pat2));
 	}
@@ -502,13 +503,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNotSame(encounter.getCreator(), Context.getAuthenticatedUser());
 		
 		// make sure the encounter date created wasn't overwritten
-		assertEquals(date, encounter.getDateCreated());
+		assertEquals(DateUtil.truncateToSeconds(date), encounter.getDateCreated());
 		
 		// make sure we can fetch this new encounter
 		// from the database and its values are the same as the passed in ones
 		Encounter newEncounter = encounterService.getEncounter(encounter.getEncounterId());
 		assertNotNull(newEncounter);
-		assertEquals(date, encounter.getDateCreated());
+		assertEquals(DateUtil.truncateToSeconds(date), encounter.getDateCreated());
 	}
 	
 	/**
@@ -566,13 +567,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// make sure the obs date created and creator are the same as what we
 		// set
 		Obs createdObs = Context.getObsService().getObs(obs.getObsId());
-		assertEquals(date, createdObs.getDateCreated());
+		assertEquals(DateUtil.truncateToSeconds(date), createdObs.getDateCreated());
 		assertEquals(creator, createdObs.getCreator());
 		
 		// make sure the order date created and creator are the same as what we
 		// set
 		Order createdOrder = os.getOrder(order.getOrderId());
-		assertEquals(date, createdOrder.getDateCreated());
+		assertEquals(DateUtil.truncateToSeconds(date), createdOrder.getDateCreated());
 		assertEquals(creator, createdOrder.getCreator());
 	}
 	
@@ -979,11 +980,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// the encounter to save without a dateCreated
 		EncounterType encounterType = new EncounterType("testing", "desc");
 		encounterType.setCreator(new User(4));
-		Date date = new Date(System.currentTimeMillis() - 5000); // make sure we
-		// have a
-		// date that
-		// isn't
-		// "right now"
+		Date date = new Date(System.currentTimeMillis() - 5000); // make sure we have a date that isn't "right now"
 		encounterType.setDateCreated(date);
 		
 		// make sure the logged in user isn't the user we're testing with
@@ -995,7 +992,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNotSame(encounterType.getCreator().getId(), Context.getAuthenticatedUser().getId());
 		
 		// make sure the encounter type date created wasn't overwritten
-		assertEquals(date, encounterType.getDateCreated());
+		assertEquals(DateUtil.truncateToSeconds(date), encounterType.getDateCreated());
 		
 		// make sure we can fetch this new encounter type
 		// from the database and its values are the same as the passed in ones
@@ -1003,7 +1000,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(newEncounterType);
 		assertEquals(4, encounterType.getCreator().getId().intValue());
 		assertNotSame(encounterType.getCreator(), Context.getAuthenticatedUser());
-		assertEquals(date, encounterType.getDateCreated());
+		assertEquals(DateUtil.truncateToSeconds(date), encounterType.getDateCreated());
 	}
 	
 	/**
@@ -1028,13 +1025,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		encounterService.saveEncounterType(encounterType);
 		
 		// make sure the encounter type date created wasn't overwritten
-		assertEquals(date, encounterType.getDateCreated());
+		assertEquals(DateUtil.truncateToSeconds(date), encounterType.getDateCreated());
 		
 		// make sure we can fetch this new encounter type
 		// from the database and its values are the same as the passed in ones
 		EncounterType newEncounterType = encounterService.getEncounterType(encounterType.getEncounterTypeId());
 		assertNotNull(newEncounterType);
-		assertEquals(date, encounterType.getDateCreated());
+		assertEquals(DateUtil.truncateToSeconds(date), encounterType.getDateCreated());
 	}
 	
 	/**

@@ -260,12 +260,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				int minutes = cal.get(Calendar.MINUTE);
 				int seconds = cal.get(Calendar.SECOND);
 				int milliseconds = cal.get(Calendar.MILLISECOND);
-				//roll autoExpireDate to end of day (23:59:59:999) if no time portion is specified
-				if (hours == 0 && minutes == 0 && seconds == 0 && milliseconds == 0) {
+				//roll autoExpireDate to end of day (23:59:59) if no time portion is specified
+				if (hours == 0 && minutes == 0 && seconds == 0) {
 					cal.set(Calendar.HOUR_OF_DAY, 23);
 					cal.set(Calendar.MINUTE, 59);
 					cal.set(Calendar.SECOND, 59);
-					cal.set(Calendar.MILLISECOND, 999);
+					cal.set(Calendar.MILLISECOND, 0); // the OpenMRS database is only precise to the second
 					order.setAutoExpireDate(cal.getTime());
 				}
 			}
