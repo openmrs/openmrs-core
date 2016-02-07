@@ -75,6 +75,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.ConceptMapTypeComparator;
+import org.openmrs.util.DateUtil;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.Errors;
@@ -501,7 +502,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		newConceptSource.setDateCreated(expectedDate);
 		Context.getConceptService().saveConceptSource(newConceptSource);
 		
-		Assert.assertEquals(newConceptSource.getDateCreated(), expectedDate);
+		Assert.assertEquals(DateUtil.truncateToSeconds(expectedDate), newConceptSource.getDateCreated());
 	}
 	
 	/**
