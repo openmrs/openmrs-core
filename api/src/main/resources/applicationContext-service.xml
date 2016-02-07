@@ -321,9 +321,6 @@
 	<bean id="alertServiceTarget" class="org.openmrs.notification.impl.AlertServiceImpl">
 		<property name="alertDAO"><ref bean="alertDAO"/></property>	
 	</bean>
-	<bean id="messageServiceTarget" class="org.openmrs.notification.impl.MessageServiceImpl">
-		<property name="templateDAO"><ref bean="templateDAO"/></property>	
-	</bean>
 	<bean id="reportObjectServiceTarget" class="org.openmrs.reporting.impl.ReportObjectServiceImpl">
 		<property name="reportObjectDAO"><ref bean="reportObjectDAO"/></property>	
 	</bean>
@@ -718,10 +715,6 @@
         <property name="daoContext">
         	<ref bean="daoContext"/>
         </property>
-
-        <property name="messagePreparator">
-			<bean id="mailMessagePreparator" class="org.openmrs.notification.mail.velocity.VelocityMessagePreparator"/>
-		</property>        
 
         <property name="messageSender">
 			<bean id="mailMessageSender" class="org.openmrs.notification.mail.MailMessageSender">

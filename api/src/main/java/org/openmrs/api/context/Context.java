@@ -65,12 +65,10 @@ import org.openmrs.module.ModuleMustStartException;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageException;
-import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
 import org.openmrs.notification.NoteService;
 import org.openmrs.notification.mail.MailMessageSender;
-import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
@@ -553,30 +551,6 @@ public class Context {
 	}
 	
 	/**
-	 * Get the message service.
-	 * 
-	 * @return message service
-	 */
-	public static MessageService getMessageService() {
-		MessageService ms = getServiceContext().getMessageService();
-		try {
-			// Message service dependencies
-			if (ms.getMessagePreparator() == null) {
-				ms.setMessagePreparator(getMessagePreparator());
-			}
-			
-			if (ms.getMessageSender() == null) {
-				ms.setMessageSender(getMessageSender());
-			}
-			
-		}
-		catch (Exception e) {
-			log.error("Unable to create message service due", e);
-		}
-		return ms;
-	}
-	
-	/**
 	 * @return active list service
 	 */
 	public static ActiveListService getActiveListService() {
@@ -623,16 +597,6 @@ public class Context {
 	 */
 	private static MessageSender getMessageSender() {
 		return new MailMessageSender(getMailSession());
-	}
-	
-	/**
-	 * Convenience method to allow us to change the configuration more easily. TODO See todo for
-	 * message sender.
-	 * 
-	 * @return
-	 */
-	private static MessagePreparator getMessagePreparator() throws MessageException {
-		return new VelocityMessagePreparator();
 	}
 	
 	/**

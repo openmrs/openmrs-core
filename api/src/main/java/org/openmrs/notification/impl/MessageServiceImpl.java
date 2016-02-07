@@ -9,21 +9,12 @@
  */
 package org.openmrs.notification.impl;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Role;
-import org.openmrs.User;
-import org.openmrs.api.context.Context;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
-import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
-import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -31,9 +22,7 @@ public class MessageServiceImpl implements MessageService {
 	
 	private static final Log log = LogFactory.getLog(MessageServiceImpl.class);
 	
-	private MessageSender messageSender; // Delivers message 
-	
-	private MessagePreparator messagePreparator; // Prepares message for delivery 
+	private MessageSender messageSender; // Delivers message
 	
 	/**
 	 * Public constructor Required for use with spring's method injection. Be careful because this
@@ -41,20 +30,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	public MessageServiceImpl() {
 	}
-	
-	/**
-	 * Set the message preparator.
-	 *
-	 * @param messagePreparator
-	 */
-	public void setMessagePreparator(MessagePreparator messagePreparator) {
-		this.messagePreparator = messagePreparator;
-	}
-	
-	public MessagePreparator getMessagePreparator() {
-		return this.messagePreparator;
-	}
-	
+
 	/**
 	 * Set the message sender.
 	 *
@@ -85,39 +61,6 @@ public class MessageServiceImpl implements MessageService {
 	}
 	
 	/**
-	 * Create a message object with the given parts.
-	 *
-	 * @param recipients the recipients of the message
-	 * @param sender the send of the message
-	 * @param subject the subject of the message
-	 * @param content the content or body of the message
-	 */
-	public Message createMessage(String recipients, String sender, String subject, String content) throws MessageException {
-		return Context.getMessageService().createMessage(recipients, sender, subject, content, null, null, null);
-	}
-	
-	/**
-	 * Create a message object with the given parts.
-	 *
-	 * @param sender the send of the message
-	 * @param subject the subject of the message
-	 * @param content the content or body of the message
-	 */
-	public Message createMessage(String sender, String subject, String content) throws MessageException {
-		return Context.getMessageService().createMessage(null, sender, subject, content);
-	}
-	
-	/**
-	 * Create a message object with the given parts.
-	 *
-	 * @param subject the subject of the message
-	 * @param content the content or body of the message
-	 */
-	public Message createMessage(String subject, String content) throws MessageException {
-		return Context.getMessageService().createMessage(null, null, subject, content);
-	}
-	
-	/**
 	 * @see org.openmrs.notification.MessageService#createMessage(java.lang.String,
 	 *      java.lang.String, java.lang.String, java.lang.String, java.lang.String,
 	 *      java.lang.String, java.lang.String)
@@ -133,172 +76,6 @@ public class MessageServiceImpl implements MessageService {
 		message.setAttachmentContentType(attachmentContentType);
 		message.setAttachmentFileName(attachmentFileName);
 		return message;
-	}
-	
-	/**
-	 * Send a message using the given parameters. This is a convenience method so that the client
-	 * does not need to create its own Message object.
-	 */
-	public void sendMessage(String recipients, String sender, String subject, String content) throws MessageException {
-		Message message = createMessage(recipients, sender, subject, content);
-		Context.getMessageService().sendMessage(message);
-	}
-	
-	/**
-	 * Send a message to a user that is identified by the given identifier.
-	 *
-	 * @param message <code>Message</code> to be sent
-	 * @param recipientId Integer identifier of user (recipient)
-	 */
-	public void sendMessage(Message message, Integer recipientId) throws MessageException {
-		log.debug("Sending message to user with user id " + recipientId);
-		User user = Context.getUserService().getUser(recipientId);
-		message.addRecipient(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS));
-		// message.setFormat( user( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_FORMAT ) );
-		Context.getMessageService().sendMessage(message);
-	}
-	
-	/**
-	 * Send message to a single user.
-	 *
-	 * @param message the <code>Message</code> to be sent
-	 * @param user the recipient of the message
-	 */
-	public void sendMessage(Message message, User user) throws MessageException {
-		log.debug("Sending message to user " + user);
-		String address = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS);
-		if (address != null) {
-			message.addRecipient(address);
-		}
-		// message.setFormat( user.getProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_FORMAT ) );
-		Context.getMessageService().sendMessage(message);
-	}
-	
-	/**
-	 * Send message to a collection of recipients.
-	 */
-	public void sendMessage(Message message, Collection<User> users) throws MessageException {
-		log.debug("Sending message to users " + users);
-		for (User user : users) {
-			String address = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS);
-			if (address != null) {
-				message.addRecipient(address);
-			}
-		}
-		Context.getMessageService().sendMessage(message);
-	}
-	
-	/**
-	 * Send a message to a group of users identified by their role.
-	 */
-	public void sendMessage(Message message, String roleName) throws MessageException {
-		log.debug("Sending message to role with name " + roleName);
-		Role role = Context.getUserService().getRole(roleName);
-		Context.getMessageService().sendMessage(message, role);
-	}
-	
-	/**
-	 * Sends a message to a group of users identifier by thir role.
-	 */
-	public void sendMessage(Message message, Role role) throws MessageException {
-		log.debug("Sending message to role " + role);
-		log.debug("User Service : " + Context.getUserService());
-		
-		List<Role> roles = new Vector<Role>();
-		roles.add(role);
-		
-		Collection<User> users = Context.getUserService().getUsers(null, roles, false);
-		
-		log.debug("Sending message " + message + " to " + users);
-		Context.getMessageService().sendMessage(message, users);
-	}
-	
-	/**
-	 * @see org.openmrs.notification.MessageService#create(java.lang.String, java.lang.String)
-	 * @deprecated
-	 */
-	public Message create(String subject, String message) throws MessageException {
-		return Context.getMessageService().createMessage(subject, message);
-	}
-	
-	/**
-	 * @see org.openmrs.notification.MessageService#create(java.lang.String, java.lang.String,
-	 *      java.lang.String)
-	 * @deprecated
-	 */
-	public Message create(String sender, String subject, String message) throws MessageException {
-		return Context.getMessageService().createMessage(sender, subject, message);
-	}
-	
-	/**
-	 * @see org.openmrs.notification.MessageService#create(java.lang.String, java.lang.String,
-	 *      java.lang.String, java.lang.String)
-	 * @deprecated
-	 */
-	public Message create(String recipients, String sender, String subject, String message) throws MessageException {
-		return Context.getMessageService().createMessage(recipients, sender, subject, message);
-	}
-	
-	/**
-	 * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message)
-	 * @deprecated use {@link #sendMessage(Message)}
-	 */
-	public void send(Message message) throws MessageException {
-		Context.getMessageService().sendMessage(message);
-	}
-	
-	/**
-	 * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message,
-	 *      java.lang.String)
-	 * @deprecated use {@link #sendMessage(Message, String)}
-	 */
-	public void send(Message message, String roleName) throws MessageException {
-		Context.getMessageService().sendMessage(message, roleName);
-	}
-	
-	/**
-	 * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message,
-	 *      java.lang.Integer)
-	 * @deprecated use {@link #sendMessage(Message, Integer)}
-	 */
-	public void send(Message message, Integer userId) throws MessageException {
-		Context.getMessageService().sendMessage(message, userId);
-	}
-	
-	/**
-	 * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message,
-	 *      org.openmrs.User)
-	 * @deprecated use {@link #sendMessage(Message, User)}
-	 */
-	public void send(Message message, User user) throws MessageException {
-		Context.getMessageService().sendMessage(message, user);
-	}
-	
-	/**
-	 * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message,
-	 *      org.openmrs.Role)
-	 * @deprecated {@link #send(Message, Role)}
-	 */
-	public void send(Message message, Role role) throws MessageException {
-		Context.getMessageService().sendMessage(message, role);
-	}
-	
-	/**
-	 * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message,
-	 *      java.util.Collection)
-	 * @deprecated {@link #send(Message, Collection)}
-	 */
-	public void send(Message message, Collection<User> users) throws MessageException {
-		Context.getMessageService().sendMessage(message, users);
-	}
-	
-	/**
-	 * @see org.openmrs.notification.MessageService#send(java.lang.String, java.lang.String,
-	 *      java.lang.String, java.lang.String)
-	 * @deprecated use {@link #send(String, String, String, String)}
-	 */
-	public void send(String recipients, String sender, String subject, String message) throws MessageException {
-		Context.getMessageService().sendMessage(recipients, sender, subject, message);
 	}
 	
 }
