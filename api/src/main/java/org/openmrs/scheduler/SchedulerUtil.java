@@ -84,57 +84,6 @@ public class SchedulerUtil {
 	}
 	
 	/**
-	 * Sends an email with system information and the given exception
-	 * 
-	 * @param error
-	 */
-	public static void sendSchedulerError(Throwable throwable) {
-		try {
-			Context.openSession();
-			
-			Boolean emailIsEnabled = Boolean.valueOf(Context.getAdministrationService().getGlobalProperty(
-			    SchedulerConstants.SCHEDULER_ADMIN_EMAIL_ENABLED_PROPERTY));
-			
-			if (emailIsEnabled) {
-				// Email addresses seperated by commas
-				String recipients = Context.getAdministrationService().getGlobalProperty(
-				    SchedulerConstants.SCHEDULER_ADMIN_EMAIL_PROPERTY);
-				
-				// Send message if 
-				if (recipients != null) {
-					
-					// TODO need to use the default sender for the application 
-					String sender = SchedulerConstants.SCHEDULER_DEFAULT_FROM;
-					String subject = SchedulerConstants.SCHEDULER_DEFAULT_SUBJECT + " : " + throwable.getClass().getName();
-					StringBuilder message = new StringBuilder();
-					message.append("\n\nStacktrace\n============================================\n");
-					message.append(SchedulerUtil.getExceptionAsString(throwable));
-					message.append("\n\nSystem Variables\n============================================\n");
-					for (Map.Entry<String, String> entry : Context.getAdministrationService().getSystemVariables()
-					        .entrySet()) {
-						message.append(entry.getKey()).append(" = ").append(entry.getValue()).append("\n");
-					}
-					
-					// TODO need to the send the IP information for the server instance that is running this task
-					
-					log.debug("Sending scheduler error email to [" + recipients + "] from [" + sender + "] with subject ["
-					        + subject + "]:\n" + message);
-					Context.getMessageService().sendMessage(recipients, sender, subject, message.toString());
-				}
-				
-			}
-			
-		}
-		catch (Exception e) {
-			// Log, but otherwise suppress errors
-			log.warn("Could not send scheduler error email: ", e);
-		}
-		finally {
-			Context.closeSession();
-		}
-	}
-	
-	/**
 	 * @param e
 	 * @return <code>String</code> representation of the given exception
 	 */
