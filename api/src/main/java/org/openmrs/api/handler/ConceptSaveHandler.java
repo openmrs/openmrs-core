@@ -58,11 +58,12 @@ public class ConceptSaveHandler implements SaveHandler<Concept> {
 		}
 		if (concept.getDescriptions() != null) {
 			for (ConceptDescription cd : concept.getDescriptions()) {
-				if(cd.getLocale()==null){
-					cd.setLocale(Context.getLocale());
-				}
-				if(StringUtils.isBlank(cd.getDescription())){
+				if (StringUtils.isBlank(cd.getDescription())) {
 					concept.removeDescription(cd);
+					continue;
+				}
+				if (cd.getLocale() == null) {
+					cd.setLocale(Context.getLocale());
 				}
 				cd.setConcept(concept);
 			}
