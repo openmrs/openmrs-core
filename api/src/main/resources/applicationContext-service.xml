@@ -338,7 +338,6 @@
 			<list>
 				<value>classpath:custom_messages</value>
 				<value>classpath:messages</value>
-				<value>/WEB-INF/module_messages</value>
 			</list>
 		</property>
 		<property name="useCodeAsDefaultMessage"><value>true</value></property>
