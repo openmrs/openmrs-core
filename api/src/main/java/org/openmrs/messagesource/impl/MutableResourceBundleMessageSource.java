@@ -26,6 +26,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.PresentationMessage;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.BeansException;
@@ -192,12 +194,27 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 */
 	@Override
 	public void setBasenames(String[] basenames) {
-		super.setBasenames(basenames);
 		if (basenames == null) {
 			this.basenames = new String[0];
 		} else {
 			this.basenames = Arrays.copyOf(basenames, basenames.length);
 		}
+		
+		//add module file urls to basenames used for locating message properties files
+		Collection<Module> modules = ModuleFactory.getStartedModules();
+		if (!modules.isEmpty()) {
+			String[] names =  new String[this.basenames.length + modules.size()];
+			System.arraycopy(this.basenames, 0, names, 0, this.basenames.length);
+			int index = this.basenames.length;
+			for (Module module : modules) {
+				names[index] = "jar:file:" + module.getFile().getAbsolutePath() + "!/messages";
+				index++;
+			}
+			
+			basenames = names;
+		}
+		
+		super.setBasenames(basenames);
 	}
 	
 	/**
