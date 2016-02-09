@@ -18,8 +18,6 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
-import org.openmrs.notification.Message;
-import org.openmrs.notification.MessageException;
 
 /**
  * Sample implementation of task that shows how to send emails to users/roles via message service.

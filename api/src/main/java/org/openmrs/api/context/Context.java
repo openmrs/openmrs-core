@@ -64,11 +64,7 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.ModuleMustStartException;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.notification.AlertService;
-import org.openmrs.notification.MessageException;
-import org.openmrs.notification.MessageSender;
-import org.openmrs.notification.MessageService;
 import org.openmrs.notification.NoteService;
-import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
@@ -587,16 +583,6 @@ public class Context {
 			mailSession = Session.getInstance(props, auth);
 		}
 		return mailSession;
-	}
-	
-	/**
-	 * Convenience method to allow us to change the configuration more easily. TODO Ideally, we
-	 * would be using Spring's method injection to set the dependencies for the message service.
-	 * 
-	 * @return the ServiceContext
-	 */
-	private static MessageSender getMessageSender() {
-		return new MailMessageSender(getMailSession());
 	}
 	
 	/**

@@ -48,7 +48,6 @@ import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.AlertService;
-import org.openmrs.notification.MessageService;
 import org.openmrs.notification.NoteService;
 import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
@@ -352,22 +351,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setLogicService(LogicService logicService) {
 		setService(LogicService.class, logicService);
-	}
-	
-	/**
-	 * @return message service
-	 */
-	public MessageService getMessageService() {
-		return getService(MessageService.class);
-	}
-	
-	/**
-	 * Sets the message service.
-	 *
-	 * @param messageService
-	 */
-	public void setMessageService(MessageService messageService) {
-		setService(MessageService.class, messageService);
 	}
 	
 	/**

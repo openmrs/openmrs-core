@@ -711,10 +711,6 @@
 	
 	<!-- Messaging Service -->
 	<!--
-    <bean id="messageService" class="org.openmrs.notification.impl.MessageServiceImpl">
-        <property name="daoContext">
-        	<ref bean="daoContext"/>
-        </property>
 
         <property name="messageSender">
 			<bean id="mailMessageSender" class="org.openmrs.notification.mail.MailMessageSender">
