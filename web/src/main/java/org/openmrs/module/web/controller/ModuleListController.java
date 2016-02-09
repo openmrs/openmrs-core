@@ -173,9 +173,8 @@ public class ModuleListController extends SimpleFormController {
 				
 				// if we didn't have trouble loading the module, start it
 				if (module != null) {
-					boolean someModuleNeedsARefresh = false;
 					ModuleFactory.startModule(module);
-					WebModuleUtil.startModule(module, getServletContext(), true);
+					boolean someModuleNeedsARefresh = WebModuleUtil.startModule(module, getServletContext(), true);
 					if (module.isStarted()) {
 						success = msa.getMessage("Module.loadedAndStarted", new String[] { module.getName() });
 						
