@@ -8946,4 +8946,444 @@
             <column name="address15" type="varchar(255)"></column>
         </addColumn>
     </changeSet>
+	
+	<changeSet id="TRUNK-3342-insert-new-app-privileges" author="pralay">
+		<comment>Inserting the new application privileges</comment>
+		<sql>
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Concepts', 'Able to view the concept entries portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a208'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Concepts') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Concept Proposals', 'Able to view the Concept Proposals to the system portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a207'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Concept Proposals') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Users', 'Able to view the Users portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a206'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Users') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Encounters', 'Able to view the Encounters portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a205'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Encounters') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Encounter Types', 'Able to view the Encounter Types portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a204'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Encounter Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Locations', 'Able to view the Locations portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a203'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Locations') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Observations', 'Able to view the Patient Observations portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a202'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Observations') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Patients', 'Able to view the Patients portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a201'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Patients') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Patient Identifiers', 'Able to view the Patient Identifiers portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a200'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Patient Identifiers') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Patient Cohorts', 'Able to view the Patient Cohorts portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a199'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Patient Cohorts') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Orders', 'Able to view the Orders portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a198'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Orders') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Forms', 'Able to view the Forms portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a197'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Forms') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Identifier Types', 'Able to view the Patient Identifier Types portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a196'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Identifier Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Concept Classes', 'Able to view the Concept Classes portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a195'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Concept Classes') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Concept Datatypes', 'Able to view the Concept Datatypes portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a194'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Concept Datatypes') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Privileges', 'Able to view the User Privileges portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a193'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Privileges') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Roles', 'Able to view the user Roles portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a192'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Roles') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Field Types', 'Able to view the Field Types portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a191'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Field Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Order Types', 'Able to view the Order Types portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a190'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Order Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Relationship Types', 'Able to view the Relationship Types portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a189'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Relationship Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Concept Sources', 'Able to view the Concept Sources portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a188'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Concept Sources') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Concept Map Types', 'Able to view the Concept Map Types portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a187'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Concept Map Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Concept Reference Terms', 'Able to view the Concept Reference Terms portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a186'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Concept Reference Terms') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Programs', 'Able to view the Patient Programs portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a185'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Programs') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Patient Programs', 'Able to view the Patient Programs portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a184'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Patient Programs') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Global Properties', 'Able to view the Global Properties on the administration screen portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a183'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Global Properties') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Person Attribute Types', 'Able to view the Person Attribute Types portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a182'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Person Attribute Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get People', 'Able to view the Person Objects portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a181'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get People') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Relationships', 'Able to view the Relationships portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a180'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Relationships') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Database Changes', 'Able to view the Database Changes from the admin screen portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a179'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Database Changes') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Problems', 'Able to view the Problems portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a178'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Problems') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Allergies', 'Able to view the Allergies portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a177'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Allergies') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get HL7 Source', 'Able to view the HL7 Source portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a176'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get HL7 Source') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get HL7 Inbound Queue', 'Able to view the HL7 Queue Item portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a175'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get HL7 Inbound Queue') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get HL7 Inbound Archive', 'Able to view the HL7 Archive Item portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a174'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get HL7 Inbound Archive') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get HL7 Inbound Exception', 'Able to view the HL7 Error Item portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a173'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get HL7 Inbound Exception') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Visit Types', 'Able to view the Visit Types portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a172'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Visit Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Visits', 'Able to view the Visits portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a171'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Visits') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Visit Attribute Types', 'Able to view the Visit Attribute Types portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a170'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Visit Attribute Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Location Attribute Types', 'Able to view the Location Attribute Types portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a169'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Location Attribute Types') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Providers', 'Able to view the Providers portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a168'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Providers') limit 1;
+			
+			insert into privilege (privilege, description, uuid) 
+			select 'Patient Overview - Get Encounter Roles', 'Able to view the Encounter Roles portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a167'
+			from privilege
+			where not exists (select privilege from privilege where privilege = 'Patient Overview - Get Encounter Roles') limit 1;
+			
+		</sql>
+	</changeSet>
+
+	<changeSet id="TRUNK-3342-assigning-new-app-privileges" author="pralay">
+		<preConditions onFail="MARK_RAN">
+			<changeSetExecuted id="TRUNK-3342-insert-new-app-privileges" author="pralay" changeLogFile="liquibase-update-to-latest.xml" />
+		</preConditions>
+		<comment>
+			Assigning the new Patient Overview privileges to roles with corresponding api level privileges
+		</comment>
+			<sql>
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Concepts' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Concepts'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Concepts' and rp2.role=rp.role);
+				
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Concept Proposals' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Concept Proposals'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Concept Proposals' and rp2.role=rp.role);
+				
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Users' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Users'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Users' and rp2.role=rp.role);
+				
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Encounters' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Encounters'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Encounters' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Encounter Types' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Encounter Types'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Encounter Types' and rp2.role=rp.role);
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Locations' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Locations'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Locations' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Observations' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Observations'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Observations' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Patients' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Patients'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Patients' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Patient Identifiers' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Patient Identifiers'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Patient Identifiers' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Patient Cohorts' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Patient Cohorts'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Patient Cohorts' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Orders' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Orders'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Orders' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Forms' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Forms'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Forms' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Identifier Types' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Identifier Types'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Identifier Types' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Concept Classes' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Concept Classes'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Concept Classes' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Concept Datatypes' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Concept Datatypes'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Concept Datatypes' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Privileges' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Privileges'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Privileges' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Roles' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Roles'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Roles' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Field Types' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Field Types'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Field Types' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Order Types' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Order Types'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Order Types' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Relationship Types' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Relationship Types'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Relationship Types' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Concept Sources' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Concept Sources'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Concept Sources' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Concept Map Types' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Concept Map Types'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Concept Map Types' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Concept Reference Terms' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Concept Reference Terms'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Concept Reference Terms' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Programs' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Programs'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Programs' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Patient Programs' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Patient Programs'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Patient Programs' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Global Properties' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Global Properties'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Global Properties' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Person Attribute Types' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Person Attribute Types'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Person Attribute Types' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get People' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get People'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get People' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Relationships' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Relationships'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Relationships' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Database Changes' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Database Changes'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Database Changes' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Problems' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Problems'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Problems' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Allergies' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Allergies'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Allergies' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get HL7 Source' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get HL7 Source'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get HL7 Source' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get HL7 Inbound Queue' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get HL7 Inbound Queue'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get HL7 Inbound Queue' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get HL7 Inbound Archive' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get HL7 Inbound Archive'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get HL7 Inbound Archive' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get HL7 Inbound Exception' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get HL7 Inbound Exception'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get HL7 Inbound Exception' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Visit Types' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Visit Types'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Visit Types' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Visits' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Visits'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Visits' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Visit Attribute Types' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Visit Attribute Types'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Visit Attribute Types' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Location Attribute Types' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Location Attribute Types'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Location Attribute Types' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Providers' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Providers'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Providers' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - Get Encounter Roles' FROM role_privilege rp 
+				WHERE rp.privilege = 'Get Encounter Roles'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - Get Encounter Roles' and rp2.role=rp.role); 
+
+			</sql>
+	</changeSet>
+
+	
 </databaseChangeLog>
