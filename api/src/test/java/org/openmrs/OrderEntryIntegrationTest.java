@@ -368,20 +368,20 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		assertEquals(stopDate, order.getDateStopped());
 		assertEquals(stopDate, dcOrder.getAutoExpireDate());
 	}
-
+	
 	@Test
 	public void shouldAllowRevisionOfOrdersInRetrospectiveDataEntry() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrderAutoExpireDate.xml");
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DAY_OF_WEEK, -20);
-
+		
 		Encounter encounter = new Encounter();
 		encounter.setEncounterDatetime(cal.getTime());
 		Patient patient = patientService.getPatient(6);
 		encounter.setPatient(patient);
 		encounter.setEncounterType(encounterService.getEncounterType(1));
 		encounterService.saveEncounter(encounter);
-
+		
 		DrugOrder order = new DrugOrder();
 		order.setEncounter(encounter);
 		order.setPatient(patient);
@@ -400,14 +400,14 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setDuration(10);
 		order.setDurationUnits(conceptService.getConcept(1001));
 		orderService.saveOrder(order, null);
-
+		
 		cal.add(Calendar.DAY_OF_WEEK, 4);
 		Encounter encounter2 = new Encounter();
 		encounter2.setEncounterDatetime(cal.getTime());
 		encounter2.setPatient(patient);
 		encounter2.setEncounterType(encounterService.getEncounterType(1));
 		encounterService.saveEncounter(encounter2);
-
+		
 		DrugOrder order2 = new DrugOrder();
 		order2.setEncounter(encounter2);
 		order2.setPatient(patient);
@@ -428,7 +428,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order2.setAction(Order.Action.REVISE);
 		order2.setPreviousOrder(order);
 		orderService.saveRetrospectiveOrder(order2, null);
-
+		
 		assertEquals(DateUtils.addSeconds(order2.getDateActivated(), -1), order.getDateStopped());
 	}
 }

@@ -301,7 +301,7 @@ public class Context {
 		
 		if (Daemon.isDaemonThread()) {
 			log.error("Authentication attempted while operating on a "
-					+ "daemon thread, authenticating is not necessary or allowed");
+			        + "daemon thread, authenticating is not necessary or allowed");
 			return;
 		}
 		
@@ -1371,7 +1371,7 @@ public class Context {
 	public static void updateSearchIndex() {
 		getContextDAO().updateSearchIndex();
 	}
-
+	
 	/**
 	 * Updates the search index. It is an asynchronous operation.
 	 * <p>

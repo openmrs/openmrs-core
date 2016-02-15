@@ -98,7 +98,7 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order, OrderContext orderContext) throws APIException;
-
+	
 	/**
 	 * Save or update the given retrospective <code>order</code> in the database. If the OrderType for the order
 	 * is not specified, then it will be set to the one set on the OrderContext if any, if none
@@ -106,17 +106,17 @@ public interface OrderService extends OpenmrsService {
 	 * the ordered concept otherwise the save fails. If the CareSetting field of the order is not
 	 * specified then it will default to the one set on the passed in OrderContext if any otherwise
 	 * the save fails. Retrospective entry of orders can affect downstream systems that acts on orders created.
-     * Orders cannot be stopped if they are already stopped in retrospective entry.
-     *
-     * @param order the Order to save
-     * @param orderContext the OrderContext object
-     * @return the Order that was saved
-     * @throws APIException
-     * @see #saveOrder(Order, OrderContext)
+	 * Orders cannot be stopped if they are already stopped in retrospective entry.
+	 *
+	 * @param order the Order to save
+	 * @param orderContext the OrderContext object
+	 * @return the Order that was saved
+	 * @throws APIException
+	 * @see #saveOrder(Order, OrderContext)
 	 */
-	@Authorized({PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS})
+	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveRetrospectiveOrder(Order order, OrderContext orderContext);
-
+	
 	/**
 	 * Completely delete an order from the database. This should not typically be used unless
 	 * desperately needed. Most orders should just be voided. See {@link #voidOrder(Order, String)}
