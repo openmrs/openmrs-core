@@ -350,7 +350,7 @@ public class Daemon {
 	
 	/**
 	 * @return the current thread daemon user or null if not assigned
-	 * @since 2.0.0, 1.12.0, 1.11.6, 1.10.5, 1.9.11
+	 * @since 2.0.0, 1.12.0, 1.11.6, 1.10.4, 1.9.11
 	 */
 	public static User getDaemonThreadUser() {
 		if (isDaemonThread()) {
