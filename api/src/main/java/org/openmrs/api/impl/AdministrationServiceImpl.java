@@ -91,6 +91,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	private HttpClient implementationIdHttpClient;
 	
+	private volatile Boolean databaseStringComparisonCaseSensitive;
+	
 	/**
 	 * Default empty constructor
 	 */
@@ -1036,6 +1038,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (newValue.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST)) {
 			// reset the calculated locale values
 			presentationLocales = null;
+		} else if (OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON.equals(newValue.getProperty())) {
+			databaseStringComparisonCaseSensitive = null;
 		}
 	}
 	
@@ -1043,8 +1047,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyDeleted(java.lang.String)
 	 */
 	public void globalPropertyDeleted(String propertyName) {
-		// TODO Auto-generated method stub
-		
+		if (OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON.equals(propertyName)) {
+			databaseStringComparisonCaseSensitive = null;
+		}
 	}
 	
 	/**
@@ -1272,7 +1277,11 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Override
 	public boolean isDatabaseStringComparisonCaseSensitive() {
-		return Boolean.valueOf(getGlobalProperty(OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON, "true"));
+		if (databaseStringComparisonCaseSensitive == null) {
+			databaseStringComparisonCaseSensitive = Boolean.valueOf(getGlobalProperty(
+			    OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON, "true"));
+		}
+		return databaseStringComparisonCaseSensitive;
 	}
 	
 }
