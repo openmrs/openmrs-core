@@ -8650,7 +8650,68 @@
 			<column name="drug_non_coded" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
-	
+
+	<changeSet id="20160216-1700" author="bahmni">
+		<comment>
+			Set uuid for columns in all tables which has uuid as null. This is required for successful run of next changeSet.
+		</comment>
+		<sql>
+			update cohort set uuid =uuid() where uuid is null;
+			update concept set uuid =uuid() where uuid is null;
+			update concept_answer set uuid =uuid() where uuid is null;
+			update concept_class set uuid =uuid() where uuid is null;
+			update concept_datatype set uuid =uuid() where uuid is null;
+			update concept_description set uuid =uuid() where uuid is null;
+			update concept_name set uuid =uuid() where uuid is null;
+			update concept_name_tag set uuid =uuid() where uuid is null;
+			update concept_proposal set uuid =uuid() where uuid is null;
+			update concept_reference_map set uuid =uuid() where uuid is null;
+			update concept_reference_source set uuid =uuid() where uuid is null;
+			update concept_set set uuid =uuid() where uuid is null;
+			update concept_state_conversion set uuid =uuid() where uuid is null;
+			update drug set uuid =uuid() where uuid is null;
+			update encounter set uuid =uuid() where uuid is null;
+			update encounter_type set uuid =uuid() where uuid is null;
+			update field set uuid =uuid() where uuid is null;
+			update field_answer set uuid =uuid() where uuid is null;
+			update field_type set uuid =uuid() where uuid is null;
+			update form set uuid =uuid() where uuid is null;
+			update form_field set uuid =uuid() where uuid is null;
+			update global_property set uuid =uuid() where uuid is null;
+			update hl7_in_archive set uuid =uuid() where uuid is null;
+			update hl7_in_error set uuid =uuid() where uuid is null;
+			update hl7_in_queue set uuid =uuid() where uuid is null;
+			update hl7_source set uuid =uuid() where uuid is null;
+			update location set uuid =uuid() where uuid is null;
+			update location_tag set uuid =uuid() where uuid is null;
+			update note set uuid =uuid() where uuid is null;
+			update notification_alert set uuid =uuid() where uuid is null;
+			update notification_template set uuid =uuid() where uuid is null;
+			update obs set uuid =uuid() where uuid is null;
+			update order_type set uuid =uuid() where uuid is null;
+			update orders set uuid =uuid() where uuid is null;
+			update patient_identifier set uuid =uuid() where uuid is null;
+			update patient_identifier_type set uuid =uuid() where uuid is null;
+			update patient_program set uuid =uuid() where uuid is null;
+			update patient_state set uuid =uuid() where uuid is null;
+			update person set uuid =uuid() where uuid is null;
+			update person_address set uuid =uuid() where uuid is null;
+			update person_attribute set uuid =uuid() where uuid is null;
+			update person_attribute_type set uuid =uuid() where uuid is null;
+			update person_name set uuid =uuid() where uuid is null;
+			update privilege set uuid =uuid() where uuid is null;
+			update program set uuid =uuid() where uuid is null;
+			update program_workflow set uuid =uuid() where uuid is null;
+			update program_workflow_state set uuid =uuid() where uuid is null;
+			update relationship set uuid =uuid() where uuid is null;
+			update relationship_type set uuid =uuid() where uuid is null;
+			update report_object set uuid =uuid() where uuid is null;
+			update report_schema_xml set uuid =uuid() where uuid is null;
+			update role set uuid =uuid() where uuid is null;
+			update serialized_object set uuid =uuid() where uuid is null;
+		</sql>
+	</changeSet>
+
 	<changeSet id="20160202-1743" author="rkorytkowski">
 		<comment>
 			Set uuid columns to "NOT NULL", if not set already for 1.9.x tables
