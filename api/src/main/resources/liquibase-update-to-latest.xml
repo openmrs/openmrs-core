@@ -8650,7 +8650,32 @@
 			<column name="drug_non_coded" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
-	
+
+	<changeSet id="20160216-1700" author="bahmni">
+		<comment>
+			Set uuid for columns in all tables which has uuid as null. This is required for successful run of next changeSet.
+		</comment>
+		<customChange class="org.openmrs.util.databasechange.GenerateUuid">
+			<param name="tableNames">
+				cohort concept concept_answer concept_class concept_datatype concept_description
+				concept_name concept_name_tag concept_proposal concept_reference_map concept_reference_source
+				concept_set concept_state_conversion drug encounter encounter_type field field_answer field_type form
+				form_field global_property hl7_in_archive hl7_in_error hl7_in_queue hl7_source location location_tag
+				note notification_alert notification_template obs order_type orders patient_identifier
+				patient_identifier_type patient_program patient_state person person_address person_attribute
+				person_attribute_type person_name privilege program program_workflow program_workflow_state relationship
+				relationship_type report_object report_schema_xml role serialized_object
+			</param>
+			<param name="columnName" value="uuid"/>
+			<param name="idExceptions">
+				field_answer_id=field_id|role_id=role|privilege_id=privilege|global_property_id=property
+				|notification_alert_id=alert_id|notification_template_id=template_id|orders_id=order_id
+				|report_schema_xml_id=report_schema_id|concept_reference_map_id=concept_map_id
+				|concept_reference_source_id=concept_source_id
+			</param>
+		</customChange>
+	</changeSet>
+
 	<changeSet id="20160202-1743" author="rkorytkowski">
 		<comment>
 			Set uuid columns to "NOT NULL", if not set already for 1.9.x tables
