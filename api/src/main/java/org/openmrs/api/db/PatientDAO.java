@@ -268,6 +268,14 @@ public interface PatientDAO {
 	public Allergy getAllergy(Integer allergyId);
 	
 	/**
+	 * Gets a allergy
+	 * 
+	 * @param uuid
+	 * @return allergy
+	 */
+	public Allergy getAllergyByUuid(String uuid);
+	
+	/**
 	 * Saves an allergy to the database
 	 * 
 	 * @param allergy the allergy to save

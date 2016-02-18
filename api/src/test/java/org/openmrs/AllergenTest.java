@@ -35,7 +35,6 @@ public class AllergenTest {
 	}
 	
 	private void assertCoded() {
-		Assert.assertNotEquals(allergen.getCodedAllergen().getUuid(), Allergen.OTHER_NON_CODED_UUID);
 		Assert.assertNull(allergen.getNonCodedAllergen());
 		Assert.assertTrue(allergen.isCoded());
 	}
@@ -59,22 +58,16 @@ public class AllergenTest {
 	
 	@Test
 	public void isSameAllergen_shouldReturnTrueForSameNonCodedAllergen() {
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
-		Assert.assertTrue(new Allergen(null, concept, "OTHER VALUE").isSameAllergen(new Allergen(null, concept, "OTHER VALUE")));
+		Assert.assertTrue(new Allergen(null, null, "OTHER VALUE").isSameAllergen(new Allergen(null, null, "OTHER VALUE")));
 	}
 	
 	@Test
 	public void isSameAllergen_shouldBeCaseInsensitiveForNonCodedAllergen() {
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
-		Assert.assertTrue(new Allergen(null, concept, "other value").isSameAllergen(new Allergen(null, concept, "OTHER VALUE")));
+		Assert.assertTrue(new Allergen(null, null, "other value").isSameAllergen(new Allergen(null, null, "OTHER VALUE")));
 	}
 	
 	@Test
 	public void isSameAllergen_shouldReturnFalseForDifferentNonCodedAllergen() {
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
-		Assert.assertFalse(new Allergen(null, concept, "OTHER VALUE1").isSameAllergen(new Allergen(null, concept, "OTHER VALUE2")));
+		Assert.assertFalse(new Allergen(null, null, "OTHER VALUE1").isSameAllergen(new Allergen(null, null, "OTHER VALUE2")));
 	}
 }

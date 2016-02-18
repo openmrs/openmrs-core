@@ -23,8 +23,6 @@ public class Allergen {
 	
 	private String nonCodedAllergen;
 	
-	public static String OTHER_NON_CODED_UUID = "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-	
 	/**
 	 * Default constructor
 	 */
@@ -68,9 +66,7 @@ public class Allergen {
      */
     public void setCodedAllergen(Concept codedAllergen) {
 		this.codedAllergen = codedAllergen;
-		if (codedAllergen != null && !codedAllergen.getUuid().equals(OTHER_NON_CODED_UUID)) {
-			nonCodedAllergen = null;
-		}
+		nonCodedAllergen = null;
     }
 	
     /**
@@ -86,14 +82,14 @@ public class Allergen {
     public void setNonCodedAllergen(String nonCodedAllergen) {
 		this.nonCodedAllergen = nonCodedAllergen;
 		if (StringUtils.isNotBlank(nonCodedAllergen)) {
-			if (codedAllergen != null && !codedAllergen.getUuid().equals(OTHER_NON_CODED_UUID)) {
+			if (codedAllergen != null) {
 				codedAllergen = null;
 			}
 		}
     }
 
 	public boolean isCoded(){
-		if (codedAllergen == null || codedAllergen.getUuid().equals(OTHER_NON_CODED_UUID)) {
+		if (codedAllergen == null) {
 			return false;
 		}
 		return true;
@@ -101,10 +97,11 @@ public class Allergen {
 
 	@Override
     public String toString() {
-	    if (StringUtils.isNotBlank(nonCodedAllergen)) {
+		if (isCoded()) {
+		    return codedAllergen.getName().getName();
+		} else {
 	    	return nonCodedAllergen;
 	    }
-	    return codedAllergen.getName().getName();
     }
 	
 	/**

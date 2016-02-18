@@ -177,14 +177,12 @@ public class AllergiesTest {
 	 */
 	@Test(expected = APIException.class)
 	public void add_shouldNotAllowDuplicateNonCodedAllergen(){
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
 		Allergy allergy1 = new Allergy();
-		allergy1.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
+		allergy1.setAllergen(new Allergen(null, null, "OTHER VALUE"));
 		
 		Allergy allergy2 = new Allergy();
-		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
+		allergy2.setAllergen(new Allergen(null, null, "OTHER VALUE"));
 		
 		allergies.add(allergy1);
 		allergies.add(allergy2);
@@ -195,14 +193,12 @@ public class AllergiesTest {
 	 */
 	@Test
 	public void add_shouldAllowNonDuplicateNonCodedAllergen(){
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
 		Allergy allergy1 = new Allergy();
-		allergy1.setAllergen(new Allergen(null, concept, "OTHER VALUE1"));
+		allergy1.setAllergen(new Allergen(null, null, "OTHER VALUE1"));
 		
 		Allergy allergy2 = new Allergy();
-		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE2"));
+		allergy2.setAllergen(new Allergen(null, null, "OTHER VALUE2"));
 		
 		allergies.add(allergy1);
 		allergies.add(allergy2);
@@ -244,14 +240,12 @@ public class AllergiesTest {
 	 */
 	@Test(expected = APIException.class)
 	public void add2_shouldNotAllowDuplicateNonCodedAllergen(){
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
 		Allergy allergy1 = new Allergy();
-		allergy1.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
+		allergy1.setAllergen(new Allergen(null, null, "OTHER VALUE"));
 		
 		Allergy allergy2 = new Allergy();
-		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
+		allergy2.setAllergen(new Allergen(null, null, "OTHER VALUE"));
 		
 		allergies.add(0, allergy1);
 		allergies.add(0, allergy2);
@@ -262,14 +256,12 @@ public class AllergiesTest {
 	 */
 	@Test
 	public void add2_shouldAllowNonDuplicateNonCodedAllergen(){
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
 		Allergy allergy1 = new Allergy();
-		allergy1.setAllergen(new Allergen(null, concept, "OTHER VALUE1"));
+		allergy1.setAllergen(new Allergen(null, null, "OTHER VALUE1"));
 		
 		Allergy allergy2 = new Allergy();
-		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE2"));
+		allergy2.setAllergen(new Allergen(null, null, "OTHER VALUE2"));
 		
 		allergies.add(0, allergy1);
 		allergies.add(0, allergy2);
@@ -316,14 +308,12 @@ public class AllergiesTest {
 	 */
 	@Test(expected = APIException.class)
 	public void addAll_shouldNotAllowDuplicateNonCodedAllergen(){
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
 		Allergy allergy1 = new Allergy();
-		allergy1.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
+		allergy1.setAllergen(new Allergen(null, null, "OTHER VALUE"));
 		
 		Allergy allergy2 = new Allergy();
-		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
+		allergy2.setAllergen(new Allergen(null, null, "OTHER VALUE"));
 		
 		Allergies allergies = new Allergies();
 		allergies.add(allergy1);
@@ -337,14 +327,12 @@ public class AllergiesTest {
 	 */
 	@Test(expected = APIException.class)
 	public void addAll_shouldAllowNonDuplicateNonCodedAllergen(){
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
 		Allergy allergy1 = new Allergy();
-		allergy1.setAllergen(new Allergen(null, concept, "OTHER VALUE1"));
+		allergy1.setAllergen(new Allergen(null, null, "OTHER VALUE1"));
 		
 		Allergy allergy2 = new Allergy();
-		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE2"));
+		allergy2.setAllergen(new Allergen(null, null, "OTHER VALUE2"));
 		
 		Allergies allergies = new Allergies();
 		allergies.add(allergy1);
@@ -394,14 +382,12 @@ public class AllergiesTest {
 	 */
 	@Test(expected = APIException.class)
 	public void addAll2_shouldNotAllowDuplicateNonCodedAllergen(){
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
 		Allergy allergy1 = new Allergy();
-		allergy1.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
+		allergy1.setAllergen(new Allergen(null, null, "OTHER VALUE"));
 		
 		Allergy allergy2 = new Allergy();
-		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
+		allergy2.setAllergen(new Allergen(null, null, "OTHER VALUE"));
 		
 		Allergies allergies = new Allergies();
 		allergies.add(allergy1);
@@ -415,14 +401,12 @@ public class AllergiesTest {
 	 */
 	@Test(expected = APIException.class)
 	public void addAll2_shouldAllowNonDuplicateNonCodedAllergen(){
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
 		Allergy allergy1 = new Allergy();
-		allergy1.setAllergen(new Allergen(null, concept, "OTHER VALUE1"));
+		allergy1.setAllergen(new Allergen(null, null, "OTHER VALUE1"));
 		
 		Allergy allergy2 = new Allergy();
-		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE2"));
+		allergy2.setAllergen(new Allergen(null, null, "OTHER VALUE2"));
 		
 		Allergies allergies = new Allergies();
 		allergies.add(allergy1);
@@ -474,14 +458,12 @@ public class AllergiesTest {
 	 */
 	@Test(expected = APIException.class)
 	public void addAll6_shouldNotAllowDuplicateNonCodedAllergen(){
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
 		Allergy allergy1 = new Allergy();
-		allergy1.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
+		allergy1.setAllergen(new Allergen(null, null, "OTHER VALUE"));
 		
 		Allergy allergy2 = new Allergy();
-		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
+		allergy2.setAllergen(new Allergen(null, null, "OTHER VALUE"));
 		
 		List<Allergy> allergies = new ArrayList<Allergy>();
 		allergies.add(allergy1);
@@ -495,14 +477,12 @@ public class AllergiesTest {
 	 */
 	@Test(expected = APIException.class)
 	public void addAll7_shouldNotAllowDuplicateNonCodedAllergen(){
-		Concept concept = new Concept();
-		concept.setUuid(Allergen.OTHER_NON_CODED_UUID);
 		
 		Allergy allergy1 = new Allergy();
-		allergy1.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
+		allergy1.setAllergen(new Allergen(null, null, "OTHER VALUE"));
 		
 		Allergy allergy2 = new Allergy();
-		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
+		allergy2.setAllergen(new Allergen(null, null, "OTHER VALUE"));
 		
 		List<Allergy> allergies = new ArrayList<Allergy>();
 		allergies.add(allergy1);

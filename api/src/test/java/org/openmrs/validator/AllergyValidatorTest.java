@@ -129,7 +129,7 @@ public class AllergyValidatorTest {
 	@Test
 	public void validate_shouldFailIfNonCodedAllergenIsNullAndAllergenIsSetToOtherNonCoded() throws Exception {
 		Allergy allergy = new Allergy();
-		allergy.setAllergen(new Allergen(null, createMockConcept(Allergen.OTHER_NON_CODED_UUID), null));
+		allergy.setAllergen(new Allergen(null, null, null));
 		Errors errors = new BindException(allergy, "allergy");
 		validator.validate(allergy, errors);
 		assertTrue(errors.hasFieldErrors("allergen"));
@@ -170,13 +170,12 @@ public class AllergyValidatorTest {
 		when(Context.getMessageSourceService()).thenReturn(ms);
 		
 		Allergies allergies = new Allergies();
-		Concept nonCodedConcept = createMockConcept(Allergen.OTHER_NON_CODED_UUID);
 		final String freeText = "some text";
-		Allergen allergen1 = new Allergen(AllergenType.DRUG, nonCodedConcept, freeText);
+		Allergen allergen1 = new Allergen(AllergenType.DRUG, null, freeText);
 		allergies.add(new Allergy(null, allergen1, null, null, null));
 		when(ps.getAllergies(any(Patient.class))).thenReturn(allergies);
 		
-		Allergen duplicateAllergen = new Allergen(AllergenType.FOOD, nonCodedConcept, freeText);
+		Allergen duplicateAllergen = new Allergen(AllergenType.FOOD, null, freeText);
 		Allergy allergy = new Allergy(mock(Patient.class), duplicateAllergen, null, null, null);
 		Errors errors = new BindException(allergy, "allergy");
 		validator.validate(allergy, errors);
