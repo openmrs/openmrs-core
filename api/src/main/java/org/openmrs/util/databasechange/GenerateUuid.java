@@ -16,25 +16,27 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
+
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.CustomChangeException;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
-
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
-import org.apache.commons.lang.StringUtils;
-import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Uses Java's {@link UUID} class to generate UUIDs for all rows in all tables in the tableNames
- * parameter. <br/>
+ * Generates UUIDs for all rows in all tables in the tableNames
+ * parameter.
  * <br/>
- * This class should only be used if you are not using MySQL, Oracle, MsSql, or some other dbms that
- * has a UUID-like function. <br/>
+ * If run on MySQL, it generates SQL statements using the in-built uuid() MySQL function,
+ * otherwise it uses Java's {@link UUID} class, which is less efficient.<br/>
  * <br/>
  * Expects parameter: "tableNames" : whitespace delimited list of table names to add <br/>
  * Expects parameter: "columnName" : name of the column to change. Default: "uuid" <br/>
@@ -45,6 +47,10 @@ import org.openmrs.util.OpenmrsUtil;
  * "field_answer_id=field_id|role_id=role|privilege_id=privilege"
  */
 public class GenerateUuid implements CustomTaskChange {
+	
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	public static final Integer TRANSACTION_BATCH_SIZE_LIMIT = 512;
 	
 	/**
 	 * The "tableNames" parameter defined in the liquibase xml changeSet element that is calling
@@ -87,61 +93,124 @@ public class GenerateUuid implements CustomTaskChange {
 	private String genericUpdateSql;
 	
 	/**
-	 * Does the work of adding UUIDs to all rows.
-	 * 
+	 * Adds UUIDs to all rows for the specified tables. It generates UUIDs using Java and updates one row at a time, thus
+	 * it is not very efficient. When running on the MySQL database, we generate SQL statements using the uuid MySQL function,
+	 * which is much faster.
+	 *
 	 * @see liquibase.change.custom.CustomTaskChange#execute(liquibase.database.Database)
 	 */
 	@Override
 	public void execute(Database database) throws CustomChangeException {
-		
-		// if we're in a "generate sql file" mode, quit early
-		if (Context.getRuntimeProperties().size() == 0)
-			return;
-		
-		if (tableNamesArray == null || tableNamesArray.length == 0)
-			throw new CustomChangeException("At least one table name in the 'tableNames' parameter is required", null);
-		
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
-		
-		// loop over all tables
-		for (String tableName : tableNamesArray) {
-			try {
-				Statement idStatement = null;
-				PreparedStatement updateStatement = null;
-				try {
-					String idSql = genericIdSql.replaceAll("tablename", tableName);
-					String updateSql = genericUpdateSql.replaceAll("tablename", tableName);
+		boolean initialAutoCommit = true;
+		try {
+			initialAutoCommit = connection.getAutoCommit();
+			connection.setAutoCommit(false);
+			
+			if (database.getTypeName().equals("mysql")) {
+				String updateSql = "update %s set " + columnName + " = uuid() where " + columnName + " is null";
+				for (String tablename : tableNamesArray) {
+					String rawSql = String.format(updateSql, tablename);
 					
-					// hacky way to deal with tables that don't follow the tableNam_id convention
-					for (Map.Entry<String, String> idException : idExceptionsMap.entrySet()) {
-						idSql = idSql.replaceFirst(idException.getKey(), idException.getValue());
-						updateSql = updateSql.replaceFirst(idException.getKey(), idException.getValue());
+					Statement statement = null;
+					try {
+						statement = connection.createStatement();
+						statement.execute(rawSql);
+						statement.close();
+						connection.commit();
 					}
-					idStatement = connection.createStatement();
-					updateStatement = connection.prepareStatement(updateSql);
-					
-					// Map<Integer, UUID> uuids = new HashMap<Integer, UUID>();
-					
-					ResultSet ids = idStatement.executeQuery(idSql);
-					while (ids.next()) {
-						updateStatement.setObject(2, ids.getObject(1)); // set the primary key number
-						updateStatement.setString(1, UUID.randomUUID().toString()); // set the uuid for this row
-						updateStatement.executeUpdate();
+					catch (SQLException e) {
+						throw new CustomChangeException(e);
 					}
+					finally {
+						if (statement != null) {
+							try {
+								statement.close();
+							}
+							catch (SQLException e) {
+								log.warn(e);
+							}
+						}
+					}
+					
 				}
-				finally {
-					if (idStatement != null)
-						idStatement.close();
-					if (updateStatement != null)
-						updateStatement.close();
+			} else {
+				int transactionBatchSize = 0;
+				// loop over all tables
+				for (String tableName : tableNamesArray) {
+					try {
+						Statement idStatement = null;
+						PreparedStatement updateStatement = null;
+						try {
+							String idSql = genericIdSql.replaceAll("tablename", tableName);
+							String updateSql = genericUpdateSql.replaceAll("tablename", tableName);
+							
+							// hacky way to deal with tables that don't follow the tableNam_id convention
+							for (Map.Entry<String, String> idException : idExceptionsMap.entrySet()) {
+								idSql = idSql.replaceFirst(idException.getKey(), idException.getValue());
+								updateSql = updateSql.replaceFirst(idException.getKey(), idException.getValue());
+							}
+							
+							idStatement = connection.createStatement();
+							updateStatement = connection.prepareStatement(updateSql);
+							
+							ResultSet ids = idStatement.executeQuery(idSql);
+							while (ids.next()) {
+								updateStatement.setObject(2, ids.getObject(1)); // set the primary key number
+								updateStatement.setString(1, UUID.randomUUID().toString()); // set the uuid for this row
+								updateStatement.executeUpdate();
+								
+								transactionBatchSize++;
+								if (transactionBatchSize > TRANSACTION_BATCH_SIZE_LIMIT) {
+									transactionBatchSize = 0;
+									connection.commit();
+								}
+							}
+							
+							idStatement.close();
+							updateStatement.close();
+						}
+						finally {
+							if (idStatement != null) {
+								try {
+									idStatement.close();
+								}
+								catch (SQLException e) {
+									log.warn(e);
+								}
+							}
+							if (updateStatement != null) {
+								try {
+									updateStatement.close();
+								}
+								catch (SQLException e) {
+									log.warn(e);
+								}
+							}
+						}
+					}
+					catch (DatabaseException e) {
+						throw new CustomChangeException("Unable to set uuid on table: " + tableName, e);
+					}
+					catch (SQLException e) {
+						throw new CustomChangeException("Unable to set uuid on table: " + tableName, e);
+					}
 				}
 				
+				connection.commit();
+			}
+			
+			connection.setAutoCommit(initialAutoCommit);
+		}
+		catch (DatabaseException e) {
+			throw new CustomChangeException(e);
+		}
+		finally {
+			try {
+				connection.setAutoCommit(initialAutoCommit);
 			}
 			catch (DatabaseException e) {
-				throw new CustomChangeException("Unable to set uuid on table: " + tableName, e);
-			}
-			catch (SQLException e) {
-				throw new CustomChangeException("Unable to set uuid on table: " + tableName, e);
+				//silently ignore so that the actual error is not hidden
 			}
 		}
 	}
@@ -169,6 +238,9 @@ public class GenerateUuid implements CustomTaskChange {
 	 */
 	@Override
 	public void setUp() throws SetupException {
+		if (StringUtils.isBlank(tableNames)) {
+			throw new SetupException("At least one table name in the 'tableNames' parameter is required");
+		}
 		
 		tableNamesArray = StringUtils.split(tableNames);
 		idExceptionsMap = OpenmrsUtil.parseParameterList(idExceptions);
