@@ -18,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.StringType;
+import org.hibernate.type.TextType;
 import org.hibernate.type.Type;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
@@ -208,37 +209,46 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#validate(java.lang.Object, Errors)
+	 * @should Pass validation if field lengths are correct
+	 * @should Fail validation if field lengths are not correct
+	 * @should Fail validation for location class if field lengths are not correct
+	 * @should Pass validation for location class if field lengths are correct
 	 */
+
+	@SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
 	@Override
 	public void validate(Object object, Errors errors) throws DAOException {
-		
 		Class entityClass = object.getClass();
-
 		ClassMetadata metadata = sessionFactory.getClassMetadata(entityClass);
 		if (metadata != null) {
 			String[] propNames = metadata.getPropertyNames();
 			Object IdentifierTpye = metadata.getIdentifierType();
 			String identifierName = metadata.getIdentifierPropertyName();
-			if (IdentifierTpye instanceof StringType && identifierName != null) {
-				ValidateUtil.validateFieldLengths(errors, object.getClass(), identifierName);
+			if (IdentifierTpye instanceof StringType || IdentifierTpye instanceof TextType) {
+				int maxLength = getMaximumPropertyLength(entityClass, identifierName);
+				String identifierValue = (String) metadata.getIdentifier(object);
+				if (identifierValue != null) {
+					int identifierLength = identifierValue.length();
+					if (identifierLength > maxLength) {
+						errors.rejectValue(identifierName, "error.exceededMaxLengthOfField", new Object[] { maxLength }, null);
+					}
+				}
 			}
 			for (int i = 0; i < propNames.length; i++) {
-				String propType = metadata.getPropertyType(propNames[i]).getName();
-				if (propType.equalsIgnoreCase("String")) {
-					Field fieldTerm = null;
-					try {
-						ValidateUtil.validateFieldLengths(errors, object.getClass(), propNames[i]);
-					} catch (NotReadablePropertyException e1) {//NotReadablePropertyException
-						validateUsingReflection(object, errors,propNames[i]);
-					}
-					 catch (InvalidPropertyException e1) {//InvalidPropertyException
-							validateUsingReflection(object, errors,propNames[i]);
+				Type propType = metadata.getPropertyType(propNames[i]);
+				if (propType instanceof StringType || propType instanceof TextType) {
+					String propertyValue = (String) metadata.getPropertyValue(object, propNames[i]);
+					if (propertyValue != null) {
+						int maxLength = getMaximumPropertyLength(entityClass, propNames[i]);
+						int propertyValueLength = propertyValue.length();
+						if (propertyValueLength > maxLength) {
+							errors.rejectValue(propNames[i], "error.exceededMaxLengthOfField", new Object[] { maxLength },
+									null);
 						}
+					}
 				}
-
 			}
 		}
-
 		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getFlushMode();
 		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
 		try {
@@ -253,39 +263,6 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		}
 
 	}
-
-	public void validateUsingReflection(Object object, Errors errors,String propName){
-		Object value = null;
-		Field fieldTerm = null;
-		Class entityClass = object.getClass();
-		try {
-			fieldTerm = object.getClass().getDeclaredField(propName);
-			fieldTerm.setAccessible(true);
-		} catch (NoSuchFieldException e1) {
-			log.warn("Unable to get the value of " + propName);
-		} catch (SecurityException e1) {
-			log.warn("Unable to get the value of " + propName);
-
-		}
-		
-		try {
-			value = fieldTerm.get(object);
-		} catch (IllegalArgumentException e1) {
-			log.warn("Unable to get the value of " + fieldTerm.getName());
-		} catch (IllegalAccessException e1) {
-			log.warn("Unable to get the value of " + fieldTerm.getName());
-		}
-		if (value != null) {
-			int l1 = getMaximumPropertyLength(entityClass, fieldTerm.getName());
-			int l2 = value.toString().length();
-			if (l2 > l1) {
-				errors.rejectValue(fieldTerm.getName(), "error.exceededMaxLengthOfField",
-						new Object[] { l1 }, null);
-			}
-		}
-	}
-	
-
 
 	/**
 	 * Fetches all validators that are registered
