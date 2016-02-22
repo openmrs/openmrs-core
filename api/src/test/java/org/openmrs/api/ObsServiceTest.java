@@ -54,6 +54,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.ObsServiceImpl;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.obs.handler.AbstractHandler;
 import org.openmrs.obs.handler.BinaryDataHandler;
 import org.openmrs.obs.handler.ImageHandler;
 import org.openmrs.obs.handler.TextHandler;
@@ -1787,5 +1788,63 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 		Assert.assertNull(obsService.getObs(orderReferencingObsId));
 		Assert.assertNotNull(orderService.getOrder(referencedOrderId));
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	@Verifies(value = "should delete the previous file when a complex observation is updated with a new complex value", method = "saveObs(Obs,String)")
+	public void saveObs_shouldDeleteThePreviousFileWhenAComplexObservationIsUpdatedWithANewComplexValue() throws Exception {
+
+		String changeMessage = "Testing TRUNK-4538";
+
+		executeDataSet(COMPLEX_OBS_XML);
+
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+		AdministrationService as = Context.getAdministrationService();
+
+		// make sure the file isn't there to begin with
+		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
+				.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+		File createdFile = new File(complexObsDir, "nameOfFile.txt");
+		if (createdFile.exists())
+			createdFile.delete();
+
+		// the complex data to put onto an obs that will be saved
+		Reader input = new CharArrayReader("This is a string to save to a file".toCharArray());
+		ComplexData complexData = new ComplexData("nameOfFile.txt", input);
+
+		// must fetch the concept instead of just new Concept(8473) because the attributes on concept are checked
+		// this is a concept mapped to the text handler
+		Concept questionConcept = cs.getConcept(8474);
+
+		Obs obsToSave = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+		obsToSave.setComplexData(complexData);
+		os.saveObs(obsToSave, null);
+
+
+		File updatedFile = new File(complexObsDir, "nameOfUpdatedFile.txt");
+		if (updatedFile.exists())
+			updatedFile.delete();
+
+
+		// the complex data to put onto an obs that will be updated
+		Reader updatedInput = new CharArrayReader("This is a string to save to a file which uploaded to update an obs".toCharArray());
+		ComplexData updatedComplexData = new ComplexData("nameOfUpdatedFile.txt", updatedInput);
+
+		obsToSave.setComplexData(updatedComplexData);
+		try {
+			os.saveObs(obsToSave, changeMessage);
+
+			Assert.assertFalse(createdFile.exists());
+		}
+		finally {
+			// we always have to delete this inside the same unit test because it is outside the
+			// database and hence can't be "rolled back" like everything else
+			updatedFile.delete();
+		}
+
 	}
 }
