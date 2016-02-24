@@ -63,6 +63,7 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
 import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -973,6 +974,26 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return null if no object found with given uuid", method = "getDrugByUuid(String)")
 	public void getDrugByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getDrugByUuid("some invalid uuid"));
+	}
+	
+	/**
+	 * @see {@link ConceptService#getDrugIngredientByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getDrugIngredientByUuid(String)")
+	public void getDrugIngredientByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+		String uuid = "6519d653-393d-4118-9c83-a3715b82d4dc";
+		DrugIngredient ingredient = Context.getConceptService().getDrugIngredientByUuid(uuid);
+		Assert.assertEquals(88, (int) ingredient.getIngredient().getConceptId());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getDrugIngredientByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getDrugIngredientByUuid(String)")
+	public void getDrugIngredientByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+		Assert.assertNull(Context.getConceptService().getDrugIngredientByUuid("some invalid uuid"));
 	}
 	
 	@Test
