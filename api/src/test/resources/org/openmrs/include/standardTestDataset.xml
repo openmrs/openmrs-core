@@ -180,6 +180,8 @@
   <drug drug_id="2" concept_id="792" name="Triomune-30" combination="true" dose_strength="1.0" units="tab(s)" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="3cfcf118-931c-46f7-8ff6-7b876f0d4202"/>
   <drug drug_id="3" concept_id="88" name="Aspirin" combination="false" dose_strength="325.0" units="mg" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="05ec820a-d297-44e3-be6e-698531d9dd3f"/>
   <drug drug_id="11" concept_id="3" name="NYQUIL" combination="true" units="" creator="1" date_created="2008-08-15 15:34:03.0" retired="true" uuid="7e2323fa-0fa0-461f-9b59-6765997d849e"/>
+  <drug_ingredient concept_id="2" ingredient_id="88" uuid="6519d653-393d-4118-9c83-a3715b82d4dc"/>
+  <drug_ingredient concept_id="3" ingredient_id="89" uuid="6519d653-393e-4118-9c83-a3715b82d4de"/>  
   <drug_order order_id="1" drug_inventory_id="3" dose="325.0" units="mg" frequency="1/day x 7 days/week" prn="false" complex="false"/>
   <drug_order order_id="2" drug_inventory_id="2" dose="1.0" units="tab(s)" frequency="1/day x 7 days/week" prn="false" complex="false"/>
   <drug_order order_id="3" drug_inventory_id="2" dose="2.0" units="tab(s)" frequency="1/day x 7 days/week" prn="false" complex="false"/>
