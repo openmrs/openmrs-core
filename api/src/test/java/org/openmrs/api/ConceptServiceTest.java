@@ -9,7 +9,27 @@
  */
 package org.openmrs.api;
 
-import junit.framework.Assert;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.openmrs.test.OpenmrsMatchers.hasId;
+import static org.openmrs.test.TestUtil.containsId;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -32,6 +52,7 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
 import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -48,26 +69,7 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.test.annotation.ExpectedException;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.openmrs.test.OpenmrsMatchers.hasId;
-import static org.openmrs.test.TestUtil.containsId;
+import junit.framework.Assert;
 
 /**
  * This test class (should) contain tests for all of the ConcepService methods TODO clean up and
@@ -829,6 +831,26 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return null if no object found with given uuid", method = "getDrugByUuid(String)")
 	public void getDrugByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getDrugByUuid("some invalid uuid"));
+	}
+	
+	/**
+	 * @see {@link ConceptService#getDrugIngredientByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getDrugIngredientByUuid(String)")
+	public void getDrugIngredientByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+		String uuid = "6519d653-393d-4118-9c83-a3715b82d4dc";
+		DrugIngredient ingredient = Context.getConceptService().getDrugIngredientByUuid(uuid);
+		Assert.assertEquals(88, (int) ingredient.getIngredient().getConceptId());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getDrugIngredientByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getDrugIngredientByUuid(String)")
+	public void getDrugIngredientByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+		Assert.assertNull(Context.getConceptService().getDrugIngredientByUuid("some invalid uuid"));
 	}
 	
 	/**
