@@ -23,12 +23,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -64,7 +59,19 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		
 		Context.getAdministrationService().saveGlobalProperty(luhnGP);
 	}
-	
+
+	@Test
+    @Verifies(value = "should return false given null date", method = "isYesterday(Date)")
+    public void isYesterday_shouldReturnFalseGivenNullDate(){
+        assertFalse(OpenmrsUtil.isYesterday(null));
+    }
+
+    @Test
+    @Verifies(value = "should return false given null folder", method = "folderContains(File, String)")
+    public void folderContains_shouldReturnFalseGivenNullFolder(){
+        assertFalse(OpenmrsUtil.folderContains(null, "book"));
+    }
+
 	/**
 	 * test the collection contains method
 	 * 
