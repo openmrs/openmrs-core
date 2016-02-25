@@ -290,13 +290,14 @@ public class WebUtil implements GlobalPropertyListener {
 	 * @should not accept invalid locales
 	 * @should not fail with empty strings
 	 * @should not fail with whitespace only
+	 * @should not fail with "_" character only
 	 */
 	public static Locale normalizeLocale(String localeString) {
 		if (localeString == null) {
 			return null;
 		}
 		localeString = localeString.trim();
-		if (localeString.isEmpty()) {
+		if (localeString.isEmpty() || localeString.equals("_")) {
 			return null;
 		}
 		int len = localeString.length();
