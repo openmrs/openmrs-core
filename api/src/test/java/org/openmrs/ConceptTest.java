@@ -1100,5 +1100,50 @@ public class ConceptTest {
 		Assert.assertTrue(c.getDescriptions().isEmpty());
 		Assert.assertNotNull(c.getDescriptions());
 	}
+	
+	    //////////////////////////////////////////////////////////////////
+    /**
+     * Test public ConceptName findNameTaggedWith(ConceptNameTag conceptNameTag);
+     */
+    @Test
+    public void findNameTaggedWith_shouldWork() {
+        Locale localeToSearch = new Locale("en");
+
+        Concept concept = new Concept();
+        ConceptNameTag cnt = new ConceptNameTag("key", "val");
+        ConceptName conceptName = new ConceptName("Test Concept", localeToSearch);
+        conceptName.addTag(cnt);
+        concept.addName(conceptName);
+
+        Assert.assertEquals(conceptName, concept.findNameTaggedWith(cnt));
+    }
+
+    @Test
+    public void getName_noNames_shouldWork() {
+        Assert.assertEquals(null, new Concept().getName());
+    }
+
+
+    /**
+     * Test the method
+     * public ConceptName getName(Locale, ConceptNameType, ConceptNameTag).
+     * @throws Exception
+     */
+    @Test
+    public void getName_threeArgs_shouldWork() throws Exception {
+        Locale localeToSearch = new Locale("en");
+
+        Concept concept = new Concept();
+        ConceptName conceptName = new ConceptName("Test Concept", localeToSearch);
+        conceptName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
+
+        concept.addName(conceptName);
+        ConceptNameTag cnt = new ConceptNameTag("key", "val");
+        conceptName.addTag(cnt);
+
+        Assert.assertEquals("Test Concept", (concept.getName(localeToSearch,
+                ConceptNameType.FULLY_SPECIFIED, cnt
+        ).toString()));
+    }
 
 }
