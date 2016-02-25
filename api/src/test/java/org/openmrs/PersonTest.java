@@ -278,6 +278,69 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.removeAttribute(pa1);
 		assertTrue("There shouldn't be any attributes in the person object now", p.getAttributes().size() == 0);
 	}
+
+	/**
+	 * Tests the getAttribute methods in the person object with regular and null values
+	 *
+	 */
+	@Test
+	public void shouldGetAttribute_shouldNotGetNullAttribute() {
+		Person p = new Person();
+		PersonAttribute pa1 = new PersonAttribute();
+		PersonAttributeType pat1 = new PersonAttributeType(1);
+		PersonAttribute pa2 = new PersonAttribute();
+		PersonAttributeType pat2 = new PersonAttributeType(2);		
+
+		pat1.setName("testnotreturned");
+		pat2.setName("testreturned");
+
+		pa1.setValue("notreturned");
+		pa1.setAttributeType(pat1);
+		pa1.setDateCreated(new Date());
+		pa1.setVoided(false);
+		pa2.setValue("returned");
+		pa2.setAttributeType(pat2);
+		pa2.setDateCreated(new Date());
+		pa2.setVoided(false);		
+
+		p.addAttribute(pa1);
+		p.addAttribute(pa2);
+
+		assertEquals(pa2, p.getAttribute(pat2));
+		assertEquals(pa2, p.getAttribute("testreturned"));
+		assertEquals(pa2, p.getAttribute(2));
+
+		PersonAttributeType patNull = null;
+		String strNull = null;
+
+		assertEquals(null, p.getAttribute(patNull));
+		assertEquals(null, p.getAttribute(strNull));
+		//getAttribute for Integer cannot be passed null
+	}
+
+	/**
+	 * Tests the getAttribute methods in the person object with voided values
+	 *
+	 */
+	@Test
+	public void shouldNotGetVoidedAttribute() {
+		Person p = new Person();
+		PersonAttribute pa = new PersonAttribute();
+		PersonAttributeType pat = new PersonAttributeType(1);
+
+		pat.setName("testnotreturned");
+		
+		pa.setValue("notreturned");
+		pa.setAttributeType(pat);
+		pa.setDateCreated(new Date());
+		pa.setVoided(true);
+
+		p.addAttribute(pa);
+
+		assertEquals(null, p.getAttribute(pat));
+		assertEquals(null, p.getAttribute("testnotreturned"));
+		assertEquals(null, p.getAttribute(1));
+	}
 	
 	/**
 	 * Test that setting a person's age correctly sets their birth date and records that this is
