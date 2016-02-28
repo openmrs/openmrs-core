@@ -9,11 +9,17 @@
  */
 package org.openmrs.api.db.hibernate;
 
+
 import java.util.List;
 import java.util.Vector;
 
+import java.lang.reflect.Field;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.type.StringType;
+import org.hibernate.type.TextType;
+import org.hibernate.type.Type;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.SessionFactory;
@@ -21,6 +27,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PersistentClass;
 import org.openmrs.GlobalProperty;
@@ -31,7 +38,10 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.validator.ValidateUtil;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.InvalidPropertyException;
+import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
@@ -200,21 +210,62 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#validate(java.lang.Object, Errors)
+	 * @should Pass validation if field lengths are correct
+	 * @should Fail validation if field lengths are not correct
+	 * @should Fail validation for location class if field lengths are not correct
+	 * @should Pass validation for location class if field lengths are correct
 	 */
+
+	//@SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
 	@Override
 	public void validate(Object object, Errors errors) throws DAOException {
+		Class entityClass = object.getClass();
+		ClassMetadata metadata = sessionFactory.getClassMetadata(entityClass);
+		if (metadata != null) {
+			String[] propNames = metadata.getPropertyNames();
+			Object IdentifierTpye = metadata.getIdentifierType();
+			String identifierName = metadata.getIdentifierPropertyName();
+			if (IdentifierTpye instanceof StringType || IdentifierTpye instanceof TextType) {
+				int maxLength = getMaximumPropertyLength(entityClass, identifierName);
+				String identifierValue = (String) metadata.getIdentifier(object,(SessionImplementor) null);
+				if (identifierValue != null) {
+					int identifierLength = identifierValue.length();
+					if (identifierLength > maxLength) {
+						
+						errors.rejectValue(identifierName, "error.exceededMaxLengthOfField", new Object[] { maxLength }, null);
+					}
+				}
+			}
+			for (int i = 0; i < propNames.length; i++) {
+				Type propType = metadata.getPropertyType(propNames[i]);
+				if (propType instanceof StringType || propType instanceof TextType) {
+					String propertyValue = (String) metadata.getPropertyValue(object, propNames[i]);
+					if (propertyValue != null) {
+						int maxLength = getMaximumPropertyLength(entityClass, propNames[i]);
+						int propertyValueLength = propertyValue.length();
+						if (propertyValueLength > maxLength) {
+							errors.rejectValue(propNames[i], "error.exceededMaxLengthOfField", new Object[] { maxLength },
+									null);
+						}
+					}
+				}
+			}
+		}
 		FlushMode previousFlushMode = sessionFactory.getCurrentSession().getFlushMode();
 		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
 		try {
 			for (Validator validator : getValidators(object)) {
 				validator.validate(object, errors);
 			}
+
 		}
+
 		finally {
 			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
 		}
+
 	}
-	
+
 	/**
 	 * Fetches all validators that are registered
 	 *
@@ -237,7 +288,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	
 	@Override
 	public boolean isDatabaseStringComparisonCaseSensitive() {
-		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class, OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON);
+		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class,
+				OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON);
 		if (gp != null) {
 			return Boolean.valueOf(gp.getPropertyValue());
 		} else {
