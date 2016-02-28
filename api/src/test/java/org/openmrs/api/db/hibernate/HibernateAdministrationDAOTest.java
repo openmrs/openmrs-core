@@ -22,6 +22,7 @@ import org.openmrs.test.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 
 public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 
@@ -45,6 +46,14 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationForLocationClassIfFieldLengthsAreNotCorrect() throws Exception {
 		Location location = new Location();
 		String longString = "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text";
+
+		String[] LocationFields = new String[] { "name", "description", "address1", "address2", "address3", "address4",
+				"address5", "address6", "address7", "address8", "address9", "address10", "address11", "address12",
+				"address13", "address14", "address15", "cityVillage", "stateProvince", "country", "postalCode",
+				"latitude", "longitude", "countyDistrict", "retireReason" };
+
+		String errorCode = "error.exceededMaxLengthOfField";
+
 		location.setName(longString);
 		location.setDescription(longString);
 		location.setAddress1(longString);
@@ -70,37 +79,16 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 		location.setLongitude(longString);
 		location.setCountyDistrict(longString);
 		location.setRetireReason(longString);
-		
+
 		Errors errors = new BindException(location, "location");
 		dao.validate(location, errors);
-		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
-		Assert.assertTrue(errors.hasFieldErrors("address1"));
-		Assert.assertTrue(errors.hasFieldErrors("address2"));
-		Assert.assertTrue(errors.hasFieldErrors("address3"));
-		Assert.assertTrue(errors.hasFieldErrors("address4"));
-		Assert.assertTrue(errors.hasFieldErrors("address5"));
-		Assert.assertTrue(errors.hasFieldErrors("address6"));
-		Assert.assertTrue(errors.hasFieldErrors("address7"));
-		Assert.assertTrue(errors.hasFieldErrors("address8"));
-		Assert.assertTrue(errors.hasFieldErrors("address9"));
-		Assert.assertTrue(errors.hasFieldErrors("address10"));
-		Assert.assertTrue(errors.hasFieldErrors("address11"));
-		Assert.assertTrue(errors.hasFieldErrors("address12"));
-		Assert.assertTrue(errors.hasFieldErrors("address13"));
-		Assert.assertTrue(errors.hasFieldErrors("address14"));
-		Assert.assertTrue(errors.hasFieldErrors("address15"));
-		Assert.assertTrue(errors.hasFieldErrors("cityVillage"));
-		Assert.assertTrue(errors.hasFieldErrors("stateProvince"));
-		Assert.assertTrue(errors.hasFieldErrors("country"));
-		Assert.assertTrue(errors.hasFieldErrors("postalCode"));
-		Assert.assertTrue(errors.hasFieldErrors("latitude"));
-		Assert.assertTrue(errors.hasFieldErrors("longitude"));
-		Assert.assertTrue(errors.hasFieldErrors("countyDistrict"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
-	}
 
+		for (String feilds : LocationFields) {
+			FieldError fielderror = errors.getFieldError(feilds);
+			Assert.assertTrue(errorCode.equals(fielderror.getCode()));
+		}
+
+	}
 
 	/**
 	 * @see HibernateAdministrationDAO#validate(Object,Errors)
@@ -108,6 +96,8 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		String errorCode = "error.exceededMaxLengthOfField";
+		String[] RoleFeilds = new String[] { "role", "description" };
 		Role role = new Role();
 		role.setRole(
 				"too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
@@ -115,10 +105,13 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 				"too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		Errors errors = new BindException(role, "type");
 		dao.validate(role, errors);
-		Assert.assertTrue(errors.hasFieldErrors("role"));
+
+		for (String feilds : RoleFeilds) {
+			FieldError fielderror = errors.getFieldError(feilds);
+			Assert.assertTrue(errorCode.equals(fielderror.getCode()));
+		}
 
 	}
-
 
 	/**
 	 * @see HibernateAdministrationDAO#validate(Object,Errors)

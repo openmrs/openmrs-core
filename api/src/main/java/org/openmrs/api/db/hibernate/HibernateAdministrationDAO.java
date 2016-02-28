@@ -27,6 +27,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PersistentClass;
 import org.openmrs.GlobalProperty;
@@ -215,7 +216,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 * @should Pass validation for location class if field lengths are correct
 	 */
 
-	@SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
+	//@SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
 	@Override
 	public void validate(Object object, Errors errors) throws DAOException {
 		Class entityClass = object.getClass();
@@ -226,10 +227,11 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			String identifierName = metadata.getIdentifierPropertyName();
 			if (IdentifierTpye instanceof StringType || IdentifierTpye instanceof TextType) {
 				int maxLength = getMaximumPropertyLength(entityClass, identifierName);
-				String identifierValue = (String) metadata.getIdentifier(object);
+				String identifierValue = (String) metadata.getIdentifier(object,(SessionImplementor) null);
 				if (identifierValue != null) {
 					int identifierLength = identifierValue.length();
 					if (identifierLength > maxLength) {
+						
 						errors.rejectValue(identifierName, "error.exceededMaxLengthOfField", new Object[] { maxLength }, null);
 					}
 				}
