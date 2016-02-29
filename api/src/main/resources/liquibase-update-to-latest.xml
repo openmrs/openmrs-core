@@ -675,6 +675,28 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
+    <changeSet id="TRUNK-2497-Store-outgoing-MessageService-emails-in-a-table" author="ivange94">
+    	<comment>Create sent_message table</comment>
+    	<createTable tableName="sent_message">
+    		<column name="message_id" type="int">
+    			<constraints primaryKey="true" nullable="false"/>
+    		</column>
+    		<column name="sender_id" type="int">
+    			<constraints nullable="false"/>
+    		</column>
+    		<column name="receiver_id" type="int"></column>
+    		<column name="message" type="varchar(50)">
+    			<constraints nullable="false"/>
+    		</column>
+    		<column name="date_sent" type="datetime">
+    			<constraints nullable="false"/>
+    		</column>
+    		<column name="message_type" type="varchar(50)">
+    			<constraints nullable="false"/>
+    		</column>
+    	</createTable>
+    </changeSet>
+    
 	<changeSet id="200903210905" author="mseaton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="serialized_object"/></not>

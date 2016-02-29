@@ -103,6 +103,7 @@
         <property name="serializationService"><ref bean="serializationService"/></property>        
         <property name="schedulerService"><ref bean="schedulerService"/></property>
         <property name="alertService"><ref bean="alertService"/></property>
+        <property name="sentMessageService"><ref bean="sentMessageService"/></property>
         <property name="hl7Service"><ref bean="hL7Service"/></property>
         <property name="ardenService"><ref bean="ardenService"/></property>
         <property name="messageSourceService"><ref bean="messageSourceService"/></property>
@@ -180,6 +181,9 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
 	<bean id="alertDAO" class="org.openmrs.notification.db.hibernate.HibernateAlertDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+	</bean>
+	<bean id="sentMessageDAO" class="org.openmrs.notification.db.hibernate.HibernateSentMessageDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
 	<bean id="hL7DAO" class="org.openmrs.hl7.db.hibernate.HibernateHL7DAO">
@@ -295,6 +299,9 @@
 	</bean>
 	<bean id="alertServiceTarget" class="org.openmrs.notification.impl.AlertServiceImpl">
 		<property name="alertDAO"><ref bean="alertDAO"/></property>	
+	</bean>
+	<bean id="sentMessageServiceTarget" class="org.openmrs.notification.impl.SentMessageServiceImpl">
+		<property name="sentMessagetDAO"><ref bean="sentMessageDAO"/></property>	
 	</bean>
 	<bean id="messageServiceTarget" class="org.openmrs.notification.impl.MessageServiceImpl">
 		<property name="templateDAO"><ref bean="templateDAO"/></property>	
