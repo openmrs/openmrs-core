@@ -2354,14 +2354,11 @@
 		<comment>
 			Add default sortWeights to all current PersonAttributeTypes
 		</comment>
-		    <sql>
-		        <![CDATA[CREATE TEMPORARY table temp as (SELECT * from person_attribute_type);
-		        ]]>
-			    <![CDATA[
-			    UPDATE  person_attribute_type as A JOIN person_attribute_type as B ON A.name = B.name  SET A.sort_weight = (select count(*) from (select * from temp) pat where pat.name < A.name) WHERE A.sort_weight is null;
-			    ]]>
-		    </sql>
-		<dropTable tableName="temp"/>
+		<sql>
+			<![CDATA[
+			UPDATE  person_attribute_type as A JOIN person_attribute_type as B ON A.name = B.name  SET A.sort_weight = (select count(*) from (select * from person_attribute_type) pat where pat.name < A.name) WHERE A.sort_weight is null;
+			]]>
+		</sql>
 	</changeSet>
 	
 	<changeSet id="200906301606" author="bwolfe" dbms="mysql">
@@ -3244,34 +3241,24 @@
 		<comment>
 			Removing the duplicate privilege 'Add Concept Proposal' in favor of 'Add Concept Proposals'
 		</comment>
-		    <sql>
-			     <![CDATA[CREATE TEMPORARY table temp as (SELECT * from role_privilege);
-				 ]]>
-		    </sql>
 		<update tableName="role_privilege">
 			<column name="privilege">Add Concept Proposals</column>
-			<where>privilege = 'Add Concept Proposal' and not exists (select * from (select role, privilege from temp) rp2 where rp2.role = role and rp2.privilege = 'Add Concept Proposals')</where>
+			<where>privilege = 'Add Concept Proposal' and not exists (select * from (select role, privilege from role_privilege) rp2 where rp2.role = role and rp2.privilege = 'Add Concept Proposals')</where>
 		</update>
 		<delete tableName="role_privilege"><where>privilege='Add Concept Proposal'</where></delete>
 		<delete tableName="privilege"><where>privilege='Add Concept Proposal'</where></delete>
-		<dropTable tableName="temp"/>
 	</changeSet>
 		
 	<changeSet id="20100330-190413" author="ricardosbarbosa" dbms="mysql">
 		<comment>
 			Removing the duplicate privilege 'Edit Concept Proposal' in favor of 'Edit Concept Proposals'
-		</comment>
-		    <sql>
-			     <![CDATA[CREATE TEMPORARY table temp as (SELECT * from role_privilege);
-				 ]]>
-		    </sql>
+		</comment>		
 		<update tableName="role_privilege">
 			<column name="privilege">Edit Concept Proposals</column>
-			<where>privilege = 'Edit Concept Proposal' and not exists (select * from (select role, privilege from temp) rp2 where rp2.role = role and rp2.privilege = 'Edit Concept Proposals')</where>
+			<where>privilege = 'Edit Concept Proposal' and not exists (select * from (select role, privilege from role_privilege) rp2 where rp2.role = role and rp2.privilege = 'Edit Concept Proposals')</where>
 		</update>
 		<delete tableName="role_privilege"><where>privilege='Edit Concept Proposal'</where></delete>
 		<delete tableName="privilege"><where>privilege='Edit Concept Proposal'</where></delete>
-		<dropTable tableName="temp"/>
 	</changeSet>
 	
 
@@ -3562,16 +3549,11 @@
 			</not>
 		</preConditions>
 		<comment>Reverting concept name type to NULL for concepts having names tagged as default</comment>
-            <sql>
-			     <![CDATA[CREATE TEMPORARY table temp as (SELECT * from concept_name);
-				 ]]>
-		    </sql>
 		<update tableName="concept_name">
 			<column name="concept_name_type" />
-			<where>concept_id IN (SELECT concept_id FROM (SELECT concept_id FROM temp LEFT JOIN concept_name_tag_map 
-			ON temp.concept_name_id = concept_name_tag_map.concept_name_id WHERE concept_name_tag_id = 1) AS x)</where>
+			<where>concept_id IN (SELECT concept_id FROM (SELECT concept_id FROM concept_name LEFT JOIN concept_name_tag_map 
+			ON concept_name.concept_name_id = concept_name_tag_map.concept_name_id WHERE concept_name_tag_id = 1) AS x)</where>
 		</update>
-		<dropTable tableName="temp"/>
 	</changeSet>
 	
 	<changeSet id="20150122-1420" author="rkorytkowski">
