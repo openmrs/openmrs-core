@@ -65,6 +65,7 @@ import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
 import org.openmrs.notification.NoteService;
+import org.openmrs.notification.SentMessageService;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.scheduler.SchedulerService;
@@ -409,6 +410,13 @@ public class Context {
 	 */
 	public static PatientService getPatientService() {
 		return getServiceContext().getPatientService();
+	}
+	
+	/**
+	 * @return sent message related service
+	 */
+	public static SentMessageService getSentMessageService() {
+		return getServiceContext().getSentMessageService();
 	}
 
 	public static CohortService getCohortService() {
