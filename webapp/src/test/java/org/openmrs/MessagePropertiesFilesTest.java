@@ -65,6 +65,8 @@ public class MessagePropertiesFilesTest {
 		checkDuplicatesKeysForFile(messagePropertiesFilename);
 	}
 
+	// test for cs498dm class
+
 	private void checkDuplicatesKeysForFile(String messagePropertiesFileName)
 			throws FileNotFoundException, IOException {
 		FileInputStream fileInputStream = new FileInputStream(
