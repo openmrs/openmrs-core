@@ -8942,7 +8942,7 @@
 								 referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
 
-	<changeSet id="20151118-1640" author="bahmni" dbms="mysql">
+	<changeSet id="20151118-1640" author="bahmni">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists columnName="order_group_id" tableName="orders"/>
@@ -8958,7 +8958,7 @@
 	</changeSet>
 
 
-	<changeSet id="20160212-1020" author="bahmni" dbms="mysql">
+	<changeSet id="20160212-1020" author="bahmni">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists columnName="sort_weight" tableName="orders"/>
