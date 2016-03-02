@@ -44,6 +44,7 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
+import org.openmrs.api.OrderSetService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
@@ -447,6 +448,14 @@ public class Context {
 	 */
 	public static OrderService getOrderService() {
 		return getServiceContext().getOrderService();
+	}
+	
+	/**
+	 * @return orderSet service
+	 * @since 1.12
+	 */
+	public static OrderSetService getOrderSetService() {
+		return getServiceContext().getOrderSetService();
 	}
 	
 	/**

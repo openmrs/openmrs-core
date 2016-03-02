@@ -37,6 +37,7 @@ import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
+import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
@@ -198,6 +199,34 @@ public class HibernateOrderDAO implements OrderDAO {
 		query.setFlushMode(FlushMode.MANUAL);
 		
 		return query.list();
+	}
+	
+	/**
+	 * @see OrderDAO#saveOrderGroup(OrderGroup)
+	 */
+	@Override
+	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException {
+		sessionFactory.getCurrentSession().saveOrUpdate(orderGroup);
+		return orderGroup;
+	}
+	
+	/**
+	 * @see OrderDAO#getOrderGroupByUuid(String)
+	 * @see org.openmrs.api.OrderService#getOrderGroupByUuid(String)
+	 */
+	@Override
+	public OrderGroup getOrderGroupByUuid(String uuid) throws DAOException {
+		return (OrderGroup) sessionFactory.getCurrentSession().createQuery("from OrderGroup o where o.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see OrderDAO#getOrderGroupById(Integer)
+	 * @see org.openmrs.api.OrderService#getOrderGroup(Integer)
+	 */
+	@Override
+	public OrderGroup getOrderGroupById(Integer orderGroupId) throws DAOException {
+		return (OrderGroup) sessionFactory.getCurrentSession().get(OrderGroup.class, orderGroupId);
 	}
 	
 	/**

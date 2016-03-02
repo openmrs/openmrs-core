@@ -94,6 +94,13 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	private Date scheduledDate;
 	
 	/**
+	 * Allows the orders if ordered as an orderGroup,
+	 * to maintain a sequence of how members are added in the group
+	 * ex - for two orders of isoniazid and ampicillin, the sequence of 1 and 2 needed to be maintained
+	 */
+	private Double sortWeight;
+	
+	/**
 	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
 	 * to the original ampicillin order (the D/C gets its own order number)
 	 */
@@ -105,6 +112,11 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see org.openmrs.Order.Action
 	 */
 	private Action action = Action.NEW;
+	
+	/**
+	 * {@link org.openmrs.OrderGroup}
+	 */
+	private OrderGroup orderGroup;
 	
 	// Constructors
 	
@@ -162,6 +174,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setChangedBy(getChangedBy());
 		target.setDateChanged(getDateChanged());
 		target.setScheduledDate(getScheduledDate());
+		target.setOrderGroup(getOrderGroup());
+		target.setSortWeight(getSortWeight());
 		return target;
 	}
 	
@@ -701,6 +715,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setCommentToFulfiller(getCommentToFulfiller());
 		target.setOrderReason(getOrderReason());
 		target.setOrderReasonNonCoded(getOrderReasonNonCoded());
+		target.setOrderGroup(getOrderGroup());
+		target.setSortWeight(getSortWeight());
 		
 		return target;
 	}
@@ -756,6 +772,51 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public Date getEffectiveStopDate() {
 		return this.getDateStopped() != null ? this.getDateStopped() : this.getAutoExpireDate();
+	}
+	
+	/**
+	 * @since 1.12
+	 * {@link org.openmrs.OrderGroup}
+	 * @returns the OrderGroup
+	 */
+	public OrderGroup getOrderGroup() {
+		return orderGroup;
+	}
+	
+	/**
+	 * Sets the OrderGroup for that order.
+	 * If the order is ordered independently, it does not set an orderGroup for it.
+	 * If the order is ordered as an orderGroup, then sets a link to the OrderGroup for that particular order.
+	 * 
+	 * @since 1.12
+	 * @param orderGroup
+	 */
+	public void setOrderGroup(OrderGroup orderGroup) {
+		this.orderGroup = orderGroup;
+	}
+	
+	/**
+	 * Gets the sortWeight for an order if it is ordered as an OrderGroup.
+	 * 
+	 * @since 1.12
+	 * @return the sortWeight
+	 */
+	public Double getSortWeight() {
+		return sortWeight;
+	}
+	
+	/**
+	 * Sets the sortWeight for an order if it is ordered as an OrderGroup.
+	 * <tt>sortWeight</tt> is used internally by the API to manage the sequencing of orders when grouped.
+	 * This value may be changed by the API as needed for that purpose. 
+	 * Instead of setting this internal value directly please use {@link OrderGroup#addOrder(Order, Integer)}.
+	 * @see OrderGroup#addOrder(Order, Integer) 
+	 * 
+	 * @since 1.12
+	 * @param sortWeight
+	 */
+	public void setSortWeight(Double sortWeight) {
+		this.sortWeight = sortWeight;
 	}
 	
 }

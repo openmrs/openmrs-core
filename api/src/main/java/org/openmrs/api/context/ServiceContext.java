@@ -32,6 +32,7 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
+import org.openmrs.api.OrderSetService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
@@ -234,6 +235,13 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
+	 * @return order set service
+	 */
+	public OrderSetService getOrderSetService() {
+		return getService(OrderSetService.class);
+	}
+	
+	/**
 	 * @return order service
 	 */
 	public OrderService getOrderService() {
@@ -396,6 +404,13 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setOrderService(OrderService orderService) {
 		setService(OrderService.class, orderService);
+	}
+	
+	/**
+	 * @param orderSetService the orderSetService to set
+	 */
+	public void setOrderSetService(OrderSetService orderSetService) {
+		setService(OrderSetService.class, orderSetService);
 	}
 	
 	/**

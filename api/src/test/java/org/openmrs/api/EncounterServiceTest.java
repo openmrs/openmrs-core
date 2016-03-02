@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +44,8 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
+import org.openmrs.OrderGroup;
+import org.openmrs.OrderSet;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -53,6 +56,8 @@ import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
+import org.openmrs.TestOrder;
+import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
@@ -76,12 +81,15 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	protected static final String UNIQUE_ENC_WITH_PAGING_XML = "org/openmrs/api/include/EncounterServiceTest-pagingWithUniqueEncounters.xml";
 	
 	protected static final String TRANSFER_ENC_DATA_XML = "org/openmrs/api/include/EncounterServiceTest-transferEncounter.xml";
+	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
+	private EncounterService encounterService;
+
 	/**
 	 * This method is run before all of the tests in this class because it has the @Before
 	 * annotation on it. This will add the contents of {@link #ENC_INITIAL_DATA_XML} to the current
 	 * database
-	 * 
+	 *
 	 * @see BaseContextSensitiveTest#runBeforeAllUnitTests()
 	 * @throws Exception
 	 */
@@ -155,7 +163,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * You should be able to add an obs to an encounter, save the encounter, and have the obs
 	 * automatically persisted. Added to test bug reported in ticket #827
-	 * 
+	 *
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
@@ -195,7 +203,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * When you save the encounter with a changed location, the location change should be cascaded
 	 * to all the obs associated with the encounter that had the same location as the encounter.
-	 * 
+	 *
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
@@ -236,7 +244,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * When you save the encounter with a changed location, the location change should not be
 	 * cascaded to all the obs associated with the encounter that had a different location from
 	 * encounter's location.
-	 * 
+	 *
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
@@ -313,7 +321,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Make sure that purging an encounter removes the row from the database
-	 * 
+	 *
 	 * @see EncounterService#purgeEncounter(Encounter)
 	 */
 	@Test
@@ -334,7 +342,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Make sure that purging an encounter removes the row from the database
-	 * 
+	 *
 	 * @see EncounterService#purgeEncounter(Encounter,null)
 	 */
 	@Test
@@ -363,7 +371,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * You should be able to add an obs to an encounter, save the encounter, and have the obs
 	 * automatically persisted.
-	 * 
+	 *
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
@@ -395,7 +403,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * You should be able to add an obs without an obsDatetime to an encounter, save the encounter,
 	 * and have the obs automatically persisted with the same date as the encounter. Added to test
 	 * bug reported in {@link Ticket#827}
-	 * 
+	 *
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
@@ -422,7 +430,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * When the date on an encounter is modified and then saved, the encounterservice changes all of
 	 * the obsdatetimes to the new datetime. This test is showing error
 	 * http://dev.openmrs.org/ticket/934
-	 * 
+	 *
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
@@ -515,7 +523,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure the obs and order creator and dateCreated is preserved when passed into
 	 * {@link EncounterService#saveEncounter(Encounter)}
-	 * 
+	 *
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
@@ -643,7 +651,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure {@link EncounterService#voidEncounter(Encounter, String)} marks all the voided
 	 * stuff correctly
-	 * 
+	 *
 	 * @see EncounterService#voidEncounter(Encounter,String)
 	 */
 	@Test
@@ -794,7 +802,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Get encounters that are after a certain date, and ensure the comparison is INCLUSIVE of the
 	 * given date
-	 * 
+	 *
 	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
@@ -1088,7 +1096,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure that the "Some Retired Type" type is not returned because it is retired in
 	 * {@link EncounterService#getEncounterType(String)}
-	 * 
+	 *
 	 * @see EncounterService#getEncounterType(String)
 	 */
 	@Test
@@ -1107,7 +1115,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Make sure that we are matching on exact name and not partial name in
-	 * 
+	 *
 	 * @see EncounterService#getEncounterType(String)
 	 */
 	@Test
@@ -1128,7 +1136,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Make sure that we are not throwing an error with a null parameter to
-	 * 
+	 *
 	 * @see EncounterService#getEncounterType(String)
 	 */
 	@Test
@@ -1221,7 +1229,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * No types should be returned when using a substring other than the starting substring
-	 * 
+	 *
 	 * @see EncounterService#findEncounterTypes(String)
 	 */
 	@Test
@@ -1479,7 +1487,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Tests that all encounters for all patients in a cohort are returned
-	 * 
+	 *
 	 * @see EncounterService#getAllEncounters(Cohort)
 	 */
 	@Test
@@ -1556,7 +1564,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * TODO see ticket https://tickets.openmrs.org/browse/TRUNK-1956 to fix this test
-	 * 
+	 *
 	 * @see EncounterService#getEncounters(String,Integer,Integer,null,null)
 	 */
 	@Test
@@ -1570,7 +1578,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * TODO see ticket https://tickets.openmrs.org/browse/TRUNK-1956 to fix this test
-	 * 
+	 *
 	 * @see EncounterService#getEncounters(String,Integer,Integer,null,null)
 	 */
 	@Test
@@ -1605,7 +1613,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Make sure that purging an encounter removes the row from the database
-	 * 
+	 *
 	 * @see EncounterService#purgeEncounterRole(org.openmrs.EncounterRole)
 	 */
 	@Test
@@ -2535,7 +2543,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Gets encounter and adds edit privilege to it
-	 * 
+	 *
 	 * @return encounter with type having non null edit privilege
 	 */
 	private Encounter getEncounterWithEditPrivilege() {
@@ -2560,7 +2568,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Gets encounter and adds view privilege to it
-	 * 
+	 *
 	 * @return encounter with type having non null view privilege
 	 */
 	private Encounter getEncounterWithViewPrivilege() {
@@ -2832,5 +2840,127 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		personNames.add(personName);
 		person.setNames(personNames);
 		return person;
+	}
+
+	@Test
+	public void shouldSaveOrderGroupAlongWithOrders() throws Exception {
+		executeDataSet(ORDER_SET);
+		
+		//Created a new Encounter
+		Encounter encounter = new Encounter();
+		encounter.setPatient(Context.getPatientService().getPatient(3));
+		encounter.setEncounterType(Context.getEncounterService().getEncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		Integer encounterId = Context.getEncounterService().getEncounterByUuid(encounter.getUuid()).getId();
+		
+		//Created a new OrderGroup
+		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
+		OrderGroup orderGroup = new OrderGroup();
+		orderGroup.setOrderSet(orderSet);
+		orderGroup.setPatient(encounter.getPatient());
+		orderGroup.setEncounter(Context.getEncounterService().getEncounter(encounterId));
+		
+		//Added this OrderGroup to two new orders
+		Order firstOrderWithOrderGroup = new OrderBuilder().withAction(Order.Action.NEW).withPatient(3).withConcept(1000)
+		        .withCareSetting(1).withOrderer(1).withEncounter(encounterId).withDateActivated(new Date())
+		        .withOrderType(17).withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date())
+		        .withOrderGroup(orderGroup).build();
+		
+		Order secondOrderWithOrderGroup = new OrderBuilder().withAction(Order.Action.NEW).withPatient(3).withConcept(1001)
+		        .withCareSetting(1).withOrderer(1).withEncounter(encounterId).withDateActivated(new Date())
+		        .withOrderType(17).withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date())
+		        .withOrderGroup(orderGroup).build();
+		
+		//Add these orders to the Encounter
+		encounter.addOrder(firstOrderWithOrderGroup);
+		encounter.addOrder(secondOrderWithOrderGroup);
+		
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		Context.flushSession();
+		
+		List<Order> orders = new ArrayList<Order>();
+		orders.addAll(Context.getEncounterService().getEncounterByUuid(encounter.getUuid()).getOrders());
+		
+		assertNotNull("OrderGroup is saved", orders.get(0).getOrderGroup());
+		assertEquals("OrderGroup isa same for both the orders ", true, orders.get(0).getOrderGroup().equals(
+		    orders.get(1).getOrderGroup()));
+	}
+	
+	@Test
+	public void shouldSaveMultipleOrderGroupsIfDifferentOrdersHaveDifferentOrderGroups() throws Exception {
+		executeDataSet(ORDER_SET);
+		
+		Encounter encounter = new Encounter();
+		encounter.setPatient(Context.getPatientService().getPatient(3));
+		encounter.setEncounterType(Context.getEncounterService().getEncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		Integer encounterId = Context.getEncounterService().getEncounterByUuid(encounter.getUuid()).getId();
+		
+		//Created a new OrderGroup
+		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
+		OrderGroup orderGroup = new OrderGroup();
+		orderGroup.setOrderSet(orderSet);
+		orderGroup.setPatient(encounter.getPatient());
+		orderGroup.setEncounter(Context.getEncounterService().getEncounter(encounterId));
+		
+		//Created a new OrderGroup
+		OrderGroup orderGroup2 = new OrderGroup();
+		orderGroup2.setEncounter(Context.getEncounterService().getEncounter(encounterId));
+		orderGroup2.setPatient(encounter.getPatient());
+		
+		//Added this OrderGroup to two new orders
+		Order newOrder1 = new OrderBuilder().withAction(Order.Action.NEW).withPatient(3).withConcept(1000)
+		        .withCareSetting(1).withOrderer(1).withEncounter(encounterId).withDateActivated(new Date())
+		        .withOrderType(17).withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date())
+		        .withOrderGroup(orderGroup).build();
+		
+		Order newOrder2 = new OrderBuilder().withAction(Order.Action.NEW).withPatient(3).withConcept(1001)
+		        .withCareSetting(1).withOrderer(1).withEncounter(encounterId).withDateActivated(new Date())
+		        .withOrderType(17).withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date())
+		        .withOrderGroup(orderGroup).build();
+		
+		Order newOrder3 = new OrderBuilder().withAction(Order.Action.NEW).withPatient(3).withConcept(1002)
+		        .withCareSetting(1).withOrderer(1).withEncounter(encounterId).withDateActivated(new Date())
+		        .withOrderType(17).withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date())
+		        .withOrderGroup(orderGroup2).build();
+		
+		Order newOrder4 = new OrderBuilder().withAction(Order.Action.NEW).withPatient(3).withConcept(1000)
+		        .withCareSetting(1).withOrderer(1).withEncounter(encounterId).withDateActivated(new Date())
+		        .withOrderType(17).withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).build();
+		
+		Order newOrder5 = new OrderBuilder().withAction(Order.Action.NEW).withPatient(3).withConcept(1001)
+		        .withCareSetting(1).withOrderer(1).withEncounter(encounterId).withDateActivated(new Date())
+		        .withOrderType(17).withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date())
+		        .withOrderGroup(orderGroup2).build();
+		
+		//Add these orders to the Encounter
+		encounter.addOrder(newOrder1);
+		encounter.addOrder(newOrder2);
+		encounter.addOrder(newOrder3);
+		encounter.addOrder(newOrder4);
+		encounter.addOrder(newOrder5);
+		
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		Context.flushSession();
+		
+		List<Order> orders = new ArrayList<>();
+		orders.addAll(Context.getEncounterService().getEncounterByUuid(encounter.getUuid()).getOrders());
+		
+		HashMap<Integer, OrderGroup> orderGroups = new HashMap<>();
+		for (Order order : orders) {
+			if (order.getOrderGroup() != null) {
+				orderGroups.put(order.getOrderGroup().getId(), order.getOrderGroup());
+			}
+		}
+		
+		assertEquals("Two New Order Groups Get Saved", 2, orderGroups.size());
 	}
 }
