@@ -880,4 +880,11 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to manage the search index")
 	public static final String MANAGE_SEARCH_INDEX = "Manage Search Index";
+	
+	@AddOnStartup(description = "Able to get order sets")
+	public static final String GET_ORDER_SETS = "Get Order Sets";
+	
+	@AddOnStartup(description = "Able to manage order sets")
+	public static final String MANAGE_ORDER_SETS = "Manage Order Sets";
+	
 }

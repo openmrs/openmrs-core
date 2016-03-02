@@ -749,4 +749,41 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 		}
 	}
 	
+	/**
+	 * Takes in a list of orders and pulls out the orderGroups within them
+	 *
+	 * @since 1.12
+	 * @return list of orderGroups
+	 */
+	public List<OrderGroup> getOrderGroups() {
+		Map<String, OrderGroup> orderGroups = new HashMap<String, OrderGroup>();
+		for (Order order : orders) {
+			if (order.getOrderGroup() != null) {
+				if (null == orderGroups.get(order.getOrderGroup().getUuid())) {
+					orderGroups.put(order.getOrderGroup().getUuid(), order.getOrderGroup());
+				}
+				order.getOrderGroup().addOrder(order, null);
+			}
+		}
+		List<OrderGroup> orderGroupList = new ArrayList<OrderGroup>();
+		orderGroupList.addAll(orderGroups.values());
+		return orderGroupList;
+	}
+	
+	/**
+	 * Takes in a list of orders and filters out the orders which have orderGroups
+	 * 
+	 * @since 1.12
+	 * @return list of orders not having orderGroups
+	 */
+	public List<Order> getOrdersWithoutOrderGroups() {
+		List<Order> orderListWithoutOrderGroups = new ArrayList<Order>();
+		for (Order order : orders) {
+			if (order.getOrderGroup() == null) {
+				orderListWithoutOrderGroups.add(order);
+			}
+		}
+		return orderListWithoutOrderGroups;
+	}
+	
 }

@@ -22,7 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
 import org.hibernate.LockOptions;
-import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
@@ -37,11 +36,11 @@ import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
+import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.DatabaseUtil;
@@ -190,6 +189,34 @@ public class HibernateOrderDAO implements OrderDAO {
 		List<List<Object>> lists = DatabaseUtil.executeSQL(sessionFactory.getCurrentSession().connection(), query
 		        + order.getOrderId(), true);
 		return lists;
+	}
+	
+	/**
+	 * @see OrderDAO#saveOrderGroup(OrderGroup)
+	 */
+	@Override
+	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException {
+		sessionFactory.getCurrentSession().saveOrUpdate(orderGroup);
+		return orderGroup;
+	}
+	
+	/**
+	 * @see OrderDAO#getOrderGroupByUuid(String)
+	 * @see org.openmrs.api.OrderService#getOrderGroupByUuid(String)
+	 */
+	@Override
+	public OrderGroup getOrderGroupByUuid(String uuid) throws DAOException {
+		return (OrderGroup) sessionFactory.getCurrentSession().createQuery("from OrderGroup o where o.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see OrderDAO#getOrderGroupById(Integer)
+	 * @see org.openmrs.api.OrderService#getOrderGroup(Integer)
+	 */
+	@Override
+	public OrderGroup getOrderGroupById(Integer orderGroupId) throws DAOException {
+		return (OrderGroup) sessionFactory.getCurrentSession().get(OrderGroup.class, orderGroupId);
 	}
 	
 	/**

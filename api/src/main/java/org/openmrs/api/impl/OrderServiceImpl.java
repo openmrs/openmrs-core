@@ -13,27 +13,32 @@ import static org.openmrs.Order.Action.DISCONTINUE;
 import static org.openmrs.Order.Action.REVISE;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.proxy.HibernateProxy;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Vector;
+
+import org.openmrs.Order;
+import org.openmrs.OrderGroup;
+import org.openmrs.DrugOrder;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.Drug;
-import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
-import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
@@ -89,6 +94,24 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public synchronized Order saveOrder(Order order, OrderContext orderContext) throws APIException {
 		return saveOrder(order, orderContext, false);
+	}
+	
+	/**
+	 * 
+	 * @see org.openmrs.api.OrderService#saveOrderGroup(org.openmrs.OrderGroup)
+	 */
+	@Override
+	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws APIException {
+		if (orderGroup.getId() == null) {
+			dao.saveOrderGroup(orderGroup);
+		}
+		List<Order> orders = orderGroup.getOrders();
+		for (Order order : orders) {
+			if (order.getId() == null) {
+				saveOrder(order, null);
+			}
+		}
+		return orderGroup;
 	}
 	
 	/**
@@ -967,6 +990,18 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			return Context.getConceptService().getConceptByUuid(conceptUuid);
 		}
 		return null;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public OrderGroup getOrderGroupByUuid(String uuid) throws APIException {
+		return dao.getOrderGroupByUuid(uuid);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public OrderGroup getOrderGroup(Integer orderGroupId) throws APIException {
+		return dao.getOrderGroupById(orderGroupId);
 	}
 	
 	private List<Concept> getSetMembersOfConceptSetFromGP(String globalProperty) {

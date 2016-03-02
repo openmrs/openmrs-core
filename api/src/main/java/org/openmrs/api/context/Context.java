@@ -47,6 +47,7 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
+import org.openmrs.api.OrderSetService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
@@ -83,8 +84,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.aop.Advisor;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to authenticate to the database and
@@ -459,6 +458,14 @@ public class Context {
 	 */
 	public static OrderService getOrderService() {
 		return getServiceContext().getOrderService();
+	}
+	
+	/**
+	 * @return orderSet service
+	 * @since 1.12
+	 */
+	public static OrderSetService getOrderSetService() {
+		return getServiceContext().getOrderSetService();
 	}
 	
 	/**

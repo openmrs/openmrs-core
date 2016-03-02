@@ -179,6 +179,9 @@ public class OrderTest {
 		assertEquals(anOrder.getCareSetting(), orderThatCanDiscontinueTheOrder.getCareSetting());
 		
 		assertEquals(anOrder.getOrderType(), orderThatCanDiscontinueTheOrder.getOrderType());
+		
+		assertNull("Discontinued order should not have orderGroup", orderThatCanDiscontinueTheOrder.getOrderGroup());
+		
 	}
 	
 	/**
@@ -197,7 +200,14 @@ public class OrderTest {
 	 */
 	@Test
 	public void cloneForRevision_shouldSetAllTheRelevantFields() throws Exception {
-		assertThatAllFieldsAreCopied(new Order(), "cloneForRevision", "creator", "dateCreated", "action", "changedBy",
+		Order newOrder = new Order();
+		
+		OrderGroup orderGroup = new OrderGroup();
+		newOrder.setOrderGroup(orderGroup);
+		
+		Order revisedOrder = newOrder.cloneForRevision();
+		
+		assertThatAllFieldsAreCopied(revisedOrder, "cloneForRevision", "creator", "dateCreated", "action", "changedBy",
 		    "dateChanged", "voided", "dateVoided", "voidedBy", "voidReason", "encounter", "orderNumber", "orderer",
 		    "previousOrder", "dateActivated", "dateStopped", "accessionNumber");
 	}

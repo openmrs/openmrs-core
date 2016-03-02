@@ -22,6 +22,8 @@ import org.openmrs.CareSetting;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.OrderGroup;
+import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.Patient;
 import org.openmrs.TestOrder;
 import org.openmrs.api.OrderService;
@@ -41,6 +43,8 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	private class SomeDrugOrder extends DrugOrder {}
 	
 	private OrderService orderService;
+	
+	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
 	@Before
 	public void setup() {
@@ -409,5 +413,46 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(errors.hasFieldErrors("dateActivated"));
 		Assert.assertEquals("Order.error.dateActivatedInFuture", errors.getFieldError("dateActivated").getCode());
+	}
+	
+	@Test
+	@Verifies(value = "should not save order if invalid orderGroup encounter", method = "saveOrder(Order)")
+	public void saveOrder_shouldNotSaveOrderIfInvalidOrderGroupEncounter() throws Exception {
+		executeDataSet(ORDER_SET);
+		OrderGroup orderGroup = new OrderGroup();
+		
+		orderGroup.setEncounter(Context.getEncounterService().getEncounter(5));
+		
+		Order order = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000).withCareSetting(1)
+		        .withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17).withUrgency(
+		            Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup).build();
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("encounter"));
+		Assert.assertEquals("Order.error.orderEncounterAndOrderGroupEncounterMismatch", errors.getFieldError("encounter")
+		        .getCode());
+	}
+	
+	@Test
+	@Verifies(value = "should not save order if invalid orderGroup patient", method = "saveOrder(Order)")
+	public void saveOrder_shouldNotSaveOrderIfInvalidOrderGroupPatient() throws Exception {
+		executeDataSet(ORDER_SET);
+		OrderGroup orderGroup = new OrderGroup();
+		
+		orderGroup.setEncounter(Context.getEncounterService().getEncounter(5));
+		orderGroup.setPatient(Context.getPatientService().getPatient(2));
+		
+		Order order = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000).withCareSetting(1)
+		        .withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17).withUrgency(
+		            Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup).build();
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("patient"));
+		Assert.assertEquals("Order.error.orderPatientAndOrderGroupPatientMismatch", errors.getFieldError("patient")
+		        .getCode());
 	}
 }
