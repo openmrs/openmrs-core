@@ -28,9 +28,11 @@ import static org.openmrs.test.TestUtil.containsId;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -56,11 +58,14 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Order.Action;
 import org.openmrs.OrderFrequency;
+import org.openmrs.OrderGroup;
+import org.openmrs.OrderSet;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
+import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.OrderServiceImpl;
 import org.openmrs.order.OrderUtil;
@@ -80,6 +85,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	private static final String OTHER_ORDER_FREQUENCIES_XML = "org/openmrs/api/include/OrderServiceTest-otherOrderFrequencies.xml";
 	
+	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
+	
 	private ConceptService conceptService;
 	
 	private OrderService orderService;
@@ -91,6 +98,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	private ProviderService providerService;
 	
 	private AdministrationService adminService;
+	
+	private OrderSetService orderSetService;
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -118,6 +127,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		}
 		if (adminService == null) {
 			adminService = Context.getAdministrationService();
+		}
+		if (orderSetService == null) {
+			orderSetService = Context.getOrderSetService();
 		}
 	}
 	
@@ -3215,4 +3227,285 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
         expectedException.expectMessage("Order.cannot.have.more.than.one");
         orderService.saveRetrospectiveOrder(order, null);
     }
+
+	@Test
+	public void shouldSaveOrdersWithSortWeightWhenWithinAOrderGroup() throws Exception {
+		executeDataSet(ORDER_SET);
+		
+		Encounter encounter = encounterService.getEncounter(3);
+		
+		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
+		OrderGroup orderGroup = new OrderGroup();
+		orderGroup.setOrderSet(orderSet);
+		orderGroup.setPatient(encounter.getPatient());
+		
+		orderGroup.setEncounter(encounter);
+		
+		Order firstOrderWithOrderGroup = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)
+		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup)
+		        .build();
+		
+		Order secondOrderWithOrderGroup = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1001)
+		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup)
+		        .build();
+		
+		Order orderWithoutOrderGroup = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)
+		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).build();
+		
+		Set<Order> orders = new LinkedHashSet<Order>();
+		orders.add(firstOrderWithOrderGroup);
+		orders.add(secondOrderWithOrderGroup);
+		orders.add(orderWithoutOrderGroup);
+		
+		encounter.setOrders(orders);
+		
+		for (OrderGroup og : encounter.getOrderGroups()) {
+			if (og.getId() == null) {
+				Context.getOrderService().saveOrderGroup(og);
+			}
+		}
+		
+		for (Order o : encounter.getOrdersWithoutOrderGroups()) {
+			if (o.getId() == null) {
+				Context.getOrderService().saveOrder(o, null);
+			}
+		}
+		
+		Context.flushSession();
+		
+		OrderGroup savedOrderGroup = Context.getOrderService().getOrderGroupByUuid(orderGroup.getUuid());
+		Order savedOrder = Context.getOrderService().getOrderByUuid(orderWithoutOrderGroup.getUuid());
+		
+		assertEquals("The first order in  savedOrderGroup is the same which is sent first in the List",
+		    firstOrderWithOrderGroup.getUuid(), savedOrderGroup.getOrders().get(0).getUuid());
+		
+		assertEquals("The second order in  savedOrderGroup is the same which is sent second in the List",
+		    secondOrderWithOrderGroup.getUuid(), savedOrderGroup.getOrders().get(1).getUuid());
+		assertNull("The order which doesn't belong to an orderGroup has no sortWeight", savedOrder.getSortWeight());
+		assertThat("The first order has a lower sortWeight than the second", savedOrderGroup.getOrders().get(0)
+		        .getSortWeight().compareTo(savedOrderGroup.getOrders().get(1).getSortWeight()), is(-1));
+	}
+	
+	@Test
+	public void shouldSetTheCorrectSortWeightWhenAddingAnOrderInOrderGroup() throws Exception {
+		executeDataSet(ORDER_SET);
+		
+		Encounter encounter = encounterService.getEncounter(3);
+		
+		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
+		OrderGroup orderGroup = new OrderGroup();
+		orderGroup.setOrderSet(orderSet);
+		orderGroup.setPatient(encounter.getPatient());
+		
+		orderGroup.setEncounter(encounter);
+		
+		Order firstOrderWithOrderGroup = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)
+		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup)
+		        .build();
+		
+		Order secondOrderWithOrderGroup = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1001)
+		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup)
+		        .build();
+		
+		Set<Order> orders = new LinkedHashSet<Order>();
+		orders.add(firstOrderWithOrderGroup);
+		orders.add(secondOrderWithOrderGroup);
+		
+		encounter.setOrders(orders);
+		
+		for (OrderGroup og : encounter.getOrderGroups()) {
+			if (og.getId() == null) {
+				Context.getOrderService().saveOrderGroup(og);
+			}
+		}
+		
+		Context.flushSession();
+		
+		OrderGroup savedOrderGroup = Context.getOrderService().getOrderGroupByUuid(orderGroup.getUuid());
+		assertEquals("The first order in  savedOrderGroup is the same which is sent first in the List",
+		    firstOrderWithOrderGroup.getUuid(), savedOrderGroup.getOrders().get(0).getUuid());
+		
+		assertEquals("The second order in  savedOrderGroup is the same which is sent second in the List",
+		    secondOrderWithOrderGroup.getUuid(), savedOrderGroup.getOrders().get(1).getUuid());
+		assertThat("The first order has a lower sortWeight than the second", savedOrderGroup.getOrders().get(0)
+		        .getSortWeight().compareTo(savedOrderGroup.getOrders().get(1).getSortWeight()), is(-1));
+		
+		Order newOrderWithoutAnyPosition = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)
+		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(savedOrderGroup)
+		        .build();
+		
+		savedOrderGroup.addOrder(newOrderWithoutAnyPosition);
+		
+		Context.getOrderService().saveOrderGroup(savedOrderGroup);
+		Context.flushSession();
+		
+		OrderGroup secondSavedOrderGroup = Context.getOrderService().getOrderGroupByUuid(orderGroup.getUuid());
+		
+		assertEquals("The first order in  savedOrderGroup is the same which is sent first in the List",
+		    firstOrderWithOrderGroup.getUuid(), savedOrderGroup.getOrders().get(0).getUuid());
+		
+		assertEquals("The second order in  savedOrderGroup is the same which is sent second in the List",
+		    secondOrderWithOrderGroup.getUuid(), savedOrderGroup.getOrders().get(1).getUuid());
+		
+		assertEquals("The third order in  savedOrderGroup is the same which is sent third in the List",
+		    secondSavedOrderGroup.getOrders().get(2).getUuid(), newOrderWithoutAnyPosition.getUuid());
+		
+		assertThat("The third order has a higher sortWeight than the second", savedOrderGroup.getOrders().get(2)
+		        .getSortWeight().compareTo(savedOrderGroup.getOrders().get(1).getSortWeight()), is(1));
+	}
+	
+	@Test
+	public void shouldSetTheCorrectSortWeightWhenAddingAnOrderAtAPosition() throws Exception {
+		executeDataSet(ORDER_SET);
+		
+		Encounter encounter = encounterService.getEncounter(3);
+		
+		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
+		OrderGroup orderGroup = new OrderGroup();
+		orderGroup.setOrderSet(orderSet);
+		orderGroup.setPatient(encounter.getPatient());
+		orderGroup.setEncounter(encounter);
+		
+		Order firstOrderWithOrderGroup = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)
+		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup)
+		        .build();
+		
+		Order secondOrderWithOrderGroup = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1001)
+		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup)
+		        .build();
+		
+		Set<Order> orders = new LinkedHashSet<Order>();
+		orders.add(firstOrderWithOrderGroup);
+		orders.add(secondOrderWithOrderGroup);
+		
+		encounter.setOrders(orders);
+		
+		for (OrderGroup og : encounter.getOrderGroups()) {
+			if (og.getId() == null) {
+				Context.getOrderService().saveOrderGroup(og);
+			}
+		}
+		
+		Context.flushSession();
+		
+		OrderGroup savedOrderGroup = Context.getOrderService().getOrderGroupByUuid(orderGroup.getUuid());
+		assertEquals("The first order in  savedOrderGroup is the same which is sent first in the List",
+		    firstOrderWithOrderGroup.getUuid(), savedOrderGroup.getOrders().get(0).getUuid());
+		
+		assertEquals("The second order in  savedOrderGroup is the same which is sent second in the List",
+		    secondOrderWithOrderGroup.getUuid(), savedOrderGroup.getOrders().get(1).getUuid());
+		assertThat("The first order has a lower sortWeight than the second", savedOrderGroup.getOrders().get(0)
+		        .getSortWeight().compareTo(savedOrderGroup.getOrders().get(1).getSortWeight()), is(-1));
+		
+		Order newOrderAtPosition1 = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)
+		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(savedOrderGroup)
+		        .build();
+		
+		Order newOrderAtPosition2 = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)
+		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(savedOrderGroup)
+		        .build();
+		
+		savedOrderGroup.addOrder(newOrderAtPosition1, 0);
+		savedOrderGroup.addOrder(newOrderAtPosition2, 1);
+		
+		Context.getOrderService().saveOrderGroup(savedOrderGroup);
+		
+		OrderGroup secondSavedOrderGroup = Context.getOrderService().getOrderGroupByUuid(orderGroup.getUuid());
+		assertEquals(4, savedOrderGroup.getOrders().size());
+		
+		assertEquals("The first order in  savedOrderGroup is the same which is sent first in the List", newOrderAtPosition1
+		        .getUuid(), secondSavedOrderGroup.getOrders().get(0).getUuid());
+		
+		assertEquals("The second order in  savedOrderGroup is the same which is sent second in the List",
+		    newOrderAtPosition2.getUuid(), secondSavedOrderGroup.getOrders().get(1).getUuid());
+		
+		assertEquals("The third order in  savedOrderGroup is the same which is sent third in the List",
+		    firstOrderWithOrderGroup.getUuid(), savedOrderGroup.getOrders().get(2).getUuid());
+		
+		assertEquals("The fourth order in  savedOrderGroup is the same which is sent first in the List",
+		    secondOrderWithOrderGroup.getUuid(), savedOrderGroup.getOrders().get(3).getUuid());
+		
+		assertThat("The third order has a lower sortWeight than the fourth", savedOrderGroup.getOrders().get(2)
+		        .getSortWeight().compareTo(savedOrderGroup.getOrders().get(3).getSortWeight()), is(-1));
+		assertThat("The second order has a lower sortWeight than the third", savedOrderGroup.getOrders().get(1)
+		        .getSortWeight().compareTo(savedOrderGroup.getOrders().get(2).getSortWeight()), is(-1));
+		assertThat("The first order has a lower sortWeight than the second", savedOrderGroup.getOrders().get(0)
+		        .getSortWeight().compareTo(savedOrderGroup.getOrders().get(1).getSortWeight()), is(-1));
+	}
+	
+	@Test
+	public void shouldSetTheCorrectSortWeightWhenAddingAnOrderWithANegativePosition() throws Exception {
+		executeDataSet(ORDER_SET);
+		
+		Encounter encounter = encounterService.getEncounter(3);
+		
+		OrderSet orderSet = Context.getOrderSetService().getOrderSet(2000);
+		OrderGroup orderGroup = new OrderGroup();
+		orderGroup.setOrderSet(orderSet);
+		orderGroup.setPatient(encounter.getPatient());
+		orderGroup.setEncounter(encounter);
+		
+		Order firstOrderWithOrderGroup = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)
+		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup)
+		        .build();
+		
+		Order secondOrderWithOrderGroup = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1001)
+		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup)
+		        .build();
+		
+		Set<Order> orders = new LinkedHashSet<Order>();
+		orders.add(firstOrderWithOrderGroup);
+		orders.add(secondOrderWithOrderGroup);
+		
+		encounter.setOrders(orders);
+		
+		for (OrderGroup og : encounter.getOrderGroups()) {
+			if (og.getId() == null) {
+				Context.getOrderService().saveOrderGroup(og);
+			}
+		}
+		
+		Context.flushSession();
+		
+		OrderGroup savedOrderGroup = Context.getOrderService().getOrderGroupByUuid(orderGroup.getUuid());
+		
+		Order newOrderWithNegativePosition = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7)
+		        .withConcept(1000).withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date())
+		        .withOrderType(17).withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date())
+		        .withOrderGroup(savedOrderGroup).build();
+		
+		savedOrderGroup.addOrder(newOrderWithNegativePosition, -1);
+		
+		Context.getOrderService().saveOrderGroup(savedOrderGroup);
+		Context.flushSession();
+		
+		OrderGroup secondSavedOrderGroup = Context.getOrderService().getOrderGroupByUuid(orderGroup.getUuid());
+		assertEquals(3, secondSavedOrderGroup.getOrders().size());
+		
+		assertEquals("The new order gets added at the last position", newOrderWithNegativePosition.getUuid(),
+		    secondSavedOrderGroup.getOrders().get(2).getUuid());
+		
+		assertThat("The new order has a higher sortWeight than the second", secondSavedOrderGroup.getOrders().get(2)
+		        .getSortWeight().compareTo(secondSavedOrderGroup.getOrders().get(1).getSortWeight()), is(1));
+		
+		Order newOrderWithInvalidPosition = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)
+		        .withCareSetting(1).withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17)
+		        .withUrgency(Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(savedOrderGroup)
+		        .build();
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot add a member which is out of range of the list");
+		secondSavedOrderGroup.addOrder(newOrderWithInvalidPosition, secondSavedOrderGroup.getOrders().size() + 1);
+	}
 }
