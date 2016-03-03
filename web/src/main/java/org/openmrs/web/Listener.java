@@ -34,7 +34,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.Module;
@@ -157,6 +159,12 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				// set props to the context so that they can be
 				// used during sessionFactory creation
 				Context.setRuntimeProperties(props);
+				
+				//ensure that we always log the runtime properties file that we are using
+				//since openmrs is just booting, the log levels are not yet set. TRUNK-4835
+				Logger.getLogger(getClass()).setLevel(Level.INFO);
+				log.info("Using runtime properties file: "
+						+ OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
 			}
 
 			Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
