@@ -2002,26 +2002,25 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Ignore("TRUNK-50")
 	@Verifies(value = "should void and create new obs when saving encounter", method = "saveEncounter(Encounter)")
 	public void saveEncounter_shouldVoidAndCreateNewObsWhenSavingEncounter() throws Exception {
 		// create an encounter
+        EncounterService es = Context.getEncounterService();
 		Encounter encounter = new Encounter();
-		encounter.setLocation(new Location(1));
-		encounter.setEncounterType(new EncounterType(1));
+		encounter.setLocation(Context.getLocationService().getLocation(1));
+		encounter.setEncounterType(es.getEncounterType(1));
 		encounter.setEncounterDatetime(new Date());
-		encounter.setPatient(new Patient(3));
+		encounter.setPatient(Context.getPatientService().getPatient(3));
 		
 		// Now add an obs to it
 		Obs obs = new Obs();
-		obs.setConcept(new Concept(1));
+		obs.setConcept(Context.getConceptService().getConcept(1));
 		obs.setValueNumeric(50d);
 		encounter.addObs(obs);
 		
 		// save the encounter
-		EncounterService es = Context.getEncounterService();
 		es.saveEncounter(encounter);
-		
+
 		// get the id of this obs
 		int oldObsId = obs.getObsId();
 		
