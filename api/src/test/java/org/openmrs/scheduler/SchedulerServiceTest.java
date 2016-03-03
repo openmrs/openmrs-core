@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.tasks.AbstractTask;
@@ -34,6 +35,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 /**
  * TODO test all methods in SchedulerService
  */
+@Ignore("https://issues.openmrs.org/browse/TRUNK-4212")
 public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	// so that we can guarantee tests running accurately instead of tests interfering with the next
