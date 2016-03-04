@@ -10,8 +10,10 @@
 package org.openmrs.notification;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
@@ -107,6 +109,26 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 		}
 		catch (MessageException e) {
 			//So that this test doesn't fail just because the user isn't running an SMTP server.
+			if (!e.getMessage().contains(NO_SMTP_SERVER_ERROR)) {
+				e.printStackTrace();
+				fail();
+			}
+		}
+	}
+	
+	@Test
+	public void sendMessage_shouldSaveTheSentMessage() throws MessageException {
+		Message message = ms.createMessage("recipient@example.com", "sender@example.com", "subject", "content");
+		message.setId(123);
+		
+		try {
+			ms.sendMessage(message);
+			SentMessage sentMessage = Context.getSentMessageService().getSentMessage(123);
+			
+			assertNotNull(sentMessage);
+			assertEquals(123, (int)sentMessage.getMessageId());
+		}
+		catch (MessageException e) {
 			if (!e.getMessage().contains(NO_SMTP_SERVER_ERROR)) {
 				e.printStackTrace();
 				fail();

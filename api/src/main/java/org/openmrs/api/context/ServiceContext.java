@@ -47,6 +47,7 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
 import org.openmrs.notification.NoteService;
+import org.openmrs.notification.SentMessageService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.aop.Advisor;
@@ -369,6 +370,20 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setEncounterService(EncounterService encounterService) {
 		setService(EncounterService.class, encounterService);
+	}
+	
+	/**
+	 * @param sentMessageService 
+	 */
+	public void setSentMessageService(SentMessageService sentMessageService) {
+		setService(SentMessageService.class, sentMessageService);
+	}
+	
+	/**
+	 * @return sentMessageService
+	 */
+	public SentMessageService getSentMessageService() {
+		return getService(SentMessageService.class);
 	}
 	
 	/**

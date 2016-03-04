@@ -109,6 +109,7 @@
         <property name="visitService"><ref bean="visitService"/></property>
         <property name="providerService"><ref bean="providerService"/></property>
         <property name="noteService"><ref bean="noteService" /></property>
+        <property name="sentMessageService"><ref bean="sentMessageService" /></property>
 	</bean>	
 	
 	<bean id="context" class="org.openmrs.api.context.Context">
@@ -194,6 +195,9 @@
 	<bean id="providerDAO" class="org.openmrs.api.db.hibernate.HibernateProviderDAO">
         <property name="sessionFactory"><ref bean="sessionFactory"/></property>
     </bean>
+	<bean id="sentMessageDAO" class="org.openmrs.notification.db.hibernate.HibernateSentMessageDAO">
+        <property name="sessionFactory"><ref bean="sessionFactory"/></property>
+    </bean>
 	
 
 	<!--  **************************  SCHEDULER SERVICE  *************************  -->
@@ -218,6 +222,9 @@
 	</bean>
 	<bean id="personServiceTarget" class="org.openmrs.api.impl.PersonServiceImpl">
 		<property name="personDAO"><ref bean="personDAO"/></property>	
+	</bean>
+	<bean id="sentMessageServiceTarget" class="org.openmrs.notification.impl.SentMessageServiceImpl">
+		<property name="sentMessageDAO"><ref bean="sentMessageDAO"/></property>	
 	</bean>
 	<bean id="conceptServiceTarget" class="org.openmrs.api.impl.ConceptServiceImpl">
 		<property name="conceptDAO"><ref bean="conceptDAO"/></property>	
@@ -352,6 +359,14 @@
 	<bean id="patientService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="patientServiceTarget"/></property>
+		<property name="preInterceptors">
+			<ref local="serviceInterceptors" />
+		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+	</bean>
+	<bean id="sentMessageService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="sentMessageServiceTarget"/></property>
 		<property name="preInterceptors">
 			<ref local="serviceInterceptors" />
 		</property>

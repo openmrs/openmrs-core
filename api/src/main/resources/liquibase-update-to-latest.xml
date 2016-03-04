@@ -307,6 +307,26 @@
 			referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
 	
+	<changeSet id="TRUNK-2497-Store-outgoing-MessageService-emails-in-a-table" author="ivange94">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="sent_message"/></not>
+		</preConditions>
+		<comment>
+			Create table to persist all sent messages
+		</comment>
+		<createTable tableName="sent_message">
+			<column name="message_id" type="int">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="sender_id" type="int"/>
+			<column name="receiver_id" type="int"/>
+			<column name="subject" type="varchar(50)"/>
+			<column name="content" type="varchar(50)"/>
+			<column name="content_type" type="varchar(50)"/>
+			<column name="sent_date" type="datetime"/>
+		</createTable>
+	</changeSet>
+	
 	<changeSet id="20090224-1250" author="Keelhaul+bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="location_tag_map"/></not>
