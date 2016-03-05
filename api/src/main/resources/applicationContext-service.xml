@@ -641,47 +641,7 @@
     </bean>   
 	-->		
 
-	<!--  **************************  VALIDATOR CONFIGURATION  *************************  -->
-	<!--  Configuration for all openmrs validators                                        -->
-	
-	<bean id="allergyValidator" class="org.openmrs.validator.AllergyValidator" />
-	<bean id="personValidator" class="org.openmrs.validator.PersonValidator" />
-	<bean id="patientValidator" class="org.openmrs.validator.PatientValidator" />
-	<bean id="locationValidator" class="org.openmrs.validator.LocationValidator"/>
-	<bean id="personNameValidator" class="org.openmrs.validator.PersonNameValidator" />
-	<bean id="patientIdentifierValidator" class="org.openmrs.validator.PatientIdentifierValidator" />
-	<bean id="patientIdentifierTypeValidator" class="org.openmrs.validator.PatientIdentifierTypeValidator" />
-	<bean id="personAttributeTypeValidator" class="org.openmrs.validator.PersonAttributeTypeValidator" />
-	<bean id="userValidator" class="org.openmrs.validator.UserValidator" />
-	<bean id="roleValidator" class="org.openmrs.validator.RoleValidator" />
-	<bean id="privilegeValidator" class="org.openmrs.validator.PrivilegeValidator" />
-	<bean id="encounterTypeValidator" class="org.openmrs.validator.EncounterTypeValidator" />
-	<bean id="conceptClassValidator" class="org.openmrs.validator.ConceptClassValidator" />
-	<bean id="conceptDatatypeValidator" class="org.openmrs.validator.ConceptDatatypeValidator" />
-	<bean id="conceptSourceValidator" class="org.openmrs.validator.ConceptSourceValidator" />
-	<bean id="formEditValidator" class="org.openmrs.validator.FormValidator" />
-	<bean id="fieldTypeValidator" class="org.openmrs.validator.FieldTypeValidator" />
-	<bean id="programValidator" class="org.openmrs.validator.ProgramValidator" />
-	<bean id="stateConversionValidator" class="org.openmrs.validator.StateConversionValidator" />
-	<bean id="taskValidator" class="org.openmrs.validator.SchedulerFormValidator" />
-	<bean id="obsValidator" class="org.openmrs.validator.ObsValidator" />
-	<bean id="orderValidator" class="org.openmrs.validator.OrderValidator" />
-	<bean id="drugOrderValidator" class="org.openmrs.validator.DrugOrderValidator" />
-	<bean id="requireNameValidator" class="org.openmrs.validator.RequireNameValidator"/>
-	<bean id="conceptDrugValidator" class="org.openmrs.validator.ConceptDrugValidator"/>
-	<bean id="hl7SourceValidator" class="org.openmrs.validator.HL7SourceValidator"/>
-	<bean id="personAddressValidator" class="org.openmrs.validator.PersonAddressValidator"/>
-	<bean id="visitTypeValidator" class="org.openmrs.validator.VisitTypeValidator" />
-	<bean id="visitAttributeTypeValidator" class="org.openmrs.validator.VisitAttributeTypeValidator" />
-	<bean id="providerAttributeTypeValidator" class="org.openmrs.validator.ProviderAttributeTypeValidator" />	
-	<bean id="encounterValidator" class="org.openmrs.validator.EncounterValidator" />
-	<bean id="locationAttributeTypeValidator" class="org.openmrs.validator.LocationAttributeTypeValidator" />
-	<bean id="providerValidator" class="org.openmrs.validator.ProviderValidator" />
-	<bean id="patientProgramValidator" class="org.openmrs.validator.PatientProgramValidator" />
-	<bean id="conceptValidator" class="org.openmrs.validator.ConceptValidator" />
-	<bean id="personMergeLogValidator" class="org.openmrs.validator.PersonMergeLogValidator" />
-	<bean id="conceptReferenceTermValidator" class="org.openmrs.validator.ConceptReferenceTermValidator" />
-	<bean id="conceptMapTypeValidator" class="org.openmrs.validator.ConceptMapTypeValidator" />
+
     <bean id="implementationIdHttpClient" class="org.openmrs.util.HttpClient">
         <constructor-arg name="url" value="http://resources.openmrs.org/tools/implementationid"/>
     </bean>
@@ -693,6 +653,6 @@
 		<context:include-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileIncludeFilter" />
 		<context:exclude-filter type="custom" expression="org.openmrs.util.TestTypeFilter"/> <!-- Excludes classes with unit test super classes -->
 		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter" />
-	</context:component-scan> 
+	</context:component-scan>
     
 </beans>
