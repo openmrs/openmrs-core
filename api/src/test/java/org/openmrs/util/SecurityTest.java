@@ -23,7 +23,17 @@ public class SecurityTest {
 	private static final int HASH_LENGTH = 128;
 	
 	/**
-	 * @see {@link Security#encodeString(String)}
+	 * Test added by Dengfeng(Davis) Li 
+	 */
+	@Test
+	@Verifies(value = "generate cipher initialization vector with lenght of 16 bytes", method = "generateNewInitVector()")
+	public void generateInitVector() throws Exception {
+		byte[] vector = Security.generateNewInitVector();
+		Assert.assertEquals(16, vector.length);
+	}
+	
+	/**
+	 * @see Security#encodeString(String)
 	 */
 	@Test
 	@Verifies(value = "should encodeStringsTo128Characters", method = "encodeString(String)")
@@ -33,7 +43,7 @@ public class SecurityTest {
 	}
 	
 	/**
-	 * @see {@link Security#encodeString(String)}
+	 * @see Security#encodeString(String)
 	 */
 	@Test
 	@Verifies(value = "should encodeStringsToXCharactersWithXCharactersSalt", method = "encodeString(String)")
@@ -43,7 +53,7 @@ public class SecurityTest {
 	}
 	
 	/**
-	 * @see {@link Security#hashMatches(String,String)}
+	 * @see Security#hashMatches(String,String)
 	 */
 	@Test
 	@Verifies(value = "should match strings hashed with sha1 algorithm", method = "hashMatches(String,String)")
@@ -53,7 +63,7 @@ public class SecurityTest {
 	}
 	
 	/**
-	 * @see {@link Security#hashMatches(String,String)}
+	 * @see Security#hashMatches(String,String)
 	 */
 	@Test
 	@Verifies(value = "should match strings hashed with sha512 algorithm and 128 characters salt", method = "hashMatches(String,String)")
@@ -65,7 +75,7 @@ public class SecurityTest {
 	}
 	
 	/**
-	 * @see {@link Security#hashMatches(String,String)}
+	 * @see Security#hashMatches(String,String)
 	 */
 	@Test
 	@Verifies(value = "should match strings hashed with incorrect sha1 algorithm", method = "hashMatches(String,String)")
@@ -75,7 +85,7 @@ public class SecurityTest {
 	}
 	
 	/**
-	 * @see {@link Security#decrypt(String)}
+	 * @see Security#decrypt(String)
 	 */
 	@Test
 	@Verifies(value = "should decrypt short and long text", method = "decrypt(String)")
@@ -185,7 +195,7 @@ public class SecurityTest {
 	}
 	
 	/**
-	 * @see {@link Security#encrypt(String)}
+	 * @see Security#encrypt(String)
 	 */
 	@Test
 	@Verifies(value = "should encrypt short and long text", method = "encrypt(String)")
