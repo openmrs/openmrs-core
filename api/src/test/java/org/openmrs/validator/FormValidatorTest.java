@@ -28,14 +28,13 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	*/
 	@Test
 	@Verifies(value = "should fail validation if all fields are null", method = "validate(object,Errors)")
-	public void validate_shouldFailValidationIfAllFieldsNull() throws Expection {
+	public void validate_shouldFailValidationIfAllFieldsNull() throws Exception {
 		Form form = new Form();
 		Errors errors = new BindException(form, "form");
 		new FormValidator().validate(form, errors);
 
 		Assert.assertTrue(errors.hasFieldErrors("name"));
 		Assert.assertTrue(errors.hasFieldErrors("version"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 
 	/**
