@@ -173,7 +173,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @param formFields The formFields to set.
 	 */
 	public void setFormFields(Set<FormField> formFields) {
-		this.formFields = formFields;
+		this.formFields = new HashSet<FormField>(formFields>;
 	}
 	
 	/**
