@@ -205,7 +205,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @since 1.10
 	 */
 	public void setIngredients(Collection<DrugIngredient> ingredients) {
-		this.ingredients = LinkedHashSet<DrugIngredient>(ingredients);
+		this.ingredients = new LinkedHashSet<DrugIngredient>(ingredients);
 	}
 	
 	/**
