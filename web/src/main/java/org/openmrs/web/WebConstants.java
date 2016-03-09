@@ -74,7 +74,7 @@ public class WebConstants {
 	/**
 	 * Global property name for the number of times one IP can fail at logging in before being
 	 * locked out. A value of 0 for this property means no IP lockout checks.
-	 * 
+	 *
 	 * @see org.openmrs.web.servlet.LoginServlet
 	 */
 	public static String GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP = "security.loginAttemptsAllowedPerIP";
@@ -84,4 +84,15 @@ public class WebConstants {
 	 * ServletContext under this key
 	 */
 	public static final String CURRENT_USERS = "CURRENT_USERS";
+	
+	public static final String INSUFFICIENT_PRIVILEGES = "insufficient_privileges";
+	
+	public static final String DENIED_PAGE = "denied_page";
+	
+	public static final String REQUIRED_PRIVILEGES = "required_privileges";
+	
+	public static final String UNCAUGHT_EXCEPTION_MESSAGE = "uncaught_exception_message";
+	
+	public static final String REFERER_URL = "referer_url";
+	
 }
