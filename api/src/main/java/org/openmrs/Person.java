@@ -42,7 +42,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	protected Integer personId;
 	
-	private SortedSet<PersonAddress> addresses = null;
+	private Set<PersonAddress> addresses = null;
 	
 	private Set<PersonName> names = null;
 	
@@ -332,6 +332,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see org.openmrs.PersonAddress
 	 */
 	public void setAddresses(Set<PersonAddress> addresses) {
+		this.getAddresses().clear();
 		this.addresses = new TreeSet<PersonAddress>(addresses);
 	}
 	
