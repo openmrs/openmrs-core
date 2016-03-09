@@ -463,7 +463,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.5
 	 */
 	public void setTags(Set<LocationTag> tags) {
-		this.tags = new HashSet<LocationTag>()tags;
+		this.tags = new HashSet<LocationTag>(tags);
 	}
 	
 	/**
