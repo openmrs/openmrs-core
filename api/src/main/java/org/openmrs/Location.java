@@ -374,7 +374,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.5
 	 */
 	public void setChildLocations(Set<Location> childLocations) {
-		this.childLocations = childLocations;
+		this.childLocations = new HashSet<Location>(childLocations);
 	}
 	
 	/**
@@ -463,7 +463,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.5
 	 */
 	public void setTags(Set<LocationTag> tags) {
-		this.tags = tags;
+		this.tags = new HashSet<LocationTag>()tags;
 	}
 	
 	/**

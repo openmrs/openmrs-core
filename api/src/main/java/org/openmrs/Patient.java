@@ -125,7 +125,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 * @see org.openmrs.PatientIdentifier
 	 */
 	public void setIdentifiers(Set<PatientIdentifier> identifiers) {
-		this.identifiers = identifiers;
+		this.identifiers = new TreeSet<PatientIdentifier>(identifiers);
 	}
 	
 	/**

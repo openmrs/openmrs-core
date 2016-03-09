@@ -273,7 +273,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @param tags the tags to set.
 	 */
 	public void setTags(Collection<ConceptNameTag> tags) {
-		this.tags = tags;
+		this.tags = new TreeSet<ConceptNameTag>(tags);
 	}
 	
 	/**
