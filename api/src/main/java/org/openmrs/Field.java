@@ -173,7 +173,7 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @param fieldAnswers The fieldAnswers to set.
 	 */
 	public void setAnswers(Set<FieldAnswer> fieldAnswers) {
-		this.answers = new TreeSet<FieldAnswer>(fieldAnswers);
+		this.answers = new HashSet<FieldAnswer>(fieldAnswers);
 	}
 	
 	/**
