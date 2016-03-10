@@ -87,9 +87,9 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 				
 				boolean isVoidedOrRetired = false;
 				if (Voidable.class.isAssignableFrom(entity.getClass())) {
-					isVoidedOrRetired = ((Voidable) entity).isVoided();
+					isVoidedOrRetired = ((Voidable) entity).getVoided();
 				} else if (Retireable.class.isAssignableFrom(entity.getClass())) {
-					isVoidedOrRetired = ((Retireable) entity).isRetired();
+					isVoidedOrRetired = ((Retireable) entity).getRetired();
 				}
 				if (isVoidedOrRetired && ignoreVoidedOrRetiredObjects()) {
 					continue;
