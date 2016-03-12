@@ -11,7 +11,7 @@ package org.openmrs;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 import org.openmrs.test.Verifies;
@@ -75,6 +75,60 @@ public class PersonNameTest {
 		Assert.assertEquals(voided, copy.getVoided().booleanValue());
 		Assert.assertEquals(voidedBy, copy.getVoidedBy());
 		Assert.assertEquals(voidReason, copy.getVoidReason());
+	}
+
+	/**
+	 * @see PersonName#newInstance(PersonName)
+	 */
+	@Test
+	@Verifies(value = "should trim leading and trailing whitespaces on each name attribute", method = "newInstance(PersonName)")
+	public void newInstance_shouldTrimLeadingAndTrailingWhitespacesOnEachNameAttribute() throws Exception {
+		Integer personNameId = 333;
+		boolean preferred = true;
+		String prefix = "prefix";
+		Person person = new Person(1);
+		String givenName = " given ";
+		String middleName = " middle ";
+		String familyNamePrefix = " familyNamePrefix ";
+		String familyName = " familyName ";
+		String familyName2 = " familyName2 ";
+		String familyNameSuffix = " familyNameSuffix ";
+		String degree = "degree";
+		boolean voided = true;
+		User voidedBy = new User(1);
+		String voidReason = "voidReason";
+
+		PersonName pn = new PersonName(personNameId);
+		pn.setPreferred(preferred);
+		pn.setPrefix(prefix);
+		pn.setPerson(person);
+		pn.setGivenName(givenName);
+		pn.setMiddleName(middleName);
+		pn.setFamilyNamePrefix(familyNamePrefix);
+		pn.setFamilyName(familyName);
+		pn.setFamilyName2(familyName2);
+		pn.setFamilyNameSuffix(familyNameSuffix);
+		pn.setDegree(degree);
+		pn.setVoided(voided);
+		pn.setVoidedBy(voidedBy);
+		pn.setVoidReason(voidReason);
+
+		PersonName copy = PersonName.newInstance(pn);
+
+		assertThat(copy.getPersonNameId(), is(personNameId));
+		assertThat(copy.getPreferred(), is(preferred));
+		assertThat(copy.getPrefix(), is(prefix));
+		assertThat(copy.getPerson(), is(person));
+		assertThat(copy.getGivenName(), is(givenName.trim()));
+		assertThat(copy.getMiddleName(), is(middleName.trim()));
+		assertThat(copy.getFamilyNamePrefix(), is(familyNamePrefix.trim()));
+		assertThat(copy.getFamilyName(), is(familyName.trim()));
+		assertThat(copy.getFamilyName2(), is(familyName2.trim()));
+		assertThat(copy.getFamilyNameSuffix(), is(familyNameSuffix.trim()));
+		assertThat(copy.getDegree(), is(degree));
+		assertThat(copy.getVoided(), is(voided));
+		assertThat(copy.getVoidedBy(), is(voidedBy));
+		assertThat(copy.getVoidReason(), is(voidReason));
 	}
 
 	/**
@@ -350,7 +404,7 @@ public class PersonNameTest {
 		pn.setFamilyNameSuffix("jr.");
 		pn.setDegree("3");
 		PersonName.setFormat(OpenmrsConstants.PERSON_NAME_FORMAT_SHORT);
-		Assert.assertEquals(pn.getFullName(), "Sr. Taylor Bob Mark");
+		Assert.assertEquals("Sr. Taylor Bob Mark", pn.getFullName());
 	}
 	
 	@Test
@@ -366,7 +420,7 @@ public class PersonNameTest {
 		pn.setFamilyName2("Jones");
 		pn.setFamilyNameSuffix("jr.");
 		pn.setDegree("3");
-		Assert.assertEquals(pn.getFullName(), "Sr. Taylor Bob Wilson Mark Jones jr. 3");
+		Assert.assertEquals("Sr. Taylor Bob Wilson Mark Jones jr. 3", pn.getFullName());
 	}
 	
 	@Test
@@ -383,7 +437,92 @@ public class PersonNameTest {
 		pn.setFamilyNameSuffix("jr.");
 		pn.setDegree("3");
 		PersonName.setFormat("");
-		Assert.assertEquals(pn.getFullName(), "Sr. Taylor Bob Mark");
+
+		Assert.assertEquals("Sr. Taylor Bob Mark", pn.getFullName());
 	}
-	
+
+	/**
+	 * @see PersonName(String, String, String)
+	 */
+	@Test
+	@Verifies(value = "should trim leading and trailing whitespaces on each name attribute", method = "PersonName")
+	public void personName_shouldTrimLeadingAndTrailingWhitespacesOnEachNameAttribute() throws Exception {
+		PersonName pn = new PersonName(" David ", " Robert ", " Jones ");
+
+		assertThat(pn.getGivenName(), is("David"));
+		assertThat(pn.getMiddleName(), is("Robert"));
+		assertThat(pn.getFamilyName(), is("Jones"));
+	}
+
+	/**
+	 * @see PersonName#setFamilyName(String)
+	 */
+	@Test
+	@Verifies(value = "should trim leading and trailing whitespaces", method = "setFamilyName(String)")
+	public void setFamilyName_shouldTrimLeadingAndTrailingWhitespaces() {
+		PersonName pn = new PersonName();
+		pn.setFamilyName(" van Dyke ");
+
+		assertThat(pn.getFamilyName(), is("van Dyke"));
+	}
+
+	/**
+	 * @see PersonName#setFamilyName2(String)
+	 */
+	@Test
+	@Verifies(value = "should trim leading and trailing whitespaces", method = "setFamilyName2(String)")
+	public void setFamilyName2_shouldTrimLeadingAndTrailingWhitespaces() {
+		PersonName pn = new PersonName();
+		pn.setFamilyName2(" von Hohenlohe ");
+
+		assertThat(pn.getFamilyName2(), is("von Hohenlohe"));
+	}
+
+	/**
+	 * @see PersonName#setFamilyNamePrefix(String)
+	 */
+	@Test
+	@Verifies(value = "should trim leading and trailing whitespaces", method = "setFamilyNamePrefix(String)")
+	public void setFamilyNamePrefix_shouldTrimLeadingAndTrailingWhitespaces() {
+		PersonName pn = new PersonName();
+		pn.setFamilyNamePrefix(" van der ");
+
+		assertThat(pn.getFamilyNamePrefix(), is("van der"));
+	}
+
+	/**
+	 * @see PersonName#setFamilyNameSuffix(String)
+	 */
+	@Test
+	@Verifies(value = "should trim leading and trailing whitespaces", method = "setFamilyNameSuffix(String)")
+	public void setFamilyNameSuffix_shouldTrimLeadingAndTrailingWhitespaces() {
+		PersonName pn = new PersonName();
+		pn.setFamilyNameSuffix(" und Taxis ");
+
+		assertThat(pn.getFamilyNameSuffix(), is("und Taxis"));
+	}
+
+	/**
+	 * @see PersonName#setGivenName(String)
+	 */
+	@Test
+	@Verifies(value = "should trim leading and trailing whitespaces", method = "setGivenName(String)")
+	public void setGivenName_shouldTrimLeadingAndTrailingWhitespaces() {
+		PersonName pn = new PersonName();
+		pn.setGivenName(" Hans Peter ");
+
+		assertThat(pn.getGivenName(), is("Hans Peter"));
+	}
+
+	/**
+	 * @see PersonName#setMiddleName(String)
+	 */
+	@Test
+	@Verifies(value = "should trim leading and trailing whitespaces", method = "setMiddleName(String)")
+	public void setMiddleName_shouldTrimLeadingAndTrailingWhitespaces() {
+		PersonName pn = new PersonName();
+		pn.setMiddleName(" Jan Franz ");
+
+		assertThat(pn.getMiddleName(), is("Jan Franz"));
+	}
 }
