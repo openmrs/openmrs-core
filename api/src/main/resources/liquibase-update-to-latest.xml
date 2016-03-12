@@ -9056,4 +9056,28 @@
 		<!-- visit_attribute_type has not null constraint on uuid -->
 		<!-- visit_type has not null constraint on uuid -->
 	</changeSet>
+
+	<changeSet id="TRUNK-3342-assigning-new-app-privileges" author="pralay">
+		<preConditions onFail="MARK_RAN">
+			<changeSetExecuted id="TRUNK-3342-insert-new-app-privileges" author="pralay" changeLogFile="liquibase-update-to-latest.xml" />
+		</preConditions>
+		<comment>
+			Assigning the new Patient Overview privileges to roles with corresponding api level privileges
+		</comment>
+			<sql>
+				
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Dashboard - View Visits Section' FROM role_privilege rp 
+				WHERE rp.privilege = 'View Visits'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard - View Visits Section' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Dashboard - View Encounters Section' FROM role_privilege rp 
+				WHERE rp.privilege = 'View Encounters'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard - View Encounters Section' and rp2.role=rp.role); 
+
+
+			</sql>
+	</changeSet>
+	
 </databaseChangeLog>
