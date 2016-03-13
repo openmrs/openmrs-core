@@ -6690,4 +6690,57 @@
 		<!-- visit_type has not null constraint on uuid -->
 	</changeSet>
 
+	<changeSet id="TRUNK-3422-adding-View-Visits-Privilege"
+		author="PralayRamteke">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT count(*) FROM role_privilege WHERE privilege='View Encounters';
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>
+                Add "View Visits" privilege to the roles having "View Encounter"
+            </comment>
+		<sql>
+			INSERT INTO role_privilege (role, privilege)
+			SELECT role, 'View Visits' from role_privilege rp
+			WHERE rp.privilege = 'View Encounters'
+			AND NOT EXISTS (SELECT role, privilege FROM role_privilege rp2 WHERE
+			rp2.privilege='View Visits' AND rp2.role=rp.role);
+
+		</sql>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-3422-adding-View-Encounter-Provider-Privilege"
+		author="PralayRamteke">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT count(*) FROM role_privilege WHERE privilege='View Encounters';
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>
+                Add "View Encounter Provider" privilege to the roles having "View Encounter"
+            </comment>
+		<sql>
+			INSERT INTO privilege (privilege,description)
+			SELECT 'View Encounter Provider','Able to view Encounter Provider'
+			FROM privilege
+			WHERE NOT EXISTS (
+			SELECT *
+			FROM privilege
+			WHERE privilege='View Encounter Provider') limit 1;
+
+			INSERT INTO role_privilege (role, privilege)
+			SELECT role, 'View Encounter Provider' from role_privilege rp
+			WHERE rp.privilege = 'View Encounters'
+			AND NOT EXISTS (SELECT role, privilege FROM role_privilege rp2 WHERE
+			rp2.privilege='View Encounter Provider' AND rp2.role=rp.role);
+		</sql>
+	</changeSet>    
+
+
 </databaseChangeLog>
