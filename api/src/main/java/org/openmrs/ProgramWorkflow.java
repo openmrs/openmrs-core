@@ -254,7 +254,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	}
 	
 	public void setStates(Set<ProgramWorkflowState> states) {
-		this.states = states;
+		this.states = new HashSet<ProgramWorkflowState>(states);
 	}
 	
 	public Concept getConcept() {

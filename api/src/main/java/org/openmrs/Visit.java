@@ -205,7 +205,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * @param encounters the encounters to set
 	 */
 	public void setEncounters(Set<Encounter> encounters) {
-		this.encounters = encounters;
+		this.encounters = new HashSet<Encounter>(encounters);
 	}
 	
 	/**

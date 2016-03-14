@@ -133,7 +133,7 @@ public class ConceptReferenceTerm extends BaseOpenmrsMetadata implements java.io
 	 * @param conceptReferenceTermMaps the conceptReferenceTermMaps to set
 	 */
 	public void setConceptReferenceTermMaps(Set<ConceptReferenceTermMap> conceptReferenceTermMaps) {
-		this.conceptReferenceTermMaps = conceptReferenceTermMaps;
+		this.conceptReferenceTermMaps = new LinkedHashSet<ConceptReferenceTermMap>(conceptReferenceTermMaps);
 	}
 	
 	/**

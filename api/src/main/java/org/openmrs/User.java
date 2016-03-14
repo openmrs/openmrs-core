@@ -248,7 +248,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	 * @param roles The roles to set.
 	 */
 	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
+		this.roles = new HashSet<Role>(roles);
 	}
 	
 	/**

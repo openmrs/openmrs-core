@@ -352,7 +352,7 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	}
 	
 	public void setStates(Set<PatientState> states) {
-		this.states = states;
+		this.states = new HashSet<PatientState>(states);
 	}
 	
 	/**

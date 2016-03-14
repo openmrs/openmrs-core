@@ -332,7 +332,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see org.openmrs.PersonAddress
 	 */
 	public void setAddresses(Set<PersonAddress> addresses) {
-		this.addresses = addresses;
+		this.addresses = new TreeSet<PersonAddress>(addresses);
 	}
 	
 	/**
@@ -353,7 +353,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see org.openmrs.PersonName
 	 */
 	public void setNames(Set<PersonName> names) {
-		this.names = names;
+		this.names = new TreeSet<PersonName>(names);
 	}
 	
 	/**
@@ -391,7 +391,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see org.openmrs.PersonAttribute
 	 */
 	public void setAttributes(Set<PersonAttribute> attributes) {
-		this.attributes = attributes;
+		this.attributes = new TreeSet<PersonAttribute>(attributes);
 		attributeMap = null;
 		allAttributeMap = null;
 	}
