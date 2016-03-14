@@ -37,7 +37,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.Module;
@@ -51,7 +50,6 @@ import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.MemoryLeakUtil;
 import org.openmrs.util.OpenmrsClassLoader;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
@@ -233,8 +231,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// start openmrs
 		try {
 			Context.openSession();
-			PersonName.setFormat(Context.getAdministrationService().getGlobalProperty(
-			    OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT, OpenmrsConstants.PERSON_NAME_FORMAT_SHORT));
+
 			// load bundled modules that are packaged into the webapp
 			Listener.loadBundledModules(servletContext);
 			

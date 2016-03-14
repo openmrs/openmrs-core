@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
+import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -823,15 +824,16 @@ public class Context {
 		// data directory can be set from the runtime properties
 		OpenmrsUtil.startup(props);
 		
-		// Loop over each module and startup each with these custom properties
-		ModuleUtil.startup(props);
+		openSession();
 		
 		// add any privileges/roles that /must/ exist for openmrs to work
 		// correctly.
-		// TODO: Should this be one of the first things executed at startup?
 		checkCoreDataset();
 		
 		getContextDAO().setupSearchIndex();
+		
+		// Loop over each module and startup each with these custom properties
+		ModuleUtil.startup(props);
 	}
 	
 	/**
@@ -1083,6 +1085,9 @@ public class Context {
 		AdministrationService as = Context.getAdministrationService();
 		Boolean disableValidation = Boolean.valueOf(as.getGlobalProperty(OpenmrsConstants.GP_DISABLE_VALIDATION, "false"));
 		ValidateUtil.setDisableValidation(disableValidation);
+		
+		PersonName.setFormat(Context.getAdministrationService().getGlobalProperty(
+			 OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT));
 	}
 	
 	/**
