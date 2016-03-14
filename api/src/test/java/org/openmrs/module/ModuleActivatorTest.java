@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 
 /**
@@ -180,5 +181,11 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		
 		assertTrue(moduleTestData.getStartedCallTime(MODULE5_ID) <= moduleTestData.getStartedCallTime(MODULE4_ID));
 		assertTrue(moduleTestData.getStartedCallTime(MODULE1_ID) <= moduleTestData.getStartedCallTime(MODULE5_ID));
+	}
+	
+	@AfterClass
+	public static void cleanUp() {
+		//ensure that we do not have any left overs to interfere with other tests
+		ModuleUtil.shutdown();
 	}
 }
