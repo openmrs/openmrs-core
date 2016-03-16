@@ -9,18 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.Vector;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,6 +54,18 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.Vector;
 
 /**
  * Default implementation of the patient service. This class should not be used on its own. The
@@ -1419,14 +1419,23 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException {
 		//if the argument or the following required fields are not specified
-		if (patientIdentifier == null || patientIdentifier.getPatient() == null
-		        || patientIdentifier.getIdentifierType() == null || patientIdentifier.getLocation() == null
-		        || StringUtils.isBlank(patientIdentifier.getIdentifier()))
+		PatientIdentifierType.LocationBehavior locationBehavior = null;
+		if (patientIdentifier != null) {
+			locationBehavior = patientIdentifier.getIdentifierType().getLocationBehavior();
+		}
+		
+		if (patientIdentifier == null
+		        || patientIdentifier.getPatient() == null
+		        || patientIdentifier.getIdentifierType() == null
+		        || StringUtils.isBlank(patientIdentifier.getIdentifier())
+		        || (locationBehavior == PatientIdentifierType.LocationBehavior.REQUIRED && patientIdentifier.getLocation() == null)) {
 			throw new APIException("PatientIdentifier argument or one of its required fields is null or invalid");
+		}
 		if (patientIdentifier.getPatientIdentifierId() == null) {
 			Context.requirePrivilege(PrivilegeConstants.ADD_PATIENT_IDENTIFIERS);
-		} else
+		} else {
 			Context.requirePrivilege(PrivilegeConstants.EDIT_PATIENT_IDENTIFIERS);
+		}
 		
 		return dao.savePatientIdentifier(patientIdentifier);
 	}
