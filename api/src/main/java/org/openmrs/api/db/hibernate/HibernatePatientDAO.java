@@ -28,6 +28,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.Allergies;
+import org.openmrs.Allergy;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -38,10 +40,6 @@ import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
-
-import org.openmrs.api.APIException;
-import org.openmrs.Allergies;
-import org.openmrs.Allergy;
 
 /**
  * Hibernate specific database methods for the PatientService
@@ -644,7 +642,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	public String getAllergyStatus(Patient patient) {
 
 		return (String) sessionFactory.getCurrentSession().createSQLQuery(
-			    "select allergy_status from Patient where patient_id = :patientId").setInteger("patientId", patient.getPatientId()).uniqueResult();
+			    "select allergy_status from patient where patient_id = :patientId").setInteger("patientId", patient.getPatientId()).uniqueResult();
 	}
 	
 	/**
@@ -655,7 +653,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	public Allergies saveAllergies(Patient patient, Allergies allergies) {
 
 		sessionFactory.getCurrentSession().createSQLQuery(
-			    "update Patient set allergy_status = :allergyStatus where patient_id = :patientId")
+			    "update patient set allergy_status = :allergyStatus where patient_id = :patientId")
 			    .setInteger("patientId", patient.getPatientId())
 			    .setString("allergyStatus", allergies.getAllergyStatus())
 			    .executeUpdate();
