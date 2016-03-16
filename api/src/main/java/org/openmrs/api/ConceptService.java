@@ -35,6 +35,7 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
 import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.util.PrivilegeConstants;
@@ -419,6 +420,17 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Drug getDrugByUuid(String uuid);
+	
+	/**
+	 * Get Drug Ingredient by its UUID
+	 * 
+	 * @param uuid the uuid for the drug ingredient to get
+	 * @return the drug ingredient if found, else null
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public DrugIngredient getDrugIngredientByUuid(String uuid);
 	
 	/**
 	 * Return the drug object corresponding to the given name or drugId

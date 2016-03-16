@@ -269,7 +269,6 @@
 			DWRConceptService.getConceptReferenceTerm(Integer conceptReferenceTermId);
 			DWRConceptService.createConceptReferenceTerm(String code, Integer conceptSourceId, String name);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
-			DWREncounterService.findEncounters(String phrase, Integer patientId, boolean includeVoided);
 			DWREncounterService.findBatchOfEncounters(String phrase, boolean includeVoided, Integer start, Integer length);
 			DWREncounterService.findBatchOfEncountersByPatient(String phrase, Integer patientId, boolean includeVoided, Integer start, Integer length);
 			DWREncounterService.findCountAndEncounters(String phrase, boolean includeVoided, Integer start, Integer length, boolean getMatchCount);
