@@ -11,6 +11,8 @@ package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Concept;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.api.context.Context;
 
 /**
  * Represent allergen
@@ -23,7 +25,7 @@ public class Allergen {
 	
 	private String nonCodedAllergen;
 	
-	public static String OTHER_NON_CODED_UUID = "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	private static String OTHER_NON_CODED_CONCEPT_UUID;
 	
 	/**
 	 * Default constructor
@@ -62,13 +64,34 @@ public class Allergen {
     public Concept getCodedAllergen() {
     	return codedAllergen;
     }
+	
+    
+	/**
+	 * Sets other non coded concept uuid constant.
+	 * 
+	 * @param otherNonCodedConceptUuid
+	 * @since 2.0
+	 */
+    public static void setOtherNonCodedConceptUuid(String otherNonCodedConceptUuid) {
+		OTHER_NON_CODED_CONCEPT_UUID = otherNonCodedConceptUuid;
+    }
+    
+	/**
+	 * Returns other non coded concept uuid constant.
+	 * 
+	 * @return other non coded concept uuid constant
+	 * @since 2.0
+	 */
+	public static String getOtherNonCodedConceptUuid() {
+		return OTHER_NON_CODED_CONCEPT_UUID;
+	}
 
     /**
      * @param codedAllergen the codedAllergen to set
      */
     public void setCodedAllergen(Concept codedAllergen) {
 		this.codedAllergen = codedAllergen;
-		if (codedAllergen != null && !codedAllergen.getUuid().equals(OTHER_NON_CODED_UUID)) {
+		if (codedAllergen != null && !codedAllergen.getUuid().equals(getOtherNonCodedConceptUuid())) {
 			nonCodedAllergen = null;
 		}
     }
@@ -86,14 +109,14 @@ public class Allergen {
     public void setNonCodedAllergen(String nonCodedAllergen) {
 		this.nonCodedAllergen = nonCodedAllergen;
 		if (StringUtils.isNotBlank(nonCodedAllergen)) {
-			if (codedAllergen != null && !codedAllergen.getUuid().equals(OTHER_NON_CODED_UUID)) {
+			if (codedAllergen != null && !codedAllergen.getUuid().equals(getOtherNonCodedConceptUuid())) {
 				codedAllergen = null;
 			}
 		}
     }
 
 	public boolean isCoded(){
-		if (codedAllergen == null || codedAllergen.getUuid().equals(OTHER_NON_CODED_UUID)) {
+		if (codedAllergen == null || codedAllergen.getUuid().equals(getOtherNonCodedConceptUuid())) {
 			return false;
 		}
 		return true;

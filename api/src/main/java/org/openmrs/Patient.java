@@ -32,6 +32,8 @@ public class Patient extends Person implements java.io.Serializable {
 	
 	private Integer patientId;
 	
+	private String allergyStatus = Allergies.UNKNOWN;
+	
 	private Set<PatientIdentifier> identifiers;
 	
 	// Constructors
@@ -88,6 +90,29 @@ public class Patient extends Person implements java.io.Serializable {
 	public void setPatientId(Integer patientId) {
 		super.setPersonId(patientId);
 		this.patientId = patientId;
+	}
+	
+	/**
+	 * Returns allergy status maintained by the supporting infrastructure.
+	 * 
+	 * @return current allargy status for patient
+	 * @since 2.0
+	 * @should return allergy status maintained by the supporting infrastructure
+	 */
+	public String getAllergyStatus() {
+		return this.allergyStatus;
+	}
+	
+	/**
+	 * Sets the allergy status for a patient. <b>This should never be called directly</b>. 
+	 * It should reflect allergy status maintained by the supporting infrastructure.
+	 * 
+	 * @param allergyStatus
+	 * @since 2.0
+	 * @should not be called by service client
+	 */
+	public void setAllergyStatus(String allergyStatus) {
+		this.allergyStatus = allergyStatus;
 	}
 	
 	/**

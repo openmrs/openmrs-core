@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.Before;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,8 +31,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.api.PatientService;
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -39,10 +38,14 @@ import org.openmrs.Allergy;
 import org.openmrs.Allergen;
 import org.openmrs.AllergenType;
 import org.openmrs.Allergies;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.test.BaseContextSensitiveTest;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Context.class)
-public class AllergyValidatorTest {
+public class AllergyValidatorTest extends BaseContextSensitiveTest {
+	
+	private static final String ALLERGY_OTHER_NONCODED_TEST_DATASET = "org/openmrs/api/include/otherNonCodedConcept.xml";
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -52,6 +55,13 @@ public class AllergyValidatorTest {
 	
 	@Mock
 	private PatientService ps;
+	
+	@Before
+	public void setup() throws Exception {
+		executeDataSet(ALLERGY_OTHER_NONCODED_TEST_DATASET);
+		Allergen.setOtherNonCodedConceptUuid(Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GP_ALLERGEN_OTHER_NON_CODED_UUID));
+	}
 	
 	private Concept createMockConcept(String uuid) {
 		Concept concept = mock(Concept.class);
@@ -146,9 +156,7 @@ public class AllergyValidatorTest {
 	 */
 	@Test
 	public void validate_shouldRejectADuplicateAllergen() throws Exception {
-		PowerMockito.mockStatic(Context.class);
-		MessageSourceService ms = mock(MessageSourceService.class);
-		when(Context.getMessageSourceService()).thenReturn(ms);
+		MessageSourceService ms = Context.getMessageSourceService();
 		
 		Allergies allergies = new Allergies();
 		Concept aspirin = createMockConcept(null);
@@ -170,9 +178,7 @@ public class AllergyValidatorTest {
 	 */
 	@Test
 	public void validate_shouldRejectADuplicateNonCodedAllergen() throws Exception {
-		PowerMockito.mockStatic(Context.class);
-		MessageSourceService ms = mock(MessageSourceService.class);
-		when(Context.getMessageSourceService()).thenReturn(ms);
+		MessageSourceService ms = Context.getMessageSourceService();
 		
 		Allergies allergies = new Allergies();
 		Concept nonCodedConcept = createMockConcept(getOtherNonCodedConceptUuid());
