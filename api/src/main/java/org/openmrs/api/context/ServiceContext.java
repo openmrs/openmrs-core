@@ -40,7 +40,6 @@ import org.openmrs.api.ProviderService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
-import org.openmrs.arden.ArdenService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
@@ -268,14 +267,7 @@ public class ServiceContext implements ApplicationContextAware {
 	public ProgramWorkflowService getProgramWorkflowService() {
 		return getService(ProgramWorkflowService.class);
 	}
-	
-	/**
-	 * @return ardenService
-	 */
-	public ArdenService getArdenService() {
-		return getService(ArdenService.class);
-	}
-	
+
 	/**
 	 * @return logicService
 	 */
@@ -319,14 +311,7 @@ public class ServiceContext implements ApplicationContextAware {
 	public void setProgramWorkflowService(ProgramWorkflowService programWorkflowService) {
 		setService(ProgramWorkflowService.class, programWorkflowService);
 	}
-	
-	/**
-	 * @param ardenService
-	 */
-	public void setArdenService(ArdenService ardenService) {
-		setService(ArdenService.class, ardenService);
-	}
-	
+
 	/**
 	 * @param logicService
 	 */
