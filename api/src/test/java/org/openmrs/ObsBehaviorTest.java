@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 import java.util.Date;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
@@ -45,7 +46,7 @@ public class ObsBehaviorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldHaveAllObsLoadedWithAnEncounterFromTheDatabaseAsNotDirty() {
+	public void shouldHaveAllObsLoadedWithAnEncounterFromTheDatabaseNotMarkedAsDirty() throws Exception {
 		Encounter e = encounterService.getEncounter(3);
 		Collection<Obs> allObs = e.getAllObs(true);
 		assertFalse(allObs.isEmpty());
@@ -55,6 +56,7 @@ public class ObsBehaviorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	@Ignore
 	public void shouldVoidAndReplaceOnlyEditedUnvoidedObsWhenTheyAreFlushedToTheDatabase() throws Exception {
 		executeDataSet(OBS_DATASET_XML);
 		final String newValueText = "some new value that for sure is different";

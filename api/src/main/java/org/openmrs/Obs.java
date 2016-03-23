@@ -210,7 +210,9 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 				if (member.getObsId() == null) {
 					newObs.addGroupMember(member);
 				} else {
-					newObs.addGroupMember(Obs.newInstance(member));
+					Obs newMember = Obs.newInstance(member);
+					newMember.setPreviousVersion(member);
+					newObs.addGroupMember(newMember);
 				}
 			}
 		}
