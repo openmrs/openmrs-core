@@ -93,6 +93,7 @@
         <property name="encounterService"><ref bean="encounterService"/></property>
         <property name="locationService"><ref bean="locationService"/></property>
         <property name="orderService"><ref bean="orderService"/></property>
+		<property name="orderSetService"><ref bean="orderSetService"/></property>
         <property name="formService"><ref bean="formService"/></property>
         <property name="administrationService"><ref bean="adminService"/></property>
         <property name="datatypeService"><ref bean="datatypeService"/></property>
@@ -144,6 +145,9 @@
 	</bean>
 	<bean id="orderDAO" class="org.openmrs.api.db.hibernate.HibernateOrderDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+	</bean>
+	<bean id="orderSetDAO" class="org.openmrs.api.db.hibernate.HibernateOrderSetDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	<bean id="formDAO" class="org.openmrs.api.db.hibernate.HibernateFormDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
@@ -252,6 +256,9 @@
 	</bean>
 	<bean id="orderServiceTarget" class="org.openmrs.api.impl.OrderServiceImpl">
 		<property name="orderDAO"><ref bean="orderDAO"/></property>
+	</bean>
+	<bean id="orderSetServiceTarget" class="org.openmrs.api.impl.OrderSetServiceImpl">
+		<property name="orderSetDAO"><ref bean="orderSetDAO"/></property>
 	</bean>
 	<bean id="formServiceTarget" class="org.openmrs.api.impl.FormServiceImpl">
 		<property name="formDAO"><ref bean="formDAO"/></property>	
@@ -401,6 +408,14 @@
 	<bean id="orderService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="orderServiceTarget"/></property>
+		<property name="preInterceptors">
+			<ref local="serviceInterceptors" />
+		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+	</bean>
+	<bean id="orderSetService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="orderSetServiceTarget"/></property>
 		<property name="preInterceptors">
 			<ref local="serviceInterceptors" />
 		</property>

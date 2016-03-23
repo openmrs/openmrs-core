@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.1//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.openmrs">
+
+    <class name="OrderGroup" table="order_group">
+
+        <id name="orderGroupId" type="int" column="order_group_id" unsaved-value="0">
+            <generator class="native">
+                <param name="sequence">order_group_order_group_id_seq</param>
+            </generator>
+        </id>
+
+        <discriminator column="order_group_id" insert="false" />
+
+        <many-to-one name="orderSet" class="OrderSet">
+            <column name="order_set_id"/>
+        </many-to-one>
+
+        <many-to-one name="patient" class="Patient" not-null="true">
+            <column name="patient_id"/>
+        </many-to-one>
+
+        <!-- bi-directional one-to-many association to Order -->
+        <bag name="orders" inverse="true" order-by="sort_weight" lazy="true">
+            <key column="order_group_id"/>
+            <one-to-many class="Order" />
+        </bag>
+
+        <!-- bi-directional many-to-one association to Encounter -->
+        <many-to-one name="encounter" class="Encounter" not-null="true">
+            <column name="encounter_id"/>
+        </many-to-one>
+
+        <!-- bi-directional many-to-one association to User -->
+        <many-to-one name="creator" class="User" not-null="true">
+            <column name="creator"/>
+        </many-to-one>
+        <property name="dateCreated" type="java.util.Date"
+                  column="date_created" not-null="true" length="19" />
+        <property name="voided" type="java.lang.Boolean"
+                  column="voided" length="1" not-null="true"/>
+        <!-- bi-directional many-to-one association to User -->
+        <many-to-one name="voidedBy" class="User">
+            <column name="voided_by" />
+        </many-to-one>
+        <property name="voidReason" type="java.lang.String"
+                  column="void_reason" length="255" />
+        <property name="dateVoided" type="java.util.Date"
+                  column="date_voided" length="19" />
+        <!-- bi-directional many-to-one association to User -->
+        <many-to-one name="changedBy" class="User">
+            <column name="changed_by" />
+        </many-to-one>
+        <property name="dateChanged" type="java.util.Date"
+                  column="date_changed" length="19" />
+        <property name="uuid" type="java.lang.String"
+                  column="uuid" length="38" unique="true" not-null="true"/>
+
+    </class>
+
+</hibernate-mapping>

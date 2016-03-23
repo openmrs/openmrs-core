@@ -19,6 +19,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
+import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
@@ -233,4 +234,23 @@ public interface OrderDAO {
 	 * @return a list of orders from the database
 	 */
 	public List<Object[]> getOrderFromDatabase(Order order, boolean isOrderADrugOrder) throws APIException;
+
+	/**
+	 * Saves an orderGroup to the database
+	 *
+	 * @param orderGroup
+	 * @return an orderGroup
+	 * @throws DAOException
+	 */
+	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupByUuid(String)
+	 */
+	public OrderGroup getOrderGroupByUuid(String uuid) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroup(Integer)
+	 */
+	public OrderGroup getOrderGroupById(Integer orderGroupId) throws DAOException;
 }

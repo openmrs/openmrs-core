@@ -22,6 +22,8 @@ import org.openmrs.CareSetting;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.OrderGroup;
+import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.Patient;
 import org.openmrs.TestOrder;
 import org.openmrs.api.OrderService;
@@ -41,6 +43,8 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	private class SomeDrugOrder extends DrugOrder {}
 	
 	private OrderService orderService;
+	
+	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
 	@Before
 	public void setup() {
@@ -432,16 +436,34 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounter);
 		order.setUrgency(Order.Urgency.ROUTINE);
 		order.setAction(Order.Action.NEW);
-		
+
 		order.setOrderReasonNonCoded("orderReasonNonCoded");
 		order.setAccessionNumber("accessionNumber");
 		order.setCommentToFulfiller("commentToFulfiller");
 		order.setVoidReason("voidReason");
+
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+
+		Assert.assertFalse(errors.hasErrors());
+	}
+
+	@Test
+	@Verifies(value = "should not save order if invalid orderGroup encounter", method = "saveOrder(Order)")
+	public void saveOrder_shouldNotSaveOrderIfInvalidOrderGroupEncounter() throws Exception {
+		executeDataSet(ORDER_SET);
+		OrderGroup orderGroup = new OrderGroup();
 		
+		orderGroup.setEncounter(Context.getEncounterService().getEncounter(5));
+		
+		Order order = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000).withCareSetting(1)
+		        .withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17).withUrgency(
+		            Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup).build();
+
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		Assert.assertTrue(errors.hasErrors());
 	}
 	
 	/**
@@ -474,13 +496,34 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		        .setCommentToFulfiller("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		order
 		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		
+
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
-		
+
 		Assert.assertTrue(errors.hasFieldErrors("accessionNumber"));
 		Assert.assertTrue(errors.hasFieldErrors("orderReasonNonCoded"));
 		Assert.assertTrue(errors.hasFieldErrors("commentToFulfiller"));
 		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+	}
+	
+	@Test
+	@Verifies(value = "should not save order if invalid orderGroup patient", method = "saveOrder(Order)")
+	public void saveOrder_shouldNotSaveOrderIfInvalidOrderGroupPatient() throws Exception {
+		executeDataSet(ORDER_SET);
+		OrderGroup orderGroup = new OrderGroup();
+		
+		orderGroup.setEncounter(Context.getEncounterService().getEncounter(5));
+		orderGroup.setPatient(Context.getPatientService().getPatient(2));
+		
+		Order order = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000).withCareSetting(1)
+		        .withOrderer(1).withEncounter(3).withDateActivated(new Date()).withOrderType(17).withUrgency(
+		            Order.Urgency.ON_SCHEDULED_DATE).withScheduledDate(new Date()).withOrderGroup(orderGroup).build();
+
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+
+		Assert.assertTrue(errors.hasFieldErrors("patient"));
+		Assert.assertEquals("Order.error.orderPatientAndOrderGroupPatientMismatch", errors.getFieldError("patient")
+		        .getCode());
 	}
 }
