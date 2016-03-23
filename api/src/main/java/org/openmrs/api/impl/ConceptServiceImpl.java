@@ -752,6 +752,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			if (ob.getUuid() == null) {
 				ob.setUuid(UUID.randomUUID().toString());
 			}
+            Context.getObsService().saveObs(ob, null);
 			cp.setObs(ob);
 		}
 		
