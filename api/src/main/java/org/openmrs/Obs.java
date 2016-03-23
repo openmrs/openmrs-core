@@ -21,8 +21,6 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -1278,16 +1276,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	private void markAsDirty(Object oldValue, Object newValue) {
 		//Should we ignore the case for Strings?
 		if (!isDirty() && !OpenmrsUtil.nullSafeEquals(oldValue, newValue)) {
-			//System.out.println("Marking as dirty..");
 			dirty = true;
-		} else if (OpenmrsUtil.nullSafeEquals(oldValue, newValue)) {
-			//System.out.println("Clean:" + oldValue + ":" + newValue);
 		}
-		
-	}
-	
-	@PostConstruct
-	private void unsetDirty() {
-		System.out.println("In Post Construct:" + getId());
 	}
 }
