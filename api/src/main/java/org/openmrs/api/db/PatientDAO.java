@@ -260,12 +260,25 @@ public interface PatientDAO {
 	public Allergies saveAllergies(Patient patient, Allergies allergies);
 	
 	/**
-	 * Gets a allergy
+	 * Gets a allergy matching the given allergyId
 	 * 
-	 * @param allergyId
-	 * @return allergy
+	 * @param allergyId of allergy to return
+	 * @return the allergy matching the given allergyId
+	 * @should return allergy given valid allergyId
+	 * @should return null if no object found with given allergyId
 	 */
 	public Allergy getAllergy(Integer allergyId);
+	
+	/**
+	 * Gets a allergy matching the given uuid
+	 * 
+	 * @param uuid of allergy to return
+	 * @since 2.0
+	 * @return the allergy matching the given uuid
+	 * @should return allergy given valid uuid
+	 * @should return null if no object found with given uuid
+	 */
+	public Allergy getAllergyByUuid(String uuid);
 	
 	/**
 	 * Saves an allergy to the database

@@ -1436,9 +1436,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			if (allergy.getAllergyId() == null && allergy.getAllergen().getCodedAllergen() == null
 			        && StringUtils.isNotBlank(allergy.getAllergen().getNonCodedAllergen())) {
 				
-				Concept otherNonCoded = Context.getConceptService().getConceptByUuid(Allergen.OTHER_NON_CODED_UUID);
+				Concept otherNonCoded = Context.getConceptService().getConceptByUuid(Allergen.getOtherNonCodedConceptUuid());
 				if (otherNonCoded == null) {
-					throw new APIException("Can't find concept with uuid:" + Allergen.OTHER_NON_CODED_UUID);
+					throw new APIException("Can't find concept with uuid:" + Allergen.getOtherNonCodedConceptUuid());
 				}
 				allergy.getAllergen().setCodedAllergen(otherNonCoded);
 			}
@@ -1466,6 +1466,14 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public Allergy getAllergy(Integer allergyId) throws APIException {
 		return dao.getAllergy(allergyId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#getAllergyByUuid(java.lang.String)
+	 */
+	@Transactional(readOnly = true)
+	public Allergy getAllergyByUuid(String uuid) throws APIException {
+		return dao.getAllergyByUuid(uuid);
 	}
 	
 	/**
