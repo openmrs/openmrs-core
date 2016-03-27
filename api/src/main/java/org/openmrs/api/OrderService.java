@@ -15,6 +15,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
+import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
@@ -23,6 +24,7 @@ import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -743,4 +745,37 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Concept getNonCodedDrugConcept();
+	
+	/**
+	 * Fetches the OrderGroup By Uuid.
+	 * 
+	 * @param uuid Uuid Of the OrderGroup
+	 * @return saved OrderGroup
+	 * @since 1.12
+	 * @throws APIException
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDERS)
+	public OrderGroup getOrderGroupByUuid(String uuid) throws APIException;
+	
+	/**
+	 * Fetches the OrderGroup by Id.
+	 * 
+	 * @param orderGroupId Id of the OrderGroup
+	 * @return saved OrderGroup
+	 * @since 1.12
+	 * @throws APIException
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDERS)
+	public OrderGroup getOrderGroup(Integer orderGroupId) throws APIException;
+	
+	/**
+	 * Saves the orderGroup.
+	 * It also saves the list of orders that are present within the orderGroup.
+	 *
+	 * @param orderGroup the orderGroup to be saved
+	 * @since 1.12
+	 * @throws APIException
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
+	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws APIException;
 }

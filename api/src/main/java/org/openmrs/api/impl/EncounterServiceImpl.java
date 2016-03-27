@@ -27,6 +27,7 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
+import org.openmrs.OrderGroup;
 import org.openmrs.Patient;
 import org.openmrs.Privilege;
 import org.openmrs.Provider;
@@ -185,8 +186,12 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		// do the actual saving to the database
 		dao.saveEncounter(encounter);
 		
-		// save the new orders
-		for (Order o : encounter.getOrders()) {
+		// save the new orderGroups
+		for (OrderGroup orderGroup : encounter.getOrderGroups()) {
+			Context.getOrderService().saveOrderGroup(orderGroup);
+		}
+		//save the new orders which do not have order groups
+		for (Order o : encounter.getOrdersWithoutOrderGroups()) {
 			if (o.getOrderId() == null) {
 				Context.getOrderService().saveOrder(o, null);
 			}

@@ -25,31 +25,40 @@ import org.openmrs.Allergy;
 import org.openmrs.AllergyReaction;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.api.APIException;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Tests allergy methods in {@link $ PatientService} .
  */
-public class AllergyServiceTest extends BaseContextSensitiveTest {
+public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	private static final String ALLERGY_TEST_DATASET = "org/openmrs/api/include/allergyTestDataset.xml";
+	private static final String ALLERGY_OTHER_NONCODED_TEST_DATASET = "org/openmrs/api/include/otherNonCodedConcept.xml";
 	
 	private PatientService allergyService;
-	
-	private static boolean statusFieldAdded = false;
-	
+	private String otherNonCodedConceptUuid;
+		
 	@Before
 	public void runBeforeAllTests() throws Exception {
 		if (allergyService == null) {
 			allergyService = Context.getPatientService();
 		}
-		
-		if (!statusFieldAdded) {
-			String sql = "alter table patient add column allergy_status varchar(50)";
-			Context.getAdministrationService().executeSQL(sql, false);
-			statusFieldAdded = true;
-		}
-		
+
+		executeDataSet(ALLERGY_OTHER_NONCODED_TEST_DATASET);
 		executeDataSet(ALLERGY_TEST_DATASET);
+		
+		Allergen.setOtherNonCodedConceptUuid(Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GP_ALLERGEN_OTHER_NON_CODED_UUID));
+	}
+	
+	/**
+	 * @see PatientService#getAllergies(Patient)
+	 * @verifies get the allergy list and status
+	 */
+	@Test
+	public void getAllergyByUuid_shouldGetAllergyByUuid() throws Exception {
+		Allergy allergy = allergyService.getAllergyByUuid("21543629-7d8c-11e1-909d-c80aa9edcf4e");		
+		Assert.assertNotNull(allergy);
 	}
 	
 	/**
@@ -336,7 +345,6 @@ public class AllergyServiceTest extends BaseContextSensitiveTest {
 		//clear any cache for this object such that the next calls fetch it from the database
 		Context.evictFromSession(editedAllergy);
 		//edit non coded allergen
-		editedAllergy.getAllergen().getCodedAllergen().setUuid(Allergen.OTHER_NON_CODED_UUID);
 		editedAllergy.getAllergen().setNonCodedAllergen("some non coded allergen");
 		
 		Assert.assertTrue(allergies.contains(editedAllergy));
@@ -489,13 +497,12 @@ public class AllergyServiceTest extends BaseContextSensitiveTest {
 
 	@Test
     public void setAllergies_shouldSetTheNonCodedConceptForNonCodedAllergenIfNotSpecified() throws Exception {
-        executeDataSet("org/openmrs/api/include/otherNonCodedConcept.xml");
         Patient patient = allergyService.getPatient(2);
         Allergen allergen = new Allergen(AllergenType.DRUG, null, "Some allergy name");
         Allergy allergy = new Allergy(patient, allergen, null, null, null);
         Allergies allergies = allergyService.getAllergies(patient);
         allergies.add(allergy);
         allergyService.setAllergies(patient, allergies);
-        Assert.assertEquals(Allergen.OTHER_NON_CODED_UUID, allergy.getAllergen().getCodedAllergen().getUuid());
+        Assert.assertFalse(allergy.getAllergen().isCoded());
     }
 }

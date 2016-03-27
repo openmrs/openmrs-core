@@ -9081,4 +9081,204 @@
 		<!-- visit_attribute_type has not null constraint on uuid -->
 		<!-- visit_type has not null constraint on uuid -->
 	</changeSet>
+	
+	<changeSet id="20151006-1530" author="bahmni">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="order_set" />
+			</not>
+		</preConditions>
+		<comment>
+			Create order_set table
+		</comment>
+		<createTable tableName="order_set">
+			<column name="order_set_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="operator" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="varchar(1000)"/>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="uuid" type="char(38)">
+				<constraints unique="true" nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="order_set_creator_fk"
+								 baseTableName="order_set" baseColumnNames="creator"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="order_set_retired_by_fk"
+								 baseTableName="order_set" baseColumnNames="retired_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="order_set_changed_by_fk"
+								 baseTableName="order_set" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20151006-1537" author="bahmni">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="order_set_member" />
+			</not>
+		</preConditions>
+		<comment>
+			Create order_set_member table
+		</comment>
+		<createTable tableName="order_set_member">
+			<column name="order_set_member_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="order_type" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="order_template" type="text"/>
+			<column name="order_template_type" type="varchar(1024)"/>
+			<column name="order_set_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="sequence_number" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="uuid" type="char(38)">
+				<constraints unique="true" nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="order_set_member_creator_fk"
+								 baseTableName="order_set_member" baseColumnNames="creator"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="order_set_member_order_set_id_fk"
+								 baseTableName="order_set_member" baseColumnNames="order_set_id"
+								 referencedTableName="order_set" referencedColumnNames="order_set_id" />
+		<addForeignKeyConstraint constraintName="order_set_member_concept_id_fk"
+								 baseTableName="order_set_member" baseColumnNames="concept_id"
+								 referencedTableName="concept" referencedColumnNames="concept_id"/>
+		<addForeignKeyConstraint constraintName="order_set_member_order_type_fk"
+								 baseTableName="order_set_member" baseColumnNames="order_type"
+								 referencedTableName="order_type" referencedColumnNames="order_type_id"/>
+		<addForeignKeyConstraint constraintName="order_set_member_retired_by_fk"
+								 baseTableName="order_set_member" baseColumnNames="retired_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="order_set_member_changed_by_fk"
+								 baseTableName="order_set_member" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="20151118-1630" author="bahmni">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="order_group" />
+			</not>
+		</preConditions>
+		<comment>
+			Create order_group table
+		</comment>
+		<createTable tableName="order_group">
+			<column name="order_group_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="order_set_id" type="int"/>
+			<column name="patient_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="encounter_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="uuid" type="char(38)">
+				<constraints unique="true" nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="order_group_patient_id_fk"
+								 baseTableName="order_group" baseColumnNames="patient_id"
+								 referencedTableName="patient" referencedColumnNames="patient_id"/>
+		<addForeignKeyConstraint constraintName="order_group_encounter_id_fk"
+								 baseTableName="order_group" baseColumnNames="encounter_id"
+								 referencedTableName="encounter" referencedColumnNames="encounter_id"/>
+		<addForeignKeyConstraint constraintName="order_group_creator_fk"
+								 baseTableName="order_group" baseColumnNames="creator"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="order_group_set_id_fk"
+								 baseTableName="order_group" baseColumnNames="order_set_id"
+								 referencedTableName="order_set" referencedColumnNames="order_set_id" />
+		<addForeignKeyConstraint constraintName="order_group_voided_by_fk"
+								 baseTableName="order_group" baseColumnNames="voided_by"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="order_group_changed_by_fk"
+								 baseTableName="order_group" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="20151118-1640" author="bahmni">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists columnName="order_group_id" tableName="orders"/>
+			</not>
+		</preConditions>
+		<comment>Adding 'order_group_id' column to orders table</comment>
+		<addColumn tableName="orders">
+			<column name="order_group_id" type="int"></column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="orders_order_group_id_fk"
+										 baseTableName="orders" baseColumnNames="order_group_id"
+										 referencedTableName="order_group" referencedColumnNames="order_group_id" />
+	</changeSet>
+
+
+	<changeSet id="20160212-1020" author="bahmni">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists columnName="sort_weight" tableName="orders"/>
+			</not>
+		</preConditions>
+		<comment>Adding 'sort_weight' column to orders table</comment>
+		<addColumn tableName="orders">
+			<column name="sort_weight" type="double"></column>
+		</addColumn>
+	</changeSet>
+	
 </databaseChangeLog>

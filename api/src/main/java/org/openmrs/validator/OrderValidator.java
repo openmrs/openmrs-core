@@ -93,6 +93,8 @@ public class OrderValidator implements Validator {
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "orderReasonNonCoded", "accessionNumber",
 			    "commentToFulfiller", "voidReason");
 			
+			validateOrderGroupEncounter(order, errors);
+			validateOrderGroupPatient(order, errors);
 		}
 	}
 	
@@ -144,6 +146,18 @@ public class OrderValidator implements Validator {
 		}
 		if (isUrgencyOnScheduledDate && order.getScheduledDate() == null) {
 			errors.rejectValue("scheduledDate", "Order.error.scheduledDateNullForOnScheduledDateUrgency");
+		}
+	}
+	
+	private void validateOrderGroupEncounter(Order order, Errors errors) {
+		if (order.getOrderGroup() != null && !(order.getEncounter().equals(order.getOrderGroup().getEncounter()))) {
+			errors.rejectValue("encounter", "Order.error.orderEncounterAndOrderGroupEncounterMismatch");
+		}
+	}
+	
+	private void validateOrderGroupPatient(Order order, Errors errors) {
+		if (order.getOrderGroup() != null && !(order.getPatient().equals(order.getOrderGroup().getPatient()))) {
+			errors.rejectValue("patient", "Order.error.orderPatientAndOrderGroupPatientMismatch");
 		}
 	}
 }

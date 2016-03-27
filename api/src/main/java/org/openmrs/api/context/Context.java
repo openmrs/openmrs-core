@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PersonName;
+import org.openmrs.Allergen;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -44,6 +45,7 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
+import org.openmrs.api.OrderSetService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
@@ -53,7 +55,6 @@ import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.db.ContextDAO;
-import org.openmrs.arden.ArdenService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
@@ -451,6 +452,14 @@ public class Context {
 	}
 
 	/**
+	 * @return orderSet service
+	 * @since 1.12
+	 */
+	public static OrderSetService getOrderSetService() {
+		return getServiceContext().getOrderSetService();
+	}
+	
+	/**
 	 * @return form service
 	 */
 	public static FormService getFormService() {
@@ -498,13 +507,6 @@ public class Context {
 	 */
 	public static AlertService getAlertService() {
 		return getServiceContext().getAlertService();
-	}
-
-	/**
-	 * @return arden service
-	 */
-	public static ArdenService getArdenService() {
-		return getServiceContext().getArdenService();
 	}
 
 	/**
@@ -1088,6 +1090,9 @@ public class Context {
 
 		PersonName.setFormat(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT));
+
+		Allergen.setOtherNonCodedConceptUuid(Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GP_ALLERGEN_OTHER_NON_CODED_UUID));
 	}
 
 	/**

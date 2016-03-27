@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+    <concept concept_id="1000" retired="0" datatype_id="4" class_id="19" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="8e02d1a0-7869-11e3-981f-0800200c9a76"/>
+    <concept_name concept_name_id="2000" concept_id="1000" name="Once" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1"
+                  voided="0" uuid="93f24a00-7869-11e3-981f-0800200c9a67"/>
+    <concept_description concept_description_id="1" concept_id="1000" description="Once concept description" locale="en" creator="1"
+                         date_created="2004-08-12 00:00:00.0" uuid="5f4d710b-d333-40b7-b449-6e0e739d15e1"/>
+
+
+    <concept concept_id="1001" retired="0" datatype_id="4" class_id="19" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="9a02d1a0-7869-11e3-981f-0800200c9a77"/>
+    <concept_name concept_name_id="2001" concept_id="1001" name="Twice" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1"
+                  voided="0" uuid="aaf24a01-7869-11e3-881f-1800200c9a68"/>
+    <concept_description concept_description_id="1" concept_id="1001" description="Twice concept description" locale="en" creator="1"
+                         date_created="2004-08-12 00:00:00.0" uuid="5f4d710b-d333-40b7-b449-6e0e739d15e2"/>
+
+    <concept concept_id="1002" retired="0" datatype_id="4" class_id="19" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="9a02d1a0-7869-11e3-981f-0800200c9a78"/>
+    <concept_name concept_name_id="2002" concept_id="1002" name="Thrice" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1"
+                  voided="0" uuid="aaf24a01-7869-11e3-881f-1800200c9a69"/>
+    <concept_description concept_description_id="1" concept_id="1002" description="Thrice concept description" locale="en" creator="1"
+                         date_created="2004-08-12 00:00:00.0" uuid="5f4d710b-d333-40b7-b449-6e0e739d15e3"/>
+
+    <order_type order_type_id="100" name="Drug Order Type" java_class_name="org.openmrs.DrugOrder" description="Some drug order" creator="1" date_created="2008-08-15 15:49:04.0"
+                retired="0" uuid="113fb1d0-ae06-22e3-a5e2-0800211c9a78"/>
+    <order_type order_type_id="101" name="Lab Order Type" java_class_name="org.openmrs.Order" description="Some lab order" creator="1" date_created="2008-08-15 15:49:04.0"
+                retired="0" uuid="2d3fb1d0-ae06-22e3-a5e2-0140211c9a66"/>
+    
+    <order_set order_set_id="2000" name="Order_Set_1" description="Order_Set_1_desc" operator="ALL" creator="1" date_created="2008-08-15 15:49:04.0" retired="0" uuid="2d3fb1d0-ae06-22e3-a5e2-0140211c1001" />
+    <order_set_member order_set_member_id="51" order_set_id="2000" order_type="100" concept_id="1000" creator="1" sequence_number="0" date_created="2008-08-15 15:49:04.0"
+                      retired="0" uuid="2d3fb1d0-ae06-22e3-a5e2-0140211c2002" />
+    <order_set_member order_set_member_id="52" order_set_id="2000" order_type="100" concept_id="1001" creator="1" sequence_number="1" date_created="2008-08-15 15:49:04.0"
+                      retired="0" uuid="443fb1d0-ae06-22e3-a5e3-0140211c2003" />
+    <order_set_member order_set_member_id="53" order_set_id="2000" order_type="100" concept_id="1002" creator="1" sequence_number="2" date_created="2008-08-15 15:49:04.0"
+                      retired="1" uuid="443fb1d0-ae06-22e3-a5e3-0140211c2004" />
+
+    <order_set order_set_id="2001" name="Order_Set_2" description="Order_Set_2_desc" operator="ALL" creator="1" date_created="2008-08-15 15:49:04.0" retired="0" uuid="222fb1d0-a666-22e3-dde2-0140211c1111" />
+    <order_set_member order_set_member_id="53" order_set_id="2001" order_type="100" concept_id="1000" creator="1" sequence_number="0" date_created="2008-08-15 15:49:04.0"
+                      retired="0" uuid="222fb1d0-ae06-22e3-a5e2-0140211c2222" />
+    <order_set_member order_set_member_id="54" order_set_id="2001" order_type="100" concept_id="1001" creator="1" sequence_number="1" date_created="2008-08-15 15:49:04.0"
+                      retired="0" uuid="333fb1d0-ae06-22e3-a5e3-0140211c3333" />
+
+</dataset>
+

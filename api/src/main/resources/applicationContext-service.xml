@@ -93,6 +93,7 @@
         <property name="encounterService"><ref bean="encounterService"/></property>
         <property name="locationService"><ref bean="locationService"/></property>
         <property name="orderService"><ref bean="orderService"/></property>
+		<property name="orderSetService"><ref bean="orderSetService"/></property>
         <property name="formService"><ref bean="formService"/></property>
         <property name="administrationService"><ref bean="adminService"/></property>
         <property name="datatypeService"><ref bean="datatypeService"/></property>
@@ -104,7 +105,6 @@
         <property name="schedulerService"><ref bean="schedulerService"/></property>
         <property name="alertService"><ref bean="alertService"/></property>
         <property name="hl7Service"><ref bean="hL7Service"/></property>
-        <property name="ardenService"><ref bean="ardenService"/></property>
         <property name="messageSourceService"><ref bean="messageSourceService"/></property>
         <property name="visitService"><ref bean="visitService"/></property>
         <property name="providerService"><ref bean="providerService"/></property>
@@ -145,6 +145,9 @@
 	</bean>
 	<bean id="orderDAO" class="org.openmrs.api.db.hibernate.HibernateOrderDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+	</bean>
+	<bean id="orderSetDAO" class="org.openmrs.api.db.hibernate.HibernateOrderSetDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	<bean id="formDAO" class="org.openmrs.api.db.hibernate.HibernateFormDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
@@ -254,6 +257,9 @@
 	<bean id="orderServiceTarget" class="org.openmrs.api.impl.OrderServiceImpl">
 		<property name="orderDAO"><ref bean="orderDAO"/></property>
 	</bean>
+	<bean id="orderSetServiceTarget" class="org.openmrs.api.impl.OrderSetServiceImpl">
+		<property name="orderSetDAO"><ref bean="orderSetDAO"/></property>
+	</bean>
 	<bean id="formServiceTarget" class="org.openmrs.api.impl.FormServiceImpl">
 		<property name="formDAO"><ref bean="formDAO"/></property>	
 	</bean>
@@ -321,9 +327,7 @@
 			</map>
 		</property>
 	</bean>
-	
-	<bean id="ardenServiceTarget" class="org.openmrs.arden.impl.ArdenServiceImpl">
-	</bean>
+
 	
 	<bean id="messageSourceServiceTarget" class="org.openmrs.messagesource.impl.MessageSourceServiceImpl">
 		<property name="activeMessageSource"><ref bean="mutableResourceBundleMessageSource"/>
@@ -404,6 +408,14 @@
 	<bean id="orderService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="orderServiceTarget"/></property>
+		<property name="preInterceptors">
+			<ref local="serviceInterceptors" />
+		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+	</bean>
+	<bean id="orderSetService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="orderSetServiceTarget"/></property>
 		<property name="preInterceptors">
 			<ref local="serviceInterceptors" />
 		</property>
@@ -495,14 +507,6 @@
 	<bean id="hL7Service" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="hL7ServiceTarget"/></property>
-		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
-		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
-	</bean>
-	<bean id="ardenService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="ardenServiceTarget"/></property>
 		<property name="preInterceptors">
 			<ref local="serviceInterceptors" />
 		</property>
