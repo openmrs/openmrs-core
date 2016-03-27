@@ -148,8 +148,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertFalse("The enc should have changed", origEncType.equals(encType2));
 		assertTrue("The enc type needs to have been set", newestEnc.getEncounterType().equals(encType2));
 		assertFalse("Make sure the dates changed slightly", origDate.equals(d2));
-		assertTrue("The date needs to have been set", newestEnc.getEncounterDatetime()
-		        .equals(DateUtil.truncateToSeconds(d2)));
+		assertTrue("The date needs to have been set",
+		    DateUtil.truncateToSeconds(newestEnc.getEncounterDatetime()).equals(DateUtil.truncateToSeconds(d2)));
 		assertFalse("The patient should be different", origPatient.equals(pat2));
 		assertTrue("The patient should have been set", newestEnc.getPatient().equals(pat2));
 	}
@@ -449,7 +449,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// save the encounter. The obs should pick up the encounter's date
 		es.saveEncounter(enc);
-		
+		Context.flushSession();
 		List<Obs> obsWithSameDateAfter = new ArrayList<>();
 		Obs obsWithDifferentDateAfter = null;
 		for (Obs o : enc.getAllObs(false)) {

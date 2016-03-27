@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -108,6 +109,13 @@ public class ObsTest {
 			fieldValue = setAlternateValue ? 10 : 17;
 		} else if (field.getType().equals(Double.class)) {
 			fieldValue = setAlternateValue ? 5.0 : 7.0;
+		} else if (field.getType().equals(Date.class)) {
+			fieldValue = new Date();
+			if (setAlternateValue) {
+				Calendar c = Calendar.getInstance();
+				c.add(Calendar.MINUTE, 2);
+				fieldValue = c.getTime();
+			}
 		} else if (field.getType().equals(String.class)) {
 			fieldValue = setAlternateValue ? "old" : "new";
 		} else if (field.getType().equals(Person.class)) {
@@ -673,7 +681,7 @@ public class ObsTest {
 			if (IGNORED_FIELDS.contains(fieldName)) {
 				continue;
 			}
-			
+
 			if ("personId".equals(fieldName)) {
 				//call setPersonId because it is protected so BeanUtils.setProperty won't work
 				obs.setPersonId((Integer) generateValue(field, true));
