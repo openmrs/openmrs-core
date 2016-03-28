@@ -97,6 +97,18 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, ModuleUtil.getMandatoryModules().size());
 		Assert.assertEquals("firstmodule", ModuleUtil.getMandatoryModules().get(0));
 	}
+
+
+	/**
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
+	 */
+	@Test
+	@Verifies(value = "should allow wildcard with character required version", method = "matchRequiredVersions(String,String)")
+	public void matchRequriedVersion_shouldAllowCharacterRequiredVersionWithWildCard() throws Exception {
+		String openmrsVersion = "1.4.3";
+		String requiredOpenmrsVersion = "1.4.*a";
+		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
+	}
 	
 	/**
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
