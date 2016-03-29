@@ -446,4 +446,15 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		assertThat(drug_orders, containsInAnyOrder(row("order_id", "6", "dose_units", null, "frequency", null), row(
 		    "order_id", "7", "dose_units", null, "frequency", null)));
 	}
+
+	@Test
+	public void shouldUpgradeLiquibase() {
+		try {
+			upgradeTestUtil.upgrade("liquibase-master.xml");
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
+
+	}
 }

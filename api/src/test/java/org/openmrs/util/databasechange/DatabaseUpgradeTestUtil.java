@@ -218,18 +218,22 @@ public class DatabaseUpgradeTestUtil {
 	}
 	
 	public void upgrade() throws IOException, SQLException {
+		upgrade("liquibase-update-to-latest.xml");
+	}
+
+	public void upgrade(String filename) throws IOException, SQLException {
 		try {
-			Liquibase liquibase = new Liquibase("liquibase-update-to-latest.xml", new ClassLoaderResourceAccessor(getClass()
-			        .getClassLoader()), liqubaseConnection);
+			Liquibase liquibase = new Liquibase(filename, new ClassLoaderResourceAccessor(getClass()
+					.getClassLoader()), liqubaseConnection);
 			liquibase.update(null);
-			
+
 			connection.commit();
 		}
 		catch (LiquibaseException e) {
 			throw new IOException(e);
 		}
 	}
-	
+
 	public SessionFactory buildSessionFactory() {
 		Configuration config = new Configuration().configure();
 		//H2 version we use behaves differently from H2Dialect in Hibernate so we provide our implementation
