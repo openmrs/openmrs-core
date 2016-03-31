@@ -10,12 +10,15 @@
 package org.openmrs.api.impl;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.openmrs.ConceptDescription;
 import org.openmrs.OrderSet;
 import org.openmrs.OrderSetMember;
+import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderSetDAO;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -46,7 +49,10 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	@Transactional(readOnly = false)
 	public OrderSet retireOrderSet(OrderSet orderSet, String retireReason) throws APIException {
 		if (!StringUtils.hasLength(retireReason)) {
-			throw new IllegalArgumentException("reitreReason cannot be empty or null");
+			throw new IllegalArgumentException("retire reason cannot be empty or null");
+		}
+		for (OrderSetMember orderSetMember : orderSet.getOrderSetMembers()) {
+			orderSet.retireOrderSetMember(orderSetMember);
 		}
 		return saveOrderSetInternal(orderSet);
 	}
@@ -67,7 +73,11 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 		if (CollectionUtils.isEmpty(orderSet.getOrderSetMembers())) {
 			return dao.save(orderSet);
 		}
-		
+		for (OrderSetMember orderSetMember : orderSet.getOrderSetMembers()) {
+			if (null == orderSetMember.getOrderSet()) {
+				orderSetMember.setOrderSet(orderSet);
+			}
+		}
 		for (OrderSetMember orderSetMember : orderSet.getOrderSetMembers()) {
 			if (orderSetMember.isRetired()) {
 				orderSetMember.setRetiredBy(Context.getAuthenticatedUser());
@@ -105,4 +115,13 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	public OrderSet getOrderSetByUuid(String orderSetUuid) throws APIException {
 		return dao.getOrderSetByUniqueUuid(orderSetUuid);
 	}
+
+	/**
+	 * @see org.openmrs.api.OrderSetService#getOrderSetMemberByUuid(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public OrderSetMember getOrderSetMemberByUuid(String uuid) {
+		return dao.getOrderSetMemberByUuid(uuid);
+	};
 }

@@ -28,6 +28,11 @@
         <many-to-one name="orderType" class="OrderType" not-null="true">
             <column name="order_type"/>
         </many-to-one>
+
+        <many-to-one name="orderSet" class="OrderSet" insert="false" update="false">
+            <column name="order_set_id"/>
+        </many-to-one>
+
         <property name="orderTemplate" type="java.lang.String"
                   column="order_template"/>
         <property name="orderTemplateType" type="java.lang.String"
