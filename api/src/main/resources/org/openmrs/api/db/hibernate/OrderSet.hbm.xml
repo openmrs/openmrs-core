@@ -36,7 +36,7 @@
             </type>
         </property>
 
-        <list name="orderSetMembers"  lazy="true" cascade="all-delete-orphan" access="field">
+        <list name="orderSetMembers" lazy="true" cascade="save-update" inverse="false">
             <key column="order_set_id" not-null="true"/>
             <list-index column="sequence_number"/>
             <one-to-many class="OrderSetMember" />
