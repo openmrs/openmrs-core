@@ -10,6 +10,7 @@
 package org.openmrs.api;
 
 import org.openmrs.OrderSet;
+import org.openmrs.OrderSetMember;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderSetDAO;
 import org.openmrs.util.PrivilegeConstants;
@@ -94,4 +95,16 @@ public interface OrderSetService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.MANAGE_ORDER_SETS })
 	OrderSet unretireOrderSet(OrderSet orderSet) throws APIException;
 	
+
+	/**
+	 * Get OrderSetMember by uuid
+	 *
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
+	OrderSetMember getOrderSetMemberByUuid(String uuid);
+
 }

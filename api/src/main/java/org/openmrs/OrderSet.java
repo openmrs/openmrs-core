@@ -95,9 +95,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements Serializable {
 	 * @param orderSetMembers the orderSetMembers to set
 	 */
 	public void setOrderSetMembers(List<OrderSetMember> orderSetMembers) {
-		for (OrderSetMember orderSetMember : orderSetMembers) {
-			addOrderSetMember(orderSetMember);
-		}
+		this.orderSetMembers = orderSetMembers;
 	}
 	
 	/**
@@ -143,6 +141,42 @@ public class OrderSet extends BaseOpenmrsMetadata implements Serializable {
 	
 	public void setId(Integer id) {
 		setOrderSetId(id);
+	}
+
+	/**
+	 * Fetches the list of orderSetMembers that are not retired
+	 *
+	 * @return the orderSetMembers that are not retired
+	 */
+	public List<OrderSetMember> getUnRetiredOrderSetMembers() {
+		List<OrderSetMember> osm = new ArrayList<OrderSetMember>();
+		for (OrderSetMember orderSetMember : getOrderSetMembers()) {
+			if (!orderSetMember.isRetired()) {
+				osm.add(orderSetMember);
+			}
+		}
+		return osm;
+	}
+
+	/**
+	 * Removes and orderSetMember from a list of existing orderSetMembers
+	 *
+	 * @param orderSetMember that is to be removed
+	 */
+	public void removeOrderSetMember(OrderSetMember orderSetMember) {
+		if (getOrderSetMembers().contains(orderSetMember)) {
+			getOrderSetMembers().remove(orderSetMember);
+			orderSetMember.setOrderSet(null);
+		}
+	}
+
+	/**
+	 * Retires an orderSetMember
+	 *
+	 * @param orderSetMember to be retired
+	 */
+	public void retireOrderSetMember(OrderSetMember orderSetMember) {
+		orderSetMember.setRetired(true);
 	}
 	
 }

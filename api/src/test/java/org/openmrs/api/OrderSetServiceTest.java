@@ -26,8 +26,10 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	
@@ -266,7 +268,76 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		        .getOrderSetMembers().get(position + initialSize + 1).getUuid());
 		
 	}
-	
+
+	@Test
+	public void shouldFetchUnRetiredOrderSetMembers() throws Exception {
+		executeDataSet(ORDER_SET);
+
+		OrderSet orderSet = orderSetService.getOrderSet(2000);
+		int initialCountOfMembers = orderSet.getOrderSetMembers().size();
+		OrderSetMember orderSetMember = orderSet.getOrderSetMembers().get(0);
+
+		//Retiring an orderSetMember in an existing list of orderSetMembers
+		orderSet.retireOrderSetMember(orderSetMember);
+		orderSetService.saveOrderSet(orderSet);
+		Context.flushSession();
+
+		OrderSet savedOrderSet = orderSetService.getOrderSetByUuid(orderSet.getUuid());
+		assertEquals("Count of orderSetMembers are not changed if we get all members", initialCountOfMembers, savedOrderSet.getOrderSetMembers().size());
+
+		//Fetching the unRetired members
+		int finalSize = savedOrderSet.getUnRetiredOrderSetMembers().size();
+		assertEquals("Count of orderSetMembers gets modified if we filter out the retired members", initialCountOfMembers-1, finalSize);
+	}
+
+	@Test
+	public void shouldDeleteAnOrderSetMemberInAnOrderSet() throws Exception {
+		executeDataSet(ORDER_SET);
+
+		OrderSet orderSet = orderSetService.getOrderSet(2001);
+		int initialCountOfMembers = orderSet.getOrderSetMembers().size();
+		OrderSetMember orderSetMember = orderSet.getOrderSetMembers().get(0);
+
+		//Removing an orderSetMember in an existing list of orderSetMembers
+		orderSet.removeOrderSetMember(orderSetMember);
+		orderSetService.saveOrderSet(orderSet);
+		Context.flushSession();
+
+		OrderSet savedOrderSet = orderSetService.getOrderSetByUuid(orderSet.getUuid());
+		assertEquals("Count of orderSetMembers changes after removing a member from the orderSet", initialCountOfMembers-1, savedOrderSet.getOrderSetMembers().size());
+	}
+
+	@Test
+	public void shouldFetchOrderSetMemberByUuid() throws Exception {
+		String orderSetUuid = "2d3fb1d0-ae06-22e3-a5e2-0140211c2002";
+		executeDataSet(ORDER_SET);
+
+		OrderSetMember orderSetMember = orderSetService.getOrderSetMemberByUuid(orderSetUuid);
+		assertNotNull(orderSetMember.getId());
+	}
+
+	@Test
+	public void shouldRetireOrderSetAndOrderSetMembersAsWell() throws Exception {
+		executeDataSet(ORDER_SET);
+
+		int initialNumberOfOrderSets = orderSetService.getOrderSets(false).size();
+
+		OrderSet orderSet = orderSetService.getOrderSet(2001);
+		orderSetService.retireOrderSet(orderSet, "Testing");
+		Context.flushSession();
+
+		int numberOfOrderSetsAfterRetire = orderSetService.getOrderSets(false).size();
+		assertEquals(initialNumberOfOrderSets-1,numberOfOrderSetsAfterRetire);
+
+		OrderSet retiredOrderSet = orderSetService.getOrderSet(2001);
+		assertEquals(true, retiredOrderSet.getRetired());
+
+		List<OrderSetMember> orderSetMembers = retiredOrderSet.getOrderSetMembers();
+		for (OrderSetMember orderSetMember : orderSetMembers) {
+			assertTrue(orderSetMember.getRetired());
+		}
+	}
+
 	private OrderSet orderSetBuilder(boolean orderSetRetired, boolean orderSetMemberRetired) {
 		OrderSet orderSet = new OrderSet();
 		orderSet.setName("Test Order Set");
