@@ -10,7 +10,6 @@
 package org.openmrs.api.impl;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -100,21 +99,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			}
 		}
 		
-		//Should allow updating a voided Obs, it seems to be pointless to restrict it,
-		//otherwise operations like merge patients won't be possible when to moving voided obs
-		if (obs != null && (obs.getObsId() == null || obs.getVoided())) {
-			if (obs.getObsId() == null) {
-				Context.requirePrivilege(PrivilegeConstants.ADD_OBS);
-			} else {
-				Context.requirePrivilege(PrivilegeConstants.EDIT_OBS);
-			}
-			Obs ret = dao.saveObs(obs);
-			if (obs.isObsGrouping()) {
-				for (Obs o : obs.getGroupMembers(true)) {
-					Context.getObsService().saveObs(o, changeMessage);
-				}
-			}
-			return ret;
+		if (obs != null && obs.getObsId() == null) {
+			Context.requirePrivilege(PrivilegeConstants.ADD_OBS);
+			return dao.saveObs(obs);
 		} else {
 			Context.requirePrivilege(PrivilegeConstants.EDIT_OBS);
 			
@@ -125,34 +112,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			Encounter encounter = obs.getEncounter();
 			if (encounter != null) {
 				obs.setPerson(encounter.getPatient());
-			}
-			
-			if (!obs.isDirty()) {
-				if (obs.isObsGrouping()) {
-					ObsService os = Context.getObsService();
-					List<Obs> toRemove = new ArrayList<>();
-					List<Obs> toAdd = new ArrayList<>();
-					for (Obs o : obs.getGroupMembers(true)) {
-						if (o.getId() == null) {
-							os.saveObs(o, null);
-						} else {
-							Obs replacement = os.saveObs(o, changeMessage);
-							//The logic in saveObs evicts the old obs instance, so we need to update
-							//the collection with the newly loaded and voided instance
-							toRemove.add(o);
-							toAdd.add(os.getObs(o.getId()));
-							toAdd.add(replacement);
-						}
-					}
-					
-					for (Obs o : toRemove) {
-						obs.removeGroupMember(o);
-					}
-					for (Obs o : toAdd) {
-						obs.addGroupMember(o);
-					}
-				}
-				return obs;
 			}
 			
 			// get a copy of the passed in obs and save it to the
@@ -176,12 +135,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			// have been made to it
 			dao.saveObs(newObs);
 			
-			if (newObs.isObsGrouping()) {
-				for (Obs o : newObs.getGroupMembers(true)) {
-					Context.getObsService().saveObs(o, null);
-				}
-			}
-			
 			// void out the original observation to keep it around for
 			// historical purposes
 			try {
@@ -192,8 +145,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 				// the fact that the obs is now voided
 				Context.evictFromSession(obs);
 				obs = Context.getObsService().getObs(obs.getObsId());
+
 				//delete the previous file from the appdata/complex_obs folder
-				if (newObs.hasPreviousVersion() && newObs.getPreviousVersion().isComplex()) {
+				if(newObs.hasPreviousVersion() && newObs.isComplex()) {
 					File previousFile = new AbstractHandler().getComplexDataFile(obs);
 					previousFile.delete();
 				}
@@ -276,9 +230,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
-	                                 List<String> sort, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
-	                                 boolean includeVoidedObs) throws APIException {
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
+	        throws APIException {
 		
 		if (sort == null) {
 			sort = new Vector<String>();
@@ -298,9 +252,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
-	                                 List<String> sort, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
-	                                 boolean includeVoidedObs, String accessionNumber) throws APIException {
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
+	        String accessionNumber) throws APIException {
 		
 		if (sort == null) {
 			sort = new Vector<String>();
@@ -320,9 +274,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Transactional(readOnly = true)
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	                                   List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
-	                                   Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
-	    throws APIException {
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
+	        Date fromDate, Date toDate, boolean includeVoidedObs) throws APIException {
 		return OpenmrsUtil.convertToInteger(dao.getObservationCount(whom, encounters, questions, answers, personTypes,
 		    locations, obsGroupId, fromDate, toDate, null, includeVoidedObs, null));
 	}
@@ -334,9 +287,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Transactional(readOnly = true)
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	                                   List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
-	                                   Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
-	                                   String accessionNumber) throws APIException {
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
+	        Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber) throws APIException {
 		return OpenmrsUtil.convertToInteger(dao.getObservationCount(whom, encounters, questions, answers, personTypes,
 		    locations, obsGroupId, fromDate, toDate, null, includeVoidedObs, accessionNumber));
 	}

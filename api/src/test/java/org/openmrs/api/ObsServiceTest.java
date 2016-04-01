@@ -11,7 +11,6 @@ package org.openmrs.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -55,6 +54,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.ObsServiceImpl;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.obs.handler.AbstractHandler;
 import org.openmrs.obs.handler.BinaryDataHandler;
 import org.openmrs.obs.handler.ImageHandler;
 import org.openmrs.obs.handler.TextHandler;
@@ -387,8 +387,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Date sd = df.parse("2006-02-13");
 		Date ed = df.parse("2006-02-13");
-		List<Obs> obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd,
-		    OpenmrsUtil.getLastMomentOfDay(ed), false);
+		List<Obs> obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd, OpenmrsUtil
+		        .getLastMomentOfDay(ed), false);
 		assertEquals(1, obs.size());
 	}
 	
@@ -1056,8 +1056,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		ObsService obsService = Context.getObsService();
 		
-		Integer count = obsService.getObservationCount(null, null, null, null,
-		    Collections.singletonList(PERSON_TYPE.PATIENT), null, null, null, null, false, null);
+		Integer count = obsService.getObservationCount(null, null, null, null, Collections
+		        .singletonList(PERSON_TYPE.PATIENT), null, null, null, null, false, null);
 		
 		Assert.assertEquals(13, count.intValue());
 	}
@@ -1154,8 +1154,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	public void getObservationCount_shouldReturnCountOfObsWithLocationInGivenLocationsParameter() throws Exception {
 		ObsService obsService = Context.getObsService();
 		
-		Integer count = obsService.getObservationCount(null, null, null, null, null,
-		    Collections.singletonList(new Location(1)), null, null, null, false, null);
+		Integer count = obsService.getObservationCount(null, null, null, null, null, Collections.singletonList(new Location(
+		        1)), null, null, null, false, null);
 		
 		Assert.assertEquals(8, count.intValue());
 	}
@@ -1560,9 +1560,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ObsService obsService = Context.getObsService();
 		
 		// a obs with child groups
-		Obs origParentObs = obsService.getObs(2);
-		Set<Obs> originalMembers = new HashSet<>(origParentObs.getGroupMembers(true));
-		assertEquals(2, originalMembers.size());
+		Obs parentObs = obsService.getObs(2);
+		parentObs.setValueNumeric(null);
 		
 		Obs groupMember = new Obs();
 		groupMember.setConcept(Context.getConceptService().getConcept(3));
@@ -1570,27 +1569,17 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		groupMember.setPerson(new Patient(2));
 		groupMember.setLocation(new Location(2));
 		groupMember.setValueNumeric(50d);
-		origParentObs.addGroupMember(groupMember);
+		parentObs.addGroupMember(groupMember);
 		assertNotNull(groupMember.getObsGroup());
 		
-		Obs newParentObs = obsService.saveObs(origParentObs, "Updating obs group");
-		assertNotEquals(origParentObs, newParentObs);
-		assertEquals(3, newParentObs.getGroupMembers(true).size());
+		obsService.saveObs(parentObs, "Updating obs group");
+		
 		// make sure the api filled in all of the necessary ids again
 		assertNotNull(groupMember.getObsId());
-		// the api should have voided and replaced the group members
-		for (Obs o : originalMembers) {
-			assertTrue(o.getVoided());
-			assertFalse(newParentObs.getGroupMembers(true).contains(o));
-		}
-		for (Obs o : newParentObs.getGroupMembers(true)) {
-			if (groupMember.equals(o)) {
-				//this is the new one so it can't have a previous one
-				continue;
-			}
-			assertTrue(o.hasPreviousVersion());
-			assertFalse(origParentObs.getGroupMembers(true).contains(o));
-		}
+		
+		// make sure the api didn't change the obsId of the first group member
+		Assert.assertEquals(9, parentObs.getGroupMembers().toArray(new Obs[] {})[0].getObsId().intValue());
+		
 	}
 	
 	/**
@@ -1633,7 +1622,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return the count of all observations using the specified conceptNames as answers", method = "getObservationCount(List, boolean)")
 	public void getObservationCount_shouldReturnTheCountOfAllObservationsUsingTheSpecifiedConceptNamesAsAnswers()
-	    throws Exception {
+	        throws Exception {
 		ObsService os = Context.getObsService();
 		Obs o = new Obs();
 		o.setConcept(Context.getConceptService().getConcept(3));
@@ -1735,40 +1724,41 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		assertEquals(obs.getPerson(), obsSaved.getEncounter().getPatient());
 	}
-	
+
 	/**
 	 * @see ObsService#purgeObs(Obs,boolean)
 	 */
 	@Test
 	@Verifies(value = "should delete any obsGroupMembers before deleting the obs", method = "purgeObs(Obs,boolean)")
 	public void purgeObs_shouldDeleteAnyObsGroupMembersBeforeDeletingTheObs() throws Exception {
-		
+
 		executeDataSet(INITIAL_OBS_XML);
 		ObsService obsService = Context.getObsService();
-		
+
 		final int parentObsId = 1;
 		Obs obs = obsService.getObs(parentObsId);
-		
+
 		final int childObsId = 2;
 		final int unrelatedObsId = 3;
 		final int orderReferencingObsId = 4;
+		Obs unrelatedObservation = obsService.getObs(unrelatedObsId);
 		obs.addGroupMember(obsService.getObs(childObsId));
 		obs.addGroupMember(obsService.getObs(orderReferencingObsId));
-		
+
 		final int conceptProposalObsId = 5;
 		ConceptProposal conceptProposal = new ConceptProposal();
 		conceptProposal.setObs(obsService.getObs(conceptProposalObsId));
 		obs.addGroupMember(conceptProposal.getObs());
-		
+
 		//before calling purgeObs method the Obs exists
 		Assert.assertNotNull(obsService.getObs(parentObsId));
 		Assert.assertNotNull(obsService.getObs(childObsId));
 		Assert.assertNotNull(obsService.getObs(unrelatedObsId));
 		Assert.assertNotNull(obsService.getObs(orderReferencingObsId));
 		Assert.assertNotNull(obsService.getObs(conceptProposalObsId));
-		
+
 		Context.getObsService().purgeObs(obs, false);
-		
+
 		//	After calling purgeObs method Obs are deleted
 		Assert.assertNull(obsService.getObs(parentObsId));
 		Assert.assertNull(obsService.getObs(childObsId));
@@ -1776,77 +1766,78 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(obsService.getObs(orderReferencingObsId));
 		Assert.assertNull(obsService.getObs(conceptProposalObsId));
 	}
-	
+
 	/**
 	 * @see ObsService#purgeObs(Obs,boolean)
 	 */
 	@Test
 	@Verifies(value = "should not delete referenced orders when purging obs", method = "purgeObs(Obs,boolean)")
 	public void purgeObs_shouldNotDeleteReferencedOrdersWhenPurgingObs() throws Exception {
-		
+
 		executeDataSet(INITIAL_OBS_XML);
 		ObsService obsService = Context.getObsService();
 		final OrderService orderService = Context.getOrderService();
-		
+
 		final int orderReferencingObsId = 4;
 		final Obs obs = obsService.getObs(orderReferencingObsId);
-		
+
 		final Order order = obs.getOrder();
 		final Integer referencedOrderId = order.getOrderId();
-		
+
 		Context.getObsService().purgeObs(obs, false);
-		
+
 		Assert.assertNull(obsService.getObs(orderReferencingObsId));
 		Assert.assertNotNull(orderService.getOrder(referencedOrderId));
 	}
-	
+
 	/**
 	 * @see ObsService#saveObs(Obs,String)
 	 */
 	@Test
 	@Verifies(value = "should delete the previous file when a complex observation is updated with a new complex value", method = "saveObs(Obs,String)")
 	public void saveObs_shouldDeleteThePreviousFileWhenAComplexObservationIsUpdatedWithANewComplexValue() throws Exception {
-		
+
 		String changeMessage = "Testing TRUNK-4538";
-		
+
 		executeDataSet(COMPLEX_OBS_XML);
-		
+
 		ObsService os = Context.getObsService();
 		ConceptService cs = Context.getConceptService();
 		AdministrationService as = Context.getAdministrationService();
-		
+
 		// make sure the file isn't there to begin with
 		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
-		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
-		final File createdFile = new File(complexObsDir, "nameOfFile.txt");
+				.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+		File createdFile = new File(complexObsDir, "nameOfFile.txt");
 		if (createdFile.exists())
 			createdFile.delete();
-		
+
 		// the complex data to put onto an obs that will be saved
 		Reader input = new CharArrayReader("This is a string to save to a file".toCharArray());
 		ComplexData complexData = new ComplexData("nameOfFile.txt", input);
-		
+
 		// must fetch the concept instead of just new Concept(8473) because the attributes on concept are checked
 		// this is a concept mapped to the text handler
 		Concept questionConcept = cs.getConcept(8474);
-		
+
 		Obs obsToSave = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
 		obsToSave.setComplexData(complexData);
 		os.saveObs(obsToSave, null);
-		
+
+
 		File updatedFile = new File(complexObsDir, "nameOfUpdatedFile.txt");
 		if (updatedFile.exists())
 			updatedFile.delete();
-		
+
+
 		// the complex data to put onto an obs that will be updated
-		Reader updatedInput = new CharArrayReader(
-		        "This is a string to save to a file which uploaded to update an obs".toCharArray());
+		Reader updatedInput = new CharArrayReader("This is a string to save to a file which uploaded to update an obs".toCharArray());
 		ComplexData updatedComplexData = new ComplexData("nameOfUpdatedFile.txt", updatedInput);
-		
+
 		obsToSave.setComplexData(updatedComplexData);
 		try {
 			os.saveObs(obsToSave, changeMessage);
-			
+
 			Assert.assertFalse(createdFile.exists());
 		}
 		finally {
@@ -1854,27 +1845,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 			// database and hence can't be "rolled back" like everything else
 			updatedFile.delete();
 		}
-		
-	}
-	
-	/**
-	 * @see ObsService#saveObs(Obs,String)
-	 * @verifies not void an Obs with no changes
-	 */
-	@Test
-	public void saveObs_shouldNotVoidAnObsWithNoChanges() throws Exception {
-		executeDataSet(INITIAL_OBS_XML);
-		ObsService os = Context.getObsService();
-		Obs obs = os.getObs(2);
-		assertFalse(obs.getGroupMembers(true).isEmpty());
-		assertFalse(obs.getGroupMembers(false).isEmpty());
-		assertFalse(obs.isDirty());
-		Set<Obs> originalMembers = new HashSet<>(obs.getGroupMembers());
-		for (Obs o : originalMembers) {
-			assertFalse(o.isDirty());
-		}
-		Obs saveObs = os.saveObs(obs, "no change");
-		assertEquals(obs, saveObs);
-		assertFalse(saveObs.getVoided());
+
 	}
 }
