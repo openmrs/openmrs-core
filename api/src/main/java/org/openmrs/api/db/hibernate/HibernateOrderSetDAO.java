@@ -15,7 +15,9 @@ import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.ConceptDescription;
 import org.openmrs.OrderSet;
+import org.openmrs.OrderSetMember;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderSetDAO;
 
@@ -94,4 +96,14 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 		    "uuid", orderSetUuid).uniqueResult();
 	}
 	
+
+	/**
+	 * @see org.openmrs.api.db.OrderSetDAO#getOrderSetMemberByUuid(String)
+	 */
+	@Override
+	public OrderSetMember getOrderSetMemberByUuid(String uuid) throws DAOException {
+		return (OrderSetMember) sessionFactory.getCurrentSession().createQuery("from OrderSetMember osm where osm.uuid = :uuid").setString(
+				"uuid", uuid).uniqueResult();
+	}
+
 }
