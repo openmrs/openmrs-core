@@ -39,7 +39,7 @@ import org.openmrs.util.OpenmrsUtil;
 public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 	
 	private static final Log log = LogFactory.getLog(ImmutableEntityInterceptor.class);
-
+	
 	/**
 	 * Returns the class handled by the interceptor
 	 */
@@ -48,7 +48,7 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 	/**
 	 * Subclasses can override this to return fields that are allowed to be edited, returning null
 	 * or an empty array implies the entity is immutable
-	 *
+	 * 
 	 * @return an array of properties
 	 */
 	protected String[] getMutablePropertyNames() {
@@ -75,7 +75,7 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 	 */
 	@Override
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
-	                            String[] propertyNames, Type[] types) {
+	        String[] propertyNames, Type[] types) {
 		
 		if (getSupportedType().isAssignableFrom(entity.getClass())) {
 			List<String> changedProperties = null;
@@ -87,9 +87,9 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 				
 				boolean isVoidedOrRetired = false;
 				if (Voidable.class.isAssignableFrom(entity.getClass())) {
-					isVoidedOrRetired = ((Voidable) entity).getVoided();
+					isVoidedOrRetired = ((Voidable) entity).isVoided();
 				} else if (Retireable.class.isAssignableFrom(entity.getClass())) {
-					isVoidedOrRetired = ((Retireable) entity).getRetired();
+					isVoidedOrRetired = ((Retireable) entity).isRetired();
 				}
 				if (isVoidedOrRetired && ignoreVoidedOrRetiredObjects()) {
 					continue;
@@ -108,10 +108,10 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 				if (log.isDebugEnabled()) {
 					log.debug("The following fields cannot be changed for " + getSupportedType() + ":" + changedProperties);
 				}
-				throw new APIException("Editing some fields on " + getSupportedType().getSimpleName() + " is not allowed");
+				throw new APIException("editing.fields.not.allowed", new Object[] { getSupportedType().getSimpleName() });
 			}
 		}
 		
-		return false;
+		return super.onFlushDirty(entity, id, currentState, previousState, propertyNames, types);
 	}
 }

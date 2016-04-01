@@ -732,7 +732,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			mappedConcept.setChangedBy(Context.getAuthenticatedUser());
 			mappedConcept.setDateChanged(new Date());
 			ValidateUtil.validate(mappedConcept);
-            Context.getConceptService().saveConcept(mappedConcept);
 		}
 		
 		cp.setMappedConcept(mappedConcept);
@@ -753,7 +752,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			if (ob.getUuid() == null) {
 				ob.setUuid(UUID.randomUUID().toString());
 			}
-            Context.getObsService().saveObs(ob, null);
 			cp.setObs(ob);
 		}
 		
