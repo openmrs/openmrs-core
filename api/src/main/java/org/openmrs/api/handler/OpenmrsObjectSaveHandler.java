@@ -17,6 +17,7 @@ import java.util.UUID;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Obs;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.Voidable;
@@ -82,7 +83,8 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 			}
 			
 			//We are dealing with only strings
-			if (!property.getPropertyType().equals(String.class)) {
+            //TODO We shouldn't be doing this for all immutable types and fields
+			if (openmrsObject instanceof Obs ||!property.getPropertyType().equals(String.class)) {
 				continue;
 			}
 			
