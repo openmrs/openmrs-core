@@ -115,7 +115,8 @@ public class UserFormController {
 			model.addAttribute("changePassword", new UserProperties(user.getUserProperties()).isSupposedToChangePassword());
 		}
 		
-		if (user.getPerson().getId() != null && !Context.getProviderService().getProvidersByPerson(user.getPerson()).isEmpty()) {
+		if (user.getPerson().getId() != null
+		        && !Context.getProviderService().getProvidersByPerson(user.getPerson()).isEmpty()) {
 			model.addAttribute("isProvider", true);
 			model.addAttribute("providerList", Context.getProviderService().getProvidersByPerson(user.getPerson()));
 		} else {
@@ -138,9 +139,9 @@ public class UserFormController {
 	        @RequestParam(required = false, value = "confirm") String confirm,
 	        @RequestParam(required = false, value = "forcePassword") Boolean forcePassword,
 	        @RequestParam(required = false, value = "roleStrings") String[] roles,
-	        @RequestParam(required = false, value = "createNewPerson") String createNewPerson, 
-			@RequestParam(required = false, value = "providerCheckBox") String addToProviderTableOption,
-			@ModelAttribute("user") User user, BindingResult errors) {
+	        @RequestParam(required = false, value = "createNewPerson") String createNewPerson,
+	        @RequestParam(required = false, value = "providerCheckBox") String addToProviderTableOption,
+	        @ModelAttribute("user") User user, BindingResult errors) {
 		
 		UserService us = Context.getUserService();
 		MessageSourceService mss = Context.getMessageSourceService();
@@ -282,7 +283,7 @@ public class UserFormController {
 			}
 			
 			//Check if admin wants the person associated with the user to be added to the Provider Table
-			if(addToProviderTableOption != null) {
+			if (addToProviderTableOption != null) {
 				Provider provider = new Provider();
 				provider.setPerson(user.getPerson());
 				provider.setIdentifier(user.getSystemId());
