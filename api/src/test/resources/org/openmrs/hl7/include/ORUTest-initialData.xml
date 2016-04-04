@@ -48,6 +48,7 @@
   <concept_name concept_id="1726" name="FOLLOW-UP ACTION" locale="en" creator="1" date_created="2007-06-05 17:38:53.0" concept_name_id="11" voided="false" uuid="5c065fba-ffaa-4bb2-bcf5-e591bac97b7f" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
   <concept_name concept_id="1" name="" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="12" voided="false" uuid="a96dd0bd-7301-4789-a620-f7afa2fd3870" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
   <concept_name concept_id="5497" name="CD4 COUNT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="13" voided="false" uuid="4debc2c4-cfcd-4bcc-b8fc-9a7f16b8eca5" concept_name_type="SHORT" locale_preferred="0"/>
+  <concept_numeric concept_id="1553" precise="false" />
   <concept_set concept_set_id="1" concept_id="1553" concept_set="1726" sort_weight="1.0" creator="1" date_created="2007-06-05 17:38:53.0" uuid="c574a329-8ac7-46bc-bb3e-45361ae48742"/>
   <concept_set concept_set_id="2" concept_id="1554" concept_set="1726" sort_weight="2.0" creator="1" date_created="2007-06-05 17:38:53.0" uuid="2282b361-8e39-41f6-a215-da6716b97bfe"/>
   <concept_set concept_set_id="3" concept_id="1558" concept_set="1726" sort_weight="0.0" creator="1" date_created="2007-06-05 17:38:53.0" uuid="7e540387-7e2e-421b-8695-5aa642889bd4"/>
