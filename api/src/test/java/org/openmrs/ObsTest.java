@@ -123,7 +123,10 @@ public class ObsTest {
 			fieldValue = new Person(setAlternateValue ? 10 : 17);
 		} else if (field.getType().equals(ComplexData.class)) {
 			fieldValue = new ComplexData(setAlternateValue ? "some complex data" : "Some other value", new Object());
-		} else {
+		} else if (field.getType().equals(Concept.class)) {
+			fieldValue = new Concept();
+		} 
+		else {
 			fieldValue = field.getType().newInstance();
 		}
 		assertNotNull("Failed to generate a value for field: Obs." + field.getName());
