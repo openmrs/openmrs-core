@@ -127,6 +127,7 @@ public class ObsTest {
 			fieldValue = new Concept();
 		} 
 		else {
+			System.out.println(".....................................................................=" + field.getType());
 			fieldValue = field.getType().newInstance();
 		}
 		assertNotNull("Failed to generate a value for field: Obs." + field.getName());
