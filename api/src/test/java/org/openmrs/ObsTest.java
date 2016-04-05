@@ -53,7 +53,7 @@ public class ObsTest {
 	private static final List<String> IGNORED_FIELDS = Arrays.asList("dirty", "log", "serialVersionUID",
 	    "DATE_TIME_PATTERN", "TIME_PATTERN", "DATE_PATTERN", "FORM_NAMESPACE_PATH_SEPARATOR",
 	    "FORM_NAMESPACE_PATH_MAX_LENGTH", "obsId", "groupMembers", "uuid", "changedBy", "dateChanged", "voided", "voidedBy",
-	    "voidReason", "dateVoided", "formNamespaceAndPath");
+	    "voidReason", "dateVoided", "formNamespaceAndPath", "$jacocoData");
 	
 	private void resetObs(Obs obs) throws Exception {
 		Field field = Obs.class.getDeclaredField("dirty");
@@ -123,11 +123,7 @@ public class ObsTest {
 			fieldValue = new Person(setAlternateValue ? 10 : 17);
 		} else if (field.getType().equals(ComplexData.class)) {
 			fieldValue = new ComplexData(setAlternateValue ? "some complex data" : "Some other value", new Object());
-		} else if (!field.getType().toString().contains(".")) {
-			//this attempts to fix java.lang.InstantiationException: [Z on bamboo
-			fieldValue = null;
-		} 
-		else {
+		} else {
 			fieldValue = field.getType().newInstance();
 		}
 		assertNotNull("Failed to generate a value for field: Obs." + field.getName());
