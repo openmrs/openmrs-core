@@ -37,7 +37,7 @@
 		<many-to-one name="encounter" class="Encounter">
 			<column name="encounter_id" />
 		</many-to-one>
-		<many-to-one name="obs" class="Obs">
+		<many-to-one name="obs" class="Obs" cascade="save-update">
 			<column name="obs_id" />
 		</many-to-one>
 		<many-to-one name="obsConcept" class="Concept">
