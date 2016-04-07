@@ -18,7 +18,6 @@ import org.openmrs.logic.datasource.LogicDataSource;
 import org.openmrs.logic.result.Result;
 import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.logic.rule.RuleParameterInfo;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The Logic Service provides a mechanism for both registering and consuming business logic in the
@@ -62,7 +61,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @see org.openmrs.logic.LogicCriteria
  * @see org.openmrs.logic.datasource.LogicDataSource
  */
-@Transactional
 public interface LogicService {
 	
 	/**

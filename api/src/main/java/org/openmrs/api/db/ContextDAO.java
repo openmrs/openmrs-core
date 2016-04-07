@@ -16,7 +16,6 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.util.OpenmrsConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Defines the functions that the Context needs to access the database
@@ -51,7 +50,6 @@ public interface ContextDAO {
 	 * @should throw a ContextAuthenticationException if username is an empty string
 	 * @should throw a ContextAuthenticationException if username is white space
 	 */
-	@Transactional(noRollbackFor = ContextAuthenticationException.class)
 	public User authenticate(String username, String password) throws ContextAuthenticationException;
 	
 	/**
@@ -62,7 +60,6 @@ public interface ContextDAO {
 	 * @return the User from the database
 	 * @throws ContextAuthenticationException
 	 */
-	@Transactional(readOnly = true)
 	public User getUserByUuid(String uuid) throws ContextAuthenticationException;
 	
 	/**
@@ -78,13 +75,11 @@ public interface ContextDAO {
 	/**
 	 * @see org.openmrs.api.context.Context#clearSession()
 	 */
-	@Transactional
 	public void clearSession();
 	
 	/**
 	 * @see org.openmrs.api.context.Context#flushSession()
 	 */
-	@Transactional
 	public void flushSession();
 	
 	/**
@@ -104,7 +99,6 @@ public interface ContextDAO {
 	 * 
 	 * @param props Properties
 	 */
-	@Transactional
 	public void startup(Properties props);
 	
 	/**
@@ -141,12 +135,10 @@ public interface ContextDAO {
 	/**
 	 * @see Context#updateSearchIndexForObject(Object)
 	 */
-	@Transactional
 	public void updateSearchIndexForObject(Object object);
 	
 	/**
 	 * @see Context#updateSearchIndexForType(Class)
 	 */
-	@Transactional
 	public void updateSearchIndexForType(Class<?> type);
 }
