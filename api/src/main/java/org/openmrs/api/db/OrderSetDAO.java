@@ -10,6 +10,7 @@
 package org.openmrs.api.db;
 
 import org.openmrs.OrderSet;
+import org.openmrs.OrderSetMember;
 
 import java.util.List;
 
@@ -43,4 +44,9 @@ public interface OrderSetDAO {
 	 */
 	OrderSet getOrderSetByUniqueUuid(String orderSetUuid) throws DAOException;
 	
+
+	/**
+	 * @see org.openmrs.api.OrderSetService#getOrderSetMemberByUuid(String)
+	 */
+	OrderSetMember getOrderSetMemberByUuid(String uuid) throws DAOException;
 }

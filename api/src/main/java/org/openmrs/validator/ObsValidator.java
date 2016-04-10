@@ -38,12 +38,13 @@ public class ObsValidator implements Validator {
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
+	 * @should support Obs class
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class c) {
 		return Obs.class.isAssignableFrom(c);
 	}
-	
+
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)

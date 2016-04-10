@@ -41,6 +41,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 import org.springframework.orm.hibernate4.SessionFactoryUtils;
 import org.springframework.orm.hibernate4.SessionHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
@@ -72,6 +73,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
 	 */
+	@Transactional(noRollbackFor = ContextAuthenticationException.class)
 	public User authenticate(String login, String password) throws ContextAuthenticationException {
 		
 		String errorMsg = "Invalid username and/or password: " + login;
@@ -206,6 +208,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#getUserByUuid(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public User getUserByUuid(String uuid) {
 		
 		// don't flush here in case we're in the AuditableInterceptor.  Will cause a StackOverflowEx otherwise
@@ -298,6 +301,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#clearSession()
 	 */
+	@Transactional
 	public void clearSession() {
 		sessionFactory.getCurrentSession().clear();
 	}
@@ -312,6 +316,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#flushSession()
 	 */
+	@Transactional
 	public void flushSession() {
 		sessionFactory.getCurrentSession().flush();
 	}
@@ -319,6 +324,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.context.Context#startup(Properties)
 	 */
+	@Transactional
 	public void startup(Properties properties) {
 	}
 	
@@ -407,6 +413,7 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 	
 	@Override
+	@Transactional
 	public void updateSearchIndexForType(Class<?> type) {
 		//From http://docs.jboss.org/hibernate/search/3.3/reference/en-US/html/manual-index-changes.html#search-batchindex-flushtoindexes
 		FullTextSession session = Search.getFullTextSession(sessionFactory.getCurrentSession());
@@ -449,6 +456,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @see org.openmrs.api.db.ContextDAO#updateSearchIndexForObject(java.lang.Object)
 	 */
 	@Override
+	@Transactional
 	public void updateSearchIndexForObject(Object object) {
 		FullTextSession session = Search.getFullTextSession(sessionFactory.getCurrentSession());
 		session.index(object);
