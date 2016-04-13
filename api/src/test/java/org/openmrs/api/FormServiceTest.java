@@ -1134,7 +1134,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	
 	        //Can compare these two?
 	        assertEquals(1, formTest.length());
-	
+	//added comment for git test
 	
 	
 	}
