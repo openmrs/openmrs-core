@@ -118,6 +118,11 @@ public class ModuleFactory {
 	 * 
 	 * @param module
 	 * @param replaceIfExists unload a module that has the same moduleId if one is loaded already
+	 * @should load module if it is currently not loaded
+	 * @should not load module if already loaded
+	 * @should always load module if replacement is wanted
+	 * @should not load an older version of the same module
+	 * @should load a newer version of the same module
 	 * @return module the module that was loaded or if the module exists already with the same
 	 *         version, the old module
 	 */
