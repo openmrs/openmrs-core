@@ -112,6 +112,19 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(ModuleFactory.getLoadedModules().contains(oldModule));
 	}
 	
+	@Test
+	public void startModule_shouldStartAllDependencies() {
+		Module test1 = loadModule(MODULE1_PATH, MODULE1, true);
+		Module test2 = loadModule(MODULE2_PATH, MODULE2, true);
+		
+		ModuleFactory.startModule(test2);
+		
+		Assert.assertNotNull(ModuleFactory.getStartedModuleById("test1")); // test1 should have been started, just by starting test2
+		Assert.assertNotNull(ModuleFactory.getStartedModuleById("test2")); // should be started after starting all dependencies
+		Assert.assertTrue(test1.isStarted());
+		Assert.assertTrue(test2.isStarted());
+	}
+	
 	private Module loadModule(String location, String moduleName, boolean replace) {
 		String moduleLocation = ModuleUtil.class.getClassLoader().getResource(location).getPath();
 		Module newModule = ModuleFactory.loadModule(new File(moduleLocation), replace);
