@@ -1025,18 +1025,18 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Form duplicateForm = fs.duplicateForm(form);
 		assertEquals(form, duplicateForm);
 	}
-	String fuzzyName;
-	Boolean onlyLatestVersion;
+
+	/*
+	public List<Form> formList = new List<Form>();
+	public String fuzzyName;
+	public Boolean onlyLatestVersion;
 
 	@Test
-	public void getFormTestNameNullBoolTrue(String fuzzyName, boolean onlyLatestVersion){
+	public void getFormTestNameNullBoolTrue1(String fuzzyName, boolean onlyLatestVersion){
         //Lets check if fuzzyname is null and OnlyLatestVersion is true
 
         	Form form1 = new Form();
-        	List<Form> formList = new List<Form>;
-
-
-        	String name1 = null;
+			String name1 = null;
        		String version1 = "1.0";
         	String descript1 = "descript1";
 	        form1.setName(name1);
@@ -1050,8 +1050,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	
 	        fuzzyName = null;
 	        onlyLatestVersion = true;
-	
-	        List<Form> formTest = formList.getForms(fuzzName, OnlyLatestVersion);
+		
+			formTest = formList.getForms(fuzzyName, OnlyLatestVersion);
 	
 	        assertEquals(null, formTest);
 	
@@ -1059,12 +1059,10 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getFormTestNameNullBoolTrue(String fuzzyName, boolean OnlyLatestVersion){
+	public void getFormTestNameNullBoolFalse1(String fuzzyName, boolean OnlyLatestVersion){
 	        //Lets check if fuzzyname is null and OnlyLatestVersion is false
 	
 	        Form form1 = new Form();
-	        List<Form> formList = new List<Form>;
-	
 	
 	        String name1 = null;
 	        String version1 = "1.0";
@@ -1081,7 +1079,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	        fuzzyName = null;
 	        onlyLatestVersion = false;
 	
-	        List<Form> formTest = formList.getForms(fuzzName, OnlyLatestVersion);
+	        formTest = formList.getForms(fuzzyName, OnlyLatestVersion);
 	
 	        assertEquals(null, formTest);
 	
@@ -1089,9 +1087,11 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getFormTestNameNullBoolTrue(String fuzzyName, boolean OnlyLatestVersion){
+	public void getFormTestNameNotNullBoolTrue1(String fuzzyName, boolean OnlyLatestVersion){
 	        //Lets check if fuzzyname is not null and OnlyLatestVersion is true
 	
+
+		   	Form form1 = new Form();
 	        String name1 = "Kyle";
 	        String version1 = "1.0";
 	        String descript1 = "descript1";
@@ -1105,18 +1105,19 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	
 	        fuzzyName = "Kyle";
 	        onlyLatestVersion = true;
-	        List<Form> formTest = getForms(fuzzName, OnlyLatestVersion);
+	        
+	        formTest = getForms(fuzzyName, OnlyLatestVersion);
 	
 	        //Can compare these two?
 	        assertEquals(1, formTest.length());
 	
-	
 	}
 	
 	@Test
-	public void getFormTestNameNullBoolTrue(String fuzzyName, boolean OnlyLatestVersion){
+	public void getFormTestNameNotNullBoolFalse(String fuzzyName, boolean OnlyLatestVersion){
 	        //Lets check if fuzzyname is not null and OnlyLatestVersion is false
 	        
+	        Form form1 = new Form();
 	        String name1 = "Kyle";
 	        String version1 = "1.0";
 	        String descript1 = "descript1";
@@ -1130,12 +1131,11 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	
 	        fuzzyName = "Kyle";
 	        onlyLatestVersion = false;
-	        List<Form> formTest = getForms(fuzzName, OnlyLatestVersion);
+	        
+	        formTest = getForms(fuzzyName, OnlyLatestVersion);
 	
 	        //Can compare these two?
 	        assertEquals(1, formTest.length());
-	//added comment for git test
-	
-	
 	}
+	*/
 }
