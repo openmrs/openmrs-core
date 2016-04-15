@@ -128,6 +128,24 @@ public class WebModuleUtilTest {
 		
 		ModuleFactory.getStartedModulesMap().clear();
 	}
+
+	@Test(expected = ModuleException.class)
+	public void startModule_shouldnotThrowModuleExceptionWhenSpacesInDirectonryName() throws Exception {
+		// create dummy module and start it
+		Module mod = buildModuleForMessageTest();
+		ModuleFactory.getStartedModulesMap().put(mod.getModuleId(), mod);
+		
+		ServletContext servletContext = mock(ServletContext.class);
+		String realPath = servletContext.getRealPath("");
+		if (realPath == null)
+			realPath = System.getProperty("user.dir");
+		when(servletContext.getRealPath("")).thenReturn(realPath + "/WEB-INF Test");
+		
+		
+		WebModuleUtil.startModule(mod, servletContext, true);
+		
+		ModuleFactory.getStartedModulesMap().clear();
+	}
 	
 	/**
 	 * @see WebModuleUtil#startModule(Module, ServletContext, boolean)
