@@ -361,6 +361,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see org.openmrs.PersonAttribute
 	 * @should not get voided attributes
 	 * @should not fail with null attributes
+	 *
 	 */
 	public Set<PersonAttribute> getAttributes() {
 		if (attributes == null) {
@@ -479,7 +480,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return PersonAttribute that matches the given type
 	 * @should not fail when attribute type is null
 	 * @should not return voided attribute
-	 * @should return null when given attribute type is not exist
+	 * @should return null when existing PersonAttributeType is voided 
 	 */
 	public PersonAttribute getAttribute(PersonAttributeType pat) {
 		if (pat != null) {
@@ -502,6 +503,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @param attributeName the name string to match on
 	 * @return PersonAttribute whose {@link PersonAttributeType#getName()} matchs the given name
 	 *         string
+	 * @should return person attribute based on attributeName
+	 * @should return null if AttributeName is voided
 	 */
 	public PersonAttribute getAttribute(String attributeName) {
 		if (attributeName != null) {
@@ -527,6 +530,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @param attributeTypeId the id of the {@link PersonAttributeType} to look for
 	 * @return PersonAttribute whose {@link PersonAttributeType#getId()} equals the given Integer id
+	 * @should return PersonAttribute based on attributeTypeId
+	 * @should return null when existing personAttribute with matching attribute type id is voided
 	 */
 	public PersonAttribute getAttribute(Integer attributeTypeId) {
 		for (PersonAttribute attribute : getActiveAttributes()) {
@@ -542,6 +547,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * PersonAttributeType.name equal to <code>attributeName</code>.
 	 * 
 	 * @param attributeName
+	 * @should return all PersonAttributes with matching attributeType names
 	 */
 	public List<PersonAttribute> getAttributes(String attributeName) {
 		List<PersonAttribute> ret = new Vector<PersonAttribute>();
@@ -561,6 +567,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * equal to <code>attributeTypeId</code>.
 	 * 
 	 * @param attributeTypeId
+	 * @should return empty list when matching personAttribute by id is voided
+	 * @should return list of person attributes based on AttributeTypeId
 	 */
 	public List<PersonAttribute> getAttributes(Integer attributeTypeId) {
 		List<PersonAttribute> ret = new Vector<PersonAttribute>();
