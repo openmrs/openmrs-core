@@ -47,6 +47,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentMatcher;
+
+import org.openmrs.api.APIException;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -3310,5 +3313,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient preferredPatient = patientService.getPatient(8);
 		Patient notPreferredPatient = patientService.getPatient(7);
 		patientService.mergePatients(preferredPatient, notPreferredPatient);
+	}
+
+	
+	@Test(expected = APIException.class)
+	public void processDeath_shouldThrowAPIExceptionIfPatientIsNull() throws Exception{
+		patientService.processDeath(null, new Date(), new Concept(), "unknown");
 	}
 }
