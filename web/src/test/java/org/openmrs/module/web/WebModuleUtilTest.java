@@ -256,5 +256,22 @@ public class WebModuleUtilTest {
 		
 		WebModuleUtil.setDispatcherServlet(dispatcherServlet);
 	}
+	/*
+	startModule should be fixed. ModuleException should not be thrown
+	*/
+	@Test(expected = ModuleException.class)
+	public void startModule_shouldnotThrowModuleExceptionWhenRealPathContainsWhitespace() throws Exception {
+		// create dummy module and start it
+		Module mod = buildModuleForMessageTest();
+		ModuleFactory.getStartedModulesMap().put(mod.getModuleId(), mod);
+		
+		ServletContext servletContext = mock(ServletContext.class);
+		String realPath = System.getProperty("user.dir");
+		
+		when(servletContext.getRealPath("")).thenReturn(realPath + "/WEB-INF Test");
+		
+		WebModuleUtil.startModule(mod, servletContext, true);
+		ModuleFactory.getStartedModulesMap().clear();
+	}
 	
 }

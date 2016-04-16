@@ -109,6 +109,7 @@ public class WebModuleUtil {
 	 * @param servletContext the current ServletContext
 	 * @param delayContextRefresh true/false whether or not to do the context refresh
 	 * @return boolean whether or not the spring context need to be refreshed
+	 * @should not throw ModuleException when realPath contains whitespace
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
 		
