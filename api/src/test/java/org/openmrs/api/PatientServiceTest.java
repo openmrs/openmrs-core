@@ -1442,6 +1442,50 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertTrue(savedIdentifierType.equals(identifierType));
 		
 	}
+
+	/**
+	 * @see PatientService#savePatient(Patient)
+	 */
+	@Test
+	@Ignore("Unignore after investigating and fixing - TRUNK-4831")
+	@Verifies(value = "should not set a voided name or address or identifier as preferred", method = "savePatient(Patient)")
+	public void savePatient_shouldNotThrowNullPointerExceptionWhenAllPatientIdentifiersAreVoided() throws Exception {
+		Patient patient = new Patient();
+		patient.setGender("M");
+		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(2),
+															 locationService.getLocation(1));
+		identifier.setVoided(true);						//Set primary identifier voided (Caused by deletion)
+		PatientIdentifier preferredIdentifier = new PatientIdentifier("QWERTY2", patientService.getPatientIdentifierType(2),
+																	  locationService.getLocation(1));
+		preferredIdentifier.setPreferred(true);
+		preferredIdentifier.setVoided(true);			//Set voided identifier voided
+		patient.addIdentifier(identifier);
+		patient.addIdentifier(preferredIdentifier);
+
+		PersonName name = new PersonName("givenName", "middleName", "familyName");
+		PersonName preferredName = new PersonName("givenName", "middleName", "familyName");
+		preferredName.setPreferred(true);
+		preferredName.setVoided(true);
+		patient.addName(name);
+		patient.addName(preferredName);
+
+		PersonAddress address = new PersonAddress();
+		address.setAddress1("some address");
+		PersonAddress preferredAddress = new PersonAddress();
+		preferredAddress.setAddress1("another address");
+		preferredAddress.setPreferred(true);
+		preferredAddress.setVoided(true);
+		patient.addAddress(address);
+		patient.addAddress(preferredAddress);
+
+		patientService.savePatient(patient);
+		Assert.assertFalse(preferredIdentifier.isPreferred());
+		Assert.assertFalse(preferredName.isPreferred());
+		Assert.assertFalse(preferredAddress.isPreferred());
+		Assert.assertTrue(identifier.isPreferred());
+		Assert.assertTrue(name.isPreferred());
+		Assert.assertTrue(address.isPreferred());
+	}
 	
 	/**
 	 * @see PatientService#unretirePatientIdentifierType(PatientIdentifierType)
