@@ -920,6 +920,19 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifier patientIdentifier = new PatientIdentifier("7TU-8", pit, null);
 		Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
 	}
+
+	/**
+	 * @see PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)
+	 */
+	@Test
+	@Ignore("Unignore after investigating and fixing - TRUNK-2758")
+	@Verifies(value = "should return false when patient identifier Type is Null", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
+	public void
+	isIdentifierInUseByAnotherPatient_shouldReturnFalseWhenPatientIdentifierTypeIsNull()
+			throws Exception {
+		PatientIdentifier patientIdentifier = new PatientIdentifier("7TU-8", null, null);
+		Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
+	}
 	
 	/**
 	 * @see PatientService#checkPatientIdentifiers(Patient)
