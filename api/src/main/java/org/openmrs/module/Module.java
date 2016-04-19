@@ -718,6 +718,10 @@ public final class Module {
 		return ModuleFactory.isModuleStarted(this);
 	}
 	
+	/**
+	 * @param e string to set as startup error message
+	 * @should throw exception when message is null
+	 */
 	public void setStartupErrorMessage(String e) {
 		if (e == null) {
 			throw new ModuleException("Startup error message cannot be null", this.getModuleId());
@@ -733,6 +737,10 @@ public final class Module {
 	 * @param exceptionMessage optional. the default message to show on the first line of the error
 	 *            message
 	 * @param t throwable stacktrace to include in the error message
+	 *
+	 * @should throw exception when throwable is null
+	 * @should set StartupErrorMessage when exceptionMessage is null
+	 * @should append throwable's message to exceptionMessage
 	 */
 	public void setStartupErrorMessage(String exceptionMessage, Throwable t) {
 		if (t == null) {
@@ -773,7 +781,10 @@ public final class Module {
 		
 		return moduleId;
 	}
-	
+
+	/*
+	 * @should dispose all classInstances, not AdvicePoints
+	 */	
 	public void disposeAdvicePointsClassInstance() {
 		if (advicePoints == null) {
 			return;
