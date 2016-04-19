@@ -93,6 +93,8 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 		return Cohort.subtract(getAllPatients(), cohort);
 	}
 	/**
+	 * @see org.openmrs.api.PatientSetService#getPatientsByCharacteristics(java.lang.String, java.util.Date, java.util.Date)
+	 * @return cohort of patients given gender and birth date range
 	 * @should return cohort that contains patients with given gender and birth date range
 	 */
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException {
@@ -112,13 +114,17 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	}
 
 	/**
-	 * @should return cohort that contains patients with given conceptId and date range
+	 * @see org.openmrs.api.PatientSetService#getPatientsHavingDateObs(java.lang.Integer, java.util.Date, java.util.Date)
+	 * @return cohort of patients that haveobservations with given conceptId and date range
+	 * @should return cohort that contains patients that have observations with given conceptId and date range
 	 */
 	public Cohort getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime) {
 		return getPatientSetDAO().getPatientsHavingDateObs(conceptId, startTime, endTime);
 	}
 	
 	/**
+	 * @see org.openmrs.api.PatientSetService#getPatientsHavingNumericObs(Integer, org.openmrs.api.PatientSetService.TimeModifier, org.openmrs.api.PatientSetService.Modifier, java.lang.Number, java.util.Date, java.util.Date)
+	 * @return cohort of patients that have the observations with numeric id and date range
 	 * @should return cohort that contains patients with given conceptId, numeric value of obs and date range
 	 */
 	public Cohort getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier,
@@ -149,6 +155,8 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	}
 
 	/**
+	 * @see org.openmrs.api.PatientSetService#getPatientsInProgram(org.openmrs.Program, java.util.Date, java.util.Date)
+	 * @return cohort of patients currently in the program within the date range
 	 * @should get cohort of patients currently in the program with the date range
 	 */
 	public Cohort getPatientsInProgram(Program program, Date fromDate, Date toDate) {
@@ -281,6 +289,8 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	}
 	
 	/**
+	 * @see org.openmrs.api.PatientSetService#getPatientsHavingPersonAttribute(org.openmrs.PersonAttributeType, java.lang.String)
+	 * @return cohort that contains patients given person attribute type and value
 	 * @should return cohort that contains patients given person attribute type and value
 	 */
 	public Cohort getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value) {
@@ -288,6 +298,7 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	}
 
 	/**
+	 * @see org.openmrs.api.PatientSetService#getShortPatientDescriptions(java.util.Collection)
 	 * @should get descriptions of given patientIds
 	 */
 	public Map<Integer, String> getShortPatientDescriptions(Collection<Integer> patientIds) {
@@ -295,6 +306,8 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	}
 
 	/**
+	 * @see org.openmrs.api.PatientSetService#getObservations(org.openmrs.Cohort, org.openmrs.Concept)
+	 * @return observations of given patient cohort and concept
 	 * @should get observations of given patient sets and concept
 	 */
 	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept) {
@@ -305,6 +318,7 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	}
 
 	/**
+	 * @see org.openmrs.api.PatientSetService#getObservations(org.openmrs.Cohort, org.openmrs.Concept, java.util.Date, java.util.Date)
 	 * Date range is inclusive of both endpoints
 	 */
 	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept, Date fromDate, Date toDate) {
@@ -377,7 +391,7 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	}
 
 	/**
-	 * @see org.openmrs.api.PatientSetService#getPatientAttributes(Cohort, String, String, boolean)
+	 * @see org.openmrs.api.PatientSetService#getPatientAttributes(org.openmrs.Cohort, java.lang.String, java.lang.String, boolean)
 	 */
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String className, String property, boolean returnAll) {
 		return getPatientSetDAO().getPatientAttributes(patients, className, property, returnAll);
@@ -444,6 +458,8 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 		return getPatientSetDAO().getCurrentStates(ps, wf);
 	}
 	/**
+	 * @see org.openmrs.api.PatientSetService#getCurrentPatientPrograms(org.openmrs.Cohort, org.openmrs.Program)
+	 * @return the patient programs enrolled by patients in the given cohort
 	 * @should get current program enrollments for the given cohort
 	 */
 	public Map<Integer, PatientProgram> getCurrentPatientPrograms(Cohort ps, Program program) {
@@ -498,7 +514,9 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	}
 
 	/**
-	 * @should return the count of patients in the db
+	 * @see org.openmrs.api.PatientSetService#getCountOfPatients()
+	 * @return the count of all patients
+	 * @should return the count of patients in the database
 	 */
 	public Integer getCountOfPatients() {
 		return getPatientSetDAO().getCountOfPatients();
