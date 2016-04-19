@@ -16,8 +16,6 @@ import java.util.Locale;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptDescription;
