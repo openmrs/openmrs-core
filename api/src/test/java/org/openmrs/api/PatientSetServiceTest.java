@@ -364,6 +364,22 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 
 
 	/**
+	 * @see PatientSetService#getPatientsByCharacteristics(String,Date,Date)
+	 */
+	@Test
+	@Verifies(value = "should get patients given gender and within birthdate range", method = "getPatientsByCharacteristics(String,Date,Date)")
+	public void getPatientsByCharacteristics_shouldGetPatientsWithinBirthDateRange() throws Exception {
+	    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	    Cohort cohort = null;
+	    cohort = service.getPatientsByCharacteristics("m", df.parse("1969-12-31"), df.parse("2010-01-02"));
+	    Assert.assertEquals(2, cohort.size());
+	    Cohort cohort1 = service.getPatientsByCharacteristics("f", df.parse("1969-12-31"), df.parse("2010-01-02"));
+	    Assert.assertEquals(1, cohort1.size());
+	}
+
+
+	/**
+>>>>>>> origin/APPTEST-54
 	 * @see PatientSetService#getPatientsHavingNumericObs(Integer,TimeModifier,Modifier,Number,Date,Date)
 	 *      test = should get patients by concept and numeric value of obs
 	 */
@@ -559,6 +575,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	 * 		test = should get the count of patients
 	 */
 	@Test
+    @Verifies(value = "should get the count of patients", method = "getCountOfPatients()")
 	public void getCountOfPatients_shouldGetCountOfPatients() throws Exception {
 	    int count = service.getCountOfPatients();
 	    assertEquals(4, count);
