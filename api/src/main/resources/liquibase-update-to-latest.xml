@@ -306,6 +306,56 @@
 			baseTableName="location_tag" baseColumnNames="retired_by"
 			referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
+	<changeSet id="TRUNK-2497-Store-outgoing-MessageService-emails-in-a-table" author="ivange94">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="sent_messages"/></not>
+		</preConditions>
+		<comment>
+			Persist all messages sent using MessageService api
+		</comment>
+		<createTable tableName="sent_messages">
+			<column name="message_id" type="int">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="sender_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="subject" type="varchar(120)"/>
+			<column name="content" type="text"/>
+			<column name="content_type" type="varchar(50)"/>
+			<column name="sent_date" type="datetime"/>
+		</createTable>
+		<addForeignKeyConstraint constraintName="fk_sender_id_user_id"
+			baseTableName="sent_messages" baseColumnNames="sender_id"
+			referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	
+	<changeSet id="20160420" author="ivange94">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="message_receivers"/></not>
+		</preConditions>
+		<comment>
+			Persist all receivers of a particular message sent using MessageService api
+		</comment>
+		<createTable tableName="message_receivers">
+			<column name="id" type="int">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="message_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="receiver_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="sent_date" type="datetime"/>
+		</createTable>
+		<addForeignKeyConstraint constraintName="fk_message_id_message_id"
+			baseTableName="message_receivers" baseColumnNames="message_id"
+			referencedTableName="sent_messages" referencedColumnNames="message_id"/>
+		<addForeignKeyConstraint constraintName="fk_receiver_id_user_id"
+			baseTableName="message_receivers" baseColumnNames="receiver_id"
+			referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
 	
 	<changeSet id="20090224-1250" author="Keelhaul+bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">

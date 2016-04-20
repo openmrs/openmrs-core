@@ -28,9 +28,9 @@ import org.aopalliance.aop.Advice;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Allergen;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PersonName;
-import org.openmrs.Allergen;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -66,6 +66,7 @@ import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
 import org.openmrs.notification.NoteService;
+import org.openmrs.notification.SentMessageService;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.scheduler.SchedulerService;
@@ -466,6 +467,12 @@ public class Context {
 		return getServiceContext().getFormService();
 	}
 
+	/**
+	 * @return sent message service
+	 */
+	public static SentMessageService getSentMessageService() {
+		return getServiceContext().getSentMessageService();
+	}
 	/**
 	 * @return serialization service
 	 * @since 1.5
