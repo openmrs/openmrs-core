@@ -314,19 +314,48 @@
 		<comment>
 			Create table to persist all sent messages
 		</comment>
-		<createTable tableName="sent_message">
+		<createTable tableName="sent_messages">
 			<column name="message_id" type="int">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="sender_id" type="int"/>
-			<column name="receiver_id" type="int"/>
-			<column name="subject" type="varchar(50)"/>
-			<column name="content" type="varchar(50)"/>
+			<column name="sender_id" type="int">
+				<constraints nullable="false"/>
+			</column>			
+			<column name="subject" type="varchar(120)"/>
+			<column name="content" type="text"/>
 			<column name="content_type" type="varchar(50)"/>
 			<column name="sent_date" type="datetime"/>
 		</createTable>
+		<addForeignKeyConstraint constraintName="user_who_sent_message"  
+			baseTableName="sent_messages" baseColumnNames="sender_id"
+			referencedColumnNames="user_id" referencedTableName="users" />
 	</changeSet>
-	
+	<changeSet id="20160420" author="ivange94">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="message_receivers"/></not>
+		</preConditions>
+		<comment>
+			Table to store receivers of messages from sent_messages table
+		</comment>
+		<createTable tableName="message_receivers">
+			<column name="id" type="int">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="message_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="receiver_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_received"/>
+			<addForeignKeyConstraint constraintName="fk_sent_messages_message_receivers" 
+			baseTableName="message_receivers" baseColumnNames="message_id" 
+			referencedColumnNames="message_id" referencedTableName="sent_messages"/>
+		<addForeignKeyConstraint constraintName="user_who_sent_message" 
+			baseTableName="message_receivers" baseColumnNames="receiver_id" 
+			referencedColumnNames="user_id" referencedTableName="users" />
+		</createTable>
+	</changeSet>
 	<changeSet id="20090224-1250" author="Keelhaul+bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="location_tag_map"/></not>

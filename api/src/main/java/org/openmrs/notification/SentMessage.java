@@ -11,6 +11,8 @@ package org.openmrs.notification;
 
 import java.util.Date;
 
+import javax.persistence.Transient;
+
 import org.openmrs.User;
 
 /**
@@ -26,6 +28,7 @@ public class SentMessage {
 	
 	private User sender;
 	
+	@Transient
 	private User receiver;
 	
 	private String subject;
