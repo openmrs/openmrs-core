@@ -67,7 +67,7 @@ public class EncounterSaveHandlerTest extends BaseContextSensitiveTest {
 		BufferedImage image = createImage();
 		
 		Obs o = new Obs();
-		o.setConcept(null);
+		o.setConcept(Context.getConceptService().getConcept(3));
 		Obs o1 = new Obs();
 		o1.setConcept(Context.getConceptService().getConcept(8473));
 		o1.setComplexData(new ComplexData("complex_obs_image_test.gif", image));
