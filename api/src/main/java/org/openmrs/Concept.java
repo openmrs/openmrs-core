@@ -494,6 +494,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param name the ConceptName.name to compare to
 	 * @param locale the locale to look in (null to check all locales)
 	 * @return true/false whether the name exists already
+	 * @should return false if name is null
+	 * @should return true if locale is null but name exists
+	 * @should return false if locale is null but name does not exist
 	 */
 	public boolean hasName(String name, Locale locale) {
 		if (name == null) {

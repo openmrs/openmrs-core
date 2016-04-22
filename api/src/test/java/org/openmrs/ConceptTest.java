@@ -1101,4 +1101,40 @@ public class ConceptTest {
 		Assert.assertNotNull(c.getDescriptions());
 	}
 
+	/**
+	 * @see Concept#hasName(String, Locale)
+	 * @verifies hasName returns false if name parameter Is Null
+	 */
+	@Test
+	public void hasName_shouldReturnFalseIfNameIsNull()
+	{
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Test Concept", new Locale("en"))) ;
+		Locale localeToSearch = new Locale("en", "UK");
+		Assert.assertFalse(concept.hasName(null, localeToSearch));
+	}
+
+	/**
+	 * @see Concept#hasName(String, Locale)
+	 * @verifies hasName returns ture if locale parameter Is Null but name is found
+	 */
+	@Test
+	public void hasName_shouldReturnTrueIfLocaleIsNullButNameExists()
+	{
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Test Concept", new Locale("en"))) ;
+		Assert.assertTrue(concept.hasName("Test Concept", null));
+	}
+
+	/**
+	 * @see Concept#hasName(String, Locale)
+	 * @verifies hasName returns false if name is not in concept and locale is null
+	 */
+	@Test
+	public void hasName_shouldReturnFalseIfLocaleIsNullButNameDoesNotExist()
+	{
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Test Concept", new Locale("en")));
+		Assert.assertFalse(concept.hasName("Unknown concept", null));
+	}
 }
