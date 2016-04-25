@@ -1252,6 +1252,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * 
 	 * @param description the description to remove
 	 * @return true if the entity was removed, false otherwise
+	 * @Should should remove description passed from list of descriptions
 	 */
 	public boolean removeDescription(ConceptDescription description) {
 		if (getDescriptions() != null) {
@@ -1431,6 +1432,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * 
 	 * @param conceptMap
 	 * @return true if the entity was removed, false otherwise
+	 * @Should remove concept map passed from list of mappings 
 	 */
 	public boolean removeConceptMapping(ConceptMap conceptMap) {
 		return getConceptMappings().remove(conceptMap);
