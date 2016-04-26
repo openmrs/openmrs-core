@@ -65,6 +65,7 @@ nb-configuration.xml
 !.gitignore
 !.gitattributes
 !.tx
+!.github/
 *~
 #############
 
