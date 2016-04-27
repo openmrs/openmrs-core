@@ -53,14 +53,13 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		newName.setCreator(Context.getAuthenticatedUser());
 		concept.addName(newName);
 		Errors errors = new BindException(concept, "concept");
-
-		//
-		// try {
-		// 	new ConceptValidator().validate(concept, errors);
-		// }
-		// catch (DuplicateConceptNameException e) {
-		// 	Assert.assertEquals("'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "' for the same concept", e.getMessage());
-		// }
+		
+		try {
+			new ConceptValidator().validate(concept, errors);
+		}
+		catch (DuplicateConceptNameException e) {
+			Assert.assertEquals("'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "' for the same concept", e.getMessage());
+		}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
