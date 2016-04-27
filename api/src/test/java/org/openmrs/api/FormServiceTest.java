@@ -484,7 +484,6 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		FormService fs = Context.getFormService();
 		Form form = new Form();
 		createFormsLockedGPAndSetValue("true");
-		
 		form.setVersion("1.0");
 
 		Assert.assertNull(fs.getForm(null, "1.0"));
