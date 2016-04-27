@@ -716,41 +716,6 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(previous.equals(actual.getValue()));
 		Assert.assertEquals(expected, actual.getValue());
 	}
-
-	//Added tests to check if getForm(String, String) can have null features
-	@Test
-	@Verifies(method = "getForm(String, String)", value = "should return null if either name or version are null")
-	public void getForm_shouldReturnNullFormIfBothNameAndVersionAreNull() throws Exception {
-		FormService fs = Context.getFormService();
-		createFormsLockedGPAndSetValue("true");
-		
-		Form form = fs.getForm(null, null);
-		Assert.assertNull(form);
-	}
-
-	@Test
-	@Verifies(method = "getForm(String, String)", value = "should return null if version is null")
-	public void getForm_shouldReturnNullFormIVersionIsNull() throws Exception {
-		FormService fs = Context.getFormService();
-		createFormsLockedGPAndSetValue("true");
-		Form form = new Form();
-		form.setName("new form");
-	
-		Assert.assertNull(fs.getForm("new form", null));
-	}
-
-	@Test
-	@Verifies(method = "getForm(String, String)", value = "should return null if name is null")
-	public void getForm_shouldReturnNullFormIfNameIsNull() throws Exception {
-		FormService fs = Context.getFormService();
-		createFormsLockedGPAndSetValue("true");
-		
-		Form form = new Form();
-		form.setVersion("1.0");
-
-		Assert.assertNull(fs.getForm(null, "1.0"));
-
-	}
 	
 	/**
 	 * @see FormService#purgeForm(Form)
