@@ -449,6 +449,48 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see FormService#getForm(String, String)
+	 */
+	@Test
+	@Verifies(method = "getForm(String, String)", value = "should return null if either name or version are null")
+	public void getForm_shouldReturnNullFormIfBothNameAndVersionAreNull() throws Exception {
+		FormService fs = Context.getFormService();
+		Form form = fs.getForm(null, null);
+		createFormsLockedGPAndSetValue("true");
+		
+		Assert.assertNull(form);
+	}
+
+	/**
+	 * @see FormService#getForm(String, String)
+	 */
+	@Test
+	@Verifies(method = "getForm(String, String)", value = "should return null if version is null")
+	public void getForm_shouldReturnNullFormIVersionIsNull() throws Exception {
+		FormService fs = Context.getFormService();
+		Form form = new Form();
+		createFormsLockedGPAndSetValue("true");
+		form.setName("new form");
+	
+		Assert.assertNull(fs.getForm("new form", null));
+	}
+
+	/**
+	 * @see FormService#getForm(String, String)
+	 */
+	@Test
+	@Verifies(method = "getForm(String, String)", value = "should return null if name is null")
+	public void getForm_shouldReturnNullFormIfNameIsNull() throws Exception {
+		FormService fs = Context.getFormService();
+		Form form = new Form();
+		createFormsLockedGPAndSetValue("true");
+		
+		form.setVersion("1.0");
+
+		Assert.assertNull(fs.getForm(null, "1.0"));
+	}
+
+	/**
 	 * @see FormService#getFieldAnswerByUuid(String)
 	 */
 	@Test
