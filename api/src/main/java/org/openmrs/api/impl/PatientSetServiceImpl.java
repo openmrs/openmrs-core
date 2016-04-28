@@ -240,7 +240,9 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 		} else {
 			if (groupMethod == GroupMethod.NONE) {
 				// Patients taking none of the specified drugs
-				
+				if (patientIds == null) {
+					patientIds = getAllPatients().getMemberIds();
+				}
 				// first get all patients taking no drugs at all
 				ret.addAll(patientIds);
 				ret.removeAll(activeDrugs.keySet());
