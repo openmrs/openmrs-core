@@ -165,7 +165,45 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, cohort.size());
 		Assert.assertTrue(cohort.contains(2));
 	}
-	
+
+	/**
+	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, Date)
+	 */
+	@Test
+	@Verifies(value = "should get all patients with no drug orders", method = "getPatientsHavingDrugOrder(Collection<QInteger;>,Collection<QInteger;>,Date)")
+	public void getPatientsHavingDrugOrder_shouldGetAllPatientsWithNoDrugOrders() throws Exception {
+		Cohort cohort = service.getPatientsHavingDrugOrder(null, null, null);
+		Assert.assertEquals(2, cohort.size());
+		Assert.assertTrue(cohort.contains(6));
+		Assert.assertTrue(cohort.contains(8));
+	}
+
+	/**
+	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, Date)
+	 */
+	@Test
+	@Verifies(value = "should get all patients with any drug order", method = "getPatientsHavingDrugOrder(Collection<QInteger;>,Collection<QInteger;>,Date)")
+	public void getPatientsHavingDrugOrder_shouldGetAllPatientsWithDrugInDrugOrder() throws Exception {
+		List<Integer> drugIds = new ArrayList<Integer>();
+		Cohort cohort = service.getPatientsHavingDrugOrder(null, drugIds, null);
+		Assert.assertEquals(2, cohort.size());
+		Assert.assertTrue(cohort.contains(2));
+		Assert.assertTrue(cohort.contains(7));
+	}
+
+	/**
+	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, Date)
+	 */
+	@Test
+	@Verifies(value = "should get all patients with any drug in the drug list", method = "getPatientsHavingDrugOrder(Collection<QInteger;>,Collection<QInteger;>,Date)")
+	public void getPatientsHavingDrugOrder_shouldGetAllPatientsWithAnyDrugInTheDrugList() throws Exception {
+		List<Integer> drugIds = new ArrayList<Integer>();
+		drugIds.add(2);
+		Cohort cohort = service.getPatientsHavingDrugOrder(null, drugIds, null);
+		Assert.assertEquals(1, cohort.size());
+		Assert.assertTrue(cohort.contains(2));
+	}
+
 	/**
 	 * @see {@link PatientSetService#getPatientsByProgramAndState(org.openmrs.Program, List, Date, Date)
 	 */
@@ -236,7 +274,51 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, cohort.size());
 		Assert.assertTrue(cohort.contains(2));
 	}
-	
+
+	/**
+	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, GroupMethod, Date, Date)
+	 */
+	@Test
+	@Verifies(value = "should get all patients do not contain any drug in the drug list", method = "getPatientsHavingDrugOrder(Collection<QInteger;>,Collection<QInteger;>,GroupMethod,Date,Date)")
+	public void getPatientsHavingDrugOrder_shouldGetAllPatientsDoNotContainAnyDrugInTheDrugList() throws Exception {
+		List<Integer> drugIds = new ArrayList<Integer>();
+		drugIds.add(2);
+		Cohort cohort = service.getPatientsHavingDrugOrder(null, drugIds, GroupMethod.NONE, null, null);
+		Assert.assertEquals(3, cohort.size());
+		Assert.assertTrue(cohort.contains(6));
+		Assert.assertTrue(cohort.contains(7));
+		Assert.assertTrue(cohort.contains(8));
+	}
+
+	/**
+	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, GroupMethod, Date, Date)
+	 */
+	@Test
+	@Verifies(value = "should get all patients contain all drugs in the drug list", method = "getPatientsHavingDrugOrder(Collection<QInteger;>,Collection<QInteger;>,GroupMethod,Date,Date)")
+	public void getPatientsHavingDrugOrder_shouldGetAllPatientsContainAllDrugsInTheDrugList() throws Exception {
+		List<Integer> drugIds = new ArrayList<Integer>();
+		drugIds.add(2);
+		drugIds.add(3);
+		Cohort cohort = service.getPatientsHavingDrugOrder(null, drugIds, GroupMethod.ALL, null, null);
+		Assert.assertEquals(1, cohort.size());
+		Assert.assertTrue(cohort.contains(2));
+	}
+
+	/**
+	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, GroupMethod, Date, Date)
+	 */
+	@Test
+	@Verifies(value = "should get all patients does contain any drug in the drug list", method = "getPatientsHavingDrugOrder(Collection<QInteger;>,Collection<QInteger;>,GroupMethod,Date,Date)")
+	public void getPatientsHavingDrugOrder_shouldGetAllPatientsContainAnyDrugInTheDrugList() throws Exception {
+		List<Integer> drugIds = new ArrayList<Integer>();
+		drugIds.add(2);
+		drugIds.add(3);
+		Cohort cohort = service.getPatientsHavingDrugOrder(null, drugIds, GroupMethod.ANY, null, null);
+		Assert.assertEquals(2, cohort.size());
+		Assert.assertTrue(cohort.contains(2));
+		Assert.assertTrue(cohort.contains(7));
+	}
+
 	/**
 	 * @see {@link PatientSetService#getPatientsHavingObs(Integer,TimeModifier,Modifier,Object,Date,Date)}
 	 *      test = should get patients by concept and false boolean value
