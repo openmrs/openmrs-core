@@ -87,6 +87,10 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 		return getPatientSetDAO().getAllPatients();
 	}
 	
+	/**
+	 * @see org.openmrs.api.PatientSetService#getInverseOfCohort(Cohort)
+	 * @return inverse of the given cohort
+	 */
 	@Override
 	public Cohort getInverseOfCohort(Cohort cohort) {
 		// TODO see if this can be sped up by delegating to the database
@@ -123,7 +127,7 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	}
 	
 	/**
-	 * @see org.openmrs.api.PatientSetService#getPatientsHavingNumericObs(Integer, org.openmrs.api.PatientSetService.TimeModifier, org.openmrs.api.PatientSetService.Modifier, java.lang.Number, java.util.Date, java.util.Date)
+	 * @see org.openmrs.api.PatientSetService#getPatientsHavingNumericObs(java.lang.Integer, org.openmrs.api.PatientSetService.TimeModifier, org.openmrs.api.PatientSetService.Modifier, java.lang.Number, java.util.Date, java.util.Date)
 	 * @return cohort of patients that have the observations with numeric id and date range
 	 * @should return cohort that contains patients with given conceptId, numeric value of obs and date range
 	 */
@@ -163,26 +167,56 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 		return getPatientSetDAO().getPatientsInProgram(program.getProgramId(), fromDate, toDate);
 	}
 	
+	/**
+	 * @see org.openmrs.api.PatientSetService#getPatientsHavingTextObs(org.openmrs.Concept, java.lang.String, org.openmrs.api.PatientSetService.TimeModifier)
+	 * @return cohort of patients that have the observations with given text value
+	 * @should get the patients with observations with given concept and text value
+	 */
 	public Cohort getPatientsHavingTextObs(Concept concept, String value, TimeModifier timeModifier) {
 		return getPatientsHavingTextObs(concept.getConceptId(), value, timeModifier);
 	}
 	
+	/**
+	 * @see org.openmrs.api.PatientSetService#getPatientsHavingTextObs(java.lang.Integer, java.lang.String, org.openmrs.api.PatientSetService.TimeModifier)
+	 * @return cohort of patients that have the observations with given text value
+	 * @should get the patients with observations with given conceptId and text value
+	 */
 	public Cohort getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier) {
 		return getPatientSetDAO().getPatientsHavingTextObs(conceptId, value, timeModifier);
 	}
 	
+	/**
+	 * @see org.openmrs.api.PatientSetService#getPatientsHavingLocation(Location)
+	 * @return cohort of patients having location with given location
+	 * @should get the patients having location with given location
+	 */
 	public Cohort getPatientsHavingLocation(Location loc) {
 		return getPatientsHavingLocation(loc.getLocationId(), PatientLocationMethod.PATIENT_HEALTH_CENTER);
 	}
 	
+	/**
+	 * @see org.openmrs.api.PatientSetService#getPatientsHavingLocation(Location, org.openmrs.api.PatientSetService.PatientLocationMethod)
+	 * @return cohort of patients having location with given location and patient location method
+	 * @should get the patients having location with given location and patient location method
+	 */
 	public Cohort getPatientsHavingLocation(Location loc, PatientLocationMethod method) {
 		return getPatientsHavingLocation(loc.getLocationId(), method);
 	}
 	
+	/**
+	 * @see org.openmrs.api.PatientSetService#getPatientsHavingLocation(Integer)
+	 * @return cohort of patients having location with given locationId
+	 * @should get the patients having location with given locationId
+	 */
 	public Cohort getPatientsHavingLocation(Integer locationId) {
 		return getPatientsHavingLocation(locationId, PatientLocationMethod.PATIENT_HEALTH_CENTER);
 	}
 	
+	/**
+	 * @see org.openmrs.api.PatientSetService#getPatientsHavingLocation(Integer, org.openmrs.api.PatientSetService.PatientLocationMethod)
+	 * @return cohort of patients having location with given locationId and patient location method
+	 * @should get the patients having location with given locationId and patient location method
+	 */
 	public Cohort getPatientsHavingLocation(Integer locationId, PatientLocationMethod method) {
 		return getPatientSetDAO().getPatientsHavingLocation(locationId, method);
 	}
@@ -348,6 +382,11 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 		return getPatientSetDAO().getObservationsValues(patients, c, attributes, limit, showMostRecentFirst);
 	}
 	
+	/**
+	 * @see org.openmrs.api.PatientSetService#getEncountersByType(Cohort, EncounterType)
+	 * @return the encounters of given patients and encounter type
+	 * @should get the encounters of given patients and encounter type
+	 */
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, EncounterType encType) {
 		List<EncounterType> types = new Vector<EncounterType>();
 		if (encType != null) {
@@ -368,10 +407,20 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 		return getPatientSetDAO().getEncountersByType(patients, types);
 	}
 	
+	/**
+	 * @see org.openmrs.api.PatientSetService#getEncounters(Cohort)
+	 * @return the encounters of given patients
+	 * @should get the encounters of given patients
+	 */
 	public Map<Integer, Encounter> getEncounters(Cohort patients) {
 		return getPatientSetDAO().getEncounters(patients);
 	}
 	
+	/**
+	 * @see org.openmrs.api.PatientSetService#getFirstEncountersByType(Cohort, EncounterType)
+	 * @return the first encounter of given patients and encounter type
+	 * @should get the first encounter of given patients and encounter type
+	 */
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, EncounterType encType) {
 		List<EncounterType> types = new Vector<EncounterType>();
 		if (encType != null) {

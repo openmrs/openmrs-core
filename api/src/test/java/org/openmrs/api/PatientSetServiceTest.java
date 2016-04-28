@@ -30,6 +30,7 @@ import org.mockito.Mockito;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
@@ -45,6 +46,7 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.PatientSetService.GroupMethod;
 import org.openmrs.api.PatientSetService.Modifier;
+import org.openmrs.api.PatientSetService.PatientLocationMethod;
 import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -584,4 +586,201 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	    Cohort cohort = service.getPatientsInProgram(new Program(2), ymd.parse("2007-12-31"), ymd.parse("2009-01-01"));
 	    assertEquals(2,cohort.size());
 	}
+	
+	/**
+	 * @see PatientSetService#getPatientsHavingTextObs(Concept, String, TimeModifier)
+	 * 		test = should get the patients with observations with given concept and text value 
+	 */
+	@Test
+	@Verifies(value = "should get the patients with observations with given concept and text value", method = "getPatientsHavingTextObs(Concept, String, TimeModifier)")
+	public void getPatientsHavingTextObs_shouldGetPatientsObsWithConceptAndTextValue() throws Exception {
+		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
+	    Concept testConcept = Context.getConceptService().getConcept(18);
+	    Obs obs1 = new Obs();
+	    obs1.setPerson(new Person(8));
+	    obs1.setConcept(testConcept);
+	    obs1.setObsDatetime(ymd.parse("2007-01-01"));
+	    obs1.setValueBoolean(true);
+	    obs1.setValueDatetime(ymd.parse("2007-01-01"));
+	    obs1.setValueText("test");
+	    Context.getObsService().saveObs(obs1, null);
+	    Cohort cohort = service.getPatientsHavingTextObs(testConcept, "test", TimeModifier.ANY);
+	    assertEquals(1,cohort.size());
+	    assertTrue(cohort.contains(8));
+	}
+	
+	/**
+	 * @see PatientSetService#getPatientsHavingTextObs(Integer, String, TimeModifier)
+	 * 		test = should get the patients with observations with given conceptId and text value 
+	 */
+	@Test
+	@Verifies(value = "should get the patients with observations with given conceptId and text value", method = "getPatientsHavingTextObs(Integer, String, TimeModifier)")
+	public void getPatientsHavingTextObs_shouldGetPatientsObsWithConceptIdAndTextValue() throws Exception {
+		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
+	    Concept testConcept = Context.getConceptService().getConcept(18);
+	    Obs obs1 = new Obs();
+	    obs1.setPerson(new Person(8));
+	    obs1.setConcept(testConcept);
+	    obs1.setObsDatetime(ymd.parse("2007-01-01"));
+	    obs1.setValueBoolean(true);
+	    obs1.setValueDatetime(ymd.parse("2007-01-01"));
+	    obs1.setValueText("test");
+	    Context.getObsService().saveObs(obs1, null);
+	    Cohort cohort = service.getPatientsHavingTextObs(18, "test", TimeModifier.ANY);
+	    assertEquals(1,cohort.size());
+	    assertTrue(cohort.contains(8));
+	}
+
+	/**
+	 * @see PatientSetService#getPatientsHavingLocation(Integer, PatientLocationMethod)
+	 * 		test = should get the patients having location with given locationId and patient location method
+	 */
+	@Test
+	@Verifies(value = "should get the patients having location with given locationId and patient location method", method = "getPatientsHavingLocation(Integer, PatientLocationMethod)")
+	public void getPatientsHavingLocation_shouldGetPatientsWithLocationIdAndPatientLocationMethod() throws Exception {
+		Cohort cohort = service.getPatientsHavingLocation(2,PatientLocationMethod.ANY_ENCOUNTER);
+		assertEquals(2,cohort.size());
+	}
+	
+	/**
+	 * @see PatientSetService#getPatientsHavingLocation(Integer, PatientLocationMethod)
+	 * 		test = should get the patients having location with given location and patient location method
+	 */
+	@Test
+	@Verifies(value = "should get the patients having location with given location and patient location method", method = "getPatientsHavingLocation(Location, PatientLocationMethod)")
+	public void getPatientsHavingLocation_shouldGetPatientsWithLocationAndPatientLocationMethod() throws Exception {
+		Location loc = Mockito.mock(Location.class);
+		Mockito.when(loc.getLocationId()).thenReturn(2);
+		Cohort cohort = service.getPatientsHavingLocation(loc,PatientLocationMethod.ANY_ENCOUNTER);
+		assertEquals(2,cohort.size());
+	}
+	
+	/**
+	 * @see PatientSetService#getPatientsHavingLocation(Location)
+	 *      test = should get empty cohort of patients having the given location
+	 */
+	@Test
+	@Verifies(value = "should get no patients having given location", method = "getPatientsHavingLocation(Location)")
+	public void getPatientsHavingLocation_shouldGetNoPatientsWithLocation() throws Exception {
+		Location loc = Mockito.mock(Location.class);
+		Mockito.when(loc.getLocationId()).thenReturn(1);
+		Cohort cohort = service.getPatientsHavingLocation(loc);
+		assertEquals(0,cohort.size());
+	}
+	
+	/**
+	 * @see PatientSetService#getPatientsHavingLocation(Integer)
+	 *      test = should get empty cohort of patients having the given locationId
+	 */
+	@Test
+	@Verifies(value = "should get no patients having given locationId", method = "getPatientsHavingLocation(Integer)")
+	public void getPatientsHavingLocation_shouldGetNoPatientsWithLocationId() throws Exception {
+		Cohort cohort = service.getPatientsHavingLocation(2);
+		assertEquals(0,cohort.size());
+	}
+	
+	/**
+	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, Date)
+	 */
+	@Test
+	@Verifies(value = "should get patients taking any drugs now", method = "getPatientsHavingDrugOrder(Collection, Collection, Date)")
+	public void getPatientsHavingDrugOrder_shouldGetPatientsTakingAnyDrugNow() throws Exception {
+		HashSet<Integer> patientIds = new HashSet<Integer>();
+		patientIds.add(2);
+		patientIds.add(7);
+		HashSet<Integer> takingIds = new HashSet<Integer>();
+		Cohort cohort = service.getPatientsHavingDrugOrder(patientIds, takingIds, null);
+		assertEquals(2,cohort.size());
+	}
+	
+	/**
+	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, Date)
+	 */
+	@Test
+	@Verifies(value = "should get patients taking given drugs now", method = "getPatientsHavingDrugOrder(Collection, Collection, Date)")
+	public void getPatientsHavingDrugOrder_shouldGetPatientsTakingGivenDrugNow() throws Exception {
+		HashSet<Integer> patientIds = new HashSet<Integer>();
+		patientIds.add(2);
+		patientIds.add(7);
+		HashSet<Integer> takingIds = new HashSet<Integer>();
+		//only patient 2 is taking drug 2
+		takingIds.add(2);
+		Cohort cohort = service.getPatientsHavingDrugOrder(patientIds, takingIds, null);
+		assertEquals(1,cohort.size());
+		assertTrue(cohort.contains(2));
+	}
+	
+	/**
+	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, Date)
+	 */
+	@Test
+	@Verifies(value = "should get patients taking no drugs now", method = "getPatientsHavingDrugOrder(Collection, Collection, Date)")
+	public void getPatientsHavingDrugOrder_shouldGetPatientsTakingNoDrugNow() throws Exception {
+		HashSet<Integer> patientIds = new HashSet<Integer>();
+		patientIds.add(2);
+		patientIds.add(7);
+		//patient 6 is not taking any drug now
+		patientIds.add(6);
+		Cohort cohort = service.getPatientsHavingDrugOrder(patientIds, null, null);
+		assertEquals(1,cohort.size());
+		assertTrue(cohort.contains(6));
+	}
+	
+	/**
+	 * @see PatientSetService#getInverseOfCohort(Cohort)
+	 */
+	@Test
+	@Verifies(value = "should get the patients having location with given locationId and patient location method", method = "getPatientsHavingLocation(Integer, PatientLocationMethod)")
+	public void getInverseOfCohort_shouldGetEmptyCohortWithInverseOfAllPatients() throws Exception {
+		Cohort cohort = service.getAllPatients();
+		assertEquals(4,cohort.size());
+		Cohort inverse = service.getInverseOfCohort(cohort);
+		assertEquals(0, inverse.size());
+	}
+	
+	/**
+	 * @see PatientSetService#getEncounters(Cohort)
+	 */
+	@Test
+	@Verifies(value = "should get the encounters of given patients", method = "getEncounters(Cohort)")
+	public void getEncounters_shouldGetEncountersOfGivenPatients(){
+		Cohort cohort = service.getAllPatients();
+		Map<Integer, Encounter> result = service.getEncounters(cohort);
+		assertEquals(2, result.size());
+		assertTrue(result.containsKey(2));
+		assertTrue(result.containsKey(7));
+		assertEquals(1, result.get(7).getAllObs().size());
+	}
+	
+	/**
+	 * @see PatientSetService#getEncountersByType(Cohort, EncounterType)
+	 */
+	@Test
+	@Verifies(value = "should get the encounters of given patients and encounter type", method = "getEncountersByType(Cohort, EncounterType)")
+	public void getEncountersByType_shouldGetEncountersOfGivenPatientsAndEncounterType(){
+		Cohort cohort = service.getAllPatients();
+		Map<Integer, Encounter> result = service.getEncounters(cohort);
+		EncounterType enc = result.get(2).getEncounterType();
+		Map<Integer, Encounter> encounters = service.getEncountersByType(cohort, enc);
+		assertEquals(2, encounters.size());
+		assertTrue(encounters.containsKey(2));
+		assertTrue(encounters.containsKey(7));
+	}
+	
+	/**
+	 * @see PatientSetService#getFirstEncountersByType(Cohort, EncounterType)
+	 */
+	@Test
+	@Verifies(value = "should get the first encounters of given patients and encounter type", method = "getFirstEncountersByType(Cohort, EncounterType)")
+	public void getEncountersByType_shouldGetFirstEncountersOfGivenPatientsAndEncounterType(){
+		Cohort cohort = service.getAllPatients();
+		Map<Integer, Encounter> result = service.getEncounters(cohort);
+		EncounterType enc = result.get(2).getEncounterType();
+		Map<Integer, Encounter> encounters = service.getFirstEncountersByType(cohort, enc);
+		assertEquals(2, encounters.size());
+		assertTrue(encounters.containsKey(2));
+		assertTrue(encounters.containsKey(7));
+	}
+	
+
 }
