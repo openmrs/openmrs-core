@@ -63,6 +63,7 @@ public class ConceptDrugFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
+	 * @should not fail with empty request
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
@@ -88,7 +89,7 @@ public class ConceptDrugFormController extends SimpleFormController {
 			else if (request.getParameter("unretireDrug") != null) {
 				conceptService.unretireDrug(drug);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.unretiredSuccessfully");
-			} else {
+			} else if (request.getParameter("conceptId") != null) {
 				drug.setConcept(conceptService.getConcept(Integer.valueOf(request.getParameter("conceptId"))));
 				conceptService.saveDrug(drug);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.saved");
