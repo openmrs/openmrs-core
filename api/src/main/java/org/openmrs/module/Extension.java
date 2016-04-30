@@ -186,4 +186,25 @@ public abstract class Extension {
 			return pointId;
 		}
 	}
+
+	/**
+	 * Extensions are equal if their pointId and moduleId is the same.
+	 * @param other
+	 * @return true if two extensions are equal
+	 */
+	@Override
+	public boolean equals(Object other) {
+
+		if (other == this) {
+			return true;
+		}
+
+		if (!(other instanceof Extension)) {
+			return false;
+		}
+
+		Extension otherExt = (Extension) other;
+		return this.pointId == otherExt.pointId &&
+			   this.moduleId == otherExt.moduleId;
+	}
 }
