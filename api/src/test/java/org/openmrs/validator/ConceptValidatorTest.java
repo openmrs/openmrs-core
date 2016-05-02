@@ -30,6 +30,33 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.junit.rules.ExpectedException;
+import org.junit.Rule;
+
+
+// class MatchesPattern extends TypeSafeMatcher<String> {
+//     private String pattern;
+//
+//     public MatchesPattern(String pattern) {
+//         this.pattern = pattern;
+//     }
+//
+//     @Override
+//     protected boolean matchesSafely(String item) {
+//         return item.matches(pattern);
+//     }
+//
+//     @Override
+//     public void describeTo(Description description) {
+//         description.appendText("matches pattern ")
+//             .appendValue(pattern);
+//     }
+//
+//     @Override
+//     protected void describeMismatchSafely(String item, Description mismatchDescription) {
+//         mismatchDescription.appendText("does not match");
+//     }
+// }
 
 /**
  * Tests methods on the {@link ConceptValidator} class.
@@ -40,6 +67,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @verifies {@link ConceptValidator#validate(Object,Errors)} test = should fail if there is a
 	 *           duplicate unretired concept name in the locale
 	 */
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 
 	@Test
 	@Verifies(value = "should fail if there is a duplicate unretired concept name in the locale", method = "validate(Concept)")
@@ -53,13 +82,16 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		newName.setCreator(Context.getAuthenticatedUser());
 		concept.addName(newName);
 		Errors errors = new BindException(concept, "concept");
-		
-		try {
-			new ConceptValidator().validate(concept, errors);
-		}
-		catch (DuplicateConceptNameException e) {
-			Assert.assertEquals("'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "' for the same concept", e.getMessage());
-		}
+
+		expectedException.expect(DuplicateConceptNameException.class);
+		expectedException.expectMessage("'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "' for the same concept");
+		new ConceptValidator().validate(concept, errors);
+		// try {
+		// 	new ConceptValidator().validate(concept, errors);
+		// }
+		// catch (DuplicateConceptNameException e) {
+		// 	Assert.assertEquals("'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "' for the same concept", e.getMessage());
+		// }
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -109,7 +141,6 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		concept.addDescription(new ConceptDescription("some description",null));
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
-		//Assert.assertEquals(true, errors.hasErrors());
 		Assert.assertEquals("Concept.name.empty", errors.getGlobalError().getCode());
 	}
 
@@ -127,12 +158,9 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		concept.addDescription(new ConceptDescription("some description",null));
 		Errors errors = new BindException(concept, "concept");
 
-		try {
-			new ConceptValidator().validate(concept, errors);
-		}
-		catch (DuplicateConceptNameException e) {
-			Assert.assertEquals("'same name' is a duplicate name in locale '" + Context.getLocale() + "' for the same concept", e.getMessage());
-		}
+		expectedException.expect(DuplicateConceptNameException.class);
+		expectedException.expectMessage("'same name' is a duplicate name in locale '" + Context.getLocale() + "' for the same concept");
+		new ConceptValidator().validate(concept, errors);
 	}
 
 	/**
@@ -152,12 +180,9 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName);
 		Errors errors = new BindException(anotherConcept, "concept");
 
-		try {
-			new ConceptValidator().validate(concept, errors);
-		}
-		catch (DuplicateConceptNameException e) {
-			Assert.assertEquals(e.getMessage(), "'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "'");
-		}
+		expectedException.expect(DuplicateConceptNameException.class);
+		expectedException.expectMessage("'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "'");
+		new ConceptValidator().validate(concept, errors);
 	}
 
 	/**
@@ -180,12 +205,9 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 
 		Errors errors = new BindException(anotherConcept, "concept");
 
-		try {
-			new ConceptValidator().validate(concept, errors);
-		}
-		catch (DuplicateConceptNameException e) {
-			Assert.assertEquals("'" + preferredName + "' is a duplicate name in locale '" + Context.getLocale() + "'", e.getMessage());
-		}
+		expectedException.expect(DuplicateConceptNameException.class);
+		expectedException.expectMessage("'preferred name' is a duplicate name in locale '" + Context.getLocale() + "'");
+		new ConceptValidator().validate(concept, errors);
 	}
 
 	/**
@@ -364,12 +386,9 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		anotherConcept.getFullySpecifiedName(en).setName(duplicateName);
 		Errors errors = new BindException(anotherConcept, "concept");
 
-		try {
-			new ConceptValidator().validate(concept, errors);
-		}
-		catch (DuplicateConceptNameException e) {
-			Assert.assertEquals("'" + duplicateName + "' is a duplicate name in locale '" + en + "'", e.getMessage());
-		}
+		expectedException.expect(DuplicateConceptNameException.class);
+		expectedException.expectMessage("'" + duplicateName + "' is a duplicate name in locale '" + en + "'");
+		new ConceptValidator().validate(concept, errors);
 	}
 
 	/**
