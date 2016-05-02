@@ -33,31 +33,6 @@ import org.springframework.validation.Errors;
 import org.junit.rules.ExpectedException;
 import org.junit.Rule;
 
-
-// class MatchesPattern extends TypeSafeMatcher<String> {
-//     private String pattern;
-//
-//     public MatchesPattern(String pattern) {
-//         this.pattern = pattern;
-//     }
-//
-//     @Override
-//     protected boolean matchesSafely(String item) {
-//         return item.matches(pattern);
-//     }
-//
-//     @Override
-//     public void describeTo(Description description) {
-//         description.appendText("matches pattern ")
-//             .appendValue(pattern);
-//     }
-//
-//     @Override
-//     protected void describeMismatchSafely(String item, Description mismatchDescription) {
-//         mismatchDescription.appendText("does not match");
-//     }
-// }
-
 /**
  * Tests methods on the {@link ConceptValidator} class.
  */
@@ -86,12 +61,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		expectedException.expect(DuplicateConceptNameException.class);
 		expectedException.expectMessage("'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "' for the same concept");
 		new ConceptValidator().validate(concept, errors);
-		// try {
-		// 	new ConceptValidator().validate(concept, errors);
-		// }
-		// catch (DuplicateConceptNameException e) {
-		// 	Assert.assertEquals("'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "' for the same concept", e.getMessage());
-		// }
+
 	}
 
 	@Test(expected = IllegalArgumentException.class)
