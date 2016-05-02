@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openmrs.api.APIException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -308,6 +309,22 @@ public class PersonTest extends BaseContextSensitiveTest {
 		assertEquals(p.getBirthdate(), df.parse("2008-01-01"));
 	}
 	
+	/**
+	 * Test that one cannot set the deathdate before the birthdate
+	 *
+	 * @throws Exception
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should throw APIException if deathdate set before birthdate", method = "setDeathDate(Date)")
+	public void shouldNotSetDeathBeforeBirth() throws Exception {
+
+		Person p = new Person();
+		Date birthdate = new Date(2000, 10, 26);
+		p.setBirthdate(birthdate);
+		Date deathdate = new Date(1998, 10, 26);
+		p.setDeathDate(deathdate);
+	}
+
 	/**
 	 * @see Person#getAge(Date)
 	 */
