@@ -21,10 +21,10 @@ import org.springframework.validation.Errors;
  * Tests methods on the {@link PatientIdentifierTypeValidator} class.
  */
 public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see PatientIdentifierTypeValidator#validate(Object,Errors)
-	 * 
+	 *
 	 */
 	@Test
 	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -32,25 +32,28 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		PatientIdentifierType type = new PatientIdentifierType();
 		type.setName(null);
 		type.setDescription("some text");
-		
+
 		Errors errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		Assert.assertTrue(errors.hasFieldErrors("name"));
-		
+		Assert.assertEquals("error.name", errors.getFieldError("name").getCode());
+
 		type.setName("");
 		errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		Assert.assertTrue(errors.hasFieldErrors("name"));
-		
+		Assert.assertEquals("error.name", errors.getFieldError("name").getCode());
+
 		type.setName(" ");
 		errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertEquals("error.name", errors.getFieldError("name").getCode());
 	}
-	
+
 	/**
 	 * @see PatientIdentifierTypeValidator#validate(Object,Errors)
-	 * 
+	 *
 	 */
 	@Test
 	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -58,25 +61,25 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		PatientIdentifierType type = new PatientIdentifierType();
 		type.setName("name");
 		type.setDescription(null);
-		
+
 		Errors errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		Assert.assertFalse(errors.hasFieldErrors("description"));
-		
+
 		type.setDescription("");
 		errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		Assert.assertFalse(errors.hasFieldErrors("description"));
-		
+
 		type.setDescription(" ");
 		errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		Assert.assertFalse(errors.hasFieldErrors("description"));
 	}
-	
+
 	/**
 	 * @see PatientIdentifierTypeValidator#validate(Object,Errors)
-	 * 
+	 *
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
@@ -84,13 +87,13 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		PatientIdentifierType type = new PatientIdentifierType();
 		type.setName("restraining");
 		type.setDescription(":(");
-		
+
 		Errors errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
-		
+
 		Assert.assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see	PatientIdentifierTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -102,13 +105,13 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		type.setDescription("helps");
 		String valid50charInput = "12345678901234567890123456789012345678901234567890";
 		type.setFormat(valid50charInput);
-		
+
 		Errors errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
-		
+
 		Assert.assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see	PatientIdentifierTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -120,14 +123,14 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		type.setDescription("helps");
 		String invalid255charInput = "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456";
 		type.setFormat(invalid255charInput);
-		
+
 		Errors errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
-		
+
 		Assert.assertTrue(errors.hasErrors());
 		Assert.assertEquals(1, errors.getFieldErrorCount("format"));
 	}
-	
+
 	/**
 	 * @see	PatientIdentifierTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -139,14 +142,14 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		type.setName(invalid51charInput);
 		type.setDescription("helps");
 		type.setFormat("format");
-		
+
 		Errors errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
-		
+
 		Assert.assertTrue(errors.hasErrors());
 		Assert.assertEquals(1, errors.getFieldErrorCount("name"));
 	}
-	
+
 	/**
 	 * @see org.openmrs.validator.PatientIdentifierTypeValidator#validate(Object,Errors)
 	 */
@@ -158,13 +161,14 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		type.setDescription("helps");
 		String valid50charInput = "12345678901234567890123456789012345678901234567890";
 		type.setFormat(valid50charInput);
-		
+
 		Errors errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
-		
+
 		Assert.assertTrue(errors.hasErrors());
+		Assert.assertEquals("identifierType.duplicate.name", errors.getFieldError("name").getCode());
 	}
-	
+
 	/**
 	 * @see PatientIdentifierTypeValidator#validate(Object,Errors)
 	 *
@@ -178,13 +182,13 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		type.setFormatDescription("formatDescription");
 		type.setValidator("validator");
 		type.setRetireReason("retireReason");
-		
+
 		Errors errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
-		
+
 		Assert.assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see PatientIdentifierTypeValidator#validate(Object,Errors)
 	 *
@@ -203,14 +207,19 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		        .setValidator("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		type
 		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		
+
 		Errors errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
-		
+
 		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertEquals(1, errors.getFieldErrorCount("name"));
 		Assert.assertTrue(errors.hasFieldErrors("format"));
+		Assert.assertEquals(1, errors.getFieldErrorCount("format"));
 		Assert.assertTrue(errors.hasFieldErrors("formatDescription"));
+		Assert.assertEquals(1, errors.getFieldErrorCount("formatDescription"));
 		Assert.assertTrue(errors.hasFieldErrors("validator"));
+		Assert.assertEquals(1, errors.getFieldErrorCount("validator"));
 		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		Assert.assertEquals(1, errors.getFieldErrorCount("retireReason"));
 	}
 }
