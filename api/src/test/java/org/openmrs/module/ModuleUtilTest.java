@@ -18,9 +18,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.jar.JarFile;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Assert;
@@ -596,5 +599,36 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(moduleJarFile);
 		InputStream resultStream = ModuleUtil.getResourceFromApi(moduleJarFile, moduleId, version, resource);
 		Assert.assertNull(resultStream);
+	}
+
+	/**
+	 * @see ModuleUtil#expandJar(File,File,String,boolean)
+	 */
+	@Test
+	@Verifies(value = "expand entire jar if name is null", method = "expandJar(File,File,String,boolean)")
+	public void expandJar_shouldExpandEntireJarIfNameIsNull() throws IOException {
+		File f = new File(this.getClass().getResource("/org/openmrs/module/include/test1-1.0-SNAPSHOT.omod").getFile());
+		String destination = "/tmp/foo";
+		File d = new File(destination);
+		ModuleUtil.expandJar(f, d, "", false);
+		Path path = Paths.get(destination);
+		Assert.assertEquals(305, java.util.Arrays.toString(d.listFiles()).length());
+		FileUtils.deleteDirectory(d);
+	}
+
+	/**
+	 * @see ModuleUtil#expandJar(File,File,String,boolean)
+	 */
+	@Test
+	@Verifies(value = "expand name's path or file if name is not null", method = "expandJar(File,File,String,boolean)")
+	public void expandJar_shouldExpandNamesPathOrFileIfNameIsNotNull() throws IOException {
+		File f = new File(this.getClass().getResource("/org/openmrs/module/include/test1-1.0-SNAPSHOT.omod").getFile());
+		String destination = "/tmp/fooName";
+		File d = new File(destination);
+		ModuleUtil.expandJar(f, d, "web", false);
+		File fileNotExist = new File("/tmp/fooName/lib");
+		Assert.assertTrue(!fileNotExist.exists());
+		Path path = Paths.get(destination);
+		FileUtils.deleteDirectory(d);
 	}
 }
