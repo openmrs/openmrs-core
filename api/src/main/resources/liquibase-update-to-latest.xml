@@ -9281,25 +9281,6 @@
 		</addColumn>
 	</changeSet>
 
-
-	<changeSet id="201604030003" author="vishnuraom">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<sqlCheck expectedResult="0">SELECT count(*) FROM drug_order WHERE dosing_type = 'SIMPLE' OR dosing_type = 'FREE_TEXT';</sqlCheck>
-			</not>
-		</preConditions>
-		<comment>Converting values in drug_order.dosing_type column(TRUNK-4845)</comment>
-		<update tableName="drug_order">
-			<column name="dosing_type" value="org.openmrs.SimpleDosingInstructions"/>
-			<where>dosing_type = 'SIMPLE'</where>
-		</update>
-		<update tableName="drug_order">
-			<column name="dosing_type" value="org.openmrs.FreeTextDosingInstructions"/>
-			<where>dosing_type = 'FREE_TEXT'</where>
-		</update>
-	</changeSet>
-
-
 	<changeSet id="201604281645" author="vishnuraom">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -9312,7 +9293,6 @@
 			<where>dosing_type = 'SIMPLE'</where>
 		</update>
 	</changeSet>
-
 
 	<changeSet id="201604281646" author="vishnuraom">
 		<preConditions onFail="MARK_RAN">
