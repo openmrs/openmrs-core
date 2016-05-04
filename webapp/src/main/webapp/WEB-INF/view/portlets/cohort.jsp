@@ -164,7 +164,7 @@
 
 
 		<span id="general_display">
-		<openmrs:message code="general.displayingXtoYofZ" arguments='<span id="cohort_fromNumber"></span>,<span id="cohort_toNumber"></span>,<span id="cohort_ofNumber"></span>' />
+		<openmrs:message code="general.displayingXtoYofZ" arguments='<span id="cohort_fromNumber"></span>,<span id="cohort_toNumber"></span>,<span id="cohort_ofNumber"></span>' htmlEscape="false" />
         </span>
  
        
