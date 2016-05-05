@@ -441,7 +441,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	
 	@Override
 	public String toString() {
-		return username;
+		return StringUtils.isNotBlank(username) ? username : systemId;
 	}
 	
 	/**
