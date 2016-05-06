@@ -237,6 +237,7 @@
 			<param name="class" value="org.openmrs.web.dwr.DWRProviderService" />
 			<include method="findProviderCountAndProvider"/>
 			<include method="findProvider"/>
+			<include method="getProvider"/>
 		</create>
 				
 	</allow>
