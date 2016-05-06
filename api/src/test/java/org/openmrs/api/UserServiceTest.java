@@ -163,8 +163,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertEquals(11, allUsers.size());
 		
 		// there should still only be the one patient we created in the xml file
-		Cohort allPatientsSet = Context.getPatientSetService().getAllPatients();
-		assertEquals(1, allPatientsSet.getSize());
+		List<Patient> allPatientsSet = Context.getPatientService().getAllPatients();
+		assertEquals(1, allPatientsSet.size());
 	}
 	
 	/**

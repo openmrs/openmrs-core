@@ -98,7 +98,6 @@
         <property name="administrationService"><ref bean="adminService"/></property>
         <property name="datatypeService"><ref bean="datatypeService"/></property>
         <property name="programWorkflowService"><ref bean="programWorkflowService"/></property>
-        <property name="patientSetService"><ref bean="patientSetService"/></property>
         <property name="cohortService"><ref bean="cohortService"/></property>
         <property name="messageService"><ref bean="messageService"/></property>
         <property name="serializationService"><ref bean="serializationService"/></property>        
@@ -162,9 +161,6 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
 	<bean id="templateDAO" class="org.openmrs.api.db.hibernate.HibernateTemplateDAO">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
-	</bean>
-	<bean id="patientSetDAO" class="org.openmrs.api.db.hibernate.HibernatePatientSetDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
 	<bean id="cohortDAO" class="org.openmrs.api.db.hibernate.HibernateCohortDAO">
@@ -274,9 +270,6 @@
 	</bean>
 	<bean id="programWorkflowServiceTarget" class="org.openmrs.api.impl.ProgramWorkflowServiceImpl">
 		<property name="programWorkflowDAO"><ref bean="programWorkflowDAO"/></property>	
-	</bean>
-	<bean id="patientSetServiceTarget" class="org.openmrs.api.impl.PatientSetServiceImpl">
-		<property name="patientSetDAO"><ref bean="patientSetDAO"/></property>	
 	</bean>
 	<bean id="visitServiceTarget" class="org.openmrs.api.impl.VisitServiceImpl">
         <property name="visitDAO"><ref bean="visitDAO"/></property>
@@ -457,14 +450,6 @@
 	<bean id="messageService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="messageServiceTarget"/></property>
-		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
-		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
-	</bean>
-	<bean id="patientSetService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="patientSetServiceTarget"/></property>
 		<property name="preInterceptors">
 			<ref local="serviceInterceptors" />
 		</property>

@@ -28,10 +28,9 @@ import org.aopalliance.aop.Advice;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Allergen;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PersonName;
-import org.openmrs.Privilege;
-import org.openmrs.Allergen;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -48,7 +47,6 @@ import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.OrderSetService;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ProviderService;
@@ -429,13 +427,6 @@ public class Context {
 	 */
 	public static HL7Service getHL7Service() {
 		return getServiceContext().getHL7Service();
-	}
-	
-	/**
-	 * @return patientset-related services
-	 */
-	public static PatientSetService getPatientSetService() {
-		return getServiceContext().getPatientSetService();
 	}
 	
 	/**
