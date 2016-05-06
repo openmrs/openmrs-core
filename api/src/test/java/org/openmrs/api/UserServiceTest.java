@@ -24,14 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.Assert;
-
 import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -45,6 +42,8 @@ import org.openmrs.test.Verifies;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
+
+import junit.framework.Assert;
 
 /**
  * TODO add more tests to cover the methods in <code>UserService</code>
@@ -163,8 +162,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertEquals(11, allUsers.size());
 		
 		// there should still only be the one patient we created in the xml file
-		Cohort allPatientsSet = Context.getPatientSetService().getAllPatients();
-		assertEquals(1, allPatientsSet.getSize());
+		List<Patient> allPatientsSet = Context.getPatientService().getAllPatients();
+		assertEquals(1, allPatientsSet.size());
 	}
 	
 	/**
