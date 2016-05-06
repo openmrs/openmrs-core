@@ -44,8 +44,8 @@
 		<c:if test="${not empty initialValue}">
 			jquerySelectEscaped("${formFieldId}").val("${initialValue}");
 			DWRProviderService.getProvider("${initialValue}", function(provider) {
-				jquerySelectEscaped("${displayNameInputId}").val(provider.name);
-				jquerySelectEscaped("${displayNameInputId}").autocomplete("option", "initialValue", provider.name);
+				jquerySelectEscaped("${displayNameInputId}").val(provider.displayName);
+				jquerySelectEscaped("${displayNameInputId}").autocomplete("option", "initialValue", provider.displayName);
 				<c:if test="${not empty callback}">
 					${callback}("${formFieldName}", provider);
 			</c:if>
