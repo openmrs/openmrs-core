@@ -615,7 +615,7 @@ public class Context {
 		if (Daemon.isDaemonThread()) {
 			return Daemon.getDaemonThreadUser();
 		}
-
+		
 		return getUserContext().getAuthenticatedUser();
 	}
 	

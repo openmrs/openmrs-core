@@ -49,7 +49,7 @@ public class LoginController {
 		} else if (Context.getAuthenticatedUser() != null && failedPrivilegeCheck) { //Else, if there is a currently logged in user and they failed a privilege check, else go to login in page
 			model.addAttribute("foundMissingPrivileges", true);
 			webRequest.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.insufficientPrivileges",
-					WebRequest.SCOPE_SESSION);
+			    WebRequest.SCOPE_SESSION);
 			
 			String deniedPage = null;
 			String requiredPrivileges = null;
@@ -57,7 +57,7 @@ public class LoginController {
 			String refererUrl = null;
 			if (webRequest.getAttribute(WebConstants.DENIED_PAGE, WebRequest.SCOPE_SESSION) != null) {
 				String deniedPageTemp = webRequest.getAttribute(WebConstants.DENIED_PAGE, WebRequest.SCOPE_SESSION)
-						.toString();
+				        .toString();
 				webRequest.removeAttribute(WebConstants.DENIED_PAGE, WebRequest.SCOPE_SESSION);
 				if (StringUtils.isNotBlank(deniedPageTemp)) {
 					deniedPage = deniedPageTemp;
@@ -66,7 +66,7 @@ public class LoginController {
 			}
 			if (webRequest.getAttribute(WebConstants.REQUIRED_PRIVILEGES, WebRequest.SCOPE_SESSION) != null) {
 				String requiredPrivilegesTemp = webRequest.getAttribute(WebConstants.REQUIRED_PRIVILEGES,
-						WebRequest.SCOPE_SESSION).toString();
+				    WebRequest.SCOPE_SESSION).toString();
 				webRequest.removeAttribute(WebConstants.REQUIRED_PRIVILEGES, WebRequest.SCOPE_SESSION);
 				if (StringUtils.isNotBlank(requiredPrivilegesTemp)) {
 					requiredPrivileges = requiredPrivilegesTemp;
@@ -74,7 +74,7 @@ public class LoginController {
 			}
 			if (webRequest.getAttribute(WebConstants.UNCAUGHT_EXCEPTION_MESSAGE, WebRequest.SCOPE_SESSION) != null) {
 				String exceptionMsgTemp = webRequest.getAttribute(WebConstants.UNCAUGHT_EXCEPTION_MESSAGE,
-						WebRequest.SCOPE_SESSION).toString();
+				    WebRequest.SCOPE_SESSION).toString();
 				webRequest.removeAttribute(WebConstants.UNCAUGHT_EXCEPTION_MESSAGE, WebRequest.SCOPE_SESSION);
 				if (StringUtils.isNotBlank(exceptionMsgTemp)) {
 					exceptionMsg = exceptionMsgTemp;
@@ -82,7 +82,7 @@ public class LoginController {
 			}
 			if (webRequest.getAttribute(WebConstants.REFERER_URL, WebRequest.SCOPE_SESSION) != null) {
 				String refererUrlTemp = webRequest.getAttribute(WebConstants.REFERER_URL, WebRequest.SCOPE_SESSION)
-						.toString();
+				        .toString();
 				webRequest.removeAttribute(WebConstants.REFERER_URL, WebRequest.SCOPE_SESSION);
 				if (StringUtils.isNotBlank(refererUrlTemp) && !refererUrlTemp.contains("login.")) {
 					refererUrl = refererUrlTemp;
@@ -92,25 +92,25 @@ public class LoginController {
 			String alertMessage = null;
 			if (requiredPrivileges != null && deniedPage != null) {
 				alertMessage = Context.getMessageSourceService().getMessage("general.alert.requestPrivilegesForPage",
-						new String[] { Context.getAuthenticatedUser().getUsername(), requiredPrivileges, deniedPage }, null);
+				    new String[] { Context.getAuthenticatedUser().getUsername(), requiredPrivileges, deniedPage }, null);
 			} else if (exceptionMsg != null && deniedPage != null) {
 				alertMessage = Context.getMessageSourceService().getMessage("general.alert.privilegesForPageOnException",
-						new String[] { exceptionMsg, Context.getAuthenticatedUser().getUsername(), deniedPage }, null);
+				    new String[] { exceptionMsg, Context.getAuthenticatedUser().getUsername(), deniedPage }, null);
 			} else if (deniedPage != null) {
 				alertMessage = Context.getMessageSourceService().getMessage("general.alert.requestUnKnownPrivilegesForPage",
-						new String[] { Context.getAuthenticatedUser().getUsername(), deniedPage }, null);
+				    new String[] { Context.getAuthenticatedUser().getUsername(), deniedPage }, null);
 			} else if (requiredPrivileges != null) {
 				alertMessage = Context.getMessageSourceService().getMessage("general.alert.requestPrivileges",
-						new String[] { Context.getAuthenticatedUser().getUsername(), requiredPrivileges }, null);
+				    new String[] { Context.getAuthenticatedUser().getUsername(), requiredPrivileges }, null);
 			} else if (exceptionMsg != null) {
 				alertMessage = Context.getMessageSourceService().getMessage("general.alert.requestPrivileges",
-						new String[] { Context.getAuthenticatedUser().getUsername(), exceptionMsg }, null);
+				    new String[] { Context.getAuthenticatedUser().getUsername(), exceptionMsg }, null);
 			}
 			
 			String reason = null;
 			if (requiredPrivileges != null) {
 				reason = Context.getMessageSourceService().getMessage("error.privilegesRequired",
-						new Object[] { requiredPrivileges }, null);
+				    new Object[] { requiredPrivileges }, null);
 			} else if (exceptionMsg != null) {
 				reason = exceptionMsg;
 			} else {

@@ -108,10 +108,9 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 *      java.util.Locale)
 	 */
 	public String getMessage(MessageSourceResolvable resolvable, Locale locale) {
-		if((resolvable.getCodes()[0]).equals((activeMessageSource.getMessage(resolvable, locale)))){
+		if ((resolvable.getCodes()[0]).equals((activeMessageSource.getMessage(resolvable, locale)))) {
 			return (resolvable.getCodes()[(resolvable.getCodes().length) - 1]);
-		}
-		else{
+		} else {
 			return activeMessageSource.getMessage(resolvable, locale);
 		}
 	}

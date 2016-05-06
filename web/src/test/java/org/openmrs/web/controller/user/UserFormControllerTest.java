@@ -43,7 +43,7 @@ public class UserFormControllerTest extends BaseWebContextSensitiveTest {
 		user.addName(new PersonName("This", "is", "Test"));
 		user.getPerson().setGender("F");
 		controller.handleSubmission(request, new MockHttpSession(), new ModelMap(), "Save User", "pass123", "pass123", null,
-				null, null, new String[0], "true", null, user, new BindException(user, "user"));
+		    null, null, new String[0], "true", null, user, new BindException(user, "user"));
 	}
 	
 	/**
@@ -62,8 +62,9 @@ public class UserFormControllerTest extends BaseWebContextSensitiveTest {
 		ModelMap model = new ModelMap();
 		model.addAttribute("isProvider", false);
 		controller.showForm(2, "true", user, model);
-		controller.handleSubmission(request, new MockHttpSession(), new ModelMap(), "", "Test1234", "valid secret question", "valid secret answer", "Test1234",
-				false, new String[] {"Provider"}, "true", "addToProviderTable", user, new BindException(user, "user"));
+		controller.handleSubmission(request, new MockHttpSession(), new ModelMap(), "", "Test1234", "valid secret question",
+		    "valid secret answer", "Test1234", false, new String[] { "Provider" }, "true", "addToProviderTable", user,
+		    new BindException(user, "user"));
 		Assert.assertFalse(Context.getProviderService().getProvidersByPerson(user.getPerson()).isEmpty());
 	}
 	
