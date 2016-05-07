@@ -14,6 +14,8 @@ import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -596,5 +598,39 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(moduleJarFile);
 		InputStream resultStream = ModuleUtil.getResourceFromApi(moduleJarFile, moduleId, version, resource);
 		Assert.assertNull(resultStream);
+	}
+
+	/**
+	* @see ModuleUtil#insertModuleFile(InputStream, String)
+	*/
+	@Test(expected= ModuleException.class)
+	@Verifies(value = "should throw ModuleException if filename is null", method = "insertModuleFile(InputStream, String)")
+	public void insertModuleFile_shouldThrowModuleExceptionIfFilenameIsNull() throws ModuleException {
+		InputStream f = null;
+		String fname = "";
+		File resultFile = ModuleUtil.insertModuleFile(f, fname);
+	}
+
+	/**
+	* @see ModuleUtil#insertModuleFile(InputStream, String)
+	*/
+	@Test(expected= FileNotFoundException.class)
+	@Verifies(value = "should throw FileNotFoundException if inputStream does not exist", method = "insertModuleFile(InputStream, String)")
+	public void insertModuleFile_shouldThrowFileNotFoundExceptionIfInputStreamDoesNotExist() throws FileNotFoundException {
+		InputStream f = new FileInputStream("file.txt");
+		String fname = "foo";
+		File resultFile = ModuleUtil.insertModuleFile(f, fname);
+	}
+
+	/**
+	* @see ModuleUtil#insertModuleFile(InputStream, String)
+	*/
+	@Test(expected= ModuleException.class)
+	@Verifies(value = "should throw ModuleException if inputStream exists but filename is empty", method = "insertModuleFile(InputStream, String)")
+	public void insertModuleFile_shouldThrowModuleExceptionIfInputstreamExistsButFilenameIsEmpty() throws FileNotFoundException {
+		File existingFile = new File(this.getClass().getResource("/org/openmrs/module/include/test1-1.0-SNAPSHOT.omod").getFile());
+		InputStream f = new FileInputStream(existingFile);
+		String fname = "";
+		File resultFile = ModuleUtil.insertModuleFile(f, fname);
 	}
 }
