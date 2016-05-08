@@ -180,6 +180,9 @@ public class ModuleFactory {
 	 * Attempt to load the given files as OpenMRS modules
 	 * 
 	 * @param modulesToLoad the list of files to try and load
+	 * @should not crash when file is not found or broken
+	 * @should setup requirement mappings for every module
+	 * @should not start the loaded modules
 	 */
 	public static void loadModules(List<File> modulesToLoad) {
 		// loop over the modules and load all the modules that we can
@@ -1268,7 +1271,6 @@ public class ModuleFactory {
 	
 	/**
 	 * Removes module from module repository
-	 * 
 	 * @param mod module to unload
 	 */
 	public static void unloadModule(Module mod) {
