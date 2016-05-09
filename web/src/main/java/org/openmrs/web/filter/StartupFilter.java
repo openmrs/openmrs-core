@@ -18,7 +18,6 @@ import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -47,16 +46,17 @@ import org.apache.velocity.tools.config.DefaultKey;
 import org.apache.velocity.tools.config.FactoryConfiguration;
 import org.apache.velocity.tools.config.ToolConfiguration;
 import org.apache.velocity.tools.config.ToolboxConfiguration;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.openmrs.OpenmrsCharacterEscapes;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.WebUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.openmrs.web.filter.util.LocalizationTool;
-import org.springframework.web.util.JavaScriptUtils;
 
 /**
  * Abstract class used when a small wizard is needed before Spring, jsp, etc has been started up.
@@ -221,7 +221,6 @@ public abstract class StartupFilter implements Filter {
 	 * @param templateName the name of the velocity file to render. This name is prepended with
 	 *            {@link #getTemplatePrefix()}
 	 * @param referenceMap
-	 * @param writer
 	 */
 	protected void renderTemplate(String templateName, Map<String, Object> referenceMap, HttpServletResponse httpResponse)
 	        throws IOException {
@@ -317,105 +316,23 @@ public abstract class StartupFilter implements Filter {
 	public abstract boolean skipFilter(HttpServletRequest request);
 	
 	/**
-	 * Convert a map of strings to objects to json
-	 *
-	 * @param map object to convert
-	 * @param escapeJavascript specifies if javascript special characters should be escaped
-	 * @param sb StringBuffer to append to
-	 */
-	private void toJSONString(Map<String, Object> map, StringBuffer sb, boolean escapeJavascript) {
-		boolean first = true;
-		
-		sb.append('{');
-		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(',');
-			}
-			
-			sb.append('"');
-			if (entry.getKey() == null) {
-				sb.append("null");
-			} else {
-				if (escapeJavascript) {
-					sb.append(JavaScriptUtils.javaScriptEscape(entry.getKey()));
-				} else {
-					sb.append(WebUtil.escapeQuotesAndNewlines(entry.getKey()));
-				}
-			}
-			sb.append('"').append(':');
-			
-			sb.append(toJSONString(entry.getValue(), escapeJavascript));
-			
-		}
-		sb.append('}');
-	}
-	
-	/**
-	 * Convert a list of objects to json
-	 *
-	 * @param list object to convert
-	 * @param escapeJavascript specifies if javascript special characters should be escaped
-	 * @param sb StringBuffer to append to
-	 */
-	private void toJSONString(List<Object> list, StringBuffer sb, boolean escapeJavascript) {
-		boolean first = true;
-		
-		sb.append('[');
-		for (Object listItem : list) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(',');
-			}
-			
-			sb.append(toJSONString(listItem, escapeJavascript));
-		}
-		sb.append(']');
-	}
-	
-	/**
-	 * Convert all other objects to json
-	 *
-	 * @param object object to convert
-	 * @param sb StringBuffer to append to
-	 * @param escapeJavascript specifies if javascript special characters should be escaped
-	 */
-	private void toJSONString(Object object, StringBuffer sb, boolean escapeJavascript) {
-		if (object == null) {
-			sb.append("null");
-		} else {
-			if (escapeJavascript) {
-				sb.append('"').append(JavaScriptUtils.javaScriptEscape(object.toString())).append('"');
-			} else {
-				sb.append('"').append(WebUtil.escapeQuotesAndNewlines(object.toString())).append('"');
-			}
-		}
-	}
-	
-	/**
 	 * Convenience method to convert the given object to a JSON string. Supports Maps, Lists,
 	 * Strings, Boolean, Double
 	 *
 	 * @param object object to convert to json
-	 * @param escapeJavascript specifies if javascript special characters should be escaped
+	 * @param escapeJavascript (this argument is no longer in use)
 	 * @return JSON string to be eval'd in javascript
 	 */
 	protected String toJSONString(Object object, boolean escapeJavascript) {
-		StringBuffer sb = new StringBuffer();
-		
-		if (object instanceof Map) {
-			toJSONString((Map<String, Object>) object, sb, escapeJavascript);
-		} else if (object instanceof List) {
-			toJSONString((List) object, sb, escapeJavascript);
-		} else if (object instanceof Boolean) {
-			sb.append(object.toString());
-		} else {
-			toJSONString(object, sb, escapeJavascript);
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.getJsonFactory().setCharacterEscapes(new OpenmrsCharacterEscapes());
+		try {
+			return mapper.writeValueAsString(object);
 		}
-		
-		return sb.toString();
+		catch (IOException e) {
+			log.error("Failed to convert object to JSON");
+			throw new APIException(e);
+		}
 	}
 	
 	/**
