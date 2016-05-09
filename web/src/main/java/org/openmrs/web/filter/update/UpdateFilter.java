@@ -286,7 +286,7 @@ public class UpdateFilter extends StartupFilter {
 				}
 			}
 			
-			String jsonText = toJSONString(result, true);
+			String jsonText = toJSONString(result);
 			httpResponse.getWriter().write(jsonText);
 		}
 	}
