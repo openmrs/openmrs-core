@@ -250,9 +250,9 @@ public class ModuleFactory {
 				
 			}
 			catch (CycleException e) {
-				String message = getCyclicDependenciesMessage();
-				log.error(message);
-				notifySuperUsersAboutCyclicDependencies();
+				String message = getCyclicDependenciesMessage(e.getMessage());
+				log.error(message, e);
+				notifySuperUsersAboutCyclicDependencies(e);
 			}
 			
 		}
@@ -358,10 +358,10 @@ public class ModuleFactory {
 	/**
 	 * Send an Alert to all super users that modules did not start due to cyclic dependencies
 	 */
-	private static void notifySuperUsersAboutCyclicDependencies() {
+	private static void notifySuperUsersAboutCyclicDependencies(Exception ex) {
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
-			Context.getAlertService().notifySuperUsers("Module.error.cyclicDependencies", null);
+			Context.getAlertService().notifySuperUsers("Module.error.cyclicDependencies", ex, ex.getMessage());
 		}
 		catch (Exception e) {
 			log.error("Unable to send an alert to the super users", e);
@@ -891,8 +891,8 @@ public class ModuleFactory {
 	 * 
 	 * @return the message text.
 	 */
-	private static String getCyclicDependenciesMessage() {
-		return Context.getMessageSourceService().getMessage("Module.error.cyclicDependencies", null, Context.getLocale());
+	private static String getCyclicDependenciesMessage(String message) {
+		return Context.getMessageSourceService().getMessage("Module.error.cyclicDependencies", new Object[]{ message }, Context.getLocale());
 	}
 	
 	/**
