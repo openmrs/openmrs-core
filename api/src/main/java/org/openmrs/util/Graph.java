@@ -167,7 +167,7 @@ public class Graph<T> {
 			}
 		}
 		if (!edges.isEmpty()) {
-			throw new CycleException();
+			throw new CycleException(edges.toString());
 		}
 		// The old edges are restored in order to maintain the graph integrity.
 		edges.addAll(initialEdges);
