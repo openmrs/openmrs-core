@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.openmrs.notification">
+
+	<class name="org.openmrs.notification.SentMessage" table="sent_messages">
+		
+		<id name="messageId" type="int" column="message_id" unsaved-value="0">
+			<generator class="native">
+				<param name="sequence">sent_messages_message_id_seq</param>
+			</generator>
+		</id>
+		<discriminator column="message_id" insert="false" />
+		
+		<many-to-one name="sender" column="sender_id" class="org.openmrs.User" not-null="true" />
+		
+		<property name="subject" column="subject" type="java.lang.String" />
+		
+		<property name="content" column="content" type="java.lang.String" />
+		
+		<property name="contentType" column="content_type" type="java.lang.String" />
+			
+		<property name="sentDate" type="java.util.Date" column="sent_date" />
+	</class>
+
+</hibernate-mapping>
