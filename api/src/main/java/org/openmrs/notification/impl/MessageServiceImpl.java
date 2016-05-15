@@ -25,6 +25,7 @@ import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
+import org.openmrs.notification.SentMessage;
 import org.openmrs.notification.Template;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,6 +87,9 @@ public class MessageServiceImpl implements MessageService {
 	public void sendMessage(Message message) throws MessageException {
 		try {
 			messageSender.send(message);
+			User sender = Context.getAuthenticatedUser();
+			SentMessage sm = new SentMessage(message, sender, null);
+			Context.getSentMessageService().saveSentMessage(sm);
 		}
 		catch (Exception e) {
 			log.error("Message could not be sent due to " + e.getMessage(), e);
