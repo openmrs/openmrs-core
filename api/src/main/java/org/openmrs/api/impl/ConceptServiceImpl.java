@@ -1148,14 +1148,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptsByConceptSource(org.openmrs.ConceptSource)
-	 */
-	@Transactional(readOnly = true)
-	public List<ConceptMap> getConceptsByConceptSource(ConceptSource conceptSource) throws APIException {
-		return Context.getConceptService().getConceptMappingsToSource(conceptSource);
-	}
-	
-	/**
 	 * @see org.openmrs.api.ConceptService#getConceptSourceByName(java.lang.String)
 	 */
 	@Transactional(readOnly = true)
