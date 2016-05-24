@@ -17,6 +17,8 @@ import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptAttribute;
+import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
@@ -1738,4 +1740,126 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	public List<ConceptSearchResult> getOrderableConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	        Integer start, Integer length);
+
+	/**
+	 * @return all {@link ConceptAttributeType}s
+	 * @since 2.0
+	 * @should return all concept attribute types including retired ones
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPT_ATTRIBUTE_TYPES)
+	public List<ConceptAttributeType> getAllConceptAttributeTypes();
+
+	/**
+	 * Creates or updates the given concept attribute type in the database
+	 *
+	 * @param conceptAttributeType
+	 * @return the ConceptAttributeType created/saved
+	 * @since 2.0
+	 * @should create a new concept attribute type
+	 * @should edit an existing concept attribute type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_ATTRIBUTE_TYPES)
+	public ConceptAttributeType saveConceptAttributeType(ConceptAttributeType conceptAttributeType);
+
+	/**
+	 * @param id
+	 * @return the {@link ConceptAttributeType} with the given internal id
+	 * @since 2.0
+	 * @should return the concept attribute type with the given id
+	 * @should return null if no concept attribute type exists with the given id
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPT_ATTRIBUTE_TYPES)
+	public ConceptAttributeType getConceptAttributeType(Integer id);
+
+	/**
+	 * @param uuid
+	 * @return the {@link ConceptAttributeType} with the given uuid
+	 * @since 2.0
+	 * @should return the concept attribute type with the given uuid
+	 * @should return null if no concept attribute type exists with the given uuid
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPT_ATTRIBUTE_TYPES)
+	public ConceptAttributeType getConceptAttributeTypeByUuid(String uuid);
+
+
+	/**
+	 * Completely removes a concept attribute type from the database
+	 *
+	 * @param conceptAttributeType
+	 * @since 2.0
+	 * @should completely remove a concept attribute type
+	 */
+	@Authorized(PrivilegeConstants.PURGE_CONCEPT_ATTRIBUTE_TYPES)
+	void purgeConceptAttributeType(ConceptAttributeType conceptAttributeType);
+
+	/**
+	 * Find concept attribute types matching the given parameters. Retired types are included in the
+	 * results
+	 *
+	 * @param name (optional) The name of type
+	 * @return list of ConceptAttributeTypes that matches <em>name</em> partially or completely
+	 * @since 2.0
+	 * @throws APIException
+	 * @should return concept attribute types performing fuzzy match on given name
+	 * @should return empty list when no concept attribute types match given name
+	 */
+	@Authorized( { PrivilegeConstants.GET_CONCEPT_ATTRIBUTE_TYPES })
+	public List<ConceptAttributeType> getConceptAttributeTypes(String name) throws APIException;
+
+	/**
+	 * Retrieves a ConceptAttributeType object based on the name provided
+	 *
+	 * @param exactName
+	 * @return the {@link ConceptAttributeType} with the specified name
+	 * @since 2.0
+	 * @should return the concept attribute type with the exact specified name
+	 * @should return null if no concept attribute type exists with the exact
+	 * specified name
+	 */
+	@Authorized( { PrivilegeConstants.GET_CONCEPT_ATTRIBUTE_TYPES })
+	public ConceptAttributeType getConceptAttributeTypeByName(String exactName);
+
+	/**
+	 * Retire a concept attribute type
+	 *
+	 * @param conceptAttributeType the concept attribute type to be retired
+	 * @param reason for retiring the concept attribute type
+	 * @return the retired concept attribute type
+	 * @since 2.0
+	 * @should retire concept type attribute
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_ATTRIBUTE_TYPES)
+	public ConceptAttributeType retireConceptAttributeType(ConceptAttributeType conceptAttributeType, String reason);
+
+	/**
+	 * Un-Retire a concept attribute type
+	 *
+	 * @param conceptAttributeType the concept type attribute to unretire
+	 * @return the unretire concept attribute type
+	 * @since 2.0
+	 * @should unretire a concept attribute type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_ATTRIBUTE_TYPES)
+	public ConceptAttributeType unretireConceptAttributeType(ConceptAttributeType conceptAttributeType);
+
+	/**
+	 * @param uuid
+	 * @return the {@link ConceptAttribute} with the given uuid
+	 * @since 2.0
+	 * @should get the concept attribute with the given uuid
+	 * @should return null if no concept attribute has the given uuid
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	ConceptAttribute getConceptAttributeByUuid(String uuid);
+
+	/**
+	 * @param conceptAttributeType
+	 * @since 2.0
+	 * Checks if there are any concept attributes (including voided attributes) for a concept attribute type.
+	 *
+	 * @return boolean true if the concept attribute type is used by a concept
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	boolean hasAnyConceptAttribute(ConceptAttributeType conceptAttributeType);
+
 }
