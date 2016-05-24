@@ -15,6 +15,7 @@ import java.util.Date;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptMapType;
@@ -46,6 +47,7 @@ import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.CohortEditor;
 import org.openmrs.propertyeditor.ConceptAnswerEditor;
+import org.openmrs.propertyeditor.ConceptAttributeTypeEditor;
 import org.openmrs.propertyeditor.ConceptClassEditor;
 import org.openmrs.propertyeditor.ConceptDatatypeEditor;
 import org.openmrs.propertyeditor.ConceptEditor;
@@ -127,6 +129,7 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 		wdb.registerCustomEditor(ConceptMapType.class, new ConceptMapTypeEditor());
 		wdb.registerCustomEditor(ConceptSource.class, new ConceptSourceEditor());
 		wdb.registerCustomEditor(ConceptReferenceTerm.class, new ConceptReferenceTermEditor());
+		wdb.registerCustomEditor(ConceptAttributeType.class, new ConceptAttributeTypeEditor());
 		wdb.registerCustomEditor(VisitType.class, new VisitTypeEditor());
 		wdb.registerCustomEditor(Visit.class, new VisitEditor());
 		

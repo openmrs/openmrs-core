@@ -33,6 +33,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptAttribute;
+import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
@@ -62,6 +64,7 @@ import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ValidateUtil;
@@ -112,7 +115,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				map.setConceptMapType(defaultConceptMapType);
 			}
 		}
-		
+
+		CustomDatatypeUtil.saveAttributesIfNecessary(concept);
+
 		// make sure the administrator hasn't turned off concept editing
 		checkIfLocked();
 		checkIfDatatypeCanBeChanged(concept);
@@ -1780,7 +1785,102 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		return dao.getConcepts(phrase, locales, false, mappedClasses, (List) Collections.emptyList(), (List) Collections
 		        .emptyList(), (List) Collections.emptyList(), null, start, length);
 	}
-	
+
+	/**
+	 * @see ConceptService#getAllConceptAttributeTypes()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<ConceptAttributeType> getAllConceptAttributeTypes() {
+		return dao.getAllConceptAttributeTypes();
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#saveConceptAttributeType(ConceptAttributeType)
+	 */
+	@Override
+	public ConceptAttributeType saveConceptAttributeType(ConceptAttributeType conceptAttributeType) {
+		return dao.saveConceptAttributeType(conceptAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptAttributeType(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public ConceptAttributeType getConceptAttributeType(Integer id) {
+		return dao.getConceptAttributeType(id);
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptAttributeTypeByUuid(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public ConceptAttributeType getConceptAttributeTypeByUuid(String uuid) {
+		return dao.getConceptAttributeTypeByUuid(uuid);
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#purgeConceptAttributeType(ConceptAttributeType)
+	 */
+	@Override
+	public void purgeConceptAttributeType(ConceptAttributeType conceptAttributeType) {
+		dao.deleteConceptAttributeType(conceptAttributeType);
+
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptAttributeTypes(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<ConceptAttributeType> getConceptAttributeTypes(String name) throws APIException {
+		return dao.getConceptAttributeTypes(name);
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptAttributeTypeByName(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public ConceptAttributeType getConceptAttributeTypeByName(String exactName) {
+		return dao.getConceptAttributeTypeByName(exactName);
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#retireConceptAttributeType(ConceptAttributeType, String)
+	 */
+	@Override
+	public ConceptAttributeType retireConceptAttributeType(ConceptAttributeType conceptAttributeType, String reason) {
+		return dao.saveConceptAttributeType(conceptAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#unretireConceptAttributeType(ConceptAttributeType)
+	 */
+	@Override
+	public ConceptAttributeType unretireConceptAttributeType(ConceptAttributeType conceptAttributeType) {
+		return dao.saveConceptAttributeType(conceptAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptAttributeByUuid(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public ConceptAttribute getConceptAttributeByUuid(String uuid) {
+		return dao.getConceptAttributeByUuid(uuid);
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#hasAnyConceptAttribute(ConceptAttributeType)
+	 */
+	@Override
+	public boolean hasAnyConceptAttribute(ConceptAttributeType conceptAttributeType) {
+		return dao.getConceptAttributeCount(conceptAttributeType) > 0;
+	}
+
 	private List<ConceptClass> getConceptClassesOfOrderTypes() {
 		List<ConceptClass> mappedClasses = new ArrayList<ConceptClass>();
 		AdministrationService administrationService = Context.getAdministrationService();

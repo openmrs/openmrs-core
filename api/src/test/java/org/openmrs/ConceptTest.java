@@ -1179,4 +1179,15 @@ public class ConceptTest {
 		Assert.assertTrue(mappings.contains(c2));
 		Assert.assertEquals(1, mappings.size());
 	}
+
+	/**
+	 * @see Concept#toString()
+	 */
+	@Test
+	public void toString_shouldReturnConceptIdIfPresentOrNull(){
+		Concept c = new Concept();
+		Assert.assertEquals("Concept #null", c.toString());
+		c.setId(2);
+		Assert.assertEquals("Concept #2", c.toString());
+	}
 }

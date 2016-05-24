@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -39,6 +41,8 @@ import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.TermsFilterFactory;
+import org.openmrs.customdatatype.CustomValueDescriptor;
+import org.openmrs.customdatatype.Customizable;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.ObjectUtils;
@@ -66,7 +70,7 @@ import org.springframework.util.ObjectUtils;
  * @see ConceptService
  */
 @FullTextFilterDefs( { @FullTextFilterDef(name = "termsFilterFactory", impl = TermsFilterFactory.class) })
-public class Concept extends BaseOpenmrsObject implements Auditable, Retireable, java.io.Serializable, Attributable<Concept> {
+public class Concept extends BaseOpenmrsObject implements Auditable, Retireable, Serializable, Attributable<Concept>,Customizable<ConceptAttribute> {
 	
 	public static final long serialVersionUID = 57332L;
 	
@@ -122,7 +126,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * getCompatibleNames().
 	 */
 	private Map<Locale, List<ConceptName>> compatibleCache;
-	
+
+	private Set<ConceptAttribute> attributes = new LinkedHashSet<>();
+
 	/** default constructor */
 	public Concept() {
 		names = new HashSet<ConceptName>();
@@ -1443,10 +1449,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@Override
 	public String toString() {
-		if (conceptId == null) {
-			return "";
-		}
-		return conceptId.toString();
+		return "Concept #" + conceptId;
 	}
 	
 	/**
@@ -1650,5 +1653,68 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		conceptSet.setConceptSet(this);
 		conceptSets.add(conceptSet);
 	}
-	
+
+	/**
+	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
+	 */
+	@Override
+	public Set<ConceptAttribute> getAttributes() {
+		return attributes;
+	}
+
+	/**
+	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes()
+	 */
+	@Override
+	public Collection<ConceptAttribute> getActiveAttributes() {
+		List<ConceptAttribute> activeConceptAttributes = new ArrayList<>();
+		Collection<ConceptAttribute> allConceptAttributes = getAttributes();
+		if (allConceptAttributes != null) {
+			for (ConceptAttribute attr : allConceptAttributes) {
+				if (!attr.isVoided()) {
+					activeConceptAttributes.add(attr);
+				}
+			}
+		}
+		return activeConceptAttributes;
+	}
+
+	/**
+	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes(org.openmrs.customdatatype.CustomValueDescriptor)
+	 */
+	@Override
+	public List<ConceptAttribute> getActiveAttributes(CustomValueDescriptor ofType) {
+		List<ConceptAttribute> conceptAttributesOfGivenType = new ArrayList<>();
+		Collection<ConceptAttribute> allConceptAttributes = getAttributes();
+		if (allConceptAttributes != null) {
+			for (ConceptAttribute attr : allConceptAttributes) {
+				if (attr.getAttributeType().equals(ofType) && !attr.isVoided()) {
+					conceptAttributesOfGivenType.add(attr);
+				}
+			}
+		}
+		return conceptAttributesOfGivenType;
+
+	}
+
+	/**
+	 * @param attributes the attributes to set
+	 */
+	public void setAttributes(Set<ConceptAttribute> attributes) {
+		this.attributes = attributes;
+	}
+
+	/**
+	 * @see org.openmrs.customdatatype.Customizable#addAttribute(Attribute)
+	 */
+	@Override
+	public void addAttribute(ConceptAttribute attribute) {
+		if (getAttributes() == null) {
+			setAttributes(new LinkedHashSet<>());
+		}
+		// TODO validate
+		getAttributes().add(attribute);
+		attribute.setOwner(this);
+	}
+
 }

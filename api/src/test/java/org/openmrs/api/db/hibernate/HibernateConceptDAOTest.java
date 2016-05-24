@@ -15,7 +15,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAttributeType;
 import org.openmrs.Drug;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	
 	private static final String PROVIDERS_INITIAL_XML = "org/openmrs/api/db/hibernate/include/HibernateConceptTestDataSet.xml";
-	
+	protected static final String CONCEPT_ATTRIBUTE_TYPE_XML = "org/openmrs/api/include/ConceptServiceTest-conceptAttributeType.xml";
+
 	@Autowired
 	private HibernateConceptDAO dao;
 	
@@ -163,5 +166,17 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, drugList1.size());
 
 	}
-	
+
+	/**
+	 * @see HibernateConceptDAO#getConceptAttributeCount(ConceptAttributeType)
+	 * @verifies return attribute count for given attribute type
+	 */
+	@Test
+	public void shouldGetConceptAttributeCountForAttributeType() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptAttributeType conceptAttributeType = Context.getConceptService().getConceptAttributeType(1);
+		Assert.assertEquals(1, dao.getConceptAttributeCount(conceptAttributeType));
+		Assert.assertEquals(0, dao.getConceptAttributeCount(null));
+	}
+
 }

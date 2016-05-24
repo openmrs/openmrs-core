@@ -18,6 +18,8 @@ import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptAttribute;
+import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
@@ -596,4 +598,50 @@ public interface ConceptDAO {
 	 */
 	Drug getDrugByMapping(String code, ConceptSource conceptSource,
 	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference) throws DAOException;
+
+	/**
+	 * @see ConceptService#getAllConceptAttributeTypes()
+	 */
+
+	List<ConceptAttributeType> getAllConceptAttributeTypes();
+
+	/**
+	 * @see ConceptService#saveConceptAttributeType(ConceptAttributeType)
+	 */
+	ConceptAttributeType saveConceptAttributeType(ConceptAttributeType conceptAttributeType);
+
+	/**
+	 * @see ConceptService#getConceptAttributeType(Integer)
+	 */
+	ConceptAttributeType getConceptAttributeType(Integer id);
+
+	/**
+	 * @see ConceptService#getConceptAttributeTypeByUuid(String)
+	 */
+	ConceptAttributeType getConceptAttributeTypeByUuid(String uuid);
+
+	/**
+	 * @see ConceptService#purgeConceptAttributeType(ConceptAttributeType)
+	 */
+	public void deleteConceptAttributeType(ConceptAttributeType conceptAttributeType);
+
+	/**
+	 * @see ConceptService#getConceptAttributeTypes(String)
+	 */
+	public List<ConceptAttributeType> getConceptAttributeTypes(String name);
+
+	/**
+	 * @see ConceptService#getConceptAttributeTypeByName(String)
+	 */
+	public ConceptAttributeType getConceptAttributeTypeByName(String exactName);
+
+	/**
+	 * @see ConceptService#getConceptAttributeByUuid(String)
+	 */
+	public ConceptAttribute getConceptAttributeByUuid(String uuid);
+
+	/**
+	 * @see ConceptService#hasAnyConceptAttribute(ConceptAttributeType)
+	 */
+	public long getConceptAttributeCount(ConceptAttributeType conceptAttributeType);
 }

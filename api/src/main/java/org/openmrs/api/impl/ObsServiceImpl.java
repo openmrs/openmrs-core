@@ -512,6 +512,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * @see org.openmrs.api.ObsService#getHandlers()
 	 */
+	@Transactional(readOnly = true)
 	public Map<String, ComplexObsHandler> getHandlers() throws APIException {
 		if (handlers == null) {
 			handlers = new LinkedHashMap<String, ComplexObsHandler>();
