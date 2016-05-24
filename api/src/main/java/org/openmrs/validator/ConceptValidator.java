@@ -37,7 +37,7 @@ import org.springframework.validation.Validator;
  * to this source also need to be reflected on that page.
  */
 @Handler(supports = { Concept.class }, order = 50)
-public class ConceptValidator implements Validator {
+public class ConceptValidator extends BaseCustomizableValidator implements Validator {
 	
 	// Log for this class
 	private static final Log log = LogFactory.getLog(ConceptValidator.class);
@@ -254,5 +254,6 @@ public class ConceptValidator implements Validator {
 			}
 		}
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "version", "retireReason");
+		super.validateAttributes(conceptToValidate, errors, Context.getConceptService().getAllConceptAttributeTypes());
 	}
 }

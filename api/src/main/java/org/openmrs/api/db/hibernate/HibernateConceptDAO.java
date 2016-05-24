@@ -41,6 +41,7 @@ import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptAttribute;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
@@ -59,6 +60,7 @@ import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
+import org.openmrs.ConceptAttributeType;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
@@ -1864,7 +1866,95 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		return null;
 	}
-	
+
+	/**
+	 * @see ConceptDAO#getAllConceptAttributeTypes()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ConceptAttributeType> getAllConceptAttributeTypes() {
+		return sessionFactory.getCurrentSession().createCriteria(ConceptAttributeType.class).list();
+	}
+
+	/**
+	 * @see ConceptDAO#saveConceptAttributeType(ConceptAttributeType)
+	 */
+	@Override
+	public ConceptAttributeType saveConceptAttributeType(ConceptAttributeType conceptAttributeType) {
+		sessionFactory.getCurrentSession().saveOrUpdate(conceptAttributeType);
+		return conceptAttributeType;
+	}
+
+	/**
+	 * @see ConceptDAO#getConceptAttributeType(Integer)
+	 */
+	@Override
+	public ConceptAttributeType getConceptAttributeType(Integer id) {
+		return (ConceptAttributeType) sessionFactory.getCurrentSession().get(ConceptAttributeType.class, id);
+	}
+
+	/**
+	 * @see ConceptDAO#getConceptAttributeTypeByUuid(String)
+	 */
+	@Override
+	public ConceptAttributeType getConceptAttributeTypeByUuid(String uuid) {
+		return (ConceptAttributeType) sessionFactory.getCurrentSession().createCriteria(ConceptAttributeType.class).add(
+				Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#deleteConceptAttributeType(org.openmrs.ConceptAttributeType)
+	 */
+	@Override
+	public void deleteConceptAttributeType(ConceptAttributeType conceptAttributeType) {
+		sessionFactory.getCurrentSession().delete(conceptAttributeType);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptAttributeTypes(String)
+	 */
+	@Override
+	public List<ConceptAttributeType> getConceptAttributeTypes(String name) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptAttributeType.class);
+
+		//match name anywhere and case insensitive
+		if (name != null) {
+			criteria.add(Restrictions.ilike("name", name, MatchMode.ANYWHERE));
+		}
+		return criteria.list();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptAttributeTypeByName(String)
+	 */
+	@Override
+	public ConceptAttributeType getConceptAttributeTypeByName(String exactName) {
+		return (ConceptAttributeType) sessionFactory.getCurrentSession().createCriteria(ConceptAttributeType.class).add(
+				Restrictions.eq("name", exactName)).uniqueResult();
+
+	}
+
+	/**
+	 * @see ConceptDAO#getConceptAttributeByUuid(String)
+	 */
+	@Override
+	public ConceptAttribute getConceptAttributeByUuid(String uuid) {
+		return (ConceptAttribute) sessionFactory.getCurrentSession().createCriteria(ConceptAttribute.class).add(
+				Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
+
+	/**
+	 * @see ConceptDAO#getConceptAttributeCount(ConceptAttributeType)
+	 */
+	@Override
+	public long getConceptAttributeCount(ConceptAttributeType conceptAttributeType) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptAttribute.class);
+		criteria.add(Restrictions.eq("attributeType", conceptAttributeType));
+		criteria.setProjection(Projections.rowCount());
+		return (Long) criteria.list().get(0);
+
+	}
+
 	private Criteria createSearchDrugByMappingCriteria(String code, ConceptSource conceptSource, boolean includeRetired) {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		searchCriteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE);
