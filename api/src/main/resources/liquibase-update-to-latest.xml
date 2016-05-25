@@ -9308,6 +9308,12 @@
 	</changeSet>
 
 	<changeSet id="20160427-0950-create-concept-attribute-type-table" author="bahmni">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="concept_attribute_type"/>
+			</not>
+		</preConditions>
+		<comment>Creating concept_attribute_type table</comment>
 		<createTable tableName="concept_attribute_type">
 			<column name="concept_attribute_type_id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false"/>
