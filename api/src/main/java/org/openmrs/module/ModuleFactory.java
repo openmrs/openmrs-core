@@ -226,38 +226,46 @@ public class ModuleFactory {
 		// loop over and try starting each of the loaded modules
 		if (getLoadedModules().size() > 0) {
 			
+			List<Module> modules = getModulesThatShouldStart();
+			
 			try {
-				List<Module> modules = getModulesThatShouldStart();
-				
 				modules = getModulesInStartupOrder(modules);
-				
-				// try and start the modules that should be started
-				for (Module mod : modules) {
-					
-					if (mod.isStarted()) {
-						continue; // skip over modules that are already started
-					}
-										
-					try {
-						if (log.isDebugEnabled()) {
-							log.debug("starting module: " + mod.getModuleId());
-						}
-						startModule(mod);
-					}
-					catch (Exception e) {
-						log.error("Error while starting module: " + mod.getName(), e);
-						mod.setStartupErrorMessage("Error while starting module", e);
-						notifySuperUsersAboutModuleFailure(mod);
-					}
-				}
-				
 			}
-			catch (CycleException e) {
-				String message = getCyclicDependenciesMessage(e.getMessage());
-				log.error(message, e);
-				notifySuperUsersAboutCyclicDependencies(e);
+			catch (CycleException ex) {
+				String message = getCyclicDependenciesMessage(ex.getMessage());
+				log.error(message, ex);
+				notifySuperUsersAboutCyclicDependencies(ex);
+				modules = (List<Module>)ex.getExtraData();
 			}
 			
+			// try and start the modules that should be started
+			for (Module mod : modules) {
+				
+				if (mod.isStarted()) {
+					continue; // skip over modules that are already started
+				}
+				
+				// Skip module if required ones are not started
+				if (!requiredModulesStarted(mod)) {
+					String message = getFailedToStartModuleMessage(mod);
+					log.error(message);
+					mod.setStartupErrorMessage(message);
+					notifySuperUsersAboutModuleFailure(mod);
+					continue;
+				}
+				
+				try {
+					if (log.isDebugEnabled()) {
+						log.debug("starting module: " + mod.getModuleId());
+					}
+					startModule(mod);
+				}
+				catch (Exception e) {
+					log.error("Error while starting module: " + mod.getName(), e);
+					mod.setStartupErrorMessage("Error while starting module", e);
+					notifySuperUsersAboutModuleFailure(mod);
+				}
+			}		
 		}
 	}
 	
