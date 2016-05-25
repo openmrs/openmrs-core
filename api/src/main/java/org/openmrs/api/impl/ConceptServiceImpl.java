@@ -1869,6 +1869,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#hasAnyConceptAttribute(ConceptAttributeType)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public boolean hasAnyConceptAttribute(ConceptAttributeType conceptAttributeType) {
 		return dao.getConceptAttributeCount(conceptAttributeType) > 0;
 	}
