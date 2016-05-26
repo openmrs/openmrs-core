@@ -723,6 +723,113 @@ public class PersonTest extends BaseContextSensitiveTest {
 		Assert.assertNull(person.getBirthDateTime());
 	}
 
+	/**
+	 * @see Person#getAttribute(String)
+	 * @verifies get attribute based on String attributename
+	 */
+	@Test
+	public void  getAttribute_shouldPersonAttributeBasedOnAttributeName() throws Exception {
+		Person person = personHelper(false, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+		Assert.assertEquals("name3", person.getAttribute("name3").getAttributeType().getName());
+	}
+
+	/**
+	 * @see Person#getAttribute(String)
+	 * @verifies null if all voided, get attribute based on String attributename
+	 */
+	@Test
+	public void  getAttribute_shouldReturnNullIfAttributeNameIsVoided() throws Exception {
+		Person person = personHelper(true, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+		Assert.assertNull(person.getAttribute("name3"));
+	}
+
+	/**
+	 * @see Person#getAttribute(PersonAttributeType)
+	 * @verifies null if all voided
+	 */
+	@Test
+	public void  getAttribute_shouldReturnNullWhenExistingPersonAttributeTypeIsVoided () throws Exception {
+		Person person = personHelper(true, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+	 	PersonAttributeType type = new PersonAttributeType(new Integer(3));
+	 	type.setName("name3");
+		Assert.assertNull(person.getAttribute(type));
+	}
+
+	/**
+	 * @see Person#getAttribute(Integer)
+	 * @verifies get attribute based on Integer attributetypeid
+	 */
+	@Test
+	public void  getAttribute_shouldreturnPersonAttributeBasedOnAttributeTypeId() throws Exception {
+		Person person = personHelper(false, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+		Assert.assertEquals(new Integer(3), person.getAttribute(new Integer(3)).getAttributeType().getId());
+	}
+
+	/**
+	 * @see Person#getAttribute(Integer)
+	 * @verifies null if all voided, get attribute based on String attributetypeid
+	 */
+	@Test
+	public void  getAttribute_shouldReturnNullWhenExistingPersonAttributeWithMatchingAttributeTypeIdIsVoided() throws Exception {
+		Person person = personHelper(true, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+		Assert.assertNull(person.getAttribute(new Integer(3)));
+	}
+
+	/**
+	 * @see Person#getAttributes(String)
+	 * @verifies get attributes based on String attributename
+	 */
+	@Test
+	public void  getAttributes_shouldReturnAllPersonAttributesWithMatchingAttributeTypeNames() throws Exception {
+		Person person = personHelper(false, 1, 2, 3, "name1", "name1", "name3", "value1", "value2", "value3");
+		Assert.assertEquals(2, person.getAttributes("name1").size());
+	}
+
+	/**
+	 * @see Person#getAttributes(Integer)
+	 * @verifies get attributes based on Integer attributetypeid
+	 */
+	@Test
+	public void  getAttributes_shouldReturnListOfPersonAttributesBasedOnAttributeTypeId() throws Exception {
+		Person person = personHelper(false, 1, 1, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+		Assert.assertEquals(2, person.getAttributes(new Integer(1)).size());
+	}
+
+	/**
+	 * @see Person#getAttributes(Integer)
+	 * @verifies get attributes based on Integer attributetypeid, null if voided
+	 */
+	@Test
+	public void  getAttributes_shouldReturnEmptyListWhenMatchingPersonAttributeByIdIsVoided() throws Exception {
+		Person person = personHelper(true, 1, 1, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+		Assert.assertEquals(0, person.getAttributes(new Integer(1)).size());
+	}
+
+	private Person personHelper(boolean isVoid, int attributeType1, int attributeType2, int attributeType3, String attributeName1, String attributeName2, String attributeName3, String attributeValue1, String attributeValue2, String attributeValue3) {
+		Person person = new Person();
+
+	 	PersonAttributeType type1 = new PersonAttributeType(new Integer(attributeType1));
+	 	PersonAttributeType type2 = new PersonAttributeType(new Integer(attributeType2));
+	 	PersonAttributeType type3 = new PersonAttributeType(new Integer(attributeType3));
+	    
+	 	type1.setName(attributeName1);
+	 	type2.setName(attributeName2);
+	 	type3.setName(attributeName3);
+	 	PersonAttribute personAttribute1 = new PersonAttribute(type1, attributeValue1);
+	 	PersonAttribute personAttribute2 = new PersonAttribute(type2, attributeValue2);
+	 	PersonAttribute personAttribute3 = new PersonAttribute(type3, attributeValue3);
+	    
+		personAttribute1.setVoided(isVoid);
+		personAttribute2.setVoided(isVoid);
+		personAttribute3.setVoided(isVoid);
+
+		person.addAttribute(personAttribute1);
+		person.addAttribute(personAttribute2);
+		person.addAttribute(personAttribute3);
+
+		return person;
+	}
+
 	private void checkGetPersonAddressResultForVoidedPerson(PersonAddress expectedPersonAddress,
 	        Set<PersonAddress> personAddresses) {
 		
