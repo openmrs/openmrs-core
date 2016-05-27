@@ -31,6 +31,9 @@
   <concept_name concept_id="798" name="SALBUTAMOL INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3256" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e4"/>
   <concept_name concept_id="798" name="SALBUTAMOL SYRUP" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3257" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e5"/>
   <concept_name concept_id="798" name="SALBUTAMOL TABS" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3258" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e6"/>
+  <concept_name concept_id="798" name="AND SALBUTAMOL INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3259" voided="false" locale_preferred="0" uuid="12ce91b2-e879-11e0-950d-00248140a5e4"/>
+  <concept_name concept_id="798" name="SALBUTAMOL OR INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3260" voided="false" locale_preferred="0" uuid="13ce91b2-e879-11e0-950d-00248140a5e4"/>
+  <concept_name concept_id="798" name="AND SALBUTAMOL INHALER NOT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3261" voided="false" locale_preferred="0" uuid="14ce91b2-e879-11e0-950d-00248140a5e4"/>
   
   <concept_name concept_id="328" name="VENTOLIN INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="328" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e7"/>
   <concept_name concept_id="798" name="VENTOLIN INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3403" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e8"/>
