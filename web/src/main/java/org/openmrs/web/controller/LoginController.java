@@ -127,6 +127,14 @@ public class LoginController {
 			model.put("refererUrl", refererUrl);
 		}
 		
+		if (webRequest.getParameter(WebConstants.REDIRECT_URL) != null) {
+			String redirectUrlTemp = webRequest.getParameter(WebConstants.REDIRECT_URL).toString();
+			if (StringUtils.isNotBlank(redirectUrlTemp) && !redirectUrlTemp.contains("login.")) {
+				redirectUrlTemp = redirectUrlTemp.replace("_HASHTAG_", "#");
+				webRequest.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, redirectUrlTemp, 1);
+			}
+		}
+		
 		return LOGIN_FORM;
 	}
 }
