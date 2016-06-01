@@ -170,6 +170,9 @@ public final class Module {
 		catch (InstantiationException e) {
 			throw new ModuleException("Unable to load/instantiate moduleActivator: '" + getActivatorName() + "'", name, e);
 		}
+		catch (NoClassDefFoundError e) {
+			throw new ModuleException("Unable to load/find moduleActivator: '" + getActivatorName() + "'", name, e);
+		}
 		
 		return moduleActivator;
 	}
