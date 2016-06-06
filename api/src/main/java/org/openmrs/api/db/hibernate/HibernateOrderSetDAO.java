@@ -96,14 +96,13 @@ public class HibernateOrderSetDAO implements OrderSetDAO {
 		    "uuid", orderSetUuid).uniqueResult();
 	}
 	
-
 	/**
 	 * @see org.openmrs.api.db.OrderSetDAO#getOrderSetMemberByUuid(String)
 	 */
 	@Override
 	public OrderSetMember getOrderSetMemberByUuid(String uuid) throws DAOException {
-		return (OrderSetMember) sessionFactory.getCurrentSession().createQuery("from OrderSetMember osm where osm.uuid = :uuid").setString(
-				"uuid", uuid).uniqueResult();
+		return (OrderSetMember) sessionFactory.getCurrentSession().createQuery(
+		    "from OrderSetMember osm where osm.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
-
+	
 }

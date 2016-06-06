@@ -95,7 +95,6 @@ public interface OrderSetService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.MANAGE_ORDER_SETS })
 	OrderSet unretireOrderSet(OrderSet orderSet) throws APIException;
 	
-
 	/**
 	 * Get OrderSetMember by uuid
 	 *
@@ -106,5 +105,5 @@ public interface OrderSetService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
 	OrderSetMember getOrderSetMemberByUuid(String uuid);
-
+	
 }

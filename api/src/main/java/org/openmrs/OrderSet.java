@@ -142,7 +142,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements Serializable {
 	public void setId(Integer id) {
 		setOrderSetId(id);
 	}
-
+	
 	/**
 	 * Fetches the list of orderSetMembers that are not retired
 	 *
@@ -157,7 +157,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements Serializable {
 		}
 		return osm;
 	}
-
+	
 	/**
 	 * Removes and orderSetMember from a list of existing orderSetMembers
 	 *
@@ -169,7 +169,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements Serializable {
 			orderSetMember.setOrderSet(null);
 		}
 	}
-
+	
 	/**
 	 * Retires an orderSetMember
 	 *

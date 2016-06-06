@@ -115,7 +115,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	public OrderSet getOrderSetByUuid(String orderSetUuid) throws APIException {
 		return dao.getOrderSetByUniqueUuid(orderSetUuid);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.OrderSetService#getOrderSetMemberByUuid(String)
 	 */

@@ -44,7 +44,6 @@ public interface OrderSetDAO {
 	 */
 	OrderSet getOrderSetByUniqueUuid(String orderSetUuid) throws DAOException;
 	
-
 	/**
 	 * @see org.openmrs.api.OrderSetService#getOrderSetMemberByUuid(String)
 	 */
