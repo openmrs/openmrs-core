@@ -176,6 +176,9 @@ public class ModuleUtil {
 	 *
 	 * @param inputStream <code>InputStream</code> to load
 	 * @return filename String of the file's name of the stream
+	 * @should throw ModuleException if filename is null
+	 * @should throw FileNotFoundException if inputStream does not exist
+	 * @should throw ModuleException if inputStream exists but filename is empty
 	 */
 	public static File insertModuleFile(InputStream inputStream, String filename) {
 		File folder = getModuleRepository();
