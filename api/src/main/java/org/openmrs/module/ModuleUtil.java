@@ -476,6 +476,7 @@ public class ModuleUtil {
 	 * @param file a file object
 	 * @return absolute URL that points to the given file
 	 * @throws MalformedURLException if file can't be represented as URL for some reason
+	 * @should return null if file is null
 	 */
 	public static URL file2url(final File file) throws MalformedURLException {
 		if (file == null) {
@@ -1068,6 +1069,8 @@ public class ModuleUtil {
 	 *
 	 * @param file jar file to look into
 	 * @return list of strings of package names in this jar
+	 * @should return empty string set if non jar file
+	 * @should not list lib, META-INF, or web/module in providedPackage
 	 */
 	public static Collection<String> getPackagesFromFile(File file) {
 		

@@ -18,13 +18,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.util.Collection;
 import java.util.Properties;
 import java.util.jar.JarFile;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -596,5 +604,45 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(moduleJarFile);
 		InputStream resultStream = ModuleUtil.getResourceFromApi(moduleJarFile, moduleId, version, resource);
 		Assert.assertNull(resultStream);
+	}
+
+	/**
+	* @see ModuleUtl#file2url(File)
+	*/
+	@Test
+	@Verifies(value = "return null if file is null", method = "file2url(File)")
+	public void file2url_shouldReturnNullIfFileIsNull() throws MalformedURLException {
+		URL nullURL = ModuleUtil.file2url(null);
+		Assert.assertNull(nullURL);
+	}
+
+	/**
+	* @see ModuleUtl#getPackagesFromFile(File)
+	*/
+	@Test
+	public void getPackagesFromFile_shouldReturnEmptyStringSetIfNonJarFile() {
+		File f = new File(this.getClass().getResource("/org/openmrs/module/include/test1-1.0-SNAPSHOT.omod").getFile());
+		Collection<String> result = ModuleUtil.getPackagesFromFile(f);
+		Assert.assertTrue(result.isEmpty());
+	}
+
+	/**
+	* @see ModuleUtl#getPackagesFromFile(File)
+	*/
+	@Test
+	public void getPackagesFromFile_shouldNotListLibMETAINFOrWebModuleInProvidedPackage() throws IOException{
+		File f = new File(this.getClass().getResource("/org/openmrs/module/include/test1-1.0-SNAPSHOT.omod").getFile());
+		File d = new File("/tmp/test1-1.0-SNAPSHOT.jar");
+		FileUtils.copyFile(f, d);
+		//File jarF = new File("tmp/test1-1.0-SNAPSHOT.jar");
+		Collection<String> result = ModuleUtil.getPackagesFromFile(d);
+		for (String string : result) {
+			Assert.assertFalse(string.contains("lib"));
+			Assert.assertFalse(string.contains("META-INF"));
+			Assert.assertFalse(string.contains("web.module"));
+		}
+		String pathFileToDelete = "/tmp/test1-1.0-SNAPSHOT.jar";
+		Path jarFileToDelete = Paths.get(pathFileToDelete);
+		Files.delete(jarFileToDelete);
 	}
 }
