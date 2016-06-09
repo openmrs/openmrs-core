@@ -507,6 +507,8 @@ public class ModuleUtil {
 	 * @param keepFullPath if true, will recreate entire directory structure in tmpModuleDir
 	 *            relating to <code>name</code>. if false will start directory structure at
 	 *            <code>name</code>
+	 * @should expand entire jar if name is null
+	 * @should expand name's path or file if name is not null
 	 */
 	public static void expandJar(File fileToExpand, File tmpModuleDir, String name, boolean keepFullPath) throws IOException {
 		JarFile jarFile = null;
