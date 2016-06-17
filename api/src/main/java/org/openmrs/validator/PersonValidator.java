@@ -101,6 +101,7 @@ public class PersonValidator implements Validator {
 		}
 		if (person.isDead()) {
 			ValidationUtils.rejectIfEmpty(errors, "causeOfDeath", "Person.dead.causeOfDeathNull");
+			validateDeathDate(errors, person.getDeathDate(), person.getBirthdate());
 		}
 		
 		ValidateUtil.validateFieldLengths(errors, Person.class, "gender", "personVoidReason");
@@ -123,6 +124,23 @@ public class PersonValidator implements Validator {
 				if (birthDate.before(c.getTime())) {
 					errors.rejectValue("birthdate", "error.date.nonsensical");
 				}
+			}
+		}
+	}
+
+	/**
+	 * Checks if the death date specified is in the future or before the birth date.
+	 *
+	 * @param deathDate The death date to validate.
+	 * @param birthDate The birth date for validation.
+	 * @param errors Stores information about errors encountered during validation.
+	 */
+	private void validateDeathDate(Errors errors, Date deathDate, Date birthDate) {
+		if (deathDate != null) {
+			if (deathDate.after(new Date())) {
+				errors.rejectValue("deathDate", "error.date.future");
+			} else if (birthDate != null && deathDate.before(birthDate)) {
+				errors.rejectValue("deathDate", "error.deathdate.before.birthdate");
 			}
 		}
 	}
