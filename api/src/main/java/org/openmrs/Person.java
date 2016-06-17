@@ -297,6 +297,11 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @param deathDate date of person's death
 	 */
 	public void setDeathDate(Date deathDate) {
+		if (deathDate != null) {
+			this.dead = true;
+		} else {
+			this.dead = false;
+		}
 		this.deathDate = deathDate;
 	}
 	
