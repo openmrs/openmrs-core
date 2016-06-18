@@ -1125,12 +1125,14 @@ public class ORUR01Handler implements Application {
 	 *
 	 * @param msh
 	 * @return
+	 * @should pass if return value is null when uuid and id is null
+	 * @should pass if return value is not null when uuid or id is not null
 	 * @throws HL7Exception
 	 */
-	private Form getForm(MSH msh) throws HL7Exception {
+	public Form getForm(MSH msh) throws HL7Exception {
 		String uuid = null;
 		String id = null;
-		
+
 		for (EI identifier : msh.getMessageProfileIdentifier()) {
 			if (identifier != null && identifier.getNamespaceID() != null) {
 				String identifierType = identifier.getNamespaceID().getValue();
@@ -1143,28 +1145,34 @@ public class ORUR01Handler implements Application {
 				}
 			}
 		}
-		
+
 		Form form = null;
-		
+
+		if (uuid == null && id == null) {
+			return form;
+		}
+
 		// prefer uuid over id
 		if (uuid != null) {
 			form = Context.getFormService().getFormByUuid(uuid);
 		}
-		
+
 		// if uuid did not work ...
-		if (form == null) {
+		if (id != null) {
+
 			try {
 				Integer formId = Integer.parseInt(id);
 				form = Context.getFormService().getForm(formId);
-			}
-			catch (NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.parseFormId"), e);
 			}
+
 		}
-		
+
 		return form;
+
 	}
-	
+
 	private EncounterType getEncounterType(MSH msh, Form form) {
 		if (form != null) {
 			return form.getEncounterType();

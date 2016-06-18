@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.jar.JarEntry;
@@ -131,9 +130,6 @@ public class WebModuleUtil {
 			if (!webInf.exists()) {
 				webInf.mkdir();
 			}
-			
-			copyModuleMessagesIntoWebapp(mod, realPath);
-			log.debug("Done copying messages");
 			
 			// flag to tell whether we added any xml/dwr/etc changes that necessitate a refresh
 			// of the web application context
@@ -401,69 +397,6 @@ public class WebModuleUtil {
 	public static boolean isModulePackageNameInTaskClass(String modulePackageName, String taskClass) {
 		return modulePackageName.length() <= taskClass.length()
 		        && taskClass.matches(Pattern.quote(modulePackageName) + "(\\..*)+");
-	}
-	
-	/**
-	 * Method visibility is package-private for testing
-	 *
-	 * @param mod
-	 * @param realPath
-	 * @should prefix messages with module id
-	 * @should not prefix messages with module id if override setting is specified
-	 */
-	static void copyModuleMessagesIntoWebapp(Module mod, String realPath) {
-		for (Entry<String, Properties> localeEntry : mod.getMessages().entrySet()) {
-			if (log.isDebugEnabled()) {
-				log.debug("Copying message property file: " + localeEntry.getKey());
-			}
-
-			Properties props = localeEntry.getValue();
-
-			String lang = "_" + localeEntry.getKey();
-			if (lang.equals("_en") || lang.equals("_")) {
-				lang = "";
-			}
-
-			insertIntoModuleMessagePropertiesFile(realPath, props, lang);
-		}
-	}
-	
-	/**
-	 * Copies a module's messages into the shared module_messages(lang).properties file
-	 *
-	 * @param realPath actual file path of the servlet context
-	 * @param props messages to copy into the shared message properties file (replacing any existing
-	 *            ones)
-	 * @param lang the empty string to represent the locale "en", or something like "_fr" for any
-	 *            other locale
-	 * @return true if the everything worked
-	 */
-	private static boolean insertIntoModuleMessagePropertiesFile(String realPath, Properties props, String lang) {
-		String path = "/WEB-INF/module_messages@LANG@.properties";
-		String currentPath = path.replace("@LANG@", lang);
-		
-		String absolutePath = realPath + currentPath;
-		File file = new File(absolutePath);
-		try {
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-		}
-		catch (IOException ioe) {
-			log.error("Unable to create new file " + file.getAbsolutePath() + " " + ioe);
-		}
-		
-		try {
-			//Copy to the module properties file replacing any keys that already exist
-			Properties allModulesProperties = new Properties();
-			OpenmrsUtil.loadProperties(allModulesProperties, file);
-			allModulesProperties.putAll(props);
-			OpenmrsUtil.storeProperties(allModulesProperties, new FileOutputStream(file), null);
-		}
-		catch (FileNotFoundException e) {
-			throw new ModuleException("Unable to load module messages from file: " + file.getAbsolutePath(), e);
-		}
-		return true;
 	}
 	
 	/**

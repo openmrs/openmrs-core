@@ -47,6 +47,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
@@ -63,6 +64,7 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
 import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -72,9 +74,11 @@ import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.ConceptMapTypeComparator;
+import org.openmrs.util.DateUtil;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.Errors;
@@ -94,7 +98,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	protected static final String GET_CONCEPTS_BY_SET_XML = "org/openmrs/api/include/ConceptServiceTest-getConceptsBySet.xml";
 	
 	protected static final String GET_DRUG_MAPPINGS = "org/openmrs/api/include/ConceptServiceTest-getDrugMappings.xml";
-	
+
+	protected static final String CONCEPT_ATTRIBUTE_TYPE_XML = "org/openmrs/api/include/ConceptServiceTest-conceptAttributeType.xml";
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	
@@ -501,7 +507,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		newConceptSource.setDateCreated(expectedDate);
 		Context.getConceptService().saveConceptSource(newConceptSource);
 		
-		Assert.assertEquals(newConceptSource.getDateCreated(), expectedDate);
+		Assert.assertEquals(DateUtil.truncateToSeconds(expectedDate), newConceptSource.getDateCreated());
 	}
 	
 	/**
@@ -972,6 +978,26 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return null if no object found with given uuid", method = "getDrugByUuid(String)")
 	public void getDrugByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getDrugByUuid("some invalid uuid"));
+	}
+	
+	/**
+	 * @see {@link ConceptService#getDrugIngredientByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getDrugIngredientByUuid(String)")
+	public void getDrugIngredientByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+		String uuid = "6519d653-393d-4118-9c83-a3715b82d4dc";
+		DrugIngredient ingredient = Context.getConceptService().getDrugIngredientByUuid(uuid);
+		Assert.assertEquals(88, (int) ingredient.getIngredient().getConceptId());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getDrugIngredientByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getDrugIngredientByUuid(String)")
+	public void getDrugIngredientByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+		Assert.assertNull(Context.getConceptService().getDrugIngredientByUuid("some invalid uuid"));
 	}
 	
 	@Test
@@ -3414,5 +3440,228 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//then
 		assertThat(concepts1, contains(hasConcept(is(concept))));
 		assertThat(concepts2, contains(hasConcept(is(concept))));
+	}
+
+	/**
+	 * @see ConceptService#getAllConceptAttributeTypes()
+	 * @verifies return all concept attribute types including retired ones
+	 */
+	@Test
+	public void getAllConceptAttributeTypes_shouldReturnAllConceptAttributeTypesIncludingRetiredOnes() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		Assert.assertEquals(2, Context.getConceptService().getAllConceptAttributeTypes().size());
+	}
+
+	/**
+	 * @see ConceptService#saveConceptAttributeType(org.openmrs.ConceptAttributeType)
+	 * @verifies create a new concept attribute type
+	 */
+	@Test
+	public void saveConceptAttributeType_shouldCreateANewConceptAttributeType() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService conceptService = Context.getConceptService();
+		Assert.assertEquals(2, conceptService.getAllConceptAttributeTypes().size());
+		ConceptAttributeType conceptAttributeType = new ConceptAttributeType();
+		conceptAttributeType.setName("Another one");
+		conceptAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
+		conceptService.saveConceptAttributeType(conceptAttributeType);
+		Assert.assertNotNull(conceptAttributeType.getId());
+		Assert.assertEquals(3, conceptService.getAllConceptAttributeTypes().size());
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeType(Integer)
+	 * @verifies return the concept attribute type with the given id
+	 */
+	@Test
+	public void getConceptAttributeType_shouldReturnTheConceptAttributeTypeWithTheGivenId() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		Assert.assertEquals("Audit Date", Context.getConceptService().getConceptAttributeType(1).getName());
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeType(Integer)
+	 * @verifies return null if no concept attribute type exists with the given id
+	 */
+	@Test
+	public void getConceptAttributeType_shouldReturnNullIfNoConceptAttributeTypeExistsWithTheGivenId() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		Assert.assertNull(Context.getConceptService().getConceptAttributeType(999));
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeTypeByUuid(String)
+	 * @verifies return the concept attribute type with the given uuid
+	 */
+	@Test
+	public void getConceptAttributeTypeByUuid_shouldReturnTheConceptAttributeTypeWithTheGivenUuid() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		Assert.assertEquals("Audit Date", Context.getConceptService().getConceptAttributeTypeByUuid(
+				"9516cc50-6f9f-11e0-8414-001e378eb67e").getName());
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeTypeByUuid(String)
+	 * @verifies return null if no concept attribute type exists with the given uuid
+	 */
+	@Test
+	public void getConceptAttributeTypeByUuid_shouldReturnNullIfNoConceptAttributeTypeExistsWithTheGivenUuid()
+			throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		Assert.assertNull(Context.getConceptService().getConceptAttributeTypeByUuid("not-a-uuid"));
+	}
+
+	/**
+	 * @see ConceptService#purgeConceptAttributeType(ConceptAttributeType)
+	 * @verifies completely remove a concept attribute type
+	 */
+	@Test
+	public void purgeConceptAttributeType_shouldCompletelyRemoveAConceptAttributeType() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService conceptService = Context.getConceptService();
+		Assert.assertEquals(2, conceptService.getAllConceptAttributeTypes().size());
+		conceptService.purgeConceptAttributeType(conceptService.getConceptAttributeType(2));
+		Assert.assertEquals(1, conceptService.getAllConceptAttributeTypes().size());
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeTypes(String)
+	 * * @verifies search conceptAttributeType by name
+	 */
+	@Test
+	public void getConceptAttributeTypes_shouldSearchConceptAttributesByName() throws Exception{
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService conceptService = Context.getConceptService();
+		Assert.assertEquals(1, conceptService.getConceptAttributeTypes("we").size());
+		Assert.assertEquals(0, conceptService.getConceptAttributeTypes("attr type").size());
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeTypeByName(String)
+	 * * @verifies get conceptAttributeType by name
+	 */
+	@Test
+	public void getConceptAttributeTypes_shouldGetConceptAttributeByExactName() throws Exception{
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService conceptService = Context.getConceptService();
+		Assert.assertNotNull(conceptService.getConceptAttributeTypeByName("Audit Date"));
+		Assert.assertNull(conceptService.getConceptAttributeTypeByName("date"));
+	}
+
+	/**
+	 * @see ConceptService#retireConceptAttributeType(ConceptAttributeType, String)
+	 * @verifies retire a concept attribute type
+	 */
+	@Test
+	public void retireConceptAttributeType_shouldRetireAConceptAttributeType() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptAttributeType vat = Context.getConceptService().getConceptAttributeType(1);
+		Assert.assertFalse(vat.isRetired());
+		Assert.assertNull(vat.getRetiredBy());
+		Assert.assertNull(vat.getDateRetired());
+		Assert.assertNull(vat.getRetireReason());
+		Context.getConceptService().retireConceptAttributeType(vat, "for testing");
+		vat = Context.getConceptService().getConceptAttributeType(1);
+		Assert.assertTrue(vat.isRetired());
+		Assert.assertNotNull(vat.getRetiredBy());
+		Assert.assertNotNull(vat.getDateRetired());
+		Assert.assertEquals("for testing", vat.getRetireReason());
+	}
+
+	/**
+	 * @see ConceptService#unretireConceptAttributeType(ConceptAttributeType)
+	 * @verifies unretire a retired concept attribute type
+	 */
+	@Test
+	public void unretireConceptAttributeType_shouldUnretireARetiredConceptAttributeType() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService service = Context.getConceptService();
+		ConceptAttributeType conceptAttributeType = service.getConceptAttributeType(2);
+		Assert.assertTrue(conceptAttributeType.isRetired());
+		Assert.assertNotNull(conceptAttributeType.getDateRetired());
+		Assert.assertNotNull(conceptAttributeType.getRetiredBy());
+		Assert.assertNotNull(conceptAttributeType.getRetireReason());
+		service.unretireConceptAttributeType(conceptAttributeType);
+		Assert.assertFalse(conceptAttributeType.isRetired());
+		Assert.assertNull(conceptAttributeType.getDateRetired());
+		Assert.assertNull(conceptAttributeType.getRetiredBy());
+		Assert.assertNull(conceptAttributeType.getRetireReason());
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeByUuid(String)
+	 * @verifies get the concept attribute with the given uuid
+	 */
+	@Test
+	public void getConceptAttributeByUuid_shouldGetTheConceptAttributeWithTheGivenUuid() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService service = Context.getConceptService();
+		Assert.assertEquals("2011-04-25", service.getConceptAttributeByUuid("3a2bdb18-6faa-11e0-8414-001e378eb67e")
+				.getValueReference());
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeByUuid(String)
+	 * @verifies return null if no concept attribute has the given uuid
+	 */
+	@Test
+	public void getConceptAttributeByUuid_shouldReturnNullIfNoConceptAttributeHasTheGivenUuid() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService service = Context.getConceptService();
+		Assert.assertNull(service.getConceptAttributeByUuid("not-a-uuid"));
+	}
+
+	/**
+	 * @see ConceptService#hasAnyConceptAttribute(ConceptAttributeType)
+	 * @verifies return true if concept attribute is present for given conceptAttributeType
+	 */
+	@Test
+	public void hasAnyConceptAttribute_shouldReturnTrueIfAnyConceptAttributeIsPresentForGivenConceptAttributeType() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService conceptService = Context.getConceptService();
+		ConceptAttributeType conceptAttributeType = conceptService.getConceptAttributeType(1);
+		Assert.assertTrue(conceptService.hasAnyConceptAttribute(conceptAttributeType));
+	}
+
+	/**
+	 * @see ConceptService#hasAnyConceptAttribute(ConceptAttributeType)
+	 * @verifies return false if concept attribute is not found for given conceptAttributeType
+	 */
+	@Test
+	public void hasAnyConceptAttribute_shouldReturnFalseIfNoConceptAttributeFoundForGivenConceptAttributeType() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService conceptService = Context.getConceptService();
+		ConceptAttributeType conceptAttributeType = conceptService.getConceptAttributeType(2);
+		Assert.assertFalse(conceptService.hasAnyConceptAttribute(conceptAttributeType));
+	}
+	
+	/**
+	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)
+	 */
+	@Test
+	@Verifies(value = "should return a search result whose concept name contains all word tokens as first", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
+	public void getConcepts_shouldPassWithAndOrNotWords() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		
+		//search phrase with AND
+		List<ConceptSearchResult> searchResults = conceptService.getConcepts("AND SALBUTAMOL INHALER", Collections
+		        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
+		
+		Assert.assertEquals(1, searchResults.size());
+		assertThat(searchResults.get(0).getWord(), is("AND SALBUTAMOL INHALER"));
+		
+		//search phrase with OR
+		searchResults = conceptService.getConcepts("SALBUTAMOL OR INHALER", Collections
+	        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
+	
+		Assert.assertEquals(1, searchResults.size());
+		assertThat(searchResults.get(0).getWord(), is("SALBUTAMOL OR INHALER"));
+		
+		//search phrase with NOT
+		searchResults = conceptService.getConcepts("SALBUTAMOL INHALER NOT", Collections
+	        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
+	
+		Assert.assertEquals(1, searchResults.size());
+		assertThat(searchResults.get(0).getWord(), is("SALBUTAMOL INHALER NOT"));
 	}
 }

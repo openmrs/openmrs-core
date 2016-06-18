@@ -572,7 +572,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param otherReason - if the concept representing the reason is OTHER NON-CODED, and a
 	 *            string-based "other" reason is supplied
 	 * @throws APIException
-	 * @should be tested more thoroughly
+	 * @should throw API exception if patient is null 
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PATIENTS })
 	public void processDeath(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason) throws APIException;
@@ -735,14 +735,27 @@ public interface PatientService extends OpenmrsService {
 	Allergies setAllergies(Patient patient, Allergies allergies);
 	
 	/**
-	 * Returns the Allergy
+	 * Returns the Allergy identified by internal Ingerger Id
 	 * 
-	 * @param allergyListId
+	 * @param allergyListId identifies allergy by internal Ingerger Id
 	 * @return the allergy
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.GET_ALLERGIES })
 	public Allergy getAllergy(Integer allergyListId) throws APIException;
+	
+	/**
+	 * Returns the Allergy identified by uuid
+	 * 
+	 * @since 2.0
+	 * @param uuid identifies allergy 
+	 * @return the allergy matching the given uuid
+	 * @should return allergy given valid uuid
+	 * @should return null if no object found with given uuid
+	 * @throws APIException
+	 */
+	@Authorized( { PrivilegeConstants.GET_ALLERGIES })
+	public Allergy getAllergyByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Creates an AllergyListItem to the Patient's Allergy Active List. Sets the start date to now,

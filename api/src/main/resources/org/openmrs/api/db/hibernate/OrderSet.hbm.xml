@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.1//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.openmrs">
+
+    <class name="OrderSet" table="order_set">
+
+        <id name="orderSetId" type="int" column="order_set_id" unsaved-value="0">
+            <generator class="native">
+                <param name="sequence">order_set_order_set_id_seq</param>
+            </generator>
+        </id>
+
+        <discriminator column="order_set_id" insert="false" />
+
+        <property name="name" type="java.lang.String"
+                  column="name" not-null="true" />
+        <property name="description" type="java.lang.String"
+                  column="description" not-null="true" />
+        <property name="operator" column="operator" not-null="true">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">org.openmrs.OrderSet$Operator</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+
+        <list name="orderSetMembers" lazy="true" cascade="save-update" inverse="false">
+            <key column="order_set_id" not-null="true"/>
+            <list-index column="sequence_number"/>
+            <one-to-many class="OrderSetMember" />
+        </list>
+
+
+        <!-- bi-directional many-to-one association to User -->
+        <many-to-one name="creator" class="User" not-null="true">
+            <column name="creator"/>
+        </many-to-one>
+        <property name="dateCreated" type="java.util.Date"
+                  column="date_created" not-null="true" length="19" />
+        <property name="retired" type="java.lang.Boolean"
+                  column="retired" length="1" not-null="true"/>
+        <!-- bi-directional many-to-one association to User -->
+        <many-to-one name="retiredBy" class="User">
+            <column name="retired_by" />
+        </many-to-one>
+        <property name="retireReason" type="java.lang.String"
+                  column="retire_reason" length="255" />
+        <property name="dateRetired" type="java.util.Date"
+                  column="date_retired" length="19" />
+        <!-- bi-directional many-to-one association to User -->
+        <many-to-one name="changedBy" class="User">
+            <column name="changed_by" />
+        </many-to-one>
+        <property name="dateChanged" type="java.util.Date"
+                  column="date_changed" length="19" />
+        <property name="uuid" type="java.lang.String"
+                  column="uuid" length="38" unique="true" not-null="true"/>
+
+    </class>
+
+</hibernate-mapping>

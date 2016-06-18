@@ -509,6 +509,12 @@ public final class OpenmrsConstants {
 	public static final String GP_ALLERGY_REACTION_CONCEPT_CLASSES = "allergy.reaction.ConceptClasses";
 	
 	/**
+	 * Global property name of other non coded allergen, stored in allergen coded allergen
+	 * when other non coded allergen is represented
+	 */
+	public static final String GP_ALLERGEN_OTHER_NON_CODED_UUID = "allergy.concept.otherNonCoded";
+	
+	/**
 	 * Encryption properties; both vector and key are required to utilize a two-way encryption
 	 */
 	public static final String ENCRYPTION_CIPHER_CONFIGURATION = "AES/CBC/PKCS5Padding";
@@ -1063,7 +1069,7 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty("allergy.concept.reactions", "162555AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 		        "UUID for the allergy reactions concept"));
 		
-		props.add(new GlobalProperty("allergy.concept.otherNonCoded", "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+		props.add(new GlobalProperty(GP_ALLERGEN_OTHER_NON_CODED_UUID, "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 		        "UUID for the allergy other non coded concept"));
 		
 		props.add(new GlobalProperty("allergy.concept.unknown", "1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",

@@ -49,7 +49,7 @@ public class Graph<T> {
 		
 		@Override
 		public String toString() {
-			return fromNode.toString() + "->" + toNode.toString();
+			return toNode.toString() + "->" + fromNode.toString();
 		}
 		
 	}
@@ -167,7 +167,7 @@ public class Graph<T> {
 			}
 		}
 		if (!edges.isEmpty()) {
-			throw new CycleException();
+			throw new CycleException(edges.toString(), result);
 		}
 		// The old edges are restored in order to maintain the graph integrity.
 		edges.addAll(initialEdges);

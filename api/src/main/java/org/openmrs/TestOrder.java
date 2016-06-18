@@ -164,7 +164,6 @@ public class TestOrder extends Order {
 		newOrder.setPreviousOrder(this);
 		newOrder.setPatient(getPatient());
 		newOrder.setOrderType(getOrderType());
-		
 		return newOrder;
 	}
 	
@@ -192,7 +191,6 @@ public class TestOrder extends Order {
 		target.setClinicalHistory(getClinicalHistory());
 		target.setFrequency(getFrequency());
 		target.setNumberOfRepeats(getNumberOfRepeats());
-		
 		return target;
 	}
 }

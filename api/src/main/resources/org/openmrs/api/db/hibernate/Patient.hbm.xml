@@ -42,6 +42,9 @@
 		<property name="voidReason" type="java.lang.String"
 			column="void_reason" length="255" />
 
+		<property name="allergyStatus" type="java.lang.String"
+			column="allergy_status" not-null="false" length="50" />
+
 		<!-- Associations -->
 
 		<!-- bi-directional one-to-many association to PatientIdentifier -->

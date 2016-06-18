@@ -9,14 +9,9 @@
  */
 package org.openmrs.module.web;
 
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -33,14 +28,10 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.openmrs.module.Module;
-import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.web.DispatcherServlet;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.w3c.dom.Attr;
@@ -116,8 +107,6 @@ public class WebModuleUtilTest {
 	 */
 	@Test
 	public void startModule_shouldCreateDwrModulesXmlIfNotExists() throws Exception {
-		partialMockWebModuleUtilForMessagesTests();
-		
 		// create dummy module and start it
 		Module mod = buildModuleForMessageTest();
 		ModuleFactory.getStartedModulesMap().put(mod.getModuleId(), mod);
@@ -145,9 +134,7 @@ public class WebModuleUtilTest {
 	 * @verifies dwr-modules.xml has dwr tag of module started
 	 */
 	@Test
-	public void startModule_dwrModuleXmlshouldContainModuleInfo() throws Exception {
-		partialMockWebModuleUtilForMessagesTests();
-		
+	public void startModule_dwrModuleXmlshouldContainModuleInfo() throws Exception {		
 		// create dummy module and start it
 		Module mod = buildModuleForMessageTest();
 		ModuleFactory.getStartedModulesMap().put(mod.getModuleId(), mod);
@@ -176,53 +163,6 @@ public class WebModuleUtilTest {
 		assertTrue(found);
 		
 		ModuleFactory.getStartedModulesMap().clear();
-	}
-
-	/**
-	 * @see WebModuleUtil#copyModuleMessagesIntoWebapp(org.openmrs.module.Module, String)
-	 * @verifies prefix messages with module id
-	 */
-	@Test
-	public void copyModuleMessagesIntoWebapp_shouldNotPrefixMessagesWithModuleId() throws Exception {
-		Module mod = buildModuleForMessageTest();
-		partialMockWebModuleUtilForMessagesTests();
-		WebModuleUtil.copyModuleMessagesIntoWebapp(mod, "unused/real/path");
-
-		assertThat(propertiesWritten.getProperty("withoutPrefix"), is("Without prefix"));
-		assertNull(propertiesWritten.getProperty("mymodule.withoutPrefix"));
-	}
-
-	/**
-	 * @see WebModuleUtil#copyModuleMessagesIntoWebapp(org.openmrs.module.Module, String)
-	 * @verifies not prefix messages with module id if override setting is specified
-	 */
-	@Test
-	public void copyModuleMessagesIntoWebapp_shouldNotPrefixMessagesWithModuleIdIfOverrideSettingIsSpecified()
-	        throws Exception {
-		Module mod = buildModuleForMessageTest();
-		mod.getMessages().get("en").setProperty(ModuleConstants.MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE,
-		    "true");
-		
-		partialMockWebModuleUtilForMessagesTests();
-		WebModuleUtil.copyModuleMessagesIntoWebapp(mod, "unused/real/path");
-		
-		assertThat(propertiesWritten.getProperty("withoutPrefix"), is("Without prefix"));
-		assertNull(propertiesWritten.getProperty("mymodule.withoutPrefix"));
-	}
-	
-	private void partialMockWebModuleUtilForMessagesTests() throws Exception {
-		PowerMockito.spy(WebModuleUtil.class);
-		
-		// cannot use the traditional when(WMU.insertInto(...)).thenAnswer(...) because calling the method throws an exception
-		PowerMockito.doAnswer(new Answer<Boolean>() {
-			
-			@Override
-			public Boolean answer(InvocationOnMock invocation) throws Throwable {
-				propertiesWritten = (Properties) invocation.getArguments()[1];
-				return true;
-			}
-		}).when(WebModuleUtil.class, "insertIntoModuleMessagePropertiesFile", anyString(), any(Properties.class),
-		    anyString());
 	}
 	
 	private Module buildModuleForMessageTest() throws ParserConfigurationException {

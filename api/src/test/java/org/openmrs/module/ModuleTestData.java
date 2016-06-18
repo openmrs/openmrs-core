@@ -60,12 +60,12 @@ public class ModuleTestData {
 		willStopCallCount.put(moduleId, 0);
 		stoppedCallCount.put(moduleId, 0);
 		
-		willRefreshContextCallTime.put(moduleId, 0l);
-		contextRefreshedCallTime.put(moduleId, 0l);
-		willStartCallTime.put(moduleId, 0l);
-		startedCallTime.put(moduleId, 0l);
-		willStopCallTime.put(moduleId, 0l);
-		stoppedCallTime.put(moduleId, 0l);
+		willRefreshContextCallTime.put(moduleId, 0L);
+		contextRefreshedCallTime.put(moduleId, 0L);
+		willStartCallTime.put(moduleId, 0L);
+		startedCallTime.put(moduleId, 0L);
+		willStopCallTime.put(moduleId, 0L);
+		stoppedCallTime.put(moduleId, 0L);
 	}
 	
 	public synchronized Integer getWillRefreshContextCallCount(String moduleId) {

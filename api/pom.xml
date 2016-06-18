@@ -152,10 +152,6 @@
          </exclusions>
       </dependency>
       <dependency>
-         <groupId>c3p0</groupId>
-         <artifactId>c3p0</artifactId>
-      </dependency>
-      <dependency>
          <groupId>net.sf.ehcache</groupId>
          <artifactId>ehcache</artifactId>
       </dependency>
@@ -221,6 +217,12 @@
            <groupId>org.codehaus.jackson</groupId>
            <artifactId>jackson-mapper-asl</artifactId>
        </dependency>
+       <dependency>
+		   <groupId>org.codehaus.groovy</groupId>
+		   <artifactId>groovy-all</artifactId>
+		   <version>2.4.6</version>
+		   <type>jar</type>
+	   </dependency>
    </dependencies>
    <build>
      <resources>

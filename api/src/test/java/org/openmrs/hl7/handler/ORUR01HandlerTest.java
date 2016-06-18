@@ -17,6 +17,7 @@ import ca.uhn.hl7v2.model.v25.message.ORU_R01;
 import ca.uhn.hl7v2.model.v25.segment.NK1;
 import ca.uhn.hl7v2.model.v25.segment.OBR;
 import ca.uhn.hl7v2.model.v25.segment.OBX;
+import ca.uhn.hl7v2.model.v26.segment.MSH;
 import ca.uhn.hl7v2.parser.GenericParser;
 import org.junit.Assert;
 import org.junit.Before;
@@ -268,8 +269,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "ORC|RE||||||||20080219085345|1^Joe\r"
 		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
 		        + "OBX|18|DT|5096^RETURN VISIT DATE^99DCT||20080506|||||||||20080212\r"
-		        + "OBR|19|||5096^PROBLEM LIST^99DCT\r"
-		        + "OBX|1|CWE|5096^PROBLEM ADDED^99DCT||PROPOSED^PELVIC MASS^99DCT|||||||||20080212";
+		        + "OBR|19|||1284^PROBLEM LIST^99DCT\r"
+		        + "OBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^PELVIC MASS^99DCT|||||||||20080212";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
@@ -278,7 +279,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		    initialOccurrences + 1, Context.getConceptService().getConceptProposals("PELVIC MASS").size());
 		
 	}
-	
+
 	/**
 	 * Should create a concept proposal because of the key string in the message
 	 * 
@@ -296,11 +297,9 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "PV1||O|1^Bishop Muge||||1^asdf asdf (5-9)|||||||||||||||||||||||||||||||||||||20081003|||||||V\r"
 		        + "ORC|RE||||||||20081006115645|1^Super User\r"
 		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
-		        + "OBX|1|CWE|5096^PAY CATEGORY^99DCT||5096^PILOT^99DCT|||||||||20081003\r"
 		        + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20081004|||||||||20081003\r"
-		        + "OBR|3|||5096^PROBLEM LIST^99DCT\r"
-		        + "OBX|1|CWE|5018^PROBLEM ADDED^99DCT||5096^HUMAN IMMUNODEFICIENCY VIRUS^99DCT|||||||||20081003\r"
-		        + "OBX|2|CWE|5089^PROBLEM ADDED^99DCT||PROPOSED^ASDFASDFASDF^99DCT|||||||||20081003";
+		        + "OBR|3|||1284^PROBLEM LIST^99DCT\r"
+		        + "OBX|2|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^ASDFASDFASDF^99DCT|||||||||20081003";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
@@ -1267,4 +1266,54 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 			return false;
 		}
 	}
+
+
+
+	/**
+	 * @see ORUR01Handler#getForm(MSH)
+	 * @verifies pass if return value is null when uuid and id is null
+	 */
+	@Test
+	public void getForm_shouldPassIfReturnValueIsNullWhenUuidAndIdIsNull() throws Exception {
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "NK1|1|Jones^Jane^Lee^^RN|3A^Parent^99REL||||||||||||F|19751016|||||||||||||||||2^^^L^PI\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714\r"
+		        + "OBR|3|||23^FOOD CONSTRUCT^99DCT\r"
+		        + "OBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
+		
+		ORUR01Handler oruHandler = new ORUR01Handler();
+		Message hl7message = parser.parse(hl7String);
+		ORU_R01 oru = (ORU_R01) hl7message;
+		ca.uhn.hl7v2.model.v25.segment.MSH msh = oru.getMSH();
+		Form form = oruHandler.getForm(msh);
+		Assert.assertNull(form);
+	}
+
+	/**
+	 * @see ORUR01Handler#getForm(MSH)
+	 * @verifies pass if return value is not null when uuid or id is not null
+	 */
+	@Test
+	public void getForm_shouldPassIfReturnValueIsNotNullWhenUuidOrIdIsNotNull() throws Exception {
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "NK1|1|Jones^Jane^Lee^^RN|3A^Parent^99REL||||||||||||F|19751016|||||||||||||||||2^^^L^PI\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714\r"
+		        + "OBR|3|||23^FOOD CONSTRUCT^99DCT\r"
+		        + "OBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
+		
+		ORUR01Handler oruHandler = new ORUR01Handler();
+		Message hl7message = parser.parse(hl7String);
+		ORU_R01 oru = (ORU_R01) hl7message;
+		ca.uhn.hl7v2.model.v25.segment.MSH msh = oru.getMSH();
+		Form form = oruHandler.getForm(msh);
+		Assert.assertNotNull(form);	
+		}
 }

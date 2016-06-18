@@ -52,8 +52,6 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	
 	private String username;
 	
-	private String secretQuestion;
-	
 	private Set<Role> roles;
 	
 	private Map<String, String> userProperties;
@@ -413,7 +411,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	
 	@Override
 	public String toString() {
-		return username;
+		return StringUtils.isNotBlank(username) ? username : systemId;
 	}
 	
 	/**

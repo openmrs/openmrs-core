@@ -10,7 +10,6 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -22,7 +21,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.FlushMode;
 import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Disjunction;
@@ -34,13 +35,10 @@ import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
-import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Provider;
 import org.openmrs.Visit;
-import org.openmrs.VisitType;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -227,10 +225,21 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterDAO#getSavedEncounterDatetime(org.openmrs.Encounter)
 	 */
 	public Date getSavedEncounterDatetime(Encounter encounter) {
-		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
-		    "select encounter_datetime from encounter where encounter_id = :encounterId");
-		sql.setInteger("encounterId", encounter.getEncounterId());
-		return (Date) sql.uniqueResult();
+		//Usages of this method currently are internal and don't require a flush
+		//Otherwise we end up with premature flushes of Immutable types like Obs
+		//that are associated to the encounter before we void and replace them
+		Session session = sessionFactory.getCurrentSession();
+		FlushMode flushMode = session.getFlushMode();
+		session.setFlushMode(FlushMode.MANUAL);
+		try {
+			SQLQuery sql = session
+			        .createSQLQuery("select encounter_datetime from encounter where encounter_id = :encounterId");
+			sql.setInteger("encounterId", encounter.getEncounterId());
+			return (Date) sql.uniqueResult();
+		}
+		finally {
+			session.setFlushMode(flushMode);
+		}
 	}
 	
 	/**
@@ -274,10 +283,17 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterDAO#getSavedEncounterLocation(org.openmrs.Encounter)
 	 */
 	public Location getSavedEncounterLocation(Encounter encounter) {
-		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
-		    "select location_id from encounter where encounter_id = :encounterId");
-		sql.setInteger("encounterId", encounter.getEncounterId());
-		return Context.getLocationService().getLocation((Integer) sql.uniqueResult());
+		Session session = sessionFactory.getCurrentSession();
+		FlushMode flushMode = session.getFlushMode();
+		session.setFlushMode(FlushMode.MANUAL);
+		try {
+			SQLQuery sql = session.createSQLQuery("select location_id from encounter where encounter_id = :encounterId");
+			sql.setInteger("encounterId", encounter.getEncounterId());
+			return Context.getLocationService().getLocation((Integer) sql.uniqueResult());
+		}
+		finally {
+			session.setFlushMode(flushMode);
+		}
 	}
 	
 	/**

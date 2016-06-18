@@ -11,9 +11,9 @@
 
 -->
 <dataset>
-	<orders order_id="6" order_type_id="2" urgency="ROUTINE" concept_id="88" orderer="1" instructions="1x minutely" start_date="2008-08-19 00:00:00.0" encounter_id="6" discontinued="false" creator="1" date_created="2008-08-19 12:24:10.0" voided="false" patient_id="2"/>
+	<orders order_id="6" order_type_id="2" urgency="ROUTINE" concept_id="88" orderer="1" instructions="1x minutely" start_date="2008-08-19 00:00:00.0" encounter_id="6" discontinued="false" creator="1" date_created="2008-08-19 12:24:10.0" voided="false" patient_id="2" uuid="53fe7834-f2c5-490a-9313-7844257f2d09"/>
 	<drug_order order_id="6" drug_inventory_id="3" dose="325.0" frequency="     " prn="false" complex="false"/>
-	
-	<orders order_id="7" order_type_id="2" urgency="ROUTINE" concept_id="88" orderer="1" instructions="1x minutely" start_date="2008-08-19 00:00:00.0" encounter_id="6" discontinued="false" creator="1" date_created="2008-08-19 12:24:10.0" voided="false" patient_id="2"/>
+
+	<orders order_id="7" order_type_id="2" urgency="ROUTINE" concept_id="88" orderer="1" instructions="1x minutely" start_date="2008-08-19 00:00:00.0" encounter_id="6" discontinued="false" creator="1" date_created="2008-08-19 12:24:10.0" voided="false" patient_id="2" uuid="3c76d5ca-7660-4bf7-bc91-37c46f7b9b1d"/>
 	<drug_order order_id="7" drug_inventory_id="3" dose="325.0" units="   " prn="false" complex="false"/>
 </dataset>

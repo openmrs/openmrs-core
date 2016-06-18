@@ -62,7 +62,8 @@ public class ConceptNameTagValidator implements Validator {
 			
 			if (cnt.getTag() != null) {
 				ConceptNameTag currentTag = Context.getConceptService().getConceptNameTagByName(cnt.getTag());
-				if (currentTag != null && OpenmrsUtil.nullSafeEqualsIgnoreCase(currentTag.getTag(), cnt.getTag())) {
+				if (currentTag != null && !OpenmrsUtil.nullSafeEqualsIgnoreCase(cnt.getUuid(), currentTag.getUuid())
+				        && OpenmrsUtil.nullSafeEqualsIgnoreCase(currentTag.getTag(), cnt.getTag())) {
 					errors.rejectValue("tag", "Concept.name.tag.duplicate");
 				}
 			}

@@ -401,8 +401,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 */
 	@Transactional(readOnly = true)
 	public Integer resolveUserId(XCN xcn) throws HL7Exception {
-		// TODO: properly handle family and given names. For now I'm treating
-		// givenName+familyName as a username.
 		String idNumber = xcn.getIDNumber().getValue();
 		String familyName = xcn.getFamilyName().getSurname().getValue();
 		String givenName = xcn.getGivenName().getValue();
@@ -430,19 +428,21 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		} else {
 			// log.debug("searching for user by name");
 			try {
-				StringBuilder username = new StringBuilder();
-				if (familyName != null) {
-					username.append(familyName);
+				List<User> users = Context.getUserService().getUsersByName(givenName,familyName,true);
+				if( users == null) {
+					log.error("Error resolving user with id '" + idNumber + "' family name '" + familyName
+							  + "' and given name '" + givenName + "': User not found");
+					return null;
 				}
-				if (givenName != null) {
-					if (username.length() > 0) {
-						username.append(" "); // separate names with a space
-					}
-					username.append(givenName);
+				else if( users.size() == 1){
+					return users.get(0).getUserId();
 				}
-				// log.debug("looking for username '" + username + "'");
-				User user = Context.getUserService().getUserByUsername(username.toString());
-				return user.getUserId();
+				else{
+					//Return null if that user ambiguous
+					log.error("Error resolving user with id '" + idNumber + "' family name '" + familyName
+							  + "' and given name '" + givenName + "': Found " + users.size() + " ambiguous users.");
+					return null;
+				}
 			}
 			catch (Exception e) {
 				log.error("Error resolving user with id '" + idNumber + "' family name '" + familyName

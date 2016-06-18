@@ -20,7 +20,7 @@ import org.openmrs.BaseOpenmrsObject;
  * Tests methods on the {@link WebUtil} class.
  */
 public class WebUtilTest {
-	
+
 	/**
 	 * @see org.openmrs.web.WebUtil#getContextPath()
 	 * @verifies should return empty string if webappname is null
@@ -96,7 +96,45 @@ public class WebUtilTest {
 	public void normalizeLocale_shouldNotFailWithWhitespaceOnly() throws Exception {
 		Assert.assertNull(WebUtil.normalizeLocale("      "));
 	}
-	
+
+	/**
+	 * @see WebUtil#normalizeLocale(String)
+	 * @verifies does not fail with "\t"
+	 */
+	@Test
+	public void normalizeLocale_shouldNotFailWithTab() throws Exception {
+		String s = new String(new byte[]{0x9}, "ASCII");
+		Assert.assertNull(WebUtil.normalizeLocale(s));
+	}
+
+	/**
+	 * @see WebUtil#normalizeLocale(String)
+	 * @verifies does not fail with "Ši"
+	 */
+	@Test
+	public void normalizeLocale_shouldNotFailWithUnicode() {
+		Assert.assertNull(WebUtil.normalizeLocale("Ši"));
+	}
+
+	/**
+	 * @see WebUtil#normalizeLocale(String)
+	 * @verifies does not fail with "s"
+	 */
+	@Test
+	public void normalizeLocale_shouldNotFailWithSingleChar() {
+		Assert.assertNull(WebUtil.normalizeLocale("s"));
+	}
+
+	/**
+	 * @see WebUtil#normalizeLocale(String)
+	 * @verifies does not fail with "_"
+	 */
+	@Test
+	public void normalizeLocale_shouldNotFailWithUnderline() throws Exception {
+		String s = new String(new byte[]{0x5f}, "ASCII");
+		Assert.assertNull(WebUtil.normalizeLocale(s));
+	}
+
 	/**
 	 * @see WebUtil#sanitizeLocales(String)
 	 * @verifies skip over invalid locales

@@ -534,4 +534,18 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to add, edit, delete allergies")
 	public static final String MODIFY_ALLERGIES = "Task: Modify Allergies";
 
+	@AddOnStartup(description = "Able to get order sets")
+	public static final String GET_ORDER_SETS = "Get Order Sets";
+	
+	@AddOnStartup(description = "Able to manage order sets")
+	public static final String MANAGE_ORDER_SETS = "Manage Order Sets";
+
+	@AddOnStartup(description = "Able to get concept attribute types")
+	public static final String GET_CONCEPT_ATTRIBUTE_TYPES = "Get Concept Attribute Types";
+
+	@AddOnStartup(description = "Able to add/edit/retire concept attribute types")
+	public static final String MANAGE_CONCEPT_ATTRIBUTE_TYPES = "Manage Concept Attribute Types";
+
+	public static final String PURGE_CONCEPT_ATTRIBUTE_TYPES = "Purge Concept Attribute Types";
+
 }

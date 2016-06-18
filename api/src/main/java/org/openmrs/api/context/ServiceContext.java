@@ -32,15 +32,14 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
+import org.openmrs.api.OrderSetService;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
-import org.openmrs.arden.ArdenService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
@@ -214,13 +213,6 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * @return patientset-related services
-	 */
-	public PatientSetService getPatientSetService() {
-		return getService(PatientSetService.class);
-	}
-	
-	/**
 	 * @return cohort related service
 	 */
 	public CohortService getCohortService() {
@@ -232,6 +224,13 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setCohortService(CohortService cs) {
 		setService(CohortService.class, cs);
+	}
+	
+	/**
+	 * @return order set service
+	 */
+	public OrderSetService getOrderSetService() {
+		return getService(OrderSetService.class);
 	}
 	
 	/**
@@ -268,14 +267,7 @@ public class ServiceContext implements ApplicationContextAware {
 	public ProgramWorkflowService getProgramWorkflowService() {
 		return getService(ProgramWorkflowService.class);
 	}
-	
-	/**
-	 * @return ardenService
-	 */
-	public ArdenService getArdenService() {
-		return getService(ArdenService.class);
-	}
-	
+
 	/**
 	 * @return logicService
 	 */
@@ -319,14 +311,7 @@ public class ServiceContext implements ApplicationContextAware {
 	public void setProgramWorkflowService(ProgramWorkflowService programWorkflowService) {
 		setService(ProgramWorkflowService.class, programWorkflowService);
 	}
-	
-	/**
-	 * @param ardenService
-	 */
-	public void setArdenService(ArdenService ardenService) {
-		setService(ArdenService.class, ardenService);
-	}
-	
+
 	/**
 	 * @param logicService
 	 */
@@ -414,10 +399,10 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * @param patientSetService the patientSetService to set
+	 * @param orderSetService the orderSetService to set
 	 */
-	public void setPatientSetService(PatientSetService patientSetService) {
-		setService(PatientSetService.class, patientSetService);
+	public void setOrderSetService(OrderSetService orderSetService) {
+		setService(OrderSetService.class, orderSetService);
 	}
 	
 	/**

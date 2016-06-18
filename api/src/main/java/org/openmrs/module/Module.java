@@ -170,6 +170,9 @@ public final class Module {
 		catch (InstantiationException e) {
 			throw new ModuleException("Unable to load/instantiate moduleActivator: '" + getActivatorName() + "'", name, e);
 		}
+		catch (NoClassDefFoundError e) {
+			throw new ModuleException("Unable to load/find moduleActivator: '" + getActivatorName() + "'", name, e);
+		}
 		
 		return moduleActivator;
 	}
@@ -478,13 +481,18 @@ public final class Module {
 	
 	/**
 	 * @return the extensions
+	 *
+	 * @should not expand extensionNames if extensionNames is null
+	 * @should not expand extensionNames if extensionNames is empty
+	 * @should not expand extensionNames if extensions matches extensionNames
+	 * @should expand extensionNames if extensions does not match extensionNames 
 	 */
 	public List<Extension> getExtensions() {
-		if (extensions.size() == extensionNames.size()) {
+		if (extensionsMatchNames()) {
 			return extensions;
+		} else {
+			return expandExtensionNames();
 		}
-		
-		return expandExtensionNames();
 	}
 	
 	/**
@@ -512,6 +520,28 @@ public final class Module {
 		}
 		this.extensionNames = map;
 	}
+
+	/**
+	 * Tests whether extensions match the contents of extensionNames.  Used to determine
+	 * if expandExtensionNames should to be called.<br>
+	 *
+	 * @return a boolean for whether extensions match the contents of extensionNames
+	 */
+	private boolean extensionsMatchNames() {
+		if (extensionNames != null && extensionNames.size() != 0) {
+			for (Extension ext : extensions) {
+				if (extensionNames.get(ext.getPointId()) != ext.getClass().getName()) {
+					return false;
+				}
+			}
+
+			if (extensions.size() != extensionNames.size()) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
 	
 	/**
 	 * Expand the temporary extensionNames map of pointid-classname to full pointid-classobject. <br>
@@ -526,7 +556,8 @@ public final class Module {
 		if (moduleClsLoader == null) {
 			log.debug(String.format("Module class loader is not available, maybe the module %s is stopped/stopping",
 			    getName()));
-		} else if (extensions.size() != extensionNames.size()) {
+		} else if (!extensionsMatchNames()) {
+			extensions.clear();
 			for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
 				String point = entry.getKey();
 				String className = entry.getValue();
@@ -584,7 +615,9 @@ public final class Module {
 	 * a string containing language and country codes.
 	 *
 	 * @return mapping from locales to properties
+	 * @deprecated as of 2.0 because messages are automatically loaded from the classpath
 	 */
+	@Deprecated
 	public Map<String, Properties> getMessages() {
 		return messages;
 	}
@@ -593,7 +626,9 @@ public final class Module {
 	 * Sets the map from locale to properties used by this module.
 	 *
 	 * @param messages map of locale to properties for that locale
+	 * @deprecated as of 2.0 because messages are automatically loaded from the classpath
 	 */
+	@Deprecated
 	public void setMessages(Map<String, Properties> messages) {
 		this.messages = messages;
 	}
@@ -686,6 +721,10 @@ public final class Module {
 		return ModuleFactory.isModuleStarted(this);
 	}
 	
+	/**
+	 * @param e string to set as startup error message
+	 * @should throw exception when message is null
+	 */
 	public void setStartupErrorMessage(String e) {
 		if (e == null) {
 			throw new ModuleException("Startup error message cannot be null", this.getModuleId());
@@ -701,6 +740,10 @@ public final class Module {
 	 * @param exceptionMessage optional. the default message to show on the first line of the error
 	 *            message
 	 * @param t throwable stacktrace to include in the error message
+	 *
+	 * @should throw exception when throwable is null
+	 * @should set StartupErrorMessage when exceptionMessage is null
+	 * @should append throwable's message to exceptionMessage
 	 */
 	public void setStartupErrorMessage(String exceptionMessage, Throwable t) {
 		if (t == null) {
@@ -741,7 +784,10 @@ public final class Module {
 		
 		return moduleId;
 	}
-	
+
+	/*
+	 * @should dispose all classInstances, not AdvicePoints
+	 */	
 	public void disposeAdvicePointsClassInstance() {
 		if (advicePoints == null) {
 			return;

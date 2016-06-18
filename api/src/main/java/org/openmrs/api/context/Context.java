@@ -28,6 +28,7 @@ import org.aopalliance.aop.Advice;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Allergen;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
@@ -44,8 +45,8 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
+import org.openmrs.api.OrderSetService;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ProviderService;
@@ -53,7 +54,6 @@ import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.db.ContextDAO;
-import org.openmrs.arden.ArdenService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
@@ -430,13 +430,6 @@ public class Context {
 	}
 
 	/**
-	 * @return patientset-related services
-	 */
-	public static PatientSetService getPatientSetService() {
-		return getServiceContext().getPatientSetService();
-	}
-
-	/**
 	 * @return user-related services
 	 */
 	public static UserService getUserService() {
@@ -450,6 +443,14 @@ public class Context {
 		return getServiceContext().getOrderService();
 	}
 
+	/**
+	 * @return orderSet service
+	 * @since 1.12
+	 */
+	public static OrderSetService getOrderSetService() {
+		return getServiceContext().getOrderSetService();
+	}
+	
 	/**
 	 * @return form service
 	 */
@@ -498,13 +499,6 @@ public class Context {
 	 */
 	public static AlertService getAlertService() {
 		return getServiceContext().getAlertService();
-	}
-
-	/**
-	 * @return arden service
-	 */
-	public static ArdenService getArdenService() {
-		return getServiceContext().getArdenService();
 	}
 
 	/**
@@ -595,7 +589,7 @@ public class Context {
 	 */
 	public static User getAuthenticatedUser() {
 		if (Daemon.isDaemonThread()) {
-			return contextDAO.getUserByUuid(Daemon.DAEMON_USER_UUID);
+			return Daemon.getDaemonThreadUser();
 		}
 
 		return getUserContext().getAuthenticatedUser();
@@ -1088,6 +1082,9 @@ public class Context {
 
 		PersonName.setFormat(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT));
+
+		Allergen.setOtherNonCodedConceptUuid(Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GP_ALLERGEN_OTHER_NON_CODED_UUID));
 	}
 
 	/**

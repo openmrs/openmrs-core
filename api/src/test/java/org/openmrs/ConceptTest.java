@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.Vector;
 
 import org.databene.benerator.Generator;
 import org.databene.benerator.factory.GeneratorFactory;
@@ -29,12 +30,13 @@ import org.junit.Test;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 /**
  * Behavior-driven tests of the Concept class.
  */
-public class ConceptTest {
+public class ConceptTest extends BaseContextSensitiveTest {
 	
 	final static String NAME_PATTERN = "[a-z]*";
 	
@@ -1101,4 +1103,114 @@ public class ConceptTest {
 		Assert.assertNotNull(c.getDescriptions());
 	}
 
+	/**
+	 * @see Concept#hasName(String, Locale)
+	 * @verifies hasName returns false if name parameter Is Null
+	 */
+	@Test
+	public void hasName_shouldReturnFalseIfNameIsNull()
+	{
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Test Concept", new Locale("en"))) ;
+		Locale localeToSearch = new Locale("en", "UK");
+		Assert.assertFalse(concept.hasName(null, localeToSearch));
+	}
+
+	/**
+	 * @see Concept#hasName(String, Locale)
+	 * @verifies hasName returns ture if locale parameter Is Null but name is found
+	 */
+	@Test
+	public void hasName_shouldReturnTrueIfLocaleIsNullButNameExists()
+	{
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Test Concept", new Locale("en"))) ;
+		Assert.assertTrue(concept.hasName("Test Concept", null));
+	}
+
+	/**
+	 * @see Concept#hasName(String, Locale)
+	 * @verifies hasName returns false if name is not in concept and locale is null
+	 */
+	@Test
+	public void hasName_shouldReturnFalseIfLocaleIsNullButNameDoesNotExist()
+	{
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Test Concept", new Locale("en")));
+		Assert.assertFalse(concept.hasName("Unknown concept", null));
+	}
+	
+	/**
+	 * @see Concept#removeDescription(ConceptDescription)
+	 */
+	@Test
+	@Verifies(value = "description removed", method = "removeDescription(ConceptDescription)")
+	public void removeDescription_shouldRemoveDescriptionPassedFromListOfDescriptions() throws Exception {
+		Concept c = new Concept();
+		ConceptDescription c1 = new ConceptDescription(new Integer(1));
+		c1.setDescription("Description 1");
+		ConceptDescription c2 = new ConceptDescription(new Integer(2));
+		c2.setDescription("Description 2");
+		c.addDescription(c1);
+		c.addDescription(c2);
+		Collection<ConceptDescription> descriptions = c.getDescriptions();
+		Assert.assertEquals(2, descriptions.size());
+		c.removeDescription(c1);
+		descriptions = c.getDescriptions();
+		Assert.assertTrue(descriptions.contains(c2));
+		Assert.assertEquals(1, descriptions.size());
+	}
+
+	/**
+	 * @see Concept#removeConceptMapping(ContentMap)
+	 */
+	@Test
+	@Verifies(value = "description removed", method = "removeConceptMapping(ContentMap)")
+	public void removeConceptMapping_shouldRemoveConceptMapPassedFromListOfMappings() throws Exception {
+		Concept c = new Concept();
+		ConceptMap c1 = new ConceptMap(new Integer(1));
+		c1.setConceptMapType(new ConceptMapType(new Integer(1)));
+		ConceptMap c2 = new ConceptMap(new Integer(2));
+		c2.setConceptMapType(new ConceptMapType(new Integer(2)));
+		c.addConceptMapping(c1);
+		c.addConceptMapping(c2);
+		Collection<ConceptMap> mappings = c.getConceptMappings();
+		Assert.assertEquals(2, mappings.size());
+		c.removeConceptMapping(c1);
+		mappings = c.getConceptMappings();
+		Assert.assertTrue(mappings.contains(c2));
+		Assert.assertEquals(1, mappings.size());
+	}
+
+	/**
+	 * @see Concept#toString()
+	 */
+	@Test
+	public void toString_shouldReturnConceptIdIfPresentOrNull(){
+		Concept c = new Concept();
+		Assert.assertEquals("Concept #null", c.toString());
+		c.setId(2);
+		Assert.assertEquals("Concept #2", c.toString());
+	}
+	
+	@Test
+	public void findPossibleValues_shouldReturnListOfConceptsFromMatchingResults() throws Exception{
+		Concept concept = new Concept(1);
+		concept.addName(new ConceptName("findPossibleValueTest", Context.getLocale()));
+		concept.addDescription(new ConceptDescription("en desc", Context.getLocale()));
+		
+		List<Concept> expectedConcepts = new Vector<Concept>();
+		
+		concept = Context.getConceptService().saveConcept(concept);
+		expectedConcepts.add(concept);
+		Concept newConcept = new Concept(2);
+		newConcept.addName(new ConceptName("New Test Concept", Context.getLocale()));
+		newConcept.addDescription(new ConceptDescription("new desc", Context.getLocale()));
+		newConcept = Context.getConceptService().saveConcept(newConcept);
+		
+		Context.updateSearchIndexForType(ConceptName.class);
+		
+		List<Concept> resultConcepts = newConcept.findPossibleValues("findPossibleValueTest");
+		Assert.assertEquals(expectedConcepts, resultConcepts);
+	}
 }
