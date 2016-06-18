@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -19,7 +20,7 @@ import javax.persistence.MappedSuperclass;
  * It implements the uuid variable that all objects are expected to have.
  */
 @MappedSuperclass
-public abstract class BaseOpenmrsObject implements OpenmrsObject {
+public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	
 	@Column(name = "uuid", unique = true, nullable = false, length = 38)
 	private String uuid = UUID.randomUUID().toString();
