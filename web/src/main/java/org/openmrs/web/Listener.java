@@ -50,6 +50,7 @@ import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.MemoryLeakUtil;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
@@ -151,6 +152,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			// erase things in the dwr file
 			clearDWRFile(servletContext);
 
+			String appDataRuntimeProperty = null;
+			
 			// Try to get the runtime properties
 			Properties props = getRuntimeProperties();
 			if (props != null) {
@@ -160,6 +163,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				// used during sessionFactory creation
 				Context.setRuntimeProperties(props);
 				
+				appDataRuntimeProperty = props.getProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
+				
 				//ensure that we always log the runtime properties file that we are using
 				//since openmrs is just booting, the log levels are not yet set. TRUNK-4835
 				Logger.getLogger(getClass()).setLevel(Level.INFO);
@@ -167,6 +172,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 						+ OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
 			}
 
+			setApplicationDataDirectory(servletContext, appDataRuntimeProperty);
+			
 			Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 
 			if (!setupNeeded()) {
@@ -279,17 +286,20 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		WebConstants.BUILD_TIMESTAMP = servletContext.getInitParameter("build.timestamp");
 		WebConstants.WEBAPP_NAME = getContextPath(servletContext);
 		WebConstants.MODULE_REPOSITORY_URL = servletContext.getInitParameter("module.repository.url");
+	}
+
+	private void setApplicationDataDirectory(ServletContext servletContext, String appDataRuntimeProperty) {
 		// note: the below value will be overridden after reading the runtime properties if the
 		// "application_data_directory" runtime property is set
 		String appDataDir = servletContext.getInitParameter("application.data.directory");
 		if (StringUtils.hasLength(appDataDir)) {
 			OpenmrsUtil.setApplicationDataDirectory(appDataDir);
-		} else if (!"openmrs".equalsIgnoreCase(WebConstants.WEBAPP_NAME)) {
+		} else if (!"openmrs".equalsIgnoreCase(WebConstants.WEBAPP_NAME) && !StringUtils.hasLength(appDataRuntimeProperty)) {
 			OpenmrsUtil.setApplicationDataDirectory(OpenmrsUtil.getApplicationDataDirectory() + File.separator
 			        + WebConstants.WEBAPP_NAME);
 		}
 	}
-
+	
 	/**
 	 * Hacky way to get the current contextPath. This will usually be "openmrs". This method will be
 	 * obsolete when servlet api ~2.6 comes out...at which point a call like
