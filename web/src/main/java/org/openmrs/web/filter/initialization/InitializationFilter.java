@@ -68,6 +68,7 @@ import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebDaemon;
 import org.openmrs.web.filter.StartupFilter;
+import org.openmrs.web.filter.update.UpdateFilter;
 import org.openmrs.web.filter.util.CustomResourceLoader;
 import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
@@ -1692,6 +1693,7 @@ public class InitializationFilter extends StartupFilter {
 						
 						// start openmrs
 						try {
+							UpdateFilter.setUpdatesRequired(false);
 							WebDaemon.startOpenmrs(filterConfig.getServletContext());
 						}
 						catch (DatabaseUpdateException updateEx) {
