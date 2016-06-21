@@ -574,7 +574,7 @@ public class UpdateFilter extends StartupFilter {
 	/**
 	 * @param updatesRequired the updatesRequired to set
 	 */
-	protected static synchronized void setUpdatesRequired(boolean updatesRequired) {
+	public static synchronized void setUpdatesRequired(boolean updatesRequired) {
 		UpdateFilter.updatesRequired = updatesRequired;
 	}
 	
