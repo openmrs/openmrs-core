@@ -21,7 +21,7 @@ import org.springframework.web.util.JavaScriptUtils;
 /**
  * {@link Controller} for the login page
  */
-@Controller
+@Controller("coreLoginController")
 public class LoginController {
 	
 	private static final String LOGIN_FORM = "/login";
