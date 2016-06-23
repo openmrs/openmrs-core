@@ -9,12 +9,6 @@
  */
 package org.openmrs.messagesource.impl;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -24,6 +18,12 @@ import org.openmrs.messagesource.PresentationMessage;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Extensible implementation of the MessageSourceService, which relies on injected implementations
@@ -106,10 +106,9 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 *      java.util.Locale)
 	 */
 	public String getMessage(MessageSourceResolvable resolvable, Locale locale) {
-		if((resolvable.getCodes()[0]).equals((activeMessageSource.getMessage(resolvable, locale)))){
+		if ((resolvable.getCodes()[0]).equals((activeMessageSource.getMessage(resolvable, locale)))) {
 			return (resolvable.getCodes()[(resolvable.getCodes().length) - 1]);
-		}
-		else{
+		} else {
 			return activeMessageSource.getMessage(resolvable, locale);
 		}
 	}

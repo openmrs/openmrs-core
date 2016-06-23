@@ -9,20 +9,6 @@
  */
 package org.openmrs.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +34,19 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -165,7 +164,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, cohort.size());
 		Assert.assertTrue(cohort.contains(2));
 	}
-
+	
 	/**
 	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, Date)
 	 */
@@ -177,7 +176,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(cohort.contains(6));
 		Assert.assertTrue(cohort.contains(8));
 	}
-
+	
 	/**
 	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, Date)
 	 */
@@ -190,7 +189,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(cohort.contains(2));
 		Assert.assertTrue(cohort.contains(7));
 	}
-
+	
 	/**
 	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, Date)
 	 */
@@ -203,7 +202,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, cohort.size());
 		Assert.assertTrue(cohort.contains(2));
 	}
-
+	
 	/**
 	 * @see {@link PatientSetService#getPatientsByProgramAndState(org.openmrs.Program, List, Date, Date)
 	 */
@@ -274,7 +273,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, cohort.size());
 		Assert.assertTrue(cohort.contains(2));
 	}
-
+	
 	/**
 	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, GroupMethod, Date, Date)
 	 */
@@ -289,7 +288,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(cohort.contains(7));
 		Assert.assertTrue(cohort.contains(8));
 	}
-
+	
 	/**
 	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, GroupMethod, Date, Date)
 	 */
@@ -303,7 +302,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, cohort.size());
 		Assert.assertTrue(cohort.contains(2));
 	}
-
+	
 	/**
 	 * @see PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, GroupMethod, Date, Date)
 	 */
@@ -318,7 +317,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(cohort.contains(2));
 		Assert.assertTrue(cohort.contains(7));
 	}
-
+	
 	/**
 	 * @see {@link PatientSetService#getPatientsHavingObs(Integer,TimeModifier,Modifier,Object,Date,Date)}
 	 *      test = should get patients by concept and false boolean value

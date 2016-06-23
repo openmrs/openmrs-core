@@ -9,13 +9,6 @@
  */
 package org.openmrs.web.controller.user;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
@@ -45,6 +38,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
+import javax.servlet.http.HttpSession;
 
 /**
  * Used for creating/editing User
@@ -111,7 +110,8 @@ public class UserFormController {
 		if (!isNewUser(user))
 			model.addAttribute("changePassword", new UserProperties(user.getUserProperties()).isSupposedToChangePassword());
 		
-		if (user.getPerson().getId() != null && !Context.getProviderService().getProvidersByPerson(user.getPerson()).isEmpty()) {
+		if (user.getPerson().getId() != null
+		        && !Context.getProviderService().getProvidersByPerson(user.getPerson()).isEmpty()) {
 			model.addAttribute("isProvider", true);
 			model.addAttribute("providerList", Context.getProviderService().getProvidersByPerson(user.getPerson()));
 		} else {
@@ -134,9 +134,9 @@ public class UserFormController {
 	        @RequestParam(required = false, value = "confirm") String confirm,
 	        @RequestParam(required = false, value = "forcePassword") Boolean forcePassword,
 	        @RequestParam(required = false, value = "roleStrings") String[] roles,
-	        @RequestParam(required = false, value = "createNewPerson") String createNewPerson, 
-			@RequestParam(required = false, value = "providerCheckBox") String addToProviderTableOption,
-			@ModelAttribute("user") User user, BindingResult errors) {
+	        @RequestParam(required = false, value = "createNewPerson") String createNewPerson,
+	        @RequestParam(required = false, value = "providerCheckBox") String addToProviderTableOption,
+	        @ModelAttribute("user") User user, BindingResult errors) {
 		
 		UserService us = Context.getUserService();
 		MessageSourceService mss = Context.getMessageSourceService();
@@ -263,7 +263,7 @@ public class UserFormController {
 			}
 			
 			//Check if admin wants the person associated with the user to be added to the Provider Table
-			if(addToProviderTableOption != null) {
+			if (addToProviderTableOption != null) {
 				Provider provider = new Provider();
 				provider.setPerson(user.getPerson());
 				provider.setIdentifier(user.getSystemId());
