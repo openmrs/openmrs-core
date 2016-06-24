@@ -377,18 +377,21 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		
 		service.scheduleTask(td);
 		
-		// refetch the task
-		td = service.getTaskByName(NAME);
+		// Give the task up to 90 seconds to execute (to ensure this doesn't hang forever, this shouldn't be reached)
+		long startTime = System.currentTimeMillis();
+		while ((actualExecutionTime == null || td.getLastExecutionTime() == null) && secondsInPast(startTime) <= 90) {
+			td = service.getTaskByName(NAME);
+		}
 		
-		// sleep a while until the task has executed, up to 30 times
-		for (int x = 0; x < 30 && (actualExecutionTime == null || td.getLastExecutionTime() == null); x++)
-			Thread.sleep(200);
+		String nullMessage = "The actualExecutionTime variable is null, so either the SessionTask.execute method hasn't finished or didn't get run";
+		Assert.assertNotNull(nullMessage, actualExecutionTime);
 		
-		Assert
-		        .assertNotNull(
-		            "The actualExecutionTime variable is null, so either the SessionTask.execute method hasn't finished or didn't get run",
-		            actualExecutionTime);
-		assertEquals("Last execution time in seconds is wrong", actualExecutionTime.longValue() / 1000, td
-		        .getLastExecutionTime().getTime() / 1000, 1);
+		long actualSeconds = actualExecutionTime.longValue() / 1000;
+		long taskSeconds = td.getLastExecutionTime().getTime() / 1000;
+		assertEquals("Last execution time in seconds is wrong", actualSeconds, taskSeconds, 1);
+	}
+	
+	private long secondsInPast(long startTime) {
+		return (System.currentTimeMillis() - startTime) / 1000;
 	}
 }
