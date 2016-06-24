@@ -467,8 +467,6 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		final String PROVIDER_ROLE = "Provider";
 		final String AUTHENTICATED_ROLE = "Authenticated";
 		Connection connection = upgradeTestUtil.getConnection();
-		//Add Visits exists in the test db above, first get rid of it
-		//DatabaseUtil.executeSQL(connection, "delete from privilege where privilege = 'Add Visits'", false);
 		//Insert Get encounters privilege for testing purposes
 		final String insertPrivilegeQuery = "insert into privilege (privilege,uuid) values ('" + GET_ENCOUNTERS
 		        + "','a6a521de-3992-11e6-899a-a4d646d86a8a')";
