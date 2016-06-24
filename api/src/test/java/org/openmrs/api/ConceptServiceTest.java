@@ -3300,15 +3300,15 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		//search phrase with OR
 		searchResults = conceptService.getConcepts("SALBUTAMOL OR INHALER", Collections
-	        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
-	
+		        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
+		
 		Assert.assertEquals(1, searchResults.size());
 		assertThat(searchResults.get(0).getWord(), is("SALBUTAMOL OR INHALER"));
 		
 		//search phrase with NOT
 		searchResults = conceptService.getConcepts("SALBUTAMOL INHALER NOT", Collections
-	        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
-	
+		        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
+		
 		Assert.assertEquals(1, searchResults.size());
 		assertThat(searchResults.get(0).getWord(), is("SALBUTAMOL INHALER NOT"));
 	}
