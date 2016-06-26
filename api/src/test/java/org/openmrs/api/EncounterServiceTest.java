@@ -2971,7 +2971,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<Encounter> encounters = encounterService.getEncountersByPatient("Joh", false);
 		assertEquals(3, encounters.size());
 	}
-
+//tst
 	/**
 	 * @see EncounterService#getEncountersByPatient(String,boolean)
 	 */
