@@ -2959,24 +2959,27 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		assertEquals("Two New Order Groups Get Saved", 2, orderGroups.size());
 	}
+	
 	/**
 	 * @see EncounterService#getEncountersByPatient(String,boolean)
 	 */
 	@Test
-	@Verifies(value = "should get all unvoided encounters for the given substring of patient names", method = "getEncountersByPatient(String,boolean)")
+	@Verifies(value = "get all unvoided encounters for the given substring of patient names", method = "getEncountersByPatient(String,boolean)")
 	public void getEncountersByPatient_shouldGetAllUnvoidedEncountersForTheGivenSubstringOfPatientNames() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
+		
 		List<Encounter> encounters = encounterService.getEncountersByPatient("Joh", false);
 		assertEquals(3, encounters.size());
 	}
+	
 	/**
 	 * @see EncounterService#getEncountersByPatient(String,boolean)
 	 */
 	@Test
-	@Verifies(value = "should not get encounters for the given substring of patient identifiers", method = "getEncountersByPatient(String,boolean)")
-	@Verifies(value = "should not get unvoided encounters for the given substring of patient identifiers", method = "getEncountersByPatient(String,boolean)")
+	@Verifies(value = "not get encounters for the given substring of patient identifiers", method = "getEncountersByPatient(String,boolean)")
 	public void getEncountersByPatient_shouldNotGetEncountersForTheGivenSubstringOfPatientIdentifiers() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
+		
 		List<Encounter> encounters = encounterService.getEncountersByPatient("123", false);
 		assertEquals(0, encounters.size());
 		encounters = encounterService.getEncountersByPatient("1234", false);
