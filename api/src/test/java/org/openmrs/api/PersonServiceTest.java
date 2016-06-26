@@ -184,6 +184,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		pAddressList.add(pAddress);
 		patient.setAddresses(pAddressList);
 		patient.addAddress(pAddress);
+		patient.setCauseOfDeath(Context.getConceptService().getConcept(3));
 		patient.setDeathDate(new Date());
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
