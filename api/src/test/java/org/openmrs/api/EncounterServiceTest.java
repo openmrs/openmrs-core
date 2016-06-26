@@ -2977,6 +2977,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should not get encounters for the given substring of patient identifiers", method = "getEncountersByPatient(String,boolean)")
+	@Verifies(value = "should not get unvoided encounters for the given substring of patient identifiers", method = "getEncountersByPatient(String,boolean)")
 	public void getEncountersByPatient_shouldNotGetEncountersForTheGivenSubstringOfPatientIdentifiers() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		
