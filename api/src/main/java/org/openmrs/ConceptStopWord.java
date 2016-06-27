@@ -21,7 +21,7 @@ import java.util.Locale;
  * 
  * @since 1.8
  */
-public class ConceptStopWord extends BaseOpenmrsObject implements java.io.Serializable {
+public class ConceptStopWord extends BaseOpenmrsObject {
 	
 	private static final long serialVersionUID = 3671020002642184656L;
 	

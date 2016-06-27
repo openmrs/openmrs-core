@@ -9,16 +9,15 @@
  */
 package org.openmrs.notification;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Patient;
+
+import java.util.Date;
 
 /**
  * Not currently used.
  */
-public class Note extends BaseOpenmrsData implements Serializable {
+public class Note extends BaseOpenmrsData {
 	
 	/**
 	 * 

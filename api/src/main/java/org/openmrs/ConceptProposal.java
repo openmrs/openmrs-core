@@ -9,11 +9,11 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
+
+import java.util.Date;
 
 /**
  * A ConceptProposal is a temporary holder for concept that should be in the system. When defining
@@ -22,7 +22,7 @@ import org.openmrs.util.OpenmrsConstants;
  * encounter that prompted this proposal is updated with a new observation pointing at the new (or
  * edited) concept.
  */
-public class ConceptProposal extends BaseOpenmrsObject implements java.io.Serializable {
+public class ConceptProposal extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 57344L;
 	

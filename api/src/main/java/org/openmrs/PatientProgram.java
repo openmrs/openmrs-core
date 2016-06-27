@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.openmrs.util.OpenmrsUtil;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -16,12 +18,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openmrs.util.OpenmrsUtil;
-
 /**
  * PatientProgram
  */
-public class PatientProgram extends BaseOpenmrsData implements java.io.Serializable {
+public class PatientProgram extends BaseOpenmrsData {
 	
 	public static final long serialVersionUID = 0L;
 	

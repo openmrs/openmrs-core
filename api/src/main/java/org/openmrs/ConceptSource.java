@@ -15,7 +15,7 @@ import java.util.Date;
  * A concept source is defined as any institution that keeps a concept dictionary. Examples are
  * ICD9, ICD10, SNOMED, or any other OpenMRS implementation
  */
-public class ConceptSource extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class ConceptSource extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 375L;
 	

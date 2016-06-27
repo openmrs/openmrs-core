@@ -14,7 +14,7 @@ package org.openmrs;
  * 
  * @version 1.0
  */
-public class Privilege extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Privilege extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 312L;
 	

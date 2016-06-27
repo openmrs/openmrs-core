@@ -15,7 +15,7 @@ package org.openmrs;
  *
  * @since 1.8
  */
-public class ConceptSearchResult implements java.io.Serializable {
+public class ConceptSearchResult {
 	
 	private static final long serialVersionUID = 6394792520635644989L;
 	

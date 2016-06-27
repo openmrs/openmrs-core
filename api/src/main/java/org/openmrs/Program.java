@@ -9,16 +9,16 @@
  */
 package org.openmrs;
 
+import org.openmrs.annotation.AllowDirectAccess;
+
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.openmrs.annotation.AllowDirectAccess;
-
 /**
  * Program
  */
-public class Program extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Program extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 3214567L;
 	

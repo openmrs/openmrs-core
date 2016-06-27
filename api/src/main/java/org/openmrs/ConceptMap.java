@@ -17,7 +17,7 @@ import org.hibernate.search.annotations.IndexedEmbedded;
  * The concept map object represents a mapping of Concept to ConceptSource. A concept can have 0 to
  * N mappings to any and all concept sources in the database.
  */
-public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
+public class ConceptMap extends BaseConceptMap {
 	
 	public static final long serialVersionUID = 754677L;
 	

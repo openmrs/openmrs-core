@@ -9,17 +9,17 @@
  */
 package org.openmrs;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * Field
  *
  * @version 1.0
  */
-public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Field extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 4454L;
 	

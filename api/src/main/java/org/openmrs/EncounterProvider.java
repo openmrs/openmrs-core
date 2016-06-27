@@ -9,14 +9,12 @@
  */
 package org.openmrs;
 
-import java.io.Serializable;
-
 /**
  * Mapping Class between Encounters and Providers which allows many to many relationship.
  * 
  * @since 1.9
  */
-public class EncounterProvider extends BaseOpenmrsData implements Serializable {
+public class EncounterProvider extends BaseOpenmrsData {
 	
 	public static final long serialVersionUID = 1L;
 	

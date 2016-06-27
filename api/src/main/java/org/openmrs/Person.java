@@ -9,6 +9,12 @@
  */
 package org.openmrs;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.openmrs.util.OpenmrsUtil;
+import org.springframework.util.StringUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -20,12 +26,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.openmrs.util.OpenmrsUtil;
-import org.springframework.util.StringUtils;
-
 /**
  * A Person in the system. This can be either a small person stub, or indicative of an actual
  * Patient in the system. This class holds the generic person things that both the stubs and
@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
  * 
  * @see org.openmrs.Patient
  */
-public class Person extends BaseOpenmrsData implements java.io.Serializable {
+public class Person extends BaseOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
 	

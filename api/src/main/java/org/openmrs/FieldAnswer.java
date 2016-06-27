@@ -9,16 +9,16 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 import org.codehaus.jackson.annotate.JsonIgnore;
+
+import java.util.Date;
 
 /**
  * FieldAnswer
  * 
  * @version 1.0
  */
-public class FieldAnswer extends BaseOpenmrsObject implements java.io.Serializable {
+public class FieldAnswer extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 5656L;
 	

@@ -9,18 +9,6 @@
  */
 package org.openmrs;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Set;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -33,6 +21,18 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.Format;
 import org.openmrs.util.Format.FORMAT_TYPE;
 import org.openmrs.util.OpenmrsUtil;
+
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * An observation is a single unit of clinical information. <br>
@@ -63,7 +63,7 @@ import org.openmrs.util.OpenmrsUtil;
  * 
  * @see Encounter
  */
-public class Obs extends BaseOpenmrsData implements java.io.Serializable {
+public class Obs extends BaseOpenmrsData {
 	
 	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";
 	

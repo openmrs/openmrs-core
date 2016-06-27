@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.openmrs.util.NaturalStrings;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -17,12 +19,10 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.openmrs.util.NaturalStrings;
-
 /**
  * ProgramWorkflow
  */
-public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class ProgramWorkflow extends BaseOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
 	

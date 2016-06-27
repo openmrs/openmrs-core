@@ -9,13 +9,13 @@
  */
 package org.openmrs;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.RoleConstants;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A Role is just an aggregater of {@link Privilege}s. {@link User}s contain a number of roles
@@ -25,7 +25,7 @@ import org.openmrs.util.RoleConstants;
  *
  * @see Privilege
  */
-public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Role extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 1234233L;
 	

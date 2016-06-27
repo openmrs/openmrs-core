@@ -9,13 +9,11 @@
  */
 package org.openmrs;
 
-import java.io.Serializable;
-
 /**
  * @since 1.12
  * OrderSetMember
  */
-public class OrderSetMember extends BaseOpenmrsMetadata implements Serializable {
+public class OrderSetMember extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 72232L;
 	
