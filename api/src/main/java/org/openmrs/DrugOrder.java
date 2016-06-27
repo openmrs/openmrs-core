@@ -10,15 +10,16 @@
 package org.openmrs;
 
 import org.apache.commons.lang.StringUtils;
-import static org.openmrs.Order.Action.DISCONTINUE;
 import org.openmrs.util.OpenmrsUtil;
+
+import static org.openmrs.Order.Action.DISCONTINUE;
 
 /**
  * DrugOrder
  *
  * @version 1.0
  */
-public class DrugOrder extends Order implements java.io.Serializable {
+public class DrugOrder extends Order {
 
 	public static final long serialVersionUID = 72232L;
 

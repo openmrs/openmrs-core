@@ -10,12 +10,11 @@
 package org.openmrs;
 
 import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Indexed;
 
 /**
  * ConceptDatatype
  */
-public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class ConceptDatatype extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 473L;
 	

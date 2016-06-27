@@ -9,14 +9,12 @@
  */
 package org.openmrs;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang.StringUtils;
 
 /**
  * PatientIdentifierType
  */
-public class PatientIdentifierType extends BaseOpenmrsMetadata implements Serializable {
+public class PatientIdentifierType extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 211231L;
 	

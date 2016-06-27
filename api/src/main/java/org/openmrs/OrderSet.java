@@ -11,7 +11,6 @@ package org.openmrs;
 
 import org.openmrs.api.APIException;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +20,7 @@ import java.util.List;
  * 
  * @since 1.12
  */
-public class OrderSet extends BaseOpenmrsMetadata implements Serializable {
+public class OrderSet extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 72232L;
 	

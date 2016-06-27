@@ -9,14 +9,12 @@
  */
 package org.openmrs.hl7;
 
-import java.io.Serializable;
-
 /**
  * Represents an hl7 message that has yet to be processed.
  * 
  * @see HL7Service
  */
-public class HL7InQueue extends HL7QueueItem implements Serializable {
+public class HL7InQueue extends HL7QueueItem {
 	
 	private static final long serialVersionUID = 8882704913734764446L;
 	

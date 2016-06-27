@@ -15,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * ConceptStateConversion
  */
-public class ConceptStateConversion extends BaseOpenmrsObject implements java.io.Serializable {
+public class ConceptStateConversion extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 3214511L;
 	

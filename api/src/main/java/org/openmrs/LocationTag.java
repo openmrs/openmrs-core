@@ -15,7 +15,7 @@ package org.openmrs;
  * @see Location
  * @since 1.5
  */
-public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class LocationTag extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 7654L;
 	

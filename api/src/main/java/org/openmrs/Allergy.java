@@ -9,22 +9,19 @@
  */
 package org.openmrs;
 
+import org.apache.commons.lang3.StringUtils;
+import org.openmrs.util.OpenmrsUtil;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
-import org.openmrs.BaseOpenmrsData;
-import org.openmrs.Concept;
-import org.openmrs.Patient;
-import org.openmrs.util.OpenmrsUtil;
-
 /**
  * Represent allergy
  */
-public class Allergy extends BaseOpenmrsData implements java.io.Serializable {
+public class Allergy extends BaseOpenmrsData {
 	
 	public static final long serialVersionUID = 1;
 	

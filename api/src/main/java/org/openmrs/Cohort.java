@@ -9,7 +9,9 @@
  */
 package org.openmrs;
 
-import java.io.Serializable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,13 +19,10 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * This class represents a list of patientIds.
  */
-public class Cohort extends BaseOpenmrsData implements Serializable {
+public class Cohort extends BaseOpenmrsData  {
 	
 	public static final long serialVersionUID = 0L;
 	

@@ -9,11 +9,6 @@
  */
 package org.openmrs;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.DocumentId;
@@ -21,11 +16,16 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.openmrs.api.context.Context;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Set;
+
 /**
  * Drug
  */
 @Indexed
-public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Drug extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 285L;
 	

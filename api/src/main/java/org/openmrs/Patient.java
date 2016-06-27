@@ -10,13 +10,11 @@
 package org.openmrs;
 
 import java.util.Collection;
-import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
-
-import org.openmrs.api.APIException;
 
 /**
  * Defines a Patient in the system. A patient is simply an extension of a person and all that that
@@ -24,7 +22,7 @@ import org.openmrs.api.APIException;
  * 
  * @version 2.0
  */
-public class Patient extends Person implements java.io.Serializable {
+public class Patient extends Person {
 	
 	public static final long serialVersionUID = 93123L;
 	

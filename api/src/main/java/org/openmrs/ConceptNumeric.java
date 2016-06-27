@@ -9,11 +9,11 @@
  */
 package org.openmrs;
 
-import java.util.HashSet;
-import java.util.TreeSet;
-
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.Indexed;
+
+import java.util.HashSet;
+import java.util.TreeSet;
 
 /**
  * The ConceptNumeric extends upon the Concept object by adding some number range values
@@ -21,7 +21,7 @@ import org.hibernate.search.annotations.Indexed;
  * @see Concept
  */
 @Indexed
-public class ConceptNumeric extends Concept implements java.io.Serializable {
+public class ConceptNumeric extends Concept {
 	
 	public static final long serialVersionUID = 47323L;
 	

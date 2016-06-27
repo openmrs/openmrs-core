@@ -9,6 +9,11 @@
  */
 package org.openmrs;
 
+import org.openmrs.annotation.AllowDirectAccess;
+import org.openmrs.annotation.DisableHandlers;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.handler.VoidHandler;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,11 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openmrs.annotation.AllowDirectAccess;
-import org.openmrs.annotation.DisableHandlers;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.handler.VoidHandler;
-
 /**
  * An Encounter represents one visit or interaction of a patient with a healthcare worker. Every
  * encounter can have 0 to n Observations associated with it Every encounter can have 0 to n Orders
@@ -35,7 +35,7 @@ import org.openmrs.api.handler.VoidHandler;
  * @see Obs
  * @see Order
  */
-public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
+public class Encounter extends BaseOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
 	

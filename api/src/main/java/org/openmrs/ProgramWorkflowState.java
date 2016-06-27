@@ -9,12 +9,10 @@
  */
 package org.openmrs;
 
-import java.io.Serializable;
-
 /**
  * ProgramWorkflowState
  */
-public class ProgramWorkflowState extends BaseOpenmrsMetadata implements Serializable {
+public class ProgramWorkflowState extends BaseOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
 	

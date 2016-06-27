@@ -17,7 +17,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  *
  * @since 1.9
  */
-public class ConceptMapType extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class ConceptMapType extends BaseOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
 	
