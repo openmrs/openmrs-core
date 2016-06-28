@@ -7764,4 +7764,116 @@
 		<!-- visit_attribute_type has not null constraint on uuid -->
 		<!-- visit_type has not null constraint on uuid -->
 	</changeSet>
+
+    <changeSet id="TRUNK-3422-20160216-1700" author="Wyclif" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*) FROM privilege  WHERE privilege='Get Visits';
+            </sqlCheck>
+        </preConditions>
+        <comment>Add "Get Visits" privilege</comment>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Visits" />
+            <column name="description" value="Able to get visits" />
+            <column name="uuid" value="4e7bdbc8-3975-11e6-899a-a4d646d86a8a" />
+        </insert>
+    </changeSet>
+
+    <changeSet id="TRUNK-3422-20160216-1701" author="Wyclif" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*) FROM privilege  WHERE privilege='Get Providers';
+            </sqlCheck>
+        </preConditions>
+        <comment>Add "Get Providers" privilege</comment>
+        <insert tableName="privilege">
+            <column name="privilege" value="Get Providers" />
+            <column name="description" value="Able to get Providers" />
+            <column name="uuid" value="5594745c-3988-11e6-899a-a4d646d86a8a" />
+        </insert>
+    </changeSet>
+
+    <changeSet id="TRUNK-3422-20160216-1702" author="Wyclif" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*) FROM privilege  WHERE privilege='Add Visits';
+            </sqlCheck>
+        </preConditions>
+        <comment>Add "Add Visits" privilege</comment>
+        <insert tableName="privilege">
+            <column name="privilege" value="Add Visits" />
+            <column name="description" value="Able to add visits" />
+            <column name="uuid" value="65d14b28-3989-11e6-899a-a4d646d86a8a" />
+        </insert>
+    </changeSet>
+
+    <changeSet id="TRUNK-3422-20160216-1703" author="PralayRamteke" >
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">
+                    SELECT count(*) FROM role_privilege  WHERE privilege='Get Encounters';
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <comment>Add "Get Visits" privilege to the roles having "Get Encounter"</comment>
+        <sql>
+            INSERT INTO role_privilege (role, privilege)
+            SELECT role, 'Get Visits' from role_privilege rp
+            WHERE rp.privilege = 'Get Encounters'
+            AND NOT EXISTS (SELECT role, privilege FROM role_privilege rp2 WHERE rp2.privilege='Get Visits'
+            AND rp2.role=rp.role);
+        </sql>
+    </changeSet>
+
+    <changeSet id="TRUNK-3422-20160216-1704" author="PralayRamteke" >
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">
+                    SELECT count(*) FROM role_privilege  WHERE privilege='Get Encounters';
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <comment>Add "Get Providers" privilege to the roles having "Get Encounter"</comment>
+        <sql>
+            INSERT INTO role_privilege (role, privilege)
+            SELECT role, 'Get Providers' from role_privilege rp
+            WHERE rp.privilege = 'Get Encounters'
+            AND NOT EXISTS (SELECT role, privilege FROM role_privilege rp2 WHERE rp2.privilege='Get Providers'                  AND rp2.role=rp.role);
+        </sql>
+    </changeSet>
+
+    <changeSet id="TRUNK-3422-20160216-1705" author="Wyclif" >
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">
+                    SELECT count(*) FROM role_privilege  WHERE privilege='Add Encounters';
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <comment>Add "Add Visits" privilege to the roles having "Add Encounters"</comment>
+        <sql>
+            INSERT INTO role_privilege (role, privilege)
+            SELECT role, 'Add Visits' from role_privilege rp
+            WHERE rp.privilege = 'Add Encounters'
+            AND NOT EXISTS (SELECT role, privilege FROM role_privilege rp2 WHERE rp2.privilege='Add Visits'                     AND rp2.role=rp.role);
+        </sql>
+    </changeSet>
+
+    <changeSet id="TRUNK-3422-20160216-1706" author="Wyclif" >
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">
+                    SELECT count(*) FROM role_privilege  WHERE privilege='Edit Encounters';
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <comment>Add "Add Visits" privilege to the roles having "Edit Encounters"</comment>
+        <sql>
+            INSERT INTO role_privilege (role, privilege)
+            SELECT role, 'Add Visits' from role_privilege rp
+            WHERE rp.privilege = 'Edit Encounters'
+            AND NOT EXISTS (SELECT role, privilege FROM role_privilege rp2 WHERE rp2.privilege='Add Visits'                     AND rp2.role=rp.role);
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
