@@ -11,12 +11,15 @@ package org.openmrs.util.databasechange;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +39,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -43,7 +47,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Tests database upgrade from OpenMRS 1.9.7.
  */
-public class Database1_9_7UpgradeIT {
+public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	
 	public static final String TEST_DATA_DIR = "/org/openmrs/util/databasechange/";
 	
@@ -444,4 +448,49 @@ public class Database1_9_7UpgradeIT {
 		assertThat(drug_orders, containsInAnyOrder(row("order_id", "6", "dose_units", null, "frequency", null), row(
 		    "order_id", "7", "dose_units", null, "frequency", null)));
 	}
+
+    @Test
+    public void shouldAddTheNecessaryPrivilegesAndAssignThemToSpecificRoles() throws Exception {
+        final String GET_ENCOUNTERS = "Get Encounters";
+        final String ADD_VISITS = "Add Visits";
+        final String ADD_ENCOUNTERS = "Add Encounters";
+        final String EDIT_ENCOUNTERS = "Edit Encounters";
+        final String GET_VISITS = "Get Visits";
+        final String GET_PROVIDERS = "Get Providers";
+        final String PROVIDER_ROLE = "Provider";
+        final String AUTHENTICATED_ROLE = "Authenticated";
+        Connection connection = upgradeTestUtil.getConnection();
+        //Insert Get encounters privilege for testing purposes
+        final String insertPrivilegeQuery = "insert into privilege (privilege,uuid) values ('" + GET_ENCOUNTERS
+                + "','a6a521de-3992-11e6-899a-a4d646d86a8a')";
+        DatabaseUtil.executeSQL(connection, insertPrivilegeQuery, false);
+        //Assign some privileges to some roles for testing purposes
+        DatabaseUtil.executeSQL(connection, "insert into role_privilege (role,privilege) values ('" + PROVIDER_ROLE + "', '"
+                + GET_ENCOUNTERS + "'), ('" + PROVIDER_ROLE + "', '" + EDIT_ENCOUNTERS + "'), ('" + AUTHENTICATED_ROLE
+                + "', '" + ADD_ENCOUNTERS + "')", false);
+        connection.commit();
+
+        String query = "select privilege from privilege where privilege = '" + GET_VISITS + "' or " + "privilege = '"
+                + GET_PROVIDERS + "'";
+        assertEquals(0, DatabaseUtil.executeSQL(connection, query, true).size());
+        assertTrue(roleHasPrivilege(PROVIDER_ROLE, GET_ENCOUNTERS));
+        assertTrue(roleHasPrivilege(PROVIDER_ROLE, EDIT_ENCOUNTERS));
+        assertFalse(roleHasPrivilege(PROVIDER_ROLE, GET_VISITS));
+        assertFalse(roleHasPrivilege(PROVIDER_ROLE, GET_PROVIDERS));
+        assertFalse(roleHasPrivilege(PROVIDER_ROLE, ADD_VISITS));
+        assertTrue(roleHasPrivilege(AUTHENTICATED_ROLE, ADD_ENCOUNTERS));
+
+        upgradeTestUtil.upgrade();
+        connection = upgradeTestUtil.getConnection();
+        assertEquals(2, DatabaseUtil.executeSQL(connection, query, true).size());
+        assertTrue(roleHasPrivilege(PROVIDER_ROLE, GET_VISITS));
+        assertTrue(roleHasPrivilege(PROVIDER_ROLE, GET_PROVIDERS));
+        assertTrue(roleHasPrivilege(PROVIDER_ROLE, ADD_VISITS));
+        assertTrue(roleHasPrivilege(AUTHENTICATED_ROLE, ADD_VISITS));
+    }
+
+    private boolean roleHasPrivilege(String role, String privilege) {
+        final String query = "select * from role_privilege where role='" + role + "' and privilege ='" + privilege + "'";
+        return DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(), query, true).size() == 1;
+    }
 }
