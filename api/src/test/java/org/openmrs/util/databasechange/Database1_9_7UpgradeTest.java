@@ -439,6 +439,7 @@ public class Database1_9_7UpgradeTest extends BaseContextSensitiveTest {
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		
 		upgradeTestUtil.executeDataset(TEST_DATA_DIR + "UpgradeTest-orderWithBlankUnitsOrFrequency.xml");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
 		
