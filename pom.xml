@@ -425,7 +425,7 @@
 			<dependency>
 				<groupId>org.azeckoski</groupId>
 				<artifactId>reflectutils</artifactId>
-				<version>0.9.14</version>
+				<version>0.9.20</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
