@@ -7768,13 +7768,13 @@
     <changeSet id="TRUNK-3422-20160216-1700" author="Wyclif" >
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
-                SELECT count(*) FROM privilege  WHERE privilege='Get Visits';
+                SELECT count(*) FROM privilege  WHERE privilege='View Visits';
             </sqlCheck>
         </preConditions>
-        <comment>Add "Get Visits" privilege</comment>
+        <comment>Add "View Visits" privilege</comment>
         <insert tableName="privilege">
-            <column name="privilege" value="Get Visits" />
-            <column name="description" value="Able to get visits" />
+            <column name="privilege" value="View Visits" />
+            <column name="description" value="Able to view visits" />
             <column name="uuid" value="4e7bdbc8-3975-11e6-899a-a4d646d86a8a" />
         </insert>
     </changeSet>
@@ -7782,13 +7782,13 @@
     <changeSet id="TRUNK-3422-20160216-1701" author="Wyclif" >
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
-                SELECT count(*) FROM privilege  WHERE privilege='Get Providers';
+                SELECT count(*) FROM privilege  WHERE privilege='View Providers';
             </sqlCheck>
         </preConditions>
-        <comment>Add "Get Providers" privilege</comment>
+        <comment>Add "View Providers" privilege</comment>
         <insert tableName="privilege">
-            <column name="privilege" value="Get Providers" />
-            <column name="description" value="Able to get Providers" />
+            <column name="privilege" value="View Providers" />
+            <column name="description" value="Able to view Providers" />
             <column name="uuid" value="5594745c-3988-11e6-899a-a4d646d86a8a" />
         </insert>
     </changeSet>
@@ -7811,16 +7811,16 @@
         <preConditions onFail="MARK_RAN">
             <not>
                 <sqlCheck expectedResult="0">
-                    SELECT count(*) FROM role_privilege  WHERE privilege='Get Encounters';
+                    SELECT count(*) FROM role_privilege  WHERE privilege='View Encounters';
                 </sqlCheck>
             </not>
         </preConditions>
-        <comment>Add "Get Visits" privilege to the roles having "Get Encounter"</comment>
+        <comment>Add "View Visits" privilege to the roles having "View Encounter"</comment>
         <sql>
             INSERT INTO role_privilege (role, privilege)
-            SELECT role, 'Get Visits' from role_privilege rp
-            WHERE rp.privilege = 'Get Encounters'
-            AND NOT EXISTS (SELECT role, privilege FROM role_privilege rp2 WHERE rp2.privilege='Get Visits'
+            SELECT role, 'View Visits' from role_privilege rp
+            WHERE rp.privilege = 'View Encounters'
+            AND NOT EXISTS (SELECT role, privilege FROM role_privilege rp2 WHERE rp2.privilege='View Visits'
             AND rp2.role=rp.role);
         </sql>
     </changeSet>
@@ -7829,16 +7829,16 @@
         <preConditions onFail="MARK_RAN">
             <not>
                 <sqlCheck expectedResult="0">
-                    SELECT count(*) FROM role_privilege  WHERE privilege='Get Encounters';
+                    SELECT count(*) FROM role_privilege  WHERE privilege='View Encounters';
                 </sqlCheck>
             </not>
         </preConditions>
-        <comment>Add "Get Providers" privilege to the roles having "Get Encounter"</comment>
+        <comment>Add "View Providers" privilege to the roles having "View Encounter"</comment>
         <sql>
             INSERT INTO role_privilege (role, privilege)
-            SELECT role, 'Get Providers' from role_privilege rp
-            WHERE rp.privilege = 'Get Encounters'
-            AND NOT EXISTS (SELECT role, privilege FROM role_privilege rp2 WHERE rp2.privilege='Get Providers'                  AND rp2.role=rp.role);
+            SELECT role, 'View Providers' from role_privilege rp
+            WHERE rp.privilege = 'View Encounters'
+            AND NOT EXISTS (SELECT role, privilege FROM role_privilege rp2 WHERE rp2.privilege='View Providers'                  AND rp2.role=rp.role);
         </sql>
     </changeSet>
 
