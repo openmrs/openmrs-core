@@ -13,5 +13,11 @@
 <dataset>
   <concept concept_id="1000" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="957eba27-2b38-43e8-91a9-4dfe3956a32d"/>
   <concept_description concept_description_id="1000" concept_id="1000" description="this is a description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="0a6f34ea-043a-4e69-b418-1d7bb66b99b6"/>
-  <concept_name concept_id="1000" name="Some coded concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="8edfd54f-b189-43dd-86e0-913591978e48"/>
+  <concept_name concept_id="1000" name="Some coded concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="8edfd54f-b189-43dd-86e0-913591978e48"/>
+
+  <concept concept_id="1001" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="de1104fe-4074-11e6-94a2-34e6d77c15d6"/>
+  <concept_description concept_description_id="1001" concept_id="1001" description="this is a description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="c73820d7-4077-11e6-94a2-34e6d77c15d6"/>
+  <concept_name concept_id="1001" name="Some other coded concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="2" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="ed729dad-4077-11e6-94a2-34e6d77c15d6"/>
+  <concept_reference_term concept_reference_term_id="1" concept_source_id="1" code="1001" name="no term name3" description="" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="6e81ca8d-842a-4748-b92c-607acc6d5e6a"/>
+  <concept_reference_map concept_map_id="1" concept_id="1001" concept_reference_term_id="1" concept_map_type_id="6" creator="1" date_created="2004-08-12 00:00:00.0" uuid="25a54a60-157a-448d-bc17-62210572bfa8"/>
 </dataset>
