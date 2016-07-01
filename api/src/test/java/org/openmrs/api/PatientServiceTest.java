@@ -196,6 +196,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// patient.removeAddress(pAddress);
 		
 		patient.setDeathDate(new Date());
+		patient.setCauseOfDeath(Context.getConceptService().getConcept(3));
 		// patient.setCauseOfDeath("air");
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
@@ -234,6 +235,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// patient.removeAddress(pAddress);
 		
 		patient.setDeathDate(new Date());
+		patient.setCauseOfDeath(Context.getConceptService().getConcept(3));
 		patient.setBirthdateEstimated(true);
 		// patient.setCauseOfDeath("air");
 		patient.setBirthdate(new Date());
@@ -2580,7 +2582,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient preferred = patientService.getPatient(999);
 		preferred.setCauseOfDeath(Context.getConceptService().getConcept(3));
 		preferred.setDeathDate(new Date());
-		preferred.setDead(true);
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
 		//merge with not preferred
@@ -2647,7 +2648,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		cDate.set(Calendar.MILLISECOND, 0);
 		Patient preferred = patientService.getPatient(999);
 		preferred.setDeathDate(cDate.getTime());
-		preferred.setDead(true);
 		preferred.setCauseOfDeath(Context.getConceptService().getConcept(3));
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
@@ -2670,6 +2670,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		cDate.setTime(new Date());
 		Patient preferred = patientService.getPatient(999);
 		preferred.setDeathDate(cDate.getTime());
+		preferred.setCauseOfDeath(Context.getConceptService().getConcept(3));
 		preferred.setDeathdateEstimated(true);
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
