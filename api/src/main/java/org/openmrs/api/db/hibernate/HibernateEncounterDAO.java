@@ -423,16 +423,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 				criteria.add(or);
 			}
 		} else {
-			String name = null;
-			String identifier = null;
-			if (query.matches(".*\\d+.*")) {
-				identifier = query;
-			} else {
-				// there is no number in the string, search on name
-				name = query;
-			}
-			criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
-			    new ArrayList<PatientIdentifierType>(), false, orderByNames, false);
+			criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(query, query,
+				    new ArrayList<PatientIdentifierType>(), true, orderByNames, true);
 		}
 		
 		return criteria;
