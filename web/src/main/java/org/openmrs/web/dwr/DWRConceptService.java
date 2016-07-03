@@ -94,6 +94,7 @@ public class DWRConceptService {
 	 * @should not return concept by given id if datatype is not included
 	 * @should not return concept by given id if datatype is excluded
 	 * @should include
+	 * @should not return duplicates when searching by concept id
 	 * @since 1.8
 	 */
 	public List<Object> findBatchOfConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
@@ -135,7 +136,7 @@ public class DWRConceptService {
 		
 		try {
 			ConceptService cs = Context.getConceptService();
-			List<ConceptSearchResult> searchResults = new Vector<ConceptSearchResult>();
+			Set<ConceptSearchResult> searchResults = new HashSet<ConceptSearchResult>();
 			
 			if (phrase.matches("\\d+")) {
 				// user searched on a number. Insert concept with
