@@ -381,6 +381,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @should get all unvoided encounters for the given patient identifier
 	 * @should throw error if given null parameter
 	 * @should include voided encounters in the returned list if includedVoided is true
+	 * @should get all unvoided encounters for the given substring of patient names
+	 * @should not get encounters for the given substring of patient identifiers
 	 * @since 1.7
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
