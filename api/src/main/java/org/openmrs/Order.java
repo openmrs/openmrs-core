@@ -363,6 +363,38 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
+	 * Convenience method to determine if the order is activated as of the current date
+	 * 
+	 * @return boolean indicating whether the order was activated before or on the current date
+	 * @since 2.0
+	 * @see #isActivated(java.util.Date)
+	 */
+	public boolean isActivated() {
+		return isActivated(new Date());
+	}
+	
+	/**
+	 * Convenience method to determine if the order is activated as of the specified date
+	 * 
+	 * @param checkDate - the date on which to check order. if null, will use current date
+	 * @return boolean indicating whether the order was activated before or on the check date
+	 * @since 2.0
+	 * @should return true if an order was activated on the check date
+	 * @should return true if an order was activated before the check date
+	 * @should return false if dateActivated is null
+	 * @should return false for an order activated after the check date
+	 */
+	public boolean isActivated(Date checkDate) {
+		if (dateActivated == null) {
+			return false;
+		}
+		if (checkDate == null) {
+			checkDate = new Date();
+		}
+		return OpenmrsUtil.compare(dateActivated, checkDate) <= 0;
+	}
+	
+	/**
 	 * Convenience method to determine if the order was active as of the current date
 	 * 
 	 * @since 1.10.1
@@ -381,6 +413,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should return true if an order expired on the check date
 	 * @should return true if an order was discontinued on the check date
 	 * @should return true if an order was activated on the check date
+	 * @should return true if an order was activated on the check date but scheduled for the future
 	 * @should return false for a voided order
 	 * @should return false for a discontinued order
 	 * @should return false for an expired order
@@ -395,7 +428,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 			checkDate = new Date();
 		}
 		
-		return isStarted(checkDate) && !isDiscontinued(checkDate) && !isExpired(checkDate);
+		return isActivated(checkDate) && !isDiscontinued(checkDate) && !isExpired(checkDate);
 	}
 	
 	/**
@@ -452,6 +485,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should fail if date stopped is after auto expire date
 	 * @should return true if check date is after date stopped but before auto expire date
 	 * @should return true if check date is after both date stopped auto expire date
+	 * @should return true if the order is scheduled for the future and activated on check date but
+	 *         the check date is after date stopped
 	 */
 	public boolean isDiscontinued(Date checkDate) {
 		if (dateStopped != null && autoExpireDate != null && dateStopped.after(autoExpireDate)) {
@@ -463,7 +498,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		if (checkDate == null) {
 			checkDate = new Date();
 		}
-		if (dateActivated == null || !isStarted(checkDate) || dateStopped == null) {
+		if (!isActivated(checkDate) || dateStopped == null) {
 			return false;
 		}
 		return checkDate.after(dateStopped);
@@ -505,7 +540,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		if (checkDate == null) {
 			checkDate = new Date();
 		}
-		if (dateActivated == null || !isStarted(checkDate)) {
+		if (!isActivated(checkDate)) {
 			return false;
 		}
 		if (isDiscontinued(checkDate) || autoExpireDate == null) {
