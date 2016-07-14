@@ -28,6 +28,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.openmrs.Order.Urgency;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtilTest;
@@ -513,6 +514,33 @@ public class OrderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see Order#isDiscontinued(Date)
+	 * @verifies return true if the order is scheduled for the future and activated on check date
+	 *           but the check date is after date stopped
+	 */
+	@Test
+	public void isDiscontinued_shouldReturnTrueIfTheOrderIsScheduledForTheFutureAndActivatedOnCheckDateButTheCheckDateIsAfterDateStopped()
+	        throws Exception {
+		// tests the case when a scheduled order is revised:
+		// in that case its original order is stopped.
+		// the stopped date of the original order is set to a moment before the activated date of the revised order.
+		// the order here represents such an original order
+		Order order = new Order();
+		order.setUrgency(Urgency.ON_SCHEDULED_DATE);
+		Date today = new Date();
+		Date scheduledDateInFuture = DateUtils.addMonths(today, 2);
+		order.setScheduledDate(scheduledDateInFuture);
+		Date activationDate = DateUtils.addDays(today, -2);
+		order.setDateActivated(activationDate);
+		Date stopDate = new Date();
+		OrderUtilTest.setDateStopped(order, stopDate);
+		assertNotNull(order.getDateActivated());
+		assertNotNull(order.getDateStopped());
+		assertNull(order.getAutoExpireDate());
+		assertTrue(order.isDiscontinued(DateUtils.addSeconds(stopDate, 1)));
+	}
+	
+	/**
 	 * @verifies return false for a voided order
 	 * @see Order#isExpired(java.util.Date)
 	 */
@@ -635,6 +663,59 @@ public class OrderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see Order#isActivated(Date)
+	 * @verifies return true if an order was activated on the check date
+	 */
+	@Test
+	public void isActivated_shouldReturnTrueIfAnOrderWasActivatedOnTheCheckDate() throws Exception {
+		Order order = new Order();
+		Date activationDate = DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT);
+		order.setDateActivated(activationDate);
+		assertNull(order.getDateStopped());
+		assertNull(order.getAutoExpireDate());
+		assertTrue(order.isActivated(activationDate));
+	}
+	
+	/**
+	 * @see Order#isActivated(Date)
+	 * @verifies return true if an order was activated before the check date
+	 */
+	@Test
+	public void isActivated_shouldReturnTrueIfAnOrderWasActivatedBeforeTheCheckDate() throws Exception {
+		Order order = new Order();
+		Date activationDate = DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT);
+		order.setDateActivated(activationDate);
+		assertNull(order.getDateStopped());
+		assertNull(order.getAutoExpireDate());
+		assertTrue(order.isActivated(DateUtils.addMonths(activationDate, 2)));
+	}
+	
+	/**
+	 * @see Order#isActivated(Date)
+	 * @verifies return false if dateActivated is null
+	 */
+	@Test
+	public void isActivated_shouldReturnFalseIfDateActivatedIsNull() throws Exception {
+		Order order = new Order();
+		assertNull(order.getDateActivated());
+		assertNull(order.getAutoExpireDate());
+		assertFalse(order.isActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT)));
+	}
+	
+	/**
+	 * @see Order#isActivated(Date)
+	 * @verifies return false for an order activated after the check date
+	 */
+	@Test
+	public void isActivated_shouldReturnFalseForAnOrderActivatedAfterTheCheckDate() throws Exception {
+		Order order = new Order();
+		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
+		assertNull(order.getDateStopped());
+		assertNull(order.getAutoExpireDate());
+		assertFalse(order.isActivated(DateUtils.addMonths(order.getDateActivated(), -2)));
+	}
+	
+	/**
 	 * @verifies return true if an order expired on the check date
 	 * @see Order#isActive(java.util.Date)
 	 */
@@ -655,6 +736,24 @@ public class OrderTest extends BaseContextSensitiveTest {
 	@Test
 	public void isActive_shouldReturnTrueIfAnOrderWasActivatedOnTheCheckDate() throws Exception {
 		Order order = new Order();
+		Date activationDate = DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT);
+		order.setDateActivated(activationDate);
+		assertNull(order.getDateStopped());
+		assertNull(order.getAutoExpireDate());
+		assertTrue(order.isActive(activationDate));
+	}
+	
+	/**
+	 * @see Order#isActive(Date)
+	 * @verifies return true if an order was activated on the check date but scheduled for the
+	 *           future
+	 */
+	@Test
+	public void isActive_shouldReturnTrueIfAnOrderWasActivatedOnTheCheckDateButScheduledForTheFuture() throws Exception {
+		Order order = new Order();
+		order.setUrgency(Urgency.ON_SCHEDULED_DATE);
+		Date scheduledDateInFuture = DateUtils.addMonths(new Date(), 2);
+		order.setScheduledDate(scheduledDateInFuture);
 		Date activationDate = DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT);
 		order.setDateActivated(activationDate);
 		assertNull(order.getDateStopped());
@@ -824,4 +923,5 @@ public class OrderTest extends BaseContextSensitiveTest {
 		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
 		assertTrue(order.isStarted(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT)));
 	}
+	
 }
