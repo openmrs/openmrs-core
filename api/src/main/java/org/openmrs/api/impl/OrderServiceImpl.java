@@ -71,6 +71,7 @@ import org.springframework.util.StringUtils;
 @Transactional
 public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator, GlobalPropertyListener {
 	
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private static final String ORDER_NUMBER_PREFIX = "ORD-";
@@ -95,9 +96,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public synchronized Order saveOrder(Order order, OrderContext orderContext) throws APIException {
 		return saveOrder(order, orderContext, false);
 	}
-
+	
 	/**
-	 * 
 	 * @see org.openmrs.api.OrderService#saveOrderGroup(org.openmrs.OrderGroup)
 	 */
 	@Override
@@ -121,7 +121,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public synchronized Order saveRetrospectiveOrder(Order order, OrderContext orderContext) {
 		return saveOrder(order, orderContext, true);
 	}
-
+	
 	private Order saveOrder(Order order, OrderContext orderContext, boolean isRetrospective) {
 		if (order.getOrderId() != null) {
 			throw new APIException("Order.cannot.edit.existing");
@@ -183,8 +183,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		if (!order.getOrderType().getJavaClass().isAssignableFrom(order.getClass())) {
-			throw new APIException("Order.type.class.does.not.match", new Object[] { order.getOrderType().getJavaClass(),
-			        order.getClass().getName() });
+			throw new APIException("Order.type.class.does.not.match",
+			        new Object[] { order.getOrderType().getJavaClass(), order.getClass().getName() });
 		}
 		
 		if (REVISE == order.getAction()) {
@@ -216,12 +216,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 					throw new APIException("Order.cannot.change.drug");
 				}
 			}
-
+			
 			//concept should be the same as on previous order, same applies to drug for drug orders
-			if(!order.hasSameOrderableAs(previousOrder)){
+			if (!order.hasSameOrderableAs(previousOrder)) {
 				throw new APIException("The orderable of the previous order and the new one order don't match");
-			}
-			else if (!order.getOrderType().equals(previousOrder.getOrderType())) {
+			} else if (!order.getOrderType().equals(previousOrder.getOrderType())) {
 				throw new APIException("Order.type.does.not.match");
 			} else if (!order.getCareSetting().equals(previousOrder.getCareSetting())) {
 				throw new APIException("Order.care.setting.does.not.match");
@@ -231,30 +230,31 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		if (DISCONTINUE != order.getAction()) {
-            Date asOfDate = new Date();
-            if(isRetrospective) {
-                asOfDate = order.getDateActivated();
-            }
-            List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), asOfDate);
-			List<String> parallelOrders = Collections.emptyList();
-			if(orderContext!=null && orderContext.getAttribute(PARALLEL_ORDERS)!=null){
-				parallelOrders= Arrays.asList((String[])orderContext.getAttribute(PARALLEL_ORDERS));
+			Date asOfDate = new Date();
+			if (isRetrospective) {
+				asOfDate = order.getDateActivated();
 			}
- 			for (Order activeOrder : activeOrders) {
- 				//Reject if there is an active drug order for the same orderable with overlapping schedule
-				if (!parallelOrders.contains(activeOrder.getUuid()) && areDrugOrdersOfSameOrderableAndOverlappingSchedule(order, activeOrder)) {
+			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), asOfDate);
+			List<String> parallelOrders = Collections.emptyList();
+			if (orderContext != null && orderContext.getAttribute(PARALLEL_ORDERS) != null) {
+				parallelOrders = Arrays.asList((String[]) orderContext.getAttribute(PARALLEL_ORDERS));
+			}
+			for (Order activeOrder : activeOrders) {
+				//Reject if there is an active drug order for the same orderable with overlapping schedule
+				if (!parallelOrders.contains(activeOrder.getUuid())
+				        && areDrugOrdersOfSameOrderableAndOverlappingSchedule(order, activeOrder)) {
 					throw new AmbiguousOrderException("Order.cannot.have.more.than.one");
- 				}
- 			}
- 		}
+				}
+			}
+		}
 		return saveOrderInternal(order, orderContext);
 	}
 	
 	private boolean areDrugOrdersOfSameOrderableAndOverlappingSchedule(Order firstOrder, Order secondOrder) {
 		return firstOrder.hasSameOrderableAs(secondOrder)
-				&& !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
-				&& OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
-				&& firstOrder.getOrderType().equals(Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID));
+		        && !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
+		        && OrderUtil.checkScheduleOverlap(firstOrder, secondOrder) && firstOrder.getOrderType()
+		                .equals(Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID));
 	}
 	
 	/**
@@ -323,8 +323,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	private OrderNumberGenerator getOrderNumberGenerator() {
 		if (orderNumberGenerator == null) {
-			String generatorBeanId = Context.getAdministrationService().getGlobalProperty(
-			    OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID);
+			String generatorBeanId = Context.getAdministrationService()
+			        .getGlobalProperty(OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID);
 			if (StringUtils.hasText(generatorBeanId)) {
 				orderNumberGenerator = Context.getRegisteredComponent(generatorBeanId, OrderNumberGenerator.class);
 				log.info("Successfully set the configured order number generator");
@@ -360,12 +360,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		//Mark first order found corresponding to this DC order as discontinued.
-        Date asOfDate = null;
-        if (isRetrospective) {
-            asOfDate = order.getDateActivated();
-        }
+		Date asOfDate = null;
+		if (isRetrospective) {
+			asOfDate = order.getDateActivated();
+		}
 		List<? extends Order> orders = getActiveOrders(order.getPatient(), order.getOrderType(), order.getCareSetting(),
-                asOfDate);
+		    asOfDate);
 		boolean isDrugOrderAndHasADrug = DrugOrder.class.isAssignableFrom(getActualType(order))
 		        && (((DrugOrder) order).getDrug() != null || ((DrugOrder) order).isNonCodedDrug());
 		Order orderToBeDiscontinued = null;
@@ -396,7 +396,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			stopOrder(orderToBeDiscontinued, aMomentBefore(order.getDateActivated()), isRetrospective);
 		}
 	}
-
+	
 	/**
 	 * Returns the class object of the specified persistent object returning the actual persistent
 	 * class in case it is a hibernate proxy
@@ -745,17 +745,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (DISCONTINUE == orderToStop.getAction()) {
 			throw new APIException("Order.action.cannot.discontinued", new Object[] { DISCONTINUE });
 		}
-
-        if (isRetrospective && orderToStop.getDateStopped() != null) {
-            throw new APIException("Order.retrospective.stopped.cannot.discontinued");
-        }
-        if (!isRetrospective && !orderToStop.isActive()) {
-            throw new APIException("Order.stopped.cannot.discontinued");
-        }
-		else if (isRetrospective && !orderToStop.isActive(discontinueDate)) {
-            throw new APIException("Order.retrospective.stopped.cannot.discontinued");
-        }
-
+		
+		if (isRetrospective && orderToStop.getDateStopped() != null) {
+			throw new APIException("Order.retrospective.stopped.cannot.discontinued");
+		}
+		if (!isRetrospective && !orderToStop.isActive()) {
+			throw new APIException("Order.stopped.cannot.discontinued");
+		} else if (isRetrospective && !orderToStop.isActive(discontinueDate)) {
+			throw new APIException("Order.retrospective.stopped.cannot.discontinued");
+		}
+		
 		setProperty(orderToStop, "dateStopped", discontinueDate);
 		saveOrderInternal(orderToStop, null);
 	}
@@ -985,7 +984,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public List<Concept> getTestSpecimenSources() {
 		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID);
 	}
-
+	
 	@Override
 	public Concept getNonCodedDrugConcept() {
 		String conceptUuid = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_DRUG_ORDER_DRUG_OTHER);
@@ -994,7 +993,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		return null;
 	}
-
+	
 	@Override
 	@Transactional(readOnly = true)
 	public OrderGroup getOrderGroupByUuid(String uuid) throws APIException {

@@ -34,6 +34,7 @@ import java.util.Date;
  */
 public class Order extends BaseOpenmrsData {
 	
+	
 	public static final long serialVersionUID = 4334343L;
 	
 	/**
@@ -94,9 +95,9 @@ public class Order extends BaseOpenmrsData {
 	private Date scheduledDate;
 	
 	/**
-	 * Allows the orders if ordered as an orderGroup,
-	 * to maintain a sequence of how members are added in the group
-	 * ex - for two orders of isoniazid and ampicillin, the sequence of 1 and 2 needed to be maintained
+	 * Allows the orders if ordered as an orderGroup, to maintain a sequence of how members are
+	 * added in the group ex - for two orders of isoniazid and ampicillin, the sequence of 1 and 2
+	 * needed to be maintained
 	 */
 	private Double sortWeight;
 	
@@ -775,8 +776,7 @@ public class Order extends BaseOpenmrsData {
 	}
 	
 	/**
-	 * @since 1.12
-	 * {@link org.openmrs.OrderGroup}
+	 * @since 1.12 {@link org.openmrs.OrderGroup}
 	 * @returns the OrderGroup
 	 */
 	public OrderGroup getOrderGroup() {
@@ -784,9 +784,9 @@ public class Order extends BaseOpenmrsData {
 	}
 	
 	/**
-	 * Sets the OrderGroup for that order.
-	 * If the order is ordered independently, it does not set an orderGroup for it.
-	 * If the order is ordered as an orderGroup, then sets a link to the OrderGroup for that particular order.
+	 * Sets the OrderGroup for that order. If the order is ordered independently, it does not set an
+	 * orderGroup for it. If the order is ordered as an orderGroup, then sets a link to the
+	 * OrderGroup for that particular order.
 	 * 
 	 * @since 1.12
 	 * @param orderGroup
@@ -806,17 +806,16 @@ public class Order extends BaseOpenmrsData {
 	}
 	
 	/**
-	 * Sets the sortWeight for an order if it is ordered as an OrderGroup.
-	 * <tt>sortWeight</tt> is used internally by the API to manage the sequencing of orders when grouped.
-	 * This value may be changed by the API as needed for that purpose. 
-	 * Instead of setting this internal value directly please use {@link OrderGroup#addOrder(Order, Integer)}.
-	 * @see OrderGroup#addOrder(Order, Integer) 
+	 * Sets the sortWeight for an order if it is ordered as an OrderGroup. <tt>sortWeight</tt> is
+	 * used internally by the API to manage the sequencing of orders when grouped. This value may be
+	 * changed by the API as needed for that purpose. Instead of setting this internal value
+	 * directly please use {@link OrderGroup#addOrder(Order, Integer)}.
 	 * 
+	 * @see OrderGroup#addOrder(Order, Integer)
 	 * @since 1.12
 	 * @param sortWeight
 	 */
 	public void setSortWeight(Double sortWeight) {
 		this.sortWeight = sortWeight;
 	}
-	
 }
