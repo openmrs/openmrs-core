@@ -42,6 +42,7 @@ import org.openmrs.util.Reflect;
  */
 public class OrderTest extends BaseContextSensitiveTest {
 	
+	
 	private final static String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	
 	@Rule
@@ -88,8 +89,8 @@ public class OrderTest extends BaseContextSensitiveTest {
 				continue;
 			}
 			assertNotNull("Order." + methodName + " should set " + field.getName() + " on the new Order", copyValue);
-			assertEquals("Order." + methodName + " should set " + field.getName() + " on the new Order",
-			    field.get(original), copyValue);
+			assertEquals("Order." + methodName + " should set " + field.getName() + " on the new Order", field.get(original),
+			    copyValue);
 		}
 	}
 	
@@ -480,7 +481,8 @@ public class OrderTest extends BaseContextSensitiveTest {
 		order.setAutoExpireDate(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT));
 		OrderUtilTest.setDateStopped(order, DateUtils.parseDate("2014-11-01 11:11:12", DATE_FORMAT));
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Order.error.invalidDateStoppedAndAutoExpireDate"));
+		expectedException.expectMessage(
+		    Context.getMessageSourceService().getMessage("Order.error.invalidDateStoppedAndAutoExpireDate"));
 		order.isDiscontinued(DateUtils.parseDate("2014-11-01 11:11:13", DATE_FORMAT));
 	}
 	
@@ -614,7 +616,8 @@ public class OrderTest extends BaseContextSensitiveTest {
 		order.setAutoExpireDate(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT));
 		OrderUtilTest.setDateStopped(order, DateUtils.parseDate("2014-11-01 11:11:12", DATE_FORMAT));
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Order.error.invalidDateStoppedAndAutoExpireDate"));
+		expectedException.expectMessage(
+		    Context.getMessageSourceService().getMessage("Order.error.invalidDateStoppedAndAutoExpireDate"));
 		order.isExpired(DateUtils.parseDate("2014-11-01 11:11:13", DATE_FORMAT));
 	}
 	
