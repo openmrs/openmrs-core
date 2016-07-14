@@ -9,6 +9,10 @@
  */
 package org.openmrs.api;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
@@ -23,11 +27,6 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Orders
@@ -69,6 +68,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should not allow revising an expired order
 	 * @should not allow revising an order with no previous order
 	 * @should save a revised order
+	 * @should save a revised order for a scheduled order which is not started
 	 * @should set order number specified in the context if specified
 	 * @should set the order number returned by the configured generator
 	 * @should set order type if null but mapped to the concept class
@@ -477,6 +477,7 @@ public interface OrderService extends OpenmrsService {
 	 *             <code>Order.Action.DISCONTINUE</code>
 	 * @since 1.10
 	 * @should set correct attributes on the discontinue and discontinued orders
+	 * @should pass for an active order which is scheduled and not started as of discontinue date
 	 * @should not pass for a discontinuation order
 	 * @should fail for a stopped order
 	 * @should fail for an expired order
@@ -500,6 +501,7 @@ public interface OrderService extends OpenmrsService {
 	 *             <code>Order.Action.DISCONTINUE</code>
 	 * @since 1.10
 	 * @should populate correct attributes on the discontinue and discontinued orders
+	 * @should pass for an active order which is scheduled and not started as of discontinue date
 	 * @should fail for a discontinuation order
 	 * @should fail if discontinueDate is in the future
 	 * @should fail for a voided order
