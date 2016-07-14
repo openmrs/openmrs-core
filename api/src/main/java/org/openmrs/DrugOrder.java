@@ -10,52 +10,88 @@
 package org.openmrs;
 
 import org.apache.commons.lang.StringUtils;
-import static org.openmrs.Order.Action.DISCONTINUE;
 import org.openmrs.util.OpenmrsUtil;
+
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Column;
+
+import static org.openmrs.Order.Action.DISCONTINUE;
 
 /**
  * DrugOrder
  *
  * @version 1.0
  */
+@Entity
+@Table(name = "drug_order")
+@PrimaryKeyJoinColumn(name="order_id")
 public class DrugOrder extends Order implements java.io.Serializable {
 
 	public static final long serialVersionUID = 72232L;
 
 	// Fields
 
+	// TODO - Order.hbm.xml says length is 22 but length is only used for strings. Shouldnt we use precision?
+	@Column(name="dose", length = 22)
 	private Double dose;
 
+	@ManyToOne
+	@JoinColumn(name="dose_units")
 	private Concept doseUnits;
 
+	@ManyToOne
+	@JoinColumn(name="frequency")
 	private OrderFrequency frequency;
 
+	@Column(name="as_needed", nullable = false)
 	private Boolean asNeeded = false;
 
+	// TODO - same as with dose
+	@Column(name="quantity", length = 22)
 	private Double quantity;
 
+	@ManyToOne
+	@JoinColumn(name="quantity_units")
 	private Concept quantityUnits;
 
+	@ManyToOne
+	@JoinColumn(name="drug_inventory_id")
 	private Drug drug;
 
+	@Column(name="as_needed_condition")
 	private String asNeededCondition;
 
+	@Column(name="dosing_type")
 	private Class<? extends DosingInstructions> dosingType = SimpleDosingInstructions.class;
 
+	@Column(name="num_refills")
 	private Integer numRefills;
 
+	@Column(name="dosing_instructions", length = 65535)
 	private String dosingInstructions;
 
+	@Column(name="duration")
 	private Integer duration;
 
+	@ManyToOne
+	@JoinColumn(name="duration_units")
 	private Concept durationUnits;
 
+	@ManyToOne
+	@JoinColumn(name="route")
 	private Concept route;
 
+	@Column(name="brand_name")
 	private String brandName;
 
+	@Column(name="dispense_as_written", nullable = false)
 	private Boolean dispenseAsWritten = Boolean.FALSE;
 
+	@Column(name="drug_non_coded")
 	private String drugNonCoded;
 
 	// Constructors

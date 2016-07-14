@@ -9,13 +9,26 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
+
 /**
  * This is a type of order that adds tests specific attributes like: laterality, clinical history,
  * etc.
  * 
  * @since 1.9.2, 1.10
  */
+@Entity
+@Table(name = "test_order")
+@PrimaryKeyJoinColumn(name="order_id")
 public class TestOrder extends Order {
+	
 	
 	public enum Laterality {
 		LEFT,
@@ -25,14 +38,22 @@ public class TestOrder extends Order {
 	
 	public static final long serialVersionUID = 1L;
 	
+	@ManyToOne
+	@JoinColumn(name = "specimen_source")
 	private Concept specimenSource;
-	
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "laterality", length = 20)
 	private Laterality laterality;
-	
+
+	@Column(name = "clinical_history", length = 65535)
 	private String clinicalHistory;
 	
+	@ManyToOne
+	@JoinColumn(name = "frequency")
 	private OrderFrequency frequency;
 	
+	@Column(name = "number_of_repeats")
 	private Integer numberOfRepeats;
 	
 	/**
