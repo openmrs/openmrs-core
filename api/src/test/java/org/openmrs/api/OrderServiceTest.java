@@ -28,7 +28,6 @@ import static org.openmrs.test.TestUtil.containsId;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -610,6 +609,47 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see OrderService#discontinueOrder(Order,String,Date,Provider,Encounter)
+	 * @verifies pass for an active order which is scheduled and not started as of discontinue date
+	 */
+	@Test
+	public void discontinueOrder_shouldPassForAnActiveOrderWhichIsScheduledAndNotStartedAsOfDiscontinueDate()
+	        throws Exception {
+		Order order = new Order();
+		order.setAction(Action.NEW);
+		order.setPatient(Context.getPatientService().getPatient(7));
+		order.setConcept(Context.getConceptService().getConcept(5497));
+		order.setCareSetting(orderService.getCareSetting(1));
+		order.setOrderer(orderService.getOrder(1).getOrderer());
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setOrderType(orderService.getOrderType(17));
+		order.setDateActivated(new Date());
+		order.setScheduledDate(DateUtils.addMonths(new Date(), 2));
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		order = orderService.saveOrder(order, null);
+		
+		assertTrue(OrderUtilTest.isActiveOrder(order, null));
+		assertFalse(order.isStarted());
+		
+		Encounter encounter = encounterService.getEncounter(3);
+		Provider orderer = providerService.getProvider(1);
+		Date discontinueDate = new Date();
+		String discontinueReasonNonCoded = "Test if I can discontinue this";
+		
+		Order discontinueOrder = orderService.discontinueOrder(order, discontinueReasonNonCoded, discontinueDate, orderer,
+		    encounter);
+		
+		Assert.assertEquals(order.getDateStopped(), discontinueDate);
+		Assert.assertNotNull(discontinueOrder);
+		Assert.assertNotNull(discontinueOrder.getId());
+		Assert.assertEquals(discontinueOrder.getDateActivated(), discontinueOrder.getAutoExpireDate());
+		Assert.assertEquals(discontinueOrder.getAction(), Action.DISCONTINUE);
+		Assert.assertEquals(discontinueOrder.getOrderReasonNonCoded(), discontinueReasonNonCoded);
+		Assert.assertEquals(discontinueOrder.getPreviousOrder(), order);
+	}
+	
+	/**
 	 * @verifies set correct attributes on the discontinue and discontinued orders
 	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date,
 	 *      org.openmrs.Provider, org.openmrs.Encounter)
@@ -636,7 +676,48 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)
+	 * @see OrderService#discontinueOrder(Order,Concept,Date,Provider,Encounter)
+	 * @verifies pass for an active order which is scheduled and not started as of discontinue date
+	 */
+	@Test
+	public void discontinueOrder_shouldPassForAnActiveOrderWhichIsScheduledAndNotStartedAsOfDiscontinueDateWithParamConcept()
+	        throws Exception {
+		Order order = new Order();
+		order.setAction(Action.NEW);
+		order.setPatient(Context.getPatientService().getPatient(7));
+		order.setConcept(Context.getConceptService().getConcept(5497));
+		order.setCareSetting(orderService.getCareSetting(1));
+		order.setOrderer(orderService.getOrder(1).getOrderer());
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setOrderType(orderService.getOrderType(17));
+		order.setDateActivated(new Date());
+		order.setScheduledDate(DateUtils.addMonths(new Date(), 2));
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		order = orderService.saveOrder(order, null);
+		
+		assertTrue(OrderUtilTest.isActiveOrder(order, null));
+		assertFalse(order.isStarted());
+		
+		Encounter encounter = encounterService.getEncounter(3);
+		Provider orderer = providerService.getProvider(1);
+		Date discontinueDate = new Date();
+		Concept concept = Context.getConceptService().getConcept(1);
+		
+		Order discontinueOrder = orderService.discontinueOrder(order, concept, discontinueDate, orderer, encounter);
+		
+		Assert.assertEquals(order.getDateStopped(), discontinueDate);
+		Assert.assertNotNull(discontinueOrder);
+		Assert.assertNotNull(discontinueOrder.getId());
+		Assert.assertEquals(discontinueOrder.getDateActivated(), discontinueOrder.getAutoExpireDate());
+		Assert.assertEquals(discontinueOrder.getAction(), Action.DISCONTINUE);
+		Assert.assertEquals(discontinueOrder.getOrderReason(), concept);
+		Assert.assertEquals(discontinueOrder.getPreviousOrder(), order);
+	}
+	
+	/**
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date,
+	 *      org.openmrs.Provider, org.openmrs.Encounter)
 	 */
 	@Test
 	@Verifies(value = "should fail for a discontinuation order", method = "discontinueOrder(Order, String, Date, Provider, Encounter)")
@@ -1146,6 +1227,46 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(originalOrderCount, activeOrders.size());
 		assertEquals(revisedOrder.getDateActivated(), DateUtils.addSeconds(originalOrder.getDateStopped(), 1));
+		assertFalse(originalOrder.isActive());
+	}
+	
+	/**
+	 * @see OrderService#saveOrder(Order,OrderContext)
+	 * @verifies save a revised order for a scheduled order which is not started
+	 */
+	@Test
+	public void saveOrder_shouldSaveARevisedOrderForAScheduledOrderWhichIsNotStarted() throws Exception {
+		Order originalOrder = new Order();
+		originalOrder.setAction(Action.NEW);
+		originalOrder.setPatient(Context.getPatientService().getPatient(7));
+		originalOrder.setConcept(Context.getConceptService().getConcept(5497));
+		originalOrder.setCareSetting(orderService.getCareSetting(1));
+		originalOrder.setOrderer(orderService.getOrder(1).getOrderer());
+		originalOrder.setEncounter(encounterService.getEncounter(3));
+		originalOrder.setOrderType(orderService.getOrderType(17));
+		originalOrder.setDateActivated(new Date());
+		originalOrder.setScheduledDate(DateUtils.addMonths(new Date(), 2));
+		originalOrder.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		originalOrder = orderService.saveOrder(originalOrder, null);
+		
+		assertTrue(originalOrder.isActive());
+		final Patient patient = originalOrder.getPatient();
+		List<Order> originalActiveOrders = orderService.getActiveOrders(patient, null, null, null);
+		final int originalOrderCount = originalActiveOrders.size();
+		assertTrue(originalActiveOrders.contains(originalOrder));
+		
+		Order revisedOrder = originalOrder.cloneForRevision();
+		revisedOrder.setEncounter(encounterService.getEncounter(5));
+		revisedOrder.setInstructions("Take after a meal");
+		revisedOrder.setDateActivated(new Date());
+		revisedOrder.setOrderer(providerService.getProvider(1));
+		revisedOrder.setEncounter(encounterService.getEncounter(3));
+		orderService.saveOrder(revisedOrder, null);
+		
+		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
+		assertEquals(originalOrderCount, activeOrders.size());
+		assertEquals(revisedOrder.getDateActivated(), DateUtils.addSeconds(originalOrder.getDateStopped(), 1));
+		assertFalse(activeOrders.contains(originalOrder));
 		assertFalse(originalOrder.isActive());
 	}
 	
