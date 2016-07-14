@@ -253,13 +253,11 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public Long getNextOrderNumberSeedSequenceValue() {
-		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
-		searchCriteria.add(Restrictions.eq("property", OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED));
 		GlobalProperty globalProperty = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class,
 		    OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED, LockOptions.UPGRADE);
 		
 		if (globalProperty == null) {
-			throw new APIException("GlobalProperty.missing ", new Object[] { OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED });
+			throw new APIException("GlobalProperty.missing", new Object[] { OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED });
 		}
 		
 		String gpTextValue = globalProperty.getPropertyValue();
