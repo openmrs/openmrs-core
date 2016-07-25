@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import java.util.Collections;
+import java.util.*;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,25 +26,27 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
+
 
 /**
  * Contains tests methods for the {@link DrugValidator}
  */
 public class DrugValidatorTest extends BaseContextSensitiveTest {
-	
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
-	
+
 	@Autowired
 	private ConceptService conceptService;
-	
+
 	protected static final String GET_DRUG_MAPPINGS = "org/openmrs/api/include/ConceptServiceTest-getDrugMappings.xml";
-	
+
 	@Before
 	public void executeDrugMappingsDataSet() throws Exception {
 		executeDataSet(GET_DRUG_MAPPINGS);
 	}
-	
+
 	/**
 	 * @verifies fail if the drug object is null
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
@@ -54,7 +57,7 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		expectedException.expectMessage("The parameter obj should not be null and must be of type" + Drug.class);
 		new DrugValidator().validate(null, new BindException(new Drug(), "drug"));
 	}
-	
+
 	/**
 	 * @verifies fail if drug on drugReferenceMap is null
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
@@ -66,8 +69,9 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(drug, "drug");
 		new DrugValidator().validate(drug, errors);
 		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].drug"));
+		Assert.assertEquals("Drug.drugReferenceMap.mappedDrug", errors.getFieldError().getCode());
 	}
-	
+
 	/**
 	 * @verifies fail if conceptReferenceTerm on drugReferenceMap is null
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
@@ -79,8 +83,9 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(drug, "drug");
 		new DrugValidator().validate(drug, errors);
 		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].conceptReferenceTerm"));
+		Assert.assertEquals("Drug.drugReferenceMap.conceptReferenceTerm", errors.getFieldError("drugReferenceMaps[0].conceptReferenceTerm").getCode());
 	}
-	
+
 	/**
 	 * @verifies invoke ConceptReferenceTermValidator if term on drugReferenceMap is new
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
@@ -94,7 +99,7 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		//reference term validator should have been called which should reject a null code
 		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].conceptReferenceTerm.code"));
 	}
-	
+
 	/**
 	 * @verifies invoke ConceptMapTypeValidator if conceptMapType on drugReferenceMap is new
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
@@ -108,7 +113,7 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		//concept map type validator should have been called which should reject a null name
 		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].conceptMapType.name"));
 	}
-	
+
 	/**
 	 * @verifies reject drug multiple mappings to the same term
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
@@ -126,8 +131,15 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(drug, "drug");
 		new DrugValidator().validate(drug, errors);
 		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[1].conceptReferenceTerm"));
+
+		// Check error message
+		List<FieldError> error_messages = errors.getFieldErrors("drugReferenceMaps[1].conceptReferenceTerm");
+		Assert.assertEquals("Drug.drugReferenceMap.termAlreadyMapped", error_messages.get(0).getCode());
+		Assert.assertEquals("Cannot map a drug multiple times to the same reference term", error_messages.get(0).getDefaultMessage());
+
+
 	}
-	
+
 	/**
 	 * @verifies pass if all fields are correct
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
@@ -141,7 +153,7 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		new DrugValidator().validate(drug, errors);
 		Assert.assertFalse(errors.hasFieldErrors());
 	}
-	
+
 	/**
 	 * @verifies pass validation if field lengths are correct
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
@@ -158,7 +170,7 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		new DrugValidator().validate(drug, errors);
 		Assert.assertFalse(errors.hasFieldErrors());
 	}
-	
+
 	/**
 	 * @verifies fail validation if field lengths are not correct
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)

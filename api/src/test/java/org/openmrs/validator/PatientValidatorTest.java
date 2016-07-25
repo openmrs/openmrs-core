@@ -32,14 +32,14 @@ import org.springframework.validation.Validator;
  * Tests methods on the {@link PatientValidator} class.
  */
 public class PatientValidatorTest extends PersonValidatorTest {
-	
+
 	@Autowired
 	@Qualifier("patientValidator")
 	@Override
 	public void setValidator(Validator validator) {
 		super.setValidator(validator);
 	}
-	
+
 	/**
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
@@ -51,12 +51,12 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		//set all identifiers to be non-preferred
 		for (PatientIdentifier id : pa.getIdentifiers())
 			id.setPreferred(false);
-		
+
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
-		Assert.assertTrue(errors.hasErrors());
+		Assert.assertEquals("error.preferredIdentifier", errors.getGlobalError().getCode());
 	}
-	
+
 	/**
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
@@ -64,17 +64,17 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	@Verifies(value = "should fail validation if a preferred patient identifier is not chosen for voided patients", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosenForVoidedPatients() throws Exception {
 		Patient pa = Context.getPatientService().getPatient(432);
-		
+
 		Assert.assertTrue(pa.isVoided());//sanity check
 		Assert.assertNotNull(pa.getPatientIdentifier());
 		for (PatientIdentifier id : pa.getIdentifiers())
 			id.setPreferred(false);
-		
+
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
-		Assert.assertTrue(errors.hasErrors());
+		Assert.assertEquals("error.preferredIdentifier", errors.getGlobalError().getCode());
 	}
-	
+
 	@Test
 	@Verifies(value = "should not fail validation if patient that is not preferred only has one identifier", method = "validate(Object,Errors)")
 	public void validate_shouldNotFailWhenPatientHasOnlyOneIdentifierAndItsNotPreferred() throws Exception {
@@ -101,13 +101,13 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		patientIdentifier1.setDateCreated(new Date());
 		patientIdentifier1.setIdentifierType(patientIdentifierType);
 		patient.addIdentifier(patientIdentifier1);
-		
+
 		Errors errors = new BindException(patient, "patient");
 		validator.validate(patient, errors);
-		
+
 		Assert.assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see org.openmrs.validator.PatientValidator#validate(Object,Errors)
 	 * @verifies fail validation if gender is blank
@@ -118,10 +118,11 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		Patient pa = new Patient(1);
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
-		
+
 		Assert.assertTrue(errors.hasFieldErrors("gender"));
+		Assert.assertEquals("Person.gender.required", errors.getFieldError("gender").getCode());
 	}
-	
+
 	/**
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
@@ -151,15 +152,15 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		patientIdentifier1.setDateCreated(new Date());
 		patientIdentifier1.setIdentifierType(patientIdentifierType);
 		patient.addIdentifier(patientIdentifier1);
-		
+
 		patient.setVoidReason("voidReason");
-		
+
 		Errors errors = new BindException(patient, "patient");
 		validator.validate(patient, errors);
-		
+
 		Assert.assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
@@ -189,13 +190,13 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		patientIdentifier1.setDateCreated(new Date());
 		patientIdentifier1.setIdentifierType(patientIdentifierType);
 		patient.addIdentifier(patientIdentifier1);
-		
+
 		patient
 		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		
+
 		Errors errors = new BindException(patient, "patient");
 		validator.validate(patient, errors);
-		
+
 		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 }
