@@ -125,7 +125,7 @@ public class OrderValidator implements Validator {
 			Encounter encounter = order.getEncounter();
 			if (encounter != null && encounter.getEncounterDatetime() != null
 			        && encounter.getEncounterDatetime().after(dateActivated)) {
-				errors.rejectValue("dateActivated", "Order.error.dateActivatedAfterEncounterDatetime");
+				errors.rejectValue("dateActivated", "Order.error.encounterDatetimeAfterDateActivated");
 			}
 		}
 	}
