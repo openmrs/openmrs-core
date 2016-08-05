@@ -19,7 +19,6 @@
 		See http://www.liquibase.org/manual/home#available_database_refactorings 
 		for a list of supported elements and attributes 
 	-->
-	
 	<changeSet id="0" author="bwolfe">
 		<preConditions onError="MARK_RAN" onFail="MARK_RAN">
 			<sqlCheck expectedResult="The update-to-latest.sql file needs to be run on this db.">
@@ -33,7 +32,7 @@
 			<param name="sqlFile">update-to-1.4.2.01-db.mysqldiff.sql</param>
 		</customChange>
 	</changeSet>
-	
+
 	<changeSet id="1" author="upul" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="person_attribute_type" columnName="edit_privilege"/></not>
@@ -45,7 +44,7 @@
 			<column name="edit_privilege" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="2" author="upul" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><foreignKeyConstraintExists foreignKeyName="privilege_which_can_edit"/></not>
@@ -55,10 +54,10 @@
 			a person attribute type and the privilege.privilege column
 		</comment>
 		<addForeignKeyConstraint constraintName="privilege_which_can_edit"
-			baseTableName="person_attribute_type" baseColumnNames="edit_privilege"
-			referencedTableName="privilege" referencedColumnNames="privilege"/>
+								 baseTableName="person_attribute_type" baseColumnNames="edit_privilege"
+								 referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
-	
+
 	<changeSet id="200811261102" author="bwolfe" dbms="mysql">
 		<comment>
 			Fix field property for new Tribe person attribute
@@ -8962,31 +8961,6 @@
 		<dropColumn columnName="value_boolean" tableName="obs"/>
 	</changeSet>
 	
-	<changeSet id="20160216-1700" author="bahmni">
-		<comment>
-			Set uuid for columns in all tables which has uuid as null. This is required for successful run of next changeSet.
-		</comment>
-		<customChange class="org.openmrs.util.databasechange.GenerateUuid">
-			<param name="tableNames">
-				cohort concept concept_answer concept_class concept_datatype concept_description
-				concept_name concept_name_tag concept_proposal concept_reference_map concept_reference_source
-				concept_set concept_state_conversion drug encounter encounter_type field field_answer field_type form
-				form_field global_property hl7_in_archive hl7_in_error hl7_in_queue hl7_source location location_tag
-				note notification_alert notification_template obs order_type orders patient_identifier
-				patient_identifier_type patient_program patient_state person person_address person_attribute
-				person_attribute_type person_name privilege program program_workflow program_workflow_state relationship
-				relationship_type report_object report_schema_xml role serialized_object
-			</param>
-			<param name="columnName" value="uuid"/>
-			<param name="idExceptions">
-				field_answer_id=field_id|role_id=role|privilege_id=privilege|global_property_id=property
-				|notification_alert_id=alert_id|notification_template_id=template_id|orders_id=order_id
-				|report_schema_xml_id=report_schema_id|concept_reference_map_id=concept_map_id
-				|concept_reference_source_id=concept_source_id
-			</param>
-		</customChange>
-	</changeSet>
-
 	<changeSet id="20160202-1743" author="rkorytkowski">
 		<comment>
 			Set uuid columns to "NOT NULL", if not set already for 1.9.x tables
@@ -9080,345 +9054,6 @@
 		<!-- visit_attribute has not null constraint on uuid -->
 		<!-- visit_attribute_type has not null constraint on uuid -->
 		<!-- visit_type has not null constraint on uuid -->
-	</changeSet>
-	
-	<changeSet id="20151006-1530" author="bahmni">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="order_set" />
-			</not>
-		</preConditions>
-		<comment>
-			Create order_set table
-		</comment>
-		<createTable tableName="order_set">
-			<column name="order_set_id" type="int" autoIncrement="true">
-				<constraints primaryKey="true" nullable="false"/>
-			</column>
-			<column name="operator" type="varchar(50)">
-				<constraints nullable="false"/>
-			</column>
-			<column name="name" type="varchar(255)">
-				<constraints nullable="false"/>
-			</column>
-			<column name="description" type="varchar(1000)"/>
-			<column name="creator" type="int">
-				<constraints nullable="false"/>
-			</column>
-			<column name="date_created" type="DATETIME">
-				<constraints nullable="false"/>
-			</column>
-			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
-				<constraints nullable="false"/>
-			</column>
-			<column name="retired_by" type="int"/>
-			<column name="date_retired" type="DATETIME"/>
-			<column name="retire_reason" type="varchar(255)"/>
-			<column name="changed_by" type="int"/>
-			<column name="date_changed" type="DATETIME"/>
-			<column name="uuid" type="char(38)">
-				<constraints unique="true" nullable="false"/>
-			</column>
-		</createTable>
-		<addForeignKeyConstraint constraintName="order_set_creator_fk"
-								 baseTableName="order_set" baseColumnNames="creator"
-								 referencedTableName="users" referencedColumnNames="user_id" />
-		<addForeignKeyConstraint constraintName="order_set_retired_by_fk"
-								 baseTableName="order_set" baseColumnNames="retired_by"
-								 referencedTableName="users" referencedColumnNames="user_id"/>
-		<addForeignKeyConstraint constraintName="order_set_changed_by_fk"
-								 baseTableName="order_set" baseColumnNames="changed_by"
-								 referencedTableName="users" referencedColumnNames="user_id"/>
-	</changeSet>
-	<changeSet id="20151006-1537" author="bahmni">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="order_set_member" />
-			</not>
-		</preConditions>
-		<comment>
-			Create order_set_member table
-		</comment>
-		<createTable tableName="order_set_member">
-			<column name="order_set_member_id" type="int" autoIncrement="true">
-				<constraints primaryKey="true" nullable="false"/>
-			</column>
-			<column name="order_type" type="int">
-				<constraints nullable="false"/>
-			</column>
-			<column name="order_template" type="text"/>
-			<column name="order_template_type" type="varchar(1024)"/>
-			<column name="order_set_id" type="int">
-				<constraints nullable="false"/>
-			</column>
-			<column name="sequence_number" type="int">
-				<constraints nullable="false"/>
-			</column>
-			<column name="concept_id" type="int">
-				<constraints nullable="false"/>
-			</column>
-			<column name="creator" type="int">
-				<constraints nullable="false"/>
-			</column>
-			<column name="date_created" type="DATETIME">
-				<constraints nullable="false"/>
-			</column>
-			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
-				<constraints nullable="false"/>
-			</column>
-			<column name="retired_by" type="int"/>
-			<column name="date_retired" type="DATETIME"/>
-			<column name="retire_reason" type="varchar(255)"/>
-			<column name="changed_by" type="int"/>
-			<column name="date_changed" type="DATETIME"/>
-			<column name="uuid" type="char(38)">
-				<constraints unique="true" nullable="false"/>
-			</column>
-		</createTable>
-		<addForeignKeyConstraint constraintName="order_set_member_creator_fk"
-								 baseTableName="order_set_member" baseColumnNames="creator"
-								 referencedTableName="users" referencedColumnNames="user_id" />
-		<addForeignKeyConstraint constraintName="order_set_member_order_set_id_fk"
-								 baseTableName="order_set_member" baseColumnNames="order_set_id"
-								 referencedTableName="order_set" referencedColumnNames="order_set_id" />
-		<addForeignKeyConstraint constraintName="order_set_member_concept_id_fk"
-								 baseTableName="order_set_member" baseColumnNames="concept_id"
-								 referencedTableName="concept" referencedColumnNames="concept_id"/>
-		<addForeignKeyConstraint constraintName="order_set_member_order_type_fk"
-								 baseTableName="order_set_member" baseColumnNames="order_type"
-								 referencedTableName="order_type" referencedColumnNames="order_type_id"/>
-		<addForeignKeyConstraint constraintName="order_set_member_retired_by_fk"
-								 baseTableName="order_set_member" baseColumnNames="retired_by"
-								 referencedTableName="users" referencedColumnNames="user_id"/>
-		<addForeignKeyConstraint constraintName="order_set_member_changed_by_fk"
-								 baseTableName="order_set_member" baseColumnNames="changed_by"
-								 referencedTableName="users" referencedColumnNames="user_id"/>
-	</changeSet>
-
-	<changeSet id="20151118-1630" author="bahmni">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="order_group" />
-			</not>
-		</preConditions>
-		<comment>
-			Create order_group table
-		</comment>
-		<createTable tableName="order_group">
-			<column name="order_group_id" type="int" autoIncrement="true">
-				<constraints primaryKey="true" nullable="false"/>
-			</column>
-			<column name="order_set_id" type="int"/>
-			<column name="patient_id" type="int">
-				<constraints nullable="false"/>
-			</column>
-			<column name="encounter_id" type="int">
-				<constraints nullable="false"/>
-			</column>
-			<column name="creator" type="int">
-				<constraints nullable="false"/>
-			</column>
-			<column name="date_created" type="DATETIME">
-				<constraints nullable="false"/>
-			</column>
-			<column name="voided" type="BOOLEAN" defaultValueBoolean="false">
-				<constraints nullable="false"/>
-			</column>
-			<column name="voided_by" type="int"/>
-			<column name="date_voided" type="DATETIME"/>
-			<column name="void_reason" type="varchar(255)"/>
-			<column name="changed_by" type="int"/>
-			<column name="date_changed" type="DATETIME"/>
-			<column name="uuid" type="char(38)">
-				<constraints unique="true" nullable="false"/>
-			</column>
-		</createTable>
-		<addForeignKeyConstraint constraintName="order_group_patient_id_fk"
-								 baseTableName="order_group" baseColumnNames="patient_id"
-								 referencedTableName="patient" referencedColumnNames="patient_id"/>
-		<addForeignKeyConstraint constraintName="order_group_encounter_id_fk"
-								 baseTableName="order_group" baseColumnNames="encounter_id"
-								 referencedTableName="encounter" referencedColumnNames="encounter_id"/>
-		<addForeignKeyConstraint constraintName="order_group_creator_fk"
-								 baseTableName="order_group" baseColumnNames="creator"
-								 referencedTableName="users" referencedColumnNames="user_id" />
-		<addForeignKeyConstraint constraintName="order_group_set_id_fk"
-								 baseTableName="order_group" baseColumnNames="order_set_id"
-								 referencedTableName="order_set" referencedColumnNames="order_set_id" />
-		<addForeignKeyConstraint constraintName="order_group_voided_by_fk"
-								 baseTableName="order_group" baseColumnNames="voided_by"
-								 referencedTableName="users" referencedColumnNames="user_id" />
-		<addForeignKeyConstraint constraintName="order_group_changed_by_fk"
-								 baseTableName="order_group" baseColumnNames="changed_by"
-								 referencedTableName="users" referencedColumnNames="user_id"/>
-	</changeSet>
-
-	<changeSet id="20151118-1640" author="bahmni">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<columnExists columnName="order_group_id" tableName="orders"/>
-			</not>
-		</preConditions>
-		<comment>Adding 'order_group_id' column to orders table</comment>
-		<addColumn tableName="orders">
-			<column name="order_group_id" type="int"></column>
-		</addColumn>
-		<addForeignKeyConstraint constraintName="orders_order_group_id_fk"
-										 baseTableName="orders" baseColumnNames="order_group_id"
-										 referencedTableName="order_group" referencedColumnNames="order_group_id" />
-	</changeSet>
-
-
-	<changeSet id="20160212-1020" author="bahmni">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<columnExists columnName="sort_weight" tableName="orders"/>
-			</not>
-		</preConditions>
-		<comment>Adding 'sort_weight' column to orders table</comment>
-		<addColumn tableName="orders">
-			<column name="sort_weight" type="double"></column>
-		</addColumn>
-	</changeSet>
-
-	<changeSet id="201604281645" author="vishnuraom">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<sqlCheck expectedResult="0">SELECT count(*) FROM drug_order WHERE dosing_type = 'SIMPLE'</sqlCheck>
-			</not>
-		</preConditions>
-		<comment>Converting values in drug_order.dosing_type column from SIMPLE to org.openmrs.SimpleDosingInstructions (TRUNK-4845)</comment>
-		<update tableName="drug_order">
-			<column name="dosing_type" value="org.openmrs.SimpleDosingInstructions" />
-			<where>dosing_type = 'SIMPLE'</where>
-		</update>
-	</changeSet>
-
-	<changeSet id="201604281646" author="vishnuraom">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<sqlCheck expectedResult="0">SELECT count(*) FROM drug_order WHERE dosing_type = 'FREE_TEXT'</sqlCheck>
-			</not>
-		</preConditions>
-		<comment>Converting values in drug_order.dosing_type column from FREE_TEXT to org.openmrs.FreeTextDosingInstructions(TRUNK-4845)</comment>
-		<update tableName="drug_order">
-			<column name="dosing_type" value="org.openmrs.FreeTextDosingInstructions" />
-			<where>dosing_type = 'FREE_TEXT'</where>
-		</update>
-	</changeSet>
-
-	<changeSet id="20160427-0950-create-concept-attribute-type-table" author="bahmni">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="concept_attribute_type"/>
-			</not>
-		</preConditions>
-		<comment>Creating concept_attribute_type table</comment>
-		<createTable tableName="concept_attribute_type">
-			<column name="concept_attribute_type_id" type="int" autoIncrement="true">
-				<constraints primaryKey="true" nullable="false"/>
-			</column>
-			<column name="name" type="varchar(255)">
-				<constraints nullable="false"/>
-			</column>
-			<column name="description" type="varchar(1024)"/>
-			<column name="datatype" type="varchar(255)"/>
-			<column name="datatype_config" type="text"/>
-			<column name="preferred_handler" type="varchar(255)"/>
-			<column name="handler_config" type="text"/>
-			<column name="min_occurs" type="int">
-				<constraints nullable="false"/>
-			</column>
-			<column name="max_occurs" type="int"></column>
-			<column name="creator" type="int">
-				<constraints nullable="false"/>
-			</column>
-			<column name="date_created" type="datetime">
-				<constraints nullable="false"/>
-			</column>
-			<column name="changed_by" type="int"/>
-			<column name="date_changed" type="datetime"/>
-			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
-				<constraints nullable="false"/>
-			</column>
-			<column name="retired_by" type="int"/>
-			<column name="date_retired" type="datetime"/>
-			<column name="retire_reason" type="varchar(255)" defaultValue="null"/>
-			<column name="uuid" type="char(38)">
-				<constraints nullable="false" unique="true"/>
-			</column>
-		</createTable>
-		<addForeignKeyConstraint constraintName="concept_attribute_type_creator_fk"
-								 baseTableName="concept_attribute_type" baseColumnNames="creator"
-								 referencedTableName="users"
-								 referencedColumnNames="user_id"/>
-		<addForeignKeyConstraint constraintName="concept_attribute_type_changed_by_fk"
-								 baseTableName="concept_attribute_type" baseColumnNames="changed_by"
-								 referencedTableName="users"
-								 referencedColumnNames="user_id"/>
-		<addForeignKeyConstraint constraintName="concept_attribute_type_retired_by_fk"
-								 baseTableName="concept_attribute_type" baseColumnNames="retired_by"
-								 referencedTableName="users"
-								 referencedColumnNames="user_id"/>
-	</changeSet>
-
-	<changeSet id="20160427-0954-create-concept-attribute-table" author="bahmni">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="concept_attribute"/>
-			</not>
-		</preConditions>
-		<comment>Creating concept_attribute table</comment>
-		<createTable tableName="concept_attribute">
-			<column name="concept_attribute_id" type="int" autoIncrement="true">
-				<constraints primaryKey="true" nullable="false"/>
-			</column>
-			<column name="concept_id" type="int">
-				<constraints nullable="false"/>
-			</column>
-			<column name="attribute_type_id" type="int">
-				<constraints nullable="false"/>
-			</column>
-			<column name="value_reference" type="text">
-				<constraints nullable="false"/>
-			</column>
-			<column name="uuid" type="char(38)">
-				<constraints nullable="false" unique="true"/>
-			</column>
-			<column name="creator" type="int">
-				<constraints nullable="false"/>
-			</column>
-			<column name="date_created" type="datetime">
-				<constraints nullable="false"/>
-			</column>
-			<column name="changed_by" type="int"/>
-			<column name="date_changed" type="datetime"/>
-			<column name="voided" type="BOOLEAN" defaultValueBoolean="false">
-				<constraints nullable="false"/>
-			</column>
-			<column name="voided_by" type="int"/>
-			<column name="date_voided" type="datetime"/>
-			<column name="void_reason" type="varchar(255)" defaultValue="null"/>
-		</createTable>
-		<addForeignKeyConstraint constraintName="concept_attribute_concept_fk"
-								 baseTableName="concept_attribute" baseColumnNames="concept_id"
-								 referencedTableName="concept"
-								 referencedColumnNames="concept_id"/>
-		<addForeignKeyConstraint constraintName="concept_attribute_attribute_type_id_fk"
-								 baseTableName="concept_attribute" baseColumnNames="attribute_type_id"
-								 referencedTableName="concept_attribute_type"
-								 referencedColumnNames="concept_attribute_type_id"/>
-		<addForeignKeyConstraint constraintName="concept_attribute_creator_fk"
-								 baseTableName="concept_attribute" baseColumnNames="creator" referencedTableName="users"
-								 referencedColumnNames="user_id"/>
-		<addForeignKeyConstraint constraintName="concept_attribute_changed_by_fk"
-								 baseTableName="concept_attribute" baseColumnNames="changed_by"
-								 referencedTableName="users"
-								 referencedColumnNames="user_id"/>
-		<addForeignKeyConstraint constraintName="concept_attribute_voided_by_fk"
-								 baseTableName="concept_attribute" baseColumnNames="voided_by"
-								 referencedTableName="users"
-								 referencedColumnNames="user_id"/>
 	</changeSet>
 
     <changeSet id="TRUNK-3422-20160216-1700" author="Wyclif" >
