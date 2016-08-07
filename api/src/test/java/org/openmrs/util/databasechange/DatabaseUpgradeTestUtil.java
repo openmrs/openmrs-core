@@ -218,7 +218,7 @@ public class DatabaseUpgradeTestUtil {
 	}
 	
 	public void upgrade() throws IOException, SQLException {
-		upgrade("liquibase-update-to-latest.xml");
+		upgrade("liquibase-master.xml");
 	}
 
 	public void upgrade(String filename) throws IOException, SQLException {

@@ -502,13 +502,10 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void shouldUpgradeLiquibase() {
-		try {
-			upgradeTestUtil.upgrade("liquibase-master.xml");
-		} catch (Exception e) {
-			e.printStackTrace();
-			Assert.fail();
-		}
+	public void shouldUpgradeLiquibase() throws IOException, SQLException {
+		upgradeTestUtil.upgrade("liquibase-master.xml");
+
+		// no explicit assertions here, this test serves to see whether the master is executed without raising an exception.
 
 	}
 }
