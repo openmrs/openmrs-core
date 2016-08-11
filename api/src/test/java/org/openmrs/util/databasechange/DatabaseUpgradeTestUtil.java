@@ -218,8 +218,12 @@ public class DatabaseUpgradeTestUtil {
 	}
 	
 	public void upgrade() throws IOException, SQLException {
+		upgrade("liquibase-update-to-latest.xml");
+	}
+
+	public void upgrade(String filename) throws IOException, SQLException {
 		try {
-			Liquibase liquibase = new Liquibase("liquibase-update-to-latest.xml", new ClassLoaderResourceAccessor(getClass()
+			Liquibase liquibase = new Liquibase(filename, new ClassLoaderResourceAccessor(getClass()
 			        .getClassLoader()), liqubaseConnection);
 			liquibase.update(null);
 			

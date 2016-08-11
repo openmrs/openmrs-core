@@ -58,7 +58,7 @@ import org.openmrs.api.context.Context;
 /**
  * This class uses Liquibase to update the database. <br>
  * <br>
- * See /metadata/model/liquibase-update-to-latest.xml for the changes. This class will also run
+ * See src/main/resources/liquibase-update-to-latest.xml for the changes. This class will also run
  * arbitrary liquibase xml files on the associated database as well. Details for the database are
  * taken from the openmrs runtime properties.
  *
@@ -421,7 +421,7 @@ public class DatabaseUpdater {
 	}
 	
 	/**
-	 * Represents each change in the liquibase-update-to-latest
+	 * Represents each change in the files referenced by liquibase-update-to-latest
 	 */
 	public static class OpenMRSChangeSet {
 		
@@ -539,7 +539,8 @@ public class DatabaseUpdater {
 	}
 	
 	/**
-	 * Looks at the current liquibase-update-to-latest.xml file and then checks the database to see
+	 * Looks at the current liquibase-update-to-latest
+	 * .xml file and then checks the database to see
 	 * if they have been run.
 	 *
 	 * @return list of changesets that both have and haven't been run
