@@ -14,6 +14,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.UUID;
 
+import org.openmrs.AllergySeverity;
+
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
@@ -22,20 +24,15 @@ import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 
-import org.openmrs.Concept;
-import org.openmrs.Allergy;
-import org.openmrs.AllergySeverity;
-import org.openmrs.api.context.Context;
-
 /**
  * Moves un voided allergies from the old active_list and active_list_allergy tables to the new
  * allergy and allergy_recation tables
  */
 public class MigrateAllergiesChangeSet implements CustomTaskChange {
 	
-	private Concept mildConcept;
-	private Concept moderateConcept;
-	private Concept severeConcept;
+	private Integer mildConcept;
+	private Integer moderateConcept;
+	private Integer severeConcept;
 	
 	@Override
 	public String getConfirmationMessage() {
@@ -60,7 +57,7 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		try {
-			loadSeverityConcepts();
+			loadSeverityConcepts(database);
 			
 			JdbcConnection connection = (JdbcConnection) database.getConnection();
 			
@@ -96,7 +93,7 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 				allergyInsertStatement.setInt(1, rs.getInt("person_id"));
 				allergyInsertStatement.setInt(2, rs.getInt("concept_id"));
 				
-				Concept severityConcept = null;
+				Integer severityConcept = null;
 				String severity = rs.getString("severity");
 				if (AllergySeverity.MILD.name().equals(severity)) {
 					severityConcept = mildConcept;
@@ -110,7 +107,7 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 				//TODO what do we do with the other severities?
 				
 				if (severityConcept != null) {
-					allergyInsertStatement.setInt(3, severityConcept.getConceptId());
+					allergyInsertStatement.setInt(3, severityConcept);
 				}
 				
 				allergyInsertStatement.setInt(4, rs.getInt("creator"));
@@ -144,18 +141,25 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 		}
 	}
 	
-	private void loadSeverityConcepts() {
-		mildConcept = getConceptByGlobalProperty("allergy.concept.severity.mild");
-		moderateConcept = getConceptByGlobalProperty("allergy.concept.severity.moderate");
-		severeConcept = getConceptByGlobalProperty("allergy.concept.severity.severe");
+	private void loadSeverityConcepts(Database database) throws Exception {
+		mildConcept = getConceptByGlobalProperty(database, "allergy.concept.severity.mild");
+		moderateConcept = getConceptByGlobalProperty(database, "allergy.concept.severity.moderate");
+		severeConcept = getConceptByGlobalProperty(database, "allergy.concept.severity.severe");
 	}
 	
-	private Concept getConceptByGlobalProperty(String globalPropertyName) {
-		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		Concept concept = Context.getConceptService().getConceptByUuid(globalProperty);
-		if (concept == null) {
-			throw new IllegalStateException("Configuration required: " + globalPropertyName);
+	private Integer getConceptByGlobalProperty(Database database, String globalPropertyName) throws Exception {
+		JdbcConnection connection = (JdbcConnection) database.getConnection();
+		Statement stmt = connection.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '" + globalPropertyName + "'");
+		if (rs.next()) {
+			String uuid = rs.getString("property_value");
+			
+			rs = stmt.executeQuery("SELECT concept_id FROM concept WHERE uuid = '" + uuid + "'");
+			if (rs.next()) {
+				return rs.getInt("concept_id");
+			}
 		}
-		return concept;
+		
+		throw new IllegalStateException("Configuration required: " + globalPropertyName);
 	}
 }
