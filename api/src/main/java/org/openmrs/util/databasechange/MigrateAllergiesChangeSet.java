@@ -119,6 +119,10 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 				if (allergyType == null) {
 					allergyType = "DRUG";
 				}
+				else if ("ENVIRONMENTAL".equals(allergyType)) {
+					allergyType = "ENVIRONMENT";
+				}
+				
 				allergyInsertStatement.setString(8, allergyType);
 				
 				allergyInsertStatement.execute();
