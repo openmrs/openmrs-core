@@ -81,6 +81,8 @@ public class ConceptValidator implements Validator {
 	 *         the system locale
 	 * @should pass for a new concept with a map created with deprecated concept map methods
 	 * @should pass for an edited concept with a map created with deprecated concept map methods
+	 * @should fail if the concept datatype is null
+	 * @should fail if the concept class is null
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
 		
@@ -94,8 +96,11 @@ public class ConceptValidator implements Validator {
 			errors.reject("Concept.name.atLeastOneRequired");
 			return;
 		}
-		
-		boolean hasFullySpecifiedName = false;
+
+		ValidationUtils.rejectIfEmpty(errors, "datatype", "Concept.datatype.empty");
+		ValidationUtils.rejectIfEmpty(errors, "conceptClass", "Concept.conceptClass.empty");
+
+        boolean hasFullySpecifiedName = false;
 		for (Locale conceptNameLocale : conceptToValidate.getAllConceptNameLocales()) {
 			boolean fullySpecifiedNameForLocaleFound = false;
 			boolean preferredNameForLocaleFound = false;

@@ -43,6 +43,7 @@ import org.junit.rules.ExpectedException;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
+import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
@@ -1296,6 +1297,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveOrderFrequency_shouldAddANewOrderFrequencyToTheDatabase() throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("new name", Context.getLocale()));
+		concept.setDatatype(new ConceptDatatype(1));
 		concept.setConceptClass(conceptService.getConceptClassByName("Frequency"));
 		concept = conceptService.saveConcept(concept);
 		Integer originalSize = orderService.getOrderFrequencies(true).size();

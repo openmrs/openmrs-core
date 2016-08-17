@@ -17,6 +17,8 @@ import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -110,6 +112,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("same name", Context.getLocale()));
 		concept.addName(new ConceptName("same name", Context.getLocale()));
+		concept.setConceptClass(new ConceptClass());
+		concept.setDatatype(new ConceptDatatype());
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 	}
@@ -178,6 +182,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassIfTheConceptHasAtleastOneFullySpecifiedNameAddedToIt() throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("one name", Context.getLocale()));
+		concept.setConceptClass(new ConceptClass());
+		concept.setDatatype(new ConceptDatatype());
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertEquals(false, errors.hasErrors());
@@ -248,7 +254,9 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassIfTheConceptHasASynonymThatIsAlsoAShortName() throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("CD4", Context.getLocale()));
-		// Add the short name. Because the short name is not counted as a Synonym. 
+		concept.setConceptClass(new ConceptClass());
+		concept.setDatatype(new ConceptDatatype());
+		// Add the short name. Because the short name is not counted as a Synonym.
 		// ConceptValidator will not record any errors.
 		ConceptName name = new ConceptName("CD4", Context.getLocale());
 		name.setConceptNameType(ConceptNameType.SHORT);
@@ -265,6 +273,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail if a term is mapped multiple times to the same concept", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfATermIsMappedMultipleTimesToTheSameConcept() throws Exception {
 		Concept concept = new Concept();
+		concept.setConceptClass(new ConceptClass());
+		concept.setDatatype(new ConceptDatatype());
 		ConceptService cs = Context.getConceptService();
 		concept.addName(new ConceptName("my name", Context.getLocale()));
 		ConceptMap map1 = new ConceptMap(cs.getConceptReferenceTerm(1), cs.getConceptMapType(1));
@@ -336,6 +346,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		ConceptService cs = Context.getConceptService();
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("test name", Context.getLocale()));
+		concept.setConceptClass(new ConceptClass());
+		concept.setDatatype(new ConceptDatatype());
 		ConceptMap map = new ConceptMap();
 		map.setSourceCode("unique code");
 		map.setSource(cs.getConceptSource(1));
