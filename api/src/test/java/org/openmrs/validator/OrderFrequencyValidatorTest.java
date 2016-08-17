@@ -97,6 +97,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		ConceptService cs = Context.getConceptService();
 		Concept concept = new Concept();
 		ConceptName cn = new ConceptName("new name", Context.getLocale());
+		concept.setDatatype(cs.getConceptDatatype(1));
 		concept.setConceptClass(cs.getConceptClass(19));
 		concept.addName(cn);
 		cs.saveConcept(concept);

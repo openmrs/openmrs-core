@@ -21,6 +21,8 @@ import java.util.Locale;
 
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -42,6 +44,8 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		Concept c = new Concept();
 		ConceptName fullySpecifiedName = new ConceptName("requires one name min", new Locale("fr", "CA"));
 		c.addName(fullySpecifiedName);
+		c.setDatatype(new ConceptDatatype(1));
+		c.setConceptClass(new ConceptClass(1));
 		Concept savedC = Context.getConceptService().saveConcept(c);
 		assertNotNull(savedC);
 		assertTrue(savedC.getConceptId() > 0);
@@ -57,6 +61,8 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		Concept c = new Concept();
 		ConceptName fullySpecifiedName = new ConceptName("requires one name min", new Locale("fr", "CA"));
 		c.addName(fullySpecifiedName);
+		c.setDatatype(new ConceptDatatype(1));
+		c.setConceptClass(new ConceptClass(1));
 		Concept savedC = Context.getConceptService().saveConcept(c);
 		assertNotNull(savedC);
 		Concept updatedC = Context.getConceptService().saveConcept(c);
@@ -156,6 +162,8 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		c.addName(synonym);
 		c.addName(indexTerm);
 		c.addName(shortName);
+		c.setDatatype(new ConceptDatatype(1));
+		c.setConceptClass(new ConceptClass(1));
 		assertFalse("check test assumption - the API didn't automatically set preferred vlag", c.getFullySpecifiedName(loc)
 		        .isPreferred());
 		
@@ -195,7 +203,9 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		allNames.add(fullySpecifiedName);
 		allNames.add(synonym);
 		c.setNames(allNames);
-		
+		c.setDatatype(new ConceptDatatype(1));
+		c.setConceptClass(new ConceptClass(1));
+
 		assertNull("check test assumption - the API hasn't promoted a name to a fully specified name", c
 		        .getFullySpecifiedName(loc));
 		
@@ -214,6 +224,8 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		String nameWithSpaces = "  jwm  ";
 		concept.addName(new ConceptName(nameWithSpaces, new Locale("en", "US")));
+		concept.setDatatype(new ConceptDatatype(1));
+		concept.setConceptClass(new ConceptClass(1));
 		//When
 		Context.getConceptService().saveConcept(concept);
 		//Then
@@ -232,6 +244,8 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		concept.addName(new ConceptName("Concept", new Locale("en", "US")));
 		Concept conceptSetMember = new Concept();
 		conceptSetMember.addName(new ConceptName("Set Member", new Locale("en", "US")));
+		concept.setDatatype(new ConceptDatatype(1));
+		concept.setConceptClass(new ConceptClass(1));
 		Context.getConceptService().saveConcept(conceptSetMember);
 		concept.addSetMember(conceptSetMember);
 		concept.setSet(false);
