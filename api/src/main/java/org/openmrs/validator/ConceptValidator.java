@@ -85,6 +85,8 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 	 * @should fail validation if field lengths are not correct
 	 * @should pass if fully specified name is the same as short name
 	 * @should pass if different concepts have the same short name
+	 * @should fail if the concept datatype is null
+	 * @should fail if the concept class is null
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
 		
@@ -102,6 +104,9 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 			errors.rejectValue("descriptions","Concept.description.atLeastOneRequired");
 			return;
 		}
+
+		ValidationUtils.rejectIfEmpty(errors, "datatype", "Concept.datatype.empty");
+		ValidationUtils.rejectIfEmpty(errors, "conceptClass", "Concept.conceptClass.empty");
 
 		boolean hasFullySpecifiedName = false;
 		for (Locale conceptNameLocale : conceptToValidate.getAllConceptNameLocales()) {
