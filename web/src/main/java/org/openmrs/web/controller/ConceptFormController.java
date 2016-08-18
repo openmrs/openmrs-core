@@ -258,8 +258,6 @@ public class ConceptFormController extends SimpleFormController {
 				}
 				
 				try {
-					ValidateUtil.validate(concept, errors);
-					
 					validateConceptUsesPersistedObjects(concept, errors);
 					
 					if (!errors.hasErrors()) {
