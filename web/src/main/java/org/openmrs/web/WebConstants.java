@@ -111,4 +111,9 @@ public class WebConstants {
 	 * Session attribute name for the referer url
 	 */
 	public static final String REFERER_URL = "referer_url";
+	
+	/**
+	 * Session parameter name for redirect url
+	 */
+	public static final String REDIRECT_URL = "redirect_url";
 }
