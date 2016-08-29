@@ -10,13 +10,11 @@
 package org.openmrs;
 
 import java.util.Collection;
-import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
-
-import org.openmrs.api.APIException;
 
 /**
  * Defines a Patient in the system. A patient is simply an extension of a person and all that that
@@ -24,13 +22,15 @@ import org.openmrs.api.APIException;
  * 
  * @version 2.0
  */
-public class Patient extends Person implements java.io.Serializable {
+public class Patient extends Person {
 	
 	public static final long serialVersionUID = 93123L;
 	
 	// Fields
 	
 	private Integer patientId;
+	
+	private String allergyStatus = Allergies.UNKNOWN;
 	
 	private Set<PatientIdentifier> identifiers;
 	
@@ -43,8 +43,8 @@ public class Patient extends Person implements java.io.Serializable {
 	/**
 	 * This constructor creates a new Patient object from the given {@link Person} object. All
 	 * attributes are copied over to the new object. NOTE! All child collection objects are copied
-	 * as pointers, each individual element is not copied. <br/>
-	 * <br/>
+	 * as pointers, each individual element is not copied. <br>
+	 * <br>
 	 * TODO Should the patient specific attributes be copied? (like identifiers)
 	 * 
 	 * @param person the person object to copy onto a new Patient
@@ -91,6 +91,29 @@ public class Patient extends Person implements java.io.Serializable {
 	}
 	
 	/**
+	 * Returns allergy status maintained by the supporting infrastructure.
+	 * 
+	 * @return current allargy status for patient
+	 * @since 2.0
+	 * @should return allergy status maintained by the supporting infrastructure
+	 */
+	public String getAllergyStatus() {
+		return this.allergyStatus;
+	}
+	
+	/**
+	 * Sets the allergy status for a patient. <b>This should never be called directly</b>. 
+	 * It should reflect allergy status maintained by the supporting infrastructure.
+	 * 
+	 * @param allergyStatus
+	 * @since 2.0
+	 * @should not be called by service client
+	 */
+	public void setAllergyStatus(String allergyStatus) {
+		this.allergyStatus = allergyStatus;
+	}
+	
+	/**
 	 * Overrides the parent setPersonId(Integer) so that we can be sure patient id is also set
 	 * correctly.
 	 * 
@@ -100,24 +123,6 @@ public class Patient extends Person implements java.io.Serializable {
 	public void setPersonId(Integer personId) {
 		super.setPersonId(personId);
 		this.patientId = personId;
-	}
-	
-	/**
-	 * @return patient's tribe
-	 * @deprecated Tribe is not long a value on Patient. Install the Tribe module
-	 */
-	@Deprecated
-	public Tribe getTribe() {
-		throw new APIException("Tribe.install.module", new Object[] { "Patient.getTribe" });
-	}
-	
-	/**
-	 * @param tribe patient's tribe
-	 * @deprecated Tribe is not long a value on Patient. Install the Tribe module
-	 */
-	@Deprecated
-	public void setTribe(Tribe tribe) {
-		throw new APIException("Tribe.install.module", new Object[] { "Patient.setTribe(Tribe)" });
 	}
 	
 	/**
@@ -139,7 +144,7 @@ public class Patient extends Person implements java.io.Serializable {
 	/**
 	 * Update all identifiers for patient
 	 * 
-	 * @param identifiers Set<PatientIdentifier> to set as update all known identifiers for patient
+	 * @param identifiers Set&lt;PatientIdentifier&gt; to set as update all known identifiers for patient
 	 * @see org.openmrs.PatientIdentifier
 	 */
 	public void setIdentifiers(Set<PatientIdentifier> identifiers) {

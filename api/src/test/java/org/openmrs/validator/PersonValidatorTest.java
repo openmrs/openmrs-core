@@ -121,7 +121,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.validator.PersonValidator#validate(Object,Errors)}
+	 * @see org.openmrs.validator.PersonValidator#validate(Object,Errors)
 	 * @verifies pass validation if gender is blank for Persons
 	 */
 	@Test
@@ -136,7 +136,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.validator.PersonValidator#validate(Object,Errors)}
+	 * @see org.openmrs.validator.PersonValidator#validate(Object,Errors)
 	 * @verifies pass validation if gender is blank for Persons
 	 */
 	@Test
@@ -156,7 +156,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.validator.PersonValidator#validate(Object,Errors)}
+	 * @see org.openmrs.validator.PersonValidator#validate(Object,Errors)
 	 * @verifies pass validation if gender is blank for Persons
 	 */
 	@Test

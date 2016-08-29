@@ -9,14 +9,12 @@
  */
 package org.openmrs.hl7;
 
-import java.io.Serializable;
-
 import org.openmrs.BaseOpenmrsMetadata;
 
 /**
  * Names a unique location that hl7 messages could be coming from.
  */
-public class HL7Source extends BaseOpenmrsMetadata implements Serializable {
+public class HL7Source extends BaseOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 3062136520728193223L;
 	

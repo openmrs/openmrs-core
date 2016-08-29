@@ -9,6 +9,9 @@
  */
 package org.openmrs.api.handler;
 
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
@@ -19,14 +22,13 @@ import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
-
-import java.util.Date;
-import java.util.List;
+import org.openmrs.parameter.EncounterSearchCriteria;
+import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 
 /**
  * This class deals with {@link Patient} objects when they are unvoided via the unvoid* method in an
  * Openmrs Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP
- * class. <br/>
+ * class. <br>
  * The handler unvoids all the encounters(including their associated observations) and orders
  * associated to the specified patient object that got voided because the patient was getting voided
  *
@@ -45,7 +47,11 @@ public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 		if (patient.getId() != null) {
 			//unvoid all the encounter that got voided as a result of the patient getting voided
 			EncounterService es = Context.getEncounterService();
-			List<Encounter> encounters = es.getEncounters(patient, null, null, null, null, null, null, true);
+			EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
+				.setPatient(patient)
+				.setIncludeVoided(true)
+				.createEncounterSearchCriteria();
+			List<Encounter> encounters = es.getEncounters(encounterSearchCriteria);
 			if (CollectionUtils.isNotEmpty(encounters)) {
 				for (Encounter encounter : encounters) {
 					if (encounter.isVoided() && encounter.getDateVoided().equals(origParentVoidedDate)

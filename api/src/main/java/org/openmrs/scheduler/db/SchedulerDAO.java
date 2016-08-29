@@ -50,7 +50,7 @@ public interface SchedulerDAO {
 	/**
 	 * Find all tasks in the database
 	 * 
-	 * @return <code>List<TaskDefinition></code> of all tasks
+	 * @return <code>List&lt;TaskDefinition&gt;</code> of all tasks
 	 * @throws DAOException
 	 */
 	public List<TaskDefinition> getTasks() throws DAOException;

@@ -29,7 +29,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	protected Validator programValidator;
 	
 	/**
-	 * @see {@link ProgramValidator#validate(Object,Errors)}
+	 * @see ProgramValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -54,7 +54,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProgramValidator#validate(Object,Errors)}
+	 * @see ProgramValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if program name already in use", method = "validate(Object,Errors)")
@@ -69,7 +69,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProgramValidator#validate(Object,Errors)}
+	 * @see ProgramValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -95,7 +95,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProgramValidator#validate(Object,Errors)}
+	 * @see ProgramValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if concept is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -110,7 +110,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProgramValidator#validate(Object,Errors)}
+	 * @see ProgramValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
@@ -147,7 +147,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProgramValidator#validate(Object,Errors)}
+	 * @see ProgramValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -163,7 +163,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProgramValidator#validate(Object,Errors)}
+	 * @see ProgramValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

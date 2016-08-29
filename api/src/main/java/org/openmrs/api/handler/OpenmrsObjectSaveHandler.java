@@ -17,6 +17,7 @@ import java.util.UUID;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Obs;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.Voidable;
@@ -29,8 +30,8 @@ import org.openmrs.api.APIException;
 /**
  * This class deals with any object that implements {@link OpenmrsObject}. When an
  * {@link OpenmrsObject} is saved (via a save* method in a service), this handler is automatically
- * called by the {@link RequiredDataAdvice} AOP class. <br/>
- * <br/>
+ * called by the {@link RequiredDataAdvice} AOP class. <br>
+ * <br>
  * This class sets the uuid property on the given OpenmrsObject to a randomly generated <a
  * href="http://wikipedia.org/wiki/UUID">UUID</a> if it is non-null.
  *
@@ -82,7 +83,8 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 			}
 			
 			//We are dealing with only strings
-			if (!property.getPropertyType().equals(String.class)) {
+            //TODO We shouldn't be doing this for all immutable types and fields
+			if (openmrsObject instanceof Obs ||!property.getPropertyType().equals(String.class)) {
 				continue;
 			}
 			

@@ -29,8 +29,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 /**
- * This class should test all methods on the person object.<br/>
- * <br/>
+ * This class should test all methods on the person object.<br>
+ * <br>
  * This class does not touch the database, so it does not need to extend the normal openmrs BaseTest
  */
 public class PersonTest extends BaseContextSensitiveTest {
@@ -257,7 +257,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addAttribute(pa3);
 		// make sure the attribute IS added
 		assertTrue("There should be 3 attributes in the person object but there is actually : " + p.getAttributes().size(),
-		    p.getAttributes().size() == 3);
+				p.getAttributes().size() == 3);
 		
 		p.removeAttribute(pa3);
 		assertTrue("There should be only 2 attribute in the person object now", p.getAttributes().size() == 2);
@@ -309,7 +309,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age after birthday", method = "getAge(Date)")
@@ -324,7 +324,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age before birthday", method = "getAge(Date)")
@@ -339,7 +339,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age on birthday with minutes defined", method = "getAge(Date)")
@@ -354,7 +354,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age on birthday with no minutes defined", method = "getAge(Date)")
@@ -369,7 +369,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge()}
+	 * @see Person#getAge()
 	 */
 	@Test
 	@Verifies(value = "should get age after death", method = "getAge()")
@@ -386,7 +386,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age with given date after death", method = "getAge(Date)")
@@ -405,7 +405,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age with given date before death", method = "getAge(Date)")
@@ -424,7 +424,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age with given date before birth", method = "getAge(Date)")
@@ -443,7 +443,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#addAttribute(PersonAttribute)}
+	 * @see Person#addAttribute(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should not save an attribute with a blank string value", method = "addAttribute(PersonAttribute)")
@@ -464,7 +464,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#addAttribute(PersonAttribute)}
+	 * @see Person#addAttribute(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should not save an attribute with a null value", method = "addAttribute(PersonAttribute)")
@@ -485,7 +485,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#addAttribute(PersonAttribute)}
+	 * @see Person#addAttribute(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should void old attribute when a null or blank string value is added", method = "addAttribute(PersonAttribute)")
@@ -523,7 +523,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#addAddress(PersonAddress)}
+	 * @see Person#addAddress(PersonAddress)
 	 */
 	@Test
 	@Verifies(value = "should not add a person address with blank fields", method = "addAddress(PersonAddress)")
@@ -615,7 +615,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		PersonName expectedPersonName = notVoidedName;
 		
 		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<PersonName>(Arrays.asList(notVoidedName,
-		    voidedName)));
+				voidedName)));
 	}
 	
 	/**
@@ -683,7 +683,153 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		Assert.assertNull(notVoidedPerson.getPersonName());
 	}
-	
+
+	/**
+	 * @see Person#getBirthDateTime()
+	 * @verifies return birthtime along with birthdate
+	 */
+	@Test
+	public void getBirthDateTime_shouldReturnBirthDateTimeAlongWithBirthdate() throws Exception {
+		Person person = new Person();
+
+		person.setBirthdate(new SimpleDateFormat("yyyy-MM-dd").parse("2012-01-01"));
+		person.setBirthtime(new SimpleDateFormat("HH:mm:ss").parse("11:11:11"));
+
+		Assert.assertEquals(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2012-01-01 11:11:11"), person.getBirthDateTime());
+	}
+
+	/**
+	 * @see Person#getBirthDateTime()
+	 * @verifies return null if birthdate is null
+	 */
+	@Test
+	public void getBirthDateTime_shouldReturnNullIfBirthdateIsNull() throws Exception {
+		Person person = new Person();
+
+		person.setBirthdate(null);
+		Assert.assertNull(person.getBirthDateTime());
+	}
+
+	/**
+	 * @see Person#getBirthDateTime()
+	 * @verifies return null if birthtime is null
+	 */
+	@Test
+	public void getBirthDateTime_shouldReturnNullIfBirthtimeIsNull() throws Exception {
+		Person person = new Person();
+
+		person.setBirthdate(new SimpleDateFormat("yyyy-MM-dd").parse("2012-01-01"));
+		person.setBirthtime(null);
+		Assert.assertNull(person.getBirthDateTime());
+	}
+
+	/**
+	 * @see Person#getAttribute(String)
+	 * @verifies get attribute based on String attributename
+	 */
+	@Test
+	public void  getAttribute_shouldPersonAttributeBasedOnAttributeName() throws Exception {
+		Person person = personHelper(false, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+		Assert.assertEquals("name3", person.getAttribute("name3").getAttributeType().getName());
+	}
+
+	/**
+	 * @see Person#getAttribute(String)
+	 * @verifies null if all voided, get attribute based on String attributename
+	 */
+	@Test
+	public void  getAttribute_shouldReturnNullIfAttributeNameIsVoided() throws Exception {
+		Person person = personHelper(true, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+		Assert.assertNull(person.getAttribute("name3"));
+	}
+
+	/**
+	 * @see Person#getAttribute(PersonAttributeType)
+	 * @verifies null if all voided
+	 */
+	@Test
+	public void  getAttribute_shouldReturnNullWhenExistingPersonAttributeTypeIsVoided () throws Exception {
+		Person person = personHelper(true, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+	 	PersonAttributeType type = new PersonAttributeType(new Integer(3));
+	 	type.setName("name3");
+		Assert.assertNull(person.getAttribute(type));
+	}
+
+	/**
+	 * @see Person#getAttribute(Integer)
+	 * @verifies get attribute based on Integer attributetypeid
+	 */
+	@Test
+	public void  getAttribute_shouldreturnPersonAttributeBasedOnAttributeTypeId() throws Exception {
+		Person person = personHelper(false, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+		Assert.assertEquals(new Integer(3), person.getAttribute(new Integer(3)).getAttributeType().getId());
+	}
+
+	/**
+	 * @see Person#getAttribute(Integer)
+	 * @verifies null if all voided, get attribute based on String attributetypeid
+	 */
+	@Test
+	public void  getAttribute_shouldReturnNullWhenExistingPersonAttributeWithMatchingAttributeTypeIdIsVoided() throws Exception {
+		Person person = personHelper(true, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+		Assert.assertNull(person.getAttribute(new Integer(3)));
+	}
+
+	/**
+	 * @see Person#getAttributes(String)
+	 * @verifies get attributes based on String attributename
+	 */
+	@Test
+	public void  getAttributes_shouldReturnAllPersonAttributesWithMatchingAttributeTypeNames() throws Exception {
+		Person person = personHelper(false, 1, 2, 3, "name1", "name1", "name3", "value1", "value2", "value3");
+		Assert.assertEquals(2, person.getAttributes("name1").size());
+	}
+
+	/**
+	 * @see Person#getAttributes(Integer)
+	 * @verifies get attributes based on Integer attributetypeid
+	 */
+	@Test
+	public void  getAttributes_shouldReturnListOfPersonAttributesBasedOnAttributeTypeId() throws Exception {
+		Person person = personHelper(false, 1, 1, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+		Assert.assertEquals(2, person.getAttributes(new Integer(1)).size());
+	}
+
+	/**
+	 * @see Person#getAttributes(Integer)
+	 * @verifies get attributes based on Integer attributetypeid, null if voided
+	 */
+	@Test
+	public void  getAttributes_shouldReturnEmptyListWhenMatchingPersonAttributeByIdIsVoided() throws Exception {
+		Person person = personHelper(true, 1, 1, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+		Assert.assertEquals(0, person.getAttributes(new Integer(1)).size());
+	}
+
+	private Person personHelper(boolean isVoid, int attributeType1, int attributeType2, int attributeType3, String attributeName1, String attributeName2, String attributeName3, String attributeValue1, String attributeValue2, String attributeValue3) {
+		Person person = new Person();
+
+	 	PersonAttributeType type1 = new PersonAttributeType(new Integer(attributeType1));
+	 	PersonAttributeType type2 = new PersonAttributeType(new Integer(attributeType2));
+	 	PersonAttributeType type3 = new PersonAttributeType(new Integer(attributeType3));
+	    
+	 	type1.setName(attributeName1);
+	 	type2.setName(attributeName2);
+	 	type3.setName(attributeName3);
+	 	PersonAttribute personAttribute1 = new PersonAttribute(type1, attributeValue1);
+	 	PersonAttribute personAttribute2 = new PersonAttribute(type2, attributeValue2);
+	 	PersonAttribute personAttribute3 = new PersonAttribute(type3, attributeValue3);
+	    
+		personAttribute1.setVoided(isVoid);
+		personAttribute2.setVoided(isVoid);
+		personAttribute3.setVoided(isVoid);
+
+		person.addAttribute(personAttribute1);
+		person.addAttribute(personAttribute2);
+		person.addAttribute(personAttribute3);
+
+		return person;
+	}
+
 	private void checkGetPersonAddressResultForVoidedPerson(PersonAddress expectedPersonAddress,
 	        Set<PersonAddress> personAddresses) {
 		

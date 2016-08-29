@@ -15,7 +15,7 @@ package org.openmrs;
  * 
  * @since 1.9
  */
-public class VisitType extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class VisitType extends BaseOpenmrsMetadata{
 	
 	private static final long serialVersionUID = 1L;
 	

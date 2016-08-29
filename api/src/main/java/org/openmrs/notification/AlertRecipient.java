@@ -9,11 +9,10 @@
  */
 package org.openmrs.notification;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
+
+import java.util.Date;
 
 /**
  * This class is essentially a wrapper for the user object. The alert is assigned to each recipient.
@@ -21,7 +20,7 @@ import org.openmrs.User;
  * 
  * @see org.openmrs.notification.Alert
  */
-public class AlertRecipient extends BaseOpenmrsObject implements Serializable {
+public class AlertRecipient extends BaseOpenmrsObject {
 	
 	private static final long serialVersionUID = -507111109155L;
 	

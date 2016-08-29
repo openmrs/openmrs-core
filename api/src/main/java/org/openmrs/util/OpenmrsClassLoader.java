@@ -85,8 +85,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		
 		OpenmrsClassLoaderHolder.INSTANCE = this;
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Creating new OpenmrsClassLoader instance with parent: " + parent);
+		}
 		
 		//disable caching so the jars aren't locked
 		//if performance is effected, this can be disabled in favor of
@@ -502,9 +503,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * This clears any references this classloader might have that will prevent garbage collection. <br/>
-	 * <br/>
-	 * Borrowed from Tomcat's WebappClassLoader#clearReferences() (not javadoc linked intentionally) <br/>
+	 * This clears any references this classloader might have that will prevent garbage collection. <br>
+	 * <br>
+	 * Borrowed from Tomcat's WebappClassLoader#clearReferences() (not javadoc linked intentionally) <br>
 	 * The only difference between this and Tomcat's implementation is that this one only acts on
 	 * openmrs objects and also clears out static java.* packages. Tomcat acts on all objects and
 	 * does not clear our static java.* objects.
@@ -585,8 +586,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * Used by {@link #clearReferences()} upon application close. <br/>
-	 * <br/>
+	 * Used by {@link #clearReferences()} upon application close. <br>
+	 * <br>
 	 * Borrowed from Tomcat's WebappClassLoader.
 	 *
 	 * @param instance the object whose fields need to be nulled out
@@ -637,8 +638,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * Determine whether a class was loaded by this class loader or one of its child class loaders. <br/>
-	 * <br/>
+	 * Determine whether a class was loaded by this class loader or one of its child class loaders. <br>
+	 * <br>
 	 * Borrowed from Tomcat's WebappClassLoader
 	 */
 	protected static boolean loadedByThisOrChild(Class<?> clazz) {
@@ -660,8 +661,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	public static void saveState() {
 		try {
 			String key = SchedulerService.class.getName();
-			if (!Context.isRefreshingContext())
+			if (!Context.isRefreshingContext()) {
 				mementos.put(key, Context.getSchedulerService().saveToMemento());
+			}
 		}
 		catch (Exception t) {
 			// pass
@@ -722,49 +724,28 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		}
 		
 		synchronized (ModuleClassLoader.class) {
-			libCacheFolder = new File(System.getProperty("java.io.tmpdir"), System.currentTimeMillis() + LIBCACHESUFFIX);
+			libCacheFolder = new File(OpenmrsUtil.getApplicationDataDirectory(), LIBCACHESUFFIX);
 			
 			if (log.isDebugEnabled()) {
 				log.debug("libraries cache folder is " + libCacheFolder);
-			}
-			
-			File lockFile = new File(libCacheFolder, "lock");
-			if (lockFile.exists()) {
-				log.error("can't initialize libraries cache folder " + libCacheFolder + " as lock file indicates that it"
-				        + " is owned by another openmrs instance");
-				return null;
 			}
 			
 			if (libCacheFolder.exists()) {
 				// clean up and empty the folder if it exists (and is not locked)
 				try {
 					OpenmrsUtil.deleteDirectory(libCacheFolder);
+					
+					libCacheFolder.mkdirs();
 				}
 				catch (IOException io) {
 					log.warn("Unable to delete: " + libCacheFolder.getName());
 				}
 			} else {
-				// delete old lib cache folders
-				deleteOldLibCaches(libCacheFolder);
 				// otherwise just create the dir structure
 				libCacheFolder.mkdirs();
 			}
 			
-			// create the lock file in the lib cache folder to prevent other caches
-			// from being created here
-			try {
-				if (!lockFile.createNewFile()) {
-					log.error("can't create lock file in JPF libraries cache folder" + libCacheFolder);
-					return null;
-				}
-			}
-			catch (IOException ioe) {
-				log.error("can't create lock file in JPF libraries cache folder " + libCacheFolder, ioe);
-				return null;
-			}
-			
 			// mark the lock and entire library cache to be deleted when the jvm exits
-			lockFile.deleteOnExit();
 			libCacheFolder.deleteOnExit();
 			
 			// mark the lib cache folder as ready
@@ -772,45 +753,6 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		}
 		
 		return libCacheFolder;
-	}
-	
-	/**
-	 * Deletes the old lib cache folders that might not have been deleted when OpenMRS closed
-	 * 
-	 * @param libCacheFolder
-	 */
-	public static void deleteOldLibCaches(File libCacheFolder) {
-		
-		FilenameFilter cacheDirFilter = new FilenameFilter() {
-			
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.endsWith(LIBCACHESUFFIX);
-			}
-		};
-		FilenameFilter lockFilter = new FilenameFilter() {
-			
-			@Override
-			public boolean accept(File dir, String name) {
-				return "lock".equals(name);
-			}
-		};
-		File tempLocation = libCacheFolder.getParentFile();
-		File[] listFiles = tempLocation.listFiles(cacheDirFilter);
-		if (listFiles != null) {
-			for (File cacheDir : listFiles) {
-				//check if it is a directory, but is not the current lib cache
-				if (cacheDir.isDirectory() && !cacheDir.equals(libCacheFolder) && cacheDir.list(lockFilter).length == 0) {
-					// check if its not locked by another running openmrs instance
-					try {
-						OpenmrsUtil.deleteDirectory(cacheDir);
-					}
-					catch (IOException io) {
-						log.warn("Unable to delete: " + cacheDir.getName());
-					}
-				}
-			}
-		}
 	}
 	
 	/**

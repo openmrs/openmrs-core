@@ -22,7 +22,6 @@ import org.aopalliance.aop.Advice;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
-import org.openmrs.api.ActiveListService;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
@@ -33,15 +32,14 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
+import org.openmrs.api.OrderSetService;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
-import org.openmrs.arden.ArdenService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
@@ -59,14 +57,14 @@ import org.springframework.context.ApplicationContextAware;
 
 /**
  * Represents an OpenMRS <code>Service Context</code>, which returns the services represented
- * throughout the system. <br/>
- * <br/>
- * This class should not be access directly, but rather used through the <code>Context</code> class. <br/>
- * <br/>
+ * throughout the system. <br>
+ * <br>
+ * This class should not be access directly, but rather used through the <code>Context</code> class. <br>
+ * <br>
  * This class is essentially static and only one instance is kept because this is fairly
  * heavy-weight. Spring takes care of filling in the actual service implementations via dependency
- * injection. See the /metadata/api/spring/applicationContext-service.xml file. <br/>
- * <br/>
+ * injection. See the /metadata/api/spring/applicationContext-service.xml file. <br>
+ * <br>
  * Module services are also accessed through this class. See {@link #getService(Class)}
  *
  * @see org.openmrs.api.context.Context
@@ -74,9 +72,7 @@ import org.springframework.context.ApplicationContextAware;
 public class ServiceContext implements ApplicationContextAware {
 	
 	private static final Log log = LogFactory.getLog(ServiceContext.class);
-	
-	private static volatile ServiceContext instance;
-	
+
 	private ApplicationContext applicationContext;
 	
 	private static boolean refreshingContext = false;
@@ -119,6 +115,10 @@ public class ServiceContext implements ApplicationContextAware {
 		log.debug("Instantiating service context");
 	}
 	
+	private static class ServiceContextHolder {
+		private static ServiceContext instance = null;
+	}
+	
 	/**
 	 * There should only be one ServiceContext per openmrs (java virtual machine). This method
 	 * should be used when wanting to fetch the service context Note: The ServiceContext shouldn't
@@ -128,11 +128,11 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @see org.openmrs.api.context.Context
 	 */
 	public static ServiceContext getInstance() {
-		if (instance == null) {
-			instance = new ServiceContext();
+		if (ServiceContextHolder.instance == null) {
+			ServiceContextHolder.instance = new ServiceContext();
 		}
 		
-		return instance;
+		return ServiceContextHolder.instance;
 	}
 	
 	/**
@@ -140,43 +140,48 @@ public class ServiceContext implements ApplicationContextAware {
 	 * refreshing (being added/removed) and/or openmrs is shutting down
 	 */
 	public static void destroyInstance() {
-		if (instance != null && instance.services != null) {
+		if (ServiceContextHolder.instance != null && ServiceContextHolder.instance.services != null) {
 			if (log.isDebugEnabled()) {
-				for (Map.Entry<Class, Object> entry : instance.services.entrySet()) {
+				for (Map.Entry<Class, Object> entry : ServiceContextHolder.instance.services.entrySet()) {
 					log.debug("Service - " + entry.getKey().getName() + ":" + entry.getValue());
 				}
 			}
 			
 			// Remove advice and advisors that this service added
-			for (Class serviceClass : instance.services.keySet()) {
-				instance.removeAddedAOP(serviceClass);
+			for (Class serviceClass : ServiceContextHolder.instance.services.keySet()) {
+				ServiceContextHolder.instance.removeAddedAOP(serviceClass);
 			}
 			
-			if (instance.services != null) {
-				instance.services.clear();
-				instance.services = null;
+			if (ServiceContextHolder.instance.services != null) {
+				ServiceContextHolder.instance.services.clear();
+				ServiceContextHolder.instance.services = null;
 			}
 			
-			if (instance.addedAdvisors != null) {
-				instance.addedAdvisors.clear();
-				instance.addedAdvisors = null;
+			if (ServiceContextHolder.instance.addedAdvisors != null) {
+				ServiceContextHolder.instance.addedAdvisors.clear();
+				ServiceContextHolder.instance.addedAdvisors = null;
 			}
 			
-			if (instance.addedAdvice != null) {
-				instance.addedAdvice.clear();
-				instance.addedAdvice = null;
+			if (ServiceContextHolder.instance.addedAdvice != null) {
+				ServiceContextHolder.instance.addedAdvice.clear();
+				ServiceContextHolder.instance.addedAdvice = null;
 			}
 		}
 		
-		if (instance != null) {
-			instance.applicationContext = null;
+		if (ServiceContextHolder.instance != null) {
+			ServiceContextHolder.instance.applicationContext = null;
+			
+			if (ServiceContextHolder.instance.moduleOpenmrsServices != null) {
+				ServiceContextHolder.instance.moduleOpenmrsServices.clear();
+				ServiceContextHolder.instance.moduleOpenmrsServices = null;
+			}
 		}
 		
 		if (log.isDebugEnabled()) {
-			log.debug("Destroying ServiceContext instance: " + instance);
+			log.debug("Destroying ServiceContext instance: " + ServiceContextHolder.instance);
 		}
 		
-		instance = null;
+		ServiceContextHolder.instance = null;
 	}
 	
 	/**
@@ -208,13 +213,6 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * @return patientset-related services
-	 */
-	public PatientSetService getPatientSetService() {
-		return getService(PatientSetService.class);
-	}
-	
-	/**
 	 * @return cohort related service
 	 */
 	public CohortService getCohortService() {
@@ -226,6 +224,13 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setCohortService(CohortService cs) {
 		setService(CohortService.class, cs);
+	}
+	
+	/**
+	 * @return order set service
+	 */
+	public OrderSetService getOrderSetService() {
+		return getService(OrderSetService.class);
 	}
 	
 	/**
@@ -262,14 +267,7 @@ public class ServiceContext implements ApplicationContextAware {
 	public ProgramWorkflowService getProgramWorkflowService() {
 		return getService(ProgramWorkflowService.class);
 	}
-	
-	/**
-	 * @return ardenService
-	 */
-	public ArdenService getArdenService() {
-		return getService(ArdenService.class);
-	}
-	
+
 	/**
 	 * @return logicService
 	 */
@@ -313,14 +311,7 @@ public class ServiceContext implements ApplicationContextAware {
 	public void setProgramWorkflowService(ProgramWorkflowService programWorkflowService) {
 		setService(ProgramWorkflowService.class, programWorkflowService);
 	}
-	
-	/**
-	 * @param ardenService
-	 */
-	public void setArdenService(ArdenService ardenService) {
-		setService(ArdenService.class, ardenService);
-	}
-	
+
 	/**
 	 * @param logicService
 	 */
@@ -408,10 +399,10 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * @param patientSetService the patientSetService to set
+	 * @param orderSetService the orderSetService to set
 	 */
-	public void setPatientSetService(PatientSetService patientSetService) {
-		setService(PatientSetService.class, patientSetService);
+	public void setOrderSetService(OrderSetService orderSetService) {
+		setService(OrderSetService.class, orderSetService);
 	}
 	
 	/**
@@ -493,22 +484,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setMessageSourceService(MessageSourceService messageSourceService) {
 		setService(MessageSourceService.class, messageSourceService);
-	}
-	
-	/**
-	 * Gets the ActiveListService used in the context.
-	 *
-	 * @return ActiveListService
-	 */
-	public ActiveListService getActiveListService() {
-		return getService(ActiveListService.class);
-	}
-	
-	/**
-	 * Sets the ActiveListService used in the context
-	 */
-	public void setActiveListService(ActiveListService activeListService) {
-		setService(ActiveListService.class, activeListService);
 	}
 	
 	/**
@@ -745,11 +720,11 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * Allow other services to be added to our service layer <br/>
-	 * <br/>
-	 * Classes will be found/loaded with the ModuleClassLoader <br/>
-	 * <br/>
-	 * <code>params</code>[0] = string representing the service interface<br/>
+	 * Allow other services to be added to our service layer <br>
+	 * <br>
+	 * Classes will be found/loaded with the ModuleClassLoader <br>
+	 * <br>
+	 * <code>params</code>[0] = string representing the service interface<br>
 	 * <code>params</code>[1] = service instance
 	 *
 	 * @param params list of parameters

@@ -1,0 +1,51 @@
+<html>
+<head>
+	<title>OpenMRS</title>
+	
+    <link rel="shortcut icon" type="image/ico" href="images/openmrs-favicon.ico"/>
+	<link rel="icon" type="image/png" href="images/openmrs-favicon.png"/>
+    
+	<style type="text/css" media="all">
+		* {
+			font-family: Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif;
+		}
+        .logo {
+            background-image:url(images/openmrs_logo_white.gif);
+            background-repeat:no-repeat;
+            height:98px;
+            left: 3px;
+        }
+        .bar {
+            background-image:url(images/openmrs_barx.gif);
+            background-repeat:repeat-x;
+            height:45px;
+            width:100%;
+            margin-left: 15px;
+        }
+        .bar-round {
+            background-image:url(images/openmrs_bar.gif);
+            background-repeat:no-repeat;
+            height:45px;
+            width:100%;
+            font-size:24px;
+        }
+    </style>
+</head>
+<body style="background:#ecf3f7">
+    <img style="margin-left:75px; padding-top:10px;" src="images/openmrs_logo_text.gif" />
+    <table style="text-align:center; line-height:40px; margin-top:-25px;" width="100%">
+        <tr>
+        	<td width="100px"><div class="logo"></div></td>
+        	<td>
+            	<div class="bar-round">
+        			<div class="bar">
+        				<h3>OpenMRS Platform ${project.version}.${revisionNumber} Running! </h3>
+        				<p>If you are seeing this page, it means that the OpenMRS Platform is running successfully, but no user interface module is installed. Learn about the available <a href="https://wiki.openmrs.org/x/d4aIBQ">User Interface Modules</a></p>
+        				<p>If you are a developer, you can access the REST API. (See <a href="https://wiki.openmrs.org/x/P4IaAQ">REST documentation for clients</a>)</p>
+        			</div>
+        		</div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

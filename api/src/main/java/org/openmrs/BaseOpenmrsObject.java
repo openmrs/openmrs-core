@@ -9,20 +9,22 @@
  */
 package org.openmrs;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.Hibernate;
 
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Column;
 
 /**
- * This is the base implementation of the {@link OpenmrsObject} interface.<br/>
+ * This is the base implementation of the {@link OpenmrsObject} interface.<br>
  * It implements the uuid variable that all objects are expected to have.
  */
 @MappedSuperclass
-public abstract class BaseOpenmrsObject implements OpenmrsObject {
+public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	
 	@Column(name = "uuid", unique = true, nullable = false, length = 38)
 	private String uuid = UUID.randomUUID().toString();
@@ -61,7 +63,7 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 	/**
 	 * Returns <code>true</code> if and only if <code>x</code> and <code>y</code> refer to the same
 	 * object (<code>x == y</code> has the value <code>true</code>) or both have the same
-	 * <code>uuid</code> (<code>((x.uuid != null) && x.uuid.equals(y.uuid))</code> has the value
+	 * <code>uuid</code> (<code>((x.uuid != null) &amp;&amp; x.uuid.equals(y.uuid))</code> has the value
 	 * <code>true</code>).
 	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -84,6 +86,12 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 		// Need to call getUuid to make sure the hibernate proxy objects return the correct uuid.
 		// The private member may not be set for a hibernate proxy.
 		if (getUuid() == null) {
+			return false;
+		}
+		//In case of hibernate proxy objects we need to get real classes
+		Class<?> thisClass = Hibernate.getClass(this);
+		Class<?> objClass = Hibernate.getClass(obj);
+		if (!(thisClass.isAssignableFrom(objClass) || objClass.isAssignableFrom(thisClass))){
 			return false;
 		}
 		return getUuid().equals(other.getUuid());

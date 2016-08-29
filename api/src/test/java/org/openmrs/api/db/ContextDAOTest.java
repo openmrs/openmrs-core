@@ -9,12 +9,13 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Properties;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -22,12 +23,10 @@ import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
-import java.util.Properties;
-
 /**
  * This class tests the {@link ContextDAO} linked to from the Context. Currently that file is the
- * {@link HibernateContextDAO}.<br/>
- * <br/>
+ * {@link HibernateContextDAO}.<br>
+ * <br>
  * So far we have thoroughly analyzed:
  * <ul>
  * <li>public User authenticate(String, String) on 21/Aug/2008</li>
@@ -65,7 +64,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test
 	@Verifies(value = "should authenticateGivenUsernameAndPassword", method = "authenticate(String,String)")
@@ -75,7 +74,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test
 	@Verifies(value = "should authenticateGivenSystemIdAndPassword", method = "authenticate(String,String)")
@@ -87,7 +86,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	/**
 	 * Fixed bug #982
 	 * 
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test
 	@Verifies(value = "should authenticateGivenSystemIdWithoutHyphenAndPassword", method = "authenticate(String,String)")
@@ -97,7 +96,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should notAuthenticateGivenUsernameAndIncorrectPassword", method = "authenticate(String,String)")
@@ -106,7 +105,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should notAuthenticateGivenSystemIdAndIncorrectPassword", method = "authenticate(String,String)")
@@ -115,7 +114,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should notAuthenticateGivenIncorrectUsername", method = "authenticate(String,String)")
@@ -124,7 +123,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should notAuthenticateGivenIncorrectSystemId", method = "authenticate(String,String)")
@@ -133,7 +132,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should notAuthenticateGivenNullLogin", method = "authenticate(String,String)")
@@ -142,7 +141,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should notAuthenticateGivenEmptyLogin", method = "authenticate(String,String)")
@@ -151,7 +150,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should notAuthenticateWhenPasswordInDatabaseIsNull", method = "authenticate(String,String)")
@@ -160,7 +159,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should notAuthenticateGivenNonNullPasswordWhenPasswordInDatabaseIsNull", method = "authenticate(String,String)")
@@ -169,7 +168,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should notAuthenticateGivenNullPasswordWhenPasswordInDatabaseIsNull", method = "authenticate(String,String)")
@@ -178,7 +177,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should notAuthenticateWhenPasswordInDatabaseIsEmpty", method = "authenticate(String,String)")
@@ -187,7 +186,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test()
 	@Verifies(value = "should giveIdenticalErrorMessagesBetweenUsernameAndPasswordMismatch", method = "authenticate(String,String)")
@@ -219,7 +218,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test
 	@Verifies(value = "should lockout user after eight failed attempts", method = "authenticate(String,String)")
@@ -255,7 +254,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test
 	@Verifies(value = "should authenticateWithCorrectHashedPassword", method = "authenticate(String,String)")
@@ -264,7 +263,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test
 	@Verifies(value = "should authenticateWithIncorrectHashedPassword", method = "authenticate(String,String)")
@@ -276,7 +275,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 * #1580: If you type your password wrong, then log in correctly, the API will not lock you out
 	 * after multiple login attempts in the future
 	 * 
-	 * @see {@link ContextDAO#authenticate(String,String)}
+	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should pass regression test for 1580", method = "authenticate(String,String)")
@@ -332,7 +331,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		u.setUsername("");
 		u.getPerson().setGender("M");
 		
-		us.saveUser(u, "Openmr5xy");
+		us.saveUser(u);
 		dao.authenticate("", "password");
 		
 	}
@@ -351,7 +350,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 *
-	 * @see {@link org.openmrs.api.db.hibernate.HibernateContextDAO#mergeDefaultRuntimeProperties(java.util.Properties)}
+	 * @see org.openmrs.api.db.hibernate.HibernateContextDAO#mergeDefaultRuntimeProperties(java.util.Properties)
 	 */
 	@Test
 	@Verifies(value = "should merge default runtime properties", method = "mergeDefaultRuntimeProperties(Properties runtimeProperties)")

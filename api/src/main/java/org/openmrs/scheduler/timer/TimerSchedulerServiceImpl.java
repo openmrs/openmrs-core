@@ -25,7 +25,6 @@ import java.util.WeakHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerException;
@@ -267,7 +266,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 					
 					// Update the timer status in the database
 					taskDefinition.setStarted(true);
-					saveTask(taskDefinition);
+					saveTaskDefinition(taskDefinition);
 				}
 			}
 			catch (Exception e) {
@@ -295,7 +294,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 			
 			// Update task that has been started
 			taskDefinition.setStarted(false);
-			saveTask(taskDefinition);
+			saveTaskDefinition(taskDefinition);
 		}
 	}
 	
@@ -399,16 +398,6 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * Save a task in the database.
 	 *
 	 * @param task the <code>TaskDefinition</code> to save
-	 * @deprecated use saveTaskDefinition which follows correct naming standard
-	 */
-	public void saveTask(TaskDefinition task) {
-		Context.getSchedulerService().saveTaskDefinition(task);
-	}
-	
-	/**
-	 * Save a task in the database.
-	 *
-	 * @param task the <code>TaskDefinition</code> to save
 	 */
 	public void saveTaskDefinition(TaskDefinition task) {
 		if (task.getId() != null) {
@@ -438,7 +427,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * Get system variables.
 	 */
 	public SortedMap<String, String> getSystemVariables() {
-		TreeMap<String, String> systemVariables = new TreeMap<String, String>();
+		SortedMap<String, String> systemVariables = new TreeMap<String, String>();
 		// scheduler username and password can be found in the global properties
 		// TODO Look into java.util.concurrent.TimeUnit class.  
 		// TODO Remove this from global properties.  This is a constant value that should never change.  

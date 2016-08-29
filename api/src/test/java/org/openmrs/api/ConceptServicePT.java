@@ -12,13 +12,13 @@ package org.openmrs.api;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
-import static org.hamcrest.Matchers.is;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,6 +45,8 @@ public class ConceptServicePT extends BaseContextSensitiveTest {
 	
 	static boolean dictionaryLoaded = false;
 	
+	private static ConceptServicePT instance;
+	
 	@Before
 	public void loadDictionary() throws Exception {
 		if (!dictionaryLoaded) {
@@ -57,6 +59,8 @@ public class ConceptServicePT extends BaseContextSensitiveTest {
 			updateSearchIndex();
 			
 			dictionaryLoaded = true;
+			
+			instance = this;
 		}
 		
 		authenticate();
@@ -81,5 +85,11 @@ public class ConceptServicePT extends BaseContextSensitiveTest {
 		List<Concept> concepts = conceptService.getConceptsByName("diabetes mellit", null, false);
 		
 		assertThat(concepts.get(0).getName().getName(), equalToIgnoringCase("diabetes mellitus"));
+	}
+	
+	@AfterClass
+	public static void unloadDictionary() throws Exception {
+		instance.deleteAllData();
+		dictionaryLoaded = false;
 	}
 }

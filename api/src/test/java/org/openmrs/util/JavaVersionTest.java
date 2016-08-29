@@ -31,7 +31,7 @@ public class JavaVersionTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.util.OpenmrsUtil#validateJavaVersion()}
+	 * @see org.openmrs.util.OpenmrsUtil#validateJavaVersion()
 	 */
 	@Test(expected = APIException.class)
 	public void validateJavaVersion_shouldFailIfTheCurrentJVMVersionIsEarlierThanJava6() {
@@ -40,7 +40,7 @@ public class JavaVersionTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.util.OpenmrsUtil#validateJavaVersion()}
+	 * @see org.openmrs.util.OpenmrsUtil#validateJavaVersion()
 	 */
 	@Test
 	public void validateJavaVersion_shouldPassIfTheCurrentJVMVersionIsLaterThanJava5() {

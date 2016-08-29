@@ -9,17 +9,14 @@
  */
 package org.openmrs;
 
-import org.openmrs.util.OpenmrsUtil;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
-
 import java.util.Comparator;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * PersonAttributeType
  */
-@Root(strict = false)
 public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.Serializable, Comparable<PersonAttributeType> {
 	
 	public static final long serialVersionUID = 2112313431211L;
@@ -50,7 +47,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @return Returns the format.
 	 */
-	@Element(data = true, required = false)
 	public String getFormat() {
 		return format;
 	}
@@ -58,7 +54,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @param format The format to set.
 	 */
-	@Element(data = true, required = false)
 	public void setFormat(String format) {
 		this.format = format;
 	}
@@ -66,7 +61,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @return the foreignKey
 	 */
-	@Attribute(required = false)
 	public Integer getForeignKey() {
 		return foreignKey;
 	}
@@ -74,7 +68,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @param foreignKey the foreignKey to set
 	 */
-	@Attribute(required = false)
 	public void setForeignKey(Integer foreignKey) {
 		this.foreignKey = foreignKey;
 	}
@@ -96,7 +89,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @return Returns the PersonAttributeTypeId.
 	 */
-	@Attribute(required = false)
 	public Integer getPersonAttributeTypeId() {
 		return personAttributeTypeId;
 	}
@@ -104,14 +96,17 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @param newPersonAttributeTypeId The PersonAttributeTypeId to set.
 	 */
-	@Attribute(required = false)
 	public void setPersonAttributeTypeId(Integer newPersonAttributeTypeId) {
 		this.personAttributeTypeId = newPersonAttributeTypeId;
 	}
 	
 	/**
 	 * @return the searchable status
+	 * 
+	 * @deprecated as of 2.0, use {@link #getSearchable()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isSearchable() {
 		return getSearchable();
 	}
@@ -119,7 +114,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @return the searchable status
 	 */
-	@Attribute(required = false)
 	public Boolean getSearchable() {
 		return searchable;
 	}
@@ -127,7 +121,6 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @param searchable the searchable to set
 	 */
-	@Attribute(required = false)
 	public void setSearchable(Boolean searchable) {
 		this.searchable = searchable;
 	}
@@ -178,10 +171,10 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	}
 	
 	/**
-	 *
-	 * @Depracated since 1.12. Use DefaultComparator instead.
-	 * Note: this comparator imposes orderings that are inconsistent with equals.
-	 */
+	*
+	* @deprecated since 1.12. Use DefaultComparator instead.
+	* Note: this comparator imposes orderings that are inconsistent with equals.
+	*/
 	@Override
 	@SuppressWarnings("squid:S1210")
 	public int compareTo(PersonAttributeType other) {

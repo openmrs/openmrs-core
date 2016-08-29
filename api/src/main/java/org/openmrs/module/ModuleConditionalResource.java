@@ -22,7 +22,7 @@ public class ModuleConditionalResource {
 	
 	private String path;
 	
-	private String openmrsVersion;
+	private String openmrsPlatformVersion;
 	
 	private List<ModuleAndVersion> modules = new ArrayList<ModuleAndVersion>();
 	
@@ -34,14 +34,20 @@ public class ModuleConditionalResource {
 		this.path = path;
 	}
 	
-	public String getOpenmrsVersion() {
-		return openmrsVersion;
-	}
-	
-	public void setOpenmrsVersion(String openmrsVersion) {
-		this.openmrsVersion = openmrsVersion;
-	}
-	
+	/**
+	 * @since 1.11.3, 1.10.2, 1.9.9
+	 */
+    public String getOpenmrsPlatformVersion() {
+    	return openmrsPlatformVersion;
+    }
+
+    /**
+	 * @since 1.11.3, 1.10.2, 1.9.9
+	 */
+    public void setOpenmrsPlatformVersion(String openmrsPlatformVersion) {
+    	this.openmrsPlatformVersion = openmrsPlatformVersion;
+    }
+
 	public List<ModuleAndVersion> getModules() {
 		return modules;
 	}
@@ -63,7 +69,7 @@ public class ModuleConditionalResource {
 		if (modules != null ? !modules.equals(that.modules) : that.modules != null) {
 			return false;
 		}
-		if (openmrsVersion != null ? !openmrsVersion.equals(that.openmrsVersion) : that.openmrsVersion != null) {
+		if (openmrsPlatformVersion != null ? !openmrsPlatformVersion.equals(that.openmrsPlatformVersion) : that.openmrsPlatformVersion != null) {
 			return false;
 		}
 		if (path != null ? !path.equals(that.path) : that.path != null) {
@@ -75,14 +81,14 @@ public class ModuleConditionalResource {
 	
 	@Override
 	public String toString() {
-		return "ModuleConditionalResource{" + "path='" + path + '\'' + ", openmrsVersion='" + openmrsVersion + '\''
+		return "ModuleConditionalResource{" + "path='" + path + '\'' + ", openmrsPlatformVersion='" + openmrsPlatformVersion + '\''
 		        + ", modules=" + modules + '}';
 	}
 	
 	@Override
 	public int hashCode() {
 		int result = path != null ? path.hashCode() : 0;
-		result = 31 * result + (openmrsVersion != null ? openmrsVersion.hashCode() : 0);
+		result = 31 * result + (openmrsPlatformVersion != null ? openmrsPlatformVersion.hashCode() : 0);
 		result = 31 * result + (modules != null ? modules.hashCode() : 0);
 		return result;
 	}

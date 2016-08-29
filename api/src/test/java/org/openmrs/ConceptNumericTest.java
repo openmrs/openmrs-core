@@ -23,7 +23,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	/**
 	 * Regression test for TRUNK-82 (old TRAC-1511)
 	 * 
-	 * @see {@link ConceptNumeric#equals(Object)}
+	 * @see ConceptNumeric#equals(Object)
 	 */
 	@Test
 	@Verifies(value = "should not return true if obj is concept", method = "equals(Object)")
@@ -122,6 +122,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	public void shouldSaveAConceptNumericWithAllowDecimalValue() throws Exception {
 		Concept c = Context.getConceptService().getConcept(22);
 		ConceptNumeric cn = new ConceptNumeric(c);
+		cn.addDescription(new ConceptDescription("some description", null));
 		
 		Context.getConceptService().saveConcept(cn);
 		Assert.assertFalse(Context.getConceptService().getConceptNumeric(22).getAllowDecimal());

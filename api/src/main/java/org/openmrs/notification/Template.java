@@ -9,12 +9,11 @@
  */
 package org.openmrs.notification;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import org.openmrs.BaseOpenmrsObject;
 
-public class Template extends BaseOpenmrsObject implements Serializable {
+import java.util.Map;
+
+public class Template extends BaseOpenmrsObject {
 	
 	/**
 	 * 

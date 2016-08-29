@@ -9,11 +9,11 @@
  */
 package org.openmrs;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.Indexed;
+
 import java.util.HashSet;
 import java.util.TreeSet;
-
-import org.simpleframework.xml.Attribute;
 
 /**
  * The ConceptNumeric extends upon the Concept object by adding some number range values
@@ -21,7 +21,7 @@ import org.simpleframework.xml.Attribute;
  * @see Concept
  */
 @Indexed
-public class ConceptNumeric extends Concept implements java.io.Serializable {
+public class ConceptNumeric extends Concept {
 	
 	public static final long serialVersionUID = 47323L;
 	
@@ -65,8 +65,8 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	}
 	
 	/**
-	 * Optional constructor for turning a Concept into a ConceptNumeric <br/>
-	 * <br/>
+	 * Optional constructor for turning a Concept into a ConceptNumeric <br>
+	 * <br>
 	 * Note: This cannot copy over numeric specific values
 	 * 
 	 * @param c
@@ -129,123 +129,62 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	
 	// Property accessors
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = false)
 	public Double getHiAbsolute() {
 		return this.hiAbsolute;
 	}
 	
-	@Attribute(required = false)
 	public void setHiAbsolute(Double hiAbsolute) {
 		this.hiAbsolute = hiAbsolute;
 	}
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = false)
 	public Double getHiCritical() {
 		return this.hiCritical;
 	}
 	
-	@Attribute(required = false)
 	public void setHiCritical(Double hiCritical) {
 		this.hiCritical = hiCritical;
 	}
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = false)
 	public Double getHiNormal() {
 		return this.hiNormal;
 	}
 	
-	@Attribute(required = false)
 	public void setHiNormal(Double hiNormal) {
 		this.hiNormal = hiNormal;
 	}
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = false)
 	public Double getLowAbsolute() {
 		return this.lowAbsolute;
 	}
 	
-	@Attribute(required = false)
 	public void setLowAbsolute(Double lowAbsolute) {
 		this.lowAbsolute = lowAbsolute;
 	}
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = false)
 	public Double getLowCritical() {
 		return this.lowCritical;
 	}
 	
-	@Attribute(required = false)
 	public void setLowCritical(Double lowCritical) {
 		this.lowCritical = lowCritical;
 	}
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = false)
 	public Double getLowNormal() {
 		return this.lowNormal;
 	}
 	
-	@Attribute(required = false)
 	public void setLowNormal(Double lowNormal) {
 		this.lowNormal = lowNormal;
 	}
 	
-	/**
-	 * 
-	 */
-	@Attribute(required = false)
 	public String getUnits() {
 		return this.units;
 	}
 	
-	@Attribute(required = false)
 	public void setUnits(String units) {
 		this.units = units;
 	}
-	
-	/**
-	 * @deprecated use {@link #isAllowDecimal()}
-	 */
-	@Deprecated
-	public Boolean isPrecise() {
-		return isAllowDecimal();
-	}
-	
-	/**
-	 * @deprecated use {@link #getAllowDecimal()}
-	 */
-	@Deprecated
-	@Attribute
-	public Boolean getPrecise() {
-		return getAllowDecimal();
-	}
-	
-	/**
-	 * @deprecated use {@link #setAllowDecimal(Boolean)}
-	 */
-	@Deprecated
-	@Attribute
-	public void setPrecise(Boolean precise) {
-		setAllowDecimal(precise);
-	}
-	
+
 	/**
 	 * This method will <i>always</i> return true for ConceptNumeric objects that have a datatype of
 	 * Numeric
@@ -263,25 +202,28 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	public Integer getDisplayPrecision() {
 		return displayPrecision;
 	}
-	
+
 	/**
-	 * @param displayPrecision, sets displayPrecision to be used for the display of a numeric value
+	 * @param displayPrecision sets displayPrecision to be used for the display of a numeric value
 	 */
 	public void setDisplayPrecision(Integer displayPrecision) {
 		this.displayPrecision = displayPrecision;
 	}
 	
-	@Attribute
 	public Boolean getAllowDecimal() {
-		return isAllowDecimal();
+		return allowDecimal == null ? false : allowDecimal;
 	}
 	
-	@Attribute
 	public void setAllowDecimal(Boolean allowDecimal) {
 		this.allowDecimal = allowDecimal;
 	}
 	
+	/**
+	 * @deprecated as of 2.0, use {@link #getAllowDecimal()}
+	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isAllowDecimal() {
-		return allowDecimal == null ? false : allowDecimal;
+		return getAllowDecimal();
 	}
 }

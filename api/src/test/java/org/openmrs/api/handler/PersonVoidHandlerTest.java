@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link PersonVoidHandler#handle(Person,User,Date,String)}
+	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should set the personVoided bit", method = "handle(Person,User,Date,String)")
@@ -40,7 +40,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonVoidHandler#handle(Person,User,Date,String)}
+	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should set the personVoidReason", method = "handle(Person,User,Date,String)")
@@ -52,7 +52,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonVoidHandler#handle(Person,User,Date,String)}
+	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should set personPersonVoidedBy", method = "handle(Person,User,Date,String)")
@@ -64,7 +64,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonVoidHandler#handle(Person,User,Date,String)}
+	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not set personPersonVoidedBy if non null", method = "handle(Person,User,Date,String)")
@@ -77,7 +77,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonVoidHandler#handle(Person,User,Date,String)}
+	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should set personDateVoided", method = "handle(Person,User,Date,String)")
@@ -91,7 +91,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonVoidHandler#handle(Person,User,Date,String)}
+	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not set personDateVoided if non null", method = "handle(Person,User,Date,String)")
@@ -107,7 +107,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonVoidHandler#handle(Person,User,Date,String)}
+	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not set the personVoidReason if already personVoided", method = "handle(Person,User,Date,String)")
@@ -130,7 +130,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = Context.getPersonService().getPerson(2);
 		User user = new User(person);
-		Context.getUserService().saveUser(user, "Admin123");
+		Context.getUserService().createUser(user, "Admin123");
 		Assert.assertFalse(Context.getUserService().getUsersByPerson(person, false).isEmpty());
 		
 		//when

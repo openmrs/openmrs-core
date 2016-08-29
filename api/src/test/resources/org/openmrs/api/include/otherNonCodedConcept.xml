@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+    <concept concept_id="4000" datatype_id="4" class_id="11" is_set="0" retired="0" creator="1" date_created="2008-08-15 15:27:51.0" uuid="5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    <concept_name concept_name_id="5000" concept_id="4000" name="Other non coded" locale="en" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="8bc5693a-f558-40c9-8166-145a4b119ca6" creator="1" date_created="2004-08-12 00:00:00.0"/>
+
+    <global_property property="allergy.concept.otherNonCoded" property_value="5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" uuid="b7ea5607-d0c4-4e44-8be6-31e1ac7e1fda"/>
+</dataset>

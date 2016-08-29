@@ -15,5 +15,5 @@ import org.springframework.stereotype.Component;
  * Test bean which should be only loaded when running on OpenMRS 1.10 and later with the htmlformentry module
  */
 @Component
-@OpenmrsProfile(openmrsVersion = "1.10", modules = { "htmlformentry:2.3" })
+@OpenmrsProfile(openmrsPlatformVersion = "1.10", modules = { "htmlformentry:2.3" })
 public class OpenmrsProfile1_10WithHtmlformentry {}

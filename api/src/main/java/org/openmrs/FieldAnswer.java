@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import java.util.Date;
 
 /**
@@ -16,7 +18,7 @@ import java.util.Date;
  * 
  * @version 1.0
  */
-public class FieldAnswer extends BaseOpenmrsObject implements java.io.Serializable {
+public class FieldAnswer extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 5656L;
 	
@@ -40,8 +42,19 @@ public class FieldAnswer extends BaseOpenmrsObject implements java.io.Serializab
 	
 	/**
 	 * @return boolean whether or not this fieldAnswer has been modified
+	 *
+	 * @deprecated as of 2.0, use {@link #getDirty()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public boolean isDirty() {
+		return getDirty();
+	}
+	
+	/**
+	 * @return boolean whether or not this fieldAnswer has been modified
+	 */
+	public boolean getDirty() {
 		return dirty;
 	}
 	

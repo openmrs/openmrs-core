@@ -123,8 +123,8 @@ public class TestUtil {
 	}
 	
 	/**
-	 * Convert the given multi-line output to lines of StringBuilder.append lines <br/>
-	 * <br/>
+	 * Convert the given multi-line output to lines of StringBuilder.append lines <br>
+	 * <br>
 	 * From an input of this this:
 	 * 
 	 * <pre>
@@ -133,12 +133,12 @@ public class TestUtil {
 	 * asdf"asdf"
 	 * </pre>
 	 * 
-	 * To this:<br/>
-	 * <br/>
-	 * StringBuilder correctOutput = new StringBuilder();<br/>
-	 * correctOutput.append("asdf\n");<br/>
-	 * correctOutput.append(" asdfasdf\n");<br/>
-	 * correctOutput.append("asdf\"asdf\"\n");<br/>
+	 * To this:<br>
+	 * <br>
+	 * StringBuilder correctOutput = new StringBuilder();<br>
+	 * correctOutput.append("asdf\n");<br>
+	 * correctOutput.append(" asdfasdf\n");<br>
+	 * correctOutput.append("asdf\"asdf\"\n");<br>
 	 * 
 	 * @param output multi line string to convert
 	 */
@@ -156,8 +156,8 @@ public class TestUtil {
 	}
 	
 	/**
-	 * Print the contents of the given tableName to system.out<br/>
-	 * <br/>
+	 * Print the contents of the given tableName to system.out<br>
+	 * <br>
 	 * Call this from any {@link BaseContextSensitiveTest} child by:
 	 * TestUtil.printOutTableContents(getConnection(), "encounter");
 	 * 
@@ -207,15 +207,17 @@ public class TestUtil {
 	}
 	
 	/**
-	 * Waits until the System.currentTimeMillis() results has changed. Useful because the
-	 * granularity of the clock on some systems is low, so doing a Thread.sleep(10) may not give you
-	 * a different clock value, for example.
+	 * Waits until System.currentTimeMillis() has flipped to the next second. Since the OpenMRS database is only precise
+	 * to the second, if you want to test something "later" you need to wait this long. (Also, useful because the granularity
+	 * of the clock on some systems is low, so doing a Thread.sleep(10) may not give you a different clock value
+	 *
+	 * @see org.openmrs.api.db.hibernate.DropMillisecondsHibernateInterceptor
 	 */
 	public static void waitForClockTick() {
-		long t = System.currentTimeMillis();
-		while (System.currentTimeMillis() == t) {
+		long t = System.currentTimeMillis() / 1000;
+		while (System.currentTimeMillis() / 1000 == t) {
 			try {
-				Thread.sleep(1);
+				Thread.sleep(100);
 			}
 			catch (InterruptedException ex) {}
 		}

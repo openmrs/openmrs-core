@@ -150,7 +150,7 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		
 		Date beforeDate = u.getDateChanged();
 		
-		Context.getUserService().saveUser(u, null);
+		Context.getUserService().saveUser(u);
 		
 		Date afterDate = u.getDateChanged();
 		
@@ -158,7 +158,7 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link AuditableInterceptor#onFlushDirty(Object,Serializable,null,null,null,null)}
+	 * @see AuditableInterceptor#onFlushDirty(Object,Serializable,null,null,null,null)
 	 * @verifies should not fail when the daemon user modifies something
 	 */
 	@Test
@@ -253,7 +253,7 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		u.setSystemId("user");
 		u.setPerson(Context.getPersonService().getPerson(1));
 		
-		Context.getUserService().saveUser(u, "Admin123");
+		Context.getUserService().createUser(u, "Admin123");
 		
 		Assert.assertSame(Context.getAuthenticatedUser(), u.getCreator());
 		Assert.assertNotNull(u.getDateCreated());

@@ -9,29 +9,25 @@
  */
 package org.openmrs;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.load.Replace;
-import org.simpleframework.xml.load.Validate;
-
-import java.util.Collections;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.ArrayList;
 
 /**
  * Defines a User Account in the system. This account belongs to a {@link Person} in the system,
@@ -55,8 +51,6 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	private String systemId;
 	
 	private String username;
-	
-	private String secretQuestion;
 	
 	private Set<Role> roles;
 	
@@ -350,7 +344,6 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @return Returns the systemId.
 	 */
-	@Attribute(required = false)
 	public String getSystemId() {
 		return systemId;
 	}
@@ -358,7 +351,6 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @param systemId The systemId to set.
 	 */
-	@Attribute(required = false)
 	public void setSystemId(String systemId) {
 		this.systemId = systemId;
 	}
@@ -366,7 +358,6 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @return Returns the userId.
 	 */
-	@Attribute(required = true)
 	public Integer getUserId() {
 		return userId;
 	}
@@ -374,17 +365,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @param userId The userId to set.
 	 */
-	@Attribute(required = true)
 	public void setUserId(Integer userId) {
 		this.userId = userId;
-	}
-	
-	/**
-	 * @deprecated see {@link #setPerson(Person)}
-	 */
-	@Deprecated
-	public void setPersonId(Integer personId) {
-		throw new APIException("User.setPersonId", (Object[]) null);
 	}
 	
 	/**
@@ -416,7 +398,6 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @return Returns the username.
 	 */
-	@Attribute(required = false)
 	public String getUsername() {
 		return username;
 	}
@@ -424,32 +405,13 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	/**
 	 * @param username The username to set.
 	 */
-	@Attribute(required = false)
 	public void setUsername(String username) {
 		this.username = username;
 	}
 	
-	/**
-	 * @deprecated Use LoginCredentials
-	 * @return Returns the secretQuestion.
-	 */
-	@Deprecated
-	public String getSecretQuestion() {
-		return secretQuestion;
-	}
-	
-	/**
-	 * @deprecated Use LoginCredentials
-	 * @param secretQuestion The secretQuestion to set.
-	 */
-	@Deprecated
-	public void setSecretQuestion(String secretQuestion) {
-		this.secretQuestion = secretQuestion;
-	}
-	
 	@Override
 	public String toString() {
-		return username;
+		return StringUtils.isNotBlank(username) ? username : systemId;
 	}
 	
 	/**
@@ -463,7 +425,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	}
 	
 	/**
-	 * @param userProperties A Map<String,String> of the properties to set.
+	 * @param userProperties A Map&lt;String,String&gt; of the properties to set.
 	 */
 	public void setUserProperties(Map<String, String> userProperties) {
 		this.userProperties = userProperties;
@@ -555,53 +517,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	public Set<PersonName> getNames() {
 		return person.getNames();
 	}
-	
-	/**
-	 * @deprecated use <tt>getGivenName</tt> on <tt>Person</tt>
-	 * @return String user's first name
-	 */
-	@Deprecated
-	public String getFirstName() {
-		return getGivenName();
-	}
-	
-	/**
-	 * @deprecated use <tt>getFamilyName</tt> on <tt>Person</tt>
-	 * @return String user's last name
-	 */
-	@Deprecated
-	public String getLastName() {
-		return getFamilyName();
-	}
-	
-	/**
-	 * If the serializer wishes, don't serialize this entire object, just the important parts
-	 * 
-	 * @param sessionMap serialization session information
-	 * @return User object to serialize
-	 * @see OpenmrsUtil#isShortSerialization(Map)
-	 */
-	@Replace
-	public User replaceSerialization(Map<?, ?> sessionMap) {
-		if (OpenmrsUtil.isShortSerialization(sessionMap)) {
-			// only serialize the user id
-			return new User(getUserId());
-		}
 		
-		// don't do short serialization
-		return this;
-	}
-	
-	@Validate
-	public void validateSerialization(Map<?, ?> sessionMap) {
-		if (OpenmrsUtil.isShortSerialization(sessionMap)) {
-			// only serialize the user id
-			
-		}
-		
-		return;
-	}
-	
 	/**
 	 * Returns a list of Locales for which the User is considered proficient.
 	 * 

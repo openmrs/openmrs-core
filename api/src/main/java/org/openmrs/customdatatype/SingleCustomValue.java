@@ -20,15 +20,14 @@ import org.openmrs.VisitAttribute;
  * reference to the real value (e.g. it is the UUID of a location or the URI of an image in a PACS).
  * The "objectValue" property accessors are convenience methods that use a {@link CustomDatatype} to convert
  * to/from the String serializedValue.
- * @param <D> the descriptor for this value, e.g. VisitAttribute implements SingleCustomValue<VisitAttributeType>
- * @see {@link CustomDatatype}
+ * @param <D> the descriptor for this value, e.g. VisitAttribute implements SingleCustomValue&lt;VisitAttributeType&gt;
+ * @see CustomDatatype
  * @since 1.9
  */
 public interface SingleCustomValue<D extends CustomValueDescriptor> {
 	
 	/**
-	 * The metadata describing this custom value
-	 * @return
+	 * @return metadata describing this custom value
 	 */
 	D getDescriptor();
 	
@@ -57,7 +56,7 @@ public interface SingleCustomValue<D extends CustomValueDescriptor> {
 	Object getValue() throws InvalidCustomValueException;
 	
 	/**
-	 * Sets the typed value. (This will result in a call to {@link CustomDatatype#toReferenceString(Object)}
+	 * Sets the typed value. (This will result in a call to {@link CustomDatatype#getReferenceStringForValue(Object)}
 	 * @param typedValue
 	 * @throws InvalidCustomValueException
 	 */

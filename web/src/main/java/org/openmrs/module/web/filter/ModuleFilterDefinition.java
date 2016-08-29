@@ -71,7 +71,7 @@ public class ModuleFilterDefinition implements Serializable {
 	}
 	
 	/**
-	 * @param the {@link Module} to set
+	 * @param module the {@link Module} to set
 	 */
 	public void setModule(Module module) {
 		this.module = module;
@@ -85,21 +85,21 @@ public class ModuleFilterDefinition implements Serializable {
 	}
 	
 	/**
-	 * @param - the name of the filter
+	 * @param filterName the name of the filter
 	 */
 	public void setFilterName(String filterName) {
 		this.filterName = filterName;
 	}
 	
 	/**
-	 * @eturn - the class name of the filter
+	 * @return - the class name of the filter
 	 */
 	public String getFilterClass() {
 		return filterClass;
 	}
 	
 	/**
-	 * @param - the class name of the filter
+	 * @param filterClass the class name of the filter
 	 */
 	public void setFilterClass(String filterClass) {
 		this.filterClass = filterClass;

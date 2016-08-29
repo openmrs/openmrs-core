@@ -11,6 +11,8 @@ package org.openmrs;
 
 import java.util.Comparator;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * The FormField object relates/orders the <code>fields</code> on a <code>form</code> A form can
  * have many 0 to n fields associated with it in a hierarchical manor. This FormField object governs
@@ -56,21 +58,6 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	/** constructor with id */
 	public FormField(Integer formFieldId) {
 		this.formFieldId = formFieldId;
-	}
-	
-	/**
-	 * Sort order for the form fields in the schema. Attempts: 1) sortWeight 2) fieldNumber 3)
-	 * fieldPart 4) fieldName
-	 *
-	 * @param f FormField to compare this object to
-	 * @return -1, 0, or +1 depending on the difference between the FormFields
-	 * @Depracated since 1.12. Use DefaultComparator instead.
-	 * Note: this comparator imposes orderings that are inconsistent with equals.
-	 */
-	@SuppressWarnings("squid:S1210")
-	public int compareTo(FormField f) {
-		DefaultComparator ffDComparator = new DefaultComparator();
-		return ffDComparator.compare(this, f);
 	}
 	
 	// Property accessors
@@ -203,16 +190,20 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	
 	/**
 	 * @return Returns the required status.
+	 * 
+	 * @deprecated as of 2.0, use {@link #getRequired()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isRequired() {
-		return required == null ? false : required;
+		return getRequired();
 	}
 	
 	/**
 	 * @return same as isRequired()
 	 */
 	public Boolean getRequired() {
-		return isRequired();
+		return required == null ? false : required;
 	}
 	
 	/**
@@ -262,6 +253,11 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	public void setId(Integer id) {
 		setFormFieldId(id);
 		
+	}
+	
+	public int compareTo(FormField other) {
+		DefaultComparator pnDefaultComparator = new DefaultComparator();
+		return pnDefaultComparator.compare(this, other);
 	}
 	
 	/**

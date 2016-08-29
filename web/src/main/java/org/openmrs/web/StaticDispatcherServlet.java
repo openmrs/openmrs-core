@@ -19,12 +19,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 /**
- * This class is only used to get access to the dispatcher servlet that handles static content. <br/>
- * <br/>
+ * This class is only used to get access to the dispatcher servlet that handles static content. <br>
+ * <br>
  * After creation, this object is saved to WebModuleUtil for later use. When Spring's root 
  * webApplicationContext is refreshed, this dispatcher servlet needs to be refreshed too.
- * 
- * @see #reInitFrameworkServlet()
  */
 public class StaticDispatcherServlet extends org.springframework.web.servlet.DispatcherServlet {
 	

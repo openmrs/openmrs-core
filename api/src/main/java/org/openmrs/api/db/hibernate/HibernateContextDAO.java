@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -40,6 +41,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 import org.springframework.orm.hibernate4.SessionFactoryUtils;
 import org.springframework.orm.hibernate4.SessionHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
@@ -71,6 +73,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
 	 */
+	@Transactional(noRollbackFor = ContextAuthenticationException.class)
 	public User authenticate(String login, String password) throws ContextAuthenticationException {
 		
 		String errorMsg = "Invalid username and/or password: " + login;
@@ -205,6 +208,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#getUserByUuid(java.lang.String)
 	 */
+	@Transactional(readOnly = true)
 	public User getUserByUuid(String uuid) {
 		
 		// don't flush here in case we're in the AuditableInterceptor.  Will cause a StackOverflowEx otherwise
@@ -297,6 +301,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#clearSession()
 	 */
+	@Transactional
 	public void clearSession() {
 		sessionFactory.getCurrentSession().clear();
 	}
@@ -311,6 +316,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#flushSession()
 	 */
+	@Transactional
 	public void flushSession() {
 		sessionFactory.getCurrentSession().flush();
 	}
@@ -318,6 +324,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.context.Context#startup(Properties)
 	 */
+	@Transactional
 	public void startup(Properties properties) {
 	}
 	
@@ -406,6 +413,7 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 	
 	@Override
+	@Transactional
 	public void updateSearchIndexForType(Class<?> type) {
 		//From http://docs.jboss.org/hibernate/search/3.3/reference/en-US/html/manual-index-changes.html#search-batchindex-flushtoindexes
 		FullTextSession session = Search.getFullTextSession(sessionFactory.getCurrentSession());
@@ -426,10 +434,13 @@ public class HibernateContextDAO implements ContextDAO {
 			int index = 0;
 			while (results.next()) {
 				index++;
-				session.index(results.get(0)); //index each element
+				//index each element
+				session.index(results.get(0));
 				if (index % 1000 == 0) {
-					session.flushToIndexes(); //apply changes to indexes
-					session.clear(); //free memory since the queue is processed
+					//apply changes to indexes
+					session.flushToIndexes();
+					//free memory since the queue is processed
+					session.clear();
 				}
 			}
 			session.flushToIndexes();
@@ -445,6 +456,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @see org.openmrs.api.db.ContextDAO#updateSearchIndexForObject(java.lang.Object)
 	 */
 	@Override
+	@Transactional
 	public void updateSearchIndexForObject(Object object) {
 		FullTextSession session = Search.getFullTextSession(sessionFactory.getCurrentSession());
 		session.index(object);
@@ -471,9 +483,8 @@ public class HibernateContextDAO implements ContextDAO {
 		try {
 			log.info("Updating the search index... It may take a few minutes.");
 			Search.getFullTextSession(sessionFactory.getCurrentSession()).createIndexer().startAndWait();
-			
 			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
-			    OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
+					OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
 			if (gp == null) {
 				gp = new GlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
 			}
@@ -485,5 +496,19 @@ public class HibernateContextDAO implements ContextDAO {
 			throw new RuntimeException("Failed to update the search index", e);
 		}
 	}
-	
+
+	/**
+	 * @see ContextDAO#updateSearchIndexAsync()
+	 */
+	@Override
+	public Future<?> updateSearchIndexAsync() {
+		try {
+			log.info("Started asynchronously updating the search index...");
+			return Search.getFullTextSession(sessionFactory.getCurrentSession()).createIndexer().start();
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Failed to start asynchronous search index update", e);
+		}
+	}
+
 }

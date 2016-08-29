@@ -20,8 +20,8 @@ import org.springframework.util.StringUtils;
 
 /**
  * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
- * an object back and forth through an html form or other medium. <br/>
- * <br/>
+ * an object back and forth through an html form or other medium. <br>
+ * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
  * 
  * @see ProgramWorkflow
@@ -41,7 +41,7 @@ public class ProgramWorkflowEditor extends PropertyEditorSupport {
 		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		if (StringUtils.hasText(text)) {
 			try {
-				setValue(pws.getWorkflow(Integer.valueOf(text)));
+				setValue(pws.getWorkflowByUuid(text));
 			}
 			catch (Exception ex) {
 				ProgramWorkflow pw = pws.getWorkflowByUuid(text);

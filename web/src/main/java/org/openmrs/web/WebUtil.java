@@ -9,12 +9,6 @@
  */
 package org.openmrs.web;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Locale;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,26 +19,200 @@ import org.openmrs.util.Format.FORMAT_TYPE;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsDateFormat;
+import org.owasp.encoder.Encode;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 
 public class WebUtil implements GlobalPropertyListener {
 	
 	private static Log log = LogFactory.getLog(WebUtil.class);
 	
 	private static String defaultDateCache = null;
-	
+
+	/**
+	 * Encodes for (X)HTML text content and text attributes.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
 	public static String escapeHTML(String s) {
-		
-		if (s == null) {
-			return "";
-		}
-		
-		s = s.replace("<", "&lt;");
-		s = s.replace(">", "&gt;");
-		s = s.replace("\n", "<br/>");
-		
-		return s;
+		return Encode.forHtml(s);
 	}
-	
+
+	/**
+	 *  Encodes data for an XML CDATA section.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForCDATA(String s) {
+		return Encode.forCDATA(s);
+	}
+
+	/**
+	 * Encodes for CSS strings.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForCssString(String s) {
+		return Encode.forCssString(s);
+	}
+
+	/**
+	 * Encodes for CSS URL contexts.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForCssUrl(String s) {
+		return Encode.forCssUrl(s);
+	}
+
+	/**
+	 * Encodes for HTML text attributes.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForHtmlAttribute(String s) {
+		return Encode.forHtmlAttribute(s);
+	}
+
+	/**
+	 * Encodes for HTML text content.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForHtmlContent(String s) {
+		return Encode.forHtmlContent(s);
+	}
+
+	/**
+	 * Encodes for unquoted HTML attribute values.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForHtmlUnquotedAttribute(String s) {
+		return Encode.forHtmlUnquotedAttribute(s);
+	}
+
+	/**
+	 * Encodes for a Java string.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForJava(String s) {
+		return Encode.forJava(s);
+	}
+
+	/**
+	 * Encodes for a JavaScript string.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForJavaScript(String s) {
+		return Encode.forJavaScript(s);
+	}
+
+	/**
+	 * This method encodes for JavaScript strings contained within HTML script attributes (such as onclick).
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForJavaScriptAttribute(String s) {
+		return Encode.forJavaScriptAttribute(s);
+	}
+
+	/**
+	 * Encodes for JavaScript strings contained within HTML script blocks.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForJavaScriptBlock(String s) {
+		return Encode.forJavaScriptBlock(s);
+	}
+
+	/**
+	 * Encodes for JavaScript strings contained within a JavaScript or JSON file.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForJavaScriptSource(String s) {
+		return Encode.forJavaScriptSource(s);
+	}
+
+	/**
+	 * Performs percent-encoding of a URL according to RFC 3986.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForUri(String s) {
+		return Encode.forUri(s);
+	}
+
+	/**
+	 * Performs percent-encoding for a component of a URI, such as a query parameter name or value, path or query-string.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForUriComponent(String s) {
+		return Encode.forUriComponent(s);
+	}
+
+	/**
+	 * Encodes for XML and XHTML.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForXml(String s) {
+		return Encode.forXml(s);
+	}
+
+	/**
+	 * Encodes for XML and XHTML attribute content.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForXmlAttribute(String s) {
+		return Encode.forXmlAttribute(s);
+	}
+
+	/**
+	 * Encodes for XML comments.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForXmlComment(String s) {
+		return Encode.forXmlComment(s);
+	}
+
+	/**
+	 * Encodes for XML and XHTML text content.
+	 *
+	 * @param s
+	 * @return Encoded String
+	 */
+	public static String encodeForXmlContent(String s) {
+		return Encode.forXmlContent(s);
+	}
+
 	public static String escapeQuotes(String s) {
 		
 		if (s == null) {
@@ -122,13 +290,14 @@ public class WebUtil implements GlobalPropertyListener {
 	 * @should not accept invalid locales
 	 * @should not fail with empty strings
 	 * @should not fail with whitespace only
+	 * @should not fail with "_" character only
 	 */
 	public static Locale normalizeLocale(String localeString) {
 		if (localeString == null) {
 			return null;
 		}
 		localeString = localeString.trim();
-		if (localeString.isEmpty()) {
+		if (localeString.isEmpty() || localeString.equals("_")) {
 			return null;
 		}
 		int len = localeString.length();

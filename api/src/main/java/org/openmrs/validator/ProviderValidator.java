@@ -80,6 +80,7 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 		
 		if (provider.getPerson() == null && StringUtils.isBlank(provider.getName())) {
 			errors.rejectValue("name", "Provider.error.personOrName.required");
+			errors.rejectValue("person", "Provider.error.personOrName.required");
 		}
 		
 		if (provider.isRetired() && StringUtils.isEmpty(provider.getRetireReason())) {

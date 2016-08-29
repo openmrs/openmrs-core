@@ -28,7 +28,7 @@ import org.openmrs.test.Verifies;
 public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)}
+	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw APIException if Patient voidReason is null", method = "handle(Voidable,User,Date,String)")
@@ -40,7 +40,7 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)}
+	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw APIException if Encounter voidReason is empty", method = "handle(Voidable,User,Date,String)")
@@ -52,7 +52,7 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)}
+	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw APIException if Encounter voidReason is blank", method = "handle(Voidable,User,Date,String)")
@@ -64,7 +64,7 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)}
+	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not throw Exception if voidReason is not blank", method = "handle(Voidable,User,Date,String)")
@@ -76,7 +76,7 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)}
+	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "not throw Exception if voidReason is null for unsupported types", method = "handle(Voidable,User,Date,String)")

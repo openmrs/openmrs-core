@@ -11,7 +11,6 @@ package org.openmrs.messagesource;
 
 import java.util.Collection;
 import java.util.Locale;
-import java.util.Properties;
 
 import org.springframework.context.HierarchicalMessageSource;
 import org.springframework.context.MessageSource;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Extended MessageSource interface, which provides more information about the available messages
  * and can be changed.
  */
-@Transactional
 public interface MutableMessageSource extends MessageSource, HierarchicalMessageSource {
 	
 	/**
@@ -30,20 +28,7 @@ public interface MutableMessageSource extends MessageSource, HierarchicalMessage
 	 * @return available message locales
 	 */
 	public Collection<Locale> getLocales();
-	
-	/**
-	 * Makes a collection of properties available as messages.
-	 * 
-	 * @param props key/value properties for the messages
-	 * @param locale locale in which the messages are expressed
-	 * @param namespace namespace within which the properties are valid ("" for generic, "module"
-	 *            for modules, etc)
-	 * @param name unique name for the properties within the namespace
-	 * @param version version of the properties
-	 * @deprecated use {@linkplain #merge(MutableMessageSource, boolean)}
-	 */
-	public void publishProperties(Properties props, String locale, String namespace, String name, String version);
-	
+		
 	/**
 	 * Gets all of the available messages, packaged as PresentationMessages.
 	 * 

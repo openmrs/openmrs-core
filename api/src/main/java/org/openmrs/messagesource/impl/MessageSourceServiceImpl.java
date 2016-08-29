@@ -12,7 +12,6 @@ package org.openmrs.messagesource.impl;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -25,7 +24,6 @@ import org.openmrs.messagesource.PresentationMessage;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Extensible implementation of the MessageSourceService, which relies on injected implementations
@@ -34,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
  * ResourceBundleMessageSourceService can be specified in the applicationContext-service.xml file to
  * use the usual .properties files to provide messages.
  */
-@Transactional
 public class MessageSourceServiceImpl implements MessageSourceService {
 	
 	private Log log = LogFactory.getLog(getClass());
@@ -46,7 +43,6 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	/**
 	 * @see org.openmrs.messagesource.MessageSourceService#getMessage(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
 	public String getMessage(String s) {
 		return Context.getMessageSourceService().getMessage(s, null, Context.getLocale());
 	}
@@ -85,18 +81,6 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	}
 	
 	/**
-	 * Presumes to append the messages to a message.properties file which is already being monitored
-	 * by the super ReloadableResourceBundleMessageSource. This is a blind, trusting hack.
-	 * 
-	 * @see org.openmrs.messagesource.MessageSourceService#publishProperties(Properties, String,
-	 *      String, String, String)
-	 * @deprecated use {@link #merge(MutableMessageSource, boolean)} instead
-	 */
-	public void publishProperties(Properties props, String locale, String namespace, String name, String version) {
-		activeMessageSource.publishProperties(props, locale, namespace, name, version);
-	}
-	
-	/**
 	 * Returns all available messages.
 	 * 
 	 * @see org.openmrs.messagesource.MessageSourceService#getPresentations()
@@ -110,7 +94,12 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 *      java.util.Locale)
 	 */
 	public String getMessage(MessageSourceResolvable resolvable, Locale locale) {
-		return activeMessageSource.getMessage(resolvable, locale);
+		if((resolvable.getCodes()[0]).equals((activeMessageSource.getMessage(resolvable, locale)))){
+			return (resolvable.getCodes()[(resolvable.getCodes().length) - 1]);
+		}
+		else{
+			return activeMessageSource.getMessage(resolvable, locale);
+		}
 	}
 	
 	/**

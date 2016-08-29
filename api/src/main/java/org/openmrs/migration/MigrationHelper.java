@@ -60,11 +60,12 @@ import org.xml.sax.SAXException;
 
 public class MigrationHelper {
 	
+	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
 	protected final static Log log = LogFactory.getLog(MigrationHelper.class);
 	
 	static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	
-	static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	public static Date parseDate(String s) throws ParseException {
 		if (s == null || s.length() == 0) {
@@ -73,6 +74,7 @@ public class MigrationHelper {
 			if (s.length() == 10) {
 				s += " 00:00:00";
 			}
+			DateFormat df = new SimpleDateFormat(DATE_TIME_PATTERN);
 			return df.parse(s);
 		}
 	}
@@ -110,9 +112,9 @@ public class MigrationHelper {
 	}
 	
 	/**
-	 * Takes XML like: <something> <user date_changed="2001-03-06 08:46:53.0"
+	 * Takes XML like: &lt;something&gt; &lt;user date_changed="2001-03-06 08:46:53.0"
 	 * date_created="2001-03-06 08:46:53.0" username="hamish@mit.edu" first_name="Hamish"
-	 * last_name="Fraser" user_id="2001"/> </something> Returns the number of users added
+	 * last_name="Fraser" user_id="2001"/&gt; &lt;/something&gt; Returns the number of users added
 	 */
 	public static int importUsers(Document document) throws ParseException {
 		int ret = 0;
@@ -149,14 +151,14 @@ public class MigrationHelper {
 				}
 				pass = new String(password);
 			}
-			us.saveUser(user, pass);
+			us.createUser(user, pass);
 			++ret;
 		}
 		return ret;
 	}
 	
 	/**
-	 * Takes XML like: <something> <location name="Cerca-la-Source"/> </something> returns the
+	 * Takes XML like: &lt;something&gt; &lt;location name="Cerca-la-Source"/&gt; &lt;/something&gt; returns the
 	 * number of locations added
 	 */
 	public static int importLocations(Document document) {
@@ -183,8 +185,8 @@ public class MigrationHelper {
 	}
 	
 	/**
-	 * Takes a list of Strings of the format RELATIONSHIP:<user last name>,<user first
-	 * name>,<relationship type name>,<patient identifier type name>,<identifier> so if user hfraser
+	 * Takes a list of Strings of the format RELATIONSHIP:&lt;user last name&gt;,&lt;user first
+	 * name&gt;,&lt;relationship type name&gt;,&lt;patient identifier type name&gt;,&lt;identifier&gt; so if user hfraser
 	 * if the cardiologist of the patient with patient_id 8039 in PIH's old emr, then:
 	 * RELATIONSHIP:hfraser,Cardiologist,HIV-EMRV1,8039 (the "RELATIONSHIP:" is not actually
 	 * necessary. Anything before and including the first : will be dropped If autoCreateUsers is
@@ -255,7 +257,7 @@ public class MigrationHelper {
 						user.addRole(role);
 					}
 				}
-				us.saveUser(user, pass);
+				us.createUser(user, pass);
 			}
 			if (user == null) {
 				throw new IllegalArgumentException("Can't find user '" + userLastName + ", " + userFirstName + "'");

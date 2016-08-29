@@ -24,7 +24,7 @@ import org.openmrs.util.PersonByNameComparator;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
- * Contains methods pertaining to Users in the system Use:<br/>
+ * Contains methods pertaining to Users in the system Use:<br>
  * 
  * <pre>
  * 
@@ -37,25 +37,6 @@ import org.openmrs.util.PrivilegeConstants;
 public interface UserService extends OpenmrsService {
 	
 	/**
-	 * Saves a user to the database.
-	 * 
-	 * @param user
-	 * @param password
-	 * @return a User object
-	 * @throws APIException
-	 * @should create new user with basic elements
-	 * @should should create user who is patient already
-	 * @should update users username
-	 * @should grant new roles in roles list to user
-	 * @should fail to create the user with a weak password
-	 * @deprecated replaced by {@link #createUser(User, String)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.ADD_USERS, PrivilegeConstants.EDIT_USERS })
-	@Logging(ignoredArgumentIndexes = { 1 })
-	public User saveUser(User user, String password) throws APIException;
-	
-	/**
 	 * Create user with given password.
 	 *
 	 * @param user the user to create
@@ -63,7 +44,6 @@ public interface UserService extends OpenmrsService {
 	 * @return created user
 	 * @throws APIException
 	 */
-	@Deprecated
 	@Authorized( { PrivilegeConstants.ADD_USERS })
 	@Logging(ignoredArgumentIndexes = { 1 })
 	public User createUser(User user, String password) throws APIException;
@@ -72,7 +52,7 @@ public interface UserService extends OpenmrsService {
 	 * Change user password.
 	 *
 	 * @param user the user to update password
-	 * @param oldPassword the user password to update
+	 * @param oldPassword the user password  to update
 	 * @param newPassword the new user password
 	 * @throws APIException for not existing user and if old password is weak
 	 * @since 1.12
@@ -95,20 +75,20 @@ public interface UserService extends OpenmrsService {
 	 * @throws APIException
 	 * @should fetch user with given userId
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
+	@Authorized( { PrivilegeConstants.GET_USERS })
 	public User getUser(Integer userId) throws APIException;
 	
 	/**
 	 * Get user by the given uuid.
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return user or null
 	 * @throws APIException
 	 * @should fetch user with given uuid
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
+	@Authorized( { PrivilegeConstants.GET_USERS })
 	public User getUserByUuid(String uuid) throws APIException;
 	
 	/**
@@ -119,7 +99,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws APIException
 	 * @should get user by username
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
+	@Authorized( { PrivilegeConstants.GET_USERS })
 	public User getUserByUsername(String username) throws APIException;
 	
 	/**
@@ -130,7 +110,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws APIException
 	 * @should verify that username and system id is unique
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
+	@Authorized( { PrivilegeConstants.GET_USERS })
 	public boolean hasDuplicateUsername(User user) throws APIException;
 	
 	/**
@@ -142,67 +122,18 @@ public interface UserService extends OpenmrsService {
 	 * @should fetch users assigned given role
 	 * @should not fetch user that does not belong to given role
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
+	@Authorized( { PrivilegeConstants.GET_USERS })
 	public List<User> getUsersByRole(Role role) throws APIException;
 	
 	/**
-	 * Save changes to given <code>user</code> to the database.
+	 * Updates a given <code>user</code> in the database.
 	 * 
 	 * @param user
+	 * @return the saved user
 	 * @throws APIException
-	 * @see #saveUser(User, String)
-	 * @deprecated replaced by {@link #saveUser(User, String)}
 	 */
-	@Deprecated
 	@Authorized( { PrivilegeConstants.EDIT_USERS })
-	public void updateUser(User user) throws APIException;
-	
-	/**
-	 * Use should be UserService.saveUser(user.addRole(role))
-	 * 
-	 * @deprecated use {@link org.openmrs.User#addRole(Role)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.EDIT_USERS })
-	public void grantUserRole(User user, Role role) throws APIException;
-	
-	/**
-	 * Use UserService.saveUser(user.removeRole(role))
-	 * 
-	 * @deprecated use {@link org.openmrs.User#removeRole(Role)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.EDIT_USERS })
-	public void revokeUserRole(User user, Role role) throws APIException;
-	
-	/**
-	 * Mark user as voided (effectively deleting user without removing their data &mdash; since
-	 * anything the user touched in the database will still have their internal identifier and point
-	 * to the voided user for historical tracking purposes.
-	 * 
-	 * @param user
-	 * @param reason
-	 * @return the given user voided out
-	 * @throws APIException
-	 * @should void user and set attributes
-	 * @deprecated use {@link #retireUser(User, String)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.EDIT_USERS })
-	public User voidUser(User user, String reason) throws APIException;
-	
-	/**
-	 * Clear voided flag for user (equivalent to an "undelete" or Lazarus Effect for user)
-	 * 
-	 * @param user
-	 * @return the given user unvoided
-	 * @throws APIException
-	 * @should unvoid and unmark all attributes
-	 * @deprecated use {@link #unretireUser(User)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.EDIT_USERS })
-	public User unvoidUser(User user) throws APIException;
+	public User saveUser(User user) throws APIException;
 	
 	/**
 	 * Deactive a user account so that it can no longer log in.
@@ -219,21 +150,11 @@ public interface UserService extends OpenmrsService {
 	 * Clears retired flag for a user.
 	 * 
 	 * @param user
-	 * @param reason
 	 * @throws APIException
 	 * @should unretire and unmark all attributes
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_USERS })
 	public User unretireUser(User user) throws APIException;
-	
-	/**
-	 * @see #voidUser(User, String)
-	 * @see #purgeUser(User)
-	 * @deprecated use {@link #purgeUser(User)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.DELETE_USERS })
-	public void deleteUser(User user) throws APIException;
 	
 	/**
 	 * Completely remove a location from the database (not reversible). This method delegates to
@@ -264,12 +185,6 @@ public interface UserService extends OpenmrsService {
 	public void purgeUser(User user, boolean cascade) throws APIException;
 	
 	/**
-	 * @deprecated use {@link #getAllPrivileges()}
-	 */
-	@Deprecated
-	public List<Privilege> getPrivileges() throws APIException;
-	
-	/**
 	 * Returns all privileges currently possible for any User
 	 * 
 	 * @return Global list of privileges
@@ -279,12 +194,6 @@ public interface UserService extends OpenmrsService {
 	public List<Privilege> getAllPrivileges() throws APIException;
 	
 	/**
-	 * @deprecated use {@link #getAllRoles()}
-	 */
-	@Deprecated
-	public List<Role> getRoles() throws APIException;
-	
-	/**
 	 * Returns all roles currently possible for any User
 	 * 
 	 * @return Global list of roles
@@ -292,12 +201,6 @@ public interface UserService extends OpenmrsService {
 	 * @should return all roles in the system
 	 */
 	public List<Role> getAllRoles() throws APIException;
-	
-	/**
-	 * @deprecated use {@link org.openmrs.Role#getInheritedRoles()}
-	 */
-	@Deprecated
-	public List<Role> getInheritingRoles(Role role) throws APIException;
 	
 	/**
 	 * Save the given role in the database
@@ -358,7 +261,7 @@ public interface UserService extends OpenmrsService {
 	 * Get Role by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return role or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -377,19 +280,12 @@ public interface UserService extends OpenmrsService {
 	 * Get Privilege by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return privilege or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 * @should fetch privilege for given uuid
 	 */
 	public Privilege getPrivilegeByUuid(String uuid) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getAllUsers()}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
-	public List<User> getUsers() throws APIException;
 	
 	/**
 	 * Returns all users in the system
@@ -399,23 +295,8 @@ public interface UserService extends OpenmrsService {
 	 * @should fetch all users in the system
 	 * @should not contains any duplicate users
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
+	@Authorized( { PrivilegeConstants.GET_USERS })
 	public List<User> getAllUsers() throws APIException;
-	
-	/**
-	 * Changes the <code>user<code>'s password
-	 * ** Restricted to Super User access**
-	 * 
-	 * @param u user
-	 * @param pw new password
-	 * @throws APIException
-	 * @should change password for the given user and password
-	 * @deprecated replaced by {@link #changePassword(User, String, String)}
-	 */
-	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
-	@Logging(ignoredArgumentIndexes = { 1 })
-	@Deprecated
-	public void changePassword(User u, String pw) throws APIException;
 	
 	/**
 	 * Changes the current user's password.
@@ -430,6 +311,17 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Logging(ignoredArgumentIndexes = { 0, 1 })
 	public void changePassword(String pw, String pw2) throws APIException;
+
+	/**
+	 * Changes password of {@link User} passed in
+	 * @param user user whose password is to be changed
+	 * @param newPassword new password to set
+	 * @throws APIException
+	 * @should update password of given user when logged in user has edit users password privilege
+	 * @should not update password of given user when logged in user does not have edit users password privilege
+	 */
+	@Authorized({PrivilegeConstants.EDIT_USER_PASSWORDS})
+	public void changePassword(User user, String newPassword) throws APIException;
 	
 	/**
 	 * Changes the current user's password directly. This is most useful if migrating users from
@@ -474,6 +366,16 @@ public interface UserService extends OpenmrsService {
 	public void changeQuestionAnswer(String pw, String q, String a) throws APIException;
 	
 	/**
+	 * Returns secret question for the given user.
+	 * 
+	 * @param user
+	 * @return
+	 * @throws APIException
+	 * @since 2.0
+	 */
+	public String getSecretQuestion(User user) throws APIException;
+	
+	/**
 	 * Compares <code>answer</code> against the <code>user</code>'s secret answer.
 	 * 
 	 * @param u user
@@ -505,36 +407,22 @@ public interface UserService extends OpenmrsService {
 	 * @should fetch all users if nameSearch is empty or null
 	 * @should not fail if roles are searched but name is empty
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
+	@Authorized( { PrivilegeConstants.GET_USERS })
 	public List<User> getUsers(String nameSearch, List<Role> roles, boolean includeVoided) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getUsers(String, List, boolean)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
-	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getUsersByName(String, String, boolean)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
-	public List<User> findUsers(String givenName, String familyName, boolean includeVoided) throws APIException;
 	
 	/**
 	 * Search for a list of users by exact first name and last name.
 	 * 
 	 * @param givenName
 	 * @param familyName
-	 * @param includeVoided
-	 * @return List<User> object of users matching criteria
+	 * @param includeRetired
+	 * @return List&lt;User&gt; object of users matching criteria
 	 * @should fetch users exactly matching the given givenName and familyName
 	 * @should fetch voided users whenincludeVoided is true
 	 * @should not fetch any voided users when includeVoided is false
 	 * @should not fetch any duplicate users
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
+	@Authorized( { PrivilegeConstants.GET_USERS })
 	public List<User> getUsersByName(String givenName, String familyName, boolean includeRetired) throws APIException;
 	
 	/**
@@ -547,15 +435,8 @@ public interface UserService extends OpenmrsService {
 	 * @should fetch all accounts for a person when include retired is true
 	 * @should not fetch retired accounts when include retired is false
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
+	@Authorized( { PrivilegeConstants.GET_USERS })
 	public List<User> getUsersByPerson(Person person, boolean includeRetired) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getUsers(String, List, boolean)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
-	public List<User> getAllUsers(List<Role> roles, boolean includeVoided) throws APIException;
 	
 	/**
 	 * Adds the <code>key</code>/<code>value</code> pair to the given <code>user</code>.
@@ -611,7 +492,7 @@ public interface UserService extends OpenmrsService {
 	 * @since 1.8
 	 * @should return users whose roles inherit requested roles
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
+	@Authorized( { PrivilegeConstants.GET_USERS })
 	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
 	        throws APIException;
 	
@@ -625,7 +506,7 @@ public interface UserService extends OpenmrsService {
 	 * @return the number of users matching the given attributes
 	 * @since 1.8
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_USERS })
+	@Authorized( { PrivilegeConstants.GET_USERS })
 	public Integer getCountOfUsers(String name, List<Role> roles, boolean includeRetired);
 	
 	/**
@@ -660,4 +541,15 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Authorized
 	public User saveUserProperties(Map<String, String> properties);
+	
+	/**
+	 * Change user password given the answer to the secret question
+	 * @param secretAnswer the answer to secret question
+	 * @param pw the new password
+	 * @should update password if secret is correct
+	 * @should not update password if secret is not correct
+	 */
+	@Authorized
+	public void changePasswordUsingSecretAnswer(String secretAnswer, String pw) throws APIException;
+
 }

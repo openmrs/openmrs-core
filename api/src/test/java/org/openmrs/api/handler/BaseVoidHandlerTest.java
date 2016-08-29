@@ -24,7 +24,7 @@ import org.openmrs.test.Verifies;
 public class BaseVoidHandlerTest {
 	
 	/**
-	 * @see {@link BaseVoidHandler#handle(Voidable,User,Date,String)}
+	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should set the voided bit", method = "handle(Voidable,User,Date,String)")
@@ -37,7 +37,7 @@ public class BaseVoidHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseVoidHandler#handle(Voidable,User,Date,String)}
+	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should set the voidReason", method = "handle(Voidable,User,Date,String)")
@@ -49,7 +49,7 @@ public class BaseVoidHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseVoidHandler#handle(Voidable,User,Date,String)}
+	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should set voidedBy", method = "handle(Voidable,User,Date,String)")
@@ -61,7 +61,7 @@ public class BaseVoidHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseVoidHandler#handle(Voidable,User,Date,String)}
+	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not set voidedBy if non null", method = "handle(Voidable,User,Date,String)")
@@ -74,7 +74,7 @@ public class BaseVoidHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseVoidHandler#handle(Voidable,User,Date,String)}
+	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should set dateVoided", method = "handle(Voidable,User,Date,String)")
@@ -88,7 +88,7 @@ public class BaseVoidHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseVoidHandler#handle(Voidable,User,Date,String)}
+	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not set dateVoided if non null", method = "handle(Voidable,User,Date,String)")
@@ -104,7 +104,7 @@ public class BaseVoidHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseVoidHandler#handle(Voidable,User,Date,String)}
+	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not set the voidReason if already voided", method = "handle(Voidable,User,Date,String)")
@@ -118,7 +118,7 @@ public class BaseVoidHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseVoidHandler#handle(Voidable,User,Date,String)}
+	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should set voidedBy even if voided bit is set but voidedBy is null", method = "handle(Voidable,User,Date,String)")

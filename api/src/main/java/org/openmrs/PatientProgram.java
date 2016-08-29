@@ -9,21 +9,19 @@
  */
 package org.openmrs;
 
+import org.openmrs.util.OpenmrsUtil;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * PatientProgram
  */
-public class PatientProgram extends BaseOpenmrsData implements java.io.Serializable {
+public class PatientProgram extends BaseOpenmrsData {
 	
 	public static final long serialVersionUID = 0L;
 	
@@ -255,18 +253,10 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	}
 	
 	/**
-	 * @deprecated use {@link #getCurrentState(ProgramWorkflow)}
-	 */
-	@Deprecated
-	public PatientState getCurrentState() {
-		return getCurrentState(null);
-	}
-	
-	/**
-	 * Returns a Set<PatientState> of all current {@link PatientState}s for the
+	 * Returns a Set&lt;PatientState&gt; of all current {@link PatientState}s for the
 	 * {@link PatientProgram}
 	 * 
-	 * @return Set<PatientState> of all current {@link PatientState}s for the {@link PatientProgram}
+	 * @return Set&lt;PatientState&gt; of all current {@link PatientState}s for the {@link PatientProgram}
 	 */
 	public Set<PatientState> getCurrentStates() {
 		Set<PatientState> ret = new HashSet<PatientState>();
@@ -280,13 +270,13 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	}
 	
 	/**
-	 * Returns a List<PatientState> of all {@link PatientState}s in the passed
+	 * Returns a List&lt;PatientState&gt; of all {@link PatientState}s in the passed
 	 * {@link ProgramWorkflow} for the {@link PatientProgram}
 	 * 
 	 * @param programWorkflow - The {@link ProgramWorkflow} to check
 	 * @param includeVoided - If true, return voided {@link PatientState}s in the returned
 	 *            {@link List}
-	 * @return List<PatientState> of all {@link PatientState}s in the passed {@link ProgramWorkflow}
+	 * @return List&lt;PatientState&gt; of all {@link PatientState}s in the passed {@link ProgramWorkflow}
 	 *         for the {@link PatientProgram}
 	 */
 	public List<PatientState> statesInWorkflow(ProgramWorkflow programWorkflow, boolean includeVoided) {

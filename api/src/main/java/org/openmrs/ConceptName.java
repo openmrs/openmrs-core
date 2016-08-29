@@ -18,31 +18,25 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.standard.StandardFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.AnalyzerDef;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
-import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.TokenFilterDef;
 import org.hibernate.search.annotations.TokenizerDef;
 import org.openmrs.api.ConceptNameType;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.bridge.LocaleFieldBridge;
 import org.openmrs.util.OpenmrsUtil;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
 
 /**
  * ConceptName is the real world term used to express a Concept within the idiom of a particular
  * locale.
  */
-@Root
 @Indexed
 @AnalyzerDef(name = "ConceptNameAnalyzer", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
         @TokenFilterDef(factory = StandardFilterFactory.class), @TokenFilterDef(factory = LowerCaseFilterFactory.class) })
@@ -106,40 +100,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	}
 	
 	/**
-	 * Short name and description are no longer attributes of ConceptName.
-	 *
-	 * @param name
-	 * @param shortName
-	 * @param description
-	 * @param locale
-	 * @deprecated
-	 */
-	@Deprecated
-	public ConceptName(String name, String shortName, String description, Locale locale) {
-		setName(name);
-		setLocale(locale);
-	}
-	
-	/**
-	 * @deprecated Use {@link Concept#getShortestName(Locale, Boolean)} instead.
-	 * @return Returns the appropriate short name
-	 */
-	@Deprecated
-	public String getShortestName() {
-		if (concept != null) {
-			ConceptName bestShortName = concept.getShortestName(this.locale, false);
-			if (bestShortName != null) {
-				return bestShortName.getName();
-			}
-		}
-		
-		return getName();
-	}
-	
-	/**
 	 * @return Returns the conceptId.
 	 */
-	@Attribute
 	public Integer getConceptNameId() {
 		return conceptNameId;
 	}
@@ -147,33 +109,22 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	/**
 	 * @param conceptNameId The conceptId to set.
 	 */
-	@Attribute
 	public void setConceptNameId(Integer conceptNameId) {
 		this.conceptNameId = conceptNameId;
 	}
 	
-	/**
-	 *
-	 */
-	@Element
 	public Concept getConcept() {
 		return concept;
 	}
 	
-	@Element
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
 	
-	/**
-	 *
-	 */
-	@Element(data = true)
 	public String getName() {
 		return name;
 	}
 	
-	@Element(data = true)
 	public void setName(String name) {
 		if (name != null && StringUtils.isBlank(name) && StringUtils.isNotBlank(this.name)
 		        && this.getConceptNameType().equals(ConceptNameType.SHORT)) {
@@ -183,55 +134,17 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 		}
 	}
 	
-	/**
-	 *
-	 */
-	@Element
 	public Locale getLocale() {
 		return locale;
 	}
 	
-	@Element
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
-	
-	/**
-	 * @deprecated
-	 * @return Returns the shortName.
-	 */
-	@Deprecated
-	public String getShortName() {
-		if (concept != null) {
-			ConceptName bestShortName = concept.getShortNameInLocale(Context.getLocale());
-			if (bestShortName != null) {
-				return bestShortName.getName();
-			}
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * @deprecated
-	 * @return Returns the description.
-	 */
-	@Deprecated
-	public String getDescription() {
-		if (concept != null) {
-			ConceptDescription description = concept.getDescription();
-			if (description != null) {
-				return description.getDescription();
-			}
-		}
-		
-		return null;
-	}
-	
+
 	/**
 	 * @return Returns the creator.
 	 */
-	@Element
 	public User getCreator() {
 		return creator;
 	}
@@ -239,7 +152,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	/**
 	 * @param creator The creator to set.
 	 */
-	@Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -247,7 +159,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	/**
 	 * @return Returns the dateCreated.
 	 */
-	@Element
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -255,7 +166,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
-	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -264,9 +174,13 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * Returns whether the ConceptName has been voided.
 	 *
 	 * @return true if the ConceptName has been voided, false otherwise.
+	 * 
+	 * @deprecated as of 2.0, use {@link #getVoided()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isVoided() {
-		return voided;
+		return getVoided();
 	}
 	
 	/**
@@ -274,9 +188,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @return true if the ConceptName has been voided, false otherwise.
 	 */
-	@Attribute
 	public Boolean getVoided() {
-		return isVoided();
+		return voided;
 	}
 	
 	/**
@@ -284,7 +197,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @param voided the voided status to set.
 	 */
-	@Attribute
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
@@ -294,7 +206,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @return the User who voided this ConceptName, or null if not set
 	 */
-	@Element(required = false)
 	public User getVoidedBy() {
 		return voidedBy;
 	}
@@ -304,7 +215,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @param voidedBy the user who voided this ConceptName.
 	 */
-	@Element(required = false)
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
@@ -314,7 +224,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @return the Date this ConceptName was voided.
 	 */
-	@Element(required = false)
 	public Date getDateVoided() {
 		return dateVoided;
 	}
@@ -324,7 +233,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @param dateVoided the date the ConceptName was voided.
 	 */
-	@Element(required = false)
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
@@ -334,7 +242,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @return the reason this ConceptName was voided
 	 */
-	@Element(required = false)
 	public String getVoidReason() {
 		return voidReason;
 	}
@@ -344,7 +251,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @param voidReason the reason this ConceptName was voided
 	 */
-	@Element(required = false)
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
@@ -354,7 +260,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *
 	 * @return the tags.
 	 */
-	@ElementList
 	public Collection<ConceptNameTag> getTags() {
 		return tags;
 	}
@@ -367,7 +272,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @see Concept#setShortName(ConceptName)
 	 * @param tags the tags to set.
 	 */
-	@ElementList
 	public void setTags(Collection<ConceptNameTag> tags) {
 		this.tags = tags;
 	}
@@ -390,9 +294,13 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * Getter for localePreferred
 	 *
 	 * @return localPreferred
+	 * 
+	 * @deprecated as of 2.0, use {@link #getLocalePreferred()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isLocalePreferred() {
-		return localePreferred;
+		return getLocalePreferred();
 	}
 	
 	/**
@@ -514,7 +422,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * Checks whether the name is explicitly marked as preferred in a locale with a matching
 	 * language. E.g 'en_US' and 'en_UK' for language en
 	 *
-	 * @see {@link #isPreferredForLocale(Locale)}
+	 * @see #isPreferredForLocale(Locale)
 	 * @param language ISO 639 2-letter code for a language
 	 * @return true if the name is preferred in a locale with a matching language code, otherwise
 	 *         false
@@ -532,7 +440,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * Checks whether the name is explicitly marked as preferred in a locale with a matching country
 	 * code E.g 'fr_RW' and 'en_RW' for country RW
 	 *
-	 * @see {@link #isPreferredForLocale(Locale)}
+	 * @see #isPreferredForLocale(Locale)
 	 * @param country ISO 3166 2-letter code for a country
 	 * @return true if the name is preferred in a locale with a matching country code, otherwise
 	 *         false
@@ -551,7 +459,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * method is different from {@link #isPreferredForLocale(Locale)} in that it checks if the given
 	 * name is marked as preferred irrespective of the locale in which it is preferred.
 	 *
-	 * @see {@link #isPreferredForLocale(Locale)}
+	 * @see #isPreferredForLocale(Locale)
 	 */
 	public Boolean isPreferred() {
 		return isLocalePreferred();
@@ -625,42 +533,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 */
 	public Boolean isSynonym() {
 		return getConceptNameType() == null;
-	}
-	
-	/**
-	 * Checks if this conceptName is a short name in a locale with a matching language
-	 *
-	 * @deprecated as of version 1.7
-	 * @see Concept#getShortNameInLocale(Locale)
-	 * @see Concept#getShortestName(Locale, Boolean)
-	 * @param language ISO 639 2-letter code for a language
-	 * @return true if the name is a short name in a locale with a matching language code, otherwise
-	 *         false
-	 */
-	@Deprecated
-	public Boolean isPreferredShortInLanguage(String language) {
-		if (!StringUtils.isBlank(language) && this.locale != null && isShort() && this.locale.getLanguage().equals(language)) {
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Checks if this conceptName is a short name in a locale with a matching country
-	 *
-	 * @deprecated since version 1.7
-	 * @see Concept#getShortNameInLocale(Locale)
-	 * @see Concept#getShortestName(Locale, Boolean)
-	 * @param country ISO 639 2-letter code for a country
-	 * @return true if the name is a short name in a locale with a matching country code, otherwise
-	 *         false
-	 */
-	@Deprecated
-	public Boolean isPreferredShortInCountry(String country) {
-		if (!StringUtils.isBlank(country) && this.locale != null && isShort() && this.locale.getCountry().equals(country)) {
-			return true;
-		}
-		return false;
 	}
 	
 	/**

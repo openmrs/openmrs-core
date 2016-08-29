@@ -44,26 +44,26 @@ import org.springframework.util.StringUtils;
  * This class provides the AOP around each save, (un)void, and (un)retire method in the service
  * layer so that the required data (like creator, dateChanged, dateVoided, etc) can be set
  * automatically and the developer doesn't have to worry about doing it explicitly in the service
- * impl method. <br/>
- * <br/>
- * See /metadata/api/spring/applicationContext-service.xml for the mapping of this bean. <br/>
- * <br/>
+ * impl method. <br>
+ * <br>
+ * See /metadata/api/spring/applicationContext-service.xml for the mapping of this bean. <br>
+ * <br>
  * For an Openmrs Service to use this AOP advice class and take advantage of its automatic variable
- * setting, it must have "&lt;ref local="requiredDataInterceptor"/>" in its "preInterceptors".<br/>
- * <br/>
+ * setting, it must have "&lt;ref local="requiredDataInterceptor"/&gt;" in its "preInterceptors".<br>
+ * <br>
  * By default, this should take care of any child collections on the object being acted on. Any
  * child collection of {@link OpenmrsObject}s will get "handled" (i.e., void data set up, save data
  * set up, or retire data set up, etc) by the same handler type that the parent object was handled
- * with.<br/>
- * <br/>
+ * with.<br>
+ * <br>
  * To add a new action to happen for a save* method, create a new class that extends
  * {@link RequiredDataHandler}. Add any <b>unique</b> code that needs to be done automatically
  * before the save. See {@link ConceptNameSaveHandler} as an example. (The code should be
  * <b>unique</b> because all other {@link SaveHandler}s will still be called <i>in addition to</i>
  * your new handler.) Be sure to add the {@link org.openmrs.annotation.Handler} annotation (like
  * "@Handler(supports=YourPojoThatHasUniqueSaveNeeds.class)") to your class so that it is picked up
- * by Spring automatically.<br/>
- * <br/>
+ * by Spring automatically.<br>
+ * <br>
  * To add a new action for a void* or retire* method, extend the {@link VoidHandler}/
  * {@link RetireHandler} class and override the handle method. Do not call super, because that code
  * would then be run twice because both handlers are registered. Be sure to add the
@@ -182,7 +182,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	
 	/**
 	 * Convenience method to change the given method to make sure it ends with
-	 * the given class name. <br/>
+	 * the given class name. <br>
 	 * This will recurse to the super class to check that as well.
 	 *
 	 * @param method
@@ -208,7 +208,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	}
 	
 	/**
-	 * Convenience method for {@link #recursivelyHandle(Class, OpenmrsObject, User, Date, String)}.
+	 * Convenience method for {@link #recursivelyHandle(Class, OpenmrsObject, User, Date, String, List)}.
 	 * Calls that method with the current user and the current Date.
 	 *
 	 * @param <H> the type of Handler to get (should extend {@link RequiredDataHandler})
@@ -216,7 +216,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * @param openmrsObject the object that is being acted upon
 	 * @param reason an optional second argument that was passed to the service method (usually a
 	 *            void/retire reason)
-	 * @see #recursivelyHandle(Class, OpenmrsObject, User, Date, String)
+	 * @see #recursivelyHandle(Class, OpenmrsObject, User, Date, String, List)
 	 */
 	@SuppressWarnings("unchecked")
 	public static <H extends RequiredDataHandler> void recursivelyHandle(Class<H> handlerType, OpenmrsObject openmrsObject,
@@ -269,7 +269,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		for (Field field : allInheritedFields) {
 			
 			// skip field if it's declared independent
-			if (field.isAnnotationPresent(Independent.class)) {
+			if (Reflect.isAnnotationPresent(openmrsObjectClass, field.getName(), Independent.class)) {
 				continue;
 			}
 			
@@ -294,7 +294,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	/**
 	 * This method gets a child attribute off of an OpenmrsObject. It usually uses the getter for
 	 * the attribute, but can use the direct field (even if its private) if told to by the
-	 * {@link #AllowDirectAccess} annotation.
+	 * {@link AllowDirectAccess} annotation.
 	 *
 	 * @param openmrsObject the object to get the collection off of
 	 * @param field the name of the field that is the collection

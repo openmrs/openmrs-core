@@ -23,11 +23,11 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
- * API methods for managing Locations <br/>
- * <br/>
- * Example Usage: <br/>
+ * API methods for managing Locations <br>
+ * <br>
+ * Example Usage: <br>
  * <code>
- *   List<Location> locations = Context.getLocationService().getAllLocations();
+ *   List&lt;Location&gt; locations = Context.getLocationService().getAllLocations();
  * </code>
  * 
  * @see org.openmrs.api.context.Context
@@ -145,26 +145,6 @@ public interface LocationService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<Location> getLocations(String nameFragment) throws APIException;
-	
-	/**
-	 * Returns a specific number locations from the specified starting position that match the
-	 * beginning of the given string. A null list will never be returned. An empty list will be
-	 * returned if there are no locations. Search is case insensitive. matching this
-	 * <code>nameFragment</code>. If start and length are not specified, then all matches are
-	 * returned
-	 *
-	 * @deprecated replaced by {@link LocationService#getLocations(String, org.openmrs.Location, java.util.Map, boolean, Integer, Integer)}
-	 * 
-	 * @param nameFragment is the string used to search for locations
-	 * @param includeRetired Specifies if retired locations should be returned
-	 * @param start the beginning index
-	 * @param length the number of matching locations to return
-	 * @since 1.8
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
-	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
-	        throws APIException;
 	
 	/**
 	 * Gets the locations matching the specified arguments. A null list will never be returned. An empty list will be
@@ -393,7 +373,7 @@ public interface LocationService extends OpenmrsService {
 	 * the Address Hierarchy module.
 	 * 
 	 * @param incomplete the incomplete address
-	 * @param field the address field we are looking for possible values for
+	 * @param fieldName the address field we are looking for possible values for
 	 * @return a list of possible address values for the specified field
 	 * @should return empty list if no possible address matches
 	 * @should return null if method not implemented

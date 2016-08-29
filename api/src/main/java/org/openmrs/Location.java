@@ -14,9 +14,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.annotation.Independent;
 
 /**
  * A Location is a physical place, such as a hospital, a room, a clinic, or a district. Locations
@@ -61,6 +61,24 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	
 	private String address5;
 	
+	private String address7;
+	
+	private String address8;
+	
+	private String address9;
+	
+	private String address10;
+	
+	private String address11;
+	
+	private String address12;
+	
+	private String address13;
+	
+	private String address14;
+
+	private String address15;
+
 	private Location parentLocation;
 	
 	private Set<Location> childLocations;
@@ -233,24 +251,6 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	}
 	
 	/**
-	 * @deprecated As of 1.8, replaced by {@link #getAddress3()}
-	 * @return Returns the neighborhoodCell.
-	 */
-	@Deprecated
-	public String getNeighborhoodCell() {
-		return getAddress3();
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #setAddress3(String)}
-	 * @param address3 The neighborhoodCell to set.
-	 */
-	@Deprecated
-	public void setNeighborhoodCell(String address3) {
-		this.setAddress3(address3);
-	}
-	
-	/**
 	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
 	 */
 	public List<Location> findPossibleValues(String searchText) {
@@ -305,60 +305,6 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	}
 	
 	/**
-	 * @deprecated As of 1.8, replaced by {@link #getAddress6()}
-	 * @return the region
-	 */
-	@Deprecated
-	public String getRegion() {
-		return getAddress6();
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #setAddress6(String)}
-	 * @param address6 the region to set
-	 */
-	@Deprecated
-	public void setRegion(String address6) {
-		this.setAddress6(address6);
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #getAddress5()}
-	 * @return the subregion
-	 */
-	@Deprecated
-	public String getSubregion() {
-		return getAddress5();
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #setAddress5(String)}
-	 * @param address5 the subregion to set
-	 */
-	@Deprecated
-	public void setSubregion(String address5) {
-		this.setAddress5(address5);
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #getAddress4()}
-	 * @return the townshipDivision
-	 */
-	@Deprecated
-	public String getTownshipDivision() {
-		return getAddress4();
-	}
-	
-	/**
-	 * @deprecated As of 1.8, replaced by {@link #setAddress4(String)}
-	 * @param address4 the townshipDivision to set
-	 */
-	@Deprecated
-	public void setTownshipDivision(String address4) {
-		this.setAddress4(address4);
-	}
-	
-	/**
 	 * @return Returns the parentLocation.
 	 * @since 1.5
 	 */
@@ -386,7 +332,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * Returns all childLocations where child.locationId = this.locationId.
 	 *
 	 * @param includeRetired specifies whether or not to include voided childLocations
-	 * @return Returns a Set<Location> of all the childLocations.
+	 * @return Returns a Set&lt;Location&gt; of all the childLocations.
 	 * @since 1.5
 	 * @should return a set of locations
 	 */
@@ -408,7 +354,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * Returns the descendant locations.
 	 *
 	 * @param includeRetired specifies whether or not to include voided childLocations
-	 * @return Returns a Set<Location> of the descendant location.
+	 * @return Returns a Set&lt;Location&gt; of the descendant location.
 	 * @since 1.10
 	 */
 	public Set<Location> getDescendantLocations(boolean includeRetired) {
@@ -649,5 +595,130 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 		setLocationId(id);
 		
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress7() {
+		return address7;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress7(String address7) {
+		this.address7 = address7;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress8() {
+		return address8;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress8(String address8) {
+		this.address8 = address8;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress9() {
+		return address9;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress9(String address9) {
+		this.address9 = address9;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress10() {
+		return address10;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress10(String address10) {
+		this.address10 = address10;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress11() {
+		return address11;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress11(String address11) {
+		this.address11 = address11;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress12() {
+		return address12;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress12(String address12) {
+		this.address12 = address12;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress13() {
+		return address13;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress13(String address13) {
+		this.address13 = address13;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress14() {
+		return address14;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress14(String address14) {
+		this.address14 = address14;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getAddress15() {
+		return address15;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setAddress15(String address15) {
+		this.address15 = address15;
+	}
 }

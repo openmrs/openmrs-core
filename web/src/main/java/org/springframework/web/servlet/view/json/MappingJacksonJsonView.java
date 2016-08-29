@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,7 +35,6 @@ import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
-
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
@@ -186,25 +186,6 @@ public class MappingJacksonJsonView extends AbstractView {
 	 * Return the attributes in the model that should be rendered by this view.
 	 */
 	public final Set<String> getModelKeys() {
-		return this.modelKeys;
-	}
-	
-	/**
-	 * Set the attributes in the model that should be rendered by this view.
-	 * When set, all other model attributes will be ignored.
-	 * @deprecated use {@link #setModelKeys(Set)} instead
-	 */
-	@Deprecated
-	public void setRenderedAttributes(Set<String> renderedAttributes) {
-		this.modelKeys = renderedAttributes;
-	}
-	
-	/**
-	 * Return the attributes in the model that should be rendered by this view.
-	 * @deprecated use {@link #getModelKeys()} instead
-	 */
-	@Deprecated
-	public final Set<String> getRenderedAttributes() {
 		return this.modelKeys;
 	}
 	

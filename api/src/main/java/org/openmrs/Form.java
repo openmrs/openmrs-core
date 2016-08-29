@@ -19,7 +19,7 @@ import java.util.Set;
  *
  * @version 1.0
  */
-public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Form extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 845634L;
 	
@@ -125,42 +125,6 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the template.
-	 * @deprecated
-	 */
-	@Deprecated
-	public String getTemplate() {
-		throw new UnsupportedOperationException("Templates no longer exist on Forms. Use Form Attributes.");
-	}
-	
-	/**
-	 * @param template The template to set.
-	 * @deprecated
-	 */
-	@Deprecated
-	public void setTemplate(String template) {
-		throw new UnsupportedOperationException("Templates no longer exist on Forms. Use Form Attributes.");
-	}
-	
-	/**
-	 * @return Returns the creator
-	 * @deprecated
-	 */
-	@Deprecated
-	public String getXslt() {
-		throw new UnsupportedOperationException("XSLTs no longer exist on Forms. Use Form Attributes.");
-	}
-	
-	/**
-	 * @param xslt the xslt to set.
-	 * @deprecated
-	 */
-	@Deprecated
-	public void setXslt(String xslt) {
-		throw new UnsupportedOperationException("XSLTs no longer exist on Forms. Use Form Attributes.");
-	}
-	
-	/**
 	 * @return Returns the formFields.
 	 */
 	public Set<FormField> getFormFields() {
@@ -263,22 +227,4 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 		setFormId(id);
 		
 	}
-	
-	/**
-	 * @deprecated use {@link #setRetireReason(String)}
-	 */
-	@Deprecated
-	public void setRetiredReason(String reason) {
-		setRetireReason(reason);
-		
-	}
-	
-	/**
-	 * @deprecated use {@link #getRetireReason()}
-	 */
-	@Deprecated
-	public String getRetiredReason() {
-		return getRetireReason();
-	}
-	
 }

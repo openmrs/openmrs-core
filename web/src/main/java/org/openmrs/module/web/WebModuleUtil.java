@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.jar.JarEntry;
@@ -51,7 +50,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
-import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
@@ -65,7 +63,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.DispatcherServlet;
 import org.openmrs.web.StaticDispatcherServlet;
-import org.openmrs.web.dwr.OpenmrsDWRServlet;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.w3c.dom.Document;
@@ -85,8 +82,6 @@ public class WebModuleUtil {
 	
 	private static StaticDispatcherServlet staticDispatcherServlet = null;
 	
-	private static OpenmrsDWRServlet dwrServlet = null;
-	
 	// caches all of the modules' mapped servlets
 	private static Map<String, HttpServlet> moduleServlets = Collections.synchronizedMap(new HashMap<String, HttpServlet>());
 	
@@ -105,8 +100,8 @@ public class WebModuleUtil {
 	 * is not rerun. This will save a lot of time, but it also means that the calling method is
 	 * responsible for restarting the context if necessary (the calling method will also have to
 	 * call {@link #loadServlets(Module, ServletContext)} and
-	 * {@link #loadFilters(Module, ServletContext)}).<br/>
-	 * <br/>
+	 * {@link #loadFilters(Module, ServletContext)}).<br>
+	 * <br>
 	 * If delayContextRefresh is true and this module should have caused a context refresh, a true
 	 * value is returned. Otherwise, false is returned
 	 *
@@ -135,9 +130,6 @@ public class WebModuleUtil {
 			if (!webInf.exists()) {
 				webInf.mkdir();
 			}
-			
-			copyModuleMessagesIntoWebapp(mod, realPath);
-			log.debug("Done copying messages");
 			
 			// flag to tell whether we added any xml/dwr/etc changes that necessitate a refresh
 			// of the web application context
@@ -408,83 +400,6 @@ public class WebModuleUtil {
 	}
 	
 	/**
-	 * Method visibility is package-private for testing
-	 *
-	 * @param mod
-	 * @param realPath
-	 * @should prefix messages with module id
-	 * @should not prefix messages with module id if override setting is specified
-	 */
-	static void copyModuleMessagesIntoWebapp(Module mod, String realPath) {
-		for (Entry<String, Properties> localeEntry : mod.getMessages().entrySet()) {
-			if (log.isDebugEnabled()) {
-				log.debug("Copying message property file: " + localeEntry.getKey());
-			}
-			
-			Properties props = localeEntry.getValue();
-			
-			if (!"true".equalsIgnoreCase(props
-			        .getProperty(ModuleConstants.MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE))) {
-				// set all properties to start with 'moduleName.' if not already
-				List<Object> keys = new Vector<Object>();
-				keys.addAll(props.keySet());
-				for (Object obj : keys) {
-					String key = (String) obj;
-					if (!key.startsWith(mod.getModuleId())) {
-						props.put(mod.getModuleId() + "." + key, props.get(key));
-						props.remove(key);
-					}
-				}
-			}
-			
-			String lang = "_" + localeEntry.getKey();
-			if (lang.equals("_en") || lang.equals("_")) {
-				lang = "";
-			}
-			
-			insertIntoModuleMessagePropertiesFile(realPath, props, lang);
-		}
-	}
-	
-	/**
-	 * Copies a module's messages into the shared module_messages(lang).properties file
-	 *
-	 * @param realPath actual file path of the servlet context
-	 * @param props messages to copy into the shared message properties file (replacing any existing
-	 *            ones)
-	 * @param lang the empty string to represent the locale "en", or something like "_fr" for any
-	 *            other locale
-	 * @return true if the everything worked
-	 */
-	private static boolean insertIntoModuleMessagePropertiesFile(String realPath, Properties props, String lang) {
-		String path = "/WEB-INF/module_messages@LANG@.properties";
-		String currentPath = path.replace("@LANG@", lang);
-		
-		String absolutePath = realPath + currentPath;
-		File file = new File(absolutePath);
-		try {
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-		}
-		catch (IOException ioe) {
-			log.error("Unable to create new file " + file.getAbsolutePath() + " " + ioe);
-		}
-		
-		try {
-			//Copy to the module properties file replacing any keys that already exist
-			Properties allModulesProperties = new Properties();
-			OpenmrsUtil.loadProperties(allModulesProperties, file);
-			allModulesProperties.putAll(props);
-			OpenmrsUtil.storeProperties(allModulesProperties, new FileOutputStream(file), null);
-		}
-		catch (FileNotFoundException e) {
-			throw new ModuleException("Unable to load module messages from file: " + file.getAbsolutePath(), e);
-		}
-		return true;
-	}
-	
-	/**
 	 * Send an Alert to all super users that the given module did not start successfully.
 	 *
 	 * @param mod The Module that failed
@@ -493,14 +408,14 @@ public class WebModuleUtil {
 		try {
 			// Add the privileges necessary for notifySuperUsers
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
-			Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
 			
 			// Send an alert to all administrators
 			Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", null, mod.getName());
 		}
 		finally {
 			// Remove added privileges
-			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 		}
 	}
@@ -511,7 +426,6 @@ public class WebModuleUtil {
 	 *
 	 * @param mod
 	 * @param servletContext the servlet context
-	 * @return this module's servlet map
 	 */
 	public static void loadServlets(Module mod, ServletContext servletContext) {
 		Element rootNode = mod.getConfig().getDocumentElement();
@@ -815,7 +729,7 @@ public class WebModuleUtil {
 	 * @param servletContext
 	 * @param skipRefresh
 	 */
-	private static void stopModule(Module mod, ServletContext servletContext, boolean skipRefresh) {
+	public static void stopModule(Module mod, ServletContext servletContext, boolean skipRefresh) {
 		
 		String moduleId = mod.getModuleId();
 		String modulePackage = mod.getPackageName();
@@ -915,8 +829,6 @@ public class WebModuleUtil {
 			//try {
 			//	if (dispatcherServlet != null)
 			//		dispatcherServlet.reInitFrameworkServlet();
-			//	if (dwrServlet != null)
-			//		dwrServlet.reInitServlet();
 			//}
 			//catch (ServletException se) {
 			//	log.warn("Unable to reinitialize webapplicationcontext for dispatcherservlet for module: " + mod.getName(), se);
@@ -969,15 +881,6 @@ public class WebModuleUtil {
 			log.warn("Caught a servlet exception while refreshing the dispatcher servlet", se);
 		}
 		
-		try {
-			if (dwrServlet != null) {
-				dwrServlet.reInitServlet();
-			}
-		}
-		catch (ServletException se) {
-			log.warn("Cause a servlet exception while refreshing the dwr servlet", se);
-		}
-		
 		return newAppContext;
 	}
 	
@@ -1002,18 +905,6 @@ public class WebModuleUtil {
 	}
 	
 	/**
-	 * Save the dwr servlet for use later (reinitializing things)
-	 *
-	 * @param ds
-	 */
-	public static void setDWRServlet(OpenmrsDWRServlet ds) {
-		log.debug("Setting dwr servlet: " + ds);
-		dwrServlet = ds;
-		//new NewCreator();
-		//SessionFactoryUtils.processDeferredClose(null);
-	}
-	
-	/**
 	 * Finds the servlet defined by the servlet name
 	 *
 	 * @param servletName the name of the servlet out of the path
@@ -1024,7 +915,7 @@ public class WebModuleUtil {
 	}
 	
 	/**
-	 * Retrieves a path to a folder that stores web files of a module. <br/>
+	 * Retrieves a path to a folder that stores web files of a module. <br>
 	 * (path-to-openmrs/WEB-INF/view/module/moduleid)
 	 *
 	 * @param moduleId module id (e.g., "basicmodule")

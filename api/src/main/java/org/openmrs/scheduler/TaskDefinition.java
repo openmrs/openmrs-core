@@ -105,7 +105,7 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	 * Set the properties of the task. This overrides any properties previously set with the
 	 * setProperty(String, String) method.
 	 * 
-	 * @param properties <code>Map<String, String></code> of the properties to set
+	 * @param properties <code>Map&lt;String, String&gt;</code> of the properties to set
 	 */
 	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;
@@ -295,21 +295,4 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	public void setTaskInstance(Task taskInstance) {
 		this.taskInstance = taskInstance;
 	}
-	
-	/**
-	 * @deprecated use {@link #getCreator()}
-	 */
-	public Object getCreatedBy() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	/**
-	 * @deprecated use {@link #setCreator(User)}
-	 */
-	public void setCreatedBy(User authenticatedUser) {
-		// TODO Auto-generated method stub
-		
-	}
-	
 }

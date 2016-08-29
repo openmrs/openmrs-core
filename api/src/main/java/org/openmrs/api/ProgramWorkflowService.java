@@ -12,7 +12,6 @@ package org.openmrs.api;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
@@ -23,14 +22,13 @@ import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
  * Contains methods pertaining to management of Programs, ProgramWorkflows, ProgramWorkflowStates,
- * PatientPrograms, PatientStates, and ConceptStateConversions Use:<br/>
+ * PatientPrograms, PatientStates, and ConceptStateConversions Use:<br>
  * 
  * <pre>
  *   Program program = new Program();
@@ -78,14 +76,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return program matching the given programId
 	 * @should return null when programId does not exist
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.GET_PROGRAMS })
 	public Program getProgram(Integer programId) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getProgramByName(String)}
-	 */
-	@Deprecated
-	public Program getProgram(String name);
 	
 	/**
 	 * Returns a program given the program's exact <code>name</code> A null value is returned if
@@ -100,29 +92,29 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return null when program does not exist with given name
 	 * @should fail when two programs found with same name
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.GET_PROGRAMS })
 	public Program getProgramByName(String name) throws APIException;
 	
 	/**
 	 * Returns all programs, includes retired programs. This method delegates to the
 	 * #getAllPrograms(boolean) method
 	 * 
-	 * @return List<Program> of all existing programs, including retired programs
+	 * @return List&lt;Program&gt; of all existing programs, including retired programs
 	 * @throws APIException
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.GET_PROGRAMS })
 	public List<Program> getAllPrograms() throws APIException;
 	
 	/**
 	 * Returns all programs
 	 * 
 	 * @param includeRetired whether or not to include retired programs
-	 * @return List<Program> all existing programs, including retired based on the input parameter
+	 * @return List&lt;Program&gt; all existing programs, including retired based on the input parameter
 	 * @throws APIException
 	 * @should return all programs including retired when includeRetired equals true
 	 * @should return all programs excluding retired when includeRetired equals false
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.GET_PROGRAMS })
 	public List<Program> getAllPrograms(boolean includeRetired) throws APIException;
 	
 	/**
@@ -130,7 +122,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * list will be returned if there are no programs matching this <code>nameFragment</code>
 	 * 
 	 * @param nameFragment is the string used to search for programs
-	 * @return List<Program> - list of Programs whose name matches the input parameter
+	 * @return List&lt;Program&gt; - list of Programs whose name matches the input parameter
 	 * @throws APIException
 	 * @should return all programs with partial name match
 	 * @should return all programs when exact name match
@@ -143,7 +135,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return programs ordered by name
 	 * @should return empty list when nameFragment does not match any
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.GET_PROGRAMS })
 	public List<Program> getPrograms(String nameFragment) throws APIException;
 	
 	/**
@@ -173,21 +165,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	/**
 	 * Retires the given program
 	 * 
-	 * @deprecated use {@link retireProgram(Program program,String reason)}
-	 * @param program Program to be retired
-	 * @return the Program which has been retired
-	 * @throws APIException
-	 * @should retire program successfully
-	 * @should retire workflows associated with given program
-	 * @should retire states associated with given program
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
-	public Program retireProgram(Program program) throws APIException;
-	
-	/**
-	 * Retires the given program
-	 * 
 	 * @param program Program to be retired
 	 * @param reason String for retiring the program
 	 * @return the Program which has been retired
@@ -198,21 +175,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public Program retireProgram(Program program, String reason) throws APIException;
-	
-	/**
-	 * Unretires the given program
-	 * 
-	 * @deprecated use {@link unretireProgram(Program program)}
-	 * @param program Program to be unretired
-	 * @return the Program which has been unretired
-	 * @throws APIException
-	 * @should unretire program successfully
-	 * @should unretire workflows associated with given program
-	 * @should unretire states associated with given program
-	 */
-	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
-	@Deprecated
-	public Program unRetireProgram(Program program) throws APIException;
 	
 	/**
 	 * Unretires the given program
@@ -282,7 +244,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should get patient program with given identifier
 	 * @should return null if program does not exist
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public PatientProgram getPatientProgram(Integer patientProgramId) throws APIException;
 	
 	/**
@@ -302,7 +264,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param maxCompletionDate if supplied will limit PatientPrograms to those completed on or
 	 *            before this Date
 	 * @param includeVoided if true, will also include voided PatientPrograms
-	 * @return List<PatientProgram> of PatientPrograms that match the passed input parameters
+	 * @return List&lt;PatientProgram&gt; of PatientPrograms that match the passed input parameters
 	 * @throws APIException
 	 * @should return patient programs for given patient
 	 * @should return patient programs for given program
@@ -316,7 +278,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return all patient programs when all parameters are null
 	 * @should return empty list when matches not found
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
 	        Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided)
 	        throws APIException;
@@ -377,7 +339,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param programId
 	 * @return outcome concepts or empty List if none exist
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.GET_PROGRAMS })
 	public List<Concept> getPossibleOutcomes(Integer programId);
 	
 	// **************************
@@ -388,7 +350,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * Get ProgramWorkflow by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return program work flow or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -418,17 +380,17 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return concept state conversion for given identifier
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.GET_PROGRAMS })
 	public ConceptStateConversion getConceptStateConversion(Integer conceptStateConversionId) throws APIException;
 	
 	/**
 	 * Returns all conceptStateConversions
 	 * 
-	 * @return List<ConceptStateConversion> of all ConceptStateConversions that exist
+	 * @return List&lt;ConceptStateConversion&gt; of all ConceptStateConversions that exist
 	 * @throws APIException
 	 * @should return all concept state conversions
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.GET_PROGRAMS })
 	public List<ConceptStateConversion> getAllConceptStateConversions() throws APIException;
 	
 	/**
@@ -453,24 +415,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion, boolean cascade)
 	        throws APIException;
-	
-	/**
-	 * @deprecated as of 1.10, because the only place in core where it was called was
-	 *             PatientService#exitFromCare(Patient patient, Date dateExited, Concept
-	 *             reasonForExit) which was moved to exit from care module
-	 * @param patient - the Patient to trigger the ConceptStateConversion on
-	 * @param reasonForExit - the Concept to trigger the ConceptStateConversion
-	 * @param dateConverted - the Date of the ConceptStateConversion
-	 * @throws APIException
-	 * @should trigger state conversion successfully
-	 * @should fail if patient is invalid
-	 * @should fail if trigger is invalid
-	 * @should fail if date converted is invalid
-	 * @should skip past patient programs that are already completed
-	 */
-	@Deprecated
-	public void triggerStateConversion(Patient patient, Concept reasonForExit, Date dateConverted) throws APIException;
-	
+		
 	/**
 	 * Retrieves the ConceptStateConversion that matches the passed <code>ProgramWorkflow</code> and
 	 * <code>Concept</code>
@@ -484,99 +429,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 */
 	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger) throws APIException;
 	
-	// **************************
-	// DEPRECATED PROGRAM
-	// **************************
-	
-	/**
-	 * Create a new program
-	 * 
-	 * @param program Program to create
-	 * @throws APIException
-	 * @deprecated use {@link #saveProgram(Program)}
-	 */
-	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
-	@Deprecated
-	public void createOrUpdateProgram(Program program) throws APIException;
-	
-	/**
-	 * Returns all programs, includes retired programs.
-	 * 
-	 * @return List<Program> of all existing programs
-	 * @deprecated use {@link #getAllPrograms()}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Deprecated
-	public List<Program> getPrograms() throws APIException;
-	
-	// **************************
-	// DEPRECATED PROGRAM WORKFLOW
-	// **************************
-	
-	/**
-	 * Create a new programWorkflow
-	 * 
-	 * @param programWorkflow - The ProgramWorkflow to create
-	 * @deprecated use {@link Program#addWorkflow(ProgramWorkflow) followed by @link
-	 *             #saveProgram(Program)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
-	public void createWorkflow(ProgramWorkflow programWorkflow) throws APIException;
-	
-	/**
-	 * Update a programWorkflow
-	 * 
-	 * @param programWorkflow - The ProgramWorkflow to update
-	 * @deprecated use {@link #saveProgram(Program) to save changes to all ProgramWorkflows for the
-	 *             given Program}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
-	@Deprecated
-	public void updateWorkflow(ProgramWorkflow programWorkflow) throws APIException;
-	
-	/**
-	 * Returns a programWorkflow given that programWorkflows primary key
-	 * <code>programWorkflowId</code>
-	 * 
-	 * @param id integer primary key of the ProgramWorkflow to find
-	 * @return ProgramWorkflow object that has an id that matches the input parameter
-	 * @deprecated ProgramWorkflows should not be retrieved directly, but rather through the
-	 *             programs they belong to: use {@link org.openmrs.Program#getWorkflows()}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Deprecated
-	public ProgramWorkflow getWorkflow(Integer id) throws APIException;
-	
-	/**
-	 * Returns a programWorkflow with the given name within the given Program
-	 * 
-	 * @param program - The Program of the ProgramWorkflow to return
-	 * @param name - The name of the ProgramWorkflow to return
-	 * @return ProgramWorkflow - The ProgramWorkflow that matches the passed Program and name
-	 * @deprecated use {@link Program#getWorkflowByName(String)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Deprecated
-	public ProgramWorkflow getWorkflow(Program program, String name) throws APIException;
-	
-	/**
-	 * Retires the given programWorkflow
-	 * 
-	 * @param programWorkflow - The ProgramWorkflow to retire
-	 * @param reason - The reason for retiring the ProgramWorkflow
-	 * @deprecated use {@link ProgramWorkflow#setRetired(Boolean) followed by @link
-	 *             #saveProgram(Program)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
-	@Deprecated
-	public void voidWorkflow(ProgramWorkflow programWorkflow, String reason) throws APIException;
-	
 	/**
 	 * Get a state by its uuid. There should be only one of these in the database. If multiple are
 	 * found, an error is thrown.
@@ -589,290 +441,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should throw an error when multiple states with same uuid are found
 	 */
 	public ProgramWorkflowState getStateByUuid(String uuid);
-	
-	/**
-	 * Returns all ProgramWorkflowStates
-	 * 
-	 * @return List<ProgramWorkflowState> - all ProgramWorkflowStates that exist
-	 * @deprecated ProgramWorkflowStates should be retrieved from the {@link ProgramWorkflow} they
-	 *             belong to
-	 * @see ProgramWorkflow#getStates()
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Deprecated
-	public List<ProgramWorkflowState> getStates() throws APIException;
-	
-	/**
-	 * Returns all ProgramWorkflowStates
-	 * 
-	 * @param includeVoided - if false, only returns non-voided ProgramWorkflowStates
-	 * @return List<ProgramWorkflowState> - all ProgramWorkflowStates that exist, including voided
-	 *         based on the input parameter
-	 * @deprecated ProgramWorkflowStates should be retrieved from the {@link ProgramWorkflow} they
-	 *             belong to
-	 * @see ProgramWorkflow#getStates(boolean)
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Deprecated
-	public List<ProgramWorkflowState> getStates(boolean includeVoided) throws APIException;
-	
-	/**
-	 * Returns ProgramWorkflowState with the passed primary key id
-	 * 
-	 * @param id - The primary key id of the ProgramWorkflowState to return
-	 * @return ProgramWorkflowState - returns ProgramWorkflowState whose primary key id matches the
-	 *         passed id
-	 * @deprecated ProgramWorkflowStates should be retrieved from the {@link ProgramWorkflow} they
-	 *             belong to
-	 * @see ProgramWorkflow#getState(Integer)
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Deprecated
-	public ProgramWorkflowState getState(Integer id) throws APIException;
-	
-	/**
-	 * Returns ProgramWorkflowState with the passed <code>name</code> in the passed
-	 * <code>programWorkflow</code>
-	 * 
-	 * @param programWorkflow - The programWorkflow to check for ProgramWorkflowState
-	 * @param name - the name of the programWorkflowState to look for
-	 * @return ProgramWorkflowState - the ProgramWorkflowState with the passed <code>name</code> in
-	 *         the passed <code>programWorkflow</code>
-	 * @deprecated ProgramWorkflowStates should be retrieved from the {@link ProgramWorkflow} they
-	 *             belong to
-	 * @see ProgramWorkflow#getStateByName(String)
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Deprecated
-	public ProgramWorkflowState getState(ProgramWorkflow programWorkflow, String name) throws APIException;
-	
-	/**
-	 * Returns List of ProgramWorkflowStates that a patient is allowed to transition into given
-	 * their current program
-	 * 
-	 * @param patientProgram - the PatientProgram to retrieve possible next transitions from
-	 * @param workflow - the ProgramWorkflow to retrieve possible next transitions from
-	 * @return List<ProgramWorkflowState> - returns List<ProgramWorkflowState> that a patient with
-	 *         the given PatientProgram and ProgramWorkflow is allowed to transition into
-	 * @deprecated use {@link ProgramWorkflow#getPossibleNextStates(PatientProgram)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Deprecated
-	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram, ProgramWorkflow workflow)
-	        throws APIException;
-	
-	/**
-	 * Returns boolean indicating whether it is legal to transition from one ProgramWorkflowState to
-	 * another
-	 * 
-	 * @param fromState - the ProgramWorkflowState to use as the state to check transitions from
-	 * @param toState - the ProgramWorkflowState to use as the state to check transitions into from
-	 *            <code>fromState</code>
-	 * @return boolean - returns true if a legal transition exists from <code>fromState</code> to
-	 *         <code>toState</code>
-	 * @deprecated use
-	 *             {@link ProgramWorkflow#isLegalTransition(ProgramWorkflowState, ProgramWorkflowState)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Deprecated
-	public boolean isLegalTransition(ProgramWorkflowState fromState, ProgramWorkflowState toState) throws APIException;
-	
-	// **************************
-	// DEPRECATED PATIENT PROGRAM 
-	// **************************
-	
-	/**
-	 * Create a new patientProgram
-	 * 
-	 * @param patientProgram - The PatientProgram to create
-	 * @deprecated use {@link #savePatientProgram(PatientProgram)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS })
-	@Deprecated
-	public void createPatientProgram(PatientProgram patientProgram) throws APIException;
-	
-	/**
-	 * Update a patientProgram
-	 * 
-	 * @param patientProgram - The PatientProgram to update
-	 * @deprecated use {@link #savePatientProgram(PatientProgram)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
-	@Deprecated
-	public void updatePatientProgram(PatientProgram patientProgram) throws APIException;
-	
-	/**
-	 * Create a new PatientProgram
-	 * 
-	 * @param patient - The Patient to enroll
-	 * @param program - The Program to enroll the <code>patient</code> into
-	 * @param enrollmentDate - The Date to use as the enrollment date in the <code>program</code>
-	 *            for the <code>patient</code>
-	 * @param completionDate - The Date to use as the completion date in the <code>program</code>
-	 *            for the <code>patient</code>
-	 * @param creator - The User who is enrolling this <code>patient</code>
-	 * @deprecated use {new PatientProgram(...) followed by @link
-	 *             #savePatientProgram(PatientProgram)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS })
-	@Deprecated
-	public void enrollPatientInProgram(Patient patient, Program program, Date enrollmentDate, Date completionDate,
-	        User creator) throws APIException;
-	
-	/**
-	 * Returns a Collection<PatientProgram> of all PatientPrograms for the passed
-	 * <code>patient</code>
-	 * 
-	 * @param patient - The Patient to retrieve all PatientPrograms for
-	 * @return Collection<PatientProgram> of all PatientPrograms for the passed <code>patient</code>
-	 * @deprecated use
-	 *             {@link #getPatientPrograms(Patient, Program, Date, Date, Date, Date, boolean)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Deprecated
-	public Collection<PatientProgram> getPatientPrograms(Patient patient) throws APIException;
-	
-	/**
-	 * Get Collection<Integer> of PatientIds for patients who are enrolled in program between
-	 * fromDate and toDate
-	 * 
-	 * @param program - The Program to check for patient enrollment
-	 * @param fromDate - Used to check whether patients were enrolled in the <code>program</code> on
-	 *            or after this Date
-	 * @param toDate - Used to check whether patients were enrolled in the <code>program</code> on
-	 *            or before this Date
-	 * @return Collection<Integer> containing all patientIds for patients who were enrolled in the
-	 *         <code>program</code> between <code>fromDate</code> and <code>toDate</code>
-	 * @deprecated use
-	 *             {@link #getPatientPrograms(Patient, Program, Date, Date, Date, Date, boolean)}
-	 *             which can be Iterated across to return collection of patient ids
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Deprecated
-	public Collection<Integer> patientsInProgram(Program program, Date fromDate, Date toDate) throws APIException;
-	
-	/**
-	 * Get Collection of PatientPrograms for patients that are current as of the passed Date
-	 * 
-	 * @param patient - The Patient to check for program enrollment
-	 * @param onDate - Specifies only to return programs that the patient is in as of this Date
-	 * @return Collection<PatientProgram> that contains all PatientPrograms are current for the
-	 *         <code>patient</code> as of <code>onDate</code>
-	 * @deprecated use
-	 *             {@link #getPatientPrograms(Patient, Program, Date, Date, Date, Date, boolean)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Deprecated
-	public Collection<PatientProgram> getCurrentPrograms(Patient patient, Date onDate) throws APIException;
-	
-	/**
-	 * Return boolean indicating if Patient was enrolled into the Program between Date and Date
-	 * 
-	 * @param patient - The Patient to check for enrollment
-	 * @param program - The Program to check for enrollment
-	 * @param fromDate - Used to check whether patients were enrolled in the <code>program</code> on
-	 *            or after this Date
-	 * @param toDate - Used to check whether patients were enrolled in the <code>program</code> on
-	 *            or before this Date
-	 * @return boolean - Returns true if the <code>patient</code> was enrolled in the
-	 *         <code>program</code> between <code>fromDate</code> and <code>toDate</code>
-	 * @deprecated use
-	 *             {@link #getPatientPrograms(Patient, Program, Date, Date, Date, Date, boolean)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Deprecated
-	public boolean isInProgram(Patient patient, Program program, Date fromDate, Date toDate) throws APIException;
-	
-	// **************************
-	// DEPRECATED PATIENT STATE 
-	// **************************
-	
-	/**
-	 * Get a PatientState by patientStateId
-	 * 
-	 * @see PatientProgram
-	 * @param patientStateId - The primary key id of the PatientState to return
-	 * @return The PatientState whose primary key id matches the input <code>patientStateId</code>
-	 * @deprecated use {@link PatientProgram#getPatientState(Integer)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Deprecated
-	public PatientState getPatientState(Integer patientStateId) throws APIException;
-	
-	/**
-	 * Get the most recent PatientState for a given PatientProgram and ProgramWorkflow
-	 * 
-	 * @param patientProgram - The PatientProgram whose states to check
-	 * @param programWorkflow - The ProgramWorkflow whose current state to check within the given
-	 *            <code>patientProgram</code>
-	 * @return PatientState - The PatientState that is most recent for the
-	 *         <code>programWorkflow</code> within the given <code>patientProgram</code>
-	 * @deprecated use {@link PatientProgram#getCurrentState(ProgramWorkflow)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Deprecated
-	public PatientState getLatestState(PatientProgram patientProgram, ProgramWorkflow programWorkflow) throws APIException;
-	
-	/**
-	 * Returns a Set of current ProgramWorkflows for the given Patient
-	 * 
-	 * @param patient - The Patient to check
-	 * @return Set<ProgramWorkflow> containing all of the current ProgramWorkflows for the
-	 *         <code>patient</code>
-	 * @deprecated No current use outside of this service. Should be retrieved from Patient,
-	 *             PatientProgram, and PatientState
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Deprecated
-	public Set<ProgramWorkflow> getCurrentWorkflowsByPatient(Patient patient) throws APIException;
-	
-	/**
-	 * Returns a Set of current ProgramWorkflows for the given PatientProgram
-	 * 
-	 * @param program - The PatientProgram to check
-	 * @return Set<ProgramWorkflow> containing all of the current ProgramWorkflows for the
-	 *         <code>program</code>
-	 * @deprecated No current use outside of this service. Should be retrieved from Patient,
-	 *             PatientProgram, and PatientState
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
-	@Deprecated
-	public Set<ProgramWorkflow> getCurrentWorkflowsByPatientProgram(PatientProgram program) throws APIException;
-	
-	/**
-	 * Change the state of the passed PatientPrograms ProgramWorkflow to the passed
-	 * ProgramWorkflowState on the passed Date
-	 * 
-	 * @param patientProgram - The PatientProgram whose state you wish to change
-	 * @param workflow - The ProgramWorkflow whose within the <code>patientProgram</code> whose
-	 *            state you wish to change
-	 * @param state - The ProgramWorkflowState you wish to change the ProgramWorkflow to
-	 * @param onDate - The Date that you wish the State change to take place
-	 * @deprecated use {@link PatientProgram#transitionToState(ProgramWorkflowState, Date)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS, PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
-	@Deprecated
-	public void changeToState(PatientProgram patientProgram, ProgramWorkflow workflow, ProgramWorkflowState state,
-	        Date onDate) throws APIException;
-	
+					
 	/**
 	 * Get a patient program by its uuid. There should be only one of these in the database. If
 	 * multiple are found, an error is thrown.
@@ -891,7 +460,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * 
 	 * @param cohort
 	 * @param programs
-	 * @return List<PatientProgram> for all Patients in the given Cohort that are in the given
+	 * @return List&lt;PatientProgram&gt; for all Patients in the given Cohort that are in the given
 	 *         programs
 	 * @should return patient programs with patients in given cohort and programs
 	 * @should return patient programs with patients in given cohort
@@ -902,44 +471,16 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should not fail when given cohort is empty
 	 * @should not fail when given program is empty
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs);
-	
-	/**
-	 * Terminatate the passed PatientPrograms ProgramWorkflow to the passed ProgramWorkflowState on
-	 * the passed Date
-	 * 
-	 * @param patientProgram - The PatientProgram whose state you wish to change
-	 * @param finalState - The ProgramWorkflowState you wish to change the ProgramWorkflow to
-	 * @param terminatedOn - The Date that you wish the State change to take place
-	 * @deprecated use {@link PatientProgram#transitionToState(ProgramWorkflowState, Date)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS, PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
-	@Deprecated
-	public void terminatePatientProgram(PatientProgram patientProgram, ProgramWorkflowState finalState, Date terminatedOn);
-	
-	/**
-	 * Voids the last non-voided ProgramWorkflowState in the given ProgramWorkflow for the given
-	 * PatientProgram, and clears the endDate of the next-to-last non-voided state.
-	 * 
-	 * @param patientProgram - The patientProgram to check
-	 * @param wf - The ProgramWorkflow to check
-	 * @param voidReason - The reason for voiding
-	 * @deprecated use {@link PatientProgram#voidLastState(ProgramWorkflow, User, Date, String)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
-	@Deprecated
-	public void voidLastState(PatientProgram patientProgram, ProgramWorkflow wf, String voidReason) throws APIException;
-	
+		
 	/**
 	 * Returns a list of Programs that are using a particular concept.
 	 * 
 	 * @param concept - The Concept being used.
 	 * @return - A List of Programs
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public List<Program> getProgramsByConcept(Concept concept);
 	
 	/**
@@ -948,7 +489,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param concept - The Concept being used.
 	 * @return - A List of ProgramWorkflows
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept);
 	
 	/**
@@ -957,57 +498,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param concept - The Concept being used.
 	 * @return - A List of ProgramWorkflowStates
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept);
-	
-	// **************************
-	// DEPRECATED CONCEPT STATE CONVERSION
-	// **************************
-	
-	/**
-	 * Create a new ConceptStateConversion
-	 * 
-	 * @param conceptStateConversion - The ConceptStateConversion to create
-	 * @deprecated use {@link #saveConceptStateConversion(ConceptStateConversion)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS })
-	@Deprecated
-	public void createConceptStateConversion(ConceptStateConversion conceptStateConversion) throws APIException;
-	
-	/**
-	 * Update a ConceptStateConversion
-	 * 
-	 * @param conceptStateConversion - The ConceptStateConversion to update
-	 * @deprecated use {@link #saveConceptStateConversion(ConceptStateConversion)}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
-	@Deprecated
-	public void updateConceptStateConversion(ConceptStateConversion conceptStateConversion) throws APIException;
-	
-	/**
-	 * Returns all conceptStateConversions, includes retired conceptStateConversions.
-	 * 
-	 * @return List<ConceptStateConversion> of all ConceptStateConversions that exist, including
-	 *         retired
-	 * @see #getAllConceptStateConversions()
-	 * @deprecated use {@link #getAllConceptStateConversions()}
-	 * @throws APIException
-	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
-	@Deprecated
-	public List<ConceptStateConversion> getAllConversions() throws APIException;
-	
-	/**
-	 * Delete a ConceptStateConversion
-	 * 
-	 * @param csc - The ConceptStateConversion to delete from the database
-	 * @deprecated use {@link #purgeConceptStateConversion(ConceptStateConversion)}
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void deleteConceptStateConversion(ConceptStateConversion csc) throws APIException;
 	
 	/**
 	 * Get a concept state conversion by its uuid. There should be only one of these in the

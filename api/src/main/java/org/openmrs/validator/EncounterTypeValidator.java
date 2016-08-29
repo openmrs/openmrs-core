@@ -68,7 +68,7 @@ public class EncounterTypeValidator implements Validator {
 					    "Specified Encounter Type name already exists, please specify another ");
 				}
 			}
-			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "retireReason");
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "retireReason");
 		}
 	}
 }

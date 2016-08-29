@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -22,7 +21,6 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
-import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PersonDAO;
 import org.openmrs.person.PersonMergeLog;
@@ -32,7 +30,7 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
- * Contains methods pertaining to Persons in the system Use:<br/>
+ * Contains methods pertaining to Persons in the system Use:<br>
  * 
  * <pre>
  * 
@@ -86,7 +84,7 @@ public interface PersonService extends OpenmrsService {
 	 * @param nameSearch string to search the person's name for
 	 * @param birthyear the year of birth to restrict
 	 * @param gender The gender field to search on (Typically just "M" or "F")
-	 * @return Set<Person> object with all people matching criteria
+	 * @return Set&lt;Person&gt; object with all people matching criteria
 	 * @throws APIException
 	 * @should accept greater than three names
 	 * @should match single search to any name part
@@ -95,33 +93,9 @@ public interface PersonService extends OpenmrsService {
 	 * @should match search to familyName2
 	 */
 	// TODO: make gender a (definable?) constant
-	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.GET_PERSONS })
 	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender) throws APIException;
-	
-	/**
-	 * This method is needed to limit the ability for Users/Patients to be created that are already
-	 * of the other type. This method will not be needed after a Person/Patient/User refactor that
-	 * is due in 1.6.
-	 * 
-	 * @param nameSearch string to search the person's name for
-	 * @param birthyear the year of birth to restrict
-	 * @param gender The gender field to search on (Typically just "M" or "F")
-	 * @param personType one of person, user, or patient. If Person, any Person object is returned,
-	 *            if Patient, only Persons that are Patients are returned, if User, only Persons
-	 *            that are Users are returned
-	 * @return Set<Person> object with all people matching criteria
-	 * @throws APIException
-	 * @see {@link #getSimilarPeople(String, Integer, String)}
-	 * @since 1.5
-	 * @should limit personType equals Patient searches to only Patients
-	 * @should limit personType equals User searches to only Users
-	 * @should limit return all Persons with personType equals Person
-	 * @deprecated @see {@link #getSimilarPeople(String, Integer, String)}
-	 */
-	@Deprecated
-	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType)
-	        throws APIException;
-	
+		
 	/**
 	 * Find a person matching the <tt>searchPhrase</tt> search string
 	 * 
@@ -131,38 +105,17 @@ public interface PersonService extends OpenmrsService {
 	 * @return list of person objects matches the parameters
 	 * @should match search to familyName2
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.GET_PERSONS })
 	public List<Person> getPeople(String searchPhrase, Boolean dead) throws APIException;
 	
-	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.GET_PERSONS })
 	public List<Person> getPeople(String searchPhrase, Boolean dead, Boolean voided) throws APIException;
-	
+		
 	/**
-	 * @deprecated @see #getPeople(...)
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
-	public Set<Person> findPeople(String searchPhrase, boolean includeVoided) throws APIException;
-	
-	/**
-	 * @deprecated @see #getPeople(...)
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
-	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, String roles) throws APIException;
-	
-	/**
-	 * @deprecated @see #getPeople(...)
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
-	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, List<String> roles) throws APIException;
-	
-	/**
-	 * Save the given person attribute type in the database. <br/>
+	 * Save the given person attribute type in the database. <br>
 	 * If the given type's Id is not empty, then also need to change any global property which is in
 	 * {@link OpenmrsConstants#GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES} and reference this given
-	 * type, prior to saving this given type. <br/>
+	 * type, prior to saving this given type. <br>
 	 * 
 	 * @param type
 	 * @return the saved person attribute type
@@ -178,7 +131,8 @@ public interface PersonService extends OpenmrsService {
 	/**
 	 * Retire a Person Attribute Type
 	 * 
-	 * @param attrTypeId, retiredReason
+	 * @param type
+	 * @param retiredReason
 	 * @should throw an error when trying to retire person attribute type while person attribute types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
@@ -187,7 +141,8 @@ public interface PersonService extends OpenmrsService {
 	/**
 	 * Retire a Person Relationship Type
 	 * 
-	 * @param relationshipType, retiredReason
+	 * @param type
+	 * @param retiredReason
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
 	public RelationshipType retireRelationshipType(RelationshipType type, String retiredReason) throws APIException;
@@ -195,25 +150,11 @@ public interface PersonService extends OpenmrsService {
 	/**
 	 * Unretire a Person Relationship Type
 	 * 
-	 * @param relationshipType, retiredReason
-	 * @Since 1.9
+	 * @param relationshipType retiredReason
+	 * @since 1.9
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
 	public RelationshipType unretireRelationshipType(RelationshipType relationshipType);
-	
-	/**
-	 * @deprecated {@link #savePersonAttributeType(PersonAttributeType)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
-	public void createPersonAttributeType(PersonAttributeType type) throws APIException;
-	
-	/**
-	 * @deprecated replaced by #purgePersonAttributeType(PersonAttributeType)
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.PURGE_PERSON_ATTRIBUTE_TYPES })
-	public void deletePersonAttributeType(PersonAttributeType type) throws APIException;
 	
 	/**
 	 * Purges a PersonAttribute type from the database (cannot be undone)
@@ -262,24 +203,7 @@ public interface PersonService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public Person unvoidPerson(Person person) throws APIException;
-	
-	/**
-	 * Delete a Person Attribute Type
-	 * 
-	 * @param attrTypeId
-	 * @deprecated use (@link #purgePersonAttributeType(PersonAttributeType))
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
-	public void deletePersonAttributeType(Integer attrTypeId) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #savePersonAttributeType(PersonAttributeType)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
-	public void updatePersonAttributeType(PersonAttributeType type) throws APIException;
-	
+		
 	/**
 	 * Get all PersonAttributeTypes in the database
 	 * 
@@ -287,27 +211,20 @@ public interface PersonService extends OpenmrsService {
 	 * @return All person attribute types including the retired ones
 	 * @should return all person attribute types including retired
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
 	public List<PersonAttributeType> getAllPersonAttributeTypes() throws APIException;
 	
 	/**
 	 * Get all PersonAttributeTypes in the database with the option of including the retired types
 	 * 
 	 * @param includeRetired boolean - include retired attribute types as well?
-	 * @return List<PersonAttributeType> object of all PersonAttributeTypes, possibly including
+	 * @return List&lt;PersonAttributeType&gt; object of all PersonAttributeTypes, possibly including
 	 *         retired ones
 	 * @should return all person attribute types including retired when include retired is true
 	 * @should return all person attribute types excluding retired when include retired is false
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
 	public List<PersonAttributeType> getAllPersonAttributeTypes(boolean includeRetired) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getAllPersonAttributeTypes()}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
-	public List<PersonAttributeType> getPersonAttributeTypes() throws APIException;
 	
 	/**
 	 * Find person attribute types matching the given parameters. Retired types are included in the
@@ -323,7 +240,7 @@ public interface PersonService extends OpenmrsService {
 	 * @should return person attribute types matching given parameters
 	 * @should return empty list when no person attribute types match given parameters
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
 	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
 	        Boolean searchable) throws APIException;
 	
@@ -334,7 +251,7 @@ public interface PersonService extends OpenmrsService {
 	 * @return the type matching this id or null if none was found
 	 * @should return null when no person attribute with the given id exist
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType getPersonAttributeType(Integer typeId) throws APIException;
 	
 	/**
@@ -345,7 +262,7 @@ public interface PersonService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType getPersonAttributeTypeByUuid(String uuid);
 	
 	/**
@@ -357,7 +274,7 @@ public interface PersonService extends OpenmrsService {
 	 * @should return null when PersonAttribute with given id does not exist
 	 * @should return person attribute when PersonAttribute with given id does exist
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttribute getPersonAttribute(Integer id) throws APIException;
 	
 	/**
@@ -368,15 +285,8 @@ public interface PersonService extends OpenmrsService {
 	 * @should return person attribute type when name matches given typeName
 	 * @should return null when no person attribute type match given typeName
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType getPersonAttributeTypeByName(String typeName) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getPersonAttributeTypeByName(String)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
-	public PersonAttributeType getPersonAttributeType(String typeName) throws APIException;
 	
 	/**
 	 * Get relationship by internal relationship identifier
@@ -387,18 +297,18 @@ public interface PersonService extends OpenmrsService {
 	 * @should return relationship with given id
 	 * @should return null when relationship with given id does not exist
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIPS })
 	public Relationship getRelationship(Integer relationshipId) throws APIException;
 	
 	/**
 	 * Get Relationship by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return relationship or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIPS })
 	public Relationship getRelationshipByUuid(String uuid) throws APIException;
 	
 	/**
@@ -409,7 +319,7 @@ public interface PersonService extends OpenmrsService {
 	 * @return list of all unvoided relationship
 	 * @should return all unvoided relationships
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIPS })
 	public List<Relationship> getAllRelationships() throws APIException;
 	
 	/**
@@ -421,16 +331,9 @@ public interface PersonService extends OpenmrsService {
 	 * @should return all relationship including voided when include voided equals true
 	 * @should return all relationship excluding voided when include voided equals false
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIPS })
 	public List<Relationship> getAllRelationships(boolean includeVoided) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getAllRelationships()}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
-	public List<Relationship> getRelationships() throws APIException;
-	
+		
 	/**
 	 * Get list of relationships that include Person in person_id or relative_id Does not include
 	 * voided relationships
@@ -442,7 +345,7 @@ public interface PersonService extends OpenmrsService {
 	 * @should fetch relationships associated with the given person
 	 * @should fetch unvoided relationships only
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIPS })
 	public List<Relationship> getRelationshipsByPerson(Person p) throws APIException;
 	
 	/**
@@ -461,30 +364,9 @@ public interface PersonService extends OpenmrsService {
 	 * @should fetch relationships associated with the given person
 	 * @should fetch relationships that were active during effectiveDate
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIPS })
 	public List<Relationship> getRelationshipsByPerson(Person p, Date effectiveDate) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getRelationshipsByPerson(Person)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
-	public List<Relationship> getRelationships(Person p, boolean showVoided) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getRelationshipsByPerson(Person)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
-	public List<Relationship> getRelationships(Person p) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getRelationships(...)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
-	public List<Relationship> getRelationshipsTo(Person toPerson, RelationshipType relType) throws APIException;
-	
+		
 	/**
 	 * Get relationships stored in the database that
 	 * 
@@ -498,7 +380,7 @@ public interface PersonService extends OpenmrsService {
 	 * @should fetch relationships matching the given rel type
 	 * @should return empty list when no relationship matching given parameters exist
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIPS })
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType)
 	        throws APIException;
 	
@@ -517,7 +399,7 @@ public interface PersonService extends OpenmrsService {
 	 * @should return empty list when no relationship matching given parameters exist
 	 * @should fetch relationships that were active during effectiveDate
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIPS })
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType,
 	        Date effectiveDate) throws APIException;
 	
@@ -539,7 +421,7 @@ public interface PersonService extends OpenmrsService {
 	 * @should return empty list when no relationship matching given parameters exist
 	 * @should fetch relationships that were active during the specified date range
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIPS })
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType,
 	        Date startEffectiveDate, Date endEffectiveDate) throws APIException;
 	
@@ -550,7 +432,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return all relationship types
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIP_TYPES })
 	public List<RelationshipType> getAllRelationshipTypes() throws APIException;
 	
 	/**
@@ -560,14 +442,8 @@ public interface PersonService extends OpenmrsService {
 	 * @return relationshipType list
 	 * @throws APIException
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIP_TYPES })
 	public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getAllRelationshipTypes()}
-	 */
-	@Deprecated
-	public List<RelationshipType> getRelationshipTypes() throws APIException;
 	
 	/**
 	 * Get relationshipType by internal identifier
@@ -578,26 +454,20 @@ public interface PersonService extends OpenmrsService {
 	 * @should return relationship type with the given relationship type id
 	 * @should return null when no relationship type matches given relationship type id
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIP_TYPES })
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws APIException;
 	
 	/**
 	 * Gets the relationship type with the given uuid.
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return relationship type or null
 	 * @throws APIException
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIP_TYPES })
 	public RelationshipType getRelationshipTypeByUuid(String uuid) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getRelationshipTypeByName(String)}
-	 */
-	@Deprecated
-	public RelationshipType findRelationshipType(String relationshipTypeName) throws APIException;
 	
 	/**
 	 * Find relationshipType by exact name match
@@ -607,7 +477,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return null when no relationship type match the given name
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIP_TYPES })
 	public RelationshipType getRelationshipTypeByName(String relationshipTypeName) throws APIException;
 	
 	/**
@@ -621,7 +491,7 @@ public interface PersonService extends OpenmrsService {
 	 * @should return list of preferred relationship type matching given name
 	 * @should return empty list when no preferred relationship type match the given name
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIP_TYPES })
 	public List<RelationshipType> getRelationshipTypes(String relationshipTypeName, Boolean preferred) throws APIException;
 	
 	/**
@@ -633,15 +503,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return empty list when no relationship type match the search string
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIP_TYPES })
 	public List<RelationshipType> getRelationshipTypes(String searchString) throws APIException;
-	
-	/**
-	 * @deprecated replaced by #saveRelationship(Relationship)
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.ADD_RELATIONSHIPS })
-	public void createRelationship(Relationship relationship) throws APIException;
 	
 	/**
 	 * Create or update a relationship between people. Saves the given <code>relationship</code> to
@@ -655,20 +518,6 @@ public interface PersonService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.ADD_RELATIONSHIPS, PrivilegeConstants.EDIT_RELATIONSHIPS })
 	public Relationship saveRelationship(Relationship relationship) throws APIException;
-	
-	/**
-	 * @deprecated replaced by #saveRelationship(Relationship)
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.EDIT_RELATIONSHIPS })
-	public void updateRelationship(Relationship relationship) throws APIException;
-	
-	/**
-	 * @deprecated replaced by #purgeRelationship(Relationship)
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.PURGE_RELATIONSHIPS })
-	public void deleteRelationship(Relationship relationship) throws APIException;
 	
 	/**
 	 * Purges a relationship from the database (cannot be undone)
@@ -704,13 +553,6 @@ public interface PersonService extends OpenmrsService {
 	public Relationship unvoidRelationship(Relationship relationship) throws APIException;
 	
 	/**
-	 * @deprecated replaced by #savePerson(Person)
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.ADD_PERSONS })
-	public Person createPerson(Person person) throws APIException;
-	
-	/**
 	 * Creates or updates a Person in the database
 	 * 
 	 * @param person person to be created or updated
@@ -726,20 +568,6 @@ public interface PersonService extends OpenmrsService {
 	public Person savePerson(Person person) throws APIException;
 	
 	/**
-	 * @deprecated use {@link #savePerson(Person)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
-	public void updatePerson(Person person) throws APIException;
-	
-	/**
-	 * @deprecated replaced by #purgePerson(Person)
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.PURGE_PERSONS })
-	public void deletePerson(Person person) throws APIException;
-	
-	/**
 	 * Purges a person from the database (cannot be undone)
 	 * 
 	 * @param person person to be purged from the database
@@ -753,55 +581,55 @@ public interface PersonService extends OpenmrsService {
 	 * Get Person by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return person or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.GET_PERSONS })
 	public Person getPersonByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Get PersonAddress by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return person address or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.GET_PERSONS })
 	public PersonAddress getPersonAddressByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Get PersonAttribute by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return person attribute or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.GET_PERSONS })
 	public PersonAttribute getPersonAttributeByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Get PersonName by its personNameId
 	 * 
 	 * @param personNameId
-	 * @return
+	 * @return person name or null
 	 * @should find PersonName given valid personNameId
 	 * @should return null if no object found with given personNameId
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.GET_PERSONS })
 	PersonName getPersonName(Integer personNameId);
 	
 	/**
 	 * Get PersonName by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return person name or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.GET_PERSONS })
 	public PersonName getPersonNameByUuid(String uuid) throws APIException;
 	
 	/**
@@ -812,35 +640,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return null when no person has the given id
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.GET_PERSONS })
 	public Person getPerson(Integer personId) throws APIException;
-	
-	/**
-	 * Use either {@link #getPerson(Integer)} passing in pat.getPatientId() or just cast the pat
-	 * object to a Person object because Patient is a subclass of Person. (Person)pat
-	 * 
-	 * @deprecated use {@link #getPerson(Integer)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
-	public Person getPerson(Patient pat) throws APIException;
-	
-	/**
-	 * Use either {@link #getPerson(Integer)} passing in user.getUserId() or just cast the user
-	 * object to a Person object because User is a subclass of Person. (Person)user
-	 * 
-	 * @deprecated use {@link #getPerson(Integer)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
-	public Person getPerson(User user) throws APIException;
-	
-	/**
-	 * @deprecated replaced with #saveRelationshipType(RelationshipType)
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
-	public void createRelationshipType(RelationshipType relationshipType) throws APIException;
 	
 	/**
 	 * Inserts or updates the given relationship type object in the database
@@ -854,20 +655,6 @@ public interface PersonService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException;
-	
-	/**
-	 * @deprecated replaced by #saveRelationshipType(RelationshipType)
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
-	public void updateRelationshipType(RelationshipType relationshipType) throws APIException;
-	
-	/**
-	 * @deprecated replaced by #purgeRelationshipType(RelationshipType)
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.PURGE_RELATIONSHIP_TYPES })
-	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException;
 	
 	/**
 	 * Purge relationship type from the database (cannot be undone)
@@ -891,24 +678,6 @@ public interface PersonService extends OpenmrsService {
 	// this has anonymous access because its cached into generic js files
 	public List<PersonAttributeType> getPersonAttributeTypes(PERSON_TYPE personType, ATTR_VIEW_TYPE viewType)
 	        throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getPersonAttributeTypes(String, String)}
-	 */
-	@Deprecated
-	// this has anonymous access because its cached into generic js files
-	public List<PersonAttributeType> getPersonAttributeTypes(String personType, String viewType) throws APIException;
-	
-	/**
-	 * Splits the <code>name</code> string into Given, Middle, and Family parts of a PersonName
-	 * 
-	 * @param name
-	 * @return fully formed PersonName object
-	 * @see #parsePersonName(String)
-	 * @deprecated replaced by parsePersonName(String)
-	 */
-	@Deprecated
-	public PersonName splitPersonName(String name);
 	
 	/**
 	 * Voids the given PersonName, effectively deleting the name, from the end-user's point of view.
@@ -966,14 +735,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return empty map when no relationship has the matching relationship type
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.GET_RELATIONSHIPS })
 	public Map<Person, List<Person>> getRelationshipMap(RelationshipType relationshipType) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getRelationshipMap(RelationshipType)}
-	 */
-	@Deprecated
-	public Map<Person, List<Person>> getRelationships(RelationshipType relationshipType) throws APIException;
 	
 	/**
 	 * Builds the serialized data from
@@ -1000,7 +763,7 @@ public interface PersonService extends OpenmrsService {
 	 * 
 	 * @param uuid
 	 * @param deserialize
-	 * @return
+	 * @return person merge log object
 	 * @throws SerializationException
 	 * @throws APIException
 	 * @should require uuid

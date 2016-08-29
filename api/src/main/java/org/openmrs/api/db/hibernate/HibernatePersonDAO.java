@@ -40,10 +40,10 @@ import org.openmrs.person.PersonMergeLog;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * Hibernate specific Person database methods. <br/>
- * <br/>
- * This class should not be used directly. All database calls should go through the Service layer. <br/>
- * <br/>
+ * Hibernate specific Person database methods. <br>
+ * <br>
+ * This class should not be used directly. All database calls should go through the Service layer. <br>
+ * <br>
  * Proper use: <code>
  *   PersonService ps = Context.getPersonService();
  *   ps.getPeople("name", false);
@@ -157,7 +157,8 @@ public class HibernatePersonDAO implements PersonDAO {
 			for (int i = 0; i < names.length; i++) {
 				q.append("  when soundex(pname.familyName2) = soundex(:n").append(i + 1).append(") then 1");
 			}
-			q.append("  else 0").append(" end").append(") >= ").append((int) (names.length * .75)); // if most of the names have at least a hit somewhere
+			// if most of the names have at least a hit somewhere
+			q.append("  else 0").append(" end").append(") >= ").append((int) (names.length * .75)); 
 		}
 		
 		String birthdayMatch = " (year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1)

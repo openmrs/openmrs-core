@@ -32,7 +32,7 @@ import org.openmrs.test.Verifies;
  * is the {@link HibernateSerializedObjectDAO}.
  */
 @Ignore("TRUNK-4704 Serialization.xstream module must be fixed to work with Hibernate 4")
-@StartModule( { "org/openmrs/api/db/include/serialization.xstream-0.1.1.omod" })
+@StartModule( { "org/openmrs/api/db/include/serialization.xstream-0.2.8-SNAPSHOT.omod" })
 public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	
 	private SerializedObjectDAO dao = null;

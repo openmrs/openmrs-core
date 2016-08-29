@@ -23,7 +23,7 @@ import org.openmrs.test.Verifies;
 public class PersonUnvoidHandlerTest {
 	
 	/**
-	 * @see {@link PersonUnvoidHandler#handle(Person,User,Date,String)}
+	 * @see PersonUnvoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should unset the personVoided bit", method = "handle(Voidable,User,Date,String)")
@@ -36,7 +36,7 @@ public class PersonUnvoidHandlerTest {
 	}
 	
 	/**
-	 * @see {@link PersonUnvoidHandler#handle(Person,User,Date,String)}
+	 * @see PersonUnvoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should unset the personVoider", method = "handle(Voidable,User,Date,String)")
@@ -50,7 +50,7 @@ public class PersonUnvoidHandlerTest {
 	}
 	
 	/**
-	 * @see {@link PersonUnvoidHandler#handle(Person,User,Date,String)}
+	 * @see PersonUnvoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should unset the personDateVoided", method = "handle(Voidable,User,Date,String)")
@@ -64,7 +64,7 @@ public class PersonUnvoidHandlerTest {
 	}
 	
 	/**
-	 * @see {@link PersonUnvoidHandler#handle(Person,User,Date,String)}
+	 * @see PersonUnvoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should unset the PersonVoidReason", method = "handle(Voidable,User,Date,String)")
@@ -78,7 +78,7 @@ public class PersonUnvoidHandlerTest {
 	}
 	
 	/**
-	 * @see {@link PersonUnvoidHandler#handle(Person,User,Date,String)}
+	 * @see PersonUnvoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should only act on already personVoided objects", method = "handle(Voidable,User,Date,String)")
@@ -91,7 +91,7 @@ public class PersonUnvoidHandlerTest {
 	}
 	
 	/**
-	 * @see {@link PersonUnvoidHandler#handle(Person,User,Date,String)}
+	 * @see PersonUnvoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not act on objects with a different personPersonDateVoided", method = "handle(Voidable,User,Date,String)")

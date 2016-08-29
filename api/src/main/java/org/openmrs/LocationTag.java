@@ -15,7 +15,7 @@ package org.openmrs;
  * @see Location
  * @since 1.5
  */
-public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class LocationTag extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 7654L;
 	
@@ -58,24 +58,6 @@ public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializ
 	 */
 	public void setLocationTagId(Integer locationTagId) {
 		this.locationTagId = locationTagId;
-	}
-	
-	/**
-	 * @return Returns the tag.
-	 * @deprecated use {@link #getName()} instead
-	 */
-	@Deprecated
-	public String getTag() {
-		return getName();
-	}
-	
-	/**
-	 * @param tag The tag to set.
-	 * @deprecated use {@link #setName(String)} instead
-	 */
-	@Deprecated
-	public void setTag(String tag) {
-		setName(tag);
 	}
 	
 	public String toString() {

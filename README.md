@@ -1,7 +1,7 @@
 [![Build Status](https://secure.travis-ci.org/openmrs/openmrs-core.png?branch=master)](https://travis-ci.org/openmrs/openmrs-core)
 
 
-OpenMRS is an patient-based medical record system focusing on giving providers a free customizable EMR.
+OpenMRS is a patient-based medical record system focusing on giving providers a free customizable EMR.
 
 Read more at http://openmrs.org/about
 
@@ -20,7 +20,7 @@ The project tree is set up as follows:
  </tr>
  <tr>
   <td>release-test</td>
-  <td>Cucumber/selenium integration tests. Run daily against a running webapp. See https://wiki.openmrs.org/display/docs/Testing+Releases</td>
+  <td>Cucumber/selenium integration tests. Run daily against a running web app. See https://wiki.openmrs.org/display/docs/Testing+Releases</td>
  </tr>
  <tr>
   <td>test</td>

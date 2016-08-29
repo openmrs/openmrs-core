@@ -11,10 +11,6 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
-
 /**
  * This class represents one option for an answer to a question type of {@link Concept}. The link to
  * the parent question Concept is stored in {@link #getConcept()} and the answer this object is
@@ -22,7 +18,6 @@ import org.simpleframework.xml.Root;
  *
  * @see Concept#getAnswers()
  */
-@Root
 public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.io.Serializable, Comparable<ConceptAnswer> {
 	
 	public static final long serialVersionUID = 3744L;
@@ -75,7 +70,6 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	/**
 	 * @return Returns the answerConcept.
 	 */
-	@Element
 	public Concept getAnswerConcept() {
 		return answerConcept;
 	}
@@ -83,7 +77,6 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	/**
 	 * @param answerConcept The answerConcept to set.
 	 */
-	@Element
 	public void setAnswerConcept(Concept answerConcept) {
 		this.answerConcept = answerConcept;
 	}
@@ -105,7 +98,6 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	/**
 	 * @return Returns the concept.
 	 */
-	@Element
 	public Concept getConcept() {
 		return concept;
 	}
@@ -113,7 +105,6 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	/**
 	 * @param concept The concept to set.
 	 */
-	@Element
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
@@ -121,7 +112,6 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	/**
 	 * @return Returns the conceptAnswerId.
 	 */
-	@Attribute
 	public Integer getConceptAnswerId() {
 		return conceptAnswerId;
 	}
@@ -129,7 +119,6 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	/**
 	 * @param conceptAnswerId The conceptAnswerId to set.
 	 */
-	@Attribute
 	public void setConceptAnswerId(Integer conceptAnswerId) {
 		this.conceptAnswerId = conceptAnswerId;
 	}
@@ -137,7 +126,6 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	/**
 	 * @return Returns the creator.
 	 */
-	@Element
 	public User getCreator() {
 		return creator;
 	}
@@ -145,7 +133,6 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	/**
 	 * @param creator The creator to set.
 	 */
-	@Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -153,7 +140,6 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	/**
 	 * @return Returns the dateCreated.
 	 */
-	@Element
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -161,7 +147,6 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
-	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -219,7 +204,6 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	/**
 	 * @return Returns the sortWeight.
 	 */
-	@Attribute
 	public Double getSortWeight() {
 		return sortWeight;
 	}
@@ -227,7 +211,6 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	/**
 	 * @param sortWeight The sortWeight to set.
 	 */
-	@Attribute
 	public void setSortWeight(Double sortWeight) {
 		this.sortWeight = sortWeight;
 	}

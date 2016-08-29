@@ -19,6 +19,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
+import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
@@ -72,10 +73,8 @@ public interface OrderDAO {
 	        boolean includeVoided, boolean includeDiscontinuationOrders);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return order or null
 	 */
 	public Order getOrderByUuid(String uuid);
 	
@@ -126,27 +125,27 @@ public interface OrderDAO {
 	public List<CareSetting> getCareSettings(boolean includeRetired);
 	
 	/**
-	 * @See OrderService#getOrderTypeByName
+	 * @see org.openmrs.api.OrderService#getOrderTypeByName(String)
 	 */
 	public OrderType getOrderTypeByName(String orderTypeName);
 	
 	/**
-	 * @See OrderService#getOrderFrequency
+	 * @see org.openmrs.api.OrderService#getOrderFrequency
 	 */
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId);
 	
 	/**
-	 * @See OrderService#getOrderFrequencyByUuid
+	 * @see org.openmrs.api.OrderService#getOrderFrequencyByUuid
 	 */
 	public OrderFrequency getOrderFrequencyByUuid(String uuid);
 	
 	/**
-	 * @See OrderService#getOrderFrequencies(boolean)
+	 * @see org.openmrs.api.OrderService#getOrderFrequencies(boolean)
 	 */
 	List<OrderFrequency> getOrderFrequencies(boolean includeRetired);
 	
 	/**
-	 * @See OrderService#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
+	 * @see org.openmrs.api.OrderService#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
 	 */
 	public List<OrderFrequency> getOrderFrequencies(String searchPhrase, Locale locale, boolean exactLocale,
 	        boolean includeRetired);
@@ -170,22 +169,22 @@ public interface OrderDAO {
 	public boolean isOrderFrequencyInUse(OrderFrequency orderFrequency);
 	
 	/**
-	 * @See OrderService#getOrderFrequencyByConcept
+	 * @see org.openmrs.api.OrderService#getOrderFrequencyByConcept
 	 */
 	public OrderFrequency getOrderFrequencyByConcept(Concept concept);
 	
 	/**
-	 * @See OrderService#getOrderType
+	 * @see org.openmrs.api.OrderService#getOrderType
 	 */
 	public OrderType getOrderType(Integer orderTypeId);
 	
 	/**
-	 * @See OrderService#getOrderTypeByUuid
+	 * @see org.openmrs.api.OrderService#getOrderTypeByUuid
 	 */
 	public OrderType getOrderTypeByUuid(String uuid);
 	
 	/**
-	 * @See OrderService#getOrderTypes
+	 * @see org.openmrs.api.OrderService#getOrderTypes
 	 */
 	public List<OrderType> getOrderTypes(boolean includeRetired);
 	
@@ -235,4 +234,23 @@ public interface OrderDAO {
 	 * @return a list of orders from the database
 	 */
 	public List<Object[]> getOrderFromDatabase(Order order, boolean isOrderADrugOrder) throws APIException;
+
+	/**
+	 * Saves an orderGroup to the database
+	 *
+	 * @param orderGroup
+	 * @return an orderGroup
+	 * @throws DAOException
+	 */
+	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupByUuid(String)
+	 */
+	public OrderGroup getOrderGroupByUuid(String uuid) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroup(Integer)
+	 */
+	public OrderGroup getOrderGroupById(Integer orderGroupId) throws DAOException;
 }

@@ -139,6 +139,13 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 			}
 			
 		} else if (t instanceof Class) {
+			Type genericSuperclass = ((Class) t).getGenericSuperclass();
+			if (genericSuperclass != null) {
+				Class ret = datatypeClassHandled(genericSuperclass);
+				if (ret != null) {
+					return ret;
+				}
+			}
 			for (Type candidate : ((Class) t).getGenericInterfaces()) {
 				Class ret = datatypeClassHandled(candidate);
 				if (ret != null) {

@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 
 /**
@@ -90,14 +91,14 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 1);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 1);
-		
-		//willStop() and stopped() should have been called in the right order
-		//which is the reverse of the startup. that is module3, module2, module1
-		assertThat(moduleTestData.getWillStopCallTime(MODULE3_ID), lessThanOrEqualTo(moduleTestData
+
+		//willStop() should have been called in the order module1, module2, module3
+		assertThat(moduleTestData.getWillStopCallTime(MODULE1_ID), lessThanOrEqualTo(moduleTestData
 		        .getWillStopCallTime(MODULE2_ID)));
 		assertThat(moduleTestData.getWillStopCallTime(MODULE2_ID), lessThanOrEqualTo(moduleTestData
-		        .getWillStopCallTime(MODULE1_ID)));
-		
+		        .getWillStopCallTime(MODULE3_ID)));
+
+		//stopped() should have been called in the order module3, module2, module1
 		assertThat(moduleTestData.getStoppedCallTime(MODULE3_ID), lessThanOrEqualTo(moduleTestData
 		        .getStoppedCallTime(MODULE2_ID)));
 		assertThat(moduleTestData.getStoppedCallTime(MODULE2_ID), lessThanOrEqualTo(moduleTestData
@@ -180,5 +181,11 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		
 		assertTrue(moduleTestData.getStartedCallTime(MODULE5_ID) <= moduleTestData.getStartedCallTime(MODULE4_ID));
 		assertTrue(moduleTestData.getStartedCallTime(MODULE1_ID) <= moduleTestData.getStartedCallTime(MODULE5_ID));
+	}
+	
+	@AfterClass
+	public static void cleanUp() {
+		//ensure that we do not have any left overs to interfere with other tests
+		ModuleUtil.shutdown();
 	}
 }

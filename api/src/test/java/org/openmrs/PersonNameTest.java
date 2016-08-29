@@ -9,16 +9,13 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import junit.framework.Assert;
 
 import org.junit.Test;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * This class should test all methods on the PersonName object This class does not touch the
@@ -79,135 +76,9 @@ public class PersonNameTest {
 		Assert.assertEquals(voidedBy, copy.getVoidedBy());
 		Assert.assertEquals(voidReason, copy.getVoidReason());
 	}
-	
+
 	/**
-	 * @see PersonName#compareTo(PersonName)
-	 */
-	@Test
-	@Verifies(value = "should return negative if other name is voided", method = "compareTo(PersonName)")
-	public void compareTo_shouldReturnNegativeIfOtherNameIsVoided() throws Exception {
-		PersonName pn = new PersonName();
-		pn.setVoided(false);
-		PersonName other = new PersonName();
-		other.setVoided(true);
-		
-		Assert.assertTrue(pn.compareTo(other) < 0);
-	}
-	
-	/**
-	 * @see PersonName#compareTo(PersonName)
-	 */
-	@Test
-	@Verifies(value = "should return negative if this name is preferred", method = "compareTo(PersonName)")
-	public void compareTo_shouldReturnNegativeIfThisNameIsPreferred() throws Exception {
-		PersonName pn = new PersonName();
-		pn.setPreferred(true);
-		PersonName other = new PersonName();
-		other.setPreferred(false);
-		
-		Assert.assertTrue(pn.compareTo(other) < 0);
-	}
-	
-	/**
-	 * @see PersonName#compareTo(PersonName)
-	 */
-	@Test
-	@Verifies(value = "should return negative if other familyName is greater", method = "compareTo(PersonName)")
-	public void compareTo_shouldReturnNegativeIfOtherFamilyNameIsGreater() throws Exception {
-		PersonName pn = new PersonName();
-		pn.setFamilyName("Jones");
-		PersonName other = new PersonName();
-		other.setFamilyName("Smith");
-		
-		Assert.assertTrue(pn.compareTo(other) < 0);
-	}
-	
-	/**
-	 * @see PersonName#compareTo(PersonName)
-	 */
-	@Test
-	@Verifies(value = "should return negative if other familyName2 is greater", method = "compareTo(PersonName)")
-	public void compareTo_shouldReturnNegativeIfOtherFamilyName2IsGreater() throws Exception {
-		PersonName pn = new PersonName();
-		pn.setFamilyName2("Jones");
-		PersonName other = new PersonName();
-		other.setFamilyName2("Smith");
-		
-		Assert.assertTrue(pn.compareTo(other) < 0);
-	}
-	
-	/**
-	 * @see PersonName#compareTo(PersonName)
-	 */
-	@Test
-	@Verifies(value = "should return negative if other givenName is greater", method = "compareTo(PersonName)")
-	public void compareTo_shouldReturnNegativeIfOtherGivenNameIsGreater() throws Exception {
-		PersonName pn = new PersonName();
-		pn.setGivenName("Adam");
-		PersonName other = new PersonName();
-		other.setGivenName("Bob");
-		
-		Assert.assertTrue(pn.compareTo(other) < 0);
-	}
-	
-	/**
-	 * @see PersonName#compareTo(PersonName)
-	 */
-	@Test
-	@Verifies(value = "should return negative if other middleName is greater", method = "compareTo(PersonName)")
-	public void compareTo_shouldReturnNegativeIfOtherMiddleNameIsGreater() throws Exception {
-		PersonName pn = new PersonName();
-		pn.setMiddleName("Alex");
-		PersonName other = new PersonName();
-		other.setMiddleName("Brian");
-		
-		Assert.assertTrue(pn.compareTo(other) < 0);
-	}
-	
-	/**
-	 * @see PersonName#compareTo(PersonName)
-	 */
-	@Test
-	@Verifies(value = "should return negative if other familynamePrefix is greater", method = "compareTo(PersonName)")
-	public void compareTo_shouldReturnNegativeIfOtherFamilynamePrefixIsGreater() throws Exception {
-		PersonName pn = new PersonName();
-		pn.setFamilyNamePrefix("Madam");
-		PersonName other = new PersonName();
-		other.setFamilyNamePrefix("Sir");
-		
-		Assert.assertTrue(pn.compareTo(other) < 0);
-	}
-	
-	/**
-	 * @see PersonName#compareTo(PersonName)
-	 */
-	@Test
-	@Verifies(value = "should return negative if other familyNameSuffix is greater", method = "compareTo(PersonName)")
-	public void compareTo_shouldReturnNegativeIfOtherFamilyNameSuffixIsGreater() throws Exception {
-		PersonName pn = new PersonName();
-		pn.setFamilyNameSuffix("Jr");
-		PersonName other = new PersonName();
-		other.setFamilyNameSuffix("Sr");
-		
-		Assert.assertTrue(pn.compareTo(other) < 0);
-	}
-	
-	/**
-	 * @see PersonName#compareTo(PersonName)
-	 */
-	@Test
-	@Verifies(value = "should return negative if other dateCreated is greater", method = "compareTo(PersonName)")
-	public void compareTo_shouldReturnNegativeIfOtherDateCreatedIsGreater() throws Exception {
-		PersonName pn = new PersonName();
-		pn.setDateCreated(new Date());
-		PersonName other = new PersonName();
-		other.setDateCreated(new Date(pn.getDateCreated().getTime() + 1000));
-		
-		Assert.assertTrue(pn.compareTo(other) < 0);
-	}
-	
-	/**
-	 * @see {@link PersonName#equalsContent(PersonName)}
+	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
 	@Verifies(value = "should return true if all fields other than ID, person and preferred are equal", method = "equalsContent(PersonName)")
@@ -240,7 +111,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#equalsContent(PersonName)}
+	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
 	@Verifies(value = "should return false if suffixes are not equal", method = "equalsContent(PersonName)")
@@ -255,7 +126,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#equalsContent(PersonName)}
+	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
 	@Verifies(value = "should return false if family name prefixes are not equal", method = "equalsContent(PersonName)")
@@ -270,7 +141,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#equalsContent(PersonName)}
+	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
 	@Verifies(value = "should return false if family name 2 is not equal", method = "equalsContent(PersonName)")
@@ -285,7 +156,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#equalsContent(PersonName)}
+	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
 	@Verifies(value = "should return false if prefix is not equal", method = "equalsContent(PersonName)")
@@ -300,7 +171,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#equalsContent(PersonName)}
+	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
 	@Verifies(value = "should return false if degrees are not equal", method = "equalsContent(PersonName)")
@@ -315,7 +186,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#equalsContent(PersonName)}
+	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
 	@Verifies(value = "should return true if only difference in content fields is between null and empty string", method = "equalsContent(PersonName)")
@@ -348,7 +219,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getFamilyName()}
+	 * @see PersonName#getFamilyName()
 	 */
 	@Test
 	@Verifies(value = "should return obscured name if obscure_patients is set to true", method = "getFamilyName()")
@@ -362,7 +233,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getFamilyName2()}
+	 * @see PersonName#getFamilyName2()
 	 */
 	@Test
 	@Verifies(value = "should return null if obscure_patients is set to true", method = "getFamilyName2()")
@@ -377,7 +248,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getFamilyNamePrefix()}
+	 * @see PersonName#getFamilyNamePrefix()
 	 */
 	@Test
 	@Verifies(value = "should return null if obscure_patients is set to true", method = "getFamilyNamePrefix()")
@@ -392,7 +263,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getFamilyNameSuffix()}
+	 * @see PersonName#getFamilyNameSuffix()
 	 */
 	@Test
 	@Verifies(value = "should return null if obscure_patients is set to true", method = "getFamilyNameSuffix()")
@@ -407,7 +278,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getGivenName()}
+	 * @see PersonName#getGivenName()
 	 */
 	@Test
 	@Verifies(value = "should return obscured name if obscure_patients is set to true", method = "getGivenName()")
@@ -421,7 +292,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getMiddleName()}
+	 * @see PersonName#getMiddleName()
 	 */
 	@Test
 	@Verifies(value = "should return obscured name if obscure_patients is set to true", method = "getMiddleName()")
@@ -435,7 +306,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getPrefix()}
+	 * @see PersonName#getPrefix()
 	 */
 	@Test
 	@Verifies(value = "should return null if obscure_patients is set to true", method = "getPrefix()")
@@ -463,7 +334,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getFullName()}
+	 * @see PersonName#getFullName()
 	 */
 	@Test
 	@Verifies(value = "should Not Return Long If Person Name Format Is Short", method = "getFullName()")

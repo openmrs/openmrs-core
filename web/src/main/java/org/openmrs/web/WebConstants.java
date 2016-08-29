@@ -58,23 +58,6 @@ public class WebConstants {
 	
 	public static String WEBAPP_NAME = "openmrs";
 	
-	// ComplexObsHandler views specific to the web layer
-	/**  
-	 * org.openmrs.obs.ComplexObsHandler views are now defined in the interface itself.
-	 * 
-	 * @deprecated the definition was moved, complex observation view types are defined in org.openmrs.obs.ComplexObsHandler
-	 */
-	@Deprecated
-	public static final String HTML_VIEW = "html_view";
-	
-	/**  
-	 * org.openmrs.obs.ComplexObsHandler views are now defined in the interface itself.
-	 * 
-	 * @deprecated the definition was removed, you probably want to use URI_VIEW defined in org.openmrs.obs.ComplexObsHandler
-	 */
-	@Deprecated
-	public static final String HYPERLINK_VIEW = "hyperlink_view";
-	
 	/**
 	 * Page in the webapp used for initial setup of the database connection if no valid one exists
 	 */
@@ -94,7 +77,7 @@ public class WebConstants {
 	public static String GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP = "security.loginAttemptsAllowedPerIP";
 	
 	/**
-	 * User names of the logged-in users are stored in this map (session id -> user name) in the
+	 * User names of the logged-in users are stored in this map (session id -&gt; user name) in the
 	 * ServletContext under this key
 	 */
 	public static final String CURRENT_USERS = "CURRENT_USERS";

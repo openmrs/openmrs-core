@@ -9,19 +9,16 @@
  */
 package org.openmrs;
 
+import org.openmrs.annotation.AllowDirectAccess;
+
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.openmrs.annotation.AllowDirectAccess;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Root;
-
 /**
  * Program
  */
-@Root
-public class Program extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Program extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 3214567L;
 	
@@ -101,7 +98,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	
 	/**
 	 * Returns a {@link ProgramWorkflow} whose {@link Concept} has any {@link ConceptName} that
-	 * matches the given <code>name</name>
+	 * matches the given <code>name</code>
 	 *
 	 * @param name the {@link ProgramWorkflow} name, in any {@link Locale}
 	 * @return a {@link ProgramWorkflow} which has the passed <code>name</code> in any
@@ -141,12 +138,10 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 		this.outcomesConcept = concept;
 	}
 	
-	@Attribute(required = true)
 	public Integer getProgramId() {
 		return programId;
 	}
 	
-	@Attribute(required = true)
 	public void setProgramId(Integer programId) {
 		this.programId = programId;
 	}
@@ -154,7 +149,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	/**
 	 * Get only the non-retired workflows
 	 *
-	 * @return Returns a Set<ProgramWorkflow> of all non-retired workflows
+	 * @return Returns a Set&lt;ProgramWorkflow&gt; of all non-retired workflows
 	 */
 	public Set<ProgramWorkflow> getWorkflows() {
 		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
@@ -186,7 +181,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	/**
 	 * Get all workflows...including the retired ones
 	 *
-	 * @return Returns a Set<ProgramWorkflow> of all workflows
+	 * @return Returns a Set&lt;ProgramWorkflow&gt; of all workflows
 	 */
 	public Set<ProgramWorkflow> getAllWorkflows() {
 		if (allWorkflows == null) {
@@ -196,7 +191,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	}
 	
 	public void setAllWorkflows(Set<ProgramWorkflow> allWorkflows) {
-		this.allWorkflows = allWorkflows;
+		this.allWorkflows = new HashSet<ProgramWorkflow>(allWorkflows);
 	}
 	
 	/**

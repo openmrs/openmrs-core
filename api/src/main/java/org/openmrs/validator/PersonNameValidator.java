@@ -39,7 +39,7 @@ public class PersonNameValidator implements Validator {
 	/**
 	 * Checks whether person name has all required values, and whether values are proper length
 	 *
-	 * @param personName
+	 * @param object
 	 * @param errors
 	 * @should fail validation if PersonName object is null
 	 * @should pass validation if name is invalid but voided
@@ -56,7 +56,7 @@ public class PersonNameValidator implements Validator {
 			if (personName == null) {
 				errors.reject("error.name");
 			} else if (!personName.isVoided()) {
-				validatePersonName(personName, errors, true, false);
+				validatePersonName(personName, errors, false, true);
 			}
 		}
 		catch (Exception e) {

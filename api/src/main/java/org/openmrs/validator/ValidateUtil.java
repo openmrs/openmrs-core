@@ -10,7 +10,6 @@
 package org.openmrs.validator;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -21,13 +20,12 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-import org.springframework.validation.Validator;
 
 /**
- * This class should be used in the *Services to validate objects before saving them. <br/>
- * <br/>
- * The validators are added to this class in the spring applicationContext-service.xml file. <br/>
- * <br/>
+ * This class should be used in the *Services to validate objects before saving them. <br>
+ * <br>
+ * The validators are added to this class in the spring applicationContext-service.xml file. <br>
+ * <br>
  * Example usage:
  *
  * <pre>
@@ -40,15 +38,11 @@ import org.springframework.validation.Validator;
  * @since 1.5
  */
 public class ValidateUtil {
-	
+
 	/**
-	 * @deprecated in favor of using HandlerUtil to reflexively get validators
-	 * @param newValidators the validators to set
+	 * This is set in {@link Context#checkCoreDataset()} class
 	 */
-	@Deprecated
-	public void setValidators(List<Validator> newValidators) {
-		
-	}
+	private static Boolean disableValidation = false;
 	
 	/**
 	 * Test the given object against all validators that are registered as compatible with the
@@ -57,8 +51,13 @@ public class ValidateUtil {
 	 * @param obj the object to validate
 	 * @throws ValidationException thrown if a binding exception occurs
 	 * @should throw APIException if errors occur during validation
+	 * @should return immediately if validation is disabled
 	 */
 	public static void validate(Object obj) throws ValidationException {
+		if (disableValidation) {
+			return;
+		}
+
 		Errors errors = new BindException(obj, "");
 		
 		Context.getAdministrationService().validate(obj, errors);
@@ -88,8 +87,13 @@ public class ValidateUtil {
 	 * @param errors the validation errors found
 	 * @since 1.9
 	 * @should populate errors if object invalid
+	 * @should return immediately if validation is disabled and have no errors
 	 */
 	public static void validate(Object obj, Errors errors) {
+		if (disableValidation) {
+			return;
+		}
+
 		Context.getAdministrationService().validate(obj, errors);
 	}
 	
@@ -102,9 +106,13 @@ public class ValidateUtil {
 	 * @should pass validation if regEx field length is not too long
 	 * @should fail validation if regEx field length is too long
 	 * @should fail validation if name field length is too long
+	 * @should return immediately if validation is disabled and have no errors
 	 */
-	
 	public static void validateFieldLengths(Errors errors, Class aClass, String... fields) {
+		if (disableValidation) {
+			return;
+		}
+
 		Assert.notNull(errors, "Errors object must not be null");
 		for (String field : fields) {
 			Object value = errors.getFieldValue(field);
@@ -112,11 +120,21 @@ public class ValidateUtil {
 				continue;
 			}
 			int length = Context.getAdministrationService().getMaximumPropertyLength(aClass, field);
-			if (length == -1)
+			if (length == -1) {
 				return;
+			}
 			if (((String) value).length() > length) {
 				errors.rejectValue(field, "error.exceededMaxLengthOfField", new Object[] { length }, null);
 			}
 		}
 	}
+
+	public static Boolean getDisableValidation() {
+		return disableValidation;
+	}
+
+	public static void setDisableValidation(Boolean disableValidation) {
+		ValidateUtil.disableValidation = disableValidation;
+	}
+
 }

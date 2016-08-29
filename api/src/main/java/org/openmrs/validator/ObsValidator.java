@@ -28,7 +28,7 @@ import org.springframework.validation.Validator;
  * <li>all required properties are filled in on the Obs object.
  * <li>checks for no recursion in the obs grouping.
  * <li>Makes sure the obs has at least one value (if not an obs grouping)</li>
- *
+ * </ul>
  * @see org.openmrs.Obs
  */
 @Handler(supports = { Obs.class }, order = 50)
@@ -38,12 +38,13 @@ public class ObsValidator implements Validator {
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
+	 * @should support Obs class
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class c) {
 		return Obs.class.isAssignableFrom(c);
 	}
-	
+
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
@@ -169,7 +170,7 @@ public class ObsValidator implements Validator {
 				} else if (dt.isNumeric()) {
 					ConceptNumeric cn = Context.getConceptService().getConceptNumeric(c.getConceptId());
 					// If the concept numeric is not precise, the value cannot be a float, so raise an error 
-					if (!cn.isPrecise() && Math.ceil(obs.getValueNumeric()) != obs.getValueNumeric()) {
+					if (!cn.isAllowDecimal() && Math.ceil(obs.getValueNumeric()) != obs.getValueNumeric()) {
 						if (atRootNode) {
 							errors.rejectValue("valueNumeric", "error.precision");
 						} else {

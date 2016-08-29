@@ -9,7 +9,9 @@
  */
 package org.openmrs;
 
-import java.io.Serializable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,23 +19,10 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
-
 /**
- * This class represents a list of patientIds. If it is generated from a CohortDefinition via
- * {@link ReportService#evaluate(org.openmrs.report.ReportSchema, Cohort, EvaluationContext)} then
- * it will contain a link back to the CohortDefinition it came from and the EvalutionContext that
- * definition was evaluated in.
- * 
- * @see org.openmrs.cohort.CohortDefinition
+ * This class represents a list of patientIds.
  */
-@Root(strict = false)
-public class Cohort extends BaseOpenmrsData implements Serializable {
+public class Cohort extends BaseOpenmrsData  {
 	
 	public static final long serialVersionUID = 0L;
 	
@@ -65,8 +54,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 * 
-	 * @see CohortService.saveCohort(Cohort) will.
+	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
 	 * @param name
 	 * @param description optional description
 	 * @param ids option array of Integer ids
@@ -83,8 +71,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 * 
-	 * @see CohortService.saveCohort(Cohort) will.
+	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
 	 * @param name
 	 * @param description optional description
 	 * @param patients optional array of patients
@@ -101,8 +88,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 * 
-	 * @see CohortService.saveCohort(Cohort) will.
+	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
 	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
@@ -114,8 +100,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 * 
-	 * @see CohortService.saveCohort(Cohort) will.
+	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
 	 * @param name
 	 * @param description optional description
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
@@ -140,8 +125,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * Convenience contructor taking in a string that is a list of comma separated patient ids This
 	 * constructor does not check whether the database contains patients with the given ids, but
-	 * 
-	 * @see CohortService.saveCohort(Cohort) will.
+	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
 	 * @param commaSeparatedIds
 	 */
 	public Cohort(String commaSeparatedIds) {
@@ -266,56 +250,36 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	// getters and setters
 	
-	@Attribute(required = false)
 	public Integer getCohortId() {
 		return cohortId;
 	}
 	
-	@Attribute(required = false)
 	public void setCohortId(Integer cohortId) {
 		this.cohortId = cohortId;
 	}
 	
-	@Element(required = false)
 	public String getDescription() {
 		return description;
 	}
 	
-	@Element(required = false)
 	public void setDescription(String description) {
 		this.description = description;
 	}
 	
-	@Element(required = false)
 	public String getName() {
 		return name;
 	}
 	
-	@Element(required = false)
 	public void setName(String name) {
 		this.name = name;
 	}
 	
-	@ElementList(required = true)
 	public Set<Integer> getMemberIds() {
 		return memberIds;
 	}
 	
-	/**
-	 * This method is only here for some backwards compatibility with the PatientSet object that
-	 * this Cohort object replaced. Do not use this method.
-	 * 
-	 * @deprecated use #getMemberIds()
-	 * @return the memberIds
-	 */
-	@Deprecated
-	public Set<Integer> getPatientIds() {
-		return getMemberIds();
-	}
-	
-	@ElementList(required = true)
 	public void setMemberIds(Set<Integer> memberIds) {
-		this.memberIds = memberIds;
+		this.memberIds = new TreeSet<Integer>(memberIds);
 	}
 	
 	/**

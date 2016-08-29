@@ -14,7 +14,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs</artifactId>
-	<version>1.12.0-SNAPSHOT</version>
+	<version>2.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>
 	<description>Master project for the modules of OpenMRS</description>
@@ -38,8 +38,8 @@
 	</organization>
 
 	<scm>
-		<connection>scm:git:https://github.com/openmrs/openmrs-core</connection>
-		<developerConnection>scm:git:https://github.com/openmrs/openmrs-core</developerConnection>
+		<connection>scm:git:git@github.com:openmrs/openmrs-core</connection>
+		<developerConnection>scm:git:git@github.com:openmrs/openmrs-core</developerConnection>
 		<url>https://github.com/openmrs/openmrs-core</url>
 	</scm>
 
@@ -97,7 +97,6 @@
                 <artifactId>openmrs-release-test</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
@@ -133,12 +132,6 @@
 				<artifactId>page</artifactId>
 				<version>1.0.1</version>
 			</dependency>
-
-			<dependency>
-				<groupId>org.openmrs.directwebremoting</groupId>
-				<artifactId>dwr</artifactId>
-				<version>2.0.5-mod</version>
-			</dependency>
 			<dependency>
 				<groupId>org.apache.velocity</groupId>
 				<artifactId>velocity</artifactId>
@@ -165,7 +158,7 @@
 			<dependency>
 				<groupId>commons-collections</groupId>
 				<artifactId>commons-collections</artifactId>
-				<version>3.2</version>
+				<version>3.2.2</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
@@ -232,11 +225,6 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-oxm</artifactId>
 				<version>${springVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.antlr</groupId>
-				<artifactId>antlr-runtime</artifactId>
-				<version>3.4</version>
 			</dependency>
 			<dependency>
 				<groupId>asm</groupId>
@@ -371,30 +359,15 @@
 				<version>2.0</version>
 			</dependency>
 			<dependency>
-				<groupId>org.openmrs.simpleframework</groupId>
-				<artifactId>simple-xml</artifactId>
-				<version>1.6.1-mod</version>
-			</dependency>
-			<dependency>
-				<groupId>stax</groupId>
-				<artifactId>stax</artifactId>
-				<version>1.2.0</version>
-			</dependency>
-			<dependency>
-				<groupId>stax</groupId>
-				<artifactId>stax-api</artifactId>
-				<version>1.0.1</version>
-			</dependency>
-			<dependency>
 				<groupId>dom4j</groupId>
 				<artifactId>dom4j</artifactId>
 				<version>1.6.1</version>
 			</dependency>
-			<dependency>
-				<groupId>c3p0</groupId>
-				<artifactId>c3p0</artifactId>
-				<version>0.9.1</version>
-			</dependency>
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>2.8.0</version>
+            </dependency>
 			<dependency>
 				<groupId>com.thoughtworks.xstream</groupId>
 				<artifactId>xstream</artifactId>
@@ -404,22 +377,6 @@
 				<groupId>javax.mail</groupId>
 				<artifactId>mail</artifactId>
 				<version>1.4.1</version>
-			</dependency>
-			<dependency>
-				<groupId>xerces</groupId>
-				<artifactId>xercesImpl</artifactId>
-				<version>2.8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>xml-apis</groupId>
-				<artifactId>xml-apis</artifactId>
-				<version>1.3.03</version>
-			</dependency>
-			<dependency>
-				<groupId>xml-resolver</groupId>
-				<artifactId>xml-resolver</artifactId>
-				<version>1.1</version>
-				<scope>runtime</scope>
 			</dependency>
 			<dependency>
 				<groupId>commons-beanutils</groupId>
@@ -438,24 +395,9 @@
 				<version>1.2.1</version>
 			</dependency>
 			<dependency>
-				<groupId>net.sf.saxon</groupId>
-				<artifactId>saxon</artifactId>
-				<version>8.7</version>
-			</dependency>
-			<dependency>
-				<groupId>net.sf.saxon</groupId>
-				<artifactId>saxon-dom</artifactId>
-				<version>8.7</version>
-			</dependency>
-			<dependency>
-				<groupId>jfree</groupId>
-				<artifactId>jfreechart</artifactId>
-				<version>1.0.12</version>
-			</dependency>
-			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.8</version>
+				<version>5.1.28</version>
 				<scope>runtime</scope>
 			</dependency>
             <dependency>
@@ -467,12 +409,6 @@
 				<groupId>postgresql</groupId>
 				<artifactId>postgresql</artifactId>
 				<version>9.0-801.jdbc4</version>
-				<scope>runtime</scope>
-			</dependency>
-			<dependency>
-				<groupId>net.sourceforge.jtds</groupId>
-				<artifactId>jtds</artifactId>
-				<version>1.2.4</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -617,7 +553,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.5</version>
+					<version>2.18.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -721,12 +657,13 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>2.1</version>
+					<version>2.5</version>
 					<configuration>
 						<preparationGoals>clean install</preparationGoals>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<useReleaseProfile>false</useReleaseProfile>
 						<arguments>-Prelease</arguments>
+						<tagNameFormat>@{project.version}</tagNameFormat>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -745,15 +682,17 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.8.1</version>
+					<version>2.10.3</version>
 					<configuration>
 						<taglet>org.openmrs.tools.doclet.ShouldTaglet</taglet>
-                        <additionalparam>-Xdoclint:none</additionalparam>
 						<tagletArtifact>
 							<groupId>org.openmrs.tools</groupId>
 							<artifactId>openmrs-tools</artifactId>
 							<version>${project.version}</version>
 						</tagletArtifact>
+						<!-- For some reason some packages from org.springframework are being
+						included and causing errors. -->
+						<excludePackageNames>org.springframework.*</excludePackageNames>
 					</configuration>
 					<executions>
 						<execution>
@@ -1057,6 +996,11 @@
 									<goal>prepare-agent</goal>
 								</goals>
 								<phase>validate</phase>
+								<configuration>
+									 <includes>
+                                        <include>org.openmrs.*</include>
+                                    </includes>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>
@@ -1079,7 +1023,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.6.1</version>
+				<version>2.10.3</version>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
 					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these
@@ -1155,6 +1099,6 @@
 		<sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
 		<sonar.analysis.mode>incremental</sonar.analysis.mode>
 		
-		<argLine>-Duser.language=en -Duser.region=US -Xmx512m -XX:MaxPermSize=512m ${customArgLineForTesting}</argLine>
+		<argLine>-Duser.language=en -Duser.region=US -Xmx2g ${customArgLineForTesting}</argLine>
 	</properties>
 </project>

@@ -380,20 +380,6 @@ public class ORUR01Handler implements Application {
 		}
 		Context.getEncounterService().saveEncounter(encounter);
 		
-		// Notify HL7 service that we have created a new encounter, allowing
-		// features/modules to trigger on HL7-generated encounters.
-		// -This can be removed once we have a obs_group table and all
-		// obs can be created in memory as part of the encounter *before* we
-		// call EncounterService.createEncounter().  For now, making obs groups
-		// requires that one obs be created (in the database) before others can
-		// be linked to it, forcing us to save the encounter prematurely."
-		//
-		// NOTE: The above referenced fix is now done.  This method is
-		// deprecated and will be removed in the next release.  All modules
-		// should modify their AOP methods to hook around
-		// EncounterService.createEncounter(Encounter).
-		hl7Service.encounterCreated(encounter);
-		
 		// loop over the proposed concepts and save each to the database
 		// now that the encounter is saved
 		for (ConceptProposal proposal : conceptProposals) {
@@ -962,8 +948,8 @@ public class ORUR01Handler implements Application {
 	}
 	
 	/**
-	 * Get a concept object representing this conceptId and coding system.<br/>
-	 * If codingSystem is 99DCT, then a new Concept with the given conceptId is returned.<br/>
+	 * Get a concept object representing this conceptId and coding system.<br>
+	 * If codingSystem is 99DCT, then a new Concept with the given conceptId is returned.<br>
 	 * Otherwise, the coding system is looked up in the ConceptMap for an openmrs concept mapped to
 	 * that code.
 	 *
@@ -998,7 +984,7 @@ public class ORUR01Handler implements Application {
 	 * @param obx the obs to parse and get the timestamp from
 	 * @return an obx timestamp or null
 	 * @throws HL7Exception
-	 * @see {@link #getDatetime(TS)}
+	 * @see #getDatetime(TS)
 	 */
 	private Date getDatetime(OBX obx) throws HL7Exception {
 		TS ts = obx.getDateTimeOfTheObservation();
@@ -1139,12 +1125,14 @@ public class ORUR01Handler implements Application {
 	 *
 	 * @param msh
 	 * @return
+	 * @should pass if return value is null when uuid and id is null
+	 * @should pass if return value is not null when uuid or id is not null
 	 * @throws HL7Exception
 	 */
-	private Form getForm(MSH msh) throws HL7Exception {
+	public Form getForm(MSH msh) throws HL7Exception {
 		String uuid = null;
 		String id = null;
-		
+
 		for (EI identifier : msh.getMessageProfileIdentifier()) {
 			if (identifier != null && identifier.getNamespaceID() != null) {
 				String identifierType = identifier.getNamespaceID().getValue();
@@ -1157,28 +1145,34 @@ public class ORUR01Handler implements Application {
 				}
 			}
 		}
-		
+
 		Form form = null;
-		
+
+		if (uuid == null && id == null) {
+			return form;
+		}
+
 		// prefer uuid over id
 		if (uuid != null) {
 			form = Context.getFormService().getFormByUuid(uuid);
 		}
-		
+
 		// if uuid did not work ...
-		if (form == null) {
+		if (id != null) {
+
 			try {
 				Integer formId = Integer.parseInt(id);
 				form = Context.getFormService().getForm(formId);
-			}
-			catch (NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.parseFormId"), e);
 			}
+
 		}
-		
+
 		return form;
+
 	}
-	
+
 	private EncounterType getEncounterType(MSH msh, Form form) {
 		if (form != null) {
 			return form.getEncounterType();

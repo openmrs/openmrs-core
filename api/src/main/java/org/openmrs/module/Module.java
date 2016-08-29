@@ -54,8 +54,6 @@ public final class Module {
 	
 	private String downloadURL = null; // will only be populated when the remote file is newer than the current module
 	
-	private Activator activator;
-	
 	private ModuleActivator moduleActivator;
 	
 	private String activatorName;
@@ -89,9 +87,6 @@ public final class Module {
 	private Document config = null;
 	
 	private Document sqldiff = null;
-	
-	@Deprecated
-	private Document log4j = null;
 	
 	private boolean mandatory = Boolean.FALSE;
 	
@@ -147,43 +142,6 @@ public final class Module {
 	}
 	
 	/**
-	 * @return the activator
-	 * @deprecated replaced by {@link Module#getModuleActivator()}
-	 */
-	@Deprecated
-	public Activator getActivator() {
-		try {
-			if (activator == null) {
-				ModuleClassLoader classLoader = ModuleFactory.getModuleClassLoader(this);
-				if (classLoader == null) {
-					throw new ModuleException("The classloader is null", getModuleId());
-				}
-				
-				Class<?> c = classLoader.loadClass(getActivatorName());
-				setActivator((Activator) c.newInstance());
-			}
-		}
-		catch (ClassNotFoundException e) {
-			throw new ModuleException("Unable to load/find activator: '" + getActivatorName() + "'", name, e);
-		}
-		catch (IllegalAccessException e) {
-			throw new ModuleException("Unable to load/access activator: '" + getActivatorName() + "'", name, e);
-		}
-		catch (InstantiationException e) {
-			throw new ModuleException("Unable to load/instantiate activator: '" + getActivatorName() + "'", name, e);
-		}
-		
-		return activator;
-	}
-	
-	/**
-	 * @param activator the activator to set
-	 */
-	public void setActivator(Activator activator) {
-		this.activator = activator;
-	}
-	
-	/**
 	 * @return the moduleActivator
 	 */
 	public ModuleActivator getModuleActivator() {
@@ -211,6 +169,9 @@ public final class Module {
 		}
 		catch (InstantiationException e) {
 			throw new ModuleException("Unable to load/instantiate moduleActivator: '" + getActivatorName() + "'", name, e);
+		}
+		catch (NoClassDefFoundError e) {
+			throw new ModuleException("Unable to load/find moduleActivator: '" + getActivatorName() + "'", name, e);
 		}
 		
 		return moduleActivator;
@@ -343,7 +304,7 @@ public final class Module {
 	}
 	
 	/**
-	 * @param requiredModulesMap <code>Map<String,String></code> of the <code>requiredModule</code>s
+	 * @param requiredModulesMap <code>Map&lt;String,String&gt;</code> of the <code>requiredModule</code>s
 	 *            to set
 	 * @since 1.5
 	 */
@@ -381,7 +342,7 @@ public final class Module {
 	/**
 	 * Gets names of modules which should start after this
 	 * @since 1.11
-	 * @return
+	 * @return list of module names or null
 	 */
 	public List<String> getStartBeforeModules() {
 		return this.startBeforeModulesMap == null ? null : new ArrayList<String>(this.startBeforeModulesMap.keySet());
@@ -390,7 +351,7 @@ public final class Module {
 	/**
 	 * Sets the modules that this module is aware of.
 	 *
-	 * @param awareOfModulesMap <code>Map<String,String></code> of the
+	 * @param awareOfModulesMap <code>Map&lt;String,String&gt;</code> of the
 	 *            <code>awareOfModulesMap</code>s to set
 	 * @since 1.9
 	 */
@@ -520,13 +481,18 @@ public final class Module {
 	
 	/**
 	 * @return the extensions
+	 *
+	 * @should not expand extensionNames if extensionNames is null
+	 * @should not expand extensionNames if extensionNames is empty
+	 * @should not expand extensionNames if extensions matches extensionNames
+	 * @should expand extensionNames if extensions does not match extensionNames 
 	 */
 	public List<Extension> getExtensions() {
-		if (extensions.size() == extensionNames.size()) {
+		if (extensionsMatchNames()) {
 			return extensions;
+		} else {
+			return expandExtensionNames();
 		}
-		
-		return expandExtensionNames();
 	}
 	
 	/**
@@ -538,8 +504,8 @@ public final class Module {
 	
 	/**
 	 * A map of pointid to classname. The classname is expected to be a class that extends the
-	 * {@link Extension} object. <br/>
-	 * <br/>
+	 * {@link Extension} object. <br>
+	 * <br>
 	 * This map will be expanded into full Extension objects the first time {@link #getExtensions()}
 	 * is called
 	 *
@@ -554,12 +520,34 @@ public final class Module {
 		}
 		this.extensionNames = map;
 	}
+
+	/**
+	 * Tests whether extensions match the contents of extensionNames.  Used to determine
+	 * if expandExtensionNames should to be called.<br>
+	 *
+	 * @return a boolean for whether extensions match the contents of extensionNames
+	 */
+	private boolean extensionsMatchNames() {
+		if (extensionNames != null && extensionNames.size() != 0) {
+			for (Extension ext : extensions) {
+				if (extensionNames.get(ext.getPointId()) != ext.getClass().getName()) {
+					return false;
+				}
+			}
+
+			if (extensions.size() != extensionNames.size()) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
 	
 	/**
 	 * Expand the temporary extensionNames map of pointid-classname to full pointid-classobject. <br>
 	 * This has to be done after the fact because when the pointid-classnames are parsed, the
-	 * module's objects aren't fully realized yet and so not all classes can be loaded. <br/>
-	 * <br/>
+	 * module's objects aren't fully realized yet and so not all classes can be loaded. <br>
+	 * <br>
 	 *
 	 * @return a list of full Extension objects
 	 */
@@ -568,7 +556,8 @@ public final class Module {
 		if (moduleClsLoader == null) {
 			log.debug(String.format("Module class loader is not available, maybe the module %s is stopped/stopping",
 			    getName()));
-		} else if (extensions.size() != extensionNames.size()) {
+		} else if (!extensionsMatchNames()) {
+			extensions.clear();
 			for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
 				String point = entry.getKey();
 				String className = entry.getValue();
@@ -582,7 +571,7 @@ public final class Module {
 					log.debug("Added extension: " + ext.getExtensionId() + " : " + ext.getClass());
 				}
 				catch (NoClassDefFoundError e) {
-					log.warn("Unable to find class definition for extension: " + point, e);
+					log.warn(getModuleId() + ": Unable to find class definition for extension: " + point, e);
 				}
 				catch (ClassNotFoundException e) {
 					log.warn("Unable to load class for extension: " + point, e);
@@ -626,7 +615,9 @@ public final class Module {
 	 * a string containing language and country codes.
 	 *
 	 * @return mapping from locales to properties
+	 * @deprecated as of 2.0 because messages are automatically loaded from the classpath
 	 */
+	@Deprecated
 	public Map<String, Properties> getMessages() {
 		return messages;
 	}
@@ -635,7 +626,9 @@ public final class Module {
 	 * Sets the map from locale to properties used by this module.
 	 *
 	 * @param messages map of locale to properties for that locale
+	 * @deprecated as of 2.0 because messages are automatically loaded from the classpath
 	 */
+	@Deprecated
 	public void setMessages(Map<String, Properties> messages) {
 		this.messages = messages;
 	}
@@ -662,22 +655,6 @@ public final class Module {
 	
 	public void setConfig(Document config) {
 		this.config = config;
-	}
-	
-	/**
-	 * @deprecated module should not hardcode it's logging properties
-	 */
-	@Deprecated
-	public Document getLog4j() {
-		return log4j;
-	}
-	
-	/**
-	 * @deprecated module should not hardcode it's logging properties
-	 */
-	@Deprecated
-	public void setLog4j(Document log4j) {
-		this.log4j = log4j;
 	}
 	
 	public Document getSqldiff() {
@@ -711,7 +688,7 @@ public final class Module {
 	 * @since 1.9.2, 1.10
 	 */
 	public void setPackagesWithMappedClasses(Set<String> packagesToScan) {
-		this.packagesWithMappedClasses = packagesToScan;
+		this.packagesWithMappedClasses = new HashSet<String>(packagesToScan);
 	}
 	
 	/**
@@ -734,7 +711,7 @@ public final class Module {
 	 * 'core' when this module is essentially part of the core code and must exist at all times
 	 *
 	 * @return true if this is an OpenMRS core module
-	 * @see {@link ModuleConstants#CORE_MODULES}
+	 * @see ModuleConstants#CORE_MODULES
 	 */
 	public boolean isCoreModule() {
 		return !ModuleUtil.ignoreCoreModules() && ModuleConstants.CORE_MODULES.containsKey(moduleId);
@@ -744,6 +721,10 @@ public final class Module {
 		return ModuleFactory.isModuleStarted(this);
 	}
 	
+	/**
+	 * @param e string to set as startup error message
+	 * @should throw exception when message is null
+	 */
 	public void setStartupErrorMessage(String e) {
 		if (e == null) {
 			throw new ModuleException("Startup error message cannot be null", this.getModuleId());
@@ -759,6 +740,10 @@ public final class Module {
 	 * @param exceptionMessage optional. the default message to show on the first line of the error
 	 *            message
 	 * @param t throwable stacktrace to include in the error message
+	 *
+	 * @should throw exception when throwable is null
+	 * @should set StartupErrorMessage when exceptionMessage is null
+	 * @should append throwable's message to exceptionMessage
 	 */
 	public void setStartupErrorMessage(String exceptionMessage, Throwable t) {
 		if (t == null) {
@@ -799,7 +784,10 @@ public final class Module {
 		
 		return moduleId;
 	}
-	
+
+	/*
+	 * @should dispose all classInstances, not AdvicePoints
+	 */	
 	public void disposeAdvicePointsClassInstance() {
 		if (advicePoints == null) {
 			return;

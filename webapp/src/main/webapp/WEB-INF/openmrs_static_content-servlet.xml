@@ -41,12 +41,6 @@
 		<entry key="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" value="/scripts/jquery-ui/css/redmond/jquery-ui.custom.css"/>
 	</util:map>
 	
-	<bean id="addRewritesToHtmlIncludeTag" class="org.openmrs.web.taglib.HtmlIncludeTag">
-		<property name="rewrites">
-			<ref local="urlRewrites"/>
-		</property>
-	</bean>
-	
 	<bean id="staticContentController" class="org.openmrs.web.controller.PseudoStaticContentController">
 		<property name="interpretJstl"><value>false</value></property>
 		<property name="rewrites">

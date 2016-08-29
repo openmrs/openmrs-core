@@ -16,10 +16,10 @@ import org.openmrs.logic.op.TransformOperator;
 /**
  * LogicExpression is an internal representation of the LogicCriteria created through LogicService.
  * This internal representation will be processed by the LogicService backend engine to create
- * hibernate query.<br />
- * <br />
- * LogicExpression has two form, the binary and unary. Binary logic expression takes the form of <br />
- * <code>LogicExpressionBinary -- (Operand Operator Operand)</code><br />
+ * hibernate query.<br>
+ * <br>
+ * LogicExpression has two form, the binary and unary. Binary logic expression takes the form of <br>
+ * <code>LogicExpressionBinary -- (Operand Operator Operand)</code><br>
  * <code>LogicExpressionUnary  -- (Operator Operand)</code>
  */
 public interface LogicExpression extends Operand {

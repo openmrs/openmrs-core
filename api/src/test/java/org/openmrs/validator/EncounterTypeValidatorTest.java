@@ -9,6 +9,7 @@
  */
 package org.openmrs.validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.EncounterType;
@@ -24,7 +25,7 @@ import org.springframework.validation.Errors;
 public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
+	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -49,7 +50,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
+	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -74,7 +75,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
+	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
@@ -90,7 +91,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
+	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation for an existing EncounterType", method = "validate(Object,Errors)")
@@ -105,7 +106,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterTypeValidator#validate(Object, Errors)}
+	 * @see EncounterTypeValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if encounter type name is duplicate", method = "validate(Object,Errors)")
@@ -122,13 +123,14 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
+	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		EncounterType type = new EncounterType();
 		type.setName("name");
+		type.setDescription("some descriptin not exceeding the limit");
 		type.setRetireReason("retireReason");
 		
 		Errors errors = new BindException(type, "type");
@@ -138,21 +140,21 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
+	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		EncounterType type = new EncounterType();
-		type
-		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		type
-		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type.setName(StringUtils.repeat("longer than 50 chars", 6));
+		type.setDescription(StringUtils.repeat("longer than 1024 chars", 120));
+		type.setRetireReason(StringUtils.repeat("longer than 255 chars", 27));
 		
 		Errors errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
 		
 		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("description"));
 		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

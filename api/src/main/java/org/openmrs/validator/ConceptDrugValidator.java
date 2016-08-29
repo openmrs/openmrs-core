@@ -45,7 +45,7 @@ public class ConceptDrugValidator implements Validator {
 	 *
 	 * @param obj the Object to validate
 	 * @param errors holds the validation errors
-	 * @throws <code>IllegalArgumentException</code> Runtime Exception if the supplied argument is
+	 * @throws IllegalArgumentException Runtime Exception if the supplied argument is
 	 *         null or not of type <code>Drug</code>
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)

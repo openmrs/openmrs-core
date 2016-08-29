@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,11 +44,15 @@ import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Person;
+import org.openmrs.PersonName;
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ServiceContext;
 import org.openmrs.api.handler.BaseVoidHandler;
 import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
 import org.openmrs.api.handler.RequiredDataHandler;
@@ -61,6 +66,7 @@ import org.openmrs.test.BaseContextMockTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.Reflect;
+import org.openmrs.util.RoleConstants;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -72,7 +78,13 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	AdministrationService administrationService;
 	
 	@Mock
-	ApplicationContext context;
+	ApplicationContext applicationContext;
+	
+	@Mock
+	Context context;
+	
+	@Mock
+	ServiceContext serviceContext;
 	
 	@Spy
 	OpenmrsObjectSaveHandler saveHandler;
@@ -84,13 +96,39 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	
 	@Before
 	public void setUp() {
+
+		context.setUserContext(userContext);
+		context.setServiceContext(serviceContext);
+		context.setContext(serviceContext);
+		serviceContext.setApplicationContext(applicationContext);
+		
+		//when(context.getUserContext()).thenReturn(userContext);
+		//when(serviceContext.getApplicationContext()).thenReturn(applicationContext);
+		
+		User user = new User();
+		user.setUuid("1010d442-e134-11de-babe-001e378eb67e");
+		user.setUserId(1);
+		user.setUsername("admin");
+		user.addRole(new Role(RoleConstants.SUPERUSER));
+		Person person = new Person();
+		person.setUuid("6adb7c42-cfd2-4301-b53b-ff17c5654ff7");
+		person.setId(1);
+		person.addName(new PersonName("Bob", "", "Smith"));
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(1980, 01, 01);
+		person.setBirthdate(calendar.getTime());
+		person.setGender("M");
+		user.setPerson(person);
+		when(userContext.getAuthenticatedUser()).thenReturn(user);
+		when(userContext.isAuthenticated()).thenReturn(true);
+		
 		Map<String, SaveHandler> saveHandlers = new HashMap<String, SaveHandler>();
 		saveHandlers.put("saveHandler", saveHandler);
-		when(context.getBeansOfType(SaveHandler.class)).thenReturn(saveHandlers);
+		when(applicationContext.getBeansOfType(SaveHandler.class)).thenReturn(saveHandlers);
 		
 		Map<String, VoidHandler> voidHandlers = new HashMap<String, VoidHandler>();
 		voidHandlers.put("voidHandler", voidHandler);
-		when(context.getBeansOfType(VoidHandler.class)).thenReturn(voidHandlers);
+		when(applicationContext.getBeansOfType(VoidHandler.class)).thenReturn(voidHandlers);
 		
 		//Clear cache since handlers are updated
 		HandlerUtil.clearCachedHandlers();
@@ -117,7 +155,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link RequiredDataAdvice#getChildCollection(OpenmrsObject, Field)}
+	 * @see RequiredDataAdvice#getChildCollection(OpenmrsObject, Field)
 	 */
 	@Test
 	@Verifies(value = "should get value of given child collection on given field", method = "getChildCollection(OpenmrsObject,Field)")
@@ -168,7 +206,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link RequiredDataAdvice#getChildCollection(OpenmrsObject, Field)}
+	 * @see RequiredDataAdvice#getChildCollection(OpenmrsObject, Field)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw APIException if getter method not found", method = "getChildCollection(OpenmrsObject,Field)")
@@ -216,7 +254,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link RequiredDataAdvice#isOpenmrsObjectCollection(Field)}
+	 * @see RequiredDataAdvice#isOpenmrsObjectCollection(Field)
 	 */
 	@Test
 	@Verifies(value = "should return false if field is collection of other objects", method = "isOpenmrsObjectCollection(Field)")
@@ -230,7 +268,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link RequiredDataAdvice#isOpenmrsObjectCollection(Field)}
+	 * @see RequiredDataAdvice#isOpenmrsObjectCollection(Field)
 	 */
 	@Test
 	@Verifies(value = "should return false if field is collection of parameterized type", method = "isOpenmrsObjectCollection(Field)")
@@ -240,7 +278,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link RequiredDataAdvice#isOpenmrsObjectCollection(Field)}
+	 * @see RequiredDataAdvice#isOpenmrsObjectCollection(Field)
 	 */
 	@Test
 	@Verifies(value = "should return false if field is not a collection", method = "isOpenmrsObjectCollection(Field)")
@@ -484,7 +522,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link RequiredDataAdvice#before(Method, null, Object)}
+	 * @see RequiredDataAdvice#before(Method, null, Object)
 	 */
 	@Test
 	@Verifies(value = "should not fail on update method with no arguments", method = "before(Method,null,Object)")

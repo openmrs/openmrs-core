@@ -25,7 +25,7 @@ import org.openmrs.test.Verifies;
 public class ConceptAnswersEditorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link ConceptAnswersEditor#setAsText(String)}
+	 * @see ConceptAnswersEditor#setAsText(String)
 	 */
 	@Test
 	@Verifies(value = "set the sort weights with the least possible changes", method = "setAsText(String)")

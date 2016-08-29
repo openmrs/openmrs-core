@@ -10,7 +10,6 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -22,7 +21,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.FlushMode;
 import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Disjunction;
@@ -34,17 +35,15 @@ import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
-import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Provider;
 import org.openmrs.Visit;
-import org.openmrs.VisitType;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
+import org.openmrs.parameter.EncounterSearchCriteria;
 
 /**
  * Hibernate specific dao for the {@link EncounterService} All calls should be made on the
@@ -106,48 +105,54 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(org.openmrs.Patient, org.openmrs.Location,
-	 *      java.util.Date, java.util.Date, java.util.Collection, java.util.Collection,
-	 *      java.util.Collection, boolean)
+	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
-	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
-		
+	public List<Encounter> getEncounters(EncounterSearchCriteria searchCriteria) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		
-		if (patient != null && patient.getPatientId() != null) {
-			crit.add(Restrictions.eq("patient", patient));
+		if (searchCriteria.getPatient() != null && searchCriteria.getPatient().getPatientId() != null) {
+			crit.add(Restrictions.eq("patient", searchCriteria.getPatient()));
 		}
-		if (location != null && location.getLocationId() != null) {
-			crit.add(Restrictions.eq("location", location));
+		if (searchCriteria.getLocation() != null && searchCriteria.getLocation().getLocationId() != null) {
+			crit.add(Restrictions.eq("location", searchCriteria.getLocation()));
 		}
-		if (fromDate != null) {
-			crit.add(Restrictions.ge("encounterDatetime", fromDate));
+		if (searchCriteria.getFromDate() != null) {
+			crit.add(Restrictions.ge("encounterDatetime", searchCriteria.getFromDate()));
 		}
-		if (toDate != null) {
-			crit.add(Restrictions.le("encounterDatetime", toDate));
+		if (searchCriteria.getToDate() != null) {
+			crit.add(Restrictions.le("encounterDatetime", searchCriteria.getToDate()));
 		}
-		if (enteredViaForms != null && enteredViaForms.size() > 0) {
-			crit.add(Restrictions.in("form", enteredViaForms));
+		if (searchCriteria.getDateChanged() != null) {
+			crit.add(
+					Restrictions.or(
+							Restrictions.and(
+									Restrictions.isNull("dateChanged"),
+									Restrictions.ge("dateCreated", searchCriteria.getDateChanged())
+							),
+							Restrictions.ge("dateChanged", searchCriteria.getDateChanged())
+					)
+			);
 		}
-		if (encounterTypes != null && encounterTypes.size() > 0) {
-			crit.add(Restrictions.in("encounterType", encounterTypes));
+		if (searchCriteria.getEnteredViaForms() != null && searchCriteria.getEnteredViaForms().size() > 0) {
+			crit.add(Restrictions.in("form", searchCriteria.getEnteredViaForms()));
 		}
-		if (providers != null && providers.size() > 0) {
+		if (searchCriteria.getEncounterTypes() != null && searchCriteria.getEncounterTypes().size() > 0) {
+			crit.add(Restrictions.in("encounterType", searchCriteria.getEncounterTypes()));
+		}
+		if (searchCriteria.getProviders() != null && searchCriteria.getProviders().size() > 0) {
 			crit.createAlias("encounterProviders", "ep");
-			crit.add(Restrictions.in("ep.provider", providers));
+			crit.add(Restrictions.in("ep.provider", searchCriteria.getProviders()));
 		}
-		if (visitTypes != null && visitTypes.size() > 0) {
+		if (searchCriteria.getVisitTypes() != null && searchCriteria.getVisitTypes().size() > 0) {
 			crit.createAlias("visit", "v");
-			crit.add(Restrictions.in("v.visitType", visitTypes));
+			crit.add(Restrictions.in("v.visitType", searchCriteria.getVisitTypes()));
 		}
-		if (visits != null && visits.size() > 0) {
-			crit.add(Restrictions.in("visit", visits));
+		if (searchCriteria.getVisits() != null && searchCriteria.getVisits().size() > 0) {
+			crit.add(Restrictions.in("visit", searchCriteria.getVisits()));
 		}
-		if (!includeVoided) {
+		if (!searchCriteria.getIncludeVoided()) {
 			crit.add(Restrictions.eq("voided", false));
 		}
 		crit.addOrder(Order.asc("encounterDatetime"));
@@ -220,10 +225,21 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterDAO#getSavedEncounterDatetime(org.openmrs.Encounter)
 	 */
 	public Date getSavedEncounterDatetime(Encounter encounter) {
-		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
-		    "select encounter_datetime from encounter where encounter_id = :encounterId");
-		sql.setInteger("encounterId", encounter.getEncounterId());
-		return (Date) sql.uniqueResult();
+		//Usages of this method currently are internal and don't require a flush
+		//Otherwise we end up with premature flushes of Immutable types like Obs
+		//that are associated to the encounter before we void and replace them
+		Session session = sessionFactory.getCurrentSession();
+		FlushMode flushMode = session.getFlushMode();
+		session.setFlushMode(FlushMode.MANUAL);
+		try {
+			SQLQuery sql = session
+			        .createSQLQuery("select encounter_datetime from encounter where encounter_id = :encounterId");
+			sql.setInteger("encounterId", encounter.getEncounterId());
+			return (Date) sql.uniqueResult();
+		}
+		finally {
+			session.setFlushMode(flushMode);
+		}
 	}
 	
 	/**
@@ -267,10 +283,17 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterDAO#getSavedEncounterLocation(org.openmrs.Encounter)
 	 */
 	public Location getSavedEncounterLocation(Encounter encounter) {
-		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
-		    "select location_id from encounter where encounter_id = :encounterId");
-		sql.setInteger("encounterId", encounter.getEncounterId());
-		return Context.getLocationService().getLocation((Integer) sql.uniqueResult());
+		Session session = sessionFactory.getCurrentSession();
+		FlushMode flushMode = session.getFlushMode();
+		session.setFlushMode(FlushMode.MANUAL);
+		try {
+			SQLQuery sql = session.createSQLQuery("select location_id from encounter where encounter_id = :encounterId");
+			sql.setInteger("encounterId", encounter.getEncounterId());
+			return Context.getLocationService().getLocation((Integer) sql.uniqueResult());
+		}
+		finally {
+			session.setFlushMode(flushMode);
+		}
 	}
 	
 	/**
@@ -278,7 +301,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients) {
-		HashMap<Integer, List<Encounter>> encountersBypatient = new HashMap<Integer, List<Encounter>>();
+		Map<Integer, List<Encounter>> encountersBypatient = new HashMap<Integer, List<Encounter>>();
 		
 		@SuppressWarnings("unchecked")
 		List<Encounter> allEncounters = createEncounterCriteria(patients).list();
@@ -416,7 +439,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByVisit(Visit)
+	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByVisit(Visit, boolean)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")

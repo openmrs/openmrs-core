@@ -37,6 +37,7 @@ import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
+import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
@@ -49,8 +50,8 @@ import org.openmrs.util.OpenmrsConstants;
  * This class should not be used directly. This is just a common implementation of the OrderDAO that
  * is used by the OrderService. This class is injected by spring into the desired OrderService
  * class. This injection is determined by the xml mappings and elements in the spring application
- * context: /metadata/api/spring/applicationContext.xml.<br/>
- * <br/>
+ * context: /metadata/api/spring/applicationContext.xml.<br>
+ * <br>
  * The OrderService should be used for all Order related database manipulation.
  * 
  * @see org.openmrs.api.OrderService
@@ -201,6 +202,34 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
+	 * @see OrderDAO#saveOrderGroup(OrderGroup)
+	 */
+	@Override
+	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException {
+		sessionFactory.getCurrentSession().saveOrUpdate(orderGroup);
+		return orderGroup;
+	}
+	
+	/**
+	 * @see OrderDAO#getOrderGroupByUuid(String)
+	 * @see org.openmrs.api.OrderService#getOrderGroupByUuid(String)
+	 */
+	@Override
+	public OrderGroup getOrderGroupByUuid(String uuid) throws DAOException {
+		return (OrderGroup) sessionFactory.getCurrentSession().createQuery("from OrderGroup o where o.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see OrderDAO#getOrderGroupById(Integer)
+	 * @see org.openmrs.api.OrderService#getOrderGroup(Integer)
+	 */
+	@Override
+	public OrderGroup getOrderGroupById(Integer orderGroupId) throws DAOException {
+		return (OrderGroup) sessionFactory.getCurrentSession().get(OrderGroup.class, orderGroupId);
+	}
+	
+	/**
 	 * Delete Obs that references (deleted) Order
 	 */
 	public void deleteObsThatReference(Order order) {
@@ -224,13 +253,11 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public Long getNextOrderNumberSeedSequenceValue() {
-		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
-		searchCriteria.add(Restrictions.eq("property", OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED));
 		GlobalProperty globalProperty = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class,
 		    OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED, LockOptions.UPGRADE);
 		
 		if (globalProperty == null) {
-			throw new APIException("GlobalProperty.missing ", new Object[] { OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED });
+			throw new APIException("GlobalProperty.missing", new Object[] { OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED });
 		}
 		
 		String gpTextValue = globalProperty.getPropertyValue();
@@ -351,7 +378,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See OrderDAO#getOrderTypeByName
+	 * @see OrderDAO#getOrderTypeByName
 	 */
 	@Override
 	public OrderType getOrderTypeByName(String orderTypeName) {
@@ -361,7 +388,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See OrderDAO#getOrderFrequency
+	 * @see OrderDAO#getOrderFrequency
 	 */
 	@Override
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId) {
@@ -369,7 +396,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See OrderDAO#getOrderFrequencyByUuid
+	 * @see OrderDAO#getOrderFrequencyByUuid
 	 */
 	@Override
 	public OrderFrequency getOrderFrequencyByUuid(String uuid) {
@@ -378,7 +405,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See OrderDAO#getOrderFrequencies(boolean)
+	 * @see OrderDAO#getOrderFrequencies(boolean)
 	 */
 	@Override
 	public List<OrderFrequency> getOrderFrequencies(boolean includeRetired) {
@@ -390,7 +417,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See OrderDAO#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
+	 * @see OrderDAO#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
 	 */
 	@Override
 	public List<OrderFrequency> getOrderFrequencies(String searchPhrase, Locale locale, boolean exactLocale,
@@ -448,11 +475,13 @@ public class HibernateOrderDAO implements OrderDAO {
 			ClassMetadata classMetadata = i.next();
 			Class<?> entityClass = classMetadata.getMappedClass();
 			if (Order.class.equals(entityClass)) {
-				continue; //ignore the org.openmrs.Order class itself
+				//ignore the org.openmrs.Order class itself
+				continue;
 			}
 			
 			if (!Order.class.isAssignableFrom(entityClass)) {
-				continue; //not a sub class of Order
+				//not a sub class of Order
+				continue;
 			}
 			
 			String[] names = classMetadata.getPropertyNames();
@@ -482,7 +511,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See org.openmrs.api.db.OrderDAO@getOrderType
+	 * @see org.openmrs.api.db.OrderDAO#getOrderType(Integer)
 	 */
 	@Override
 	public OrderType getOrderType(Integer orderTypeId) {
@@ -492,7 +521,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See org.openmrs.api.db.OrderDAO@getOrderTypeByUuid
+	 * @see org.openmrs.api.db.OrderDAO#getOrderTypeByUuid(String)
 	 */
 	@Override
 	public OrderType getOrderTypeByUuid(String uuid) {
@@ -501,7 +530,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See org.openmrs.api.db.OrderDAO@getOrderTypes
+	 * @see org.openmrs.api.db.OrderDAO#getOrderTypes(boolean)
 	 */
 	@Override
 	public List<OrderType> getOrderTypes(boolean includeRetired) {

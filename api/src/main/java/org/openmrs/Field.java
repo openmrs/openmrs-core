@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,7 +19,7 @@ import java.util.Set;
  *
  * @version 1.0
  */
-public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Field extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 4454L;
 	
@@ -137,15 +139,20 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 		this.defaultValue = defaultValue;
 	}
 	
+	/**
+	 * @deprecated as of 2.0, use {@link #getSelectMultiple()}
+	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isSelectMultiple() {
-		return selectMultiple;
+		return getSelectMultiple();
 	}
 	
 	/**
 	 * @return Returns the selectMultiple.
 	 */
 	public Boolean getSelectMultiple() {
-		return isSelectMultiple();
+		return selectMultiple;
 	}
 	
 	/**
@@ -192,24 +199,6 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 		if (answers != null) {
 			answers.remove(fieldAnswer);
 		}
-	}
-	
-	/**
-	 * @deprecated This method always returns null. Forms that a Field is on are managed through the
-	 *             {@link FormField} object
-	 */
-	@Deprecated
-	public Set<Form> getForms() {
-		return null;
-	}
-	
-	/**
-	 * @deprecated This method does nothing. Forms that a Field is on are managed through the
-	 *             {@link FormField} object
-	 */
-	@Deprecated
-	public void setForms(Set<Form> forms) {
-		
 	}
 	
 	/**

@@ -25,7 +25,7 @@ import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
 /**
- * Used by the {@link HibernateSessionFactoryBean} to keep track of multiple interceptors <br/>
+ * Used by the {@link HibernateSessionFactoryBean} to keep track of multiple interceptors <br>
  * Each of the methods in {@link Interceptor} are called for each interceptor that is added to this
  * class
  * 
@@ -115,7 +115,8 @@ public class ChainingInterceptor implements Interceptor {
 	}
 	
 	public Boolean isTransient(Object entity) {
-		Boolean returnValue = null; // by default let hibernate figure it out
+		// by default let hibernate figure it out
+		Boolean returnValue = null;
 		
 		for (Interceptor i : interceptors) {
 			Boolean tmpReturnValue = i.isTransient(entity);

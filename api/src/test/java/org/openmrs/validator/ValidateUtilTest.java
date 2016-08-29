@@ -11,6 +11,7 @@ package org.openmrs.validator;
 
 import org.junit.Test;
 import org.openmrs.Location;
+import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.ValidationException;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -21,6 +22,7 @@ import org.springframework.validation.Errors;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests methods on the {@link ValidateUtil} class.
@@ -28,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 public class ValidateUtilTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link ValidateUtil#validate(Object)}
+	 * @see ValidateUtil#validate(Object)
 	 */
 	@Test(expected = ValidationException.class)
 	@Verifies(value = "should throw ValidationException if errors occur during validation", method = "validate(Object)")
@@ -51,9 +53,29 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		}
 		
 	}
+
+	/**
+	 * @see ValidateUtil#validate(Object)
+	 */
+	@Test
+	@Verifies(value = "should return immediately if validation is disabled", method = "validate(Object)")
+	public void validate_shouldReturnImmediatelyIfValidationIsDisabled() {
+		Boolean prevVal = ValidateUtil.getDisableValidation();
+		ValidateUtil.setDisableValidation(true);
+
+		try {
+			ValidateUtil.validate(new Patient());
+		} catch (Exception e) {
+			ValidateUtil.setDisableValidation(prevVal);
+			e.printStackTrace();
+			fail("An unexpected exception occurred");
+		}
+
+		ValidateUtil.setDisableValidation(prevVal);
+	}
 	
 	/**
-	 * @see {@link ValidateUtil#validateFieldLengths(org.springframework.validation.Errors, Class, String...)}
+	 * @see ValidateUtil#validateFieldLengths(org.springframework.validation.Errors, Class, String...)
 	 */
 	@Test
 	@Verifies(value = "fail validation if name field length is too long", method = "validateFieldLengths(org.springframework.validation.Errors, Class, String...)")
@@ -67,7 +89,7 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ValidateUtil#validateFieldLengths(org.springframework.validation.Errors, Class, String...)}
+	 * @see ValidateUtil#validateFieldLengths(org.springframework.validation.Errors, Class, String...)
 	 */
 	@Test
 	@Verifies(value = "pass validation if name field length is equal to maximum length", method = "validateFieldLengths(org.springframework.validation.Errors, Class, String...)")
@@ -78,6 +100,25 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		BindException errors = new BindException(patientIdentifierType, "patientIdentifierType");
 		ValidateUtil.validateFieldLengths(errors, PatientIdentifierType.class, "name");
 		assertFalse(errors.hasFieldErrors("name"));
+	}
+
+	/**
+	 * @see ValidateUtil#validateFieldLengths(org.springframework.validation.Errors, Class, String...)
+	 */
+	@Test
+	@Verifies(value = "should return immediately if validation is disabled and have no errors", method = "validateFieldLengths(org.springframework.validation.Errors, Class, String...)")
+	public void validateFieldLength_shouldReturnImmediatelyIfValidationIsDisabledAndHaveNoErrors() {
+		Boolean prevVal = ValidateUtil.getDisableValidation();
+		ValidateUtil.setDisableValidation(true);
+
+		PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
+		patientIdentifierType.setName("asdfghjkl asdfghjkl asdfghjkl asdfghjkl asdfghjkl +1");
+
+		BindException errors = new BindException(patientIdentifierType, "patientIdentifierType");
+		ValidateUtil.validateFieldLengths(errors, PatientIdentifierType.class, "name");
+		assertFalse(errors.hasFieldErrors("name"));
+
+		ValidateUtil.setDisableValidation(prevVal);
 	}
 	
 	/**
@@ -91,5 +132,28 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 		ValidateUtil.validate(loc, errors);
 		
 		assertTrue(errors.hasErrors());
+	}
+
+	/**
+	 * @see ValidateUtil#validate(Object,Errors)
+	 */
+	@Test
+	@Verifies(value = "should return immediately if validation is disabled and have no errors", method = "validate(Object,Errors)")
+	public void validate_shouldReturnImmediatelyIfValidationIsDisabledAndHaveNoErrors() {
+		Boolean prevVal = ValidateUtil.getDisableValidation();
+		ValidateUtil.setDisableValidation(true);
+
+		try {
+			Patient patient = new Patient();
+			Errors errors = new BindException(patient, "patient");
+			ValidateUtil.validate(patient, errors);
+			assertFalse(errors.hasErrors());
+		} catch (Exception e) {
+			ValidateUtil.setDisableValidation(prevVal);
+			e.printStackTrace();
+			fail("An unexpected exception occurred");
+		}
+
+		ValidateUtil.setDisableValidation(prevVal);
 	}
 }

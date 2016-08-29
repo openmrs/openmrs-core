@@ -9,22 +9,23 @@
  */
 package org.openmrs;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.openmrs.api.context.Context;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Set;
+
 /**
  * Drug
  */
 @Indexed
-public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Drug extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 285L;
 	
@@ -36,15 +37,9 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private Concept dosageForm;
 	
-	private Double doseStrength;
-	
 	private Double maximumDailyDose;
 	
 	private Double minimumDailyDose;
-	
-	private Concept route;
-	
-	private String units;
 	
 	private String strength;
 	
@@ -106,13 +101,17 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * Gets whether or not this is a combination drug
 	 *
 	 * @return Boolean
+	 * 
+	 * @deprecated as of 2.0, use {@link #getCombination()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isCombination() {
-		return this.combination;
+		return getCombination();
 	}
 	
 	public Boolean getCombination() {
-		return isCombination();
+		return combination;
 	}
 	
 	/**
@@ -122,50 +121,6 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 */
 	public void setCombination(Boolean combination) {
 		this.combination = combination;
-	}
-	
-	/**
-	 * Gets the dose strength of this drug
-	 *
-	 * @return Double
-	 * @deprecated
-	 */
-	@Deprecated
-	public Double getDoseStrength() {
-		return this.doseStrength;
-	}
-	
-	/**
-	 * Sets the dose strength
-	 *
-	 * @param doseStrength
-	 * @deprecated
-	 */
-	@Deprecated
-	public void setDoseStrength(Double doseStrength) {
-		this.doseStrength = doseStrength;
-	}
-	
-	/**
-	 * Gets the units
-	 *
-	 * @return String
-	 * @deprecated
-	 */
-	@Deprecated
-	public String getUnits() {
-		return this.units;
-	}
-	
-	/**
-	 * Sets the units
-	 *
-	 * @param units
-	 * @deprecated
-	 */
-	@Deprecated
-	public void setUnits(String units) {
-		this.units = units;
 	}
 	
 	/**
@@ -228,22 +183,6 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public void setMinimumDailyDose(Double minimumDailyDose) {
 		this.minimumDailyDose = minimumDailyDose;
-	}
-	
-	/**
-	 * @deprecated moving it to order entry where it belongs.
-	 */
-	@Deprecated
-	public Concept getRoute() {
-		return route;
-	}
-	
-	/**
-	 * @deprecated moving it to order entry where it belongs.
-	 */
-	@Deprecated
-	public void setRoute(Concept route) {
-		this.route = route;
 	}
 	
 	/**

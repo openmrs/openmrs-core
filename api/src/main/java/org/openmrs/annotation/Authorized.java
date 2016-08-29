@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation used to describe service layer authorization attributes.
  * <p>
- * For example, to require that the user have <i>either<i> View or Add privileges:
+ * For example, to require that the user have <i>either</i> View or Add privileges:
  * 
  * <pre>
  *     &#64;Authorized ({"View Users", "Add User"})

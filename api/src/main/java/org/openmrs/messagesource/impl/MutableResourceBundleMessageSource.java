@@ -26,6 +26,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.PresentationMessage;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.BeansException;
@@ -141,36 +143,6 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	}
 	
 	/**
-	 * Presumes to append the messages to a message.properties file which is already being monitored
-	 * by the super ReloadableResourceBundleMessageSource. This is a blind, trusting hack.
-	 *
-	 * @see org.openmrs.messagesource.MutableMessageSource#publishProperties(java.util.Properties,
-	 *      java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-	 * @deprecated use {@linkplain #merge(MutableMessageSource, boolean)}
-	 */
-	@Deprecated
-	public void publishProperties(Properties props, String locale, String namespace, String name, String version) {
-		
-		String filePrefix = (namespace.length() > 0) ? (namespace + "_") : "";
-		String propertiesPath = "/WEB-INF/" + filePrefix + "messages" + locale + ".properties";
-		
-		Resource propertiesResource = applicationContext.getResource(propertiesPath);
-		try {
-			File propertiesFile = propertiesResource.getFile();
-			
-			if (!propertiesFile.exists()) {
-				propertiesFile.createNewFile();
-			}
-			// append the properties to the appropriate messages file
-			OpenmrsUtil.storeProperties(props, propertiesFile, namespace + ": " + name + " v" + version);
-			
-		}
-		catch (Exception ex) {
-			log.error("Error creating new properties file");
-		}
-	}
-	
-	/**
 	 * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
 	 */
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -222,12 +194,27 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 */
 	@Override
 	public void setBasenames(String[] basenames) {
-		super.setBasenames(basenames);
 		if (basenames == null) {
 			this.basenames = new String[0];
 		} else {
 			this.basenames = Arrays.copyOf(basenames, basenames.length);
 		}
+		
+		//add module file urls to basenames used for locating message properties files
+		Collection<Module> modules = ModuleFactory.getStartedModules();
+		if (!modules.isEmpty()) {
+			String[] names =  new String[this.basenames.length + modules.size()];
+			System.arraycopy(this.basenames, 0, names, 0, this.basenames.length);
+			int index = this.basenames.length;
+			for (Module module : modules) {
+				names[index] = "jar:file:" + module.getFile().getAbsolutePath() + "!/messages";
+				index++;
+			}
+			
+			basenames = names;
+		}
+		
+		super.setBasenames(basenames);
 	}
 	
 	/**

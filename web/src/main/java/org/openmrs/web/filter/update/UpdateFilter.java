@@ -286,7 +286,7 @@ public class UpdateFilter extends StartupFilter {
 				}
 			}
 			
-			String jsonText = toJSONString(result, true);
+			String jsonText = toJSONString(result);
 			httpResponse.getWriter().write(jsonText);
 		}
 	}
@@ -508,7 +508,7 @@ public class UpdateFilter extends StartupFilter {
 		
 		log.debug("Initializing the UpdateFilter");
 		
-		if (!InitializationFilter.initializationRequired()) {
+		if (!InitializationFilter.initializationRequired() || (Listener.isSetupNeeded() && Listener.runtimePropertiesFound())) {
 			model = new UpdateFilterModel();
 			/*
 			 * In this case, Listener#runtimePropertiesFound == true and InitializationFilter Wizard is skipped,
@@ -553,7 +553,7 @@ public class UpdateFilter extends StartupFilter {
 	}
 	
 	/**
-	 * @see org.openmrs.web.filter.StartupFilter#skipFilter()
+	 * @see org.openmrs.web.filter.StartupFilter#skipFilter(HttpServletRequest)
 	 */
 	@Override
 	public boolean skipFilter(HttpServletRequest httpRequest) {
@@ -574,7 +574,7 @@ public class UpdateFilter extends StartupFilter {
 	/**
 	 * @param updatesRequired the updatesRequired to set
 	 */
-	protected static synchronized void setUpdatesRequired(boolean updatesRequired) {
+	public static synchronized void setUpdatesRequired(boolean updatesRequired) {
 		UpdateFilter.updatesRequired = updatesRequired;
 	}
 	

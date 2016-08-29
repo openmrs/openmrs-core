@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.OrderFrequency;
 import org.openmrs.api.APIException;
@@ -35,7 +36,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
-	 * @see {@link OrderFrequencyValidator#validate(Object,Errors)}
+	 * @see OrderFrequencyValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if orderFrequency is null", method = "validate(Object,Errors)")
@@ -47,7 +48,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderFrequencyValidator#validate(Object,Errors)}
+	 * @see OrderFrequencyValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if concept is null", method = "validate(Object,Errors)")
@@ -61,7 +62,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderFrequencyValidator#validate(Object,Errors)}
+	 * @see OrderFrequencyValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the concept is not of class frequency", method = "validate(Object,Errors)")
@@ -75,7 +76,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderFrequencyValidator#validate(Object,Errors)}
+	 * @see OrderFrequencyValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if concept is used by another frequency", method = "validate(Object,Errors)")
@@ -97,8 +98,10 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		ConceptService cs = Context.getConceptService();
 		Concept concept = new Concept();
 		ConceptName cn = new ConceptName("new name", Context.getLocale());
+		concept.setDatatype(cs.getConceptDatatype(1));
 		concept.setConceptClass(cs.getConceptClass(19));
 		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("some description",null));
 		cs.saveConcept(concept);
 		
 		OrderFrequency orderFrequency = new OrderFrequency();
@@ -132,7 +135,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(2);
 		orderFrequency.setConcept(null);
 		expectedException.expect(APIException.class);
-		String expectedMsg = "'" + orderFrequency + "' failed to validate with reason: concept: Concept.noConceptSelected";
+		String expectedMsg = "'" + orderFrequency + "' failed to validate with reason: concept: " + Context.getMessageSourceService().getMessage("Concept.noConceptSelected");
 		expectedException.expectMessage(expectedMsg);
 		Context.getOrderService().saveOrderFrequency(orderFrequency);
 	}
@@ -146,8 +149,10 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		ConceptService cs = Context.getConceptService();
 		Concept concept = new Concept();
 		ConceptName cn = new ConceptName("new name", Context.getLocale());
+		concept.setDatatype(cs.getConceptDatatype(1));
 		concept.setConceptClass(cs.getConceptClass(19));
 		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("some description",null));
 		cs.saveConcept(concept);
 		
 		OrderFrequency orderFrequency = new OrderFrequency();
@@ -170,8 +175,10 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		ConceptService cs = Context.getConceptService();
 		Concept concept = new Concept();
 		ConceptName cn = new ConceptName("new name", Context.getLocale());
+		concept.setDatatype(cs.getConceptDatatype(1));
 		concept.setConceptClass(cs.getConceptClass(19));
 		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("some description",null));
 		cs.saveConcept(concept);
 		
 		OrderFrequency orderFrequency = new OrderFrequency();

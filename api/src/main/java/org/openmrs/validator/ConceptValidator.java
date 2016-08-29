@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.annotation.Handler;
@@ -36,7 +37,7 @@ import org.springframework.validation.Validator;
  * to this source also need to be reflected on that page.
  */
 @Handler(supports = { Concept.class }, order = 50)
-public class ConceptValidator implements Validator {
+public class ConceptValidator extends BaseCustomizableValidator implements Validator {
 	
 	// Log for this class
 	private static final Log log = LogFactory.getLog(ConceptValidator.class);
@@ -84,6 +85,8 @@ public class ConceptValidator implements Validator {
 	 * @should fail validation if field lengths are not correct
 	 * @should pass if fully specified name is the same as short name
 	 * @should pass if different concepts have the same short name
+	 * @should fail if the concept datatype is null
+	 * @should fail if the concept class is null
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
 		
@@ -97,7 +100,14 @@ public class ConceptValidator implements Validator {
 			errors.reject("Concept.name.atLeastOneRequired");
 			return;
 		}
-		
+		if (conceptToValidate.getDescriptions().size() == 0) {
+			errors.rejectValue("descriptions","Concept.description.atLeastOneRequired");
+			return;
+		}
+
+		ValidationUtils.rejectIfEmpty(errors, "datatype", "Concept.datatype.empty");
+		ValidationUtils.rejectIfEmpty(errors, "conceptClass", "Concept.conceptClass.empty");
+
 		boolean hasFullySpecifiedName = false;
 		for (Locale conceptNameLocale : conceptToValidate.getAllConceptNameLocales()) {
 			boolean fullySpecifiedNameForLocaleFound = false;
@@ -241,6 +251,14 @@ public class ConceptValidator implements Validator {
 				index++;
 			}
 		}
+		if (CollectionUtils.isNotEmpty(conceptToValidate.getAnswers())) {
+			for (ConceptAnswer conceptAnswer : conceptToValidate.getAnswers()) {
+				if (conceptAnswer.getAnswerConcept().equals(conceptToValidate)) {
+					errors.reject("Concept.contains.itself.as.answer");
+				}
+			}
+		}
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "version", "retireReason");
+		super.validateAttributes(conceptToValidate, errors, Context.getConceptService().getAllConceptAttributeTypes());
 	}
 }

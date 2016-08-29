@@ -17,6 +17,7 @@ import ca.uhn.hl7v2.model.v25.message.ORU_R01;
 import ca.uhn.hl7v2.model.v25.segment.NK1;
 import ca.uhn.hl7v2.model.v25.segment.OBR;
 import ca.uhn.hl7v2.model.v25.segment.OBX;
+import ca.uhn.hl7v2.model.v26.segment.MSH;
 import ca.uhn.hl7v2.parser.GenericParser;
 import org.junit.Assert;
 import org.junit.Before;
@@ -86,7 +87,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should create encounter and obs from hl7 message", method = "processMessage(Message)")
@@ -134,7 +135,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	/**
 	 * This method checks that obs grouping is happening correctly when processing an ORUR01
 	 * 
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should create obs group for OBRs", method = "processMessage(Message)")
@@ -219,7 +220,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * If an hl7 message contains a "visit number" pv1-19 value, then assume its an encounter_id and
 	 * that information in the hl7 message should be appended to that encounter.
 	 * 
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should append to an existing encounter", method = "processMessage(Message)")
@@ -253,7 +254,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	/**
 	 * Should create a concept proposal because of the key string in the message
 	 * 
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should create basic concept proposal", method = "processMessage(Message)")
@@ -268,8 +269,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "ORC|RE||||||||20080219085345|1^Joe\r"
 		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
 		        + "OBX|18|DT|5096^RETURN VISIT DATE^99DCT||20080506|||||||||20080212\r"
-		        + "OBR|19|||5096^PROBLEM LIST^99DCT\r"
-		        + "OBX|1|CWE|5096^PROBLEM ADDED^99DCT||PROPOSED^PELVIC MASS^99DCT|||||||||20080212";
+		        + "OBR|19|||1284^PROBLEM LIST^99DCT\r"
+		        + "OBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^PELVIC MASS^99DCT|||||||||20080212";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
@@ -278,11 +279,11 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		    initialOccurrences + 1, Context.getConceptService().getConceptProposals("PELVIC MASS").size());
 		
 	}
-	
+
 	/**
 	 * Should create a concept proposal because of the key string in the message
 	 * 
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should create concept proposal and with obs alongside", method = "processMessage(Message)")
@@ -296,11 +297,9 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		        + "PV1||O|1^Bishop Muge||||1^asdf asdf (5-9)|||||||||||||||||||||||||||||||||||||20081003|||||||V\r"
 		        + "ORC|RE||||||||20081006115645|1^Super User\r"
 		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
-		        + "OBX|1|CWE|5096^PAY CATEGORY^99DCT||5096^PILOT^99DCT|||||||||20081003\r"
 		        + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20081004|||||||||20081003\r"
-		        + "OBR|3|||5096^PROBLEM LIST^99DCT\r"
-		        + "OBX|1|CWE|5018^PROBLEM ADDED^99DCT||5096^HUMAN IMMUNODEFICIENCY VIRUS^99DCT|||||||||20081003\r"
-		        + "OBX|2|CWE|5089^PROBLEM ADDED^99DCT||PROPOSED^ASDFASDFASDF^99DCT|||||||||20081003";
+		        + "OBR|3|||1284^PROBLEM LIST^99DCT\r"
+		        + "OBX|2|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^ASDFASDFASDF^99DCT|||||||||20081003";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
@@ -313,7 +312,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	/**
 	 * Tests that a ConceptProposal row can be written by the processor
 	 * 
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should not create problem list observation with concept proposals", method = "processMessage(Message)")
@@ -347,7 +346,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should create obs valueCodedName", method = "processMessage(Message)")
@@ -380,7 +379,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#getConcept(String,String)}
+	 * @see ORUR01Handler#getConcept(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return a Concept if given local coding system", method = "getConcept(String,String)")
@@ -389,7 +388,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#getConcept(String,String)}
+	 * @see ORUR01Handler#getConcept(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return a mapped Concept if given a valid mapping", method = "getConcept(String,String)")
@@ -398,7 +397,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#getConcept(String,String)}
+	 * @see ORUR01Handler#getConcept(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return null if codingSystem not found", method = "getConcept(String,String)")
@@ -408,7 +407,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test(expected = ApplicationException.class)
 	@Verifies(value = "should fail on empty concept answers", method = "processMessage(Message)")
@@ -424,7 +423,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test(expected = ApplicationException.class)
 	@Verifies(value = "should fail on empty concept proposals", method = "processMessage(Message)")
@@ -441,7 +440,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processNK1(Patient,NK1)}
+	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
 	@Test
 	@Verifies(value = "should create a relationship from a NK1 segment", method = "processNK1(Patient,NK1)")
@@ -477,7 +476,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processNK1(Patient,NK1)}
+	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
 	@Test(expected = HL7Exception.class)
 	@Verifies(value = "should fail if the coding system is not 99REL", method = "processNK1(Patient,NK1)")
@@ -503,7 +502,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processNK1(Patient,NK1)}
+	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
 	@Test(expected = HL7Exception.class)
 	@Verifies(value = "should fail if the relationship identifier is formatted improperly", method = "processNK1(Patient,NK1)")
@@ -529,7 +528,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processNK1(Patient,NK1)}
+	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
 	@Test(expected = HL7Exception.class)
 	@Verifies(value = "should fail if the relationship type is not found", method = "processNK1(Patient,NK1)")
@@ -555,7 +554,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processNK1(Patient,NK1)}
+	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
 	@Test
 	@Verifies(value = "should not create a relationship if one exists", method = "processNK1(Patient,NK1)")
@@ -601,7 +600,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processORU_R01(ORU_R01)}
+	 * @see ORUR01Handler#processORU_R01(ORU_R01)
 	 */
 	@Test
 	@Verifies(value = "should process multiple NK1 segments", method = "processORU_R01(ORU_R01)")
@@ -652,7 +651,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processNK1(Patient,NK1)}
+	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
 	@Test
 	@Verifies(value = "should create a person if the relative is not found", method = "processNK1(Patient,NK1)")
@@ -688,7 +687,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test(expected = ApplicationException.class)
 	@Verifies(value = "should fail if question datatype is coded and a boolean is not a valid answer", method = "processMessage(Message)")
@@ -711,7 +710,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test(expected = ApplicationException.class)
 	@Verifies(value = "should fail if question datatype is neither Boolean nor numeric nor coded", method = "processMessage(Message)")
@@ -728,7 +727,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should set value as boolean for obs if the answer is 0 or 1 and Question datatype is Boolean", method = "processMessage(Message)")
@@ -764,7 +763,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should set value_Coded matching a boolean concept for obs if the answer is 0 or 1 and Question datatype is coded", method = "processMessage(Message)")
@@ -794,7 +793,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should set value_Numeric for obs if Question datatype is Numeric", method = "processMessage(Message)")
@@ -823,7 +822,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should set value_Numeric for obs if Question datatype is Numeric and the answer is either 0 or 1", method = "processMessage(Message)")
@@ -853,7 +852,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#parseObs(Encounter,OBX,OBR,String)}
+	 * @see ORUR01Handler#parseObs(Encounter,OBX,OBR,String)
 	 */
 	@Test
 	@Verifies(value = "should add comments to an observation from NTE segments", method = "parseObs(Encounter,OBX,OBR,String)")
@@ -882,7 +881,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#parseObs(Encounter,OBX,OBR,String)}
+	 * @see ORUR01Handler#parseObs(Encounter,OBX,OBR,String)
 	 */
 	@Test
 	@Verifies(value = "should add multiple comments for an observation as one comment", method = "parseObs(Encounter,OBX,OBR,String)")
@@ -917,7 +916,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#parseObs(Encounter,OBX,OBR,String)}
+	 * @see ORUR01Handler#parseObs(Encounter,OBX,OBR,String)
 	 */
 	@Test
 	@Verifies(value = "should add comments to an observation group", method = "parseObs(Encounter,OBX,OBR,String)")
@@ -945,7 +944,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should create an encounter and find the provider by identifier", method = "processMessage(Message)")
@@ -978,7 +977,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should create an encounter and find the provider by personId", method = "processMessage(Message)")
@@ -1009,7 +1008,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should create an encounter and find the provider by providerId", method = "processMessage(Message)")
@@ -1042,7 +1041,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should create an encounter and find the provider by uuid", method = "processMessage(Message)")
@@ -1077,7 +1076,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test(expected = ApplicationException.class)
 	@Verifies(value = "should fail if the provider name type code is not specified and is not a personId", method = "processMessage(Message)")
@@ -1096,7 +1095,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should understand form uuid if present", method = "processMessage(Message)")
@@ -1130,7 +1129,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should prefer form uuid over id if both are present", method = "processMessage(Message)")
@@ -1164,7 +1163,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should prefer form id if uuid is not found", method = "processMessage(Message)")
@@ -1198,7 +1197,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 * @see ORUR01Handler#processMessage(Message)
 	 * 
 	 */
 	@Test
@@ -1267,4 +1266,54 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 			return false;
 		}
 	}
+
+
+
+	/**
+	 * @see ORUR01Handler#getForm(MSH)
+	 * @verifies pass if return value is null when uuid and id is null
+	 */
+	@Test
+	public void getForm_shouldPassIfReturnValueIsNullWhenUuidAndIdIsNull() throws Exception {
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "NK1|1|Jones^Jane^Lee^^RN|3A^Parent^99REL||||||||||||F|19751016|||||||||||||||||2^^^L^PI\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714\r"
+		        + "OBR|3|||23^FOOD CONSTRUCT^99DCT\r"
+		        + "OBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
+		
+		ORUR01Handler oruHandler = new ORUR01Handler();
+		Message hl7message = parser.parse(hl7String);
+		ORU_R01 oru = (ORU_R01) hl7message;
+		ca.uhn.hl7v2.model.v25.segment.MSH msh = oru.getMSH();
+		Form form = oruHandler.getForm(msh);
+		Assert.assertNull(form);
+	}
+
+	/**
+	 * @see ORUR01Handler#getForm(MSH)
+	 * @verifies pass if return value is not null when uuid or id is not null
+	 */
+	@Test
+	public void getForm_shouldPassIfReturnValueIsNotNullWhenUuidOrIdIsNotNull() throws Exception {
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "NK1|1|Jones^Jane^Lee^^RN|3A^Parent^99REL||||||||||||F|19751016|||||||||||||||||2^^^L^PI\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714\r"
+		        + "OBR|3|||23^FOOD CONSTRUCT^99DCT\r"
+		        + "OBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
+		
+		ORUR01Handler oruHandler = new ORUR01Handler();
+		Message hl7message = parser.parse(hl7String);
+		ORU_R01 oru = (ORU_R01) hl7message;
+		ca.uhn.hl7v2.model.v25.segment.MSH msh = oru.getMSH();
+		Form form = oruHandler.getForm(msh);
+		Assert.assertNotNull(form);	
+		}
 }

@@ -29,7 +29,7 @@ public class OpenmrsProfileExcludeFilter implements TypeFilter {
 	/**
 	 * @param metadataReader
 	 * @param metadataReaderFactory
-	 * @return
+	 * @return whether this filter matches
 	 * @throws IOException
 	 *
 	 * @should not include bean for openmrs from 1_6 to 1_7
@@ -44,14 +44,20 @@ public class OpenmrsProfileExcludeFilter implements TypeFilter {
 		if (openmrsProfileAttributes != null) {
 			return !matchOpenmrsProfileAttributes(openmrsProfileAttributes);
 		} else {
-			return false; //do not exclude
+			//do not exclude
+			return false;
 		}
 	}
 	
 	public boolean matchOpenmrsProfileAttributes(Map<String, Object> openmrsProfile) {
-		Object openmrsVersion = openmrsProfile.get("openmrsVersion");
-		if (StringUtils.isNotBlank((String) openmrsVersion)
-		        && !ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, (String) openmrsVersion)) {
+		Object openmrsPlatformVersion = openmrsProfile.get("openmrsPlatformVersion");
+		if (StringUtils.isBlank((String) openmrsPlatformVersion)) {
+			//Left for backwards compatibility
+			openmrsPlatformVersion = openmrsProfile.get("openmrsVersion");
+		}
+		
+		if (StringUtils.isNotBlank((String) openmrsPlatformVersion)
+		        && !ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, (String) openmrsPlatformVersion)) {
 			return false;
 		}
 		

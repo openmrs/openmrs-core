@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.1//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping>
+
+    <class name="org.openmrs.Allergy" table="allergy">
+       <id name="allergyId" type="int" column="allergy_id">
+            <generator class="native">
+                <param name="sequence">allergy_allergy_id_seq</param>
+            </generator>
+        </id>
+        <many-to-one name="patient" column="patient_id" class="org.openmrs.Patient" not-null="true"/>
+        <component name="allergen" class="org.openmrs.Allergen">
+            <property name="allergenType" column="allergen_type" length="50" not-null="true">
+                <type name="org.hibernate.type.EnumType">
+                    <param name="enumClass">org.openmrs.AllergenType</param>
+                    <param name="type">12</param>
+                </type>
+            </property>
+            <many-to-one name="codedAllergen" column="coded_allergen" class="org.openmrs.Concept" not-null="true"/>
+            <property name="nonCodedAllergen" type="java.lang.String" column="non_coded_allergen" length="255"/>
+        </component>
+        <many-to-one name="severity" column="severity_concept_id" class="org.openmrs.Concept"/>
+        <property name="comment" column="comment" type="java.lang.String" length="1024"/>
+        <bag name="reactions" inverse="true" cascade="all-delete-orphan,evict" lazy="false">
+            <key>
+                <column name="allergy_id" not-null="true"/>
+            </key>
+            <one-to-many class="org.openmrs.AllergyReaction"/>
+        </bag>
+        <many-to-one name="creator" column="creator" class="org.openmrs.User" not-null="true"/>
+        <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
+        <many-to-one name="changedBy" column="changed_by" class="org.openmrs.User"/>
+        <property name="dateChanged" type="java.util.Date" column="date_changed"/>
+        <property name="voided" type="java.lang.Boolean" column="voided" length="1" not-null="true"/>
+        <property name="dateVoided" type="java.util.Date" column="date_voided" length="19"/>
+        <property name="voidReason" type="java.lang.String" column="void_reason" length="255"/>
+        <many-to-one name="voidedBy" column="voided_by" class="org.openmrs.User"/>
+        <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" not-null="true"/>
+    </class>
+</hibernate-mapping>

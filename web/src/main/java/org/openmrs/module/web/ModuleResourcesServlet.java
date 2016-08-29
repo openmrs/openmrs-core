@@ -50,6 +50,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		log.debug("In service method for module servlet: " + request.getPathInfo());
 		
 		File f = getFile(request);
@@ -91,6 +92,13 @@ public class ModuleResourcesServlet extends HttpServlet {
 		String relativePath = ModuleUtil.getPathForResource(module, path);
 		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources"
 		        + relativePath;
+		
+		//if in dev mode, load resources from the development directory
+		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
+		if (devDir != null) {
+			realPath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources" + relativePath;
+		}
+		
 		realPath = realPath.replace("/", File.separator);
 		
 		File f = new File(realPath);

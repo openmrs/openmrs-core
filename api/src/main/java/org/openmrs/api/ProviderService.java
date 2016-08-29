@@ -9,6 +9,10 @@
  */
 package org.openmrs.api;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
@@ -16,10 +20,6 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This service contains methods relating to providers.
@@ -37,7 +37,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should get all providers
 	 */
 	
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public List<Provider> getAllProviders();
 	
 	/**
@@ -46,14 +46,14 @@ public interface ProviderService extends OpenmrsService {
 	 * @param includeRetired - whether or not to include retired Provider
 	 * @should get all providers that are unretired
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public List<Provider> getAllProviders(boolean includeRetired);
 	
 	/**
 	 * Retires a given Provider
 	 * 
-	 * @param Provider provider to retire
-	 * @param String reason why the provider is retired
+	 * @param provider provider to retire
+	 * @param reason reason why the provider is retired
 	 * @should retire a provider
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROVIDERS })
@@ -62,7 +62,7 @@ public interface ProviderService extends OpenmrsService {
 	/**
 	 * Unretire a given Provider
 	 * 
-	 * @param Provider provider to unretire
+	 * @param provider provider to unretire
 	 * @should unretire a provider
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROVIDERS })
@@ -71,7 +71,7 @@ public interface ProviderService extends OpenmrsService {
 	/**
 	 * Deletes a given Provider
 	 * 
-	 * @param Provider provider to be deleted
+	 * @param provider provider to be deleted
 	 * @should delete a provider
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_PROVIDERS })
@@ -84,7 +84,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @return the provider by it's id
 	 * @should get provider given ID
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public Provider getProvider(Integer providerId);
 	
 	/**
@@ -97,11 +97,11 @@ public interface ProviderService extends OpenmrsService {
 	public Provider saveProvider(Provider provider);
 	
 	/**
-	 * @param string
+	 * @param uuid
 	 * @return the Provider object having the given uuid
 	 * @should get provider given Uuid
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public Provider getProviderByUuid(String uuid);
 	
 	/**
@@ -112,7 +112,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should return providers for given person
 	 * @should fail if person is null
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public Collection<Provider> getProvidersByPerson(Person person);
 	
 	/**
@@ -126,7 +126,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should fail if person is null
 	 * @since 1.10, 1.9.1
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public Collection<Provider> getProvidersByPerson(Person person, boolean includeRetired);
 	
 	/**
@@ -148,7 +148,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should return all providers if query is empty
 	 * @should find provider by identifier
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public List<Provider> getProviders(String query, Integer start, Integer length,
 	        Map<ProviderAttributeType, Object> attributes, boolean includeRetired);
 	
@@ -170,7 +170,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should return all providers if query is empty
 	 * @should return retired providers
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public List<Provider> getProviders(String query, Integer start, Integer length,
 	        Map<ProviderAttributeType, Object> attributes);
 	
@@ -179,7 +179,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @return Count-Integer
 	 * @should exclude retired providers
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public Integer getCountOfProviders(String query);
 	
 	/**
@@ -297,7 +297,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should return true if the identifier is null
 	 * @should return true if the identifier is a blank string
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public boolean isProviderIdentifierUnique(Provider provider) throws APIException;
 	
 	/**
@@ -307,7 +307,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @return a {@link Provider}
 	 * @should get a provider matching the specified identifier ignoring case
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
 	public Provider getProviderByIdentifier(String identifier);
 	
 	/**

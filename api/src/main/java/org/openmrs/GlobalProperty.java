@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
@@ -285,10 +286,17 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#isDirty()
+	 *
+	 * @deprecated as of 2.0, use {@link #getDirty()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	@Override
 	public boolean isDirty() {
-		return dirty;
+		return getDirty();
 	}
 	
+	public boolean getDirty() {
+		return dirty;
+	}
 }

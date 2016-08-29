@@ -24,14 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.Assert;
-
 import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -45,6 +42,8 @@ import org.openmrs.test.Verifies;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
+
+import junit.framework.Assert;
 
 /**
  * TODO add more tests to cover the methods in <code>UserService</code>
@@ -70,7 +69,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Test that we can create a user
 	 * 
-	 * @see {@link UserService#saveUser(User,String)}
+	 * @see UserService#saveUser(User,String)
 	 */
 	@Test
 	@Verifies(value = "should create new user with basic elements", method = "saveUser(User,String)")
@@ -86,7 +85,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.setUsername("bwolfe");
 		u.getPerson().setGender("M");
 		
-		User createdUser = us.saveUser(u, "Openmr5xy");
+		User createdUser = us.createUser(u, "Openmr5xy");
 		
 		// if we're returning the object from create methods, check validity
 		assertTrue("The user returned by the create user method should equal the passed in user", createdUser.equals(u));
@@ -99,7 +98,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * Creates a user object that was a patient/person object already.
 	 * 
 	 * @throws Exception
-	 * @see {@link UserService#saveUser(User,String)}
+	 * @see UserService#saveUser(User,String)
 	 */
 	@Test
 	@SkipBaseSetup
@@ -139,7 +138,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertTrue(user.hasRole("Some Role"));
 		
 		// do the actual creating of the user object
-		userService.saveUser(user, "Openmr5xy");
+		userService.createUser(user, "Openmr5xy");
 		Assert.assertNotNull("User was not created", userService.getUser(user.getUserId()));
 		
 		Integer shouldCreateUserWhoIsPatientAlreadyTestUserIdCreated = user.getUserId();
@@ -163,14 +162,14 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertEquals(11, allUsers.size());
 		
 		// there should still only be the one patient we created in the xml file
-		Cohort allPatientsSet = Context.getPatientSetService().getAllPatients();
-		assertEquals(1, allPatientsSet.getSize());
+		List<Patient> allPatientsSet = Context.getPatientService().getAllPatients();
+		assertEquals(1, allPatientsSet.size());
 	}
 	
 	/**
 	 * Test that we can update a user
 	 * 
-	 * @see {@link UserService#saveUser(User,String)}
+	 * @see UserService#saveUser(User,String)
 	 */
 	@Test
 	@Verifies(value = "should update users username", method = "saveUser(User,String)")
@@ -181,7 +180,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertNotNull("There needs to be a user with username 'admin' in the database", u);
 		
 		u.setUsername("admin2");
-		us.saveUser(u, null);
+		us.saveUser(u);
 		
 		User u2 = us.getUserByUsername("admin2");
 		
@@ -191,7 +190,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Test changing a user's password multiple times in the same transaction
 	 * 
-	 * @see {@link UserService#changePassword(String,String)}
+	 * @see UserService#changePassword(String,String)
 	 */
 	@Test
 	@Verifies(value = "should be able to update password multiple times", method = "changePassword(String,String)")
@@ -201,25 +200,25 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User u = us.getUserByUsername("admin");
 		assertNotNull("There needs to be a user with username 'admin' in the database", u);
 		
-		us.changePassword("test", "test2");
-		us.changePassword("test2", "test");
+		us.changePassword("test", "Tester12");
+		us.changePassword("Tester12", "Tester13");
 	}
-	
+
 	/**
 	 * Make sure we can grant roles to users
-	 * 
-	 * @see {@link UserService#saveUser(User,String)}
+	 *
+	 * @see UserService#saveUser(User,String)
 	 */
 	@Test
 	@Verifies(value = "should grant new roles in roles list to user", method = "saveUser(User,String)")
 	public void saveUser_shouldGrantNewRolesInRolesListToUser() throws Exception {
 		UserService us = Context.getUserService();
-		
+
 		// add in some basic properties
 		executeDataSet(XML_FILENAME);
-		
+
 		User u = us.getUserByUsername("admin");
-		
+
 		Role role1 = new Role();
 		role1.setDescription("testing1");
 		role1.setRole("test1");
@@ -227,7 +226,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Set<Privilege> privileges1 = new HashSet<Privilege>();
 		privileges1.add(p1);
 		role1.setPrivileges(privileges1);
-		
+
 		Role role2 = new Role();
 		role2.setDescription("testing2");
 		role2.setRole("test2");
@@ -235,20 +234,20 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Set<Privilege> privileges2 = new HashSet<Privilege>();
 		privileges2.add(p2);
 		role2.setPrivileges(privileges2);
-		
-		us.saveUser(u.addRole(role1), null);
-		
-		us.saveUser(u.addRole(role2), null);
-		
+
+		us.saveUser(u.addRole(role1));
+
+		us.saveUser(u.addRole(role2));
+
 		// so the contents are fetched from the db
 		Context.evictFromSession(u);
-		
+
 		us.getUser(u.getUserId()).hasRole("test1");
 		us.getUser(u.getUserId()).hasRole("test2");
 	}
-	
+
 	/**
-	 * @see {@link UserService#getUserByUsername(String)}
+	 * @see UserService#getUserByUsername(String)
 	 */
 	@Test
 	@Verifies(value = "should get user by username", method = "getUserByUsername(String)")
@@ -258,9 +257,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = us.getUserByUsername(username);
 		assertNotNull("username not found " + username, user);
 	}
-	
+
 	/**
-	 * @see {@link UserService#changePassword(String,String)}
+	 * @see UserService#changePassword(String,String)
 	 */
 	@Test
 	@Verifies(value = "should match on incorrectly hashed sha1 stored password", method = "changePassword(String,String)")
@@ -268,15 +267,15 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("incorrectlyhashedSha1", "test");
-		
+
 		UserService us = Context.getUserService();
-		us.changePassword("test", "test2");
-		
+		us.changePassword("test", "Tester12");
+
 		Context.logout(); // so that the next test reauthenticates
 	}
-	
+
 	/**
-	 * @see {@link UserService#changeQuestionAnswer(String,String,String)}
+	 * @see UserService#changeQuestionAnswer(String,String,String)
 	 */
 	@Test
 	@Verifies(value = "should match on correctly hashed stored password", method = "changeQuestionAnswer(String,String,String)")
@@ -284,15 +283,15 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("correctlyhashedSha1", "test");
-		
+
 		UserService us = Context.getUserService();
 		us.changeQuestionAnswer("test", "some question", "some answer");
-		
+
 		Context.logout(); // so that the next test reauthenticates
 	}
-	
+
 	/**
-	 * @see {@link UserService#changeQuestionAnswer(String,String,String)}
+	 * @see UserService#changeQuestionAnswer(String,String,String)
 	 */
 	@Test
 	@Verifies(value = "should match on incorrectly hashed stored password", method = "changeQuestionAnswer(String,String,String)")
@@ -300,15 +299,15 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("incorrectlyhashedSha1", "test");
-		
+
 		UserService us = Context.getUserService();
 		us.changeQuestionAnswer("test", "some question", "some answer");
-		
+
 		Context.logout(); // so that the next test reauthenticates
 	}
-	
+
 	/**
-	 * @see {@link UserService#changePassword(String,String)}
+	 * @see UserService#changePassword(String,String)
 	 */
 	@Test
 	@Verifies(value = "should match on correctly hashed sha1 stored password", method = "changePassword(String,String)")
@@ -316,30 +315,30 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("correctlyhashedSha1", "test");
-		
+
 		UserService us = Context.getUserService();
-		us.changePassword("test", "test2");
-		
+		us.changePassword("test", "Tester12");
+
 		Context.logout(); // so that the next test reauthenticates
 	}
-	
+
 	/**
-	 * @see {@link UserService#getUsers(String,List,boolean)}
+	 * @see UserService#getUsers(String,List,boolean)
 	 */
 	@Test
 	@Verifies(value = "should match search to familyName2", method = "getUsers(String,List,boolean)")
 	public void getUsers_shouldMatchSearchToFamilyName2() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
-		
+
 		List<User> users = Context.getUserService().getUsers("Johnson", null, false);
 		Assert.assertEquals(3, users.size());
 		Assert.assertTrue(containsId(users, 2));
 		Assert.assertTrue(containsId(users, 4));
 		Assert.assertTrue(containsId(users, 5));
 	}
-	
+
 	/**
-	 * @see {@link UserService#changePassword(String,String)}
+	 * @see UserService#changePassword(String,String)
 	 */
 	@Test
 	@Verifies(value = "should match on sha512 hashed password", method = "changePassword(String,String)")
@@ -347,32 +346,32 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("userWithSha512Hash", "test");
-		
+
 		UserService us = Context.getUserService();
-		us.changePassword("test", "test2");
-		
+		us.changePassword("test", "Tester12");
+
 		Context.logout(); // so that the next test reauthenticates
 	}
-	
+
 	/**
 	 * This test verifies that {@link PersonName}s are fetched correctly from the hibernate cache.
 	 * (Or really, not fetched from the cache but instead are mapped with lazy=false. For some
 	 * reason Hibernate isn't able to find objects in the cache if a parent object was the one that
 	 * loaded them)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void shouldFetchNamesForPersonsThatWereFirstFetchedAsUsers() throws Exception {
 		Person person = Context.getPersonService().getPerson(1);
 		User user = Context.getUserService().getUser(1);
-		
+
 		user.getNames().size();
 		person.getNames().size();
 	}
-	
+
 	/**
-	 * @see {@link UserService#getPrivilegeByUuid(String)}
+	 * @see UserService#getPrivilegeByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getPrivilegeByUuid(String)")
@@ -382,18 +381,18 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Privilege privilege = Context.getUserService().getPrivilegeByUuid(uuid);
 		Assert.assertEquals("Some Privilege", privilege.getPrivilege());
 	}
-	
+
 	/**
-	 * @see {@link UserService#getPrivilegeByUuid(String)}
+	 * @see UserService#getPrivilegeByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getPrivilegeByUuid(String)")
 	public void getPrivilegeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getUserService().getPrivilegeByUuid("some invalid uuid"));
 	}
-	
+
 	/**
-	 * @see {@link UserService#getRoleByUuid(String)}
+	 * @see UserService#getRoleByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getRoleByUuid(String)")
@@ -402,18 +401,18 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Role role = Context.getUserService().getRoleByUuid(uuid);
 		Assert.assertEquals("Provider", role.getRole());
 	}
-	
+
 	/**
-	 * @see {@link UserService#getRoleByUuid(String)}
+	 * @see UserService#getRoleByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getRoleByUuid(String)")
 	public void getRoleByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getUserService().getRoleByUuid("some invalid uuid"));
 	}
-	
+
 	/**
-	 * @see {@link UserService#getUserByUuid(String)}
+	 * @see UserService#getUserByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getUserByUuid(String)")
@@ -422,18 +421,18 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = Context.getUserService().getUserByUuid(uuid);
 		Assert.assertEquals(501, (int) user.getUserId());
 	}
-	
+
 	/**
-	 * @see {@link UserService#getUserByUuid(String)}
+	 * @see UserService#getUserByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getUserByUuid(String)")
 	public void getUserByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getUserService().getUserByUuid("some invalid uuid"));
 	}
-	
+
 	/**
-	 * @see {@link UserService#changeHashedPassword(User,String,String)}
+	 * @see UserService#changeHashedPassword(User,String,String)
 	 */
 	@Test
 	@Verifies(value = "should change the hashed password for the given user", method = "changeHashedPassword(User,String,String)")
@@ -443,26 +442,26 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		String salt = Security.getRandomToken();
 		String hash = Security.encodeString("new password" + salt);
 		userService.changeHashedPassword(user, hash, salt);
-		
+
 		// TODO Review this a little further
 		// This is the assert - checks to see if current user can use the new password
-		userService.changePassword("new password", "another new password"); // try to change the password with the new one
-		
+		userService.changePassword("new password", "Another new password1"); // try to change the password with the new one
+
 	}
-	
+
 	/**
-	 * @see {@link UserService#changePassword(User,String)}
+	 * @see UserService#changePassword(User,String)
 	 */
 	@Test
 	@Verifies(value = "should change password for the given user and password", method = "changePassword(User,String)")
 	public void changePassword_shouldChangePasswordForTheGivenUserAndPassword() throws Exception {
 		UserService userService = Context.getUserService();
-		userService.changePassword("test", "another new password");
-		userService.changePassword("another new password", "yet another new password"); // try to change the password with the new one
+		userService.changePassword("test", "Another new password1");
+		userService.changePassword("Another new password1", "Yet another new password1"); // try to change the password with the new one
 	}
 	
 	/**
-	 * @see {@link UserService#changeQuestionAnswer(User,String,String)}
+	 * @see UserService#changeQuestionAnswer(User,String,String)
 	 */
 	@Test
 	@Ignore
@@ -475,12 +474,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		// need to retrieve the user since the service method does not modify the given user object
 		User o = userService.getUser(501);
-		Assert.assertEquals("the question", o.getSecretQuestion());
 		Assert.assertTrue(userService.isSecretAnswer(o, "the answer"));
 	}
 	
 	/**
-	 * @see {@link UserService#getAllPrivileges()}
+	 * @see UserService#getAllPrivileges()
 	 */
 	@Test
 	@Verifies(value = "should return all privileges in the system", method = "getAllPrivileges()")
@@ -491,7 +489,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getAllRoles()}
+	 * @see UserService#getAllRoles()
 	 */
 	@Test
 	@Verifies(value = "should return all roles in the system", method = "getAllRoles()")
@@ -503,7 +501,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getAllUsers()}
+	 * @see UserService#getAllUsers()
 	 */
 	@Test
 	@Verifies(value = "should fetch all users in the system", method = "getAllUsers()")
@@ -513,7 +511,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getAllUsers()}
+	 * @see UserService#getAllUsers()
 	 */
 	@Test
 	@Verifies(value = "should not contains any duplicate users", method = "getAllUsers()")
@@ -628,7 +626,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getPrivilege(String)}
+	 * @see UserService#getPrivilege(String)
 	 */
 	@Test
 	@Verifies(value = "should fetch privilege for given name", method = "getPrivilege(String)")
@@ -639,7 +637,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getRole(String)}
+	 * @see UserService#getRole(String)
 	 */
 	@Test
 	@Verifies(value = "should fetch role for given role name", method = "getRole(String)")
@@ -650,7 +648,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getUser(Integer)}
+	 * @see UserService#getUser(Integer)
 	 */
 	@Test
 	@Verifies(value = "should fetch user with given userId", method = "getUser(Integer)")
@@ -660,7 +658,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getUsers(String,List,boolean)}
+	 * @see UserService#getUsers(String,List,boolean)
 	 */
 	@Test
 	@Verifies(value = "should fetch users with at least one of the given role objects", method = "getUsers(String,List,boolean)")
@@ -672,7 +670,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getUsers(String,List,boolean)}
+	 * @see UserService#getUsers(String,List,boolean)
 	 */
 	@Test
 	@Verifies(value = "should fetch users with name that contains given nameSearch", method = "getUsers(String,List,boolean)")
@@ -681,7 +679,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getUsers(String,List,boolean)}
+	 * @see UserService#getUsers(String,List,boolean)
 	 */
 	@Test
 	@Verifies(value = "should fetch users with systemId that contains given nameSearch", method = "getUsers(String,List,boolean)")
@@ -690,7 +688,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getUsers(String,List,boolean)}
+	 * @see UserService#getUsers(String,List,boolean)
 	 */
 	@Test
 	@Verifies(value = "should fetch voided users if includedVoided is true", method = "getUsers(String,List,boolean)")
@@ -699,7 +697,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getUsers(String,List,boolean)}
+	 * @see UserService#getUsers(String,List,boolean)
 	 */
 	@Test
 	@Verifies(value = "should fetch all users if nameSearch is empty or null", method = "getUsers(String,List,null)")
@@ -709,7 +707,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getUsers(String,List,boolean)}
+	 * @see UserService#getUsers(String,List,boolean)
 	 */
 	@Test
 	@Verifies(value = "should not fetch duplicate users", method = "getUsers(String,List,boolean)")
@@ -721,7 +719,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getUsers(String,List,boolean)}
+	 * @see UserService#getUsers(String,List,boolean)
 	 */
 	@Test
 	@Verifies(value = "should not fetch voided users if includedVoided is false", method = "getUsers(String,List,boolean)")
@@ -730,7 +728,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getUsersByRole(Role)}
+	 * @see UserService#getUsersByRole(Role)
 	 */
 	@Test
 	@Verifies(value = "should fetch users assigned given role", method = "getUsersByRole(Role)")
@@ -741,7 +739,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getUsersByRole(Role)}
+	 * @see UserService#getUsersByRole(Role)
 	 */
 	@Test
 	@Verifies(value = "should not fetch user that does not belong to given role", method = "getUsersByRole(Role)")
@@ -752,7 +750,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#hasDuplicateUsername(User)}
+	 * @see UserService#hasDuplicateUsername(User)
 	 */
 	@Test
 	@Verifies(value = "should verify that username and system id is unique", method = "hasDuplicateUsername(User)")
@@ -771,7 +769,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#isSecretAnswer(User,String)}
+	 * @see UserService#isSecretAnswer(User,String)
 	 */
 	@Test
 	@Verifies(value = "should return false when given answer does not match the stored secret answer", method = "isSecretAnswer(User,String)")
@@ -781,7 +779,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#isSecretAnswer(User,String)}
+	 * @see UserService#isSecretAnswer(User,String)
 	 */
 	@Test
 	@Verifies(value = "should return true when given answer matches stored secret answer", method = "isSecretAnswer(User,String)")
@@ -793,7 +791,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#purgePrivilege(Privilege)}
+	 * @see UserService#purgePrivilege(Privilege)
 	 */
 	@Test
 	@Verifies(value = "should delete given privilege from the database", method = "purgePrivilege(Privilege)")
@@ -803,7 +801,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#purgePrivilege(Privilege)}
+	 * @see UserService#purgePrivilege(Privilege)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw error when privilege is core privilege", method = "purgePrivilege(Privilege)")
@@ -812,7 +810,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#purgeRole(Role)}
+	 * @see UserService#purgeRole(Role)
 	 */
 	@Test
 	@Verifies(value = "should delete given role from database", method = "purgeRole(Role)")
@@ -824,7 +822,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#purgeRole(Role)}
+	 * @see UserService#purgeRole(Role)
 	 */
 	@Test
 	@Verifies(value = "should return if role is null", method = "purgeRole(Role)")
@@ -833,7 +831,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#purgeRole(Role)}
+	 * @see UserService#purgeRole(Role)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw error when role is a core role", method = "purgeRole(Role)")
@@ -843,7 +841,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#purgeUser(User)}
+	 * @see UserService#purgeUser(User)
 	 */
 	@Test(expected = CannotDeleteRoleWithChildrenException.class)
 	@Verifies(value = "should throw error when role has child roles", method = "purgeRole(Role)")
@@ -857,7 +855,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#purgeUser(User)}
+	 * @see UserService#purgeUser(User)
 	 */
 	@Test
 	@Verifies(value = "should delete given user", method = "purgeUser(User)")
@@ -868,7 +866,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#purgeUser(User,boolean)}
+	 * @see UserService#purgeUser(User,boolean)
 	 */
 	@Test
 	@Verifies(value = "should delete given user when cascade equals false", method = "purgeUser(User,boolean)")
@@ -879,7 +877,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#purgeUser(User,boolean)}
+	 * @see UserService#purgeUser(User,boolean)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw APIException if cascade is true", method = "purgeUser(User,null)")
@@ -889,7 +887,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#removeUserProperty(User,String)}
+	 * @see UserService#removeUserProperty(User,String)
 	 */
 	@Test
 	@Verifies(value = "should remove user property for given user and key", method = "removeUserProperty(User,String)")
@@ -907,7 +905,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#removeUserProperty(User,String)}
+	 * @see UserService#removeUserProperty(User,String)
 	 */
 	@Test
 	@Verifies(value = "should return null if user is null", method = "removeUserProperty(User,String)")
@@ -917,7 +915,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#removeUserProperty(User,String)}
+	 * @see UserService#removeUserProperty(User,String)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw error when user is not authorized to edit users", method = "removeUserProperty(User,String)")
@@ -936,7 +934,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#savePrivilege(Privilege)}
+	 * @see UserService#savePrivilege(Privilege)
 	 */
 	@Test
 	@Verifies(value = "should save given privilege to the database", method = "savePrivilege(Privilege)")
@@ -950,7 +948,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#setUserProperty(User,String,String)}
+	 * @see UserService#setUserProperty(User,String,String)
 	 */
 	@Test
 	@Verifies(value = "should add property with given key and value when key does not already exist", method = "setUserProperty(User,String,String)")
@@ -970,7 +968,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#setUserProperty(User,String,String)}
+	 * @see UserService#setUserProperty(User,String,String)
 	 */
 	@Test
 	@Verifies(value = "should modify property with given key and value when key already exists", method = "setUserProperty(User,String,String)")
@@ -990,7 +988,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#setUserProperty(User,String,String)}
+	 * @see UserService#setUserProperty(User,String,String)
 	 */
 	@Test
 	@Verifies(value = "should return null if user is null", method = "setUserProperty(User,String,String)")
@@ -1001,7 +999,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#setUserProperty(User,String,String)}
+	 * @see UserService#setUserProperty(User,String,String)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw error when user is not authorized to edit users", method = "setUserProperty(User,String,String)")
@@ -1014,7 +1012,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#saveRole(Role)}
+	 * @see UserService#saveRole(Role)
 	 */
 	@Test
 	@Verifies(value = "should save given role to the database", method = "saveRole(Role)")
@@ -1027,7 +1025,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#saveRole(Role)}
+	 * @see UserService#saveRole(Role)
 	 */
 	@Test
 	@Verifies(value = "should throw error if role inherits from itself", method = "saveRole(Role)")
@@ -1051,7 +1049,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getUsersByPerson(Person,null)}
+	 * @see UserService#getUsersByPerson(Person,null)
 	 */
 	@Test
 	@Verifies(value = "should fetch all accounts for a person when include retired is true", method = "getUsersByPerson(Person,null)")
@@ -1063,7 +1061,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getUsersByPerson(Person,null)}
+	 * @see UserService#getUsersByPerson(Person,null)
 	 */
 	@Test
 	@Verifies(value = "should not fetch retired accounts when include retired is false", method = "getUsersByPerson(Person,null)")
@@ -1075,7 +1073,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#retireUser(User,String)}
+	 * @see UserService#retireUser(User,String)
 	 */
 	@Test
 	@Verifies(value = "should retire user and set attributes", method = "retireUser(User,String)")
@@ -1090,7 +1088,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#unretireUser(User)}
+	 * @see UserService#unretireUser(User)
 	 */
 	@Test
 	@Verifies(value = "should unretire and unmark all attributes", method = "unretireUser(User)")
@@ -1107,7 +1105,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Test that user is not created with a weak password
 	 * 
-	 * @see {@link UserService#saveUser(User,String)}
+	 * @see UserService#saveUser(User,String)
 	 */
 	@Test(expected = PasswordException.class)
 	@Verifies(value = "fail to create the user with a weak password", method = "saveUser(User,String)")
@@ -1123,11 +1121,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.setUsername("bwolfe");
 		u.getPerson().setGender("M");
 		
-		us.saveUser(u, "short");
+		us.createUser(u, "short");
 	}
 	
 	/**
-	 * This is a regression test for TRUNK-2108 <br/>
+	 * This is a regression test for TRUNK-2108 <br>
 	 * 
 	 * @see UserService#getUsers(String,List,boolean)
 	 * @verifies not fail if roles are searched but name is empty
@@ -1142,7 +1140,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#getUsers(String, List, boolean, Integer, Integer)}
+	 * @see UserService#getUsers(String, List, boolean, Integer, Integer)
 	 */
 	@Test
 	@Verifies(value = "return users whose roles inherit requested roles", method = "getUsers(String,List,boolean,Integer,Integer)")
@@ -1260,7 +1258,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate(user6001.getUsername(), "userServiceTest");
 		
 		expectedException.expect(APIAuthenticationException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.privilegesRequired"));
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null));
 		userService.changePassword(user6001, wrongPassword, newPassword);
 	}
 	
@@ -1282,7 +1280,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate(user6001.getUsername(), "userServiceTest");
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.privilegesRequired"));
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null));
 		userService.changePassword(user6001, oldPassword, newPassword);
 	}
 	
@@ -1299,7 +1297,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		String oldPassword = "userServiceTest";
 		String weakPassword = "weak";
 		
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.password.length"));
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.password.length", new Object[] {"8"}, null));
 		userService.changePassword(user6001, oldPassword, weakPassword);
 	}
 	
@@ -1315,7 +1313,71 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		String anyString = "anyString";
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("user.must.exist");
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("user.must.exist"));
 		userService.changePassword(notExistingUser, anyString, anyString);
+	}
+
+    @Test
+    public void changePassword_shouldThrowShortPasswordExceptionWithShortPassword() throws Exception {
+        expectedException.expect(ShortPasswordException.class);
+        expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.password.length", new Object[] {"8"}, null));
+
+        Context.getUserService().changePassword("test", "");
+    }
+    
+	@Test
+	@Verifies(value = "should update password of given user when logged in user has edit users password privilege", method = "changePassword(User,String)")
+	public void changePassword_shouldUpdatePasswordOfGivenUserWhenLoggedInUserHasEditUsersPasswordPrivilege() throws Exception {
+		UserService userService = Context.getUserService();
+		User user = userService.getUserByUsername("admin");
+		assertNotNull("There needs to be a user with username 'admin' in the database", user);
+		
+		userService.changePassword(user, "testTest123");
+		
+		Context.authenticate(user.getUsername(), "testTest123");
+	}
+	
+	@Test
+	@Verifies(value = "should not update password of given user when logged in user does not have edit users password privilege", method = "changePassword(User,String)")
+	public void changePassword_shouldNotUpdatePasswordOfGivenUserWhenLoggedInUserDoesNotHaveEditUsersPasswordPrivilege() throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		UserService userService = Context.getUserService();
+		User user = userService.getUser(6001);
+		assertFalse(user.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
+		Context.authenticate(user.getUsername(), "userServiceTest");
+		
+		expectedException.expect(APIAuthenticationException.class);
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.privilegesRequired", new Object[] {PrivilegeConstants.EDIT_USER_PASSWORDS}, null));
+		
+		userService.changePassword(user, "testTest123");
+	}
+	
+	@Test
+	@Verifies(value = "should update password if secret is correct", method = "changePasswordUsingSecretAnswer(String,String)")
+	public void changePasswordUsingSecretAnswer_shouldUpdatePasswordIfSecretIsCorrect() throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		UserService userService = Context.getUserService();
+		User user = userService.getUser(6001);
+		assertFalse(user.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
+		Context.authenticate(user.getUsername(), "userServiceTest");
+		
+		userService.changePasswordUsingSecretAnswer("answer", "userServiceTest2");
+		
+		Context.authenticate(user.getUsername(), "userServiceTest2");
+	}
+
+	@Test
+	@Verifies(value = "should not update password if secret is not correct", method = "changePasswordUsingSecretAnswer(String,String)")
+	public void changePasswordUsingSecretAnswer_shouldNotUpdatePasswordIfSecretIsNotCorrect() throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		UserService userService = Context.getUserService();
+		User user = userService.getUser(6001);
+		assertFalse(user.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
+		Context.authenticate(user.getUsername(), "userServiceTest");
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("secret.answer.not.correct"));
+		
+		userService.changePasswordUsingSecretAnswer("wrong answer", "userServiceTest2");
 	}
 }

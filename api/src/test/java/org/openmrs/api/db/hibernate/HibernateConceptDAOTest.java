@@ -11,13 +11,13 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.List;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAttributeType;
 import org.openmrs.Drug;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	
 	private static final String PROVIDERS_INITIAL_XML = "org/openmrs/api/db/hibernate/include/HibernateConceptTestDataSet.xml";
-	
+	protected static final String CONCEPT_ATTRIBUTE_TYPE_XML = "org/openmrs/api/include/ConceptServiceTest-conceptAttributeType.xml";
+
 	@Autowired
 	private HibernateConceptDAO dao;
 	
@@ -157,5 +158,25 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, drugList.size());
 		
 	}
-	
+
+	@Test
+	@Verifies(value = "return a drug if drug name is passed with special character", method = "getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)")
+	public void getDrugs_shouldReturnDrugEvenIf_DrugNameHasSpecialCharacters() throws Exception {
+		List<Drug> drugList1 = dao.getDrugs("DRUG_NAME_WITH_SPECIAL_CHARACTERS (", null, true);
+		Assert.assertEquals(1, drugList1.size());
+
+	}
+
+	/**
+	 * @see HibernateConceptDAO#getConceptAttributeCount(ConceptAttributeType)
+	 * @verifies return attribute count for given attribute type
+	 */
+	@Test
+	public void shouldGetConceptAttributeCountForAttributeType() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptAttributeType conceptAttributeType = Context.getConceptService().getConceptAttributeType(1);
+		Assert.assertEquals(1, dao.getConceptAttributeCount(conceptAttributeType));
+		Assert.assertEquals(0, dao.getConceptAttributeCount(null));
+	}
+
 }

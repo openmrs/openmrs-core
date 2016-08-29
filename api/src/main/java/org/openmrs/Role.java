@@ -9,13 +9,13 @@
  */
 package org.openmrs;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.RoleConstants;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A Role is just an aggregater of {@link Privilege}s. {@link User}s contain a number of roles
@@ -25,7 +25,7 @@ import org.openmrs.util.RoleConstants;
  *
  * @see Privilege
  */
-public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Role extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 1234233L;
 	
@@ -203,7 +203,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * Returns the full set of roles be looping over inherited roles. Duplicate roles are dropped.
 	 *
 	 * @param total Roles already looped over
-	 * @return Set<Role> Current and inherited roles
+	 * @return Set&lt;Role&gt; Current and inherited roles
 	 */
 	public Set<Role> recurseOverParents(final Set<Role> total) {
 		if (!this.inheritsRoles()) {
@@ -296,7 +296,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * Returns the full set of child roles be looping over children. Duplicate roles are dropped.
 	 *
 	 * @param total Roles already looped over
-	 * @return Set<Role> Current and child roles
+	 * @return Set&lt;Role&gt; Current and child roles
 	 * @since 1.9
 	 */
 	public Set<Role> recurseOverChildren(final Set<Role> total) {

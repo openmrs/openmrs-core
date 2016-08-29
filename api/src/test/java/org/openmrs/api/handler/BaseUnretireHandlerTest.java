@@ -24,7 +24,7 @@ import org.openmrs.test.Verifies;
 public class BaseUnretireHandlerTest {
 	
 	/**
-	 * @see {@link BaseUnretireHandler#handle(Retireable,User,Date,String)}
+	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should unset the retired bit", method = "handle(Retireable,User,Date,String)")
@@ -37,7 +37,7 @@ public class BaseUnretireHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseUnretireHandler#handle(Retireable,User,Date,String)}
+	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should unset the retirer", method = "handle(Retireable,User,Date,String)")
@@ -51,7 +51,7 @@ public class BaseUnretireHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseUnretireHandler#handle(Retireable,User,Date,String)}
+	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should unset the date retired", method = "handle(Retireable,User,Date,String)")
@@ -65,7 +65,7 @@ public class BaseUnretireHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseUnretireHandler#handle(Retireable,User,Date,String)}
+	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should unset the retire reason", method = "handle(Retireable,User,Date,String)")
@@ -79,7 +79,7 @@ public class BaseUnretireHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseUnretireHandler#handle(Retireable,User,Date,String)}
+	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not act on already unretired objects", method = "handle(Retireable,User,Date,String)")
@@ -92,7 +92,7 @@ public class BaseUnretireHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseUnretireHandler#handle(Retireable,User,Date,String)}
+	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not act on retired objects with a different dateRetired", method = "handle(Retireable,User,Date,String)")

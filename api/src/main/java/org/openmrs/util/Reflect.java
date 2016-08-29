@@ -9,15 +9,20 @@
  */
 package org.openmrs.util;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.azeckoski.reflectutils.ClassData;
+import org.azeckoski.reflectutils.ClassDataCacher;
+import org.azeckoski.reflectutils.ClassFields;
+import org.azeckoski.reflectutils.exceptions.FieldnameNotFoundException;
 
 /**
  * This class has convenience methods to find the fields on a class and superclass as well as
@@ -66,12 +71,29 @@ public class Reflect {
 	 * classes.
 	 * 
 	 * @param fieldClass Class
-	 * @return List<Field>
+	 * @return List&lt;Field&gt;
 	 * @should return all fields include private and super classes
 	 */
-	@SuppressWarnings("unchecked")
 	public static List<Field> getAllFields(Class<?> fieldClass) {
-		return new ClassData(fieldClass).getFields();
+		List<Field> fields = ClassDataCacher.getInstance().getClassData(fieldClass).getFields();
+		return new ArrayList<Field>(fields);
+	}
+	
+	/**
+	 * This method returns true if the given annotation is present on the given field.
+	 * 
+	 * @param fieldClass
+	 * @param fieldName
+	 * @param annotation
+	 * @return true if the given annotation is present
+	 */
+	public static boolean isAnnotationPresent(Class<?> fieldClass, String fieldName, Class<? extends Annotation> annotation) {
+		ClassFields<?> classFields = ClassDataCacher.getInstance().getClassFields(fieldClass);
+		try {
+			return classFields.getFieldAnnotation(annotation, fieldName) != null;
+		} catch (FieldnameNotFoundException e) {
+			return false;
+		}
 	}
 	
 	/**
@@ -155,14 +177,13 @@ public class Reflect {
 	 * This method return all the fields (including private) until the given parameterized class
 	 * 
 	 * @param subClass Class
-	 * @return List<Field>
+	 * @return List&lt;Field&gt;
 	 * @should return only the sub class fields of given parameterized class
 	 */
-	@SuppressWarnings("unchecked")
-	public List<Field> getInheritedFields(Class subClass) {
+	public List<Field> getInheritedFields(Class<?> subClass) {
 		
 		List<Field> allFields = getAllFields(subClass);
-		for (Iterator iterator = allFields.iterator(); iterator.hasNext();) {
+		for (Iterator<Field> iterator = allFields.iterator(); iterator.hasNext();) {
 			Field field = (Field) iterator.next();
 			if (!hasField(field)) {
 				iterator.remove();

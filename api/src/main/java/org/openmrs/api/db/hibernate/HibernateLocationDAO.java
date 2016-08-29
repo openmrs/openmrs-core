@@ -152,7 +152,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.LocationDAO#getLocations(java.lang.String)
+	 * @see org.openmrs.api.db.LocationDAO#getLocationTags(String)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<LocationTag> getLocationTags(String search) {

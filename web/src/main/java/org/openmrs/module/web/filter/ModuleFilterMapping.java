@@ -58,7 +58,7 @@ public class ModuleFilterMapping implements Serializable {
 	}
 	
 	/**
-	 * @param the {@link Module}
+	 * @param module the {@link Module}
 	 */
 	public void setModule(Module module) {
 		this.module = module;
@@ -72,7 +72,7 @@ public class ModuleFilterMapping implements Serializable {
 	}
 	
 	/**
-	 * @param the name of the Filter
+	 * @param filterName the name of the Filter
 	 */
 	public void setFilterName(String filterName) {
 		this.filterName = filterName;
@@ -86,7 +86,7 @@ public class ModuleFilterMapping implements Serializable {
 	}
 	
 	/**
-	 * @param a List of all Servlet Names mapped to this filter
+	 * @param servletNames a List of all Servlet Names mapped to this filter
 	 */
 	public void setServletNames(List<String> servletNames) {
 		this.servletNames = servletNames;
@@ -109,7 +109,7 @@ public class ModuleFilterMapping implements Serializable {
 	}
 	
 	/**
-	 * @param - a List of all Url Patterns mapped to this filter
+	 * @param urlPatterns a List of all Url Patterns mapped to this filter
 	 */
 	public void setUrlPatterns(List<String> urlPatterns) {
 		this.urlPatterns = urlPatterns;

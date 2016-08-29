@@ -108,6 +108,12 @@
 			<column name="creator" />
 		</many-to-one>
 		
+        <set name="attributes" lazy="true" inverse="true" batch-size="100"
+             cascade="all-delete-orphan" order-by="voided asc">
+            <key column="concept_id"/>
+            <one-to-many class="ConceptAttribute"/>
+        </set>
+
 		<joined-subclass name="org.openmrs.ConceptNumeric" table="concept_numeric" extends="org.openmrs.Concept" lazy="false">
 			<key column="concept_id" not-null="true" on-delete="cascade" />
 			<property name="hiAbsolute" type="java.lang.Double" column="hi_absolute" length="22" />

@@ -57,7 +57,8 @@ public class OrderUtil {
 	 * orderable
 	 * 
 	 * @since 1.10
-	 * @param order1, order2 orders to match
+	 * @param order1 order to match
+	 * @param order2 order to match
 	 * @return true if the schedules overlap otherwise false
 	 * @should return true if order1 and order2 do not have end date
 	 * @should return true if order1 and order2 have same start dates

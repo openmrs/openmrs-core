@@ -129,7 +129,9 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		//then
 		Assert.assertTrue(errors.hasErrors());
 		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("person"));
 		Assert.assertEquals("Provider.error.personOrName.required", errors.getFieldError("name").getCode());
+		Assert.assertEquals("Provider.error.personOrName.required", errors.getFieldError("person").getCode());
 	}
 	
 	/**
@@ -194,7 +196,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object, Errors)}
+	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should accept duplicate identifier if the existing provider is not retired", method = "validate(Object,Errors)")
@@ -210,7 +212,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object, Errors)}
+	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should accept duplicate identifier if the existing provider is retired", method = "validate(Object,Errors)")
@@ -227,7 +229,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object, Errors)}
+	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should accept a duplicate identifier for a new provider which is not retired", method = "validate(Object,Errors)")
@@ -243,7 +245,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object, Errors)}
+	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should accept a duplicate identifier for a new provider which is retired", method = "validate(Object,Errors)")
@@ -261,7 +263,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object, Errors)}
+	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -283,7 +285,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object, Errors)}
+	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

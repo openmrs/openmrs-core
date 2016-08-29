@@ -9,9 +9,13 @@
  */
 package org.openmrs;
 
+import org.openmrs.annotation.AllowDirectAccess;
+import org.openmrs.annotation.DisableHandlers;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.handler.VoidHandler;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
@@ -22,11 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openmrs.annotation.AllowDirectAccess;
-import org.openmrs.annotation.DisableHandlers;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.handler.VoidHandler;
-
 /**
  * An Encounter represents one visit or interaction of a patient with a healthcare worker. Every
  * encounter can have 0 to n Observations associated with it Every encounter can have 0 to n Orders
@@ -36,7 +35,7 @@ import org.openmrs.api.handler.VoidHandler;
  * @see Obs
  * @see Order
  */
-public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
+public class Encounter extends BaseOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
 	
@@ -139,7 +138,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns a Set<Obs> of all non-voided, non-obsGroup children Obs of this Encounter
+	 * @return Returns a Set&lt;Obs&gt; of all non-voided, non-obsGroup children Obs of this Encounter
 	 * @should not return null with null obs set
 	 * @should get obs
 	 * @should not get voided obs
@@ -235,7 +234,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Returns a Set<Obs> of all root-level Obs of an Encounter, including obsGroups
+	 * Returns a Set&lt;Obs&gt; of all root-level Obs of an Encounter, including obsGroups
 	 *
 	 * @param includeVoided specifies whether or not to include voided Obs
 	 * @return Returns all obs at top level -- will not be null
@@ -401,24 +400,6 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return the patientId
-	 * @deprecated due to duplication. Use Encounter.Patient instead
-	 */
-	@Deprecated
-	public Integer getPatientId() {
-		return patientId;
-	}
-	
-	/**
-	 * @param patientId the patientId to set
-	 * @deprecated due to duplication. Use Encounter.Patient instead
-	 */
-	@Deprecated
-	public void setPatientId(Integer patientId) {
-		this.patientId = patientId;
-	}
-	
-	/**
 	 * Basic property accessor for encounterProviders. The convenience methods getProvidersByRoles
 	 * and getProvidersByRole are the preferred methods for getting providers. This getter is 
 	 * provided as a convenience for treating this like a DTO
@@ -447,60 +428,26 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	public void setEncounterProviders(Set<EncounterProvider> encounterProviders) {
 		this.encounterProviders = encounterProviders;
 	}
-	
-	/**
-	 * @return Returns the provider.
-	 * @since 1.6 (used to return User)
-	 * @deprecated since 1.9, use {@link #getProvidersByRole(EncounterRole)}
-	 * @should return null if there is no providers
-	 * @should return provider for person
-	 * @should return null if there is no provider for person
-	 * @should return same provider for person if called twice
-	 * @should not return a voided provider
-	 */
-	@Deprecated
-	public Person getProvider() {
-		if (encounterProviders == null || encounterProviders.isEmpty()) {
-			return null;
-		} else {
-			for (EncounterProvider encounterProvider : encounterProviders) {
-				// Return the first non-voided provider associated with a person in the list
-				if (!encounterProvider.isVoided() && encounterProvider.getProvider().getPerson() != null) {
-					return encounterProvider.getProvider().getPerson();
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * @param provider The provider to set.
-	 * @deprecated use {@link #setProvider(Person)}
-	 */
-	@Deprecated
-	public void setProvider(User provider) {
-		setProvider(provider.getPerson());
-	}
-	
-	/**
-	 * @param provider The provider to set.
-	 * @deprecated since 1.9, use {@link #setProvider(EncounterRole, Provider)}
-	 * @should set existing provider for unknown role
-	 */
-	@Deprecated
-	public void setProvider(Person provider) {
-		EncounterRole unknownRole = Context.getEncounterService().getEncounterRoleByUuid(
-		    EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID);
-		if (unknownRole == null) {
-			throw new IllegalStateException("No 'Unknown' encounter role with uuid "
-			        + EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID + ".");
-		}
-		Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(provider);
-		if (providers == null || providers.isEmpty()) {
-			throw new IllegalArgumentException("No provider with personId " + provider.getPersonId());
-		}
-		setProvider(unknownRole, providers.iterator().next());
-	}
+
+    /**
+     * Returns only the non-voided encounter providers for this encounter. If you want <u>all</u> encounter providers,
+     * use {@link #getEncounterProviders()}
+     *
+     * @return list of non-voided encounter providers for this encounter
+     * @see #getEncounterProviders()
+     */
+    public Set<EncounterProvider> getActiveEncounterProviders() {
+        Set<EncounterProvider> activeEncounterProviders = new LinkedHashSet<EncounterProvider>();
+        Set<EncounterProvider> providers = getEncounterProviders();
+        if (providers != null && providers.size() > 0) {
+            for (EncounterProvider provider : providers) {
+                if (provider.isVoided() == false) {
+                    activeEncounterProviders.add(provider);
+                }
+            }
+        }
+        return activeEncounterProviders;
+    }
 	
 	/**
 	 * @return Returns the form.
@@ -741,7 +688,6 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should copy all Encounter data except visit and assign copied Encounter to given Patient
 	 */
 	public Encounter copyAndAssignToAnotherPatient(Patient patient) {
-		Map<Order, Order> oldNewOrderMap = new HashMap<Order, Order>();
 		Encounter target = new Encounter();
 		
 		target.setChangedBy(getChangedBy());
@@ -767,15 +713,6 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 			target.getEncounterProviders().add(encounterProviderCopy);
 		}
 		
-		//orders
-		for (Order order : getOrders()) {
-			Order orderCopy = order.copy();
-			orderCopy.setEncounter(target);
-			orderCopy.setPatient(patient);
-			target.addOrder(orderCopy);
-			oldNewOrderMap.put(order, orderCopy);
-		}
-		
 		Context.getEncounterService().saveEncounter(target);
 		
 		//obs
@@ -783,13 +720,46 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 			Obs obsCopy = Obs.newInstance(obs);
 			obsCopy.setEncounter(target);
 			obsCopy.setPerson(patient);
-			//refresh order reference
-			Order oldOrder = obsCopy.getOrder();
-			Order newOrder = oldNewOrderMap.get(oldOrder);
-			obsCopy.setOrder(newOrder);
 			target.addObs(obsCopy);
 		}
 		
 		return target;
+	}
+
+	/**
+	 * Takes in a list of orders and pulls out the orderGroups within them
+	 *
+	 * @since 1.12
+	 * @return list of orderGroups
+	 */
+	public List<OrderGroup> getOrderGroups() {
+		Map<String, OrderGroup> orderGroups = new HashMap<String, OrderGroup>();
+		for (Order order : orders) {
+			if (order.getOrderGroup() != null) {
+				if (null == orderGroups.get(order.getOrderGroup().getUuid())) {
+					orderGroups.put(order.getOrderGroup().getUuid(), order.getOrderGroup());
+				}
+				order.getOrderGroup().addOrder(order, null);
+			}
+		}
+		List<OrderGroup> orderGroupList = new ArrayList<OrderGroup>();
+		orderGroupList.addAll(orderGroups.values());
+		return orderGroupList;
+	}
+	
+	/**
+	 * Takes in a list of orders and filters out the orders which have orderGroups
+	 * 
+	 * @since 1.12
+	 * @return list of orders not having orderGroups
+	 */
+	public List<Order> getOrdersWithoutOrderGroups() {
+		List<Order> orderListWithoutOrderGroups = new ArrayList<Order>();
+		for (Order order : orders) {
+			if (order.getOrderGroup() == null) {
+				orderListWithoutOrderGroups.add(order);
+			}
+		}
+		return orderListWithoutOrderGroups;
 	}
 }

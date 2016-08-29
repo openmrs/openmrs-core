@@ -10,9 +10,10 @@
 package org.openmrs.api.db.hibernate;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Arrays;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,8 +28,8 @@ import org.openmrs.api.context.Context;
  * This class looks for {@link OpenmrsObject} and {@link Auditable} that are being inserted into the
  * database. The creator and dateCreated fields are set when inserting or updating objects and the
  * fields are still null. If the class is an update (instead of an insert) then the changedBy and
- * dateChanged fields are set to the current user and the current time. <br/>
- * <br/>
+ * dateChanged fields are set to the current user and the current time. <br>
+ * <br>
  * This class replaces the logic that was in the AuditableSaveHandler. It is here so that the
  * cascading does NOT happen for dateChanged/changedBy to child OpenmrsObjects (because all handlers
  * recurse on lists of OpenmrsObjects.
@@ -81,7 +82,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 				log.debug("Setting changed by fields on " + entity.getClass());
 			}
 			
-			HashMap<String, Object> propertyValues = getPropertyValuesToUpdate();
+			Map<String, Object> propertyValues = getPropertyValuesToUpdate();
 			objectWasChanged = changeProperties(currentState, propertyNames, objectWasChanged, propertyValues, false);
 		}
 		return objectWasChanged;
@@ -107,14 +108,14 @@ public class AuditableInterceptor extends EmptyInterceptor {
 				log.debug("Setting creator and dateCreated on " + entity);
 			}
 			
-			HashMap<String, Object> propertyValues = getPropertyValuesToSave();
+			Map<String, Object> propertyValues = getPropertyValuesToSave();
 			objectWasChanged = changeProperties(currentState, propertyNames, objectWasChanged, propertyValues, true);
 		}
 		return objectWasChanged;
 	}
 	
 	private boolean changeProperties(Object[] currentState, String[] propertyNames, boolean objectWasChanged,
-	        HashMap<String, Object> propertyValues, Boolean setNullOnly) {
+	        Map<String, Object> propertyValues, Boolean setNullOnly) {
 		
 		for (String property : propertyValues.keySet()) {
 			if (changePropertyValue(currentState, propertyNames, property, propertyValues.get(property), setNullOnly)) {
@@ -124,8 +125,8 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		return objectWasChanged;
 	}
 	
-	private HashMap<String, Object> getPropertyValuesToSave() {
-		HashMap<String, Object> propertyValues = new HashMap<String, Object>();
+	private Map<String, Object> getPropertyValuesToSave() {
+		Map<String, Object> propertyValues = new HashMap<String, Object>();
 		propertyValues.put("creator", Context.getAuthenticatedUser());
 		propertyValues.put("dateCreated", new Date());
 		propertyValues.put("personCreator", Context.getAuthenticatedUser());
@@ -133,8 +134,8 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		return propertyValues;
 	}
 	
-	private HashMap<String, Object> getPropertyValuesToUpdate() {
-		HashMap<String, Object> propertyValues = new HashMap<String, Object>();
+	private Map<String, Object> getPropertyValuesToUpdate() {
+		Map<String, Object> propertyValues = new HashMap<String, Object>();
 		propertyValues.put("changedBy", Context.getAuthenticatedUser());
 		propertyValues.put("dateChanged", new Date());
 		propertyValues.put("personChangedBy", Context.getAuthenticatedUser());

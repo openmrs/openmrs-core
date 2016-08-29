@@ -9,72 +9,14 @@
  */
 package org.openmrs.hl7;
 
-import java.util.Hashtable;
-
-import org.openmrs.util.PrivilegeConstants;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Constants used by the hl7 package
  */
 public class HL7Constants {
-	
-	@Deprecated
-	public static final String PRIV_ADD_HL7_SOURCE = PrivilegeConstants.PRIV_ADD_HL7_SOURCE;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_HL7_SOURCE = PrivilegeConstants.PRIV_VIEW_HL7_SOURCE;
-	
-	@Deprecated
-	public static final String PRIV_MANAGE_HL7_SOURCE = PrivilegeConstants.PRIV_UPDATE_HL7_SOURCE;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_HL7_SOURCE = PrivilegeConstants.PRIV_PURGE_HL7_SOURCE;
-	
-	@Deprecated
-	public static final String PRIV_ADD_HL7_IN_QUEUE = PrivilegeConstants.PRIV_ADD_HL7_IN_QUEUE;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_HL7_IN_QUEUE = PrivilegeConstants.PRIV_VIEW_HL7_IN_QUEUE;
-	
-	@Deprecated
-	public static final String PRIV_UPDATE_HL7_IN_QUEUE = PrivilegeConstants.PRIV_UPDATE_HL7_IN_QUEUE;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_HL7_IN_QUEUE = PrivilegeConstants.PRIV_DELETE_HL7_IN_QUEUE;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_HL7_IN_QUEUE = PrivilegeConstants.PRIV_PURGE_HL7_IN_QUEUE;
-	
-	@Deprecated
-	public static final String PRIV_ADD_HL7_IN_ARCHIVE = PrivilegeConstants.PRIV_ADD_HL7_IN_ARCHIVE;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_HL7_IN_ARCHIVE = PrivilegeConstants.PRIV_VIEW_HL7_IN_ARCHIVE;
-	
-	@Deprecated
-	public static final String PRIV_UPDATE_HL7_IN_ARCHIVE = PrivilegeConstants.PRIV_UPDATE_HL7_IN_ARCHIVE;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_HL7_IN_ARCHIVE = PrivilegeConstants.PRIV_DELETE_HL7_IN_ARCHIVE;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_HL7_IN_ARCHIVE = PrivilegeConstants.PRIV_PURGE_HL7_IN_ARCHIVE;
-	
-	@Deprecated
-	public static final String PRIV_ADD_HL7_IN_EXCEPTION = PrivilegeConstants.PRIV_ADD_HL7_IN_EXCEPTION;
-	
-	@Deprecated
-	public static final String PRIV_VIEW_HL7_IN_EXCEPTION = PrivilegeConstants.PRIV_VIEW_HL7_IN_EXCEPTION;
-	
-	@Deprecated
-	public static final String PRIV_UPDATE_HL7_IN_EXCEPTION = PrivilegeConstants.PRIV_UPDATE_HL7_IN_EXCEPTION;
-	
-	@Deprecated
-	public static final String PRIV_DELETE_HL7_IN_EXCEPTION = PrivilegeConstants.PRIV_DELETE_HL7_IN_EXCEPTION;
-	
-	@Deprecated
-	public static final String PRIV_PURGE_HL7_IN_EXCEPTION = PrivilegeConstants.PRIV_PURGE_HL7_IN_EXCEPTION;
-	
+		
 	public static final Integer HL7_STATUS_PENDING = 0;
 	
 	public static final Integer HL7_STATUS_PROCESSING = 1;
@@ -174,7 +116,7 @@ public class HL7Constants {
 	public static final int MIGRATION_MAX_BATCH_SIZE = 2000;
 	
 	// List of datatypes that do not require complex definitions
-	public static final Hashtable<String, String> simpleDatatypes = new Hashtable<String, String>();
+	public static final Map<String, String> simpleDatatypes = new HashMap<String, String>();
 	
 	static {
 		simpleDatatypes.put(HL7_TEXT, "xs:string");

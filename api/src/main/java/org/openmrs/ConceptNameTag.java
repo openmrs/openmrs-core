@@ -10,51 +10,15 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.Locale;
 
-import org.apache.commons.lang.StringUtils;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * ConceptNameTag is a textual tag which can be applied to a ConceptName.
  */
-@Root
 public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 33226787L;
-	
-	// well-known tags
-	
-	/**
-	 * Name to use when nothing else is available.
-	 * @deprecated since OpenMRS 1.7 we use ConceptNameType to mark these types of concept names.
-	 */
-	@Deprecated
-	public static final String DEFAULT = "default";
-	
-	/**
-	 * Short name for a concept. Does not indicate any preference for the name.
-	 * @deprecated since OpenMRS 1.7 we use ConceptNameType to mark these types of concept names.
-	 */
-	@Deprecated
-	public static final String SHORT = "short";
-	
-	/**
-	 * A different word with similar meaning.
-	 * @deprecated since OpenMRS 1.7 we use ConceptNameType to mark these types of concept names.
-	 */
-	@Deprecated
-	public static final String SYNONYM = "synonym";
-	
-	/**
-	 * Preferred name for a language. Can be applied to only one name within the set of names within
-	 * a language.
-	 * @deprecated since OpenMRS 1.7 we use ConceptNameType to mark these types of concept names.
-	 */
-	@Deprecated
-	public static final String PREFERRED = "preferred";
 	
 	// Fields
 	private Integer conceptNameTagId;
@@ -101,7 +65,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * 
 	 * @return the textual representation of this ConceptNameTag.
 	 */
-	@Attribute
 	public String getTag() {
 		return tag;
 	}
@@ -111,7 +74,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * 
 	 * @param tag the textual representation
 	 */
-	@Attribute
 	public void setTag(String tag) {
 		this.tag = tag;
 	}
@@ -121,7 +83,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * 
 	 * @return the description of this tag
 	 */
-	@Element(data = true)
 	public String getDescription() {
 		return description;
 	}
@@ -131,7 +92,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * 
 	 * @param description
 	 */
-	@Element(data = true)
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -139,7 +99,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	/**
 	 * @return Returns the creator.
 	 */
-	@Element
 	public User getCreator() {
 		return creator;
 	}
@@ -147,7 +106,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	/**
 	 * @param creator The creator to set.
 	 */
-	@Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -155,7 +113,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	/**
 	 * @return Returns the dateCreated.
 	 */
-	@Element
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -163,7 +120,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
-	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -172,9 +128,13 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * Returns whether the ConceptName has been voided.
 	 * 
 	 * @return true if the ConceptName has been voided, false otherwise.
+	 * 
+	 * @deprecated as of 2.0, use {@link #getVoided()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isVoided() {
-		return voided;
+		return getVoided();
 	}
 	
 	/**
@@ -182,9 +142,8 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * 
 	 * @return true if the ConceptName has been voided, false otherwise.
 	 */
-	@Attribute
 	public Boolean getVoided() {
-		return isVoided();
+		return voided;
 	}
 	
 	/**
@@ -192,7 +151,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * 
 	 * @param voided the voided status to set.
 	 */
-	@Attribute
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
@@ -202,7 +160,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * 
 	 * @return the User who voided this ConceptName, or null if not set
 	 */
-	@Element(required = false)
 	public User getVoidedBy() {
 		return voidedBy;
 	}
@@ -212,7 +169,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * 
 	 * @param voidedBy the user who voided this ConceptName.
 	 */
-	@Element(required = false)
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
@@ -222,7 +178,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * 
 	 * @return the Date this ConceptName was voided.
 	 */
-	@Element(required = false)
 	public Date getDateVoided() {
 		return dateVoided;
 	}
@@ -232,7 +187,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * 
 	 * @param dateVoided the date the ConceptName was voided.
 	 */
-	@Element(required = false)
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
@@ -242,7 +196,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * 
 	 * @return the reason this ConceptName was voided
 	 */
-	@Element(data = true, required = false)
 	public String getVoidReason() {
 		return voidReason;
 	}
@@ -252,7 +205,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * 
 	 * @param voidReason the reason this ConceptName was voided
 	 */
-	@Element(data = true, required = false)
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
@@ -264,7 +216,6 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	/**
 	 * @return the conceptNameTagId
 	 */
-	@Attribute
 	public Integer getConceptNameTagId() {
 		return conceptNameTagId;
 	}
@@ -272,97 +223,8 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	/**
 	 * @param conceptNameTagId the conceptNameTagId to set
 	 */
-	@Attribute
 	public void setConceptNameTagId(Integer conceptNameTagId) {
 		this.conceptNameTagId = conceptNameTagId;
-	}
-	
-	/**
-	 * A factory method for generating a tag which indicates that a name is the preferred term
-	 * within a particular language.
-	 * 
-	 * @param locale locale from which the language component will be used
-	 * @return concept-name-tag
-	 */
-	public static ConceptNameTag preferredLanguageTagFor(Locale locale) {
-		return preferredLanguageTagFor(locale.getLanguage());
-	}
-	
-	/**
-	 * A factory method which generates a preferred country tag from the country-code portion of a
-	 * locale.
-	 * 
-	 * @param locale locale from which the country-code will be used
-	 * @return concept-name-tag for country, or null if country component wasn't specified in locale
-	 */
-	public static ConceptNameTag preferredCountryTagFor(Locale locale) {
-		ConceptNameTag preferredCountryTag = null;
-		String country = locale.getCountry();
-		if (StringUtils.isNotEmpty(country)) {
-			preferredCountryTag = preferredCountryTagFor(locale.getCountry());
-		}
-		return preferredCountryTag;
-	}
-	
-	/**
-	 * A factory method that generates strings for preferred country tags.
-	 * 
-	 * @param country ISO-3166 two letter country code
-	 * @return Returns the ConceptNameTag for the specified country.
-	 */
-	public static ConceptNameTag preferredCountryTagFor(String country) {
-		return new ConceptNameTag(PREFERRED + "_" + country, "");
-	}
-	
-	/**
-	 * A factory method that generates strings for preferred language tags. The tag will have no
-	 * description.
-	 * 
-	 * @param language ISO-639 two letter language code
-	 * @return Returns the ConceptNameTag for the specified language.
-	 */
-	public static ConceptNameTag preferredLanguageTagFor(String language) {
-		return new ConceptNameTag(PREFERRED + "_" + language, "");
-	}
-	
-	/**
-	 * Method that generates a concept name tag based on a specific locale's language.
-	 * 
-	 * @param locale
-	 * @return Returns the short language tag for the specified locale's language.
-	 */
-	public static ConceptNameTag shortLanguageTagFor(Locale locale) {
-		return shortLanguageTagFor(locale.getLanguage());
-	}
-	
-	/**
-	 * Method that generates a concept name tag based on a specified locale's country code.
-	 * 
-	 * @param locale
-	 * @return Returns the short country Name tag for the specified locale's country.
-	 */
-	public static ConceptNameTag shortCountryTagFor(Locale locale) {
-		return shortCountryTagFor(locale.getCountry());
-	}
-	
-	/**
-	 * A factory method that generates strings for short country tags.
-	 * 
-	 * @param country ISO-3166 two letter country code
-	 * @return Returns the Name Tag for the specified country code.
-	 */
-	public static ConceptNameTag shortCountryTagFor(String country) {
-		return new ConceptNameTag(SHORT + "_" + country, "");
-	}
-	
-	/**
-	 * A factory method that generates strings for short language tags.
-	 * 
-	 * @param language ISO-639 two letter language code
-	 * @return Returns the short language tag for the specified language.
-	 */
-	public static ConceptNameTag shortLanguageTagFor(String language) {
-		return new ConceptNameTag(SHORT + "_" + language, "");
 	}
 	
 	/**

@@ -11,11 +11,13 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.hibernate.search.annotations.Field;
-
 import javax.persistence.Column;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.search.annotations.Field;
 
 /**
  * In OpenMRS, we distinguish between data and metadata within our data model. Metadata represent
@@ -38,14 +40,14 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	private String description;
 	
 	@ManyToOne(optional = false)
-	@Column(name = "creator")
+	@JoinColumn(name = "creator")
 	private User creator;
 	
 	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
 	@ManyToOne
-	@Column(name = "changed_by")
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
 	@Column(name = "date_changed")
@@ -59,7 +61,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	private Date dateRetired;
 	
 	@ManyToOne
-	@Column(name = "retired_by")
+	@JoinColumn(name = "retired_by")
 	private User retiredBy;
 	
 	@Column(name = "retire_reason", length = 255)
@@ -160,10 +162,14 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	}
 	
 	/**
+	 * @deprecated as of 2.0, use {@link #getRetired()}
+	 * 
 	 * @see org.openmrs.Retireable#isRetired()
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isRetired() {
-		return retired;
+		return getRetired();
 	}
 	
 	/**
@@ -174,7 +180,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 * @see org.openmrs.Retireable#isRetired()
 	 */
 	public Boolean getRetired() {
-		return isRetired();
+		return retired;
 	}
 	
 	/**

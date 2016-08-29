@@ -35,7 +35,7 @@ import org.openmrs.obs.ComplexObsHandler;
  * {@link javax.imageio.ImageIO#getWriterFormatNames()} then that mime type will be used to save the
  * image. Images are stored in the location specified by the global property: "obs.complex_obs_dir"
  * 
- * @see OpenmrsConstants#GLOBAL_PROPERTY_COMPLEX_OBS_DIR
+ * @see org.openmrs.util.OpenmrsConstants#GLOBAL_PROPERTY_COMPLEX_OBS_DIR
  * @since 1.5
  */
 public class ImageHandler extends AbstractHandler implements ComplexObsHandler {

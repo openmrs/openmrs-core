@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 import java.util.jar.JarFile;
@@ -32,7 +31,6 @@ import java.util.zip.ZipEntry;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,6 +69,8 @@ public class ModuleFileParser {
 		validConfigVersions.add("1.2");
 		validConfigVersions.add("1.3");
 		validConfigVersions.add("1.4");
+		validConfigVersions.add("1.5");
+		validConfigVersions.add("1.6");
 	}
 	
 	/**
@@ -92,8 +92,8 @@ public class ModuleFileParser {
 	}
 	
 	/**
-	 * Convenience constructor to parse the given inputStream file into an omod. <br/>
-	 * This copies the stream into a temporary file just so things can be parsed.<br/>
+	 * Convenience constructor to parse the given inputStream file into an omod. <br>
+	 * This copies the stream into a temporary file just so things can be parsed.<br>
 	 *
 	 * @param inputStream the inputStream pointing to an omod file
 	 */
@@ -260,8 +260,6 @@ public class ModuleFileParser {
 			module.setPrivileges(getPrivileges(rootNode, configVersion));
 			module.setGlobalProperties(getGlobalProperties(rootNode, configVersion));
 			
-			module.setMessages(getMessages(rootNode, configVersion, jarfile, moduleId, version));
-			
 			module.setMappingFiles(getMappingFiles(rootNode, configVersion, jarfile));
 			module.setPackagesWithMappedClasses(getPackagesWithMappedClasses(rootNode, configVersion));
 			
@@ -343,7 +341,11 @@ public class ModuleFileParser {
 					}
 					resource.setPath(resourceElement.getTextContent());
 				} else if ("openmrsVersion".equals(resourceElement.getNodeName())) {
-					resource.setOpenmrsVersion(resourceElement.getTextContent());
+					if (StringUtils.isBlank(resource.getOpenmrsPlatformVersion())) {
+						resource.setOpenmrsPlatformVersion(resourceElement.getTextContent());
+					}
+				} else if ("openmrsPlatformVersion".equals(resourceElement.getNodeName())) {
+					resource.setOpenmrsPlatformVersion(resourceElement.getTextContent());
 				} else if ("modules".equals(resourceElement.getNodeName())) {
 					NodeList modulesNode = resourceElement.getChildNodes();
 					for (int k = 0; k < modulesNode.getLength(); k++) {
@@ -534,73 +536,7 @@ public class ModuleFileParser {
 		return extensions;
 		
 	}
-	
-	/**
-	 * load in messages
-	 *
-	 * @param root
-	 * @param configVersion
-	 * @return
-	 */
-	private Map<String, Properties> getMessages(Element root, String configVersion, JarFile jarfile, String moduleId,
-	        String version) {
 		
-		Map<String, Properties> messages = new HashMap<String, Properties>();
-		
-		NodeList messageNodes = root.getElementsByTagName("messages");
-		if (messageNodes.getLength() > 0) {
-			log.debug("# message nodes: " + messageNodes.getLength());
-			int i = 0;
-			while (i < messageNodes.getLength()) {
-				Node node = messageNodes.item(i);
-				NodeList nodes = node.getChildNodes();
-				int x = 0;
-				String lang = "", file = "";
-				while (x < nodes.getLength()) {
-					Node childNode = nodes.item(x);
-					if ("lang".equals(childNode.getNodeName())) {
-						lang = childNode.getTextContent().trim();
-					} else if ("file".equals(childNode.getNodeName())) {
-						file = childNode.getTextContent().trim();
-					}
-					x++;
-				}
-				log.debug("lang: " + lang + " file: " + file);
-				
-				// lang and file are required
-				if (lang.length() > 0 && file.length() > 0) {
-					InputStream inStream = null;
-					try {
-						inStream = ModuleUtil.getResourceFromApi(jarfile, moduleId, version, file);
-						if (inStream == null) {
-							// Try the old way. Loading from the root of the omod
-							ZipEntry entry = jarfile.getEntry(file);
-							if (entry == null) {
-								throw new ModuleException(Context.getMessageSourceService().getMessage(
-								    "Module.error.noMessagePropsFile", new Object[] { file, lang }, Context.getLocale()));
-							}
-							inStream = jarfile.getInputStream(entry);
-						}
-						Properties props = new Properties();
-						OpenmrsUtil.loadProperties(props, inStream);
-						messages.put(lang, props);
-					}
-					catch (IOException e) {
-						log.warn("Unable to load properties: " + file);
-					}
-					finally {
-						IOUtils.closeQuietly(inStream);
-					}
-				} else {
-					log.warn("'lang' and 'file' are required for extensions. Given '" + lang + "' and '" + file + "'");
-				}
-				i++;
-			}
-		}
-		
-		return messages;
-	}
-	
 	/**
 	 * load in required privileges
 	 *

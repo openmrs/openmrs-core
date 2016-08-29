@@ -66,72 +66,9 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Test the check digit method
-	 * 
-	 * @see {@link OpenmrsUtil#getCheckDigit(String)}
-	 */
-	@Test
-	@Verifies(value = "should get valid check digits", method = "getCheckDigit(String)")
-	public void getCheckDigit_shouldGetValidCheckDigits() throws Exception {
-		
-		String[] ids = { "9", "99", "999", "123MT", "asdf" };
-		int[] cds = { 1, 2, 3, 2, 8 };
-		
-		for (int i = 0; i < ids.length; i++) {
-			assertEquals(OpenmrsUtil.getCheckDigit(ids[i]), cds[i]);
-		}
-		
-	}
-	
-	/**
-	 * Test check digit validation methods
-	 * 
-	 * @see {@link OpenmrsUtil#isValidCheckDigit(String)}
-	 */
-	@Test
-	@Verifies(value = "should validate correct check digits", method = "isValidCheckDigit(String)")
-	public void isValidCheckDigit_shouldValidateCorrectCheckDigits() throws Exception {
-		
-		String[] ids2 = { "9-1", "99-2", "999-3", "123MT-2", "asdf-8", "12abd-7" };
-		String[] ids2Char = { "9-b", "99-c", "999-d", "123MT-c", "asdf-i", "12abd-h" };
-		for (int i = 0; i < ids2.length; i++) {
-			assertTrue(OpenmrsUtil.isValidCheckDigit(ids2[i]));
-			assertTrue(OpenmrsUtil.isValidCheckDigit(ids2Char[i]));
-		}
-	}
-	
-	/**
-	 * @see {@link OpenmrsUtil#isValidCheckDigit(String)}
-	 */
-	@Test
-	@Verifies(value = "should not validate invalid check digits", method = "isValidCheckDigit(String)")
-	public void isValidCheckDigit_shouldNotValidateInvalidCheckDigits() throws Exception {
-		String[] ids3 = { "asdf-7", "9-2", "9-4" };
-		for (int i = 0; i < ids3.length; i++) {
-			assertFalse(OpenmrsUtil.isValidCheckDigit(ids3[i]));
-		}
-	}
-	
-	/**
-	 * @see {@link OpenmrsUtil#isValidCheckDigit(String)}
-	 */
-	@Test
-	@Verifies(value = "should throw error if given an invalid character in id", method = "isValidCheckDigit(String)")
-	public void isValidCheckDigit_shouldThrowErrorIfGivenAnInvalidCharacterInId() throws Exception {
-		String[] ids4 = { "#@!", "234-3-3", "-3", "2134" };
-		for (int i = 0; i < ids4.length; i++) {
-			try {
-				OpenmrsUtil.isValidCheckDigit(ids4[i]);
-				fail("An exception was not thrown for invalid identifier: " + ids4[i]);
-			}
-			catch (Exception e) {}
-		}
-	}
-	
-	/**
 	 * test the collection contains method
 	 * 
-	 * @see {@link OpenmrsUtil#collectionContains(Collection<*>,Object)}
+	 * @see OpenmrsUtil#collectionContains(Collection<*>,Object)
 	 */
 	@Test
 	@Verifies(value = "should use equals method for comparison instead of compareTo given List collection", method = "collectionContains(Collection<*>,Object)")
@@ -162,7 +99,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * test the collection contains method
 	 * 
-	 * @see {@link OpenmrsUtil#collectionContains(Collection<*>,Object)}
+	 * @see OpenmrsUtil#collectionContains(Collection<*>,Object)
 	 */
 	@Test
 	@Verifies(value = "should use equals method for comparison instead of compareTo given SortedSet collection", method = "collectionContains(Collection<*>,Object)")
@@ -194,7 +131,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * When given a null parameter, the {@link OpenmrsUtil#url2file(java.net.URL)} method should
 	 * quietly fail by returning null
 	 * 
-	 * @see {@link OpenmrsUtil#url2file(URL)}
+	 * @see OpenmrsUtil#url2file(URL)
 	 */
 	@Test
 	@Verifies(value = "should return null given null parameter", method = "url2file(URL)")
@@ -203,7 +140,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
 	@Verifies(value = "should fail with digit only password by default", method = "validatePassword(String,String,String)")
@@ -212,7 +149,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
 	@Verifies(value = "should fail with digit only password if not allowed", method = "validatePassword(String,String,String)")
@@ -222,7 +159,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
 	@Verifies(value = "should pass with digit only password if allowed", method = "validatePassword(String,String,String)")
@@ -233,7 +170,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
 	@Verifies(value = "should fail with char only password by default", method = "validatePassword(String,String,String)")
@@ -242,7 +179,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
 	@Verifies(value = "should fail with char only password if not allowed", method = "validatePassword(String,String,String)")
@@ -252,7 +189,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
 	@Verifies(value = "should pass with char only password if allowed", method = "validatePassword(String,String,String)")
@@ -263,7 +200,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
 	@Verifies(value = "should fail without upper and lower case password by default", method = "validatePassword(String,String,String)")
@@ -272,7 +209,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
 	@Verifies(value = "should fail without upper and lower case password if not allowed", method = "validatePassword(String,String,String)")
@@ -282,7 +219,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
 	@Verifies(value = "should pass without upper and lower case password if allowed", method = "validatePassword(String,String,String)")
@@ -292,7 +229,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = WeakPasswordException.class)
 	@Verifies(value = "should fail with password equals to user name by default", method = "validatePassword(String,String,String)")
@@ -301,7 +238,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = WeakPasswordException.class)
 	@Verifies(value = "should fail with password equals to user name if not allowed", method = "validatePassword(String,String,String)")
@@ -311,7 +248,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
 	@Verifies(value = "should pass with password equals to user name if allowed", method = "validatePassword(String,String,String)")
@@ -321,7 +258,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = WeakPasswordException.class)
 	@Verifies(value = "should fail with password equals to system id by default", method = "validatePassword(String,String,String)")
@@ -330,7 +267,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = WeakPasswordException.class)
 	@Verifies(value = "should fail with password equals to system id if not allowed", method = "validatePassword(String,String,String)")
@@ -340,7 +277,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
 	@Verifies(value = "should pass with password equals to system id if allowed", method = "validatePassword(String,String,String)")
@@ -350,7 +287,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = ShortPasswordException.class)
 	@Verifies(value = "should fail with short password by default", method = "validatePassword(String,String,String)")
@@ -359,7 +296,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = ShortPasswordException.class)
 	@Verifies(value = "should fail with short password if not allowed", method = "validatePassword(String,String,String)")
@@ -369,7 +306,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
 	@Verifies(value = "should pass with short password if allowed", method = "validatePassword(String,String,String)")
@@ -379,7 +316,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
 	@Verifies(value = "should fail with password not matching configured regex", method = "validatePassword(String,String,String)")
@@ -390,7 +327,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
 	@Verifies(value = "should pass with password matching configured regex", method = "validatePassword(String,String,String)")
@@ -401,7 +338,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow password to contain non alphanumeric characters", method = "validatePassword(String,String,String)")
@@ -410,7 +347,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow password to contain white spaces", method = "validatePassword(String,String,String)")
@@ -419,7 +356,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#getDateFormat(Locale)}
+	 * @see OpenmrsUtil#getDateFormat(Locale)
 	 */
 	@Test
 	@Verifies(value = "should return a pattern with four y characters in it", method = "getDateFormat(Locale)")
@@ -431,7 +368,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#containsUpperAndLowerCase(String)}
+	 * @see OpenmrsUtil#containsUpperAndLowerCase(String)
 	 */
 	@Test
 	@Verifies(value = "should return true if string contains upper and lower case", method = "containsUpperAndLowerCase(String)")
@@ -443,7 +380,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#containsUpperAndLowerCase(String)}
+	 * @see OpenmrsUtil#containsUpperAndLowerCase(String)
 	 */
 	@Test
 	@Verifies(value = "should return false if string does not contain lower case characters", method = "containsUpperAndLowerCase(String)")
@@ -455,7 +392,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#containsUpperAndLowerCase(String)}
+	 * @see OpenmrsUtil#containsUpperAndLowerCase(String)
 	 */
 	@Test
 	@Verifies(value = "should return false if string does not contain upper case characters", method = "containsUpperAndLowerCase(String)")
@@ -467,7 +404,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#containsOnlyDigits(String)}
+	 * @see OpenmrsUtil#containsOnlyDigits(String)
 	 */
 	@Test
 	@Verifies(value = "should return true if string contains only digits", method = "containsOnlyDigits(String)")
@@ -476,7 +413,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#containsOnlyDigits(String)}
+	 * @see OpenmrsUtil#containsOnlyDigits(String)
 	 */
 	@Test
 	@Verifies(value = "should return false if string contains any non-digits", method = "containsOnlyDigits(String)")
@@ -489,7 +426,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#containsDigit(String)}
+	 * @see OpenmrsUtil#containsDigit(String)
 	 */
 	@Test
 	@Verifies(value = "should return true if string contains any digits", method = "containsDigit(String)")
@@ -498,7 +435,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#containsDigit(String)}
+	 * @see OpenmrsUtil#containsDigit(String)
 	 */
 	@Test
 	@Verifies(value = "should return false if string contains no digits", method = "containsDigit(String)")
@@ -514,7 +451,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * initialization wizard), but that is not possible to set up on a test-by-test basis, so we
 	 * settle by making the user context not available.
 	 * 
-	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
 	@Verifies(value = "should still work without an open session", method = "validatePassword(String,String,String)")
@@ -524,7 +461,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#getDateFormat(Locale)}
+	 * @see OpenmrsUtil#getDateFormat(Locale)
 	 */
 	@Test
 	@Verifies(value = "should not allow the returned SimpleDateFormat to be modified", method = "getDateFormat(Locale)")
@@ -620,7 +557,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#shortenedStackTrace(String)}
+	 * @see OpenmrsUtil#shortenedStackTrace(String)
 	 */
 	@Test
 	@Verifies(value = "should remove springframework and reflection related lines", method = "shortenedStackTrace(String)")
@@ -751,7 +688,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#shortenedStackTrace(String)}
+	 * @see OpenmrsUtil#shortenedStackTrace(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if stackTrace is null", method = "shortenedStackTrace(String)")
@@ -760,7 +697,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#nullSafeEqualsIgnoreCase(String,String)}
+	 * @see OpenmrsUtil#nullSafeEqualsIgnoreCase(String,String)
 	 */
 	@Test
 	@Verifies(value = "should be case insensitive", method = "nullSafeEqualsIgnoreCase(String,String)")
@@ -769,7 +706,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsUtil#nullSafeEqualsIgnoreCase(String,String)}
+	 * @see OpenmrsUtil#nullSafeEqualsIgnoreCase(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return false if only one of the strings is null", method = "nullSafeEqualsIgnoreCase(String,String)")

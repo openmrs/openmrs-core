@@ -107,7 +107,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	}
 	
 	/**
-	 * @see SerializedObjectDAO#getAllObjectsByName(Class, String)
+	 * @see SerializedObjectDAO#getAllSerializedObjectsByName(Class, String, boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<SerializedObject> getAllSerializedObjectsByName(Class<?> type, String name, boolean exactMatchOnly)
@@ -123,7 +123,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	}
 	
 	/**
-	 * @see SerializedObjectDAO#getAllObjectsByName(Class, String)
+	 * @see SerializedObjectDAO#getAllObjectsByName(Class, String, boolean)
 	 */
 	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, String name, boolean exactMatchOnly)
 	        throws DAOException {

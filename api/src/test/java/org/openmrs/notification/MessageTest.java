@@ -56,7 +56,7 @@ public class MessageTest {
 	}
 	
 	/**
-	 * @see {@link Message#Message(Integer,String,String,String,String,String,String,String)}
+	 * @see Message#Message(Integer,String,String,String,String,String,String,String)
 	 */
 	@Test
 	@Verifies(value = "should fill in all parameters", method = "Message(Integer,String,String,String,String,String,String,String)")
@@ -80,7 +80,7 @@ public class MessageTest {
 	}
 	
 	/**
-	 * @see {@link Message#setRecipients(String)}
+	 * @see Message#setRecipients(String)
 	 */
 	@Test
 	@Verifies(value = "should set multiple recipients", method = "setRecipients(String)")
@@ -95,7 +95,7 @@ public class MessageTest {
 	}
 	
 	/**
-	 * @see {@link Message#addRecipient(String)}
+	 * @see Message#addRecipient(String)
 	 */
 	@Test
 	@Verifies(value = "should add new recipient", method = "addRecipient(String)")
@@ -111,7 +111,7 @@ public class MessageTest {
 	}
 	
 	/**
-	 * @see {@link Message#hasAttachment()}
+	 * @see Message#hasAttachment()
 	 */
 	@Test
 	@Verifies(value = "should r return true if this message has an attachment", method = "hasAttachment()")

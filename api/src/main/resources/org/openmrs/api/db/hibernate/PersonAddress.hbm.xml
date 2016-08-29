@@ -16,14 +16,14 @@
 <hibernate-mapping package="org.openmrs">
 
 	<class name="PersonAddress" table="person_address">
+	
+		<cache usage="read-write"/>
 
 		<id name="personAddressId" type="int" column="person_address_id" unsaved-value="none">
 			<generator class="native">
 				<param name="sequence">person_address_person_address_id_seq</param>
 			</generator>
 		</id>
-
-		
 
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
@@ -70,6 +70,33 @@
 		
 		<property name="address5" type="java.lang.String"
 			column="address5" length="255" />
+		
+		<property name="address7" type="java.lang.String"
+			column="address7" length="255" />
+		
+		<property name="address8" type="java.lang.String"
+			column="address8" length="255" />
+
+		<property name="address9" type="java.lang.String"
+			column="address9" length="255" />
+
+		<property name="address10" type="java.lang.String"
+			column="address10" length="255" />
+
+		<property name="address11" type="java.lang.String"
+			column="address11" length="255" />
+
+		<property name="address12" type="java.lang.String"
+			column="address12" length="255" />
+
+		<property name="address13" type="java.lang.String"
+			column="address13" length="255" />
+
+		<property name="address14" type="java.lang.String"
+			column="address14" length="255" />
+
+		<property name="address15" type="java.lang.String"
+			column="address15" length="255" />
 		
 		<many-to-one name="creator" class="User" />
 

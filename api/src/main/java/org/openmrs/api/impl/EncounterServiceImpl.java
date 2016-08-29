@@ -12,7 +12,6 @@ package org.openmrs.api.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,7 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
+import org.openmrs.OrderGroup;
 import org.openmrs.Patient;
 import org.openmrs.Privilege;
 import org.openmrs.Provider;
@@ -39,10 +39,11 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.EncounterTypeLockedException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
-import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.handler.EncounterVisitHandler;
+import org.openmrs.parameter.EncounterSearchCriteria;
+import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
@@ -185,12 +186,43 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		// do the actual saving to the database
 		dao.saveEncounter(encounter);
 		
-		// save the new orders
-		for (Order o : encounter.getOrders()) {
+		// save the new orderGroups
+		for (OrderGroup orderGroup : encounter.getOrderGroups()) {
+			Context.getOrderService().saveOrderGroup(orderGroup);
+		}
+		//save the new orders which do not have order groups
+		for (Order o : encounter.getOrdersWithoutOrderGroups()) {
 			if (o.getOrderId() == null) {
 				Context.getOrderService().saveOrder(o, null);
 			}
 		}
+		
+		// save the Obs
+		String changeMessage = Context.getMessageSourceService().getMessage("Obs.void.reason.default");
+		ObsService os = Context.getObsService();
+		List<Obs> toRemove = new ArrayList<>();
+		List<Obs> toAdd = new ArrayList<>();
+		for (Obs o : encounter.getAllObs(true)) {
+			if (o.getId() == null) {
+				os.saveObs(o, null);
+			} else {
+				Obs newObs = os.saveObs(o, changeMessage);
+				//The logic in saveObs evicts the old obs instance, so we need to update the collection
+				//with the newly loaded and voided instance, apparently reloading the encounter
+				//didn't do the tick
+				toRemove.add(o);
+				toAdd.add(os.getObs(o.getId()));
+				toAdd.add(newObs);
+			}
+		}
+		
+		for (Obs o : toRemove) {
+			encounter.removeObs(o);
+		}
+		for (Obs o : toAdd) {
+			encounter.addObs(o);
+		}
+		
 		return encounter;
 	}
 	
@@ -218,7 +250,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		if (patient == null) {
 			throw new IllegalArgumentException("The 'patient' parameter is requred and cannot be null");
 		}
-		return Context.getEncounterService().getEncounters(patient, null, null, null, null, null, null, false);
+		
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setPatient(patient)
+		        .setIncludeVoided(false).createEncounterSearchCriteria();
+		
+		return Context.getEncounterService().getEncounters(encounterSearchCriteria);
 	}
 	
 	/**
@@ -252,7 +288,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 		
 		List<Encounter> encs = new Vector<Encounter>();
-		for (Patient p : Context.getPatientService().getPatients(null, identifier, null, false)) {
+		for (Patient p : Context.getPatientService().getPatients(identifier, null, null, false)) {
 			encs.addAll(Context.getEncounterService().getEncountersByPatientId(p.getPatientId()));
 		}
 		return Context.getEncounterService().filterEncountersByViewPermissions(encs, null);
@@ -261,66 +297,32 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
 	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
-	 *      java.util.Collection, boolean)
-	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
+	 *      java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection,
+	 *      boolean)
+	 * @deprecated As of 2.0, replaced by {@link #getEncounters(EncounterSearchCriteria)}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, boolean includeVoided) {
-		return Context.getEncounterService().getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes,
-		    null, includeVoided);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
-	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
-	 *      java.util.Collection, java.util.Collection, boolean)
-	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, Collection, Collection, boolean)}
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
-	        boolean includeVoided) {
-		return Context.getEncounterService().filterEncountersByViewPermissions(
-		    dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, usersToProviders(providers),
-		        null, null, includeVoided), null);
-	}
-	
-	/**
-	 * Helper method that finds the corresponding providers for a collection of users
-	 * 
-	 * @param users
-	 * @return a collection of providers, with 0-n for each item in users
-	 */
-	private Collection<Provider> usersToProviders(Collection<User> users) {
-		if (users == null) {
-			return null;
-		}
-		ProviderService providerService = Context.getProviderService();
-		Collection<Provider> ret = new HashSet<Provider>();
-		for (User u : users) {
-			ret.addAll(providerService.getProvidersByPerson(u.getPerson()));
-		}
-		return ret;
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
-	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
-	 *      java.util.Collection, java.util.Collection, boolean)
-	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
-	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
-		return Context.getEncounterService().filterEncountersByViewPermissions(
-		    dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, providers, visitTypes, visits,
-		        includeVoided), null);
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     Collection<Provider> providers, Collection<VisitType> visitTypes,
+	                                     Collection<Visit> visits, boolean includeVoided) {
+		EncounterSearchCriteriaBuilder encounterSearchCriteriaBuilder = new EncounterSearchCriteriaBuilder().setPatient(who)
+		        .setLocation(loc).setFromDate(fromDate).setToDate(toDate).setEnteredViaForms(enteredViaForms)
+		        .setEncounterTypes(encounterTypes).setProviders(providers).setVisitTypes(visitTypes).setVisits(visits)
+		        .setIncludeVoided(includeVoided);
+		
+		return getEncounters(encounterSearchCriteriaBuilder.createEncounterSearchCriteria());
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)
+	 */
+	public List<Encounter> getEncounters(EncounterSearchCriteria encounterSearchCriteria) {
+		// the second search parameter is null as it defaults to authenticated user from context
+		return Context.getEncounterService().filterEncountersByViewPermissions(dao.getEncounters(encounterSearchCriteria),
+		    null);
 	}
 	
 	/**
@@ -532,172 +534,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#createEncounter(org.openmrs.Encounter)
-	 * @deprecated replaced by {@link #saveEncounter(Encounter)}
-	 */
-	@Deprecated
-	public void createEncounter(Encounter encounter) throws APIException {
-		Context.getEncounterService().saveEncounter(encounter);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#updateEncounter(org.openmrs.Encounter)
-	 * @deprecated replaced by {@link #saveEncounter(Encounter)}
-	 */
-	@Deprecated
-	public void updateEncounter(Encounter encounter) throws APIException {
-		Context.getEncounterService().saveEncounter(encounter);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#deleteEncounter(org.openmrs.Encounter)
-	 * @deprecated Replaced by {@link #purgeEncounter(Encounter)}
-	 */
-	@Deprecated
-	public void deleteEncounter(Encounter encounter) throws APIException {
-		Context.getEncounterService().purgeEncounter(encounter);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getEncountersByPatientId(java.lang.Integer, boolean)
-	 * @deprecated replaced by {@link #getEncountersByPatientId(Integer)}
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Encounter> getEncountersByPatientId(Integer patientId, boolean includeVoided) throws APIException {
-		return Context.getEncounterService().getEncountersByPatientId(patientId);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getEncountersByPatientIdentifier(java.lang.String,
-	 *      boolean)
-	 * @deprecated replaced by {@link #getEncountersByPatientIdentifier(String)}
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Encounter> getEncountersByPatientIdentifier(String identifier, boolean includeVoided) throws APIException {
-		return Context.getEncounterService().getEncountersByPatientIdentifier(identifier);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient)
-	 * @deprecated replaced by {@link #getEncountersByPatient(Patient patient)}
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Encounter> getEncounters(Patient who) {
-		return Context.getEncounterService().filterEncountersByViewPermissions(getEncountersByPatient(who), null);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient, boolean)
-	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Encounter> getEncounters(Patient who, boolean includeVoided) {
-		return Context.getEncounterService().getEncounters(who, null, null, null, null, null, null, includeVoided);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
-	 *      org.openmrs.Location)
-	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Encounter> getEncounters(Patient who, Location where) {
-		return Context.getEncounterService().getEncounters(who, where, null, null, null, null, null, false);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient, java.util.Date,
-	 *      java.util.Date)
-	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Encounter> getEncounters(Patient who, Date fromDate, Date toDate) {
-		return Context.getEncounterService().getEncounters(who, null, fromDate, toDate, null, null, null, false);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getEncounters(java.util.Date, java.util.Date)
-	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public Collection<Encounter> getEncounters(Date fromDate, Date toDate) {
-		return Context.getEncounterService().getEncounters(null, null, fromDate, toDate, null, null, null, false);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Location, java.util.Date,
-	 *      java.util.Date)
-	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Encounter> getEncounters(Location loc, Date fromDate, Date toDate) {
-		return Context.getEncounterService().getEncounters(null, loc, fromDate, toDate, null, null, null, false);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getEncounterTypes()
-	 * @deprecated replaced by {@link #getAllEncounterTypes()}
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<EncounterType> getEncounterTypes() {
-		return Context.getEncounterService().getAllEncounterTypes();
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getLocations()
-	 * @deprecated use LocationService.getAllLocations()
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Location> getLocations() throws APIException {
-		return Context.getLocationService().getAllLocations();
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getLocation(java.lang.Integer)
-	 * @deprecated use LocationService.getLocation(locationId)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public Location getLocation(Integer locationId) throws APIException {
-		return Context.getLocationService().getLocation(locationId);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getLocationByName(java.lang.String)
-	 * @deprecated use LocationService.getLocation(name)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public Location getLocationByName(String name) throws APIException {
-		return Context.getLocationService().getLocation(name);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#findLocations(java.lang.String)
-	 * @deprecated use LocationService.getLocations(name)
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public List<Location> findLocations(String name) throws APIException {
-		return Context.getLocationService().getLocations(name);
-	}
-	
-	/**
 	 * @see org.openmrs.api.EncounterService#getEncounterByUuid(java.lang.String)
 	 */
 	@Transactional(readOnly = true)
@@ -729,7 +565,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided)
-	        throws APIException {
+	    throws APIException {
 		return Context.getEncounterService().filterEncountersByViewPermissions(
 		    dao.getEncounters(query, null, start, length, includeVoided), null);
 	}
@@ -741,7 +577,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(String query, Integer patientId, Integer start, Integer length,
-	        boolean includeVoided) throws APIException {
+	                                     boolean includeVoided) throws APIException {
 		return Context.getEncounterService().filterEncountersByViewPermissions(
 		    dao.getEncounters(query, patientId, start, length, includeVoided), null);
 	}
@@ -904,7 +740,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query,
-	        Integer start, Integer length) throws APIException {
+	                                                       Integer start, Integer length) throws APIException {
 		return Context.getEncounterService().filterEncountersByViewPermissions(
 		    dao.getEncountersByVisitsAndPatient(patient, includeVoided, query, start, length), null);
 	}
@@ -916,7 +752,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query)
-	        throws APIException {
+	    throws APIException {
 		return dao.getEncountersByVisitsAndPatientCount(patient, includeVoided, query);
 	}
 	

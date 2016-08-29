@@ -9,28 +9,30 @@
  */
 package org.openmrs;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
- * Defines a type of relationship between two people in the database. <br/>
- * <br/>
- * A relationship is two-way. There is a name for the relationship in both directions. <br/>
- * <br/>
- * For example: <br/>
- * a) physician Joe<br/>
- * b) patient Bob<br/>
+ * Defines a type of relationship between two people in the database. <br>
+ * <br>
+ * A relationship is two-way. There is a name for the relationship in both directions. <br>
+ * <br>
+ * For example: <br>
+ * a) physician Joe<br>
+ * b) patient Bob<br>
  * Joe is the "physician of" Bob <u>and</u> Bob is the patient of Joe. Once you can establish one of
- * the two relationships, you automatically know the other. <br/>
- * <br/>
- * ALL relationships are two-way and can be defined as such. <br/>
- * <br/>
+ * the two relationships, you automatically know the other. <br>
+ * <br>
+ * ALL relationships are two-way and can be defined as such. <br>
+ * <br>
  * RelationshipTypes should be defined as <b>gender non-specific</b> For example: A mother and her
  * son. Instead of having a RelationshipType defined as mother-son, it should be defined as
  * Parent-child. (This avoids the duplicative types that would come out like father-son,
- * father-daughter, mother-daughter) <br/>
- * <br/>
+ * father-daughter, mother-daughter) <br>
+ * <br>
  * In English, we run into a tricky RelationshipType with aunts and uncles. We have chosen to define
  * them as aunt/uncle-niece/nephew.
  */
-public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class RelationshipType extends BaseOpenmrsMetadata{
 	
 	public static final long serialVersionUID = 4223L;
 	
@@ -113,22 +115,20 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 	}
 	
 	/**
-	 * @deprecated use isPreferred(). This method is kept around for Spring/Hibernate's use
-	 * @return the preferred status
-	 */
-	@Deprecated
-	@SuppressWarnings("unused")
-	private Boolean getPreferred() {
-		return isPreferred();
-	}
-	
-	/**
 	 * "Preferred" relationship types are those that should be shown as default types when
 	 * adding/editing a person's relationships
 	 * 
 	 * @return the preferred status
+	 * 
+	 * @deprecated as of 2.0, use {@link #getPrefered()}
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isPreferred() {
+		return getPreferred();
+	}
+	
+	public Boolean getPreferred() {
 		return preferred;
 	}
 	

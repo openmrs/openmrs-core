@@ -48,7 +48,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#getCohort(String)}
+	 * @see CohortService#getCohort(String)
 	 */
 	@Test
 	@Verifies(value = "should only get non voided cohorts by name", method = "getCohort(String)")
@@ -70,7 +70,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#getCohortByUuid(String)}
+	 * @see CohortService#getCohortByUuid(String)
 	 * 
 	 */
 	@Test
@@ -83,7 +83,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#getCohortByUuid(String)}
+	 * @see CohortService#getCohortByUuid(String)
 	 * 
 	 */
 	@Test
@@ -93,7 +93,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#purgeCohort(Cohort)}
+	 * @see CohortService#purgeCohort(Cohort)
 	 */
 	@Test
 	@Verifies(value = "should delete cohort from database", method = "purgeCohort(Cohort)")
@@ -107,7 +107,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#getCohorts(String)}
+	 * @see CohortService#getCohorts(String)
 	 */
 	@Test
 	@Verifies(value = "should match cohorts by partial name", method = "getCohorts(String)")
@@ -124,7 +124,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#saveCohort(Cohort)}
+	 * @see CohortService#saveCohort(Cohort)
 	 * 
 	 */
 	@Test
@@ -149,7 +149,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#saveCohort(Cohort)}
+	 * @see CohortService#saveCohort(Cohort)
 	 * 
 	 */
 	@Test
@@ -168,7 +168,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#voidCohort(Cohort,String)}
+	 * @see CohortService#voidCohort(Cohort,String)
 	 * 
 	 */
 	@Test
@@ -194,7 +194,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#voidCohort(Cohort,String)}
+	 * @see CohortService#voidCohort(Cohort,String)
 	 * 
 	 */
 	@Test
@@ -226,7 +226,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#voidCohort(Cohort,String)}
+	 * @see CohortService#voidCohort(Cohort,String)
 	 * 
 	 */
 	@Test
@@ -254,7 +254,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#voidCohort(Cohort,String)}
+	 * @see CohortService#voidCohort(Cohort,String)
 	 * 
 	 */
 	@Test
@@ -274,7 +274,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#getCohort(Integer)}
+	 * @see CohortService#getCohort(Integer)
 	 * 
 	 */
 	@Test
@@ -288,7 +288,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#getCohort(String)}
+	 * @see CohortService#getCohort(String)
 	 * 
 	 */
 	@Test
@@ -301,7 +301,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#getCohort(String)}
+	 * @see CohortService#getCohort(String)
 	 * 
 	 */
 	@Test
@@ -342,7 +342,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#getAllCohorts()}
+	 * @see CohortService#getAllCohorts()
 	 * 
 	 */
 	@Test
@@ -366,7 +366,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#getAllCohorts(null)}
+	 * @see CohortService#getAllCohorts(null)
 	 * 
 	 */
 	@Test
@@ -390,7 +390,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#getCohorts(String)}
+	 * @see CohortService#getCohorts(String)
 	 * 
 	 */
 	@Test
@@ -405,7 +405,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#getCohortsContainingPatient(Patient)}
+	 * @see CohortService#getCohortsContainingPatient(Patient)
 	 * 
 	 */
 	@Test
@@ -432,7 +432,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#getCohortsContainingPatient(Patient)}
+	 * @see CohortService#getCohortsContainingPatient(Patient)
 	 * 
 	 */
 	@Test
@@ -449,7 +449,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#addPatientToCohort(Cohort,Patient)}
+	 * @see CohortService#addPatientToCohort(Cohort,Patient)
 	 * 
 	 */
 	@Test
@@ -465,7 +465,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link CohortService#addPatientToCohort(Cohort,Patient)}
+	 * @see CohortService#addPatientToCohort(Cohort,Patient)
 	 * 
 	 */
 	@Test

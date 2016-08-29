@@ -9,8 +9,6 @@
  */
 package org.openmrs;
 
-import java.io.Serializable;
-
 /**
  * The concept Reference Term map object represents a mapping between two Concept Reference Terms. A
  * concept reference term can have 0 to N concept reference term mappings to any or all Concept
@@ -18,7 +16,7 @@ import java.io.Serializable;
  *
  * @since 1.9
  */
-public class ConceptReferenceTermMap extends BaseConceptMap implements Serializable {
+public class ConceptReferenceTermMap extends BaseConceptMap {
 	
 	private static final long serialVersionUID = 1L;
 	

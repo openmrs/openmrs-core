@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+	<patient patient_id="9" creator="1" date_created="2006-01-18 00:00:00.0" voided="0" />
+	<encounter encounter_id="7" encounter_type="2" patient_id="9" location_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="0" uuid="62f85583c-ccae-4d9d-96b1-01abf41fe44d"/>
+	<orders order_id="212" order_type_id="1" order_number="212" urgency="ROUTINE" order_action="NEW" concept_id="88" orderer="1" instructions="2x daily" date_activated="2008-08-08 00:00:00.0" creator="1" date_created="2008-08-08 00:00:00.0" voided="0" patient_id="9" uuid="d8856128-f4c6-47f9-97fe-8fa377cc327a" care_setting="1" encounter_id="7" />
+	<drug_order order_id="212" drug_inventory_id="3" dose="321.1" dose_units="50" as_needed="0" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" dispense_as_written="0" />
+	<orders order_id="213" order_type_id="1" order_number="213" orderer="1" urgency="ROUTINE" order_action="NEW" concept_id="88" creator="1" date_activated="2008-08-15 00:00:00.0" date_created="2008-08-15 00:00:00.0" voided="0" patient_id="9" uuid="fd7ec11-ce8c-5af8-b612-fe39f844cff2" care_setting="1" encounter_id="7" />
+  	<drug_order order_id="213" drug_inventory_id="3" dose="321.1" dose_units="50" as_needed="0" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" dispense_as_written="0" />
+</dataset>

@@ -9,11 +9,14 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 import javax.persistence.Column;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
-import java.util.Date;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * In OpenMRS, we distinguish between data and metadata within our data model. Data (as opposed to
@@ -28,14 +31,14 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	
 	//***** Properties *****
 	@ManyToOne(optional = false)
-	@Column(name = "creator")
+	@JoinColumn(name = "creator")
 	protected User creator;
 	
 	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
 	@ManyToOne
-	@Column(name = "changed_by")
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	
 	@Column(name = "date_changed")
@@ -48,7 +51,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	private Date dateVoided;
 	
 	@ManyToOne
-	@Column(name = "voided_by")
+	@JoinColumn(name = "voided_by")
 	private User voidedBy;
 	
 	@Column(name = "void_reason", length = 255)
@@ -121,10 +124,14 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	}
 	
 	/**
+	 * @deprecated as of 2.0, use {@link #getVoided()}
+	 * 
 	 * @see org.openmrs.Voidable#isVoided()
 	 */
+	@Deprecated
+	@JsonIgnore
 	public Boolean isVoided() {
-		return voided;
+		return getVoided();
 	}
 	
 	/**
@@ -135,7 +142,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * @see org.openmrs.Voidable#isVoided()
 	 */
 	public Boolean getVoided() {
-		return isVoided();
+		return voided;
 	}
 	
 	/**

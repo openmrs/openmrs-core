@@ -54,18 +54,18 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 		// the "/metadata/sqldiff.xml" file has been deleted in order to load the modules into hsql.
 		//    (the sql tables are built from hibernate mapping files automatically in unit tests)
 		props.setProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD,
-		    "org/openmrs/module/include/logic-0.2.omod org/openmrs/module/include/dssmodule-1.44.omod");
+		    "org/openmrs/module/include/test1-1.0-SNAPSHOT.omod org/openmrs/module/include/test2-1.0-SNAPSHOT.omod");
 		
 		return props;
 	}
 	
 	/**
-	 * @see {@link Context#loadClass(String)}
+	 * @see Context#loadClass(String)
 	 */
 	@Test
 	@Verifies(value = "should load class with the OpenmrsClassLoader", method = "loadClass(String)")
 	public void loadClass_shouldLoadClassWithOpenmrsClassLoader() throws Exception {
-		Class<?> c = Context.loadClass("org.openmrs.module.dssmodule.DssService");
+		Class<?> c = Context.loadClass("org.openmrs.module.test1.api.Test1Service");
 		Assert.assertTrue("Should be loaded by OpenmrsClassLoader", c.getClassLoader() instanceof ModuleClassLoader);
 	}
 	

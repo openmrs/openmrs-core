@@ -20,7 +20,7 @@ import org.springframework.validation.Errors;
 public class VisitTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link VisitTypeValidator#validate(Object, org.springframework.validation.Errors)}
+	 * @see VisitTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -37,7 +37,7 @@ public class VisitTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitTypeValidator#validate(Object,Errors)}
+	 * @see VisitTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

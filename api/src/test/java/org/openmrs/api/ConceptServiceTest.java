@@ -47,6 +47,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptAttributeType;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
@@ -63,6 +64,7 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
 import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -72,9 +74,11 @@ import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.ConceptMapTypeComparator;
+import org.openmrs.util.DateUtil;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.Errors;
@@ -94,7 +98,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	protected static final String GET_CONCEPTS_BY_SET_XML = "org/openmrs/api/include/ConceptServiceTest-getConceptsBySet.xml";
 	
 	protected static final String GET_DRUG_MAPPINGS = "org/openmrs/api/include/ConceptServiceTest-getDrugMappings.xml";
-	
+
+	protected static final String CONCEPT_ATTRIBUTE_TYPE_XML = "org/openmrs/api/include/ConceptServiceTest-conceptAttributeType.xml";
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	
@@ -140,7 +146,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Test getting a concept by name and by partial name.
 	 * 
-	 * @see {@link ConceptService#getConceptByName(String)}
+	 * @see ConceptService#getConceptByName(String)
 	 */
 	@Test
 	@Verifies(value = "should get concept by name", method = "getConceptByName(String)")
@@ -155,7 +161,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptByName(String)}
+	 * @see ConceptService#getConceptByName(String)
 	 */
 	@Test
 	@Verifies(value = "should get concept by partial name", method = "getConceptByName(String)")
@@ -170,7 +176,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should save a ConceptNumeric as a concept", method = "saveConcept(Concept)")
@@ -182,8 +188,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept c2 = new Concept(2);
 		ConceptName cn = new ConceptName("not a numeric anymore", Locale.US);
 		c2.addName(cn);
-		
+		c2.addDescription(new ConceptDescription("some description",null));
 		c2.setDatatype(new ConceptDatatype(3));
+		c2.setConceptClass(new ConceptClass(1));
 		conceptService.saveConcept(c2);
 		
 		Concept secondConcept = conceptService.getConcept(2);
@@ -197,7 +204,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should save a new ConceptNumeric", method = "saveConcept(Concept)")
@@ -207,9 +214,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		// this tests saving a never before in the database conceptnumeric
 		ConceptNumeric cn3 = new ConceptNumeric();
 		cn3.setDatatype(new ConceptDatatype(1));
-		
+		cn3.setConceptClass(new ConceptClass(1));
+
 		ConceptName cn = new ConceptName("a brand new conceptnumeric", Locale.US);
 		cn3.addName(cn);
+		cn3.addDescription(new ConceptDescription("some description",null));
 		cn3.setHiAbsolute(50.0);
 		conceptService.saveConcept(cn3);
 		
@@ -221,7 +230,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should save non ConceptNumeric object as conceptNumeric", method = "saveConcept(Concept)")
@@ -233,11 +242,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		// with a concept id of #1
 		ConceptNumeric cn = new ConceptNumeric(1);
 		cn.setDatatype(new ConceptDatatype(1));
+		cn.setConceptClass(new ConceptClass(1));
 		cn.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		cn.addDescription(new ConceptDescription("some description",null));
 		cn.setHiAbsolute(20.0);
 		conceptService.saveConcept(cn);
 		
 		Concept firstConcept = conceptService.getConceptNumeric(1);
+		firstConcept.addDescription(new ConceptDescription("some description",null));
 		assertEquals("a new conceptnumeric", firstConcept.getName(Locale.US).getName());
 		assertTrue(firstConcept instanceof ConceptNumeric);
 		ConceptNumeric firstConceptNumeric = (ConceptNumeric) firstConcept;
@@ -246,7 +258,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should save non ConceptComplex object as conceptComplex", method = "saveConcept(Concept)")
@@ -258,7 +270,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		// with a concept id of #1
 		ConceptComplex cn = new ConceptComplex(1);
 		cn.setDatatype(new ConceptDatatype(13));
+		cn.setConceptClass(new ConceptClass(1));
 		cn.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn.addDescription(new ConceptDescription("some description",null));
 		cn.setHandler("SomeHandler");
 		conceptService.saveConcept(cn);
 		
@@ -271,7 +285,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "save changes between concept numeric and complex", method = "saveConcept(Concept)")
@@ -281,7 +295,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//save a concept numeric
 		ConceptNumeric cn = new ConceptNumeric(1);
 		cn.setDatatype(new ConceptDatatype(1));
+		cn.setConceptClass(new ConceptClass(1));
 		cn.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		cn.addDescription(new ConceptDescription("some description",null));
 		cn.setHiAbsolute(20.0);
 		conceptService.saveConcept(cn);
 		
@@ -295,7 +311,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//change to concept complex
 		ConceptComplex cn2 = new ConceptComplex(1);
 		cn2.setDatatype(new ConceptDatatype(13));
+		cn2.setConceptClass(new ConceptClass(1));
 		cn2.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn2.addDescription(new ConceptDescription("some description",null));
 		cn2.setHandler("SomeHandler");
 		conceptService.saveConcept(cn2);
 		
@@ -311,7 +329,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		ConceptDatatype dt = new ConceptDatatype(1);
 		dt.setName("Numeric");
 		cn.setDatatype(dt);
+		cn.setConceptClass(new ConceptClass(1));
 		cn.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		cn.addDescription(new ConceptDescription("some description",null));
 		cn.setHiAbsolute(20.0);
 		conceptService.saveConcept(cn);
 		
@@ -325,7 +345,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//change to concept complex
 		cn2 = new ConceptComplex(1);
 		cn2.setDatatype(new ConceptDatatype(13));
+		cn2.setConceptClass(new ConceptClass(1));
 		cn2.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn2.addDescription(new ConceptDescription("some description",null));
 		cn2.setHandler("SomeHandler");
 		conceptService.saveConcept(cn2);
 		
@@ -338,7 +360,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptComplex(Integer)}
+	 * @see ConceptService#getConceptComplex(Integer)
 	 */
 	@Test
 	@Verifies(value = "should return a concept complex object", method = "getConceptComplex(Integer)")
@@ -349,7 +371,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should generate id for new concept if none is specified", method = "saveConcept(Concept)")
@@ -357,6 +379,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		ConceptName cn = new ConceptName("Weight", Context.getLocale());
 		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("some description",null));
 		
 		concept.setConceptId(null);
 		concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
@@ -367,7 +390,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should keep id for new concept if one is specified", method = "saveConcept(Concept)")
@@ -378,6 +401,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		ConceptName cn = new ConceptName("Weight", Context.getLocale());
 		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("some description",null));
 		concept.setConceptId(conceptId);
 		concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
 		concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
@@ -387,7 +411,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#conceptIterator()}
+	 * @see ConceptService#conceptIterator()
 	 */
 	@Test
 	@Verifies(value = "should iterate over all concepts", method = "conceptIterator()")
@@ -405,7 +429,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * where it executes the befores/afters in a thread separate from the one that the actual test
 	 * ends up running in when timed.
 	 * 
-	 * @see {@link ConceptService#conceptIterator()}
+	 * @see ConceptService#conceptIterator()
 	 */
 	@Test()
 	@Verifies(value = "should start with the smallest concept id", method = "conceptIterator()")
@@ -427,7 +451,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should reuse concept name tags that already exist in the database", method = "saveConcept(Concept)")
@@ -444,6 +468,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		cn.addTag(new ConceptNameTag("preferred_en", "preferred name in a language"));
 		Concept concept = new Concept();
 		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("some description",null));
 		
 		concept.setDatatype(new ConceptDatatype(1));
 		concept.setConceptClass(new ConceptClass(1));
@@ -456,7 +481,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConceptSource(ConceptSource)}
+	 * @see ConceptService#saveConceptSource(ConceptSource)
 	 */
 	@Test
 	@Verifies(value = "should not set creator if one is supplied already", method = "saveConceptSource(ConceptSource)")
@@ -474,7 +499,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConceptSource(ConceptSource)}
+	 * @see ConceptService#saveConceptSource(ConceptSource)
 	 */
 	@Test
 	@Verifies(value = "should not set date created if one is supplied already", method = "saveConceptSource(ConceptSource)")
@@ -489,11 +514,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		newConceptSource.setDateCreated(expectedDate);
 		Context.getConceptService().saveConceptSource(newConceptSource);
 		
-		Assert.assertEquals(newConceptSource.getDateCreated(), expectedDate);
+		Assert.assertEquals(DateUtil.truncateToSeconds(expectedDate), newConceptSource.getDateCreated());
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConcept(String)}
+	 * @see ConceptService#getConcept(String)
 	 */
 	@Test
 	@Verifies(value = "should return null given null parameter", method = "getConcept(String)")
@@ -502,7 +527,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptByName(String)}
+	 * @see ConceptService#getConceptByName(String)
 	 */
 	@Test
 	@Verifies(value = "should return null given null parameter", method = "getConceptByName(String)")
@@ -545,7 +570,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 * @see ConceptService#getConceptByMapping(String,String)
 	 */
 	@Test
 	@Verifies(value = "should get concept with given code and source hl7 code", method = "getConceptByMapping(String,String)")
@@ -555,7 +580,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 * @see ConceptService#getConceptByMapping(String,String)
 	 */
 	@Test
 	@Verifies(value = "should get concept with given code and source hl7 name", method = "getConceptByMapping(String,String)")
@@ -565,7 +590,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 * @see ConceptService#getConceptByMapping(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return null if source code does not exist", method = "getConceptByMapping(String,String)")
@@ -575,7 +600,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
+	 * @see ConceptService#getConceptsByMapping(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no mapping exists", method = "getConceptByMapping(String,String)")
@@ -585,7 +610,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
+	 * @see ConceptService#getConceptsByMapping(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return retired concept by default if that is the only match", method = "getConceptByMapping(String,String)")
@@ -596,7 +621,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptsByMapping(String,String,Boolean)}
+	 * @see ConceptService#getConceptsByMapping(String,String,Boolean)
 	 */
 	@Test
 	@Verifies(value = "should return retired concept if that is the only match", method = "getConceptByMapping(String,String,Boolean)")
@@ -607,7 +632,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptsByMapping(String,String,Boolean)}
+	 * @see ConceptService#getConceptsByMapping(String,String,Boolean)
 	 */
 	@Test
 	@Verifies(value = "should not return retired concept", method = "getConceptByMapping(String,String,Boolean)")
@@ -624,7 +649,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
+	 * @see ConceptService#getConceptsByMapping(String,String)
 	 */
 	@Test
 	@Verifies(value = "should get distinct concepts with given code and and source hl7 code", method = "getConceptsByMapping(String,String)")
@@ -636,7 +661,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
+	 * @see ConceptService#getConceptsByMapping(String,String)
 	 */
 	@Test
 	@Verifies(value = "should get distinct concepts with given code and source name", method = "getConceptsByMapping(String,String)")
@@ -648,7 +673,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
+	 * @see ConceptService#getConceptsByMapping(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return empty list if code does not exist", method = "getConceptByMapping(String,String)")
@@ -658,7 +683,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
+	 * @see ConceptService#getConceptsByMapping(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return empty list if no mappings exist", method = "getConceptsByMapping(String,String)")
@@ -668,7 +693,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptsByMapping(String,String,Boolean)}
+	 * @see ConceptService#getConceptsByMapping(String,String,Boolean)
 	 */
 	@Test
 	@Verifies(value = "should return retired and non-retired concepts", method = "getConceptsByMapping(String,String)")
@@ -680,7 +705,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptsByMapping(String,String,Boolean)}
+	 * @see ConceptService#getConceptsByMapping(String,String,Boolean)
 	 */
 	@Test
 	@Verifies(value = "should only return non-retired concepts", method = "getConceptsByMapping(String,String,Boolean)")
@@ -691,7 +716,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptsByMapping(String,String,Boolean)}
+	 * @see ConceptService#getConceptsByMapping(String,String,Boolean)
 	 */
 	@Test
 	@Verifies(value = "should return retired and non-retired concepts", method = "getConceptsByMapping(String,String,Boolean)")
@@ -703,7 +728,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptsByMapping(String,String,Boolean)}
+	 * @see ConceptService#getConceptsByMapping(String,String,Boolean)
 	 */
 	@Test
 	@Verifies(value = "should sort non-retired concepts first", method = "getConceptsByMapping(String,String,Boolean)")
@@ -713,7 +738,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 * @see ConceptService#getConceptByMapping(String,String)
 	 */
 	@Test
 	@Verifies(value = "should ignore case while returning results", method = "getConceptByMapping(String,String)")
@@ -723,7 +748,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptAnswerByUuid(String)}
+	 * @see ConceptService#getConceptAnswerByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptAnswerByUuid(String)")
@@ -734,7 +759,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptAnswerByUuid(String)}
+	 * @see ConceptService#getConceptAnswerByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptAnswerByUuid(String)")
@@ -743,7 +768,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptByUuid(String)}
+	 * @see ConceptService#getConceptByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptByUuid(String)")
@@ -754,7 +779,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptByUuid(String)}
+	 * @see ConceptService#getConceptByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptByUuid(String)")
@@ -763,7 +788,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptClassByUuid(String)}
+	 * @see ConceptService#getConceptClassByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptClassByUuid(String)")
@@ -774,7 +799,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptClassByUuid(String)}
+	 * @see ConceptService#getConceptClassByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptClassByUuid(String)")
@@ -783,7 +808,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptDatatypeByUuid(String)}
+	 * @see ConceptService#getConceptDatatypeByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptDatatypeByUuid(String)")
@@ -794,7 +819,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptDatatypeByUuid(String)}
+	 * @see ConceptService#getConceptDatatypeByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptDatatypeByUuid(String)")
@@ -803,7 +828,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptDescriptionByUuid(String)}
+	 * @see ConceptService#getConceptDescriptionByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptDescriptionByUuid(String)")
@@ -814,7 +839,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptDescriptionByUuid(String)}
+	 * @see ConceptService#getConceptDescriptionByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptDescriptionByUuid(String)")
@@ -823,7 +848,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptNameByUuid(String)}
+	 * @see ConceptService#getConceptNameByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptNameByUuid(String)")
@@ -834,7 +859,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptNameByUuid(String)}
+	 * @see ConceptService#getConceptNameByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptNameByUuid(String)")
@@ -843,7 +868,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptNameTagByUuid(String)}
+	 * @see ConceptService#getConceptNameTagByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptNameTagByUuid(String)")
@@ -854,7 +879,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptNameTagByUuid(String)}
+	 * @see ConceptService#getConceptNameTagByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptNameTagByUuid(String)")
@@ -863,7 +888,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptNumericByUuid(String)}
+	 * @see ConceptService#getConceptNumericByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptNumericByUuid(String)")
@@ -874,7 +899,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptNumericByUuid(String)}
+	 * @see ConceptService#getConceptNumericByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptNumericByUuid(String)")
@@ -883,7 +908,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptProposalByUuid(String)}
+	 * @see ConceptService#getConceptProposalByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptProposalByUuid(String)")
@@ -894,7 +919,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptProposalByUuid(String)}
+	 * @see ConceptService#getConceptProposalByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptProposalByUuid(String)")
@@ -903,7 +928,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptSetByUuid(String)}
+	 * @see ConceptService#getConceptSetByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptSetByUuid(String)")
@@ -914,7 +939,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptSetByUuid(String)}
+	 * @see ConceptService#getConceptSetByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptSetByUuid(String)")
@@ -923,7 +948,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptSourceByUuid(String)}
+	 * @see ConceptService#getConceptSourceByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptSourceByUuid(String)")
@@ -934,7 +959,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptSourceByUuid(String)}
+	 * @see ConceptService#getConceptSourceByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptSourceByUuid(String)")
@@ -943,7 +968,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getDrugByUuid(String)}
+	 * @see ConceptService#getDrugByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getDrugByUuid(String)")
@@ -954,12 +979,32 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getDrugByUuid(String)}
+	 * @see ConceptService#getDrugByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getDrugByUuid(String)")
 	public void getDrugByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getDrugByUuid("some invalid uuid"));
+	}
+	
+	/**
+	 * @see {@link ConceptService#getDrugIngredientByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getDrugIngredientByUuid(String)")
+	public void getDrugIngredientByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+		String uuid = "6519d653-393d-4118-9c83-a3715b82d4dc";
+		DrugIngredient ingredient = Context.getConceptService().getDrugIngredientByUuid(uuid);
+		Assert.assertEquals(88, (int) ingredient.getIngredient().getConceptId());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getDrugIngredientByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getDrugIngredientByUuid(String)")
+	public void getDrugIngredientByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+		Assert.assertNull(Context.getConceptService().getDrugIngredientByUuid("some invalid uuid"));
 	}
 	
 	@Test
@@ -970,7 +1015,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getDrugs(String)}
+	 * @see ConceptService#getDrugs(String)
 	 */
 	@Test
 	@Verifies(value = "should not return drugs that are retired", method = "getDrugs(String)")
@@ -980,7 +1025,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getDrugs(String)}
+	 * @see ConceptService#getDrugs(String)
 	 */
 	@Test
 	@Verifies(value = "return drugs by drug id", method = "getDrugs(String)")
@@ -992,7 +1037,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getDrugs(String)}
+	 * @see ConceptService#getDrugs(String)
 	 */
 	@Test
 	@Verifies(value = "not fail if there is no drug by given id", method = "getDrugs(String)")
@@ -1002,7 +1047,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getDrugs(String)}
+	 * @see ConceptService#getDrugs(String)
 	 */
 	@Test
 	@Verifies(value = "return drugs by drug concept id", method = "getDrugs(String)")
@@ -1022,7 +1067,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * This tests for being able to find concepts with names in en_GB locale when the user is in the
 	 * en locale.
 	 * 
-	 * @see {@link ConceptService#getConceptByName(String)}
+	 * @see ConceptService#getConceptByName(String)
 	 */
 	@Test
 	@Verifies(value = "should find concepts with names in more specific locales", method = "getConceptByName(String)")
@@ -1046,7 +1091,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * This tests for being able to find concepts with names in the en locale when the user is in
 	 * the en_GB locale
 	 * 
-	 * @see {@link ConceptService#getConceptByName(String)}
+	 * @see ConceptService#getConceptByName(String)
 	 */
 	@Test
 	@Verifies(value = "should find concepts with names in more generic locales", method = "getConceptByName(String)")
@@ -1062,7 +1107,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * This tests for being able to find concepts with names in en_GB locale when the user is in the
 	 * en_GB locale.
 	 * 
-	 * @see {@link ConceptService#getConceptByName(String)}
+	 * @see ConceptService#getConceptByName(String)
 	 */
 	@Test
 	@Verifies(value = "should find concepts with names in same specific locale", method = "getConceptByName(String)")
@@ -1076,7 +1121,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#retireConceptSource(ConceptSource,String)}
+	 * @see ConceptService#retireConceptSource(ConceptSource,String)
 	 */
 	@Test
 	@Verifies(value = "should retire concept source", method = "retireConceptSource(ConceptSource,String)")
@@ -1101,6 +1146,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept conceptToAdd = new Concept();
 		ConceptName cn = new ConceptName("new name", Context.getLocale());
 		conceptToAdd.addName(cn);
+		conceptToAdd.addDescription(new ConceptDescription("some description",null));
+		conceptToAdd.setDatatype(new ConceptDatatype(1));
+		conceptToAdd.setConceptClass(new ConceptClass(1));
 		assertFalse(conceptService.getAllConcepts().contains(conceptToAdd));
 		conceptService.saveConcept(conceptToAdd);
 		assertTrue(conceptService.getAllConcepts().contains(conceptToAdd));
@@ -1154,7 +1202,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptsByConceptSource_shouldReturnAListOfConceptMapsIfConceptMappingsFound() throws Exception {
 		List<ConceptMap> list = conceptService
-		        .getConceptsByConceptSource(conceptService.getConceptSourceByName("SNOMED CT"));
+		        .getConceptMappingsToSource(conceptService.getConceptSourceByName("SNOMED CT"));
 		assertEquals(2, list.size());
 	}
 	
@@ -1164,7 +1212,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConceptsByConceptSource_shouldReturnEmptyListOfConceptMapsIfNoneFound() throws Exception {
-		List<ConceptMap> list = conceptService.getConceptsByConceptSource(conceptService
+		List<ConceptMap> list = conceptService.getConceptMappingsToSource(conceptService
 		        .getConceptSourceByName("Some invalid name"));
 		assertEquals(0, list.size());
 	}
@@ -1193,8 +1241,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test(expected = Exception.class)
 	public void saveConceptSource_shouldNotSaveAConceptSourceIfVoidedIsNull() throws Exception {
 		ConceptSource source = new ConceptSource();
-		source.setVoided(null);
-		assertNull(source.getVoided());
+		source.setRetired(null);
+		assertNull(source.isRetired());
 		
 		conceptService.saveConceptSource(source);
 		
@@ -1283,7 +1331,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getFalseConcept()}
+	 * @see ConceptService#getFalseConcept()
 	 */
 	@Test
 	@Verifies(value = "should return the false concept", method = "getFalseConcept()")
@@ -1294,7 +1342,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getTrueConcept()}
+	 * @see ConceptService#getTrueConcept()
 	 */
 	@Test
 	@Verifies(value = "should return the true concept", method = "getTrueConcept()")
@@ -1305,7 +1353,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getUnknownConcept()}
+	 * @see ConceptService#getUnknownConcept()
 	 */
 	@Test
 	@Verifies(value = "should return the unknown concept", method = "getUnknownConcept()")
@@ -1316,7 +1364,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptDatatypeByName(String)}
+	 * @see ConceptService#getConceptDatatypeByName(String)
 	 */
 	@Test
 	@Verifies(value = "should convert the datatype of a boolean concept to coded", method = "changeConceptFromBooleanToCoded(Concept)")
@@ -1330,7 +1378,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConcept(Integer)}
+	 * @see ConceptService#getConcept(Integer)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should fail if the datatype of the concept is not boolean", method = "changeConceptFromBooleanToCoded(Concept)")
@@ -1340,7 +1388,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#convertBooleanConceptToCoded(Concept)}
+	 * @see ConceptService#convertBooleanConceptToCoded(Concept)
 	 */
 	@Test
 	@Verifies(value = "should explicitly add false concept as a value_Coded answer", method = "changeConceptFromBooleanToCoded(Concept)")
@@ -1364,7 +1412,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#convertBooleanConceptToCoded(Concept)}
+	 * @see ConceptService#convertBooleanConceptToCoded(Concept)
 	 */
 	@Test
 	@Verifies(value = "should explicitly add true concept as a value_Coded answer", method = "changeConceptFromBooleanToCoded(Concept)")
@@ -1387,7 +1435,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getFalseConcept()}
+	 * @see ConceptService#getFalseConcept()
 	 */
 	@Test
 	@Verifies(value = "should return the false concept", method = "getFalseConcept()")
@@ -1397,7 +1445,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getTrueConcept()}
+	 * @see ConceptService#getTrueConcept()
 	 */
 	@Test
 	@Verifies(value = "should return the true concept", method = "getTrueConcept()")
@@ -1428,7 +1476,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptDatatypeByName(String)}
+	 * @see ConceptService#getConceptDatatypeByName(String)
 	 */
 	@Test
 	@Verifies(value = "should not return a fuzzy match on name", method = "getConceptDatatypeByName(String)")
@@ -1439,7 +1487,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptDatatypeByName(String)}
+	 * @see ConceptService#getConceptDatatypeByName(String)
 	 */
 	@Test
 	@Verifies(value = "should return an exact match on name", method = "getConceptDatatypeByName(String)")
@@ -1455,7 +1503,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#purgeConcept(Concept)}
+	 * @see ConceptService#purgeConcept(Concept)
 	 */
 	@Test(expected = ConceptNameInUseException.class)
 	@Verifies(value = "should fail if any of the conceptNames of the concept is being used by an obs", method = "purgeConcept(Concept)")
@@ -1479,7 +1527,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should create a new conceptName when the old name is changed", method = "saveConcept(Concept)")
@@ -1510,7 +1558,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should void the conceptName if the text of the name has changed", method = "saveConcept(Concept)")
@@ -1530,7 +1578,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Test getting a concept by name and by partial name.
 	 * 
-	 * @see {@link ConceptService#getConceptByName(String)}
+	 * @see ConceptService#getConceptByName(String)
 	 */
 	@Test
 	@Verifies(value = "should return all concepts in set and subsets", method = "getConceptsByConceptSet(Concept)")
@@ -1546,7 +1594,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConceptStopWord(org.openmrs.ConceptStopWord)}
+	 * @see ConceptService#saveConceptStopWord(org.openmrs.ConceptStopWord)
 	 */
 	@Test
 	@Verifies(value = "should save concept stop word into database", method = "saveConceptStopWord(ConceptStopWord)")
@@ -1560,7 +1608,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConceptStopWord(ConceptStopWord)}
+	 * @see ConceptService#saveConceptStopWord(ConceptStopWord)
 	 */
 	@Test
 	@Verifies(value = "should assign default Locale ", method = "saveConceptStopWord(ConceptStopWord)")
@@ -1573,7 +1621,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptStopWords(Locale)}
+	 * @see ConceptService#getConceptStopWords(Locale)
 	 */
 	@Test
 	@Verifies(value = "should return default Locale ConceptStopWords if Locale is null", method = "getConceptStopWords(Locale)")
@@ -1583,7 +1631,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConceptStopWord(ConceptStopWord)}
+	 * @see ConceptService#saveConceptStopWord(ConceptStopWord)
 	 */
 	@Test
 	@Verifies(value = "should put generated concept stop word id onto returned concept stop word", method = "saveConceptStopWord(ConceptStopWord)")
@@ -1595,7 +1643,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConceptStopWord(ConceptStopWord)}
+	 * @see ConceptService#saveConceptStopWord(ConceptStopWord)
 	 */
 	@Test(expected = ConceptStopWordException.class)
 	@Verifies(value = "should fail if a duplicate conceptStopWord in a locale is added", method = "saveConceptStopWord(ConceptStopWord)")
@@ -1612,7 +1660,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConceptStopWord(ConceptStopWord)}
+	 * @see ConceptService#saveConceptStopWord(ConceptStopWord)
 	 */
 	@Test
 	@Verifies(value = "should save concept stop word in uppercase", method = "saveConceptStopWord(ConceptStopWord)")
@@ -1624,7 +1672,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptStopWords(Locale)}
+	 * @see ConceptService#getConceptStopWords(Locale)
 	 */
 	@Test
 	@Verifies(value = "should return list of concept stop word for given locale", method = "getConceptStopWords(Locale)")
@@ -1635,7 +1683,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getAllConceptStopWords()}
+	 * @see ConceptService#getAllConceptStopWords()
 	 */
 	@Test
 	@Verifies(value = "should return all the concept stop words", method = "getAllConceptStopWords()")
@@ -1645,7 +1693,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getAllConceptStopWords()}
+	 * @see ConceptService#getAllConceptStopWords()
 	 */
 	@Test
 	@Verifies(value = "should return empty list if nothing found", method = "getAllConceptStopWords()")
@@ -1660,7 +1708,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptStopWords(Locale)}
+	 * @see ConceptService#getConceptStopWords(Locale)
 	 */
 	@Test
 	@Verifies(value = "should return empty list if no stop words are found for the given locale", method = "getConceptStopWords(Locale)")
@@ -1670,7 +1718,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#deleteConceptStopWord(Integer)}
+	 * @see ConceptService#deleteConceptStopWord(Integer)
 	 */
 	@Test
 	@Verifies(value = "should delete the given concept stop word from the database", method = "deleteConceptStopWord(ConceptStopWordId)")
@@ -1755,7 +1803,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should set a preferred name for each locale if none is marked", method = "saveConcept(Concept)")
@@ -1773,7 +1821,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		concept.addName(new ConceptName("name4", Locale.FRENCH));
 		concept.addName(new ConceptName("name5", Locale.JAPANESE));
 		concept.addName(new ConceptName("name6", Locale.JAPANESE));
-		
+		concept.addDescription(new ConceptDescription("some description",null));
+		concept.setDatatype(new ConceptDatatype(1));
+		concept.setConceptClass(new ConceptClass(1));
+
 		concept = Context.getConceptService().saveConcept(concept);
 		Assert.assertNotNull(concept.getPreferredName(Locale.ENGLISH));
 		Assert.assertNotNull(concept.getPreferredName(Locale.FRENCH));
@@ -1818,7 +1869,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
+	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)
 	 */
 	@Test
 	@Verifies(value = "should return concept search results that match unique concepts", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
@@ -1830,9 +1881,23 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//So we should see 2 results only
 		Assert.assertEquals(2, searchResults.size());
 	}
-	
+
+    /**
+     * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)
+     */
+    @Test
+    @Verifies(value = "should return concept search results that match unique concepts", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
+    public void getConcepts_shouldReturnConceptSearchResultsThatMatchUniqueConceptsEvenIfDifferentMatchingWords() throws Exception {
+        executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+        List<ConceptSearchResult> searchResults = conceptService.getConcepts("now", Collections
+                .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+        // "now matches both concept names "TRUST NOW" and "TRUST NOWHERE", but these are for the same concept (4000), so there should only be one item in the result set
+        Assert.assertEquals(1, searchResults.size());
+        Assert.assertEquals(new Integer(4000), searchResults.get(0).getConcept().getId());
+	}
+
 	/**
-	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
+	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)
 	 */
 	@Test
 	@Verifies(value = "should return concept search results that contain all search words as first", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
@@ -1845,7 +1910,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptReferenceTermByName(String,ConceptSource)}
+	 * @see ConceptService#getConceptReferenceTermByName(String,ConceptSource)
 	 */
 	@Test
 	@Verifies(value = "should return a concept reference term that matches the given name from the given source", method = "getConceptReferenceTermByName(String,ConceptSource)")
@@ -1858,7 +1923,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptReferenceTermByCode(String,ConceptSource)}
+	 * @see ConceptService#getConceptReferenceTermByCode(String,ConceptSource)
 	 */
 	@Test
 	@Verifies(value = "should return a concept reference term that matches the given code from the given source", method = "getConceptReferenceTermByCode(String,ConceptSource)")
@@ -1871,7 +1936,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptMapTypes(null,null)}
+	 * @see ConceptService#getConceptMapTypes(null,null)
 	 */
 	@Test
 	@Verifies(value = "should not include hidden concept map types if includeHidden is set to false", method = "getConceptMapTypes(null,null)")
@@ -1880,7 +1945,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptMapTypes(null,null)}
+	 * @see ConceptService#getConceptMapTypes(null,null)
 	 */
 	@Test
 	@Verifies(value = "should return a sorted list ordered as follows: regular, retired, hidden, retired and hidden", method = "getConceptMapTypes(null,null)")
@@ -1898,7 +1963,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptMapTypes(null,null)}
+	 * @see ConceptService#getConceptMapTypes(null,null)
 	 */
 	@Test
 	@Verifies(value = "should return all the concept map types if includeRetired and hidden are set to true", method = "getConceptMapTypes(null,null)")
@@ -1907,7 +1972,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptMapTypes(null,null)}
+	 * @see ConceptService#getConceptMapTypes(null,null)
 	 */
 	@Test
 	@Verifies(value = "should return only un retired concept map types if includeRetired is set to false", method = "getConceptMapTypes(null,null)")
@@ -1916,7 +1981,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getAllConceptMapTypes()}
+	 * @see ConceptService#getAllConceptMapTypes()
 	 */
 	@Test
 	@Verifies(value = "should return all the concept map types excluding hidden ones", method = "getAllConceptMapTypes()")
@@ -1925,7 +1990,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptMapTypeByName(String)}
+	 * @see ConceptService#getConceptMapTypeByName(String)
 	 */
 	@Test
 	@Verifies(value = "should return a conceptMapType matching the specified name", method = "getConceptMapTypeByName(String)")
@@ -1934,7 +1999,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptMapTypeByUuid(String)}
+	 * @see ConceptService#getConceptMapTypeByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return a conceptMapType matching the specified uuid", method = "getConceptMapTypeByUuid(String)")
@@ -1944,7 +2009,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#purgeConceptMapType(ConceptMapType)}
+	 * @see ConceptService#purgeConceptMapType(ConceptMapType)
 	 */
 	@Test
 	@Verifies(value = "should delete the specified conceptMapType from the database", method = "purgeConceptMapType(ConceptMapType)")
@@ -1957,7 +2022,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#purgeConceptNameTag(ConceptNameTag)}
+	 * @see ConceptService#purgeConceptNameTag(ConceptNameTag)
 	 */
 	@Test
 	@Verifies(value = "should delete the specified ConceptNameTag from the database", method = "purgeConceptNameTag(ConceptNameTag)")
@@ -1971,7 +2036,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConceptMapType(ConceptMapType)}
+	 * @see ConceptService#saveConceptMapType(ConceptMapType)
 	 */
 	@Test
 	@Verifies(value = "should add the specified concept map type to the database and assign to it an id", method = "saveConceptMapType(ConceptMapType)")
@@ -1984,7 +2049,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConceptMapType(ConceptMapType)}
+	 * @see ConceptService#saveConceptMapType(ConceptMapType)
 	 */
 	@Test
 	@Verifies(value = "should update an existing concept map type", method = "saveConceptMapType(ConceptMapType)")
@@ -2005,7 +2070,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#retireConceptMapType(ConceptMapType,String)}
+	 * @see ConceptService#retireConceptMapType(ConceptMapType,String)
 	 */
 	@Test
 	@Verifies(value = "should retire the specified conceptMapType with the given retire reason", method = "retireConceptMapType(ConceptMapType,String)")
@@ -2023,7 +2088,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#retireConceptMapType(ConceptMapType,String)}
+	 * @see ConceptService#retireConceptMapType(ConceptMapType,String)
 	 */
 	@Test
 	@Verifies(value = "should should set the default retire reason if none is given", method = "retireConceptMapType(ConceptMapType,String)")
@@ -2036,7 +2101,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getAllConceptReferenceTerms(null)}
+	 * @see ConceptService#getAllConceptReferenceTerms(null)
 	 */
 	@Test
 	@Verifies(value = "should return all the concept reference terms if includeRetired is set to true", method = "getConceptReferenceTerms(null)")
@@ -2046,7 +2111,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getAllConceptReferenceTerms(null)}
+	 * @see ConceptService#getAllConceptReferenceTerms(null)
 	 */
 	@Test
 	@Verifies(value = "should return only un retired concept reference terms if includeRetired is set to false", method = "getConceptReferenceTerms(null)")
@@ -2056,7 +2121,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptReferenceTermByUuid(String)}
+	 * @see ConceptService#getConceptReferenceTermByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return the concept reference term that matches the given uuid", method = "getConceptReferenceTermByUuid(String)")
@@ -2066,7 +2131,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptReferenceTermsBySource(ConceptSource)}
+	 * @see ConceptService#getConceptReferenceTermsBySource(ConceptSource)
 	 */
 	@Test
 	@Verifies(value = "should return only the concept reference terms from the given concept source", method = "getConceptReferenceTermsBySource(ConceptSource)")
@@ -2077,7 +2142,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#retireConceptReferenceTerm(ConceptReferenceTerm,String)}
+	 * @see ConceptService#retireConceptReferenceTerm(ConceptReferenceTerm,String)
 	 */
 	@Test
 	@Verifies(value = "should retire the specified concept reference term with the given retire reason", method = "retireConceptReferenceTerm(ConceptReferenceTerm,String)")
@@ -2097,7 +2162,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#retireConceptReferenceTerm(ConceptReferenceTerm,String)}
+	 * @see ConceptService#retireConceptReferenceTerm(ConceptReferenceTerm,String)
 	 */
 	@Test
 	@Verifies(value = "should should set the default retire reason if none is given", method = "retireConceptReferenceTerm(ConceptReferenceTerm,String)")
@@ -2108,7 +2173,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConceptReferenceTerm(ConceptReferenceTerm)}
+	 * @see ConceptService#saveConceptReferenceTerm(ConceptReferenceTerm)
 	 */
 	@Test
 	@Verifies(value = "should add a concept reference term to the database and assign an id to it", method = "saveConceptReferenceTerm(ConceptReferenceTerm)")
@@ -2124,7 +2189,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConceptReferenceTerm(ConceptReferenceTerm)}
+	 * @see ConceptService#saveConceptReferenceTerm(ConceptReferenceTerm)
 	 */
 	@Test
 	@Verifies(value = "should update changes to the concept reference term in the database", method = "saveConceptReferenceTerm(ConceptReferenceTerm)")
@@ -2152,7 +2217,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#unretireConceptMapType(ConceptMapType)}
+	 * @see ConceptService#unretireConceptMapType(ConceptMapType)
 	 */
 	@Test
 	@Verifies(value = "should unretire the specified concept map type and drop all retire related fields", method = "unretireConceptMapType(ConceptMapType)")
@@ -2171,7 +2236,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#unretireConceptReferenceTerm(ConceptReferenceTerm)}
+	 * @see ConceptService#unretireConceptReferenceTerm(ConceptReferenceTerm)
 	 */
 	@Test
 	@Verifies(value = "should unretire the specified concept reference term and drop all retire related fields", method = "unretireConceptReferenceTerm(ConceptReferenceTerm)")
@@ -2190,7 +2255,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getAllConceptReferenceTerms()}
+	 * @see ConceptService#getAllConceptReferenceTerms()
 	 */
 	@Test
 	@Verifies(value = "should return all concept reference terms in the database", method = "getAllConceptReferenceTerms()")
@@ -2199,7 +2264,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptMappingsToSource(ConceptSource)}
+	 * @see ConceptService#getConceptMappingsToSource(ConceptSource)
 	 */
 	@Test
 	@Verifies(value = "should return a List of ConceptMaps from the given source", method = "getConceptMappingsToSource(ConceptSource)")
@@ -2209,7 +2274,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getReferenceTermMappingsTo(ConceptReferenceTerm)}
+	 * @see ConceptService#getReferenceTermMappingsTo(ConceptReferenceTerm)
 	 */
 	@Test
 	@Verifies(value = "should return all concept reference term maps where the specified term is the termB", method = "getReferenceTermMappingsTo(ConceptReferenceTerm)")
@@ -2220,7 +2285,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getCountOfConcepts(String, List, boolean, List, List, List, List, Concept)}
+	 * @see ConceptService#getCountOfConcepts(String, List, boolean, List, List, List, List, Concept)
 	 */
 	@Test
 	@Verifies(value = "should return a count of unique concepts", method = "getCountOfConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept)")
@@ -2231,7 +2296,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should not fail when a duplicate name is edited to a unique value", method = "saveConcept(Concept)")
@@ -2240,6 +2305,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-conceptWithDuplicateName.xml");
 		Concept conceptToEdit = conceptService.getConcept(10000);
 		Locale locale = new Locale("en", "GB");
+		conceptToEdit.addDescription(new ConceptDescription("some description",locale));
 		ConceptName duplicateNameToEdit = conceptToEdit.getFullySpecifiedName(locale);
 		//Ensure the name is a duplicate in it's locale
 		Concept otherConcept = conceptService.getConcept(5497);
@@ -2251,7 +2317,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptReferenceTerms(String,ConceptSource,Integer,Integer,null)}
+	 * @see ConceptService#getConceptReferenceTerms(String,ConceptSource,Integer,Integer,null)
 	 */
 	@Test
 	@Verifies(value = "should return unique terms with a code or name containing the search phrase", method = "getConceptReferenceTerms(String,ConceptSource,Integer,Integer,null)")
@@ -2290,7 +2356,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getCountOfConceptReferenceTerms(String,ConceptSource,null)}
+	 * @see ConceptService#getCountOfConceptReferenceTerms(String,ConceptSource,null)
 	 */
 	@Test
 	@Verifies(value = "should include retired terms if includeRetired is set to true", method = "getCountOfConceptReferenceTerms(String,ConceptSource,null)")
@@ -2299,7 +2365,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getCountOfConceptReferenceTerms(String,ConceptSource,null)}
+	 * @see ConceptService#getCountOfConceptReferenceTerms(String,ConceptSource,null)
 	 */
 	@Test
 	@Verifies(value = "should not include retired terms if includeRetired is set to false", method = "getCountOfConceptReferenceTerms(String,ConceptSource,null)")
@@ -2318,14 +2384,23 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		String name = "Concept";
 		Concept concept1 = new Concept();
 		concept1.addName(new ConceptName(name, new Locale("en", "US")));
+		concept1.addDescription(new ConceptDescription("some description",null));
+		concept1.setDatatype(new ConceptDatatype(1));
+		concept1.setConceptClass(new ConceptClass(1));
 		Context.getConceptService().saveConcept(concept1);
 		
 		Concept concept2 = new Concept();
 		concept2.addName(new ConceptName(name, new Locale("en", "GB")));
+		concept2.addDescription(new ConceptDescription("some description",null));
+		concept2.setDatatype(new ConceptDatatype(1));
+		concept2.setConceptClass(new ConceptClass(1));
 		Context.getConceptService().saveConcept(concept2);
 		
 		Concept concept3 = new Concept();
 		concept3.addName(new ConceptName(name, new Locale("en")));
+		concept3.addDescription(new ConceptDescription("some description",null));
+		concept3.setDatatype(new ConceptDatatype(1));
+		concept3.setConceptClass(new ConceptClass(1));
 		Context.getConceptService().saveConcept(concept3);
 		
 		updateSearchIndex();
@@ -2350,14 +2425,23 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		String name = "Concept";
 		Concept concept1 = new Concept();
 		concept1.addName(new ConceptName(name, new Locale("en", "US")));
+		concept1.addDescription(new ConceptDescription("some description",null));
+		concept1.setDatatype(new ConceptDatatype(1));
+		concept1.setConceptClass(new ConceptClass(1));
 		Context.getConceptService().saveConcept(concept1);
 		
 		Concept concept2 = new Concept();
 		concept2.addName(new ConceptName(name, new Locale("en", "GB")));
+		concept2.addDescription(new ConceptDescription("some description",null));
+		concept2.setDatatype(new ConceptDatatype(1));
+		concept2.setConceptClass(new ConceptClass(1));
 		Context.getConceptService().saveConcept(concept2);
 		
 		Concept concept3 = new Concept();
 		concept3.addName(new ConceptName(name, new Locale("en")));
+		concept3.addDescription(new ConceptDescription("some description",null));
+		concept3.setDatatype(new ConceptDatatype(1));
+		concept3.setConceptClass(new ConceptClass(1));
 		Context.getConceptService().saveConcept(concept3);
 		
 		updateSearchIndex();
@@ -2371,7 +2455,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@SuppressWarnings("deprecation")
 	@Test
@@ -2381,9 +2465,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("test name", Context.getLocale()));
+		concept.setDatatype(new ConceptDatatype(1));
+		concept.setConceptClass(new ConceptClass(1));
 		ConceptMap map = new ConceptMap();
-		map.setSourceCode("unique code");
-		map.setSource(conceptService.getConceptSource(1));
+		map.getConceptReferenceTerm().setCode("unique code");
+		map.getConceptReferenceTerm().setConceptSource(conceptService.getConceptSource(1));
+		concept.addDescription(new ConceptDescription("some description",null));
 		concept.addConceptMapping(map);
 		conceptService.saveConcept(concept);
 		Assert.assertNotNull(concept.getId());
@@ -2391,7 +2478,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@SuppressWarnings("deprecation")
 	@Test
@@ -2400,8 +2487,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		int initialTermCount = conceptService.getAllConceptReferenceTerms().size();
 		Concept concept = conceptService.getConcept(5497);
 		ConceptMap map = new ConceptMap();
-		map.setSourceCode("unique code");
-		map.setSource(conceptService.getConceptSource(1));
+		map.getConceptReferenceTerm().setCode("unique code");
+		map.getConceptReferenceTerm().setConceptSource(conceptService.getConceptSource(1));
 		concept.addConceptMapping(map);
 		conceptService.saveConcept(concept);
 		Assert.assertEquals(initialTermCount + 1, conceptService.getAllConceptReferenceTerms().size());
@@ -2433,7 +2520,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptMapTypeByName(String)}
+	 * @see ConceptService#getConceptMapTypeByName(String)
 	 */
 	@Test
 	@Verifies(value = "should be case insensitive", method = "getConceptMapTypeByName(String)")
@@ -2447,7 +2534,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptReferenceTermByName(String,ConceptSource)}
+	 * @see ConceptService#getConceptReferenceTermByName(String,ConceptSource)
 	 */
 	@Test
 	@Verifies(value = "should be case insensitive", method = "getConceptReferenceTermByName(String,ConceptSource)")
@@ -2512,7 +2599,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Ignore
@@ -2528,7 +2615,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should set audit info if an item is removed from any of its child collections", method = "saveConcept(Concept)")
@@ -2536,18 +2623,24 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept concept = conceptService.getConcept(3);
 		Assert.assertNull(concept.getDateChanged());
 		Assert.assertNull(concept.getChangedBy());
-		
-		ConceptDescription description = concept.getDescription();
-		Assert.assertNotNull(description);
-		Assert.assertTrue(concept.removeDescription(description));
+
+		Concept concept1= conceptService.getConcept(5);
+		ConceptAnswer conceptanswer = new ConceptAnswer(concept1);
+		concept.addAnswer(conceptanswer);
 		conceptService.saveConcept(concept);
-		
 		Assert.assertNotNull(concept.getDateChanged());
+		Date date=concept.getDateChanged();
+
+		Assert.assertTrue(concept.removeAnswer(conceptanswer));
+		conceptService.saveConcept(concept);
+		Assert.assertNotNull(concept.getDateChanged());
+		Date date1=concept.getDateChanged();
+		Assert.assertFalse(date.equals(date1));
 		Assert.assertNotNull(concept.getChangedBy());
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should set audit info if any item in the child collections is edited", method = "saveConcept(Concept)")
@@ -2566,7 +2659,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should set audit info if an item is added to any of its child collections", method = "saveConcept(Concept)")
@@ -2575,7 +2668,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(concept.getDateChanged());
 		Assert.assertNull(concept.getChangedBy());
 		
-		ConceptDescription description = new ConceptDescription("new description", Context.getLocale());
+		ConceptDescription description = new ConceptDescription("new description",Context.getLocale());
 		concept.addDescription(description);
 		conceptService.saveConcept(concept);
 		Assert.assertNotNull(description.getConceptDescriptionId());
@@ -2615,7 +2708,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
+	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)
 	 */
 	@Test
 	@Verifies(value = "should return a search result whose concept name contains all word tokens as first", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
@@ -2629,7 +2722,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
+	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)
 	 */
 	@Test
 	@Verifies(value = "should return a search result for phrase with stop words", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
@@ -2645,7 +2738,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
+	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)
 	 */
 	@Test
 	@Verifies(value = "should return concepts with specified classes", method = "getConcepts(String,List<QLocale;>,boolean,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
@@ -2660,7 +2753,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
+	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)
 	 */
 	@Test
 	@Verifies(value = "should include retired concepts in the search results", method = "getConcepts(String,List<QLocale;>,boolean,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
@@ -2674,7 +2767,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
+	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)
 	 */
 	@Test
 	@Verifies(value = "should exclude specified classes from the search results", method = "getConcepts(String,List<QLocale;>,boolean,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
@@ -2691,8 +2784,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConcepts(String,List<Locale>,null,List<ConceptClass>,List<
-	 *      ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)}
+	 * @see ConceptService#getConcepts(String,List<Locale>,null,List<ConceptClass>,List<
+	 *      ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)
 	 */
 	@Test
 	@Verifies(value = "should not return concepts with matching names that are voided", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
@@ -2736,7 +2829,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept,Locale)}
+	 * @see ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept,Locale)
 	 */
 	@Test
 	@Verifies(value = "should not set value coded name when add concept is selected", method = "mapConceptProposalToConcept(ConceptProposal,Concept,Locale)")
@@ -2761,7 +2854,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept,Locale)}
+	 * @see ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept,Locale)
 	 */
 	@Test
 	@Verifies(value = "should set value coded name when add synonym is selected", method = "mapConceptProposalToConcept(ConceptProposal,Concept,Locale)")
@@ -2774,6 +2867,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(Context.getObsService().getObservationsByPersonAndConcept(cp.getEncounter().getPatient(),
 		    civilStatusConcept).isEmpty());
 		Concept mappedConcept = conceptService.getConcept(mappedConceptId);
+		mappedConcept.addDescription(new ConceptDescription("some description",Context.getLocale()));
 		
 		cp.setFinalText(finalText);
 		cp.setObsConcept(civilStatusConcept);
@@ -2789,7 +2883,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getAllConcepts(String,null,null)}
+	 * @see ConceptService#getAllConcepts(String,null,null)
 	 */
 	@Test
 	@Verifies(value = "should exclude retired concepts when set includeRetired to false", method = "getAllConcepts(String,null,null)")
@@ -2801,7 +2895,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getAllConcepts(String,null,null)}
+	 * @see ConceptService#getAllConcepts(String,null,null)
 	 */
 	@Test
 	@Verifies(value = "should order by a concept field", method = "getAllConcepts(String,null,null)")
@@ -2821,7 +2915,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getAllConcepts(String,null,null)}
+	 * @see ConceptService#getAllConcepts(String,null,null)
 	 */
 	@Test
 	@Verifies(value = "should order by a concept name field", method = "getAllConcepts(String,null,null)")
@@ -2841,7 +2935,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getAllConcepts(String,null,null)}
+	 * @see ConceptService#getAllConcepts(String,null,null)
 	 */
 	@Test
 	@Verifies(value = "should order by concept id and include retired when given no parameters", method = "getAllConcepts(String,null,null)")
@@ -2853,7 +2947,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getAllConcepts(String,null,null)}
+	 * @see ConceptService#getAllConcepts(String,null,null)
 	 */
 	@Test
 	@Verifies(value = "should order by concept id descending when set asc parameter to false", method = "getAllConcepts(String,null,null)")
@@ -2865,7 +2959,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept,Locale)}
+	 * @see ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept,Locale)
 	 */
 	@Test(expected = DuplicateConceptNameException.class)
 	@Verifies(value = "should fail when adding a duplicate syonymn", method = "mapConceptProposalToConcept(ConceptProposal,Concept,Locale)")
@@ -2877,26 +2971,28 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM);
 		Concept mappedConcept = cs.getConcept(5);
 		Locale locale = new Locale("en", "GB");
+		mappedConcept.addDescription(new ConceptDescription("some description",locale));
 		Assert.assertTrue(mappedConcept.hasName(cp.getFinalText(), locale));
 		
 		cs.mapConceptProposalToConcept(cp, mappedConcept, locale);
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * @see ConceptService#saveConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should pass when saving a concept after removing a name", method = "saveConcept(Concept)")
 	public void saveConcept_shouldPassWhenSavingAConceptAfterRemovingAName() throws Exception {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
 		Concept concept = conceptService.getConcept(3000);
+		concept.addDescription(new ConceptDescription("some description",null));
 		Assert.assertFalse(concept.getSynonyms().isEmpty());
 		concept.removeName(concept.getSynonyms().iterator().next());
 		conceptService.saveConcept(concept);
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConceptNameTag(Object,Errors)}
+	 * @see ConceptService#saveConceptNameTag(Object,Errors)
 	 */
 	@Test(expected = Exception.class)
 	@Verifies(value = "not save a concept name tag if tag is null, empty or whitespace", method = "saveConceptNameTag(ConceptNameTag)")
@@ -2908,7 +3004,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConceptNameTag(Object,Errors)}
+	 * @see ConceptService#saveConceptNameTag(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "save a concept name tag if tag is supplied", method = "saveConceptNameTag(ConceptNameTag)")
@@ -2928,7 +3024,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConceptNameTag(Object,Errors)}
+	 * @see ConceptService#saveConceptNameTag(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "save an edited concept name tag", method = "saveConceptNameTag(ConceptNameTag)")
@@ -3044,7 +3140,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugs_shouldReturnUniqueDrugs() throws Exception {
 		//sanity check that drug.name and drug.concept.name will both match the search phrase
-		Drug drug = conceptService.getDrugByNameOrId("ASPIRIN");
+		Drug drug = conceptService.getDrug("ASPIRIN");
 		assertEquals(drug.getName().toLowerCase(), drug.getConcept().getName().getName().toLowerCase());
 		
 		List<Drug> drugs = conceptService.getDrugs("Asp", null, false, false);
@@ -3200,7 +3296,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugsByMapping_shouldFailIfSourceIsNull() throws Exception {
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("ConceptSource.is.required");
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("ConceptSource.is.required"));
 		conceptService.getDrugsByMapping("random", null, null, false);
 	}
 	
@@ -3284,7 +3380,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugByMapping_shouldFailIfSourceIsNull() throws Exception {
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("ConceptSource.is.required");
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("ConceptSource.is.required"));
 		conceptService.getDrugByMapping("random", null, null);
 	}
 	
@@ -3304,6 +3400,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept c1 = new Concept();
 		ConceptName cn1a = new ConceptName("ONE TERM", locale);
 		c1.addName(cn1a);
+		c1.addDescription(new ConceptDescription("some description",null));
 		c1.setConceptClass(cc1);
 		c1.setDatatype(dt);
 		cs.saveConcept(c1);
@@ -3311,6 +3408,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept c2 = new Concept();
 		ConceptName cn2a = new ConceptName("ONE TO MANY", locale);
 		c2.addName(cn2a);
+		c2.addDescription(new ConceptDescription("some description",null));
 		c2.setConceptClass(cc3);
 		c2.setDatatype(dt);
 		cs.saveConcept(c2);
@@ -3367,5 +3465,228 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//then
 		assertThat(concepts1, contains(hasConcept(is(concept))));
 		assertThat(concepts2, contains(hasConcept(is(concept))));
+	}
+
+	/**
+	 * @see ConceptService#getAllConceptAttributeTypes()
+	 * @verifies return all concept attribute types including retired ones
+	 */
+	@Test
+	public void getAllConceptAttributeTypes_shouldReturnAllConceptAttributeTypesIncludingRetiredOnes() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		Assert.assertEquals(2, Context.getConceptService().getAllConceptAttributeTypes().size());
+	}
+
+	/**
+	 * @see ConceptService#saveConceptAttributeType(org.openmrs.ConceptAttributeType)
+	 * @verifies create a new concept attribute type
+	 */
+	@Test
+	public void saveConceptAttributeType_shouldCreateANewConceptAttributeType() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService conceptService = Context.getConceptService();
+		Assert.assertEquals(2, conceptService.getAllConceptAttributeTypes().size());
+		ConceptAttributeType conceptAttributeType = new ConceptAttributeType();
+		conceptAttributeType.setName("Another one");
+		conceptAttributeType.setDatatypeClassname(FreeTextDatatype.class.getName());
+		conceptService.saveConceptAttributeType(conceptAttributeType);
+		Assert.assertNotNull(conceptAttributeType.getId());
+		Assert.assertEquals(3, conceptService.getAllConceptAttributeTypes().size());
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeType(Integer)
+	 * @verifies return the concept attribute type with the given id
+	 */
+	@Test
+	public void getConceptAttributeType_shouldReturnTheConceptAttributeTypeWithTheGivenId() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		Assert.assertEquals("Audit Date", Context.getConceptService().getConceptAttributeType(1).getName());
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeType(Integer)
+	 * @verifies return null if no concept attribute type exists with the given id
+	 */
+	@Test
+	public void getConceptAttributeType_shouldReturnNullIfNoConceptAttributeTypeExistsWithTheGivenId() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		Assert.assertNull(Context.getConceptService().getConceptAttributeType(999));
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeTypeByUuid(String)
+	 * @verifies return the concept attribute type with the given uuid
+	 */
+	@Test
+	public void getConceptAttributeTypeByUuid_shouldReturnTheConceptAttributeTypeWithTheGivenUuid() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		Assert.assertEquals("Audit Date", Context.getConceptService().getConceptAttributeTypeByUuid(
+				"9516cc50-6f9f-11e0-8414-001e378eb67e").getName());
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeTypeByUuid(String)
+	 * @verifies return null if no concept attribute type exists with the given uuid
+	 */
+	@Test
+	public void getConceptAttributeTypeByUuid_shouldReturnNullIfNoConceptAttributeTypeExistsWithTheGivenUuid()
+			throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		Assert.assertNull(Context.getConceptService().getConceptAttributeTypeByUuid("not-a-uuid"));
+	}
+
+	/**
+	 * @see ConceptService#purgeConceptAttributeType(ConceptAttributeType)
+	 * @verifies completely remove a concept attribute type
+	 */
+	@Test
+	public void purgeConceptAttributeType_shouldCompletelyRemoveAConceptAttributeType() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService conceptService = Context.getConceptService();
+		Assert.assertEquals(2, conceptService.getAllConceptAttributeTypes().size());
+		conceptService.purgeConceptAttributeType(conceptService.getConceptAttributeType(2));
+		Assert.assertEquals(1, conceptService.getAllConceptAttributeTypes().size());
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeTypes(String)
+	 * * @verifies search conceptAttributeType by name
+	 */
+	@Test
+	public void getConceptAttributeTypes_shouldSearchConceptAttributesByName() throws Exception{
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService conceptService = Context.getConceptService();
+		Assert.assertEquals(1, conceptService.getConceptAttributeTypes("we").size());
+		Assert.assertEquals(0, conceptService.getConceptAttributeTypes("attr type").size());
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeTypeByName(String)
+	 * * @verifies get conceptAttributeType by name
+	 */
+	@Test
+	public void getConceptAttributeTypes_shouldGetConceptAttributeByExactName() throws Exception{
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService conceptService = Context.getConceptService();
+		Assert.assertNotNull(conceptService.getConceptAttributeTypeByName("Audit Date"));
+		Assert.assertNull(conceptService.getConceptAttributeTypeByName("date"));
+	}
+
+	/**
+	 * @see ConceptService#retireConceptAttributeType(ConceptAttributeType, String)
+	 * @verifies retire a concept attribute type
+	 */
+	@Test
+	public void retireConceptAttributeType_shouldRetireAConceptAttributeType() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptAttributeType vat = Context.getConceptService().getConceptAttributeType(1);
+		Assert.assertFalse(vat.isRetired());
+		Assert.assertNull(vat.getRetiredBy());
+		Assert.assertNull(vat.getDateRetired());
+		Assert.assertNull(vat.getRetireReason());
+		Context.getConceptService().retireConceptAttributeType(vat, "for testing");
+		vat = Context.getConceptService().getConceptAttributeType(1);
+		Assert.assertTrue(vat.isRetired());
+		Assert.assertNotNull(vat.getRetiredBy());
+		Assert.assertNotNull(vat.getDateRetired());
+		Assert.assertEquals("for testing", vat.getRetireReason());
+	}
+
+	/**
+	 * @see ConceptService#unretireConceptAttributeType(ConceptAttributeType)
+	 * @verifies unretire a retired concept attribute type
+	 */
+	@Test
+	public void unretireConceptAttributeType_shouldUnretireARetiredConceptAttributeType() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService service = Context.getConceptService();
+		ConceptAttributeType conceptAttributeType = service.getConceptAttributeType(2);
+		Assert.assertTrue(conceptAttributeType.isRetired());
+		Assert.assertNotNull(conceptAttributeType.getDateRetired());
+		Assert.assertNotNull(conceptAttributeType.getRetiredBy());
+		Assert.assertNotNull(conceptAttributeType.getRetireReason());
+		service.unretireConceptAttributeType(conceptAttributeType);
+		Assert.assertFalse(conceptAttributeType.isRetired());
+		Assert.assertNull(conceptAttributeType.getDateRetired());
+		Assert.assertNull(conceptAttributeType.getRetiredBy());
+		Assert.assertNull(conceptAttributeType.getRetireReason());
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeByUuid(String)
+	 * @verifies get the concept attribute with the given uuid
+	 */
+	@Test
+	public void getConceptAttributeByUuid_shouldGetTheConceptAttributeWithTheGivenUuid() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService service = Context.getConceptService();
+		Assert.assertEquals("2011-04-25", service.getConceptAttributeByUuid("3a2bdb18-6faa-11e0-8414-001e378eb67e")
+				.getValueReference());
+	}
+
+	/**
+	 * @see ConceptService#getConceptAttributeByUuid(String)
+	 * @verifies return null if no concept attribute has the given uuid
+	 */
+	@Test
+	public void getConceptAttributeByUuid_shouldReturnNullIfNoConceptAttributeHasTheGivenUuid() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService service = Context.getConceptService();
+		Assert.assertNull(service.getConceptAttributeByUuid("not-a-uuid"));
+	}
+
+	/**
+	 * @see ConceptService#hasAnyConceptAttribute(ConceptAttributeType)
+	 * @verifies return true if concept attribute is present for given conceptAttributeType
+	 */
+	@Test
+	public void hasAnyConceptAttribute_shouldReturnTrueIfAnyConceptAttributeIsPresentForGivenConceptAttributeType() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService conceptService = Context.getConceptService();
+		ConceptAttributeType conceptAttributeType = conceptService.getConceptAttributeType(1);
+		Assert.assertTrue(conceptService.hasAnyConceptAttribute(conceptAttributeType));
+	}
+
+	/**
+	 * @see ConceptService#hasAnyConceptAttribute(ConceptAttributeType)
+	 * @verifies return false if concept attribute is not found for given conceptAttributeType
+	 */
+	@Test
+	public void hasAnyConceptAttribute_shouldReturnFalseIfNoConceptAttributeFoundForGivenConceptAttributeType() throws Exception {
+		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
+		ConceptService conceptService = Context.getConceptService();
+		ConceptAttributeType conceptAttributeType = conceptService.getConceptAttributeType(2);
+		Assert.assertFalse(conceptService.hasAnyConceptAttribute(conceptAttributeType));
+	}
+	
+	/**
+	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)
+	 */
+	@Test
+	@Verifies(value = "should return a search result whose concept name contains all word tokens as first", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
+	public void getConcepts_shouldPassWithAndOrNotWords() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		
+		//search phrase with AND
+		List<ConceptSearchResult> searchResults = conceptService.getConcepts("AND SALBUTAMOL INHALER", Collections
+		        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
+		
+		Assert.assertEquals(1, searchResults.size());
+		assertThat(searchResults.get(0).getWord(), is("AND SALBUTAMOL INHALER"));
+		
+		//search phrase with OR
+		searchResults = conceptService.getConcepts("SALBUTAMOL OR INHALER", Collections
+	        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
+	
+		Assert.assertEquals(1, searchResults.size());
+		assertThat(searchResults.get(0).getWord(), is("SALBUTAMOL OR INHALER"));
+		
+		//search phrase with NOT
+		searchResults = conceptService.getConcepts("SALBUTAMOL INHALER NOT", Collections
+	        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
+	
+		Assert.assertEquals(1, searchResults.size());
+		assertThat(searchResults.get(0).getWord(), is("SALBUTAMOL INHALER NOT"));
 	}
 }

@@ -13,8 +13,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
@@ -24,16 +22,23 @@ import org.openmrs.Person;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests methods on the {@link ObsValidator} class.
  */
 public class ObsValidatorTest extends BaseContextSensitiveTest {
+
+	@Autowired
+	private ObsValidator obsValidator;
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if personId is null", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -44,16 +49,16 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setValueNumeric(1.0);
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("person"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
-		Assert.assertFalse(errors.hasFieldErrors("valueNumeric"));
+		assertTrue(errors.hasFieldErrors("person"));
+		assertFalse(errors.hasFieldErrors("concept"));
+		assertFalse(errors.hasFieldErrors("obsDatetime"));
+		assertFalse(errors.hasFieldErrors("valueNumeric"));
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if obsDatetime is null", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -64,16 +69,16 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setValueNumeric(1.0);
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("person"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertTrue(errors.hasFieldErrors("obsDatetime"));
-		Assert.assertFalse(errors.hasFieldErrors("valueNumeric"));
+		assertFalse(errors.hasFieldErrors("person"));
+		assertFalse(errors.hasFieldErrors("concept"));
+		assertTrue(errors.hasFieldErrors("obsDatetime"));
+		assertFalse(errors.hasFieldErrors("valueNumeric"));
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the parent obs has values", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -99,22 +104,22 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setGroupMembers(group);
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("person"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertTrue(errors.hasFieldErrors("valueCoded"));
-		Assert.assertTrue(errors.hasFieldErrors("valueDrug"));
-		Assert.assertTrue(errors.hasFieldErrors("valueDatetime"));
-		Assert.assertTrue(errors.hasFieldErrors("valueNumeric"));
-		Assert.assertTrue(errors.hasFieldErrors("valueModifier"));
-		Assert.assertTrue(errors.hasFieldErrors("valueText"));
-		Assert.assertTrue(errors.hasFieldErrors("valueBoolean"));
-		Assert.assertTrue(errors.hasFieldErrors("valueComplex"));
+		assertFalse(errors.hasFieldErrors("person"));
+		assertFalse(errors.hasFieldErrors("concept"));
+		assertTrue(errors.hasFieldErrors("valueCoded"));
+		assertTrue(errors.hasFieldErrors("valueDrug"));
+		assertTrue(errors.hasFieldErrors("valueDatetime"));
+		assertTrue(errors.hasFieldErrors("valueNumeric"));
+		assertTrue(errors.hasFieldErrors("valueModifier"));
+		assertTrue(errors.hasFieldErrors("valueText"));
+		assertTrue(errors.hasFieldErrors("valueBoolean"));
+		assertTrue(errors.hasFieldErrors("valueComplex"));
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if obs has no values and not parent", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -126,13 +131,13 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertTrue(errors.getGlobalErrorCount() > 0);
+		assertTrue(errors.getGlobalErrorCount() > 0);
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if concept is null", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -143,16 +148,16 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setValueNumeric(1.0);
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("person"));
-		Assert.assertTrue(errors.hasFieldErrors("concept"));
-		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
-		Assert.assertFalse(errors.hasFieldErrors("valueNumeric"));
+		assertFalse(errors.hasFieldErrors("person"));
+		assertTrue(errors.hasFieldErrors("concept"));
+		assertFalse(errors.hasFieldErrors("obsDatetime"));
+		assertFalse(errors.hasFieldErrors("valueNumeric"));
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if concept datatype is boolean and valueBoolean is null", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -163,16 +168,16 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("person"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
-		Assert.assertTrue(errors.hasFieldErrors("valueBoolean"));
+		assertFalse(errors.hasFieldErrors("person"));
+		assertFalse(errors.hasFieldErrors("concept"));
+		assertFalse(errors.hasFieldErrors("obsDatetime"));
+		assertTrue(errors.hasFieldErrors("valueBoolean"));
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if concept datatype is coded and valueCoded is null", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -183,16 +188,16 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("person"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
-		Assert.assertTrue(errors.hasFieldErrors("valueCoded"));
+		assertFalse(errors.hasFieldErrors("person"));
+		assertFalse(errors.hasFieldErrors("concept"));
+		assertFalse(errors.hasFieldErrors("obsDatetime"));
+		assertTrue(errors.hasFieldErrors("valueCoded"));
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if concept datatype is date and valueDatetime is null", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -203,16 +208,16 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("person"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
-		Assert.assertTrue(errors.hasFieldErrors("valueDatetime"));
+		assertFalse(errors.hasFieldErrors("person"));
+		assertFalse(errors.hasFieldErrors("concept"));
+		assertFalse(errors.hasFieldErrors("obsDatetime"));
+		assertTrue(errors.hasFieldErrors("valueDatetime"));
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if concept datatype is numeric and valueNumeric is null", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -223,16 +228,16 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("person"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
-		Assert.assertTrue(errors.hasFieldErrors("valueNumeric"));
+		assertFalse(errors.hasFieldErrors("person"));
+		assertFalse(errors.hasFieldErrors("concept"));
+		assertFalse(errors.hasFieldErrors("obsDatetime"));
+		assertTrue(errors.hasFieldErrors("valueNumeric"));
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if concept datatype is text and valueText is null", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -243,13 +248,13 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("valueText"));
+		assertTrue(errors.hasFieldErrors("valueText"));
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if obs ancestors contains obs", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -264,16 +269,16 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setGroupMembers(group);
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("person"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
-		Assert.assertTrue(errors.hasFieldErrors("groupMembers"));
+		assertFalse(errors.hasFieldErrors("person"));
+		assertFalse(errors.hasFieldErrors("concept"));
+		assertFalse(errors.hasFieldErrors("obsDatetime"));
+		assertTrue(errors.hasFieldErrors("groupMembers"));
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all values present", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -285,13 +290,13 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setValueNumeric(1.0);
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if concept value for text datatype is greater than the maximum length", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -311,16 +316,16 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setValueText(valueText);
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("person"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
-		Assert.assertTrue(errors.hasFieldErrors("valueText"));
+		assertFalse(errors.hasFieldErrors("person"));
+		assertFalse(errors.hasFieldErrors("concept"));
+		assertFalse(errors.hasFieldErrors("obsDatetime"));
+		assertTrue(errors.hasFieldErrors("valueText"));
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(Object,Errors)}
+	 * @see ObsValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should reject an invalid concept and drug combination", method = "validate(Object,Errors)")
@@ -340,12 +345,12 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setValueDrug(drug);
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
-		Assert.assertTrue(errors.hasFieldErrors("valueDrug"));
+		obsValidator.validate(obs, errors);
+		assertTrue(errors.hasFieldErrors("valueDrug"));
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(Object,Errors)}
+	 * @see ObsValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if answer concept and concept of value drug match", method = "validate(Object,Errors)")
@@ -366,12 +371,12 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setValueDrug(drug);
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
-		Assert.assertFalse(errors.hasFieldErrors());
+		obsValidator.validate(obs, errors);
+		assertFalse(errors.hasFieldErrors());
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -389,13 +394,13 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setComment("comment");
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertFalse(errors.hasErrors());
+		assertFalse(errors.hasErrors());
 	}
 	
 	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -417,12 +422,22 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		        .setComment("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		
 		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
+		obsValidator.validate(obs, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("accessionNumber"));
-		Assert.assertTrue(errors.hasFieldErrors("valueModifier"));
-		Assert.assertTrue(errors.hasFieldErrors("valueComplex"));
-		Assert.assertTrue(errors.hasFieldErrors("comment"));
-		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("accessionNumber"));
+		assertTrue(errors.hasFieldErrors("valueModifier"));
+		assertTrue(errors.hasFieldErrors("valueComplex"));
+		assertTrue(errors.hasFieldErrors("comment"));
+		assertTrue(errors.hasFieldErrors("voidReason"));
+	}
+
+	/**
+	 * @verifies support Obs class
+	 * @see ObsValidator#supports(Class)
+	 */
+	@Test
+	public void supports_shouldSupportObsClass() throws Exception {
+		assertTrue(obsValidator.supports(Obs.class));
+		assertFalse(obsValidator.supports(Concept.class));
 	}
 }

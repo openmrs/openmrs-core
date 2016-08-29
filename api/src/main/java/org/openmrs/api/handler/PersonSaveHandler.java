@@ -23,7 +23,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * This class deals with {@link Person} objects when they are saved via a save* method in an Openmrs
- * Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP class. <br/>
+ * Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP class. <br>
  *
  * @see RequiredDataHandler
  * @see SaveHandler
@@ -42,6 +42,10 @@ public class PersonSaveHandler implements SaveHandler<Person> {
 		// address collection
 		if (person.getAddresses() != null && person.getAddresses().size() > 0) {
 			for (PersonAddress pAddress : person.getAddresses()) {
+				if (pAddress.isBlank()){
+					person.removeAddress(pAddress);
+					continue;
+				}
 				pAddress.setPerson(person);
 			}
 		}

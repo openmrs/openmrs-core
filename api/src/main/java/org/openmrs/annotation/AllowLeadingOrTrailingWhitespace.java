@@ -27,8 +27,8 @@ import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
  * public void setName(String name);
  * </pre>
  * 
- * Note: This annotation should be put onto the setter methods<br/>
- * <br/>
+ * Note: This annotation should be put onto the setter methods<br>
+ * <br>
  * If this annotation is not present the {@link OpenmrsObjectSaveHandler} will
  * trim off whitespace before this object is persisted in the db.
  * 

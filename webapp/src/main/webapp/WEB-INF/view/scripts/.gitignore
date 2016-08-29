@@ -1,0 +1,10 @@
+/calendar/
+/dictionary/
+/dojo/
+/flot/
+/timepicker/
+*.withjstl
+/*.js
+!/initialsetup.js
+
+
