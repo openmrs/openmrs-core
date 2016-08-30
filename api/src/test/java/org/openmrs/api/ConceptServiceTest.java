@@ -2756,6 +2756,20 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)
 	 */
 	@Test
+	@Verifies(value = "should return empty list if no concept within specified classes was found", method = "getConcepts(String,List<QLocale;>,boolean,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
+	public void getConcepts_shouldReturnEmptyListIfNoConceptWithinSpecifiedClassesWasFound() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		List<ConceptClass> classes = new ArrayList<ConceptClass>();
+		classes.add(Context.getConceptService().getConceptClassByName("Finding"));
+		List<ConceptSearchResult> searchResults = conceptService.getConcepts("SALBUTAMOL", null, false, classes, null, null, null,
+		    null, null, null);
+		Assert.assertEquals(0, searchResults.size());
+	}
+	
+	/**
+	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)
+	 */
+	@Test
 	@Verifies(value = "should include retired concepts in the search results", method = "getConcepts(String,List<QLocale;>,boolean,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
 	public void getConcepts_shouldIncludeRetiredConceptsInTheSearchResults() throws Exception {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");

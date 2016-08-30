@@ -236,7 +236,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		String idPropertyName = getSession().getSessionFactory().getClassMetadata(getType()).getIdentifierPropertyName();
 		
 		List<Object> documents = listProjection(idPropertyName, field);
-		
+
 		TermsFilter termsFilter = null;
 		if (!documents.isEmpty()) {
 			Set<Object> uniqueFieldValues = new HashSet<Object>();
@@ -250,9 +250,8 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 			termsFilter = new TermsFilter(terms);
 		}
 		
-		buildQuery();
-		
 		if (termsFilter != null) {
+			buildQuery();
 			fullTextQuery.setFilter(termsFilter);
 		}
 		
@@ -281,7 +280,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		
 		@SuppressWarnings("unchecked")
 		List<T> list = fullTextQuery.list();
-		
+
 		return ListPart.newListPart(list, firstResult, maxResults, Long.valueOf(fullTextQuery.getResultSize()),
 		    !fullTextQuery.hasPartialResults());
 	}
