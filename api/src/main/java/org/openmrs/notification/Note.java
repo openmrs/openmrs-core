@@ -44,8 +44,6 @@ public class Note extends BaseOpenmrsData {
 	// Relationships
 	private Patient patient;
 	
-	private NoteType noteType;
-	
 	//private Observation observation;
 	//private Encounter encounter;
 	//private User createdBy;		
@@ -82,14 +80,6 @@ public class Note extends BaseOpenmrsData {
 	
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
-	}
-	
-	public NoteType getNoteType() {
-		return noteType;
-	}
-	
-	public void setNoteType(NoteType noteType) {
-		this.noteType = noteType;
 	}
 	
 	public Patient getPatient() {
