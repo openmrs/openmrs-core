@@ -688,7 +688,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Provider orderer,
-	        Encounter encounter) throws Exception {
+	        Encounter encounter) {
 		if (discontinueDate == null) {
 			discontinueDate = aMomentBefore(new Date());
 		}
@@ -707,7 +707,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Provider orderer,
-	        Encounter encounter) throws Exception {
+	        Encounter encounter)  {
 		if (discontinueDate == null) {
 			discontinueDate = aMomentBefore(new Date());
 		}
