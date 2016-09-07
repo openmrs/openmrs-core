@@ -133,7 +133,7 @@
 		        <artifactId>tomcat7-maven-plugin</artifactId>
 		        <version>2.2</version>
 		        <configuration>
-		          <path>/openmrs</path>
+		          <path>/${project.build.finalName}</path>
 		        </configuration>
          </plugin>
          <plugin>
