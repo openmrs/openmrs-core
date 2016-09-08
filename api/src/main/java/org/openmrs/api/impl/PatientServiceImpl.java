@@ -1574,7 +1574,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			identifierTypes = Collections.emptyList();
 		}
 		
-		return dao.getPatients(name, start, length);
+		return dao.getPatients(name != null ? name : identifier, start, length);
 	}
 	
 	/**
