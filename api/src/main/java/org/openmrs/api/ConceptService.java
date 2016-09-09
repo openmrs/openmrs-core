@@ -1039,7 +1039,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should get ConceptSource with the given name
 	 * @should return null if no ConceptSource with that name is found
 	 */
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
 	public ConceptSource getConceptSourceByName(String conceptSourceName) throws APIException;
 	
 	/**
