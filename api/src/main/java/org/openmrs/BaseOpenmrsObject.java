@@ -26,7 +26,7 @@ import javax.persistence.Column;
 @MappedSuperclass
 public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	
-	@Column(name = "uuid", unique = true, nullable = false, length = 38)
+	@Column(name = "uuid", unique = true, nullable = false, length = 38, updatable = false)
 	private String uuid = UUID.randomUUID().toString();
 	
 	/**
