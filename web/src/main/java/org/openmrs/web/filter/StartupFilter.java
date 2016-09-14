@@ -242,6 +242,7 @@ public abstract class StartupFilter implements Filter {
 		// put each of the private varibles into the template for convenience
 		for (Field field : model.getClass().getDeclaredFields()) {
 			try {
+				field.setAccessible(true);
 				velocityContext.put(field.getName(), field.get(model));
 			}
 			catch (IllegalArgumentException e) {
