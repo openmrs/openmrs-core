@@ -64,7 +64,6 @@ import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
-import org.openmrs.notification.NoteService;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.scheduler.SchedulerService;
@@ -395,13 +394,6 @@ public class Context {
 	 */
 	public static ObsService getObsService() {
 		return getServiceContext().getObsService();
-	}
-
-	/**
-	 * @return note service
-	 */
-	public static NoteService getNoteService() {
-		return getServiceContext().getNoteService();
 	}
 
 	/**
