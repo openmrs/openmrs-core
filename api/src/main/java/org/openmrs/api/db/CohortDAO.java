@@ -47,16 +47,26 @@ public interface CohortDAO {
 	 * @throws DAOException
 	 */
 	public List<Cohort> getAllCohorts(boolean includeVoided) throws DAOException;
-	
+
 	/**
 	 * Finds all cohorts that contain the given patientId
-	 * 
-	 * @param patientId
+	 *
+	 * @param patientId patient id to get the cohorts containing the patient
+	 * @param voided voided true/false whether or not to include voided patients
+	 * @return List&lt;Cohort&gt; object of matching Cohorts
+	 * @throws DAOException
+	 */
+	public List<Cohort> getCohortsContainingPatientId(Integer patientId, Boolean voided) throws DAOException;
+
+	/**
+	 * Finds all cohorts that contain the given patientId
+	 *
+	 * @param patientId patient id to get the cohorts containing the patient
 	 * @return List&lt;Cohort&gt; object of matching Cohorts
 	 * @throws DAOException
 	 */
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException;
-	
+
 	/**
 	 * Saves a Cohort to the database
 	 * 
@@ -86,5 +96,4 @@ public interface CohortDAO {
 	 * @return cohort or null
 	 */
 	public Cohort getCohortByUuid(String uuid);
-	
 }

@@ -739,8 +739,7 @@ public class Context {
 	 */
 	public static void closeSessionWithCurrentUser() {
 		getContextDAO().closeSession();
-		;
-	}
+    }
 
 	/**
 	 * Clears cached changes made so far during this unit of work without writing them to the
