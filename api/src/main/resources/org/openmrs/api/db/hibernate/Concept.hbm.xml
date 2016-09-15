@@ -98,8 +98,7 @@
 			<column name="class_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="changedBy" class="User"
-			not-null="true">
+		<many-to-one name="changedBy" class="User">
 			<column name="changed_by" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
