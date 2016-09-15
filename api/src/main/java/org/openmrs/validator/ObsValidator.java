@@ -92,7 +92,7 @@ public class ObsValidator implements Validator {
 		}
 		
 		// if this is an obs group (i.e., parent) make sure that it has no values (other than valueGroupId) set
-		if (obs.hasGroupMembers()) {
+		if (obs.hasGroupMembers(obs.getVoided())) {
 			if (obs.getValueCoded() != null) {
 				errors.rejectValue("valueCoded", "error.not.null");
 			}
