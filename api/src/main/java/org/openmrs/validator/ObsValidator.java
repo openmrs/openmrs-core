@@ -140,7 +140,7 @@ public class ObsValidator implements Validator {
 			errors.rejectValue("concept", "error.null");
 		}
 		// if there is a concept, and this isn't a group, perform validation tests specific to the concept datatype
-		else if (!obs.hasGroupMembers()) {
+		else if (!obs.hasGroupMembers(obs.getVoided())) {
 			ConceptDatatype dt = c.getDatatype();
 			if (dt != null) {
 				if (dt.isBoolean() && obs.getValueBoolean() == null) {
