@@ -440,4 +440,27 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(obsValidator.supports(Obs.class));
 		assertFalse(obsValidator.supports(Concept.class));
 	}
+
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	@Verifies(value = "should not validate if obs is voided", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
+	public void validate_shouldNotValidateIfObsIsVoided() throws Exception {
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(2));
+		obs.setConcept(Context.getConceptService().getConcept(5089));
+		obs.setObsDatetime(new Date());
+		obs.setValueNumeric(null);
+
+		Errors errors = new BindException(obs, "obs");
+		new ObsValidator().validate(obs, errors);
+		assertTrue(errors.hasFieldErrors("valueNumeric"));
+
+		obs.setVoided(true);
+		errors = new BindException(obs, "obs");
+		new ObsValidator().validate(obs, errors);
+		assertFalse(errors.hasErrors());
+
+	}
 }
