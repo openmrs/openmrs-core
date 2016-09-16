@@ -17,6 +17,7 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -29,6 +30,7 @@ import org.springframework.validation.Validator;
  * <li>checks for no recursion in the obs grouping.
  * <li>Makes sure the obs has at least one value (if not an obs grouping)</li>
  * </ul>
+ * 
  * @see org.openmrs.Obs
  */
 @Handler(supports = { Obs.class }, order = 50)
@@ -62,11 +64,18 @@ public class ObsValidator implements Validator {
 	 * @should pass if answer concept and concept of value drug match
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
+	 * @should not validate if obs is voided
+	 * @should not validate a voided child obs
+	 * @should fail for a null object
 	 */
 	public void validate(Object obj, Errors errors) {
 		Obs obs = (Obs) obj;
+		if (obs == null) {
+			throw new APIException("Obs can't be null");
+		} else if (obs.getVoided()) {
+			return;
+		}
 		List<Obs> ancestors = new ArrayList<Obs>();
-		//ancestors.add(obs);
 		validateHelper(obs, errors, ancestors, true);
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "accessionNumber", "valueModifier", "valueComplex",
 		    "comment", "voidReason");

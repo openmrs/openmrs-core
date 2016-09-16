@@ -9,21 +9,29 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.hamcrest.CoreMatchers;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.Drug;
 import org.openmrs.Obs;
 import org.openmrs.Person;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -31,6 +39,12 @@ import org.springframework.validation.Errors;
  * Tests methods on the {@link ObsValidator} class.
  */
 public class ObsValidatorTest extends BaseContextSensitiveTest {
+	
+	@Autowired
+	private ObsValidator obsValidator;
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
@@ -406,15 +420,11 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setObsDatetime(new Date());
 		obs.setValueNumeric(1.0);
 		
-		obs
-		        .setAccessionNumber("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		obs.setAccessionNumber("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		obs.setValueModifier("too long text");
-		obs
-		        .setValueComplex("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		obs
-		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		obs
-		        .setComment("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		obs.setValueComplex("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		obs.setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		obs.setComment("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		
 		Errors errors = new BindException(obs, "obs");
 		new ObsValidator().validate(obs, errors);
@@ -424,5 +434,68 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors("valueComplex"));
 		Assert.assertTrue(errors.hasFieldErrors("comment"));
 		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+	}
+	
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	@Verifies(value = "should not validate if obs is voided", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
+	public void validate_shouldNotValidateIfObsIsVoided() throws Exception {
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(2));
+		obs.setConcept(Context.getConceptService().getConcept(5089));
+		obs.setObsDatetime(new Date());
+		obs.setValueNumeric(null);
+		
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+		assertTrue(errors.hasFieldErrors("valueNumeric"));
+		
+		obs.setVoided(true);
+		errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+		assertFalse(errors.hasErrors());
+		
+	}
+	
+	/**
+	 * @see ObsValidator#validate(Object, Errors)
+	 */
+	@Test
+	@Verifies(value = "should not validate a voided child obs", method = "validate(Object, Errors)")
+	public void validate_shouldNotValidateAVoidedChildObs() throws Exception {
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(2));
+		obs.setConcept(Context.getConceptService().getConcept(5089));
+		obs.setObsDatetime(new Date());
+		Obs validChild = new Obs();
+		validChild.setPerson(Context.getPersonService().getPerson(2));
+		validChild.setConcept(Context.getConceptService().getConcept(5089));
+		validChild.setObsDatetime(new Date());
+		validChild.setValueNumeric(80.0);
+		obs.addGroupMember(validChild);
+		Obs inValidChild = new Obs();
+		obs.addGroupMember(inValidChild);
+		
+		Errors errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+		assertTrue(errors.hasErrors());
+		
+		inValidChild.setVoided(true);
+		errors = new BindException(obs, "obs");
+		obsValidator.validate(obs, errors);
+		assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see ObsValidator#validate(Object, Errors)
+	 */
+	@Test
+	@Verifies(value = "should fail for a null object", method = "validate(Object, Errors)")
+	public void validate_shouldFailForANullObject() throws Exception {
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(CoreMatchers.equalTo("Obs can't be null"));
+		obsValidator.validate(null, null);
 	}
 }
