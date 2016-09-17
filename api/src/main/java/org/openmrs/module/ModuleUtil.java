@@ -50,6 +50,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 
@@ -210,6 +211,35 @@ public class ModuleUtil {
 		}
 		
 		return file;
+	}
+
+	/**
+	 * Checks if the current OpenMRS version is in an array of versions.
+	 * <p>
+	 * This method calls {@link ModuleUtil#matchRequiredVersions(String, String)} internally.
+	 * </p>
+	 *
+	 * @param versions the openmrs versions to be checked against the current openmrs version
+	 * @return true if the current openmrs version is in versions and false otherwise
+	 * @should return false when versions is null
+	 * @should return false when versions is empty
+	 * @should return true if current openmrs version matches one element in versions
+	 * @should return false if current openmrs version does not match any element in versions
+	 */
+	public static boolean isOpenmrsVersionInVersions(String ...versions) {
+
+		if (versions == null || versions.length == 0) {
+			return false;
+		}
+
+		boolean result = false;
+		for (String version : versions) {
+			if (matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, version)) {
+				result = true;
+				break;
+			}
+		}
+		return result;
 	}
 	
 	/**
