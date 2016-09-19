@@ -11,6 +11,7 @@ package org.openmrs;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -1216,5 +1217,25 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		
 		List<Concept> resultConcepts = newConcept.findPossibleValues("findPossibleValueTest");
 		Assert.assertEquals(expectedConcepts, resultConcepts);
+	}
+	
+	/**
+	 * @see Concept#addSetMember(Concept)
+	 */
+	@Test
+	@Verifies(value = "should append concept to the existing list of conceptSet having retired concept", method = "addSetMember(Concept)")
+	public void addSetMember_shouldAppendConceptToExistingConceptSetHavingRetiredConcept() throws Exception {
+		Concept concept = new Concept();
+		Concept setMember1 = new Concept(1);
+		setMember1.setRetired(true);
+		concept.addSetMember(setMember1);
+		Concept setMember2 = new Concept(2);
+		concept.addSetMember(setMember2);
+		Concept setMember3 = new Concept(3);
+		concept.addSetMember(setMember3);
+		assertThat(concept.getSetMembers(),hasItem(setMember1));
+		assertThat(concept.getSetMembers(),hasItem(setMember2));
+		assertThat(concept.getSetMembers(),hasItem(setMember3));
+		assertThat(concept.getSetMembers().size(),is(3));
 	}
 }
