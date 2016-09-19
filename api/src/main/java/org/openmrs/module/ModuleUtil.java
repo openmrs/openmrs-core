@@ -220,7 +220,7 @@ public class ModuleUtil {
 	 * </p>
 	 *
 	 * @param versions the openmrs versions to be checked against the current openmrs version
-	 * @return true if the current openmrs version is in versions and false otherwise
+	 * @return true if the current openmrs version is in versions otherwise false
 	 * @should return false when versions is null
 	 * @should return false when versions is empty
 	 * @should return true if current openmrs version matches one element in versions
