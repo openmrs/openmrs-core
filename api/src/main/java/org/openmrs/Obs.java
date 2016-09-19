@@ -9,18 +9,6 @@
  */
 package org.openmrs;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Set;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -33,6 +21,18 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.Format;
 import org.openmrs.util.Format.FORMAT_TYPE;
 import org.openmrs.util.OpenmrsUtil;
+
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * An observation is a single unit of clinical information. <br>
@@ -441,11 +441,11 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setGroupMembers(Set<Obs> groupMembers) {
 		if (CollectionUtils.isNotEmpty(this.groupMembers) && CollectionUtils.isNotEmpty(groupMembers)) {
-			dirty = !CollectionUtils.disjunction(this.groupMembers, groupMembers).isEmpty();
+			setDirty(!CollectionUtils.disjunction(this.groupMembers, groupMembers).isEmpty());
 		} else if (CollectionUtils.isEmpty(this.groupMembers) && CollectionUtils.isNotEmpty(groupMembers)) {
-			dirty = true;
+			setDirty(true);
 		} else if (CollectionUtils.isNotEmpty(this.groupMembers) && CollectionUtils.isEmpty(groupMembers)) {
-			dirty = true;
+			setDirty(true);
 		}
 		this.groupMembers = new HashSet<Obs>(groupMembers); //Copy over the entire list
 		
@@ -478,7 +478,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		
 		member.setObsGroup(this);
 		if (groupMembers.add(member)) {
-			dirty = true;
+			setDirty(true);
 		}
 	}
 	
@@ -499,7 +499,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		
 		if (groupMembers.remove(member)) {
 			member.setObsGroup(null);
-			dirty = true;
+			setDirty(true);
 		}
 	}
 	
@@ -1275,8 +1275,14 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private void markAsDirty(Object oldValue, Object newValue) {
 		//Should we ignore the case for Strings?
-		if (!isDirty() && !OpenmrsUtil.nullSafeEquals(oldValue, newValue)) {
+		if (!isDirty() && obsId != null && !OpenmrsUtil.nullSafeEquals(oldValue, newValue)) {
 			dirty = true;
+		}
+	}
+
+	private void setDirty(Boolean dirty){
+		if(obsId != null){
+			this.dirty = dirty;
 		}
 	}
 }
