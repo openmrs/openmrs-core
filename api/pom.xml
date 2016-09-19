@@ -219,6 +219,10 @@
 		   <version>2.4.6</version>
 		   <type>jar</type>
 	   </dependency>
+       <dependency>
+		   <groupId>net.sf.ehcache</groupId>
+		   <artifactId>ehcache</artifactId>
+       </dependency>
    </dependencies>
    <build>
      <resources>
