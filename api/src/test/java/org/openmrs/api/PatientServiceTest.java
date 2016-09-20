@@ -600,6 +600,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(USERS_WHO_ARE_PATIENTS_XML);
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
+
 		Context.getPatientService().mergePatients(patientService.getPatient(6), notPreferred);
 		User user = Context.getUserService().getUser(2);
 		Assert.assertEquals(6, user.getPerson().getId().intValue());
@@ -617,6 +618,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
+
 		Patient preferred = patientService.getPatient(6);
 		
 		// patient 2 (not preferred) has 3 unvoided visits (id = 1, 2, 3) and 1 voided visit (id = 6)
@@ -693,6 +695,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void mergePatients_shouldVoidNonPreferredPersonObject() throws Exception {
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
+
 		Context.getPatientService().mergePatients(patientService.getPatient(6), notPreferred);
 		Assert.assertTrue(Context.getPersonService().getPerson(2).isVoided());
 	}
@@ -1910,7 +1913,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Patient> allPatients = patientService.getAllPatients();
 		// there are 1 voided and 4 nonvoided patients in
 		// standardTestDataset.xml
-		assertEquals(4, allPatients.size());
+		assertEquals(5, allPatients.size());
 	}
 	
 	/**
@@ -1923,7 +1926,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Patient> allPatients = patientService.getAllPatients(false);
 		// there are 1 voided and 4 nonvoided patients in
 		// standardTestDataset.xml
-		assertEquals(4, allPatients.size());
+		assertEquals(5, allPatients.size());
 	}
 	
 	/**
@@ -1936,7 +1939,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Patient> allPatients = patientService.getAllPatients(true);
 		// there are 1 voided and 4 nonvoided patients in
 		// standardTestDataset.xml
-		assertEquals(6, allPatients.size());
+		assertEquals(7, allPatients.size());
 	}
 	
 	/**

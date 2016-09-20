@@ -23,10 +23,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openmrs.Encounter;
-import org.openmrs.Patient;
-import org.openmrs.Visit;
-import org.openmrs.VisitAttribute;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
@@ -469,4 +466,82 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		new VisitValidator().validate(visit, errors);
 		assertEquals(true, errors.hasFieldErrors("voidReason"));
 	}
+
+	/**
+	 *  @see VisitValidator#validate(Object,Errors)
+	 */
+	@Test
+	@Verifies(value= "should fail validation if the visit start date is before the birth date of the patient", method = "validate(Object, Errors)")
+	public void validate_shouldFailValidationIfVisitStartDateIsBeforeBirthdate() throws Exception {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(1970, Calendar.FEBRUARY, 2);
+		Visit visit = makeVisit(42);
+		visit.setStartDatetime(calendar.getTime());
+
+		visit.setPatient(Context.getPatientService().getPatient(2));
+
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+
+		assertTrue(errors.hasFieldErrors("startDatetime"));
+	}
+
+	/**
+	 *  @see VisitValidator#validate(Object,Errors)
+	 */
+	@Test
+	@Verifies(value= "should fail validation if the visit start date is before the estimated birth date of the patient", method= "validate(Object, Errors)")
+	public void validate_shouldFailValidationIfVisitStartDateIsBeforeEstimatedBirthdate() throws Exception {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(1950, Calendar.FEBRUARY, 2);
+		Visit visit = makeVisit(42);
+		visit.setStartDatetime(calendar.getTime());
+
+		visit.setPatient(Context.getPatientService().getPatient(7));
+
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+
+		assertTrue(errors.hasFieldErrors("startDatetime"));
+	}
+
+	/**
+	 *  @see VisitValidator#validate(Object,Errors)
+	 */
+	@Test
+	@Verifies(value= "should fail validation if the visit start date is before the estimated birth date of the patient less than 2 YO", method= "validate(Object, Errors)")
+	public void validate_shouldFailValidationIfVisitStartDateIsBeforeEstimatedBirthdateLessThanTwoYO() throws Exception {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2012, Calendar.FEBRUARY, 2);
+		Visit visit = makeVisit(42);
+		visit.setStartDatetime(calendar.getTime());
+
+		visit.setPatient(Context.getPatientService().getPatient(1010));
+
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+
+		assertTrue(errors.hasFieldErrors("startDatetime"));
+	}
+
+	/**
+	 *  @see VisitValidator#validate(Object,Errors)
+	 */
+	@Test
+	@Verifies(value= "should pass validation if the visit start date is after the estimated birth date of the patient", method= "validate(Object, Errors)")
+	public void validate_shouldPassValidationIfVisitStartDateIsAfterEstimatedBirthdate() throws Exception {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2012, Calendar.FEBRUARY, 2);
+		Visit visit = makeVisit(42);
+		visit.setStartDatetime(calendar.getTime());
+
+		visit.setPatient(Context.getPatientService().getPatient(7));
+
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+
+		assertFalse(errors.hasFieldErrors("startDatetime"));
+	}
 }
+
+
