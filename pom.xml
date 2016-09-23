@@ -227,6 +227,11 @@
 				<artifactId>spring-oxm</artifactId>
 				<version>${springVersion}</version>
 			</dependency>
+		    <dependency>
+			   <groupId>org.springframework</groupId>
+			   <artifactId>spring-context-support</artifactId>
+			   <version>${springVersion}</version>
+		    </dependency>
 			<dependency>
 				<groupId>asm</groupId>
 				<artifactId>asm</artifactId>
