@@ -6004,6 +6004,7 @@
      	<validCheckSum><comment>Copying user.retired to person.voided so that generated providers for retired users are retired</comment>3:f338c9ea12ce38b0695db335d983b4e1</validCheckSum>
      	<validCheckSum><comment>Correcting checksum</comment>3:216ab5057dca5471de69124e93953d96</validCheckSum>
      	<validCheckSum><comment>TRUNK-3853 and TRUNK-3414</comment>3:04bc8aa9859f6f8dda065e272ba12e0d</validCheckSum>
+     	<validCheckSum><comment>TRUNK-4813</comment>3:f4aef46fe2207906684f25d3a3c9148e</validCheckSum>
      	<preConditions onFail="MARK_RAN">
  			<columnExists tableName="encounter" columnName="provider_id"/>
  		</preConditions>
@@ -6020,8 +6021,10 @@
  				select distinct person.person_id, user.system_id, 1, CURRENT_TIMESTAMP, user.retired, user.retired_by, user.date_retired, user.retire_reason, CONCAT('prov', SUBSTRING(person.uuid, 5))
  				from person as person
  					inner join encounter as encounter on encounter.provider_id = person.person_id
- 					left join (select max(users.user_id) as user_id, users.system_id, users.person_id, users.retired, users.retired_by, users.date_retired, users.retire_reason 
- 							from users as users group by users.person_id) as user 
+ 					left join (SELECT users.user_id, users.system_id, users.person_id, users.retired, users.retired_by, users.date_retired, users.retire_reason
+						FROM users, (SELECT users.person_id, MAX(users.user_id) as user_id
+							FROM users GROUP BY users.person_id) latestuser
+						WHERE latestuser.user_id = users.user_id) as user 
  						on person.person_id = user.person_id
  				where user.user_id is not null and encounter.provider_id not in (select person_id from provider);
          </sql>
