@@ -42,6 +42,8 @@ public final class OpenmrsConstants {
 	
 	private static final Log log = LogFactory.getLog(OpenmrsConstants.class);
 	
+	public static final String KEY_OPENMRS_APPLICATION_DATA_DIRECTORY = "OPENMRS_APPLICATION_DATA_DIRECTORY";
+	
 	/**
 	 * This is the hard coded primary key of the concept class for DRUG. This has to be done because
 	 * some logic in the API acts on this concept class
