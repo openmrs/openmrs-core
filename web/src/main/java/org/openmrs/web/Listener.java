@@ -289,6 +289,10 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		WebConstants.BUILD_TIMESTAMP = servletContext.getInitParameter("build.timestamp");
 		WebConstants.WEBAPP_NAME = getContextPath(servletContext);
 		WebConstants.MODULE_REPOSITORY_URL = servletContext.getInitParameter("module.repository.url");
+		
+		if (!"openmrs".equalsIgnoreCase(WebConstants.WEBAPP_NAME)) {
+			OpenmrsConstants.KEY_OPENMRS_APPLICATION_DATA_DIRECTORY = WebConstants.WEBAPP_NAME + "_APPLICATION_DATA_DIRECTORY";
+		}
 	}
 	
 	private void setApplicationDataDirectory(ServletContext servletContext) {
