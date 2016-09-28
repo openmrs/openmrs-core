@@ -66,6 +66,9 @@ public class ObsValidator implements Validator {
 	 */
 	public void validate(Object obj, Errors errors) {
 		Obs obs = (Obs) obj;
+		if(obs.getVoided()){
+			return;
+		}
 		List<Obs> ancestors = new ArrayList<Obs>();
 		//ancestors.add(obs);
 		validateHelper(obs, errors, ancestors, true);
