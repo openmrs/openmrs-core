@@ -9,14 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
@@ -39,6 +31,14 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Default implementation of the Observation Service
@@ -87,7 +87,148 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#saveObs(org.openmrs.Obs, String)
 	 */
 	public Obs saveObs(Obs obs, String changeMessage) throws APIException {
-		if (null != obs && null != obs.getConcept() && obs.getConcept().isComplex()
+		if(obs == null){
+			throw new APIException("Obs.error.cannot.be.null", (Object[]) null);
+		}
+
+		if(obs.getId() != null && changeMessage == null){
+			throw new APIException("Obs.error.ChangeMessage.required", (Object[]) null);
+		}
+
+		handleExistingObsWithComplexConcept(obs);
+
+		ensureRequirePrivilege(obs);
+
+		//Should allow updating a voided Obs, it seems to be pointless to restrict it,
+		//otherwise operations like merge patients won't be possible when to moving voided obs
+		if (obs.getObsId() == null || obs.getVoided()) {
+			return saveNewOrVoidedObs(obs,changeMessage);
+		} else if(!obs.isDirty()){
+			setPersonFromEncounter(obs);
+			return saveObsNotDirty(obs, changeMessage);
+		} else {
+			setPersonFromEncounter(obs);
+			return saveExistingObs(obs,changeMessage);
+		}
+	}
+
+	private void setPersonFromEncounter(Obs obs) {
+		Encounter encounter = obs.getEncounter();
+		if (encounter != null) {
+			obs.setPerson(encounter.getPatient());
+		}
+	}
+
+	private void voidExistingObs(Obs obs, String changeMessage, Obs newObs) {
+		// void out the original observation to keep it around for
+		// historical purposes
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.DELETE_OBS);
+
+			// fetch a clean copy of this obs from the database so that
+			// we don't write the changes to the database when we save
+			// the fact that the obs is now voided
+			Context.evictFromSession(obs);
+			obs = Context.getObsService().getObs(obs.getObsId());
+			//delete the previous file from the appdata/complex_obs folder
+			if (newObs.hasPreviousVersion() && newObs.getPreviousVersion().isComplex()) {
+				File previousFile = new AbstractHandler().getComplexDataFile(obs);
+				previousFile.delete();
+			}
+			// calling this via the service so that AOP hooks are called
+			Context.getObsService().voidObs(obs, changeMessage);
+
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.DELETE_OBS);
+		}
+	}
+
+	private Obs saveExistingObs(Obs obs, String changeMessage) {
+		// get a copy of the passed in obs and save it to the
+		// database. This allows us to create a new row and new obs_id
+		// this method doesn't copy the obs_id
+		Obs newObs = Obs.newInstance(obs);
+
+		// unset any voided properties on the new obs
+		newObs.setVoided(false);
+		newObs.setVoidReason(null);
+		newObs.setDateVoided(null);
+		newObs.setVoidedBy(null);
+		// unset the creation stats
+		newObs.setCreator(null);
+		newObs.setDateCreated(null);
+		newObs.setPreviousVersion(obs);
+
+		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, newObs, changeMessage);
+
+		// save the new row to the database with the changes that
+		// have been made to it
+		dao.saveObs(newObs);
+
+		saveObsGroup(newObs,null);
+
+		voidExistingObs(obs, changeMessage, newObs);
+
+		return newObs;
+
+	}
+
+	private Obs saveObsNotDirty(Obs obs, String changeMessage) {
+		if(!obs.isObsGrouping()){
+			return obs;
+		}
+
+		ObsService os = Context.getObsService();
+		List<Obs> toRemove = new ArrayList<>();
+		List<Obs> toAdd = new ArrayList<>();
+		for (Obs o : obs.getGroupMembers(true)) {
+			if (o.getId() == null) {
+				os.saveObs(o, null);
+			} else {
+				Obs replacement = os.saveObs(o, changeMessage);
+				//The logic in saveObs evicts the old obs instance, so we need to update
+				//the collection with the newly loaded and voided instance
+				toRemove.add(o);
+				toAdd.add(os.getObs(o.getId()));
+				toAdd.add(replacement);
+			}
+		}
+
+		for (Obs o : toRemove) {
+			obs.removeGroupMember(o);
+		}
+		for (Obs o : toAdd) {
+			obs.addGroupMember(o);
+		}
+
+		return obs;
+	}
+
+	private Obs saveNewOrVoidedObs(Obs obs, String changeMessage) {
+		Obs ret = dao.saveObs(obs);
+		saveObsGroup(ret,changeMessage);
+		return ret;
+	}
+
+	private void ensureRequirePrivilege(Obs obs){
+		if (obs.getObsId() == null) {
+			Context.requirePrivilege(PrivilegeConstants.ADD_OBS);
+		} else {
+			Context.requirePrivilege(PrivilegeConstants.EDIT_OBS);
+		}
+	}
+
+	private void saveObsGroup(Obs obs, String changeMessage){
+		if (obs.isObsGrouping()) {
+			for (Obs o : obs.getGroupMembers(true)) {
+				Context.getObsService().saveObs(o, changeMessage);
+			}
+		}
+	}
+
+	private void handleExistingObsWithComplexConcept(Obs obs) {
+		if (null != obs.getConcept() && obs.getConcept().isComplex()
 		        && null != obs.getComplexData().getData()) {
 			// save or update complexData object on this obs
 			// this is done before the database save so that the obs.valueComplex
@@ -99,116 +240,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 				throw new APIException("unknown.handler", new Object[] { obs.getConcept() });
 			}
 		}
-		
-		//Should allow updating a voided Obs, it seems to be pointless to restrict it,
-		//otherwise operations like merge patients won't be possible when to moving voided obs
-		if (obs != null && (obs.getObsId() == null || obs.getVoided())) {
-			if (obs.getObsId() == null) {
-				Context.requirePrivilege(PrivilegeConstants.ADD_OBS);
-			} else {
-				Context.requirePrivilege(PrivilegeConstants.EDIT_OBS);
-			}
-			Obs ret = dao.saveObs(obs);
-			if (obs.isObsGrouping()) {
-				for (Obs o : obs.getGroupMembers(true)) {
-					Context.getObsService().saveObs(o, changeMessage);
-				}
-			}
-			return ret;
-		} else {
-			Context.requirePrivilege(PrivilegeConstants.EDIT_OBS);
-			
-			if (changeMessage == null) {
-				throw new APIException("Obs.error.ChangeMessage.required", (Object[]) null);
-			}
-			
-			Encounter encounter = obs.getEncounter();
-			if (encounter != null) {
-				obs.setPerson(encounter.getPatient());
-			}
-			
-			if (!obs.isDirty()) {
-				if (obs.isObsGrouping()) {
-					ObsService os = Context.getObsService();
-					List<Obs> toRemove = new ArrayList<>();
-					List<Obs> toAdd = new ArrayList<>();
-					for (Obs o : obs.getGroupMembers(true)) {
-						if (o.getId() == null) {
-							os.saveObs(o, null);
-						} else {
-							Obs replacement = os.saveObs(o, changeMessage);
-							//The logic in saveObs evicts the old obs instance, so we need to update
-							//the collection with the newly loaded and voided instance
-							toRemove.add(o);
-							toAdd.add(os.getObs(o.getId()));
-							toAdd.add(replacement);
-						}
-					}
-					
-					for (Obs o : toRemove) {
-						obs.removeGroupMember(o);
-					}
-					for (Obs o : toAdd) {
-						obs.addGroupMember(o);
-					}
-				}
-				return obs;
-			}
-			
-			// get a copy of the passed in obs and save it to the
-			// database. This allows us to create a new row and new obs_id
-			// this method doesn't copy the obs_id
-			Obs newObs = Obs.newInstance(obs);
-			
-			// unset any voided properties on the new obs
-			newObs.setVoided(false);
-			newObs.setVoidReason(null);
-			newObs.setDateVoided(null);
-			newObs.setVoidedBy(null);
-			// unset the creation stats
-			newObs.setCreator(null);
-			newObs.setDateCreated(null);
-			newObs.setPreviousVersion(obs);
-			
-			RequiredDataAdvice.recursivelyHandle(SaveHandler.class, newObs, changeMessage);
-			
-			// save the new row to the database with the changes that
-			// have been made to it
-			dao.saveObs(newObs);
-			
-			if (newObs.isObsGrouping()) {
-				for (Obs o : newObs.getGroupMembers(true)) {
-					Context.getObsService().saveObs(o, null);
-				}
-			}
-			
-			// void out the original observation to keep it around for
-			// historical purposes
-			try {
-				Context.addProxyPrivilege(PrivilegeConstants.DELETE_OBS);
-				
-				// fetch a clean copy of this obs from the database so that
-				// we don't write the changes to the database when we save
-				// the fact that the obs is now voided
-				Context.evictFromSession(obs);
-				obs = Context.getObsService().getObs(obs.getObsId());
-				//delete the previous file from the appdata/complex_obs folder
-				if (newObs.hasPreviousVersion() && newObs.getPreviousVersion().isComplex()) {
-					File previousFile = new AbstractHandler().getComplexDataFile(obs);
-					previousFile.delete();
-				}
-				// calling this via the service so that AOP hooks are called
-				Context.getObsService().voidObs(obs, changeMessage);
-				
-			}
-			finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.DELETE_OBS);
-			}
-			
-			return newObs;
-		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
 	 */
