@@ -1878,18 +1878,27 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveObs_shouldNotVoidAnObsWithNoChanges() throws Exception {
-		executeDataSet(INITIAL_OBS_XML);
+		executeDataSet(ENCOUNTER_OBS_XML);
 		ObsService os = Context.getObsService();
-		Obs obs = os.getObs(2);
-		assertFalse(obs.getGroupMembers(true).isEmpty());
+		Obs obs = os.getObs(14);
+		Set<Obs> groupMembersBeforeSave = obs.getGroupMembers(true);
+		assertFalse(groupMembersBeforeSave.isEmpty());
 		assertFalse(obs.getGroupMembers(false).isEmpty());
 		assertFalse(obs.isDirty());
 		Set<Obs> originalMembers = new HashSet<>(obs.getGroupMembers());
 		for (Obs o : originalMembers) {
 			assertFalse(o.isDirty());
 		}
+
 		Obs saveObs = os.saveObs(obs, "no change");
+
 		assertEquals(obs, saveObs);
 		assertFalse(saveObs.getVoided());
+		Set<Obs> savedMembers = new HashSet<>(saveObs.getGroupMembers());
+		assertFalse(saveObs.isDirty());
+		for (Obs o : savedMembers) {
+			assertFalse(o.isDirty());
+		}
+
 	}
 }
