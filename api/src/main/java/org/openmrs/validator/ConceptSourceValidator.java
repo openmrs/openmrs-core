@@ -52,7 +52,8 @@ public class ConceptSourceValidator implements Validator {
 			        + ConceptSource.class);
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "hl7Code", "description", "retireReason");
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "hl7Code", "uniqueId", "description",
+			    "retireReason");
 		}
 		
 	}

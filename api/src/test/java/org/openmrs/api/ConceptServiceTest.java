@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -1194,7 +1195,50 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		ConceptSource conceptSource = conceptService.getConceptSourceByName("Some invalid name");
 		assertNull("Method did not return null when no ConceptSource with that name is found", conceptSource);
 	}
-	
+
+	/**
+	 * @verifies get concept source with the given unique id
+	 * @see ConceptService#getConceptSourceByUniqueId(String)
+	 */
+	@Test public void getConceptSourceByUniqueId_shouldGetConceptSourceWithTheGivenUniqueId() throws Exception {
+
+		String existingUniqueId = "2.16.840.1.113883.6.96";
+		ConceptSource conceptSource = conceptService.getConceptSourceByUniqueId(existingUniqueId);
+		assertThat(conceptSource, is(not(nullValue())));
+		assertThat(conceptSource.getUniqueId(), is(existingUniqueId));
+	}
+
+	/**
+	 * @verifies return null if no concept source with given unique id is found
+	 * @see ConceptService#getConceptSourceByUniqueId(String)
+	 */
+	@Test public void getConceptSourceByUniqueId_shouldReturnNullIfNoConceptSourceWithGivenUniqueIdIsFound()
+			throws Exception {
+
+		assertThat(conceptService.getConceptSourceByUniqueId("9.99999.999.9999.999.999.999.9999.99"), is(nullValue()));
+	}
+
+	/**
+	 * @verifies return null if given an empty string
+	 * @see ConceptService#getConceptSourceByUniqueId(String)
+	 */
+	@Test public void getConceptSourceByUniqueId_shouldReturnNullIfGivenAnEmptyString() throws Exception {
+
+		assertThat(conceptService.getConceptSourceByUniqueId(""), is(nullValue()));
+		assertThat(conceptService.getConceptSourceByUniqueId("    "), is(nullValue()));
+	}
+
+	/**
+	 * @verifies fail if given null
+	 * @see ConceptService#getConceptSourceByUniqueId(String)
+	 */
+	@Test public void getConceptSourceByUniqueId_shouldFailIfGivenNull() throws Exception {
+
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("uniqueId is required");
+		conceptService.getConceptSourceByUniqueId(null);
+	}
+
 	/**
 	 * @verifies {@link ConceptService#getConceptsByConceptSource(ConceptSource)} test = should
 	 *           return a List of ConceptMaps if concept mappings found

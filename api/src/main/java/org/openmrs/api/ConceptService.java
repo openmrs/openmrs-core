@@ -1041,7 +1041,21 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
 	public ConceptSource getConceptSourceByName(String conceptSourceName) throws APIException;
-	
+
+	/**
+	 * Get a ConceptSource by its unique id.
+	 *
+	 * @param uniqueId the unique id
+	 * @return the concept source matching given unique id
+	 * @throws APIException
+	 * @should get concept source with the given unique id
+	 * @should return null if no concept source with given unique id is found
+	 * @should return null if given an empty string
+	 * @should fail if given null
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
+	public ConceptSource getConceptSourceByUniqueId(String uniqueId) throws APIException;
+
 	/**
 	 * Checks if there are any observations (including voided observations) for a concept.
 	 * 
