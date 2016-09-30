@@ -1159,7 +1159,18 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public ConceptSource getConceptSourceByName(String conceptSourceName) throws APIException {
 		return dao.getConceptSourceByName(conceptSourceName);
 	}
-	
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptSourceByUniqueId(java.lang.String)
+	 */
+	@Transactional(readOnly = true)
+	public ConceptSource getConceptSourceByUniqueId(String uniqueId) throws APIException {
+		if (uniqueId == null) {
+			throw new IllegalArgumentException("uniqueId is required");
+		}
+		return dao.getConceptSourceByUniqueId(uniqueId);
+	}
+
 	/**
 	 * Utility method to check if the concept is already attached to an observation (including
 	 * voided ones) and if the datatype of the concept has changed, an exception indicating that the
