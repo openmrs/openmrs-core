@@ -9535,6 +9535,9 @@
         </sql>
     </changeSet>
 	<changeSet id="TRUNK-4936-20160930-1000" author="teleivo">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="concept_reference_source" columnName="unique_id"/></not>
+		</preConditions>
 		<comment>Add unique_id column to concept_reference_source</comment>
 		<addColumn tableName="concept_reference_source">
 			<column name="unique_id" type="varchar(250)">
