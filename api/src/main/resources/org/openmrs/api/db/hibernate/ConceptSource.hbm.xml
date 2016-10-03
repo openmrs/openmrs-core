@@ -32,7 +32,9 @@
 			column="description" length="1024" />
 		<property name="hl7Code" type="java.lang.String"
 			column="hl7_code" length="50" />
-			
+		<property name="uniqueId" type="java.lang.String"
+				  column="unique_id" length="250" unique="true" />
+
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 		<property name="retired" type="boolean" column="retired" not-null="true"/>

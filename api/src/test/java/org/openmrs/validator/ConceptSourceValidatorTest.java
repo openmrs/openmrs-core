@@ -9,10 +9,10 @@
  */
 package org.openmrs.validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.ConceptSource;
-import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.Errors;
@@ -120,18 +120,17 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		ConceptSource conceptSource = new ConceptSource();
-		conceptSource.setName("too long text too long text too long text too long text");
-		conceptSource
-		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		conceptSource
-		        .setHl7Code("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		conceptSource
-		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		conceptSource.setName(StringUtils.repeat("a", 51));
+		conceptSource.setDescription(StringUtils.repeat("a", 1025));
+		conceptSource.setHl7Code(StringUtils.repeat("a", 51));
+		conceptSource.setUniqueId(StringUtils.repeat("a", 251));
+		conceptSource.setRetireReason(StringUtils.repeat("a", 256));
 		Errors errors = new BindException(conceptSource, "conceptSource");
 		new ConceptSourceValidator().validate(conceptSource, errors);
 		Assert.assertTrue(errors.hasFieldErrors("name"));
 		Assert.assertTrue(errors.hasFieldErrors("description"));
 		Assert.assertTrue(errors.hasFieldErrors("hl7Code"));
+		Assert.assertTrue(errors.hasFieldErrors("uniqueId"));
 		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

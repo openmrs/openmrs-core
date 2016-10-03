@@ -25,6 +25,8 @@ public class ConceptSource extends BaseOpenmrsMetadata {
 	
 	private String hl7Code;
 	
+	private String uniqueId;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -92,6 +94,20 @@ public class ConceptSource extends BaseOpenmrsMetadata {
 	 */
 	public void setHl7Code(String hl7Code) {
 		this.hl7Code = hl7Code;
+	}
+	
+	/**
+	 * @return the unique id
+	 */
+	public String getUniqueId() {
+		return uniqueId;
+	}
+	
+	/**
+	 * @param uniqueId the unique id to set
+	 */
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
 	}
 	
 	public String getName() {
