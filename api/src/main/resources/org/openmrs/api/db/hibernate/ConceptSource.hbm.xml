@@ -27,9 +27,9 @@
 			column="uuid" length="38" unique="true" />
 
 		<property name="name" type="java.lang.String"
-			column="name" length="50" />
+			column="name" length="50" not-null="true" />
 		<property name="description" type="java.lang.String"
-			column="description" length="1024" />
+			column="description" length="1024" not-null="true" />
 		<property name="hl7Code" type="java.lang.String"
 			column="hl7_code" length="50" />
 		<property name="uniqueId" type="java.lang.String"

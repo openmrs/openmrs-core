@@ -1271,6 +1271,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		String aNullString = null;
 		String sourceName = "A concept source with null HL7 code";
 		source.setName(sourceName);
+		source.setDescription("A concept source description");
 		source.setHl7Code(aNullString);
 		conceptService.saveConceptSource(source);
 		assertEquals("Did not save a ConceptSource with a null hl7Code", source, conceptService
