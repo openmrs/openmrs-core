@@ -75,7 +75,7 @@
 			<one-to-many class="VisitAttribute" />
 		</set>
 
-		<set name="encounters" lazy="true" cascade="all" order-by="encounter_datetime desc, encounter_id desc">
+		<set name="encounters" lazy="true"  order-by="encounter_datetime desc, encounter_id desc">
 			<key column="visit_id" />
 			<one-to-many class="Encounter" />
 		</set>
