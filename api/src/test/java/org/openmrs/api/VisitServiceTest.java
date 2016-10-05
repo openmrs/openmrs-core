@@ -11,12 +11,14 @@ package org.openmrs.api;
 
 import junit.framework.Assert;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.TransientObjectException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
 import org.openmrs.VisitAttribute;
@@ -43,6 +45,7 @@ import java.util.Map;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertNull;
 
 /**
  * Tests methods in the {@link VisitService}
@@ -962,33 +965,25 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see VisitService#saveVisit(Visit)
 	 */
-	@Test
-	@Verifies(value = "save visit should persist new encounter", method = "saveVisit(Visit)")
-	public void saveVisit_shouldPersistNewEncounter() throws Exception {
+	@Test(expected = TransientObjectException.class)
+	@Verifies(value = "save visit should not persist new encounter", method = "saveVisit(Visit)")
+	public void saveVisit_shouldNotPersistNewEncounter() throws Exception {
 		
 		VisitService vs = Context.getVisitService();
 		Visit visit = vs.getVisit(1);
 		
 		Encounter encounter = new Encounter();
 		encounter.setEncounterDatetime(new Date());
+		encounter.setEncounterType(Context.getEncounterService().getEncounterType(1));
 		encounter.setPatient(visit.getPatient());
 		encounter.setLocation(visit.getLocation());
 		visit.addEncounter(encounter);
 		
 		vs.saveVisit(visit);
-		
+
 		Context.flushSession();
-		Context.clearSession();
-		
-		Integer encounterId = encounter.getEncounterId();
-		
-		// reload the visit
-		visit = Context.getVisitService().getVisit(1);
-		
-		assertEquals(1, visit.getEncounters().size());
-		assertEquals(encounterId, ((Encounter) visit.getEncounters().toArray()[0]).getEncounterId());
 	}
-	
+
 	/**
 	 * @see VisitService#getAllVisitTypes(boolean)
 	 */
