@@ -260,6 +260,11 @@ public class InitializationFilter extends StartupFilter {
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 		} else if (page == null) {
 			httpResponse.setContentType("text/html");// if any body has already started installation
+			
+			//If someone came straight here without setting the hidden page input,
+			// then we need to clear out all the passwords
+			clearPasswords();
+			
 			renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 		} else if (INSTALL_METHOD.equals(page)) {
 			// get props and render the second page
@@ -356,6 +361,14 @@ public class InitializationFilter extends StartupFilter {
 			
 			wizardModel.adminUserPassword = script.getProperty("admin_user_password", wizardModel.adminUserPassword);
 		}
+	}
+	
+	private void clearPasswords(){
+		wizardModel.databaseRootPassword = "";
+		wizardModel.createDatabasePassword = "";
+		wizardModel.createUserPassword = "";
+		wizardModel.currentDatabasePassword = "";
+		wizardModel.remotePassword = "";
 	}
 	
 	/**
