@@ -617,15 +617,14 @@ public class OpenmrsUtil {
 		}
 		return ret;
 	}
-	
+
 	public static <Arg1, Arg2 extends Arg1> boolean nullSafeEquals(Arg1 d1, Arg2 d2) {
 		if (d1 == null) {
 			return d2 == null;
 		} else if (d2 == null) {
 			return false;
-		} else {
-			return d1.equals(d2);
 		}
+		return (d1 instanceof Date && d2 instanceof Date) ? compare((Date) d1, (Date) d2) == 0 : d1.equals(d2);
 	}
 	
 	/**
