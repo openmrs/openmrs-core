@@ -7,6 +7,8 @@ matrix:
 branches:
   only:
     - master
+after_success:
+  - mvn jacoco:report coveralls:report
 notifications:
   email: false
   irc:
