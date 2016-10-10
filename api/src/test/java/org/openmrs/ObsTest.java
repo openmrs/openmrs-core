@@ -18,6 +18,7 @@ import org.openmrs.test.Verifies;
 import org.openmrs.util.Reflect;
 
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -1028,4 +1029,23 @@ public class ObsTest {
 		obs.setGroupMembers(members2);
 		assertFalse(obs.isDirty());
 	}
+
+	/**
+	 * @see Obs#setObsDatetime(Date)
+	 * @verifies not mark the obs as dirty when same date is set again and existing value is of Timestamp instance
+	 */
+	@Test
+	public void setObsDateTime_shouldNotMarkTheObsAsDirtyWhenDateIsNotChangedAndExistingValueIsOfTimeStampType(){
+		Obs obs = new Obs();
+		Date date = new Date();
+		Timestamp timestamp = new Timestamp(date.getTime());
+		obs.setObsDatetime(timestamp);
+		obs.setId(1);
+		assertFalse(obs.isDirty());
+
+		obs.setObsDatetime(date);
+
+		assertFalse(obs.isDirty());
+	}
+
 }
