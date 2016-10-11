@@ -857,7 +857,7 @@ public class ObsTest {
 		Obs obs = new Obs(2);
 		Obs member = new Obs();
 		obs.addGroupMember(member);
-		assertTrue(obs.isDirty());
+		assertFalse(obs.isDirty());
 		resetObs(obs);
 		obs.addGroupMember(member);
 		assertFalse(obs.isDirty());
@@ -880,18 +880,18 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#addGroupMember(Obs)
-	 * @verifies return true when a new obs is added as a member
+	 * @verifies return isDirty false when a new obs is added as a member
 	 */
 	@Test
-	public void addGroupMember_shouldReturnTrueWhenANewObsIsAddedAsAMember() throws Exception {
+	public void addGroupMember_shouldReturnFalseWhenANewObsIsAddedAsAMember() throws Exception {
 		Obs obs = new Obs(2);
 		Obs member1 = new Obs();
 		obs.addGroupMember(member1);
-		assertTrue(obs.isDirty());
+		assertFalse(obs.isDirty());
 		resetObs(obs);
 		Obs member2 = new Obs();
 		obs.addGroupMember(member2);
-		assertTrue(obs.isDirty());
+		assertFalse(obs.isDirty());
 	}
 	
 	/**
@@ -907,22 +907,22 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#removeGroupMember(Obs)
-	 * @verifies return true when an existing obs is removed from the group
+	 * @verifies return isDirty as false when an existing obs is removed from the group
 	 */
 	@Test
-	public void removeGroupMember_shouldReturnTrueWhenAnObsIsRemoved() throws Exception {
+	public void removeGroupMember_shouldReturnDirtyFalseWhenAnObsIsRemoved() throws Exception {
 		Obs obs = new Obs(2);
 		Obs member = new Obs();
 		obs.addGroupMember(member);
-		assertTrue(obs.isDirty());
+		assertFalse(obs.isDirty());
 		resetObs(obs);
 		obs.removeGroupMember(member);
-		assertTrue(obs.isDirty());
+		assertFalse(obs.isDirty());
 	}
 
 	/**
 	 * @see Obs#removeGroupMember(Obs)
-	 * @verifies return false when an new obs is removed from the group
+	 * @verifies return isDirty false when an new obs is removed from the group
 	 */
 	@Test
 	public void removeGroupMember_shouldReturnFalseForDirtyFlagWhenAnObsIsRemovedFromGroup() throws Exception {
@@ -937,16 +937,16 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#setGroupMembers(Set)
-	 * @verifies mark the existing obs as dirty when the set is changed from null to a non empty one
+	 * @verifies do not mark the existing obs as dirty when the set is changed from null to a non empty one
 	 */
 	@Test
-	public void setGroupMembers_shouldMarkTheExistingObsAsDirtyWhenTheSetIsChangedFromNullToANonEmptyOne() throws Exception {
+	public void setGroupMembers_shouldNotMarkTheExistingObsAsDirtyWhenTheSetIsChangedFromNullToANonEmptyOne() throws Exception {
 		Obs obs = new Obs(5);
 		assertNull(Obs.class.getDeclaredField("groupMembers").get(obs));
 		Set members = new HashSet<>();
 		members.add(new Obs());
 		obs.setGroupMembers(members);
-		assertTrue(obs.isDirty());
+		assertFalse(obs.isDirty());
 	}
 
 	/**
@@ -965,10 +965,10 @@ public class ObsTest {
 
 	/**
 	 * @see Obs#setGroupMembers(Set)
-	 * @verifies mark the existing obs as dirty when the set is replaced with another with different members
+	 * @verifies do not mark the existing obs as dirty when the set is replaced with another with different members
 	 */
 	@Test
-	public void setGroupMembers_shouldMarkTheExistingObsAsDirtyWhenTheSetIsReplacedWithAnotherWithDifferentMembers()
+	public void setGroupMembers_shouldNotMarkTheExistingObsAsDirtyWhenTheSetIsReplacedWithAnotherWithDifferentMembers()
 	    throws Exception {
 		Obs obs = new Obs(2);
 		Set members1 = new HashSet<>();
@@ -978,7 +978,7 @@ public class ObsTest {
 		Set members2 = new HashSet<>();
 		members2.add(new Obs());
 		obs.setGroupMembers(members2);
-		assertTrue(obs.isDirty());
+		assertFalse(obs.isDirty());
 	}
 
 	/**
