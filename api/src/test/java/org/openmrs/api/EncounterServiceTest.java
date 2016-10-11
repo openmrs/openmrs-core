@@ -9,28 +9,6 @@
  */
 package org.openmrs.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -57,7 +35,6 @@ import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
-import org.openmrs.TestOrder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.EncounterVisitHandler;
@@ -72,6 +49,28 @@ import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Vector;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Tests all methods in the {@link EncounterService}
  */
@@ -82,9 +81,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	protected static final String UNIQUE_ENC_WITH_PAGING_XML = "org/openmrs/api/include/EncounterServiceTest-pagingWithUniqueEncounters.xml";
 	
 	protected static final String TRANSFER_ENC_DATA_XML = "org/openmrs/api/include/EncounterServiceTest-transferEncounter.xml";
+
+	protected static final String ENC_OBS_HIERARCHY_DATA_XML = "org/openmrs/api/include/EncounterServiceTest-saveObsHierarchyTests.xml";
+
 	protected static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
-	
-	private EncounterService encounterService;
+
 
 	/**
 	 * This method is run before all of the tests in this class because it has the @Before
@@ -98,7 +99,131 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void runBeforeEachTest() throws Exception {
 		executeDataSet(ENC_INITIAL_DATA_XML);
 	}
-	
+
+	@Test
+	@Verifies(value = "should update existing encounter correctly when a child obs is edited", method = "saveEncounter(Encounter)")
+	public void saveEncounter_shouldUpdateExistingEncounterWhenAChildObsIsEdited() throws Exception {
+		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+
+		Encounter enc = es.getEncounter(100);
+
+		Obs o = os.getObs(101);
+		o.setValueText("Obs value updated");
+
+		es.saveEncounter(enc);
+		Context.flushSession();
+		Context.clearSession();
+
+		enc = es.getEncounter(100);
+
+		Set<Obs> obsAtTopLevelUpdated = enc.getObsAtTopLevel(true);
+		Obs oParent = os.getObs(100);
+		final Obs editedObs = os.getObs(101);
+		Obs o2 = os.getObs(102);
+		Obs o3 = getNewVersionOfEditedObs(oParent,editedObs);
+
+		assertEquals(1,obsAtTopLevelUpdated.size());
+		assertEquals(3, oParent.getGroupMembers(true).size());
+		assertTrue(editedObs.getVoided());
+		assertFalse(oParent.getVoided());
+		assertFalse(o2.getVoided());
+
+		assertNotNull(o3);
+		assertFalse(o3.getVoided());
+		assertEquals("Obs value updated", o3.getValueText());
+	}
+
+	@Test
+	@Verifies(value = "should update existing encounter correctly when a new obs is added to parent obs", method = "saveEncounter(Encounter)")
+	public void saveEncounter_shouldUpdateExistingEncounterWhenNewObsIsAddedToParentObs() throws Exception {
+		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
+		ConceptService cs = Context.getConceptService();
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+
+		Encounter enc = es.getEncounter(100);
+
+		Obs o3 = new Obs();
+		o3.setConcept(cs.getConcept(3));
+		o3.setDateCreated(new Date());
+		o3.setCreator(Context.getAuthenticatedUser());
+		o3.setLocation(new Location(1));
+		o3.setObsDatetime(new Date());
+		o3.setPerson(Context.getPersonService().getPerson(3));
+		o3.setValueText("third obs value text");
+		o3.setEncounter(enc);
+
+		Obs oParent = os.getObs(100);
+		oParent.addGroupMember(o3);
+
+		es.saveEncounter(enc);
+
+		Context.flushSession();
+		Context.clearSession();
+
+		enc = es.getEncounter(100);
+
+		Set<Obs> obsAtTopLevelUpdated = enc.getObsAtTopLevel(true);
+		assertEquals(1,obsAtTopLevelUpdated.size());
+
+		assertEquals(3, obsAtTopLevelUpdated.iterator().next().getGroupMembers(true).size());
+
+		oParent = os.getObs(100);
+		assertTrue(oParent.getGroupMembers(true).contains(os.getObs(101)));
+		assertTrue(oParent.getGroupMembers(true).contains(os.getObs(102)));
+		assertTrue(oParent.getGroupMembers(true).contains(os.getObs(o3.getObsId())));
+	}
+
+
+	@Test
+	@Verifies(value = "should update existing encounter correctly when an existing obs is removed from parent obs", method = "saveEncounter(Encounter)")
+	public void saveEncounter_shouldSaveEncounterWhenTopLevelObsIsUpdatedByRemovingChildObs() throws Exception {
+		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+
+		Encounter enc = es.getEncounter(100);
+		Obs oParent = os.getObs(100);
+		Obs oChild = os.getObs(101);
+
+		oParent.removeGroupMember(oChild);
+
+		es.saveEncounter(enc);
+
+		Context.flushSession();
+		Context.clearSession();
+
+		enc = es.getEncounter(100);
+
+		Set<Obs> obsAtTopLevel = enc.getObsAtTopLevel(true);
+		assertEquals(2,obsAtTopLevel.size()); //oChild's new version is still associated to encounter but not part of the oParent anymore
+
+		assertTrue(obsAtTopLevel.contains(os.getObs(100)));
+
+		Obs newObs = obsAtTopLevel.stream().filter(obs -> obs.getObsId() != 100 ).findFirst().get(); //Find the other top level obs which is not 100. i.e. the new obs which is a clone of 101
+
+		assertNotNull(newObs.getPreviousVersion());
+		assertEquals(oChild.getObsId(), newObs.getPreviousVersion().getObsId());
+
+		assertTrue(os.getObs(100).getGroupMembers(true).contains(os.getObs(102)));
+		//The oChild will still be associated to the parent because when we save oChild, we create a new instance
+		//and void the oChild using ObsServiceImpl.voidExistingObs(). We use Context.evictFromSession(obs); to get a fresh copy
+		//there by losing the change we made to oChild.
+		assertTrue(os.getObs(100).getGroupMembers(true).contains(os.getObs(101)));
+
+	}
+
+	private Obs getNewVersionOfEditedObs(Obs parentObs, Obs originalObs){
+		for(Obs childObs: parentObs.getGroupMembers()){
+			if(originalObs.equals(childObs.getPreviousVersion())){
+				return childObs;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
