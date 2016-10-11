@@ -10,6 +10,7 @@
 package org.openmrs.api;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -90,6 +91,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ObsService os = Context.getObsService();
 		Obs o = os.saveObs(null,"Null Obs");
 	}
+
+
 	
 	/**
 	 * This test tests multi-level heirarchy obsGroup cascades for create, delete, update, void, and
@@ -1578,7 +1581,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Obs origParentObs = obsService.getObs(2);
 		Set<Obs> originalMembers = new HashSet<>(origParentObs.getGroupMembers(true));
 		assertEquals(2, originalMembers.size());
-		
+		assertTrue(originalMembers.contains(obsService.getObs(9)));
+		assertTrue(originalMembers.contains(obsService.getObs(10)));
+
 		Obs groupMember = new Obs();
 		groupMember.setConcept(Context.getConceptService().getConcept(3));
 		groupMember.setObsDatetime(new Date());
@@ -1589,23 +1594,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(groupMember.getObsGroup());
 		
 		Obs newParentObs = obsService.saveObs(origParentObs, "Updating obs group");
-		assertNotEquals(origParentObs, newParentObs);
+		assertEquals(origParentObs, newParentObs);
 		assertEquals(3, newParentObs.getGroupMembers(true).size());
 		// make sure the api filled in all of the necessary ids again
 		assertNotNull(groupMember.getObsId());
-		// the api should have voided and replaced the group members
-		for (Obs o : originalMembers) {
-			assertTrue(o.getVoided());
-			assertFalse(newParentObs.getGroupMembers(true).contains(o));
-		}
-		for (Obs o : newParentObs.getGroupMembers(true)) {
-			if (groupMember.equals(o)) {
-				//this is the new one so it can't have a previous one
-				continue;
-			}
-			assertTrue(o.hasPreviousVersion());
-			assertFalse(origParentObs.getGroupMembers(true).contains(o));
-		}
+		assertTrue(newParentObs.getGroupMembers(true).contains(obsService.getObs(9)));
+		assertTrue(newParentObs.getGroupMembers(true).contains(obsService.getObs(10)));
+		assertTrue(newParentObs.getGroupMembers(true).contains(obsService.getObs(groupMember.getObsId())));
 	}
 	
 	/**
@@ -1878,9 +1873,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveObs_shouldNotVoidAnObsWithNoChanges() throws Exception {
-		executeDataSet(INITIAL_OBS_XML);
+		executeDataSet(ENCOUNTER_OBS_XML);
 		ObsService os = Context.getObsService();
-		Obs obs = os.getObs(2);
+		Obs obs = os.getObs(14);
 		assertFalse(obs.getGroupMembers(true).isEmpty());
 		assertFalse(obs.getGroupMembers(false).isEmpty());
 		assertFalse(obs.isDirty());
@@ -1891,5 +1886,12 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Obs saveObs = os.saveObs(obs, "no change");
 		assertEquals(obs, saveObs);
 		assertFalse(saveObs.getVoided());
+
+		Set<Obs> savedMembers = new HashSet<>(saveObs.getGroupMembers());
+		assertFalse(saveObs.isDirty());
+		for (Obs o : savedMembers) {
+			assertFalse("obs"+o.getId(), o.isDirty());
+		}
+
 	}
 }

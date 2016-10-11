@@ -440,13 +440,6 @@ public class Obs extends BaseOpenmrsData {
 	 * @should not mark the obs as dirty when the set is replaced with another with same members
 	 */
 	public void setGroupMembers(Set<Obs> groupMembers) {
-		if (CollectionUtils.isNotEmpty(this.groupMembers) && CollectionUtils.isNotEmpty(groupMembers)) {
-			setDirty(!CollectionUtils.disjunction(this.groupMembers, groupMembers).isEmpty());
-		} else if (CollectionUtils.isEmpty(this.groupMembers) && CollectionUtils.isNotEmpty(groupMembers)) {
-			setDirty(true);
-		} else if (CollectionUtils.isNotEmpty(this.groupMembers) && CollectionUtils.isEmpty(groupMembers)) {
-			setDirty(true);
-		}
 		this.groupMembers = new HashSet<Obs>(groupMembers); //Copy over the entire list
 		
 	}
@@ -477,9 +470,7 @@ public class Obs extends BaseOpenmrsData {
 		}
 		
 		member.setObsGroup(this);
-		if (groupMembers.add(member)) {
-			setDirty(true);
-		}
+		groupMembers.add(member);
 	}
 	
 	/**
@@ -499,7 +490,6 @@ public class Obs extends BaseOpenmrsData {
 		
 		if (groupMembers.remove(member)) {
 			member.setObsGroup(null);
-			setDirty(true);
 		}
 	}
 	
@@ -1277,12 +1267,6 @@ public class Obs extends BaseOpenmrsData {
 		//Should we ignore the case for Strings?
 		if (!isDirty() && obsId != null && !OpenmrsUtil.nullSafeEquals(oldValue, newValue)) {
 			dirty = true;
-		}
-	}
-
-	private void setDirty(Boolean dirty){
-		if(obsId != null){
-			this.dirty = dirty;
 		}
 	}
 }
