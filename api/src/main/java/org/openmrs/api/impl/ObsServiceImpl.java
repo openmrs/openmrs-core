@@ -33,7 +33,6 @@ import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -180,28 +179,19 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		}
 
 		ObsService os = Context.getObsService();
-		List<Obs> toRemove = new ArrayList<>();
-		List<Obs> toAdd = new ArrayList<>();
+		boolean refreshNeeded = false;
 		for (Obs o : obs.getGroupMembers(true)) {
 			if (o.getId() == null) {
 				os.saveObs(o, null);
 			} else {
-				Obs replacement = os.saveObs(o, changeMessage);
-				if(!replacement.equals(o)){
-					toRemove.add(o);
-					toAdd.add(os.getObs(o.getId()));
-					toAdd.add(replacement);
-				}
+				Obs newObs = os.saveObs(o, changeMessage);
+				refreshNeeded = !newObs.equals(o) || refreshNeeded;
 			}
 		}
 
-		for (Obs o : toRemove) {
-			obs.removeGroupMember(o);
+		if(refreshNeeded) {
+			Context.refreshEntity(obs);
 		}
-		for (Obs o : toAdd) {
-			obs.addGroupMember(o);
-		}
-
 		return obs;
 	}
 
