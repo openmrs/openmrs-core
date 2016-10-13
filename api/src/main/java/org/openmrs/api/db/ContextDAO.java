@@ -91,7 +91,16 @@ public interface ContextDAO {
 	 * @see org.openmrs.api.context.Context#evictFromSession(Object)
 	 */
 	public void evictFromSession(Object obj);
-	
+
+	/**
+	 * Used to re-read the state of the given instance from the underlying database.
+	 * @since 2.0
+	 *
+	 * @param obj The object to refresh from the database in the session
+	 * @see org.openmrs.api.context.Context#refreshEntity(Object)
+	 */
+	public void refreshEntity(Object obj);
+
 	/**
 	 * Starts the OpenMRS System
 	 * <p>
