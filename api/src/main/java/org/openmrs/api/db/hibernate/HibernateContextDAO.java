@@ -314,6 +314,13 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.ContextDAO#refreshEntity(Object)
+	 */
+	public void refreshEntity(Object obj) {
+		sessionFactory.getCurrentSession().refresh(obj);
+	}
+
+	/**
 	 * @see org.openmrs.api.db.ContextDAO#flushSession()
 	 */
 	@Transactional

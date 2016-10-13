@@ -136,6 +136,21 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	@Verifies(value = "should update leaf obs and not duplicate at encounter level", method = "saveEncounter(Encounter)")
+	public void saveEncounter_shouldUpdateValueOfLeafObsAndNotDuplicateAtEncounterLevel() throws Exception {
+		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
+		Encounter encounter = Context.getEncounterService().getEncounter(100);
+		assertEquals(1, encounter.getObsAtTopLevel(true).size());
+		Obs topLevelObs = encounter.getObsAtTopLevel(true).iterator().next();
+		topLevelObs.getGroupMembers().iterator().next().setValueText("editing first obs");
+		encounter.addObs(topLevelObs);
+
+		Encounter savedEncounter = Context.getEncounterService().saveEncounter(encounter);
+
+		assertEquals(1, savedEncounter.getObsAtTopLevel(true).size());
+	}
+
+	@Test
 	@Verifies(value = "should update existing encounter correctly when a new obs is added to parent obs", method = "saveEncounter(Encounter)")
 	public void saveEncounter_shouldUpdateExistingEncounterWhenNewObsIsAddedToParentObs() throws Exception {
 		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);

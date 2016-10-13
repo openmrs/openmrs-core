@@ -783,6 +783,16 @@ public class Context {
 	}
 	
 	/**
+	 * Used to re-read the state of the given instance from the underlying database.
+	 * @since 2.0
+	 * @param obj The object to refresh from the database in the session
+	 */
+	public static void refreshEntity(Object obj) {
+		log.trace("refreshing object: "+obj);
+		getContextDAO().refreshEntity(obj);
+	}
+
+	/**
 	 * Used to clear a cached object out of a session in the middle of a unit of work. Future
 	 * updates to this object will not be saved. Future gets of this object will not fetch this
 	 * cached copy
