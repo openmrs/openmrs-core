@@ -80,8 +80,13 @@ public class ValidateUtil {
 	 * @param obj the object to validate
 	 * @throws APIException thrown if a binding exception occurs
 	 * @should throw APIException if errors occur during validation
+	 * @should throw APIException if object is null
 	 */
 	public static void validate(Object obj) throws APIException {
+		if (obj == null) 
+	        throw new APIException(Context.getMessageSourceService().
+	            getMessage("error.null"));
+
 		BindException errors = new BindException(obj, "");
 		
 		for (Validator validator : getValidators(obj)) {
