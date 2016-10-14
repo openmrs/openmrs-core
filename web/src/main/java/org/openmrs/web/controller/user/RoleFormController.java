@@ -77,7 +77,7 @@ public class RoleFormController extends SimpleFormController {
 		
 		String[] inheritiedRoles = request.getParameterValues("inheritedRoles");
 		if (inheritiedRoles == null) {
-			role.setInheritedRoles(Collections.EMPTY_SET);
+			role.setInheritedRoles((Set) (Collections.emptySet()));
 		}
 		
 		String[] privileges = request.getParameterValues("privileges");
