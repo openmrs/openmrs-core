@@ -48,6 +48,7 @@ public class PersonValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if birthdate makes patient older that 120 years old
 	 * @should fail validation if birthdate is a future date
+	 * @should fail validation if deathdate is a future date
 	 * @should fail validation if voidReason is blank when patient is voided
 	 * @should fail validation if causeOfDeath is blank when patient is dead
 	 * @should pass validation if gender is blank for Persons
@@ -81,7 +82,7 @@ public class PersonValidator implements Validator {
 			errors.rejectValue("names", "Person.shouldHaveAtleastOneNonVoidedName");
 		}
 		
-		//validate the personAddress
+		// validate the personAddress
 		index = 0;
 		for (PersonAddress address : person.getAddresses()) {
 			try {
@@ -95,6 +96,7 @@ public class PersonValidator implements Validator {
 		}
 		
 		validateBirthDate(errors, person.getBirthdate());
+		validateDeathDate(errors, person.getDeathDate());
 		
 		if (person.isVoided()) {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
@@ -113,17 +115,52 @@ public class PersonValidator implements Validator {
 	 * @param errors Stores information about errors encountered during validation.
 	 */
 	private void validateBirthDate(Errors errors, Date birthDate) {
-		if (birthDate != null) {
-			if (birthDate.after(new Date())) {
-				errors.rejectValue("birthdate", "error.date.future");
-			} else {
-				Calendar c = Calendar.getInstance();
-				c.setTime(new Date());
-				c.add(Calendar.YEAR, -120);
-				if (birthDate.before(c.getTime())) {
-					errors.rejectValue("birthdate", "error.date.nonsensical");
-				}
-			}
+		if (birthDate == null) {
+			return;
+		}
+		rejectIfFutureDate(errors, birthDate, "birthdate");
+		rejectDateIfBefore120YearsAgo(errors, birthDate, "birthdate");
+	}
+	
+	/**
+	 * Checks if the death date is in the future.
+	 * 
+	 * @param errors Stores information about errors encountered during validation
+	 * @param deathDate the deathdate to validate
+	 */
+	private void validateDeathDate(Errors errors, Date deathDate) {
+		if (deathDate == null) {
+			return;
+		}
+		rejectIfFutureDate(errors, deathDate, "deathDate");
+	}
+	
+	/**
+	 * Rejects a date if it is in the future.
+	 * 
+	 * @param errors the error object
+	 * @param date the date to check
+	 * @param dateField the name of the field
+	 */
+	private void rejectIfFutureDate(Errors errors, Date date, String dateField) {
+		if (date.after(new Date())) {
+			errors.rejectValue(dateField, "error.date.future");
+		}
+	}
+	
+	/**
+	 * Rejects a date if it is before 120 years ago.
+	 * 
+	 * @param errors the error object
+	 * @param date the date to check
+	 * @param dateField the name of the field
+	 */
+	private void rejectDateIfBefore120YearsAgo(Errors errors, Date date, String dateField) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		c.add(Calendar.YEAR, -120);
+		if (date.before(c.getTime())) {
+			errors.rejectValue(dateField, "error.date.nonsensical");
 		}
 	}
 	

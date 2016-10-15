@@ -60,6 +60,25 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PersonValidator#validate(Object,Errors)
+	 * @verifies fail validation if deathdate is a future date
+	 */
+	
+	@Test
+	@Verifies(value = "should fail validation if deathdate is a future date", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDeathDateIsAFutureDate() throws Exception {
+		Patient pa = new Patient(1);
+		Calendar death = Calendar.getInstance();
+		death.setTime(new Date());
+		death.add(Calendar.YEAR, 20);
+		pa.setDeathDate(death.getTime());
+		Errors errors = new BindException(pa, "patient");
+		validator.validate(pa, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("deathDate"));
+	}
+	
+	/**
+	 * @see PersonValidator#validate(Object,Errors)
 	 * @verifies fail validation if birthdate makes patient older that 120 years old
 	 */
 	@Test
