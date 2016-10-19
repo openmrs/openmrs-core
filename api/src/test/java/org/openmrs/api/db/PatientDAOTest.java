@@ -340,7 +340,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		//
 		// plus 1 non-voided identifier from HibernatePatientDAOTest-patients.xml
 		
-		Assert.assertEquals(6, patientIdentifiers.size());
+		Assert.assertEquals(8, patientIdentifiers.size());
 		
 		for (PatientIdentifier patientIdentifier : patientIdentifiers) {
 			Assert.assertFalse(patientIdentifier.isVoided());
@@ -389,7 +389,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
 		    new ArrayList<Location>(), new ArrayList<Patient>(), Boolean.FALSE);
 		
-		Assert.assertEquals(4, patientIdentifiers.size());
+		Assert.assertEquals(6, patientIdentifiers.size());
 	}
 	
 	/**
@@ -403,7 +403,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
 		    new ArrayList<Location>(), new ArrayList<Patient>(), null);
 		
-		Assert.assertEquals(6, patientIdentifiers.size());
+		Assert.assertEquals(8, patientIdentifiers.size());
 	}
 	
 	/**
@@ -2032,5 +2032,95 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldGetNoVoidedPersonWhenVoidedFalseIsPassed() throws Exception {
 		List<Patient> patients = dao.getPatients("voided-bravo", false, 0, 11);
 		Assert.assertEquals(0, patients.size());
+	}
+	/**
+	 * @verifies get duplicate patients when birthDate match
+	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
+	 */
+	@Test
+	public void getDuplicatePatients_shouldGetDuplicatesWithBirthDate() throws Exception {
+		List<String> attributes = new ArrayList<String>();
+		attributes.add("birthdate");
+		List<Patient> patients = dao.getDuplicatePatientsByAttributes(attributes);
+		Assert.assertEquals(31, patients.size());
+	}
+	/**
+	 * @verifies get duplicate patients when gender, birthDate match
+	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
+	 */
+	@Test
+	public void getDuplicatePatients_shouldGetDuplicatesWithGenderBirthDate() throws Exception {
+		List<String> attributes = new ArrayList<String>();
+		attributes.add("gender");
+		attributes.add("birthdate");
+		List<Patient> patients = dao.getDuplicatePatientsByAttributes(attributes);
+		Assert.assertEquals(31, patients.size());
+	}
+	/**
+	 * @verifies get duplicate patients when gender, birthDate and giveName match
+	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
+	 */
+	@Test
+	public void getDuplicatePatients_shouldGetDuplicatesWithGenderBirthDateGivenName() throws Exception {
+		List<String> attributes = new ArrayList<String>();
+		attributes.add("gender");
+		attributes.add("birthdate");
+		attributes.add("givenName");
+		List<Patient> patients = dao.getDuplicatePatientsByAttributes(attributes);
+		Assert.assertEquals(22, patients.size());
+	}
+
+	/**
+	 * @verifies get duplicate patients when gender, birthdate, givenName and familyName match
+	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
+	 */
+	@Test
+	public void getDuplicatePatients_shouldGetDuplicatesWithGenderBirthDateGivenNameFamilyName() throws Exception {
+		List<String> attributes = new ArrayList<String>();
+		attributes.add("gender");
+		attributes.add("birthdate");
+		attributes.add("givenName");
+		attributes.add("familyName");
+		List<Patient> patients = dao.getDuplicatePatientsByAttributes(attributes);
+		Assert.assertEquals(10, patients.size());
+	}
+	/**
+	 * @verifies get duplicate patients when gender, birthdate, givenName, familyName and identifier match
+	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
+	 */
+	@Test
+	public void getDuplicatePatients_shouldGetDuplicatesWithGenderBirthDateGivenNameFamilyNameIdentifier() throws Exception {
+		List<String> attributes = new ArrayList<String>();
+		attributes.add("gender");
+		attributes.add("birthdate");
+		attributes.add("givenName");
+		attributes.add("familyName");
+		attributes.add("identifier");
+		List<Patient> patients = dao.getDuplicatePatientsByAttributes(attributes);
+		Assert.assertEquals(2, patients.size());
+	}
+	/**
+	 * @verifies get duplicate patients returns 0 duplicates with invalid/unsupported attribute
+	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
+	 */
+	@Test
+	public void getDuplicatePatients_shouldGetZeroDuplicatesWithInvalidAttribute() throws Exception {
+		List<String> attributes = new ArrayList<String>();
+		attributes.add("abcDef");
+		List<Patient> patients = dao.getDuplicatePatientsByAttributes(attributes);
+		Assert.assertEquals(0, patients.size());
+	}
+	/**
+	 * @verifies get duplicate patients returns duplicates with birthdate when one invalid/unsupported attribute
+	 * is passed along with birthdate
+	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
+	 */
+	@Test
+	public void getDuplicatePatients_shouldGetDuplicatesWithBirthDateInvalidAttribute() throws Exception {
+		List<String> attributes = new ArrayList<String>();
+		attributes.add("abcDef");
+		attributes.add("birthdate");
+		List<Patient> patients = dao.getDuplicatePatientsByAttributes(attributes);
+		Assert.assertEquals(31, patients.size());
 	}
 }
