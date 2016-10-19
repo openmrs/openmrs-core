@@ -12,10 +12,13 @@ package org.openmrs.api.db.hibernate;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -23,11 +26,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.persister.entity.AbstractEntityPersister;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 import org.openmrs.Location;
@@ -425,85 +431,179 @@ public class HibernatePatientDAO implements PatientDAO {
 	@SuppressWarnings("unchecked")
 	public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) {
 		List<Patient> patients = new Vector<Patient>();
-		
+		List<Integer> patientIds = new Vector<Integer>();
+
 		if (attributes.size() > 0) {
-			String select = "select distinct p1 from Patient p1, Patient p2";
-			String where = " where p1 <> p2 ";
-			String orderBy = " order by ";
-			
-			Class patient = Patient.class;
-			Set<String> patientFieldNames = new HashSet<String>(patient.getDeclaredFields().length);
-			for (Field f : patient.getDeclaredFields()) {
-				patientFieldNames.add(f.getName());
-				log.debug(f.getName());
-			}
-			
-			Class person = Person.class;
-			Set<String> personFieldNames = new HashSet<String>(person.getDeclaredFields().length);
-			for (Field f : person.getDeclaredFields()) {
-				personFieldNames.add(f.getName());
-				log.debug(f.getName());
-			}
-			
-			Class personName = PersonName.class;
-			Set<String> personNameFieldNames = new HashSet<String>(personName.getDeclaredFields().length);
-			for (Field f : personName.getDeclaredFields()) {
-				personNameFieldNames.add(f.getName());
-				log.debug(f.getName());
-			}
-			
-			Class identifier = PatientIdentifier.class;
-			Set<String> identifierFieldNames = new HashSet<String>(identifier.getDeclaredFields().length);
-			for (Field f : identifier.getDeclaredFields()) {
-				identifierFieldNames.add(f.getName());
-				log.debug(f.getName());
-			}
-			
-			if (!attributes.contains("includeVoided")) {
-				where += "and p1.voided = false and p2.voided = false ";
-			}
-			
-			for (String s : attributes) {
-				if (patientFieldNames.contains(s)) {
-					where += " and p1." + s + " = p2." + s;
-					orderBy += "p1." + s + ", ";
-				} else if (personFieldNames.contains(s)) {
-					if (!select.contains("Person ")) {
-						select += ", Person person1, Person person2";
-						where += " and p1.patientId = person1.personId and p2.patientId = person2.personId ";
-					}
-					where += " and person1." + s + " = person2." + s;
-					orderBy += "person1." + s + ", ";
-				} else if (personNameFieldNames.contains(s)) {
-					if (!select.contains("PersonName")) {
-						select += ", PersonName pn1, PersonName pn2";
-						where += " and p1 = pn1.person and p2 = pn2.person ";
-					}
-					where += " and pn1." + s + " = pn2." + s;
-					orderBy += "pn1." + s + ", ";
-				} else if (identifierFieldNames.contains(s)) {
-					if (!select.contains("PatientIdentifier")) {
-						select += ", PatientIdentifier pi1, PatientIdentifier pi2";
-						where += " and p1 = pi1.patient and p2 = pi2.patient ";
-					}
-					where += " and pi1." + s + " = pi2." + s;
-					orderBy += "pi1." + s + ", ";
-				} else {
-					log.warn("Unidentified attribute: " + s);
+
+			String sqlString = getDuplicatePatientsSQLString(attributes);
+			if(sqlString != null) {
+
+				SQLQuery sqlquery = sessionFactory.getCurrentSession().createSQLQuery(sqlString);
+				patientIds = sqlquery.list();
+				if (patientIds.size() >= 1) {
+					Query query = sessionFactory.getCurrentSession().createQuery(
+							"from Patient p1 where p1.patientId in (:ids)");
+					query.setParameterList("ids", patientIds);
+					patients = query.list();
 				}
 			}
-			
-			int index = orderBy.lastIndexOf(", ");
-			orderBy = orderBy.substring(0, index);
-			
-			select = select + where + orderBy;
-			
-			Query query = sessionFactory.getCurrentSession().createQuery(select);
-			
-			patients = query.list();
-		}
 		
+		}
+
+		sortDuplicatePatients(patients, patientIds);
 		return patients;
+	}
+
+	private String getDuplicatePatientsSQLString(List<String> attributes) {
+		String outerSelect = "select distinct t1.patient_id from patient t1 ";
+
+		Class patient = Patient.class;
+		Set<String> patientFieldNames = new HashSet<String>(patient.getDeclaredFields().length);
+		for (Field field : patient.getDeclaredFields()) {
+			patientFieldNames.add(field.getName());
+			log.debug(field.getName());
+		}
+
+		Class person = Person.class;
+		Set<String> personFieldNames = new HashSet<String>(person.getDeclaredFields().length);
+		for (Field field : person.getDeclaredFields()) {
+			personFieldNames.add(field.getName());
+			log.debug(field.getName());
+		}
+
+		Class personName = PersonName.class;
+
+		Set<String> personNameFieldNames = new HashSet<String>(personName.getDeclaredFields().length);
+		for (Field field : personName.getDeclaredFields()) {
+			personNameFieldNames.add(field.getName());
+			log.debug(field.getName());
+		}
+
+		Class identifier = PatientIdentifier.class;
+		Set<String> identifierFieldNames = new HashSet<String>(identifier.getDeclaredFields().length);
+		for (Field field : identifier.getDeclaredFields()) {
+			identifierFieldNames.add(field.getName());
+			log.debug(field.getName());
+		}
+		List<String> whereConditions = new ArrayList<String>();
+
+
+		List<String> innerFields = new ArrayList<String>();
+		String innerSelect = " from patient p1 ";
+
+		for (String attribute : attributes) {
+			if (attribute != null) {
+				attribute = attribute.trim();
+			}
+			if (patientFieldNames.contains(attribute)) {
+
+				AbstractEntityPersister aep = ((AbstractEntityPersister) sessionFactory.getClassMetadata(Patient.class));
+				String[] properties = aep.getPropertyColumnNames(attribute);
+				if (properties.length >= 1) {
+					attribute = properties[0];
+				}
+				whereConditions.add(" t1." + attribute + " = t5." + attribute);
+				innerFields.add("p1." + attribute);
+			} else if (personFieldNames.contains(attribute)) {
+				if (!outerSelect.contains("person")) {
+					outerSelect += "inner join person t2 on t1.patient_id = t2.person_id ";
+					innerSelect += "inner join person person1 on p1.patient_id = person1.person_id ";
+				}
+
+				AbstractEntityPersister aep = ((AbstractEntityPersister) sessionFactory.getClassMetadata(Person.class));
+				if (aep != null) {
+					String[] properties = aep.getPropertyColumnNames(attribute);
+					if (properties != null && properties.length >= 1) {
+						attribute = properties[0];
+					}
+				}
+
+				whereConditions.add(" t2." + attribute + " = t5." + attribute);
+				innerFields.add("person1." + attribute);
+			} else if (personNameFieldNames.contains(attribute)) {
+				if (!outerSelect.contains("person_name")) {
+					outerSelect += "inner join person_name t3 on t2.person_id = t3.person_id ";
+					innerSelect += "inner join person_name pn1 on person1.person_id = pn1.person_id ";
+				}
+
+				//Since we are firing a native query get the actual table column name from the field name of the entity
+				AbstractEntityPersister aep = ((AbstractEntityPersister) sessionFactory
+						.getClassMetadata(PersonName.class));
+				if (aep != null) {
+					String[] properties = aep.getPropertyColumnNames(attribute);
+
+					if (properties != null && properties.length >= 1) {
+						attribute = properties[0];
+					}
+				}
+
+				whereConditions.add(" t3." + attribute + " = t5." + attribute);
+				innerFields.add("pn1." + attribute);
+			} else if (identifierFieldNames.contains(attribute)) {
+				if (!outerSelect.contains("patient_identifier")) {
+					outerSelect += "inner join patient_identifier t4 on t1.patient_id = t4.patient_id ";
+					innerSelect += "inner join patient_identifier pi1 on p1.patient_id = pi1.patient_id ";
+				}
+
+				AbstractEntityPersister aep = ((AbstractEntityPersister) sessionFactory
+						.getClassMetadata(PatientIdentifier.class));
+				if (aep != null) {
+
+					String[] properties = aep.getPropertyColumnNames(attribute);
+					if (properties != null && properties.length >= 1) {
+						attribute = properties[0];
+					}
+				}
+
+				whereConditions.add(" t4." + attribute + " = t5." + attribute);
+				innerFields.add("pi1." + attribute);
+			} else {
+				log.warn("Unidentified attribute: " + attribute);
+			}
+		}
+		if(innerFields.size() > 0 || whereConditions.size() > 0) {
+			String innerFieldsJoined = StringUtils.join(innerFields, ", ");
+			String whereFieldsJoined = StringUtils.join(whereConditions, " and ");
+			String innerWhereCondition = "";
+			if (!attributes.contains("includeVoided")) {
+				innerWhereCondition = " where p1.voided = false ";
+			}
+			String innerQuery = "(Select " + innerFieldsJoined + innerSelect + innerWhereCondition + " group by "
+					+ innerFieldsJoined + " having count(*) > 1" + " order by " + innerFieldsJoined + ") t5";
+			return outerSelect + ", " + innerQuery + " where " + whereFieldsJoined + ";";
+		}
+		return null;
+	}
+
+	private void sortDuplicatePatients(List<Patient> patients, List<Integer> patientIds) {
+
+		Map<Integer, Integer> patientIdOrder = new HashMap<Integer, Integer>();
+		int startPos = 0;
+		for (Integer id : patientIds) {
+			patientIdOrder.put(id, startPos++);
+		}
+		class PatientIdComparator implements Comparator<Patient> {
+
+			private Map<Integer, Integer> sortOrder;
+
+			public PatientIdComparator(Map<Integer, Integer> sortOrder) {
+				this.sortOrder = sortOrder;
+			}
+
+			@Override
+			public int compare(Patient patient1, Patient patient2) {
+				Integer patPos1 = sortOrder.get(patient1.getPatientId());
+				if (patPos1 == null) {
+					throw new IllegalArgumentException("Bad patient encountered: " + patient1.getPatientId());
+				}
+				Integer patPos2 = sortOrder.get(patient2.getPatientId());
+				if (patPos2 == null) {
+					throw new IllegalArgumentException("Bad patient encountered: " + patient2.getPatientId());
+				}
+				return patPos1.compareTo(patPos2);
+			}
+		}
+		Collections.sort(patients, new PatientIdComparator(patientIdOrder));
 	}
 	
 	/**
