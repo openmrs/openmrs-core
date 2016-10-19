@@ -144,4 +144,53 @@
     <patient patient_id="84" creator="1" date_created="2014-08-28 15:54:48.0" changed_by="1" voided="false" void_reason=""/>
     <patient patient_id="85" creator="1" date_created="2014-08-28 15:54:48.0" changed_by="1" voided="false" void_reason=""/>
 
+    <!--
+    Duplicate Patients test - start
+    -->
+    <!--
+       Duplicate Patients test - based on givenName, firstName, gender, birth date
+    -->
+    <person person_id="170" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" uuid="22792132-DFAD-447C-B36C-586895DE9938"/>
+    <person person_id="171" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" uuid="8DC92447-9A77-4D07-BC04-CEEB1ECC77EF"/>
+    <person person_id="172" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" uuid="8DECE3AB-5857-4E62-B683-400CD93165A9"/>
+    <person person_id="173" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" uuid="6109C60A-904B-4B95-827B-88328DAEAB6F"/>
+    <person person_id="174" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" uuid="DE6057BF-DC56-4CFB-8103-1CAF38D5CEB9"/>
+    <person person_id="175" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" uuid="55A61A26-ED36-471D-A8D4-B2F7CDED24F0"/>
+    <person person_id="176" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" uuid="17AEEF1E-00AE-4581-9CC8-03D64B57709C"/>
+    <person person_id="177" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" uuid="016C2AB1-DFFE-4247-AAAF-D9A2C67333B9"/>
+    <person person_id="178" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" uuid="9045D3B6-9035-4BDB-9CF6-36F98852ACEC"/>
+    <person person_id="179" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" uuid="5848B8C7-9811-49F7-8358-6C5BC0FF9972"/>
+
+
+    <person_name person_name_id="170" preferred="true" person_id="170" prefix="Mr." given_name="Duplicate1" middle_name="" family_name="Last Name1"  family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="22C95D00-CD75-4075-A323-20F47AC43A56"/>
+    <person_name person_name_id="171" preferred="true" person_id="171" prefix="Mr." given_name="Duplicate1" middle_name="" family_name="Last Name1"   family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="4712F362-DB85-4554-B6A4-F59FA85A5CBE"/>
+    <person_name person_name_id="172" preferred="true" person_id="172" prefix="Mr." given_name="Duplicate1" middle_name="" family_name="Last Name1"    family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="E11A581A-6D73-4217-8DB8-E6A027903EA5"/>
+    <person_name person_name_id="173" preferred="true" person_id="173" prefix="Mr." given_name="Duplicate1" middle_name="" family_name="Last Name1" family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="49175E08-FEEA-4F84-8FE9-DCA6317764BD"/>
+    <person_name person_name_id="174" preferred="true" person_id="174" prefix="Mr." given_name="Duplicate1" middle_name="" family_name="Last Name1" family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="C15362E8-7041-4F2F-AB3D-8962FA5C4EA8"/>
+    <person_name person_name_id="175" preferred="true" person_id="175" prefix="Mr." given_name="Duplicate2" middle_name="" family_name="Last Name2" family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="CC5AEE7C-915D-4E55-8A46-74DDEA2726DE"/>
+    <person_name person_name_id="176" preferred="true" person_id="176" prefix="Mr." given_name="Duplicate2" middle_name="" family_name="Last Name2"  family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="2C13CABE-7A17-4B75-921D-8427ED676EE6"/>
+    <person_name person_name_id="177" preferred="true" person_id="177" prefix="Mr." given_name="Duplicate2" middle_name="" family_name="Last Name2" family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="043AC2F4-0C3E-458C-BA41-9CBAA593409B"/>
+    <person_name person_name_id="178" preferred="true" person_id="178" prefix="Mr." given_name="Duplicate2" middle_name="" family_name="Last Name2"  family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="2097E313-7098-4516-ACF7-B446F2BDD29D"/>
+    <person_name person_name_id="179" preferred="true" person_id="179" prefix="Mr." given_name="Duplicate2" middle_name="" family_name="Last Name2"   family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="39ECD61A-09A6-4CF9-A39E-F4BD205FA779"/>
+
+
+    <patient patient_id="170" creator="1" date_created="2014-01-09 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="171" creator="1" date_created="2014-01-09 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="172" creator="1" date_created="2014-01-09 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="173" creator="1" date_created="2014-01-09 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="174" creator="1" date_created="2014-01-09 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="175" creator="1" date_created="2014-01-09 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="176" creator="1" date_created="2014-01-09 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="177" creator="1" date_created="2014-01-09 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="178" creator="1" date_created="2014-01-09 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="179" creator="1" date_created="2014-01-09 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
+    <!--
+      Duplicate Patients test - based on givenName, firstName, gender, birth date and primary identifier
+    -->
+    <patient_identifier patient_identifier_id="1001" patient_id="170" identifier="HHID-01-02-03"  identifier_type="2" preferred="0" location_id="1" creator="1" date_created="2013-12-27 00:00:00.0" voided="false" void_reason="" uuid="0D348EC3-26E5-4B13-9E80-EBC48BB0BE0A"/>
+    <patient_identifier patient_identifier_id="1002" patient_id="171" identifier="HHID-01-02-03"  identifier_type="2" preferred="0" location_id="1" creator="1" date_created="2013-12-27 00:00:00.0" voided="false" void_reason="" uuid="2f8d3ced-80a0-4896-9290-9be73cee89ef"/>
+    <!--
+            Duplicate Patients test - end
+    -->
+
 </dataset>
