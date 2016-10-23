@@ -423,16 +423,12 @@ public class HibernateEncounterDAO implements EncounterDAO {
 				criteria.add(or);
 			}
 		} else {
-			String name = null;
-			String identifier = null;
-			if (query.matches(".*\\d+.*")) {
-				identifier = query;
-			} else {
-				// there is no number in the string, search on name
-				name = query;
-			}
+			//As identifier could be all alpha, no heuristic here will work in determining intent of user for querying by name versus identifier
+			//So search by both!
+			String name = query;
+			String identifier = query;
 			criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
-			    new ArrayList<PatientIdentifierType>(), false, orderByNames, false);
+			    new ArrayList<PatientIdentifierType>(), true, orderByNames, true);	
 		}
 		
 		return criteria;
