@@ -49,6 +49,17 @@ import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.api.order.exceptions.CannotDeleteOrderPropertyInUseException;
+import org.openmrs.api.order.exceptions.CannotDiscontinueAlreadyDiscontinuedOrderException;
+import org.openmrs.api.order.exceptions.CannotDiscontinueOrderWithActionException;
+import org.openmrs.api.order.exceptions.CannotEditAlreadyExistingOrderException;
+import org.openmrs.api.order.exceptions.CannotEditOrderPropertyInUseException;
+import org.openmrs.api.order.exceptions.CannotStopRetrospectiveDiscontinuedOrderException;
+import org.openmrs.api.order.exceptions.CannotUnvoidOrderException;
+import org.openmrs.api.order.exceptions.EditedOrderDoesNotMatchPreviousException;
+import org.openmrs.api.order.exceptions.InvalidOrderException;
+import org.openmrs.api.order.exceptions.PreviousOrderRequiredException;
+import org.openmrs.api.order.exceptions.UnchangeableOrderPropertyException;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -120,7 +131,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	private Order saveOrder(Order order, OrderContext orderContext, boolean isRetrospective) {
 		if (order.getOrderId() != null) {
-			throw new APIException("Order.cannot.edit.existing");
+			throw new CannotEditAlreadyExistingOrderException();
 		}
 		if (order.getDateActivated() == null) {
 			order.setDateActivated(new Date());
@@ -139,7 +150,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		if (concept == null) {
-			throw new APIException("Order.concept.required");
+			throw new InvalidOrderException("Order.concept.required");
 		}
 		
 		Order previousOrder = order.getPreviousOrder();
@@ -162,7 +173,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			
 			//this order's order type should match that of the previous
 			if (orderType == null || (previousOrder != null && !orderType.equals(previousOrder.getOrderType()))) {
-				throw new APIException("Order.type.cannot.determine");
+				throw new InvalidOrderException("Order.type.cannot.determine");
 			}
 			
 			order.setOrderType(orderType);
@@ -173,19 +184,19 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				careSetting = orderContext.getCareSetting();
 			}
 			if (careSetting == null || (previousOrder != null && !careSetting.equals(previousOrder.getCareSetting()))) {
-				throw new APIException("Order.care.cannot.determine");
+				throw new InvalidOrderException("Order.care.cannot.determine");
 			}
 			order.setCareSetting(careSetting);
 		}
 		
 		if (!order.getOrderType().getJavaClass().isAssignableFrom(order.getClass())) {
-			throw new APIException("Order.type.class.does.not.match",
+			throw new EditedOrderDoesNotMatchPreviousException("Order.type.class.does.not.match",
 			        new Object[] { order.getOrderType().getJavaClass(), order.getClass().getName() });
 		}
 		
 		if (REVISE == order.getAction()) {
 			if (previousOrder == null) {
-				throw new APIException("Order.previous.required");
+				throw new PreviousOrderRequiredException();
 			}
 			stopOrder(previousOrder, aMomentBefore(order.getDateActivated()), isRetrospective);
 		} else if (DISCONTINUE == order.getAction()) {
@@ -199,29 +210,29 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			List<Object[]> rows = dao.getOrderFromDatabase(previousOrder, isPreviousDrugOrder);
 			Object[] rowData = rows.get(0);
 			if (!rowData[0].equals(previousOrder.getPatient().getPatientId())) {
-				throw new APIException("Order.cannot.change.patient");
+				throw UnchangeableOrderPropertyException.withProperty("patient");
 			} else if (!rowData[1].equals(previousOrder.getCareSetting().getCareSettingId())) {
-				throw new APIException("Order.cannot.change.careSetting");
+				throw UnchangeableOrderPropertyException.withProperty("careSetting");
 			} else if (!rowData[2].equals(previousOrder.getConcept().getConceptId())) {
-				throw new APIException("Order.cannot.change.concept");
+				throw UnchangeableOrderPropertyException.withProperty("concept");
 			} else if (isPreviousDrugOrder) {
 				Drug previousDrug = ((DrugOrder) previousOrder).getDrug();
 				if (previousDrug == null && rowData[3] != null) {
-					throw new APIException("Order.cannot.change.drug");
+					throw UnchangeableOrderPropertyException.withProperty("drug");
 				} else if (previousDrug != null && !OpenmrsUtil.nullSafeEquals(rowData[3], previousDrug.getDrugId())) {
-					throw new APIException("Order.cannot.change.drug");
+					throw UnchangeableOrderPropertyException.withProperty("drug");
 				}
 			}
 			
 			//concept should be the same as on previous order, same applies to drug for drug orders
 			if (!order.hasSameOrderableAs(previousOrder)) {
-				throw new APIException("The orderable of the previous order and the new one order don't match");
+				throw new EditedOrderDoesNotMatchPreviousException("The orderable of the previous order and the new one order don't match");
 			} else if (!order.getOrderType().equals(previousOrder.getOrderType())) {
-				throw new APIException("Order.type.does.not.match");
+				throw new EditedOrderDoesNotMatchPreviousException("Order.type.does.not.match");
 			} else if (!order.getCareSetting().equals(previousOrder.getCareSetting())) {
-				throw new APIException("Order.care.setting.does.not.match");
+				throw new EditedOrderDoesNotMatchPreviousException("Order.care.setting.does.not.match");
 			} else if (!getActualType(order).equals(getActualType(previousOrder))) {
-				throw new APIException("Order.class.does.not.match");
+				throw new EditedOrderDoesNotMatchPreviousException("Order.class.does.not.match");
 			}
 		}
 		
@@ -450,7 +461,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (previousOrder != null && isDiscontinueOrReviseOrder(order)) {
 			if (!previousOrder.isActive()) {
 				final String action = DISCONTINUE == order.getAction() ? "discontinuation" : "revision";
-				throw new APIException("Order.action.cannot.unvoid", new Object[] { action });
+				throw new CannotUnvoidOrderException(action);
 			}
 			stopOrder(previousOrder, aMomentBefore(order.getDateActivated()), false);
 		}
@@ -739,16 +750,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			throw new IllegalArgumentException("Discontinue date cannot be in the future");
 		}
 		if (DISCONTINUE == orderToStop.getAction()) {
-			throw new APIException("Order.action.cannot.discontinued", new Object[] { DISCONTINUE });
+			throw new CannotDiscontinueOrderWithActionException();
 		}
 		
 		if (isRetrospective && orderToStop.getDateStopped() != null) {
-			throw new APIException("Order.retrospective.stopped.cannot.discontinued");
+			throw new CannotStopRetrospectiveDiscontinuedOrderException();
 		}
 		if (!isRetrospective && !orderToStop.isActive()) {
-			throw new APIException("Order.stopped.cannot.discontinued");
+			throw new CannotDiscontinueAlreadyDiscontinuedOrderException();
 		} else if (isRetrospective && !orderToStop.isActive(discontinueDate)) {
-			throw new APIException("Order.retrospective.stopped.cannot.discontinued");
+			throw new CannotStopRetrospectiveDiscontinuedOrderException();
 		}
 		
 		setProperty(orderToStop, "dateStopped", discontinueDate);
@@ -762,7 +773,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) throws APIException {
 		if (orderFrequency.getOrderFrequencyId() != null) {
 			if (dao.isOrderFrequencyInUse(orderFrequency)) {
-				throw new APIException("Order.frequency.cannot.edit");
+				throw CannotEditOrderPropertyInUseException.withProperty("frequency");
 			}
 		}
 		
@@ -793,7 +804,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public void purgeOrderFrequency(OrderFrequency orderFrequency) {
 		
 		if (dao.isOrderFrequencyInUse(orderFrequency)) {
-			throw new APIException("Order.frequency.cannot.delete");
+			throw CannotDeleteOrderPropertyInUseException.withProperty("frequency");
 		}
 		
 		dao.purgeOrderFrequency(orderFrequency);
@@ -881,7 +892,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public void purgeOrderType(OrderType orderType) {
 		if (dao.isOrderTypeInUse(orderType)) {
-			throw new APIException("Order.type.cannot.delete");
+			throw CannotDeleteOrderPropertyInUseException.withProperty("type");
 		}
 		dao.purgeOrderType(orderType);
 	}
