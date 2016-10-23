@@ -68,6 +68,17 @@ import org.openmrs.TestOrder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.OrderServiceImpl;
+import org.openmrs.api.order.exceptions.CannotDeleteOrderPropertyInUseException;
+import org.openmrs.api.order.exceptions.CannotDiscontinueAlreadyDiscontinuedOrderException;
+import org.openmrs.api.order.exceptions.CannotDiscontinueOrderWithActionException;
+import org.openmrs.api.order.exceptions.CannotEditAlreadyExistingOrderException;
+import org.openmrs.api.order.exceptions.CannotEditOrderPropertyInUseException;
+import org.openmrs.api.order.exceptions.CannotStopRetrospectiveDiscontinuedOrderException;
+import org.openmrs.api.order.exceptions.CannotUnvoidOrderException;
+import org.openmrs.api.order.exceptions.EditedOrderDoesNotMatchPreviousException;
+import org.openmrs.api.order.exceptions.InvalidOrderException;
+import org.openmrs.api.order.exceptions.PreviousOrderRequiredException;
+import org.openmrs.api.order.exceptions.UnchangeableOrderPropertyException;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
@@ -727,7 +738,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order discontinuationOrder = orderService.getOrder(26);
 		assertEquals(Action.DISCONTINUE, discontinuationOrder.getAction());
 		Encounter encounter = encounterService.getEncounter(3);
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotDiscontinueOrderWithActionException.class);
 		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Order.action.cannot.discontinued",
 		    new Object[] { DISCONTINUE }, null));
 		orderService.discontinueOrder(discontinuationOrder, "Test if I can discontinue this", null, null, encounter);
@@ -745,7 +756,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order discontinuationOrder = orderService.getOrder(26);
 		assertEquals(Action.DISCONTINUE, discontinuationOrder.getAction());
 		Encounter encounter = encounterService.getEncounter(3);
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotDiscontinueOrderWithActionException.class);
 		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Order.action.cannot.discontinued",
 		    new Object[] { DISCONTINUE }, null));
 		orderService.discontinueOrder(discontinuationOrder, (Concept) null, null, null, encounter);
@@ -762,7 +773,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertFalse(discontinuationOrder.isActive());
 		assertNotNull(discontinuationOrder.getDateStopped());
 		Encounter encounter = encounterService.getEncounter(3);
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotDiscontinueAlreadyDiscontinuedOrderException.class);
 		expectedException.expectMessage("Order.stopped.cannot.discontinued");
 		orderService.discontinueOrder(discontinuationOrder, "some reason", null, null, encounter);
 	}
@@ -778,7 +789,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertFalse(discontinuationOrder.isActive());
 		assertNotNull(discontinuationOrder.getDateStopped());
 		Encounter encounter = encounterService.getEncounter(3);
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotDiscontinueAlreadyDiscontinuedOrderException.class);
 		expectedException.expectMessage("Order.stopped.cannot.discontinued");
 		orderService.discontinueOrder(discontinuationOrder, (Concept) null, null, null, encounter);
 	}
@@ -875,7 +886,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertFalse(previousOrder.getConcept().equals(newConcept));
 		order.setConcept(newConcept);
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
 		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
@@ -973,7 +984,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setDrug(discontinuationOrderDrug);
 		order.setOrderReasonNonCoded("Discontinue this");
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
 		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
@@ -1032,7 +1043,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order orderToDiscontinue = orderService.getOrder(1);
 		Encounter encounter = encounterService.getEncounter(3);
 		assertNotNull(orderToDiscontinue.getDateStopped());
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotDiscontinueAlreadyDiscontinuedOrderException.class);
 		expectedException.expectMessage("Order.stopped.cannot.discontinued");
 		orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null, null, encounter);
 	}
@@ -1047,7 +1058,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order orderToDiscontinue = orderService.getOrder(8);
 		Encounter encounter = encounterService.getEncounter(3);
 		assertTrue(orderToDiscontinue.isVoided());
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotDiscontinueAlreadyDiscontinuedOrderException.class);
 		expectedException.expectMessage("Order.stopped.cannot.discontinued");
 		orderService.discontinueOrder(orderToDiscontinue, "testing", null, null, encounter);
 	}
@@ -1063,7 +1074,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Encounter encounter = encounterService.getEncounter(3);
 		assertNotNull(orderToDiscontinue.getAutoExpireDate());
 		assertTrue(orderToDiscontinue.getAutoExpireDate().before(new Date()));
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotDiscontinueAlreadyDiscontinuedOrderException.class);
 		expectedException.expectMessage("Order.stopped.cannot.discontinued");
 		orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null, null, encounter);
 	}
@@ -1075,7 +1086,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrder_shouldNotAllowEditingAnExistingOrder() throws Exception {
 		final DrugOrder order = (DrugOrder) orderService.getOrder(5);
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotEditAlreadyExistingOrderException.class);
 		expectedException.expectMessage("Order.cannot.edit.existing");
 		orderService.saveOrder(order, null);
 	}
@@ -1142,7 +1153,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setOrderer(providerService.getProvider(1));
 		revisedOrder.setDateActivated(new Date());
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotDiscontinueAlreadyDiscontinuedOrderException.class);
 		expectedException.expectMessage("Order.stopped.cannot.discontinued");
 		orderService.saveOrder(revisedOrder, null);
 	}
@@ -1160,7 +1171,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setOrderer(providerService.getProvider(1));
 		revisedOrder.setDateActivated(new Date());
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotDiscontinueAlreadyDiscontinuedOrderException.class);
 		expectedException.expectMessage("Order.stopped.cannot.discontinued");
 		orderService.saveOrder(revisedOrder, null);
 	}
@@ -1180,7 +1191,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		revisedOrder.setOrderer(providerService.getProvider(1));
 		revisedOrder.setDateActivated(new Date());
 		revisedOrder.setAutoExpireDate(new Date());
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotDiscontinueAlreadyDiscontinuedOrderException.class);
 		expectedException.expectMessage("Order.stopped.cannot.discontinued");
 		orderService.saveOrder(revisedOrder, null);
 	}
@@ -1200,7 +1211,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		revisedOrder.setOrderer(providerService.getProvider(1));
 		revisedOrder.setDateActivated(new Date());
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(PreviousOrderRequiredException.class);
 		expectedException.expectMessage("Order.previous.required");
 		orderService.saveOrder(revisedOrder, null);
 	}
@@ -1486,7 +1497,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(orderFrequency);
 		
 		orderFrequency.setFrequencyPerDay(4d);
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotEditOrderPropertyInUseException.class);
 		expectedException.expectMessage("Order.frequency.cannot.edit");
 		orderService.saveOrderFrequency(orderFrequency);
 	}
@@ -1500,7 +1511,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderFrequency orderFrequency = orderService.getOrderFrequency(1);
 		assertNotNull(orderFrequency);
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotDeleteOrderPropertyInUseException.class);
 		expectedException.expectMessage("Order.frequency.cannot.delete");
 		orderService.purgeOrderFrequency(orderFrequency);
 	}
@@ -1703,7 +1714,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		drugOrder.setQuantityUnits(duplicateOrder.getQuantityUnits());
 		drugOrder.setNumRefills(duplicateOrder.getNumRefills());
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(AmbiguousOrderException.class);
 		expectedException.expectMessage("Order.cannot.have.more.than.one");
 		orderService.saveOrder(drugOrder, null);
 	}
@@ -2167,7 +2178,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setCareSetting(orderService.getCareSetting(1));
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setDateActivated(new Date());
-		expectedException.expect(APIException.class);
+		expectedException.expect(InvalidOrderException.class);
 		expectedException.expectMessage("Order.type.cannot.determine");
 		orderService.saveOrder(order, null);
 	}
@@ -2230,7 +2241,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void purgeOrderType_shouldNotAllowDeletingAnOrderTypeThatIsInUse() {
 		OrderType orderType = orderService.getOrderType(1);
 		assertNotNull(orderType);
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotDeleteOrderPropertyInUseException.class);
 		expectedException.expectMessage("Order.type.cannot.delete");
 		orderService.purgeOrderType(orderType);
 	}
@@ -2383,7 +2394,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setOrderer(providerService.getProvider(1));
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(UnchangeableOrderPropertyException.class);
 		expectedException.expectMessage("Order.cannot.change.patient");
 		orderService.saveOrder(order, null);
 	}
@@ -2402,7 +2413,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertFalse(order.getPreviousOrder().getCareSetting().equals(newCareSetting));
 		order.getPreviousOrder().setCareSetting(newCareSetting);
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(UnchangeableOrderPropertyException.class);
 		expectedException.expectMessage("Order.cannot.change.careSetting");
 		orderService.saveOrder(order, null);
 	}
@@ -2422,7 +2433,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		order.getPreviousOrder().setConcept(newConcept);
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(UnchangeableOrderPropertyException.class);
 		expectedException.expectMessage("Order.cannot.change.concept");
 		orderService.saveOrder(order, null);
 	}
@@ -2442,7 +2453,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertFalse(previousOrder.getDrug().equals(newDrug));
 		previousOrder.setDrug(newDrug);
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(UnchangeableOrderPropertyException.class);
 		expectedException.expectMessage("Order.cannot.change.drug");
 		orderService.saveOrder(order, null);
 	}
@@ -2462,7 +2473,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertFalse(previousOrder.getConcept().equals(newConcept));
 		order.setConcept(newConcept);
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
 		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
@@ -2489,7 +2500,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounterService.getEncounter(6));
 		order.setDrug(discontinuationOrderDrug);
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
 		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
@@ -2510,7 +2521,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		discontinuationOrder.setOrderer(Context.getProviderService().getProvider(1));
 		discontinuationOrder.setEncounter(Context.getEncounterService().getEncounter(6));
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
 		expectedException.expectMessage("Order.type.does.not.match");
 		orderService.saveOrder(discontinuationOrder, null);
 	}
@@ -2534,7 +2545,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		discontinuationOrder.setOrderer(Context.getProviderService().getProvider(1));
 		discontinuationOrder.setEncounter(Context.getEncounterService().getEncounter(6));
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
 		expectedException.expectMessage("Order.class.does.not.match");
 		orderService.saveOrder(discontinuationOrder, null);
 	}
@@ -2554,7 +2565,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		discontinuationOrder.setOrderer(Context.getProviderService().getProvider(1));
 		discontinuationOrder.setEncounter(Context.getEncounterService().getEncounter(6));
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
 		expectedException.expectMessage("Order.care.setting.does.not.match");
 		orderService.saveOrder(discontinuationOrder, null);
 	}
@@ -2742,7 +2753,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		    previousOrder.getEncounter());
 		Thread.sleep(10);
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotUnvoidOrderException.class);
 		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Order.action.cannot.unvoid",
 		    new Object[] { "discontinuation" }, null));
 		orderService.unvoidOrder(order);
@@ -2772,7 +2783,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderService.saveOrder(revise, null);
 		Thread.sleep(10);
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotUnvoidOrderException.class);
 		expectedException.expectMessage(
 		    Context.getMessageSourceService().getMessage("Order.action.cannot.unvoid", new Object[] { "revision" }, null));
 		orderService.unvoidOrder(order);
@@ -3193,7 +3204,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		DrugOrder drugOrder = duplicateOrder.copy();
 		drugOrder.setDrugNonCoded("non coded drug crocine");
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(AmbiguousOrderException.class);
 		expectedException.expectMessage("Order.cannot.have.more.than.one");
 		orderService.saveOrder(drugOrder, null);
 	}
@@ -3228,7 +3239,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		drugOrder.setOrderer(providerService.getProvider(1));
 		drugOrder.setEncounter(encounterService.getEncounter(6));
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
 		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
 		orderService.saveOrder(drugOrder, null);
 	}
@@ -3249,7 +3260,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setDrugNonCoded(drugNonCodedParacetemol);
 		order.setPreviousOrder(previousOrder);
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(EditedOrderDoesNotMatchPreviousException.class);
 		expectedException.expectMessage("The orderable of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
@@ -3336,7 +3347,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounterService.getEncounter(18));
 		order.setPreviousOrder(previousOrder);
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(CannotStopRetrospectiveDiscontinuedOrderException.class);
 		expectedException.expectMessage("Order.retrospective.stopped.cannot.discontinued");
 		orderService.saveRetrospectiveOrder(order, null);
 	}
@@ -3369,7 +3380,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setQuantityUnits(duplicateOrder.getQuantityUnits());
 		order.setNumRefills(duplicateOrder.getNumRefills());
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(AmbiguousOrderException.class);
 		expectedException.expectMessage("Order.cannot.have.more.than.one");
 		orderService.saveRetrospectiveOrder(order, null);
 	}
