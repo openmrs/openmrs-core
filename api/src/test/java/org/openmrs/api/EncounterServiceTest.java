@@ -369,6 +369,26 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		es.saveEncounter(enc);
 		assertEquals(enc.getLocation(), newObs.getLocation());
 	}
+
+	@Test
+	@Verifies(value="should save encounter with complex obs", method="saveEncounter(Encounter)")
+	public void saveEncounter_shouldSaveEncounterWithComplexObs() throws Exception {
+		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
+		EncounterService es = Context.getEncounterService();
+
+		Encounter encounter = es.getEncounter(101);
+		Obs observation = buildObs();
+		observation.setLocation(encounter.getLocation());
+		observation.setPerson(encounter.getPatient());
+		encounter.addObs(observation);
+
+		es.saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		encounter = es.getEncounter(101);
+		assertEquals(2, encounter.getObsAtTopLevel(true).size());
+	}
 	
 	private Encounter buildEncounter() {
 		// First, create a new Encounter

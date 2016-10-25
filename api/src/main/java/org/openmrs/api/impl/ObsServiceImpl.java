@@ -24,6 +24,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.handler.SaveHandler;
+import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.obs.handler.AbstractHandler;
 import org.openmrs.util.OpenmrsClassLoader;
@@ -218,8 +219,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	private void handleExistingObsWithComplexConcept(Obs obs) {
-		if (null != obs.getConcept() && obs.getConcept().isComplex()
-		        && null != obs.getComplexData().getData()) {
+		ComplexData complexData = obs.getComplexData();
+		Concept concept = obs.getConcept();
+		if (null != concept && concept.isComplex()
+		        && null != complexData && null != complexData.getData()) {
 			// save or update complexData object on this obs
 			// this is done before the database save so that the obs.valueComplex
 			// can be filled in by the handler.
@@ -227,7 +230,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			if (null != handler) {
 				handler.saveObs(obs);
 			} else {
-				throw new APIException("unknown.handler", new Object[] { obs.getConcept() });
+				throw new APIException("unknown.handler", new Object[] {concept});
 			}
 		}
 	}
