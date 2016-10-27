@@ -518,13 +518,13 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 **/
 	@Test
-	@Verifies(value = "fail if any description is a not entered while creating a new concept ", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfAnyDescriptionIsNotEnteredWhileCreatingANewConcept() throws Exception {
+	@Verifies(value = "not fail if any description is a not entered while creating a new concept ", method = "validate(Object,Errors)")
+	public void validate_shouldNotFailIfAnyDescriptionIsNotEnteredWhileCreatingANewConcept() throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name", Context.getLocale()));
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
-		Assert.assertTrue(errors.hasFieldErrors("descriptions"));
+		Assert.assertFalse(errors.hasFieldErrors("descriptions"));
 	}
 
 	/**
@@ -547,14 +547,14 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 **/
 	@Test
-	@Verifies(value = "should fail if blank concept description is passed", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfBlankConceptDescriptionIsPassed() throws Exception {
+	@Verifies(value = "should not fail if blank concept description is passed", method = "validate(Object,Errors)")
+	public void validate_shouldNotFailIfBlankConceptDescriptionIsPassed() throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name",Context.getLocale()));
 		concept.addDescription(new ConceptDescription("   ",null));
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
-		Assert.assertTrue(errors.hasFieldErrors("descriptions"));
+		Assert.assertFalse(errors.hasFieldErrors("descriptions"));
 	}
 
 	/**
