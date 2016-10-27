@@ -100,10 +100,6 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 			errors.reject("Concept.name.atLeastOneRequired");
 			return;
 		}
-		if (conceptToValidate.getDescriptions().size() == 0) {
-			errors.rejectValue("descriptions","Concept.description.atLeastOneRequired");
-			return;
-		}
 
 		ValidationUtils.rejectIfEmpty(errors, "datatype", "Concept.datatype.empty");
 		ValidationUtils.rejectIfEmpty(errors, "conceptClass", "Concept.conceptClass.empty");
