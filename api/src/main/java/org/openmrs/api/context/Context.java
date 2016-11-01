@@ -829,6 +829,7 @@ public class Context {
 		OpenmrsUtil.startup(props);
 		
 		openSession();
+		clearSession();
 		
 		// add any privileges/roles that /must/ exist for openmrs to work
 		// correctly.
