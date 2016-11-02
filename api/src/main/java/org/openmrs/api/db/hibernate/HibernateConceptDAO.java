@@ -1801,8 +1801,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 				return false;
 			}
 			
-			//If it is not a default name for a concept
-			if (!name.getConcept().getName(name.getLocale()).equals(name)) {
+			//If it is not a default name of a concept, it cannot be a duplicate.
+			//Note that a concept may not have a default name for the given locale, if just a short name or
+			//a search term is set.
+			if (!name.equals(name.getConcept().getName(name.getLocale()))) {
 				return false;
 			}
 		}
