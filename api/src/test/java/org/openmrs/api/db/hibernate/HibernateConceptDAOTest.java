@@ -10,17 +10,22 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.List;
+import java.util.Locale;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptName;
 import org.openmrs.Drug;
+import org.openmrs.api.ConceptNameType;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
+import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 
 public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	
@@ -166,4 +171,28 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	@Test
+	//TRUNK-4967
+	public void isConceptNameDuplicate_shouldNotFailIfConceptDoesNotHaveADefaultNameForLocale() throws Exception {
+		//given
+		ConceptClass diagnosis = dao.getConceptClasses("Diagnosis").get(0);
+		ConceptDatatype na = dao.getConceptDatatypeByName("N/A");
+		
+		Concept tuberculosis = new Concept();
+		tuberculosis.addName(new ConceptName("Tuberculosis", Locale.US));
+		tuberculosis.setDatatype(na);
+		tuberculosis.setConceptClass(diagnosis);
+		dao.saveConcept(tuberculosis);
+		
+		ConceptName shortName = new ConceptName("TB", Locale.FRANCE);
+		shortName.setConceptNameType(ConceptNameType.SHORT);
+		tuberculosis.addName(shortName);
+		
+		//when
+		boolean duplicate = dao.isConceptNameDuplicate(shortName);
+		
+		//then
+		//no NPE exception thrown
+		assertThat(duplicate, is(false));
+	}
 }
