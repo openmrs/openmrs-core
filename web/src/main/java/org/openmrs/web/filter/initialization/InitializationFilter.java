@@ -39,8 +39,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import liquibase.changelog.ChangeSet;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,6 +49,7 @@ import org.openmrs.ImplementationId;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.OpenmrsCoreModuleException;
 import org.openmrs.module.web.WebModuleUtil;
@@ -74,6 +73,8 @@ import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
+
+import liquibase.changelog.ChangeSet;
 
 /**
  * This is the first filter that is processed. It is only active when starting OpenMRS for the very
@@ -1778,9 +1779,14 @@ public class InitializationFilter extends StartupFilter {
 						try {
 							// change the admin user password from "test" to what they input above
 							if (wizardModel.createTables) {
-								Context.authenticate("admin", "test");
-								Context.getUserService().changePassword("test", wizardModel.adminUserPassword);
-								Context.logout();
+								try {
+									Context.authenticate("admin", "test");
+									Context.getUserService().changePassword("test", wizardModel.adminUserPassword);
+									Context.logout();
+								}
+								catch (ContextAuthenticationException ex) {
+									log.info("No need to change admin password.");
+								}
 							}
 						}
 						catch (Exception e) {
