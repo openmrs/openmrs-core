@@ -9,7 +9,6 @@
  */
 package org.openmrs.messagesource.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,24 +28,20 @@ import org.openmrs.messagesource.PresentationMessage;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 /**
  * ResourceBundleMessageSource extends ReloadableResourceBundleMessageSource to provide the
  * additional features of a MutableMessageSource.
  */
-public class MutableResourceBundleMessageSource extends ReloadableResourceBundleMessageSource implements MutableMessageSource, ApplicationContextAware {
-	
-	private static final String PROPERTIES_FILE_COMMENT = "OpenMRS Application Messages";
-	
+public class MutableResourceBundleMessageSource extends ReloadableResourceBundleMessageSource implements MutableMessageSource {
+
 	private Log log = LogFactory.getLog(getClass());
-	
-	private ApplicationContext applicationContext;
 	
 	/**
 	 * Local reference to basenames used to search for properties files.
@@ -89,8 +84,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	private Collection<Locale> findLocales() {
 		Collection<Locale> foundLocales = new HashSet<Locale>();
 		
-		for (File propertiesFile : findPropertiesFiles()) {
-			String filename = propertiesFile.getName();
+		for (Resource propertiesFile : findPropertiesFiles()) {
+			String filename = propertiesFile.getFilename();
 			
 			Locale parsedLocale = parseLocaleFrom(filename);
 			
@@ -116,19 +111,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		Locale parsedLocale = null;
 		
 		// trim off leading basename
-		for (String basename : basenames) {
-			File basefilename = new File(basename);
-			basename = basefilename.getPath();
-			
-			int indexOfLastPart = basename.lastIndexOf(File.separatorChar) + 1;
-			if (indexOfLastPart > 0) {
-				basename = basename.substring(indexOfLastPart);
-			}
-			
-			if (filename.startsWith(basename)) {
-				filename = filename.substring(basename.length());
-			}
-		}
+		filename = filename.substring("messages".length());
 		
 		// trim off extension
 		String localespec = filename.substring(0, filename.indexOf('.'));
@@ -143,14 +126,6 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	}
 	
 	/**
-	 * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-	 */
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-		
-	}
-	
-	/**
 	 * Returns all available messages.
 	 *
 	 * @see org.openmrs.messagesource.MessageSourceService#getPresentations()
@@ -158,11 +133,11 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	public Collection<PresentationMessage> getPresentations() {
 		Collection<PresentationMessage> presentations = new Vector<PresentationMessage>();
 		
-		for (File propertiesFile : findPropertiesFiles()) {
-			Locale currentLocale = parseLocaleFrom(propertiesFile.getName());
+		for (Resource propertiesFile : findPropertiesFiles()) {
+			Locale currentLocale = parseLocaleFrom(propertiesFile.getFilename());
 			Properties props = new Properties();
 			try {
-				OpenmrsUtil.loadProperties(props, propertiesFile);
+				OpenmrsUtil.loadProperties(props, propertiesFile.getInputStream());
 				for (Map.Entry<Object, Object> property : props.entrySet()) {
 					presentations.add(new PresentationMessage(property.getKey().toString(), currentLocale, property
 					        .getValue().toString(), ""));
@@ -170,7 +145,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 			}
 			catch (Exception e) {
 				// skip over errors in loading a single file
-				log.error("Unable to load properties from file: " + propertiesFile.getAbsolutePath(), e);
+				log.error("Unable to load properties from file: " + propertiesFile.getFilename());
 			}
 		}
 		return presentations;
@@ -193,7 +168,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * @see org.springframework.context.support.ReloadableResourceBundleMessageSource#setBasenames(java.lang.String[])
 	 */
 	@Override
-	public void setBasenames(String[] basenames) {
+	public void setBasenames(String... basenames) {
 		if (basenames == null) {
 			this.basenames = new String[0];
 		} else {
@@ -221,13 +196,16 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * @see org.openmrs.messagesource.MutableMessageSource#addPresentation(org.openmrs.messagesource.PresentationMessage)
 	 */
 	public void addPresentation(PresentationMessage message) {
-		File propertyFile = findPropertiesFileFor(message.getCode());
+		Resource propertyFile = findPropertiesFileFor(message.getCode());
 		if (propertyFile != null) {
 			Properties props = new Properties();
 			try {
-				OpenmrsUtil.loadProperties(props, propertyFile);
+				OpenmrsUtil.loadProperties(props, propertyFile.getInputStream());
 				props.setProperty(message.getCode(), message.getMessage());
-				OpenmrsUtil.storeProperties(props, propertyFile, "OpenMRS Application Messages");
+				
+				//TODO properties files are now in api jar files which cannot be modified. TRUNK-4097
+				//We should therefore remove this method implementation or stop claiming that we are a mutable resource
+				//OpenmrsUtil.storeProperties(props, propertyFile.getInputStream(), "OpenMRS Application Messages");
 			}
 			catch (Exception e) {
 				log.error("Error generated", e);
@@ -239,13 +217,16 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * @see org.openmrs.messagesource.MutableMessageSource#removePresentation(org.openmrs.messagesource.PresentationMessage)
 	 */
 	public void removePresentation(PresentationMessage message) {
-		File propertyFile = findPropertiesFileFor(message.getCode());
+		Resource propertyFile = findPropertiesFileFor(message.getCode());
 		if (propertyFile != null) {
 			Properties props = new Properties();
 			try {
-				OpenmrsUtil.loadProperties(props, propertyFile);
+				OpenmrsUtil.loadProperties(props, propertyFile.getInputStream());
 				props.remove(message.getCode());
-				OpenmrsUtil.storeProperties(props, propertyFile, PROPERTIES_FILE_COMMENT);
+				
+				//TODO properties files are now in api jar files which cannot be modified. TRUNK-4097
+				//We should therefore remove this method implementation or stop claiming that we are a mutable resource
+				//OpenmrsUtil.storeProperties(props, propertyFile, PROPERTIES_FILE_COMMENT);
 			}
 			catch (Exception e) {
 				log.error("Error generated", e);
@@ -260,14 +241,14 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * @param code
 	 * @return the file which defines the code, or null if not found
 	 */
-	private File findPropertiesFileFor(String code) {
+	private Resource findPropertiesFileFor(String code) {
 		Properties props = new Properties();
-		File foundFile = null;
+		Resource foundFile = null;
 		
-		for (File propertiesFile : findPropertiesFiles()) {
+		for (Resource propertiesFile : findPropertiesFiles()) {
 			props.clear();
 			try {
-				OpenmrsUtil.loadProperties(props, propertiesFile);
+				OpenmrsUtil.loadProperties(props, propertiesFile.getInputStream());
 			}
 			catch (Exception e) {
 				log.error("Error generated", e);
@@ -284,42 +265,19 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * Searches the filesystem for message properties files. ABKTODO: consider caching this, rather
 	 * than searching every time
 	 *
-	 * @return collection of property file names
+	 * @return an array of property file names
 	 */
-	private Collection<File> findPropertiesFiles() {
-		Collection<File> propertiesFiles = new Vector<File>();
-		
+	private Resource[] findPropertiesFiles() {
+		Resource[] propertiesFiles = new Resource[]{};
 		try {
-			for (String basename : basenames) {
-				File basefilename = new File(basename);
-				basename = basefilename.getPath();
-				int nameIndex = basename.lastIndexOf(File.separatorChar) + 1;
-				String basedir = (nameIndex > 0) ? basename.substring(0, nameIndex) : "";
-				String namePrefix = basename.substring(nameIndex);
-				Resource propertiesDir = applicationContext.getResource(basedir);
-				boolean filesFound = false;
-				if (propertiesDir.exists()) {
-					for (File possibleFile : propertiesDir.getFile().listFiles()) {
-						if (possibleFile.getName().startsWith(namePrefix) && possibleFile.getName().endsWith(".properties")) {
-							propertiesFiles.add(possibleFile);
-							filesFound = true;
-						}
-					}
-				} else {
-					if (log.isDebugEnabled()) {
-						log.debug("Parent directory " + propertiesDir + " does not exist");
-					}
-				}
-				
-				if (log.isDebugEnabled() && !filesFound) {
-					log.debug("No messages for basename " + basename);
-				}
-			}
+			String pattern = "classpath*:messages*.properties";
+			ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver(OpenmrsClassLoader.getInstance());
+			propertiesFiles = resourceResolver.getResources(pattern);
 		}
 		catch (IOException e) {
 			log.error("Error generated", e);
 		}
-		if (log.isWarnEnabled() && (propertiesFiles.size() == 0)) {
+		if (log.isWarnEnabled() && (propertiesFiles.length == 0)) {
 			log.warn("No properties files found.");
 		}
 		return propertiesFiles;
@@ -331,27 +289,27 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	public void merge(MutableMessageSource fromSource, boolean overwrite) {
 		
 		// collect all existing properties
-		Collection<File> propertiesFiles = findPropertiesFiles();
-		Map<Locale, List<File>> localeToFilesMap = new HashMap<Locale, List<File>>();
-		Map<File, Properties> fileToPropertiesMap = new HashMap<File, Properties>();
+		Resource[] propertiesFiles = findPropertiesFiles();
+		Map<Locale, List<Resource>> localeToFilesMap = new HashMap<Locale, List<Resource>>();
+		Map<Resource, Properties> fileToPropertiesMap = new HashMap<Resource, Properties>();
 		
-		for (File propertiesFile : propertiesFiles) {
+		for (Resource propertiesFile : propertiesFiles) {
 			Properties props = new Properties();
-			Locale propsLocale = parseLocaleFrom(propertiesFile.getName());
-			List<File> propList = localeToFilesMap.get(propsLocale);
+			Locale propsLocale = parseLocaleFrom(propertiesFile.getFilename());
+			List<Resource> propList = localeToFilesMap.get(propsLocale);
 			if (propList == null) {
-				propList = new ArrayList<File>();
+				propList = new ArrayList<Resource>();
 				localeToFilesMap.put(propsLocale, propList);
 			}
 			propList.add(propertiesFile);
 			
 			try {
-				OpenmrsUtil.loadProperties(props, propertiesFile);
+				OpenmrsUtil.loadProperties(props, propertiesFile.getInputStream());
 				fileToPropertiesMap.put(propertiesFile, props);
 			}
 			catch (Exception e) {
 				// skip over errors in loading a single file
-				log.error("Unable to load properties from file: " + propertiesFile.getAbsolutePath(), e);
+				log.error("Unable to load properties from file: " + propertiesFile.getFilename(), e);
 			}
 		}
 		
@@ -359,11 +317,11 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		for (PresentationMessage message : fromSource.getPresentations()) {
 			Locale messageLocale = message.getLocale();
 			
-			List<File> filelist = localeToFilesMap.get(messageLocale);
+			List<Resource> filelist = localeToFilesMap.get(messageLocale);
 			if (filelist != null) {
 				Properties propertyDestination = null;
 				boolean propExists = false;
-				for (File propertiesFile : filelist) {
+				for (Resource propertiesFile : filelist) {
 					Properties possibleDestination = fileToPropertiesMap.get(propertiesFile);
 					
 					if (possibleDestination.containsKey(message.getCode())) {
@@ -379,14 +337,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 				}
 				
 			} else {
-				// no properties files for this locale, create one
-				File newPropertiesFile = new File(basenames[0] + "_" + messageLocale.toString() + ".properties");
-				Properties newProperties = new Properties();
-				fileToPropertiesMap.put(newPropertiesFile, newProperties);
-				newProperties.put(message.getCode(), message.getMessage());
-				List<File> newFilelist = new ArrayList<File>();
-				newFilelist.add(newPropertiesFile);
-				localeToFilesMap.put(messageLocale, newFilelist);
+				// no properties files for this locale
 			}
 			
 			message.getCode();
