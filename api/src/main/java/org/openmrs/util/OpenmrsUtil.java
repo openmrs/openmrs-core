@@ -1040,12 +1040,12 @@ public class OpenmrsUtil {
 		
 		String systemProperty = System.getProperty(OpenmrsConstants.KEY_OPENMRS_APPLICATION_DATA_DIRECTORY);
 		//System and runtime property take precedence
-		if (systemProperty != null) {
+		if (StringUtils.isNotBlank(systemProperty)) {
 			filepath = systemProperty;
 		} else {
 			String runtimeProperty = Context.getRuntimeProperties().getProperty(
 			    OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
-			if (runtimeProperty != null) {
+			if (StringUtils.isNotBlank(runtimeProperty)) {
 				filepath = runtimeProperty;
 			}
 		}
@@ -1059,21 +1059,12 @@ public class OpenmrsUtil {
 					filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX + File.separator + "OpenMRS";
 				}
 			} else {
-				if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
-					filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
-					if (!canWrite(new File(filepath))) {
-						log.warn("Unable to write to users home dir, fallback to: "
-						        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX);
-						filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX + File.separator + "OpenMRS";
-					}
-				} else {
-					filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
-					        + "OpenMRS";
-					if (!canWrite(new File(filepath))) {
-						log.warn("Unable to write to users home dir, fallback to: "
-						        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN);
-						filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN + File.separator + "OpenMRS";
-					}
+				filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
+						+ "OpenMRS";
+				if (!canWrite(new File(filepath))) {
+					log.warn("Unable to write to users home dir, fallback to: "
+							+ OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN);
+					filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN + File.separator + "OpenMRS";
 				}
 			}
 			
