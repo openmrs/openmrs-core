@@ -150,7 +150,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should not get voided obs with three layers of hierarchy
 	 */
 	public Set<Obs> getObs() {
-		Set<Obs> ret = new HashSet<Obs>();
+		Set<Obs> ret = new LinkedHashSet<>();
 		
 		if (this.obs != null) {
 			for (Obs o : this.obs) {
@@ -209,7 +209,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 			return obs;
 		}
 		
-		Set<Obs> ret = new HashSet<Obs>();
+		Set<Obs> ret = new LinkedHashSet<>();
 		
 		if (this.obs != null) {
 			for (Obs o : this.obs) {
@@ -246,7 +246,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should get both child and parent obs after removing child from parent grouping
 	 */
 	public Set<Obs> getObsAtTopLevel(boolean includeVoided) {
-		Set<Obs> ret = new HashSet<Obs>();
+		Set<Obs> ret = new LinkedHashSet<>();
 		for (Obs o : getAllObs(includeVoided)) {
 			if (o.getObsGroup() == null) {
 				ret.add(o);
@@ -275,7 +275,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void addObs(Obs observation) {
 		if (obs == null) {
-			obs = new HashSet<Obs>();
+			obs = new LinkedHashSet<>();
 		}
 		
 		if (observation != null) {
@@ -288,7 +288,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 			obsToUpdate.add(observation);
 			
 			//prevent infinite recursion if an obs is its own group member
-			Set<Obs> seenIt = new HashSet<Obs>();
+			Set<Obs> seenIt = new LinkedHashSet<>();
 			
 			while (!obsToUpdate.isEmpty()) {
 				Obs o = obsToUpdate.removeFirst();
