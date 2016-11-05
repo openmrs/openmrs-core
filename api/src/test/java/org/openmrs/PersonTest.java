@@ -443,6 +443,18 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see Person#setDeathDate(Date)
+	 */
+	@Test
+	@Verifies(value = "should set dead to true when setDeathDate is called", method = "setDeathDate(Date)")
+	public void setDeathDate_shouldSetDeadToTrueIfSetDeathDateIsCalled() throws Exception{
+		Person p = new Person();
+		Date deathDate = new Date(2012, 5, 5);
+		p.setDeathDate(deathDate);
+		Assert.assertTrue(p.getDead());
+	}
+	
+	/**
 	 * @see Person#addAttribute(PersonAttribute)
 	 */
 	@Test
