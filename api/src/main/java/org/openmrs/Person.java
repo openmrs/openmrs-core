@@ -295,9 +295,12 @@ public class Person extends BaseOpenmrsData {
 	
 	/**
 	 * @param deathDate date of person's death
+	 * setting death date should automatically set the person as dead
 	 */
 	public void setDeathDate(Date deathDate) {
 		this.deathDate = deathDate;
+		//setting death date automatically sets person as dead
+		this.setDead(true) ;
 	}
 	
 	/**
@@ -322,7 +325,7 @@ public class Person extends BaseOpenmrsData {
 	 */
 	public Set<PersonAddress> getAddresses() {
 		if (addresses == null) {
-			addresses = new TreeSet<PersonAddress>();
+			addresses = new TreeSet<PersonAddress>();	
 		}
 		return this.addresses;
 	}
