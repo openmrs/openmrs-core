@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -127,7 +128,35 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		assertNotNull(encounter.getAllObs(false));
 		assertEquals(encounter.getAllObs(false).size(), 0);
 	}
-	
+
+
+	/**
+	 * @see Encounter#getAllObs(null)
+	 */
+	@Test
+	@Verifies(value = "should get obs in the same order it is added to the encounter", method = "getAllObs(null)")
+	public void getAllObs_shouldGetObsInTheSameOrderObsIsAddedToTheEncounter() throws Exception {
+		Encounter encounter = new Encounter();
+		Obs obs1= new Obs();
+		obs1.setValueText("first obs");
+		encounter.addObs(obs1);
+		Obs obs2= new Obs();
+		obs2.setValueText("second obs");
+		encounter.addObs(obs2);
+		Obs obs3= new Obs();
+		obs3.setValueText("third obs");
+		encounter.addObs(obs3);
+
+		Set<Obs> allObs = encounter.getAllObs(true);
+		assertNotNull(allObs);
+		assertEquals(3, allObs.size());
+		Iterator<Obs> obsIterator = allObs.iterator();
+		assertEquals("first obs", obsIterator.next().getValueText());
+		assertEquals("second obs", obsIterator.next().getValueText());
+		assertEquals("third obs", obsIterator.next().getValueText());
+	}
+
+
 	/**
 	 * @see Encounter#getObsAtTopLevel(null)
 	 */
@@ -140,7 +169,59 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		assertNotNull(encounter.getObsAtTopLevel(false));
 		assertEquals(encounter.getObsAtTopLevel(false).size(), 0);
 	}
-	
+
+	/**
+	 * @see Encounter#getObsAtTopLevel(boolean)
+	 */
+	@Test
+	@Verifies(value = "should get obs at top level in the same order it is added to the encounter", method = "getObsAtTopLevel(boolean)")
+	public void getObsAtTopLevel_shouldGetObsInTheSameOrderObsIsAddedToTheEncounter() throws Exception {
+		Encounter encounter = new Encounter();
+		Obs obs1= new Obs();
+		obs1.setValueText("first obs");
+		encounter.addObs(obs1);
+		Obs obs2= new Obs();
+		obs2.setValueText("second obs");
+		encounter.addObs(obs2);
+		Obs obs3= new Obs();
+		obs3.setValueText("third obs");
+		encounter.addObs(obs3);
+
+		Set<Obs> obsAtTopLevel = encounter.getObsAtTopLevel(true);
+		assertNotNull(obsAtTopLevel);
+		assertEquals(3, obsAtTopLevel.size());
+		Iterator<Obs> obsIterator = obsAtTopLevel.iterator();
+		assertEquals("first obs", obsIterator.next().getValueText());
+		assertEquals("second obs", obsIterator.next().getValueText());
+		assertEquals("third obs", obsIterator.next().getValueText());
+	}
+
+	/**
+	 * @see Encounter#getObs()
+	 */
+	@Test
+	@Verifies(value = "should get obs in the same order it is added to the encounter", method = "getObs()")
+	public void getObs_shouldGetObsInTheSameOrderObsIsAddedToTheEncounter() throws Exception {
+		Encounter encounter = new Encounter();
+		Obs obs1= new Obs();
+		obs1.setValueText("first obs");
+		encounter.addObs(obs1);
+		Obs obs2= new Obs();
+		obs2.setValueText("second obs");
+		encounter.addObs(obs2);
+		Obs obs3= new Obs();
+		obs3.setValueText("third obs");
+		encounter.addObs(obs3);
+
+		Set<Obs> obs = encounter.getObs();
+		assertNotNull(obs);
+		assertEquals(3, obs.size());
+		Iterator<Obs> obsIterator = obs.iterator();
+		assertEquals("first obs", obsIterator.next().getValueText());
+		assertEquals("second obs", obsIterator.next().getValueText());
+		assertEquals("third obs", obsIterator.next().getValueText());
+	}
+
 	/**
 	 * @see Encounter#getObs()
 	 */
