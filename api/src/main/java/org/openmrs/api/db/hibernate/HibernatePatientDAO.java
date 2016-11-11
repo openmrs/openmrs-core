@@ -641,6 +641,7 @@ public class HibernatePatientDAO implements PatientDAO {
         return p;
     }
 
+    @Override
     public PatientIdentifier getPatientIdentifierByUuid(String uuid) {
         return (PatientIdentifier) sessionFactory.getCurrentSession().createQuery(
                 "from PatientIdentifier p where p.uuid = :uuid").setString("uuid", uuid).uniqueResult();
