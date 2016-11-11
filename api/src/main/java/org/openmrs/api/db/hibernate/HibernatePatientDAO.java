@@ -340,6 +340,7 @@ public class HibernatePatientDAO implements PatientDAO {
      * @see
      * org.openmrs.api.db.PatientDAO#savePatientIdentifierType(org.openmrs.PatientIdentifierType)
      */
+    @Override
     public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException {
         sessionFactory.getCurrentSession().saveOrUpdate(patientIdentifierType);
         return patientIdentifierType;
