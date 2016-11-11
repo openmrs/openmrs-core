@@ -815,6 +815,7 @@ public class HibernatePatientDAO implements PatientDAO {
     /**
      * @see org.openmrs.PatientDAO#getAllergyByUuid(String)
      */
+    @Override
     public Allergy getAllergyByUuid(String uuid) {
         return (Allergy) sessionFactory.getCurrentSession().createQuery("from Allergy a where a.uuid = :uuid")
                 .setString("uuid", uuid).uniqueResult();
