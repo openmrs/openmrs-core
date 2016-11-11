@@ -82,6 +82,7 @@ public class HibernatePatientDAO implements PatientDAO {
     /**
      * @see org.openmrs.api.db.PatientDAO#savePatient(org.openmrs.Patient)
      */
+    @Override
     public Patient savePatient(Patient patient) throws DAOException {
         if (patient.getPatientId() == null) {
             // if we're saving a new patient, just do the normal thing
