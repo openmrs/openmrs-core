@@ -776,6 +776,7 @@ public class HibernatePatientDAO implements PatientDAO {
      * @see org.openmrs.api.db.PatientDAO#getAllergyStatus(org.openmrs.Patient)
      */
     //@Override
+    @Override
     public String getAllergyStatus(Patient patient) {
 
         return (String) sessionFactory.getCurrentSession().createSQLQuery(
