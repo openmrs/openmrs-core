@@ -414,6 +414,7 @@ public class HibernatePatientDAO implements PatientDAO {
      *
      */
     @SuppressWarnings("unchecked")
+    @Override
     public List<PatientIdentifierType> getPatientIdentifierTypes(String name, String format, Boolean required,
             Boolean hasCheckDigit) throws DAOException {
 
