@@ -349,6 +349,7 @@ public class HibernatePatientDAO implements PatientDAO {
     /**
      * @see org.openmrs.api.PatientService#deletePatient(org.openmrs.Patient)
      */
+    @Override
     public void deletePatient(Patient patient) throws DAOException {
         HibernatePersonDAO.deletePersonAndAttributes(sessionFactory, patient);
     }
