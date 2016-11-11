@@ -664,6 +664,7 @@ public class HibernatePatientDAO implements PatientDAO {
      * @see
      * org.openmrs.api.db.PatientDAO#isIdentifierInUseByAnotherPatient(org.openmrs.PatientIdentifier)
      */
+    @Override
     public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
         boolean checkPatient = patientIdentifier.getPatient() != null
                 && patientIdentifier.getPatient().getPatientId() != null;
