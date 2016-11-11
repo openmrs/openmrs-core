@@ -373,6 +373,7 @@ public class HibernatePatientDAO implements PatientDAO {
      * @see org.openmrs.api.db.PatientDAO#getAllPatientIdentifierTypes(boolean)
      */
     @SuppressWarnings("unchecked")
+    @Override
     public List<PatientIdentifierType> getAllPatientIdentifierTypes(boolean includeRetired) throws DAOException {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
 
