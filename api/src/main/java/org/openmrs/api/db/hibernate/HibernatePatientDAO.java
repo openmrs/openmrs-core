@@ -806,6 +806,7 @@ public class HibernatePatientDAO implements PatientDAO {
     /**
      * @see org.openmrs.PatientDAO#getAllergy(Integer)
      */
+    @Override
     public Allergy getAllergy(Integer allergyId) {
         return (Allergy) sessionFactory.getCurrentSession().createQuery("from Allergy a where a.allergyId = :allergyId")
                 .setInteger("allergyId", allergyId).uniqueResult();
