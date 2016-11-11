@@ -707,11 +707,10 @@ public class HibernatePatientDAO implements PatientDAO {
      * @see
      * org.openmrs.api.db.PatientDAO#savePatientIdentifier(org.openmrs.PatientIdentifier)
      */
+    @Override
     public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) {
-
         sessionFactory.getCurrentSession().saveOrUpdate(patientIdentifier);
         return patientIdentifier;
-
     }
 
     /**
