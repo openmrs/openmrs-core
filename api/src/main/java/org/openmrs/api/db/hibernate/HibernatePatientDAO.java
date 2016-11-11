@@ -297,6 +297,7 @@ public class HibernatePatientDAO implements PatientDAO {
      * java.util.List, java.util.List, java.util.List, java.lang.Boolean)
      */
     @SuppressWarnings("unchecked")
+    @Override
     public List<PatientIdentifier> getPatientIdentifiers(String identifier,
             List<PatientIdentifierType> patientIdentifierTypes, List<Location> locations, List<Patient> patients,
             Boolean isPreferred) throws DAOException {
