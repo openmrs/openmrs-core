@@ -651,6 +651,7 @@ public class HibernatePatientDAO implements PatientDAO {
      * @see
      * org.openmrs.api.db.PatientDAO#getPatientIdentifierTypeByUuid(java.lang.String)
      */
+    @Override
     public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) {
         return (PatientIdentifierType) sessionFactory.getCurrentSession().createQuery(
                 "from PatientIdentifierType pit where pit.uuid = :uuid").setString("uuid", uuid).uniqueResult();
