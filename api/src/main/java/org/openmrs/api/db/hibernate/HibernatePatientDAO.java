@@ -451,6 +451,7 @@ public class HibernatePatientDAO implements PatientDAO {
      * org.openmrs.api.db.PatientDAO#getDuplicatePatientsByAttributes(java.util.List)
      */
     @SuppressWarnings("unchecked")
+    @Override
     public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) {
         List<Patient> patients = new Vector<Patient>();
         List<Integer> patientIds = new Vector<Integer>();
