@@ -727,6 +727,7 @@ public class HibernatePatientDAO implements PatientDAO {
     /**
      * @see org.openmrs.api.db.PatientDAO#getCountOfPatients(String)
      */
+    @Override
     public Long getCountOfPatients(String query) {
         if (StringUtils.isBlank(query)) {
             return 0L;
