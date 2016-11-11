@@ -631,6 +631,7 @@ public class HibernatePatientDAO implements PatientDAO {
     /**
      * @see org.openmrs.api.db.PatientDAO#getPatientByUuid(java.lang.String)
      */
+    @Override
     public Patient getPatientByUuid(String uuid) {
         Patient p = null;
 
