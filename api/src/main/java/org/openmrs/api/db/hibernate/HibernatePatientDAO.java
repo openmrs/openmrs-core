@@ -269,6 +269,7 @@ public class HibernatePatientDAO implements PatientDAO {
      * @see org.openmrs.api.db.PatientDAO#getAllPatients(boolean)
      */
     @SuppressWarnings("unchecked")
+    @Override
     public List<Patient> getAllPatients(boolean includeVoided) throws DAOException {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 
