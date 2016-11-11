@@ -764,6 +764,7 @@ public class HibernatePatientDAO implements PatientDAO {
      * @see org.openmrs..api.db.PatientDAO#getAllergies(org.openmrs.Patient)
      */
     //@Override
+    @Override
     public List<Allergy> getAllergies(Patient patient) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Allergy.class);
         criteria.add(Restrictions.eq("patient", patient));
