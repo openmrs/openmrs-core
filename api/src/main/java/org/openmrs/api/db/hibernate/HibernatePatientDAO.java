@@ -74,6 +74,7 @@ public class HibernatePatientDAO implements PatientDAO {
     /**
      * @see org.openmrs.api.PatientService#getPatient(java.lang.Integer)
      */
+    @Override
     public Patient getPatient(Integer patientId) {
         return (Patient) sessionFactory.getCurrentSession().get(Patient.class, patientId);
     }
