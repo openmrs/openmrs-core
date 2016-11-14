@@ -3444,7 +3444,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="20090316-1008"/>
             <column name="author" value="vanand"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10000"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3452,7 +3452,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="20090225-1551"/>
             <column name="author" value="dthomas"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10001"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3460,7 +3460,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="20090402-1515-38-concept_map"/>
             <column name="author" value="bwolfe"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10002"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3468,7 +3468,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="20090402-1515-38-concept_source"/>
             <column name="author" value="bwolfe"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10003"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3476,7 +3476,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="20090402-1516-concept_map"/>
             <column name="author" value="bwolfe"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10004"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3484,7 +3484,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="20090402-1516-concept_source"/>
             <column name="author" value="bwolfe"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10005"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3492,7 +3492,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="20090402-1519-concept_map"/>
             <column name="author" value="bwolfe"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10006"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3500,7 +3500,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="20090402-1519-concept_source"/>
             <column name="author" value="bwolfe"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10007"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3508,7 +3508,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="200908291938-1"/>
             <column name="author" value="dthomas"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10008"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3516,7 +3516,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="200908291938-2a"/>
             <column name="author" value="dthomas"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10009"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3524,7 +3524,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="200912211118"/>
             <column name="author" value="nribeka"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10010"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3532,7 +3532,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="20091215-0210"/>
             <column name="author" value="jmiranda"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10011"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3540,7 +3540,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="200912091821"/>
             <column name="author" value="djazayeri"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10012"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3548,7 +3548,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="20110218-1206"/>
             <column name="author" value="rubailly"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10013"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3556,7 +3556,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="20110218-1210"/>
             <column name="author" value="rubailly"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-15"/>
             <column name="orderexecuted" value="10013"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3564,7 +3564,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="20110919-0638"/>
             <column name="author" value="sunbiz"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-19"/>
             <column name="orderexecuted" value="10015"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3572,7 +3572,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="20110301-1030c-fix"/>
             <column name="author" value="sunbiz"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-19"/>
             <column name="orderexecuted" value="10014"/>
             <column name="exectype" value="MARK_RAN"/>
@@ -3580,7 +3580,7 @@
         <insert tableName="liquibasechangelog">
             <column name="id" value="0"/>
             <column name="author" value="bwolfe"/>
-            <column name="filename" value="liquibase-update-to-2.0.xml"/>
+            <column name="filename" value="liquibase-update-to-latest.xml"/>
             <column name="dateexecuted" valueDate="2011-09-20"/>
             <column name="orderexecuted" value="10016"/>
             <column name="exectype" value="MARK_RAN"/>
