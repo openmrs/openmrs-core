@@ -500,4 +500,12 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		final String query = "select * from role_privilege where role='" + role + "' and privilege ='" + privilege + "'";
 		return DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(), query, true).size() == 1;
 	}
+
+	@Test
+	public void shouldUpgradeLiquibase() throws IOException, SQLException {
+		upgradeTestUtil.upgrade("liquibase-update-to-latest.xml");
+
+		// no explicit assertions here, this test serves to see whether the master is executed without raising an exception.
+
+	}
 }

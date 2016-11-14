@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!--
+    This file contains all changesets that have been introduced on top of liquibase-update-to-2.0.xml exclusively.
+    If you intend for a changeset to be backported to older releases, you must put such a changeset in the
+    liquibase-update-to-2.0.xml, which have been used for older releases.
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<!--
+		See http://www.liquibase.org/manual/home#available_database_refactorings
+		for a list of supported elements and attributes
+	-->
+	<changeSet id="TRUNK-4936-20160930-1000" author="teleivo" >
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="concept_reference_source" columnName="unique_id"/></not>
+		</preConditions>
+		<comment>Add unique_id column to concept_reference_source</comment>
+		<addColumn tableName="concept_reference_source">
+			<column name="unique_id" type="varchar(250)">
+			</column>
+		</addColumn>
+		<addUniqueConstraint tableName="concept_reference_source" columnNames="unique_id" constraintName="concept_reference_source_unique_id_unique"/>
+	</changeSet>
+
+</databaseChangeLog>
