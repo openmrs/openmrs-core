@@ -476,14 +476,14 @@ public class HibernatePatientDAO implements PatientDAO {
 		String outerSelect = "select distinct t1.patient_id from patient t1 ";
 
 		Class patient = Patient.class;
-		Set<String> patientFieldNames = new HashSet<String>(patient.getDeclaredFields().length);
+		Set<String> patientFieldNames = new HashSet<>(patient.getDeclaredFields().length);
 		for (Field field : patient.getDeclaredFields()) {
 			patientFieldNames.add(field.getName());
 			log.debug(field.getName());
 		}
 
 		Class person = Person.class;
-		Set<String> personFieldNames = new HashSet<String>(person.getDeclaredFields().length);
+		Set<String> personFieldNames = new HashSet<>(person.getDeclaredFields().length);
 		for (Field field : person.getDeclaredFields()) {
 			personFieldNames.add(field.getName());
 			log.debug(field.getName());
@@ -491,22 +491,22 @@ public class HibernatePatientDAO implements PatientDAO {
 
 		Class personName = PersonName.class;
 
-		Set<String> personNameFieldNames = new HashSet<String>(personName.getDeclaredFields().length);
+		Set<String> personNameFieldNames = new HashSet<>(personName.getDeclaredFields().length);
 		for (Field field : personName.getDeclaredFields()) {
 			personNameFieldNames.add(field.getName());
 			log.debug(field.getName());
 		}
 
 		Class identifier = PatientIdentifier.class;
-		Set<String> identifierFieldNames = new HashSet<String>(identifier.getDeclaredFields().length);
+		Set<String> identifierFieldNames = new HashSet<>(identifier.getDeclaredFields().length);
 		for (Field field : identifier.getDeclaredFields()) {
 			identifierFieldNames.add(field.getName());
 			log.debug(field.getName());
 		}
-		List<String> whereConditions = new ArrayList<String>();
+		List<String> whereConditions = new ArrayList<>();
 
 
-		List<String> innerFields = new ArrayList<String>();
+		List<String> innerFields = new ArrayList<>();
 		String innerSelect = " from patient p1 ";
 
 		for (String attribute : attributes) {
