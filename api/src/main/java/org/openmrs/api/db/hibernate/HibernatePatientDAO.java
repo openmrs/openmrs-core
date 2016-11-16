@@ -27,7 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
@@ -192,7 +191,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		criteriaExactMatch = new PatientSearchCriteria(sessionFactory, criteriaExactMatch).prepareCriteria(query, true,
 		    true, includeVoided);
 		
-		Set<Patient> patients = new LinkedHashSet<Patient>();
+		Set<Patient> patients = new LinkedHashSet<>();
 		
 		if (start < listSize) {
 			setFirstAndMaxResult(criteriaExactMatch, start, length);
@@ -243,7 +242,7 @@ public class HibernatePatientDAO implements PatientDAO {
 				patients.addAll(criteriaNoExactMatch.list());
 			}
 		}
-		return new ArrayList<Patient>(patients);
+		return new ArrayList<>(patients);
 	}
 	
 	/**
@@ -477,14 +476,14 @@ public class HibernatePatientDAO implements PatientDAO {
 		String outerSelect = "select distinct t1.patient_id from patient t1 ";
 
 		Class patient = Patient.class;
-		Set<String> patientFieldNames = new HashSet<String>(patient.getDeclaredFields().length);
+		Set<String> patientFieldNames = new HashSet<>(patient.getDeclaredFields().length);
 		for (Field field : patient.getDeclaredFields()) {
 			patientFieldNames.add(field.getName());
 			log.debug(field.getName());
 		}
 
 		Class person = Person.class;
-		Set<String> personFieldNames = new HashSet<String>(person.getDeclaredFields().length);
+		Set<String> personFieldNames = new HashSet<>(person.getDeclaredFields().length);
 		for (Field field : person.getDeclaredFields()) {
 			personFieldNames.add(field.getName());
 			log.debug(field.getName());
@@ -492,22 +491,22 @@ public class HibernatePatientDAO implements PatientDAO {
 
 		Class personName = PersonName.class;
 
-		Set<String> personNameFieldNames = new HashSet<String>(personName.getDeclaredFields().length);
+		Set<String> personNameFieldNames = new HashSet<>(personName.getDeclaredFields().length);
 		for (Field field : personName.getDeclaredFields()) {
 			personNameFieldNames.add(field.getName());
 			log.debug(field.getName());
 		}
 
 		Class identifier = PatientIdentifier.class;
-		Set<String> identifierFieldNames = new HashSet<String>(identifier.getDeclaredFields().length);
+		Set<String> identifierFieldNames = new HashSet<>(identifier.getDeclaredFields().length);
 		for (Field field : identifier.getDeclaredFields()) {
 			identifierFieldNames.add(field.getName());
 			log.debug(field.getName());
 		}
-		List<String> whereConditions = new ArrayList<String>();
+		List<String> whereConditions = new ArrayList<>();
 
 
-		List<String> innerFields = new ArrayList<String>();
+		List<String> innerFields = new ArrayList<>();
 		String innerSelect = " from patient p1 ";
 
 		for (String attribute : attributes) {
@@ -596,7 +595,7 @@ public class HibernatePatientDAO implements PatientDAO {
 
 	private void sortDuplicatePatients(List<Patient> patients, List<Integer> patientIds) {
 
-		Map<Integer, Integer> patientIdOrder = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> patientIdOrder = new HashMap<>();
 		int startPos = 0;
 		for (Integer id : patientIds) {
 			patientIdOrder.put(id, startPos++);
