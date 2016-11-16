@@ -1,3 +1,4 @@
+
 /**
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -73,6 +74,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
+     * @param patientId  internal patient identifier
+     * @return           patient with given internal identifier
 	 * @see org.openmrs.api.PatientService#getPatient(java.lang.Integer)
 	 */
         @Override
@@ -81,6 +84,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
+     * @param patient  patient to be created or updated
+     * @return         patient who was created or updated
 	 * @see org.openmrs.api.db.PatientDAO#savePatient(org.openmrs.Patient)
 	 */
         @Override
@@ -436,6 +441,9 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
+     * @param attributes attributes on a Person or Patient object. similar to: [gender, givenName,
+     *                   middleName, familyName]
+     * @return           list of patients that match other patients
 	 * @see org.openmrs.api.db.PatientDAO#getDuplicatePatientsByAttributes(java.util.List)
 	 */
 	@SuppressWarnings("unchecked")
@@ -682,6 +690,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
+     * @param patientIdentifierId  the patientIdentifier id
+     * @return                     the patientIdentifier matching the Id
 	 * @see org.openmrs.api.db.PatientDAO#getPatientIdentifier(java.lang.Integer)
 	 */
         @Override
@@ -692,6 +702,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
+     * @param patientIdentifier patientIndentifier to be created or updated
+     * @return                  patientIndentifier that was created or updated
 	 * @see org.openmrs.api.db.PatientDAO#savePatientIdentifier(org.openmrs.PatientIdentifier)
 	 */
         @Override
@@ -714,6 +726,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
+         * @param query  the string to search on
+         * @return       the number of patients matching the given search phrase
 	 * @see org.openmrs.api.db.PatientDAO#getCountOfPatients(String)
 	 */
         @Override
@@ -732,6 +746,9 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
+         * @param query          the string to search on
+         * @param includeVoided  true/false whether or not to included voided patients
+         * @return               the number of patients matching the given search phrase
 	 * @see org.openmrs.api.db.PatientDAO#getCountOfPatients(String, boolean)
 	 */
         @Override
