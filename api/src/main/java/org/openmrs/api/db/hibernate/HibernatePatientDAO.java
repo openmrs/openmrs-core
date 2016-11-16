@@ -595,7 +595,7 @@ public class HibernatePatientDAO implements PatientDAO {
 
 	private void sortDuplicatePatients(List<Patient> patients, List<Integer> patientIds) {
 
-		Map<Integer, Integer> patientIdOrder = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> patientIdOrder = new HashMap<>();
 		int startPos = 0;
 		for (Integer id : patientIds) {
 			patientIdOrder.put(id, startPos++);
