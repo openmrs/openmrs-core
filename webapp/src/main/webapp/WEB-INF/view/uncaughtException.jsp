@@ -107,12 +107,8 @@ try {
 	// page isn't passed through that filter like all other pages	
 	UserContext userContext = (UserContext) session.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
 	if (exception != null) {
-		if (userContext == null || userContext.getAuthenticatedUser() == null) {
-			out.println("<openmrs:message code='uncaughtException.logged.out'/>");
-			// print the stack trace to the servlet container's error logs
-			exception.printStackTrace();
-		}
-		else {
+		if (userContext != null && userContext.getAuthenticatedUser() != null) {
+
 			java.lang.StackTraceElement[] elements;
 			
 			if (exception instanceof ServletException) {
