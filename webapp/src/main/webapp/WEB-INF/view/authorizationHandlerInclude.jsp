@@ -34,7 +34,7 @@
 			session.setAttribute(WebConstants.REFERER_URL, request.getHeader("Referer"));
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 		} else {
-			log.error("Exception was thrown by not authenticated user", exception);
+			log.info("Exception was thrown by not authenticated user");
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 		}
 	}
