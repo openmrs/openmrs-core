@@ -87,7 +87,7 @@
 	<!--  **************************  CACHE MANAGER CONFIGURATION  *************************  -->
 
 	<bean id="apiEhCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-		<property name="configLocation" value="classpath:api-ehcache.xml"/>
+		<property name="configLocation" value="classpath:ehcache-api.xml"/>
 	</bean>
 
 	<bean id="apiCacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cacheManager-ref="apiEhCacheManager" />
