@@ -16,11 +16,12 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xmlns:p="http://www.springframework.org/schema/p"
 	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:cache="http://www.springframework.org/schema/cache"
 	   xmlns:jee="http://www.springframework.org/schema/jee"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
        		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 			http://www.springframework.org/schema/context
 			http://www.springframework.org/schema/context/spring-context-3.0.xsd
@@ -31,7 +32,9 @@
 			http://www.springframework.org/schema/aop
            	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
             http://www.springframework.org/schema/util
-            http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+            http://www.springframework.org/schema/util/spring-util-3.0.xsd
+			http://www.springframework.org/schema/cache
+			http://www.springframework.org/schema/cache/spring-cache.xsd">
 	<!--  **************************  Transactional Intercepter  *************************  -->
 	<!--  	
 		Looks for advisors (TransactionAttributeSourceAdvisor) in the context, and automatically 
@@ -80,6 +83,14 @@
 			</list>
 		</property>
 	</bean>
+
+	<!--  **************************  CACHE MANAGER CONFIGURATION  *************************  -->
+
+	<bean id="apiEhCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation" value="classpath:api-ehcache.xml"/>
+	</bean>
+
+	<bean id="apiCacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cacheManager-ref="apiEhCacheManager" />
 	
 	<!--  **************************  SERVICE CONTEXT CONFIGURATION  *************************  -->
 
@@ -113,7 +124,7 @@
         <property name="serviceContext"><ref bean="serviceContext"/></property>
         <property name="contextDAO"><ref bean="contextDAO"/></property>
 	</bean>
-	
+
 	<!--  **************************  DATA ACCESS OBJECTS  *************************  -->		
 
 	<bean id="contextDAO" class="org.openmrs.api.db.hibernate.HibernateContextDAO">
@@ -536,11 +547,20 @@
 	<bean id="loggingInterceptor" class="org.openmrs.aop.LoggingAdvice"/>
 	<!-- AOP before advice that calls the SetRequiredDataHandler methods -->
 	<bean id="requiredDataInterceptor" class="org.openmrs.aop.RequiredDataAdvice"/>
+	<!-- AOP cache interceptor -->
+	<bean id="cacheInterceptor" class="org.springframework.cache.interceptor.CacheInterceptor">
+		<property name="cacheManager" ref="apiCacheManager"/>
+		<property name="cacheOperationSources" ref="annotationCacheOperationSource"/>
+	</bean>
+
+	<!-- finds all cache-related annotations to create available cache operations for CacheInterceptor -->
+	<bean id="annotationCacheOperationSource" class="org.springframework.cache.annotation.AnnotationCacheOperationSource"/>
 
 	<util:list id="serviceInterceptors">
 		<ref local="authorizationInterceptor"/>
 		<ref local="requiredDataInterceptor"/>
 		<ref local="loggingInterceptor"/>
+		<ref local="cacheInterceptor"/>
 	</util:list>
 	
 	
@@ -668,6 +688,6 @@
 		<context:include-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileIncludeFilter" />
 		<context:exclude-filter type="custom" expression="org.openmrs.util.TestTypeFilter"/> <!-- Excludes classes with unit test super classes -->
 		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter" />
-	</context:component-scan> 
-    
+	</context:component-scan>
+
 </beans>

@@ -9,8 +9,12 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
@@ -37,6 +41,9 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -51,6 +58,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	protected static final String ADMIN_INITIAL_DATA_XML = "org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml";
 	
 	private HttpClient implementationHttpClient;
+
+	private CacheManager cacheManager;
 	
 	/**
 	 * Run this before each unit test in this class. It simply assigns the services used in this
@@ -65,6 +74,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 			adminService = Context.getAdministrationService();
 			implementationHttpClient = mock(HttpClient.class);
 			adminService.setImplementationIdHttpClient(implementationHttpClient);
+			cacheManager = Context.getRegisteredComponent("apiCacheManager", CacheManager.class);
 		}
 		
 	}
@@ -963,5 +973,65 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(new Locale("es"), presentationLocales.get(1));
 		Assert.assertEquals(new Locale("it", "IT"), presentationLocales.get(2));
 		Assert.assertEquals(new Locale("pl", "PL"), presentationLocales.get(3));
+	}
+
+	/**
+	 * @see AdministrationService#getSearchLocales()
+	 * @verifies cache results for a user
+	 */
+	@Test
+	public void getSearchLocales_shouldCacheResultsForAnUser() throws Exception {
+		//given
+		Context.getAdministrationService().saveGlobalProperty(
+				new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, en_US, pl"));
+
+		User user = Context.getAuthenticatedUser();
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "en_GB, en_US");
+		Context.getUserService().saveUser(user);
+
+		//when
+		Context.getAdministrationService().getSearchLocales();
+
+		List<Locale> cachedSearchLocales = getCachedSearchLocalesForCurrentUser();
+
+		//then
+		assertThat(cachedSearchLocales, hasItem(Locale.ENGLISH));
+		assertThat(cachedSearchLocales, hasItem(new Locale("en", "US")));
+		assertThat(cachedSearchLocales, not(hasItem(new Locale("pl"))));
+	}
+
+	/**
+	 * @see AdministrationService#saveGlobalProperty(GlobalProperty)
+	 * @verifies evict search locale results
+	 */
+	@Test
+	public void saveGlobalProperty_shouldEvictCachedResults() throws Exception {
+		//given
+		Context.getAdministrationService().saveGlobalProperty(
+				new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, en_US, pl"));
+
+		User user = Context.getAuthenticatedUser();
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "en_GB, en_US");
+		Context.getUserService().saveUser(user);
+
+		//sanity check that cache has been populated
+		Context.getAdministrationService().getSearchLocales();
+		List<Locale> cachedSearchLocales = getCachedSearchLocalesForCurrentUser();
+		assertThat(cachedSearchLocales, hasItem(new Locale("en", "US")));
+
+		//evict cache
+		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty("test", "TEST"));
+
+		assertThat(getCacheForCurrentUser(), nullValue());
+	}
+
+	private Cache.ValueWrapper getCacheForCurrentUser(){
+		Object[] params = { Context.getLocale(), Context.getAuthenticatedUser() };
+		Object key = (new SimpleKeyGenerator()).generate(null, null, params);
+		return cacheManager.getCache("userSearchLocales").get(key);
+	}
+
+	private List<Locale> getCachedSearchLocalesForCurrentUser() {
+		return (List<Locale>) getCacheForCurrentUser().get();
 	}
 }

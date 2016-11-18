@@ -9,7 +9,7 @@
     graphic logo is a trademark of OpenMRS Inc.
 
 -->
-<ehcache>
+<ehcache name="hibernateCache">
 
     <!-- Sets the path to the directory where cache .data files are created.
 

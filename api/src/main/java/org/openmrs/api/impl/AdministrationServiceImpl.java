@@ -9,25 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,8 +30,29 @@ import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
+
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Default implementation of the administration services. This class should not be used on its own.
@@ -232,6 +234,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#saveGlobalProperties(java.util.List)
 	 */
+	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public List<GlobalProperty> saveGlobalProperties(List<GlobalProperty> props) throws APIException {
 		log.debug("saving a list of global properties");
 		
@@ -248,6 +251,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
+	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws APIException {
 		// only try to save it if the global property has a key
 		if (gp.getProperty() != null && gp.getProperty().length() > 0) {
@@ -770,24 +774,13 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 
 		dao.validate(object, errors);
 	}
-	
-	/**
-	 * @see AdministrationService#getSearchLocales()
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public List<Locale> getSearchLocales() throws APIException {
+
+	@Cacheable(value = "userSearchLocales")
+	public List<Locale> getSearchLocales(Locale currentLocale, User user) throws APIException {
 		Set<Locale> locales = new LinkedHashSet<Locale>();
-		
-		Locale currentLocale = Context.getLocale();
-		
 		locales.add(currentLocale); //the currently used full locale
-		
-		//the currently used language
 		locales.add(new Locale(currentLocale.getLanguage()));
-		
-		//add user's proficient locales
-		User user = Context.getAuthenticatedUser();
+
 		if (user != null) {
 			List<Locale> proficientLocales = user.getProficientLocales();
 			if (proficientLocales != null) {
@@ -809,6 +802,16 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		return new ArrayList<Locale>(locales);
+	}
+
+	/**
+	 * @see AdministrationService#getSearchLocales()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Locale> getSearchLocales(){
+		//call it via interface, so cache interceptor is invoked
+		return Context.getAdministrationService().getSearchLocales(Context.getLocale(), Context.getAuthenticatedUser());
 	}
 	
 	@Override
