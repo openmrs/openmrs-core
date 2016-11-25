@@ -375,10 +375,12 @@ public interface ObsService extends OpenmrsService {
 	 * @param obsId
 	 * @return Obs with a ComplexData
 	 * @since 1.5
+	 * @deprecated replaced by {@link #getObs(Integer)}
 	 * @should fill in complex data object for complex obs
 	 * @should return normal obs for non complex obs
 	 * @should not fail with null view
 	 */
+	@Deprecated
 	@Authorized( { PrivilegeConstants.GET_OBS })
 	public Obs getComplexObs(Integer obsId, String view) throws APIException;
 	
