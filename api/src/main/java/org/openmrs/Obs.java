@@ -200,6 +200,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		
 		newObs.setValueComplex(obsToCopy.getValueComplex());
 		newObs.setComplexData(obsToCopy.getComplexData());
+		newObs.setFormField(obsToCopy.getFormFieldNamespace(),obsToCopy.getFormFieldPath());
 		
 		// Copy list of all members, including voided, and put them in respective groups
 		if (obsToCopy.hasGroupMembers(true)) {

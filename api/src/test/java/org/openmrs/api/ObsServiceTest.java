@@ -1894,4 +1894,22 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		}
 
 	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	@Verifies(value = "should contain the form_namespace_and_path value in the edited obs", method = "saveObs(Obs,String)")
+	public void saveObs_shouldCopyTheFormNamespaceAndPathFieldInEditedObs() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		Obs obs = Context.getObsService().getObs(7);
+		obs.setValueNumeric(5.0);
+		Obs o2 = Context.getObsService().saveObs(obs, "just testing");
+		Assert.assertNotNull(obs.getFormFieldNamespace());
+
+		// fetch the obs from the database again
+		obs = Context.getObsService().getObs(o2.getObsId());
+		Assert.assertNotNull(obs.getFormFieldNamespace());
+		Assert.assertNotNull(obs.getFormFieldPath());
+	}
 }
