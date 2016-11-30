@@ -18,10 +18,6 @@ The project tree is set up as follows:
   <td>java and resource files for building the java api jar file.</td>
  </tr>
  <tr>
-  <td>release-test</td>
-  <td>Cucumber/selenium integration tests. Run daily against a running web app. See https://wiki.openmrs.org/display/docs/Testing+Releases</td>
- </tr>
- <tr>
   <td>test</td>
   <td>TBD</td>
  </tr>

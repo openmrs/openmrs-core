@@ -92,11 +92,6 @@
                 <version>${project.version}</version>
                 <type>war</type>
             </dependency>
-            <dependency>
-                <groupId>org.openmrs</groupId>
-                <artifactId>openmrs-release-test</artifactId>
-                <version>${project.version}</version>
-            </dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
@@ -988,12 +983,6 @@
 			<properties>
 				<customArgLineForTesting>-Djub.consumers=CONSOLE,H2 -Djub.db.file=target/benchmarks/results -Djub.charts.dir=target/benchmarks</customArgLineForTesting>
 			</properties>
-		</profile>
-		<profile>
-			<id>release-test</id>
-			<modules>
-				<module>release-test</module>
-			</modules>
 		</profile>
 		<profile>
 			<id>sonar</id>
