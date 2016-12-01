@@ -83,7 +83,6 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 		if (getAttributes() == null) {
 			setAttributes(new LinkedHashSet<A>());
 		}
-		// TODO validate
 		getAttributes().add(attribute);
 		attribute.setOwner(this);
 	}

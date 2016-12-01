@@ -83,7 +83,6 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 		if (getAttributes() == null) {
 			setAttributes(new LinkedHashSet<A>());
 		}
-		// TODO validate
 		getAttributes().add(attribute);
 		attribute.setOwner(this);
 	}
