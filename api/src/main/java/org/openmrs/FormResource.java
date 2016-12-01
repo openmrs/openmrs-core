@@ -16,6 +16,8 @@ import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.NotYetPersistedException;
 import org.openmrs.customdatatype.SingleCustomValue;
 
+import java.util.Date;
+
 /**
  * A FormResource is meant as a way for modules to add arbitrary information to
  * a Form. FormResources are essentially just key-value pairs. The value is
@@ -49,6 +51,10 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	private transient boolean dirty = false;
 	
 	private transient Object typedValue;
+	
+	private User changedBy;
+	
+	private Date dateChanged;
 	
 	public FormResource() {
 		// generic constructor
@@ -261,5 +267,33 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	
 	public boolean getDirty() {
 		return dirty;
+	}
+	
+	/**
+	 * @return Returns the changedBy.
+	 */
+	public User getChangedBy() {
+		return changedBy;
+	}
+	
+	/**
+	 * @param changedBy The user that changed this object
+	 */
+	public void setChangedBy(User changedBy) {
+		this.changedBy = changedBy;
+	}
+	
+	/**
+	 * @return Returns the date this object was changed
+	 */
+	public Date getDateChanged() {
+		return dateChanged;
+	}
+	
+	/**
+	 * @param dateChanged The date this object was changed
+	 */
+	public void setDateChanged(Date dateChanged) {
+		this.dateChanged = dateChanged;
 	}
 }

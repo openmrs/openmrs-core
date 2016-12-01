@@ -1718,7 +1718,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		if (getAttributes() == null) {
 			setAttributes(new LinkedHashSet<>());
 		}
-		// TODO validate
 		getAttributes().add(attribute);
 		attribute.setOwner(this);
 	}
