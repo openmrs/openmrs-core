@@ -574,21 +574,11 @@
 	<!-- will be autowired to the HibernateSessionFactoryBean by type -->
 	<!-- interceptors are used in order of name, this needs to be one of the first and should be since auditable happens to start with 'a' -->
 	<bean id="auditableInterceptor" class="org.openmrs.api.db.hibernate.AuditableInterceptor" />
+
+	<bean name="/DatabaseConfig" class="org.openmrs.config.DatabaseConfig"/>
 	
-	<bean id="sessionFactory" class="org.openmrs.api.db.hibernate.HibernateSessionFactoryBean">
-		<property name="configLocations">
-			<list>
-				<value>classpath:hibernate.cfg.xml</value>
-			</list>
-		</property>
-		<property name="mappingJarLocations">
-			<ref bean="mappingJarResources" />
-		</property>
-        <property name="packagesToScan">
-            <list>
-                <value>org.openmrs</value>
-            </list>
-            </property>
+	<bean id="sessionFactory" class="org.springframework.orm.jpa.vendor.HibernateJpaSessionFactoryBean">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
 		<!--  default properties must be set in the hibernate.default.properties -->
 	</bean>
 	
@@ -598,8 +588,8 @@
 
 	<!--  **************************  TRANSACTION MANAGER CONFIGURATION  *************************  -->
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory"/>
 	</bean>
 
 
@@ -675,7 +665,9 @@
     </bean>
 
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
-	
+
+	<context:annotation-config/>
+
 	<context:component-scan base-package="org.openmrs">
 		<context:include-filter type="annotation" expression="org.openmrs.annotation.Handler"/>
 		<context:include-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileIncludeFilter" />

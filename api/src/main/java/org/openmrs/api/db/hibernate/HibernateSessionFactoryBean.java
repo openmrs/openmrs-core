@@ -61,7 +61,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		for (String resource : mappingResources) {
 			this.mappingResources.add(resource);
 		}
-		
+
 		super.setMappingResources(this.mappingResources.toArray(new String[] {}));
 	}
 	
@@ -73,7 +73,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	@Override
 	public void setPackagesToScan(String... packagesToScan) {
 		this.packagesToScan.addAll(Arrays.asList(packagesToScan));
-		
+
 		super.setPackagesToScan(this.packagesToScan.toArray(new String[0]));
 	}
 	
@@ -196,9 +196,9 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			super.destroy();
 		}
 		catch (IllegalStateException e) {
-			// ignore errors sometimes thrown by the CacheManager trying to shut down twice
-			// see net.sf.ehcache.CacheManager#removeShutdownHook()
+			// ignore errors sometimes thrown by the apiCacheManager trying to shut down twice
+			// see net.sf.ehcache.apiCacheManager#removeShutdownHook()
 		}
 	}
-	
+
 }

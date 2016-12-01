@@ -286,6 +286,11 @@
 				<version>5.1.2.Final</version>
 			</dependency>
 			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-entitymanager</artifactId>
+				<version>${hibernateVersion}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-queryparser</artifactId>
 				<version>4.10.4</version>
