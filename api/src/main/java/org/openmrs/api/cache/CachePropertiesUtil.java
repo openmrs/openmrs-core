@@ -7,12 +7,11 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.util;
+package org.openmrs.api.cache;
 
 
 import net.sf.ehcache.config.CacheConfiguration;
 import org.apache.commons.beanutils.BeanUtils;
-import org.openmrs.OpenmrsCacheConfiguration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -30,7 +29,7 @@ import java.util.Set;
 public class CachePropertiesUtil {
 
     /**
-     * This method look for all moduleCacheConfig.properties file located in cacheConfig folder in classpath
+     * This method look for all apiCacheConfig.properties file located in cacheConfig folder in classpath
      * @return list of CacheConfiguration objects
      */
     public static List<CacheConfiguration> getCacheConfigurations(){
@@ -96,7 +95,7 @@ public class CachePropertiesUtil {
     private static Resource[] getResourceFromClassPath() {
         ResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
         try {
-            return patternResolver.getResources("classpath*:cacheConfig/moduleCacheConfig.properties");
+            return patternResolver.getResources("classpath*:apiCacheConfig.properties");
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }

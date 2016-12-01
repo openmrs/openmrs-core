@@ -7,7 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs;
+package org.openmrs.api.cache;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -26,6 +26,4 @@ public class OpenmrsCacheConfiguration {
     public Set<String> getAllKeys(){
         return cacheProperties.keySet();
     }
-
-
 }
