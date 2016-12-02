@@ -16,7 +16,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
-
+/**
+ * CacheConfig provides a cache manager for the @Cacheable annotation and uses ehCache under the hood.
+ * The config of ehCache is loaded from ehcache-api.xml and can be extended by modules through apiCacheConfig.properties.
+ * For more details see the wiki page at <a href="https://wiki.openmrs.org/x/IYaEBg">https://wiki.openmrs.org/x/IYaEBg</a>
+ */
 @Configuration
 public class CacheConfig {
 
