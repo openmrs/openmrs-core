@@ -7,11 +7,12 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.util;
+package org.openmrs.api.cache;
 
 
 import net.sf.ehcache.config.CacheConfiguration;
 import org.junit.Test;
+import org.openmrs.api.cache.CachePropertiesUtil;
 
 import java.util.List;
 

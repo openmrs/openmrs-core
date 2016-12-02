@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.cache;
 
+import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.Configuration;
@@ -24,13 +25,13 @@ public class OpenmrsCacheManagerFactoryBean extends EhCacheManagerFactoryBean {
 		CacheManager cacheManager = super.getObject();
 
 		Map<String, CacheConfiguration> cacheConfig = cacheManager.getConfiguration().getCacheConfigurations();
-		Configuration config = new Configuration();
 
 		List<CacheConfiguration> cacheConfigurations = CachePropertiesUtil.getCacheConfigurations();
 		cacheConfigurations.stream()
 				.filter(cc ->
 						cacheConfig.get(cc.getName()) == null)
-				.forEach(config::addCache);
+				.forEach(cc ->
+						cacheManager.addCache(new Cache(cc)));
 
 		return cacheManager;
 	}
