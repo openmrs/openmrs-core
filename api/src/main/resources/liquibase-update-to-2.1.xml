@@ -36,4 +36,231 @@
 		<addUniqueConstraint tableName="concept_reference_source" columnNames="unique_id" constraintName="concept_reference_source_unique_id_unique"/>
 	</changeSet>
 
+
+	<changeSet id="TRUNK-4730-20161114-1000" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_class" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to concept_class table</comment>
+		<addColumn tableName="concept_class">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1001" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_class" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to concept_class table</comment>
+		<addColumn tableName="concept_class">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="concept_class_changed_by"
+								 baseTableName="concept_class" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-4730-20161114-1002" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_reference_source" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to concept_reference_source table</comment>
+		<addColumn tableName="concept_reference_source">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1003" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_reference_source" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to concept_reference_source table</comment>
+		<addColumn tableName="concept_reference_source">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="concept_reference_source_changed_by"
+								 baseTableName="concept_reference_source" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1004" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_name" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to concept_name table</comment>
+		<addColumn tableName="concept_name">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1005" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_name" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to concept_name table</comment>
+		<addColumn tableName="concept_name">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="concept_name_changed_by"
+								 baseTableName="concept_name" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-4730-20161114-1006" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_name_tag" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to concept_name_tag table</comment>
+		<addColumn tableName="concept_name_tag">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1007" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_name_tag" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to concept_name_tag table</comment>
+		<addColumn tableName="concept_name_tag">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="concept_name_tag_changed_by"
+								 baseTableName="concept_name_tag" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-4730-20161114-1008" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="form_resource" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to form_resource table</comment>
+		<addColumn tableName="form_resource">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1009" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="form_resource" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to form_resource table</comment>
+		<addColumn tableName="form_resource">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="form_resource_changed_by"
+								 baseTableName="form_resource" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-4730-20161114-1010" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="global_property" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to global_property table</comment>
+		<addColumn tableName="global_property">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1011" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="global_property" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to global_property table</comment>
+		<addColumn tableName="global_property">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="global_property_changed_by"
+								 baseTableName="global_property" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-4730-20161114-1012" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="patient_identifier_type" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to patient_identifier_type table</comment>
+		<addColumn tableName="patient_identifier_type">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1013" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="patient_identifier_type" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to patient_identifier_type table</comment>
+		<addColumn tableName="patient_identifier_type">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="patient_identifier_type_changed_by"
+								 baseTableName="patient_identifier_type" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1014" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="relationship_type" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to relationship_type table</comment>
+		<addColumn tableName="relationship_type">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+
+	<changeSet id="TRUNK-4730-20161114-1015" author="manuelagrindei">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="relationship_type" columnName="changed_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding "changed_by" column to relationship_type table</comment>
+		<addColumn tableName="relationship_type">
+			<column name="changed_by" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="relationship_type_changed_by"
+								 baseTableName="relationship_type" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
 </databaseChangeLog>
