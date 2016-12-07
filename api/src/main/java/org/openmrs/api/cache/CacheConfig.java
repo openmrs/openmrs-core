@@ -29,6 +29,7 @@ public class CacheConfig {
         OpenmrsCacheManagerFactoryBean cacheManagerFactoryBean = new OpenmrsCacheManagerFactoryBean();
         cacheManagerFactoryBean.setConfigLocation(new ClassPathResource("ehcache-api.xml"));
         cacheManagerFactoryBean.setShared(false);
+        cacheManagerFactoryBean.setAcceptExisting(true);
 
         return cacheManagerFactoryBean;
     }
