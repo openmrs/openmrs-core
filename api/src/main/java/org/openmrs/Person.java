@@ -12,6 +12,15 @@ package org.openmrs;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.DateBridge;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FullTextFilterDef;
+import org.hibernate.search.annotations.FullTextFilterDefs;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Resolution;
+import org.openmrs.api.db.hibernate.search.TermsFilterFactory;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
 
@@ -39,25 +48,29 @@ public class Person extends BaseOpenmrsData {
 	public static final long serialVersionUID = 2L;
 	
 	protected final Log log = LogFactory.getLog(getClass());
-	
+
+	@DocumentId
 	protected Integer personId;
-	
+
 	private Set<PersonAddress> addresses = null;
-	
+
+	@ContainedIn
 	private Set<PersonName> names = null;
-	
+
+	@ContainedIn
 	private Set<PersonAttribute> attributes = null;
-	
+
+	@Field
 	private String gender;
-	
+
 	private Date birthdate;
-	
+
 	private Date birthtime;
-	
+
 	private Boolean birthdateEstimated = false;
-	
+
 	private Boolean deathdateEstimated = false;
-	
+
 	private Boolean dead = false;
 	
 	private Date deathDate;
@@ -71,7 +84,7 @@ public class Person extends BaseOpenmrsData {
 	private User personChangedBy;
 	
 	private Date personDateChanged;
-	
+
 	private Boolean personVoided = false;
 	
 	private User personVoidedBy;

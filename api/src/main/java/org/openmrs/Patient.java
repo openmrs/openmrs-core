@@ -9,6 +9,11 @@
  */
 package org.openmrs;
 
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Field;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,13 +30,12 @@ import java.util.Vector;
 public class Patient extends Person {
 	
 	public static final long serialVersionUID = 93123L;
-	
-	// Fields
-	
+
 	private Integer patientId;
-	
+
 	private String allergyStatus = Allergies.UNKNOWN;
-	
+
+	@ContainedIn
 	private Set<PatientIdentifier> identifiers;
 	
 	// Constructors
