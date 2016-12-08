@@ -17,6 +17,7 @@
 
 	<class name="Privilege" table="privilege">
 
+		<cache usage="read-write"/>
 		<id name="privilege" type="java.lang.String"
 			column="privilege" length="250">
 			<generator class="assigned" />
