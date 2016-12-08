@@ -9,14 +9,26 @@
  */
 package org.openmrs;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
+import org.apache.lucene.analysis.standard.StandardFilterFactory;
+import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.TokenFilterDef;
+import org.hibernate.search.annotations.TokenizerDef;
+import org.openmrs.util.OpenmrsUtil;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Comparator;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * A <code>Patient</code> can have zero to n identifying PatientIdentifier(s). PatientIdentifiers
@@ -26,6 +38,10 @@ import org.openmrs.util.OpenmrsUtil;
  *
  * @see org.openmrs.PatientIdentifierType
  */
+@Indexed
+@AnalyzerDef(name = "PatientIdentifierAnalyzer", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
+		@TokenFilterDef(factory = StandardFilterFactory.class), @TokenFilterDef(factory = LowerCaseFilterFactory.class) })
+@Analyzer(definition = "PatientIdentifierAnalyzer")
 public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serializable, Comparable<PatientIdentifier> {
 	
 	public static final long serialVersionUID = 1123121L;
@@ -37,10 +53,13 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	/**
 	 * @since 1.5
 	 */
+	@DocumentId
 	private Integer patientIdentifierId;
-	
+
+	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Patient patient;
-	
+
+	@Field(analyze = Analyze.NO)
 	private String identifier;
 	
 	private PatientIdentifierType identifierType;

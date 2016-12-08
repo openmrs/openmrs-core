@@ -12,12 +12,14 @@ package org.openmrs.api.db.hibernate;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +36,10 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.persister.entity.AbstractEntityPersister;
+import org.hibernate.search.FullTextQuery;
+import org.hibernate.search.FullTextSession;
+import org.hibernate.search.Search;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 import org.openmrs.Location;
@@ -42,10 +48,15 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientIdentifierType.UniquenessBehavior;
 import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
+import org.openmrs.api.db.hibernate.search.LuceneQuery;
+import org.openmrs.api.db.hibernate.search.SkipSame;
+
+import javax.persistence.EntityManager;
 
 /**
  * Hibernate specific database methods for the PatientService
@@ -179,69 +190,9 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (length == null) {
 			length = HibernatePersonDAO.getMaximumSearchResults();
 		}
-		
-		Criteria criteriaExactMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-		criteriaExactMatch = new PatientSearchCriteria(sessionFactory, criteriaExactMatch).prepareCriteria(query, true,
-		    false, includeVoided);
-		
-		criteriaExactMatch.setProjection(Projections.rowCount());
-		Integer listSize = ((Number) criteriaExactMatch.uniqueResult()).intValue();
-		
-		criteriaExactMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-		criteriaExactMatch = new PatientSearchCriteria(sessionFactory, criteriaExactMatch).prepareCriteria(query, true,
-		    true, includeVoided);
-		
-		Set<Patient> patients = new LinkedHashSet<>();
-		
-		if (start < listSize) {
-			setFirstAndMaxResult(criteriaExactMatch, start, length);
-			patients.addAll(criteriaExactMatch.list());
-			
-			length -= patients.size();
-		}
-		
-		if (length > 0) {
-			Criteria criteriaAllMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-			criteriaAllMatch = new PatientSearchCriteria(sessionFactory, criteriaAllMatch).prepareCriteria(query, null,
-			    false, includeVoided);
-			criteriaAllMatch.setProjection(Projections.rowCount());
-			
-			start -= listSize;
-			listSize = ((Number) criteriaAllMatch.uniqueResult()).intValue();
-			
-			criteriaAllMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-			criteriaAllMatch = new PatientSearchCriteria(sessionFactory, criteriaAllMatch).prepareCriteria(query, null,
-			    true, includeVoided);
-			
-			if (start < listSize) {
-				setFirstAndMaxResult(criteriaAllMatch, start, length);
-				
-				List<Patient> patientsList = criteriaAllMatch.list();
-				
-				patients.addAll(patientsList);
-				
-				length -= patientsList.size();
-			}
-		}
-		
-		if (length > 0) {
-			Criteria criteriaNoExactMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-			criteriaNoExactMatch = new PatientSearchCriteria(sessionFactory, criteriaNoExactMatch).prepareCriteria(query,
-			    false, false, includeVoided);
-			criteriaNoExactMatch.setProjection(Projections.rowCount());
-			
-			start -= listSize;
-			listSize = ((Number) criteriaNoExactMatch.uniqueResult()).intValue();
-			
-			criteriaNoExactMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-			criteriaNoExactMatch = new PatientSearchCriteria(sessionFactory, criteriaNoExactMatch).prepareCriteria(query,
-			    false, true, includeVoided);
-			
-			if (start < listSize) {
-				setFirstAndMaxResult(criteriaNoExactMatch, start, length);
-				patients.addAll(criteriaNoExactMatch.list());
-			}
-		}
+
+		List<Patient> patients = findPatients(query, includeVoided, start, length);
+
 		return new ArrayList<>(patients);
 	}
 	
@@ -731,17 +682,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
         @Override
 	public Long getCountOfPatients(String query) {
-		if (StringUtils.isBlank(query)) {
-			return 0L;
-		}
-		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(query);
-		
-		// Using Hibernate projections did NOT work here, the resulting queries could not be executed due to
-		// missing group-by clauses. Hence the poor man's implementation of counting search results.
-		//
-		return (long) criteria.list().size();
+		return getCountOfPatients(query, false);
 	}
 	
 	/**
@@ -755,17 +696,85 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (StringUtils.isBlank(query)) {
 			return 0L;
 		}
-		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(query, includeVoided);
-		
-		// Using Hibernate projections did NOT work here, the resulting queries could not be executed due to
-		// missing group-by clauses. Hence the poor man's implementation of counting search results.
-		//
-		return (long) criteria.list().size();
+
+		return (long) findPatients(query, includeVoided).size();
 	}
-	
-	/**
+
+    private List<Patient> findPatients(String query, boolean includeVoided) {
+		return findPatients(query, includeVoided, null, null);
+	}
+
+	public List<Patient> findPatients(String query, boolean includeVoided, Integer start, Integer length){
+		String personId = "person.personId";
+		String patientId = "patient.personId";
+		query = LuceneQuery.escapeQuery(query);
+
+		LuceneQuery<PatientIdentifier> luceneQuery = getPatientIdentifierLuceneQuery(query, includeVoided);
+		List<PatientIdentifier> patientIdentifiers = luceneQuery.list();
+
+		LuceneQuery<PersonName> luceneQuery2 = getPersonNameLuceneQuery(query, includeVoided);
+		luceneQuery2.skipSame(personId, new SkipSame(luceneQuery, patientId));
+		List<PersonName> personNames = luceneQuery2.list();
+
+		LuceneQuery<PersonAttribute> luceneQuery3 = getPersonAttributeLuceneQuery(query, includeVoided);
+		luceneQuery3.skipSame(personId, new SkipSame(luceneQuery, patientId), new SkipSame(luceneQuery2, personId));
+		List<PersonAttribute> personAttributes = luceneQuery3.list();
+
+		List<Patient> patientList = new LinkedList<>();
+		patientIdentifiers.forEach(patientIdentifier -> patientList.add(patientIdentifier.getPatient()));
+		personNames.forEach(personName -> patientList.add(Context.getPatientService().getPatient(personName.getPerson().getId())));
+		personAttributes.forEach(personAttribute -> patientList.add(Context.getPatientService().getPatient(personAttribute.getPerson().getId())));
+
+		int size = patientList.size();
+		if(start == null || start < 0){
+			start = 0;
+		}
+		if(length == null){
+			length = size - start;
+		} else if(length > size-start){
+			length = size -start;
+		}
+
+		return patientList.subList(start, start+length);
+	}
+
+    private LuceneQuery<PatientIdentifier> getPatientIdentifierLuceneQuery(String query, boolean includeVoided) {
+        StringBuilder newQuery = new StringBuilder();
+        newQuery.append("identifier:\"").append(query).append("\"");
+        LuceneQuery<PatientIdentifier> luceneQuery = LuceneQuery
+                .newQuery(PatientIdentifier.class, sessionFactory.getCurrentSession(), newQuery.toString());
+        if(!includeVoided){
+        	luceneQuery.include("voided", false);
+			luceneQuery.include("patient.voided", false);
+        }
+        luceneQuery.skipSame("patient.personId");
+        return luceneQuery;
+    }
+
+    private LuceneQuery<PersonName> getPersonNameLuceneQuery(String query, boolean includeVoided) {
+        String[] fields = {"givenName", "givenNameExact", "middleName", "middleNameExact", "familyName", "familyNameExact", "familyName2", "familyName2Exact"};
+        LuceneQuery<PersonName> luceneQuery = LuceneQuery
+                .newQuery(PersonName.class, sessionFactory.getCurrentSession(), query, fields);
+        if(!includeVoided){
+			luceneQuery.include("voided", false);
+			luceneQuery.include("person.voided", false);
+        }
+        return luceneQuery;
+    }
+
+    private LuceneQuery<PersonAttribute> getPersonAttributeLuceneQuery(String query, boolean includeVoided) {
+        StringBuilder newQuery = new StringBuilder();
+        newQuery.append("value:\"").append(query).append("\"");
+        LuceneQuery<PersonAttribute> luceneQuery = LuceneQuery
+                .newQuery(PersonAttribute.class, sessionFactory.getCurrentSession(), newQuery.toString());
+        if(!includeVoided){
+			luceneQuery.include("voided", false);
+			luceneQuery.include("person.voided", false);
+        }
+        return luceneQuery;
+    }
+
+    /**
 	 * @see org.openmrs..api.db.PatientDAO#getAllergies(org.openmrs.Patient)
 	 */
 	//@Override

@@ -9,16 +9,6 @@
  */
 package org.openmrs.api.db;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hamcrest.FeatureMatcher;
@@ -41,6 +31,16 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 
 public class PatientDAOTest extends BaseContextSensitiveTest {
 	
@@ -80,7 +80,8 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		personAttributeHelper = new PersonAttributeHelper(sessionFactory);
 		globalPropertiesTestHelper = new GlobalPropertiesTestHelper(Context.getAdministrationService());
-		
+
+		updateSearchIndex();
 	}
 	
 	private void logPatientList(List<Patient> patients) {
@@ -739,7 +740,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, patients.size());
 		
 		Patient patient = patients.get(0);
-		
+
 		Set<PersonName> names = patient.getNames();
 		
 		for (PersonName name : names) {
@@ -1980,10 +1981,10 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		List<Patient> patients = dao.getPatients("Ben", 0, 11);
 		
 		Assert.assertEquals(4, patients.size());
-		Assert.assertEquals("Alan", patients.get(0).getGivenName());
-		Assert.assertEquals("Ben", patients.get(1).getGivenName());
-		Assert.assertEquals("Adam", patients.get(2).getGivenName());
-		Assert.assertEquals("Benedict", patients.get(3).getGivenName());
+		Assert.assertEquals("Ben", patients.get(0).getGivenName());
+		Assert.assertEquals("Alan", patients.get(1).getGivenName());
+		Assert.assertEquals("Benedict", patients.get(2).getGivenName());
+		Assert.assertEquals("Adam", patients.get(3).getGivenName());
 		
 		patients = dao.getPatients("Ben Frank", 0, 11);
 		

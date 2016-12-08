@@ -10,17 +10,21 @@
 package org.openmrs.api.db.hibernate.search;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.TermsFilter;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.hibernate.Session;
@@ -28,7 +32,9 @@ import org.hibernate.search.FullTextQuery;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
+import org.openmrs.PersonName;
 import org.openmrs.collection.ListPart;
+import org.openmrs.logic.LogicService;
 
 /**
  * Performs Lucene queries.
@@ -42,7 +48,22 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	private Set<Set<Term>> includeTerms = new HashSet<Set<Term>>();
 	
 	private Set<Term> excludeTerms = new HashSet<Term>();
-	
+
+	public static <T> LuceneQuery<T> newQuery(final Class<T> type, final Session session, final String query, String[] fields) {
+		return new LuceneQuery<T>(
+				type, session) {
+
+			@Override
+			protected Query prepareQuery() throws ParseException {
+				if (query.isEmpty()) {
+					return new MatchAllDocsQuery();
+				}
+				return newMultipleFieldQueryParser(fields).parse(query);
+			}
+
+		};
+	}
+
 	/**
 	 * The preferred way to create a Lucene query using the query parser.
 	 * @param type filters on type
@@ -211,6 +232,20 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		queryParser.setDefaultOperator(Operator.AND);
 		return queryParser;
 	}
+
+
+	protected MultiFieldQueryParser newMultipleFieldQueryParser(String[] fields) {
+		Analyzer analyzer;
+		if (getType().isAssignableFrom(PersonName.class)) {
+			analyzer = getFullTextSession().getSearchFactory().getAnalyzer("PartialPersonNameQueryAnalyzer");
+		} else {
+			analyzer = getFullTextSession().getSearchFactory().getAnalyzer(getType());
+		}
+		MultiFieldQueryParser queryParser = new MultiFieldQueryParser(fields, analyzer);
+		queryParser.setDefaultOperator(Operator.AND);
+		return queryParser;
+	}
+
 	
 	/**
 	 * Gives you access to the full text session.
@@ -234,7 +269,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 */
 	public LuceneQuery<T> skipSame(String field) {
 		String idPropertyName = getSession().getSessionFactory().getClassMetadata(getType()).getIdentifierPropertyName();
-		
+
 		List<Object> documents = listProjection(idPropertyName, field);
 
 		TermsFilter termsFilter = null;
@@ -249,12 +284,52 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 			}
 			termsFilter = new TermsFilter(terms);
 		}
-		
+
+		buildQuery();
+
 		if (termsFilter != null) {
-			buildQuery();
 			fullTextQuery.setFilter(termsFilter);
 		}
-		
+
+		return this;
+	}
+
+	public LuceneQuery<T> skipSame(String field, SkipSame... skipSames){
+		String idPropertyName = getSession().getSessionFactory().getClassMetadata(getType()).getIdentifierPropertyName();
+
+		List<Object> documents = listProjection(idPropertyName, field);
+
+
+		Set<Object> uniqueFieldValues = new HashSet<Object>();
+		Arrays.stream(skipSames)
+				.forEach(skipSame -> {
+					skipSame.getProjectionList()
+							.stream()
+							.map(o -> (Object[])o)
+							.forEach(objects -> uniqueFieldValues.add(objects[0]));
+				});
+
+		TermsFilter termsFilter = null;
+		if (!documents.isEmpty()) {
+			List<Term> terms = new ArrayList<Term>();
+			for (Object document : documents) {
+				Object[] row = (Object[]) document;
+				if (uniqueFieldValues.add(row[1])) {
+					terms.add(new Term(idPropertyName, row[0].toString()));
+				}
+			}
+			if (!terms.isEmpty()) {
+				termsFilter = new TermsFilter(terms);
+			}
+		}
+
+		buildQuery();
+		if (termsFilter != null) {
+			fullTextQuery.setFilter(termsFilter);
+		} else {
+			fullTextQuery.setMaxResults(0);
+		}
+
 		return this;
 	}
 	
@@ -268,6 +343,13 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
 	@Override
 	public List<T> list() {
+		//debug
+		/*fullTextQuery.setProjection(
+				FullTextQuery.DOCUMENT_ID,
+				FullTextQuery.EXPLANATION,
+				FullTextQuery.THIS );
+		@SuppressWarnings("unchecked") List<Object[]> results = fullTextQuery.list();*/
+
 		@SuppressWarnings("unchecked")
 		List<T> list = fullTextQuery.list();
 		
@@ -298,7 +380,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		
 		@SuppressWarnings("unchecked")
 		List<Object> list = fullTextQuery.list();
-		
+		buildQuery();
 		return list;
 	}
 	
@@ -331,6 +413,10 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		}
 		
 		fullTextQuery = getFullTextSession().createFullTextQuery(query, getType());
+
+		fullTextQuery.enableFullTextFilter("termsFilterFactory").setParameter("includeTerms", includeTerms)
+				.setParameter("excludeTerms", excludeTerms);
+
 		adjustFullTextQuery(fullTextQuery);
 	}
 	
