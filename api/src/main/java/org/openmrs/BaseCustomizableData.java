@@ -107,11 +107,6 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 			addAttribute(attribute);
 			return;
 		}
-
-		if (getAttributes() == null) {
-			addAttribute(attribute);
-			return;
-		}
 		
 		if (getActiveAttributes(attribute.getAttributeType()).size() == 1) {
 			A existing = getActiveAttributes(attribute.getAttributeType()).get(0);

@@ -106,11 +106,6 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 			addAttribute(attribute);
 			return;
 		}
-
-		if (getAttributes() == null) {
-			addAttribute(attribute);
-			return;
-		}
 		
 		if (getActiveAttributes(attribute.getAttributeType()).size() == 1) {
 			A existing = getActiveAttributes(attribute.getAttributeType()).get(0);
