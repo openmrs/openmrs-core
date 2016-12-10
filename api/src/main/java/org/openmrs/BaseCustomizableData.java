@@ -89,14 +89,25 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 	
 	/**
 	 * Convenience method that voids all existing attributes of the given type, and sets this new one.
-	 * TODO fail if minOccurs &gt; 1
-	 * TODO decide whether this should require maxOccurs=1
 	 * @should void the attribute if an attribute with same attribute type already exists and the maxOccurs is set to 1
 	 *
 	 * @param attribute
 	 */
 	@SuppressWarnings("unchecked")
 	public void setAttribute(A attribute) {
+
+		Integer minOccurs = attribute.getMinOccurs();
+		Integer maxOccurs = attribute.getMaxOccurs();
+		if(minOccurs>1)
+			{ throw new ValidationException("Minimum occurrences exceed 1"); }
+		else if (maxOccurs != 1)
+			{ throw new ValidationException("Maximum occurrences do not equal to 1"); }
+
+		if (getAttributes() == null) {
+			addAttribute(attribute);
+			return;
+		}
+
 		if (getAttributes() == null) {
 			addAttribute(attribute);
 			return;
