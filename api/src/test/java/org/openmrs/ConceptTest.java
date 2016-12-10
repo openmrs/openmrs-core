@@ -1093,6 +1093,18 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see Concept#getName()
+	 * @verifies return any name If no locale match and exact is false
+	 */
+	@Test
+	public void getName_shouldReturnNameAnyNameIfNoLocaleMatchGivenExactEqualsFalse() throws Exception {
+		Locale locale = new Locale("en");
+		Locale localeToSearch = new Locale("fr");
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Test Concept", locale));
+		Assert.assertNotNull((concept.getName(localeToSearch, false)));
+	}
+	/**
 	 * @see Concept#getDescriptions()
 	 */
 	@Test
