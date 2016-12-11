@@ -184,10 +184,7 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata {
 		return StringUtils.isNotEmpty(validator);
 	}
 	
-	/**
-	 * TODO: make this return a more debug-worth string instead of just the name. Check the webapp
-	 * to make sure it is not depending on this
-	 * 
+	/** 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
