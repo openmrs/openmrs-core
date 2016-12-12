@@ -76,9 +76,9 @@ public class PersonNameValidator implements Validator {
 	 * @should fail validation if PersonName.givenName is just spaces
 	 * @should fail validation if PersonName.givenName is spaces surrounded by quotation marks
 	 * @should pass validation if PersonName.givenName is not blank
-	 * @should fail validation if PersonName.familyName is null
-	 * @should fail validation if PersonName.familyName is empty
-	 * @should fail validation if PersonName.familyName is just spaces
+	 * @should pass validation if PersonName.familyName is null
+	 * @should pass validation if PersonName.familyName is empty
+	 * @should pass validation if PersonName.familyName is just spaces
 	 * @should fail validation if PersonName.familyName is spaces surrounded by quotation marks
 	 * @should pass validation if PersonName.familyName is not blank
 	 * @should fail validation if PersonName.prefix is too long
@@ -128,10 +128,7 @@ public class PersonNameValidator implements Validator {
 		        || StringUtils.isBlank(personName.getGivenName().replaceAll("\"", ""))) {
 			errors.rejectValue(getFieldKey("givenName", arrayInd, testInd), "Patient.names.required.given.family");
 		}
-		if (StringUtils.isBlank(personName.getFamilyName())
-		        || StringUtils.isBlank(personName.getFamilyName().replaceAll("\"", ""))) {
-			errors.rejectValue(getFieldKey("familyName", arrayInd, testInd), "Patient.names.required.given.family");
-		}
+
 		// Make sure the entered name value is sensible 
 		String namePattern = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
