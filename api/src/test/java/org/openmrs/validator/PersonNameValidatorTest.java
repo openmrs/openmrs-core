@@ -122,38 +122,38 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if PersonName.familyName is null", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
-	public void validate_shouldFailValidationIfPersonNameFamilyNameIsNull() throws Exception {
+	@Verifies(value = "should pass validation if PersonName.familyName is null", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
+	public void validate_shouldPassValidationIfPersonNameFamilyNameIsNull() throws Exception {
 		PersonName personName = new PersonName();
 		Errors errors = new BindException(personName, "familyName");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
-		Assert.assertTrue(errors.hasFieldErrors("familyName"));
+		Assert.assertFalse(errors.hasFieldErrors("familyName"));
 	}
 	
 	/**
 	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if PersonName.familyName is empty", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
-	public void validate_shouldFailValidationIfPersonNameFamilyNameIsEmpty() throws Exception {
+	@Verifies(value = "should pass validation if PersonName.familyName is empty", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
+	public void validate_shouldPassValidationIfPersonNameFamilyNameIsEmpty() throws Exception {
 		PersonName personName = new PersonName();
 		personName.setFamilyName("");
 		Errors errors = new BindException(personName, "familyName");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
-		Assert.assertTrue(errors.hasFieldErrors("familyName"));
+		Assert.assertFalse(errors.hasFieldErrors("familyName"));
 	}
 	
 	/**
 	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if PersonName.familyName is just spaces", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
-	public void validate_shouldFailValidationIfPersonNameFamilyNameIsJustSpaces() throws Exception {
+	@Verifies(value = "should pass validation if PersonName.familyName is just spaces", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
+	public void validate_shouldPassValidationIfPersonNameFamilyNameIsJustSpaces() throws Exception {
 		PersonName personName = new PersonName();
 		personName.setFamilyName("    ");
 		Errors errors = new BindException(personName, "familyName");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
-		Assert.assertTrue(errors.hasFieldErrors("familyName"));
+		Assert.assertFalse(errors.hasFieldErrors("familyName"));
 	}
 	
 	/**
