@@ -43,7 +43,7 @@ public interface DatatypeService extends OpenmrsService {
 	
 	/**
 	 * Gets the default handler for a {@link CustomDatatype}, and sets its configuration
-	 * TODO probably remove the config argument since it doesn't make sense to let people provide handlerConfig to the default handler. If we remove this argument, we also need to change BaseAttributeTypeValidator  
+	 *  
 	 * 
 	 * @param datatype
 	 * @param handlerConfig
