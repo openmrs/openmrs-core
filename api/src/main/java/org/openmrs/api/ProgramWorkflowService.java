@@ -456,7 +456,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public PatientProgram getPatientProgramByUuid(String uuid);
 	
 	/**
-	 * TODO: refactor?
 	 * 
 	 * @param cohort
 	 * @param programs
