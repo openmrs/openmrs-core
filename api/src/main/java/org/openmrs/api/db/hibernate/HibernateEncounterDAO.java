@@ -335,7 +335,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		
 		// only include this where clause if patients were passed in
 		if (patients != null) {
-			criteria.add(Restrictions.in("patient.personId", patients.getMemberIds()));
+            ArrayList<Integer> patientIds = new ArrayList<Integer>();
+			patients.getMembers().forEach(m -> patientIds.add(m.getPatient().getPatientId()));
+			criteria.add(Restrictions.in("patient.personId", patientIds));
 		}
 		
 		criteria.add(Restrictions.eq("voided", false));

@@ -15,6 +15,7 @@ import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
+import org.openmrs.api.CohortService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 
@@ -58,5 +59,9 @@ public class PatientDataVoidHandler implements VoidHandler<Patient> {
 				}
 			}
 		}
+
+		// if patient is voided, we set the membership containing the patient to be voided
+		CohortService cs = Context.getCohortService();
+		cs.patientVoided(patient);
 	}
 }

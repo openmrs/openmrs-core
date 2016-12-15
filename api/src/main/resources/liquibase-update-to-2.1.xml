@@ -35,5 +35,262 @@
 		</addColumn>
 		<addUniqueConstraint tableName="concept_reference_source" columnNames="unique_id" constraintName="concept_reference_source_unique_id_unique"/>
 	</changeSet>
+	<changeSet author="vshankar" id="201609171146-1">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="member_patient"/>
+		</preConditions>
+		<comment>Dropping foreign key constraint member_patient</comment>
+		<dropForeignKeyConstraint constraintName="member_patient" baseTableName="cohort_member"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-1.1">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="parent_cohort"/>
+		</preConditions>
+		<comment>Dropping foreign key constraint parent_cohort</comment>
+		<dropForeignKeyConstraint constraintName="parent_cohort" baseTableName="cohort_member"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-1.2">
+		<preConditions onFail="MARK_RAN">
+			<primaryKeyExists tableName="cohort_member"/>
+		</preConditions>
+		<comment>Dropping primary key for cohort_member</comment>
+		<dropPrimaryKey tableName="cohort_member"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-2">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="cohort_member" columnName="cohort_member_id"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.cohort_member_id</comment>
+		<addColumn tableName="cohort_member">
+			<column name="cohort_member_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-2.1" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<and>
+				<columnExists tableName="cohort_member" columnName="cohort_member_id"/>
+				<not>
+					<sqlCheck expectedResult="0">
+						SELECT COUNT(*) from cohort_member
+					</sqlCheck>
+				</not>
+			</and>
+		</preConditions>
+		<comment>Updating cohort member ids</comment>
+		<customChange class="org.openmrs.util.databasechange.UpdateCohortMemberIds"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-2.2" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="cohort_member" columnName="cohort_member_id"/>
+		</preConditions>
+		<comment>Adding primary key to cohort_member.cohort_member_id</comment>
+		<addPrimaryKey tableName="cohort_member" columnNames="cohort_member_id"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-2.3" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="cohort_member" columnName="cohort_member_id"/>
+		</preConditions>
+		<comment>Adding auto increment property to cohort_member.cohort_member_id</comment>
+		<addAutoIncrement tableName="cohort_member" columnName="cohort_member_id" columnDataType="int"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-3">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="cohort_member" columnName="start_date"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.start_date</comment>
+		<addColumn tableName="cohort_member">
+			<column name="start_date" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	<changeSet author="vshankar" id="201610242135-3">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT COUNT(*) from cohort_member
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Updating cohort_start_date with value cohort.date_created</comment>
+		<update tableName="cohort_member">
+			<column name="start_date" type="DATETIME"
+					valueComputed="(select date_created from cohort where cohort_member.cohort_id = cohort.cohort_id)"/>
+		</update>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-4">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="cohort_member" columnName="end_date"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.end_date</comment>
+		<addColumn tableName="cohort_member">
+			<column name="end_date" type="datetime"/>
+		</addColumn>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-5">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="cohort_member" columnName="creator"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.creator</comment>
+		<addColumn tableName="cohort_member">
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-5.1">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT COUNT(*) from cohort_member
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Updating cohort_member.creator value</comment>
+		<update tableName="cohort_member">
+			<column name="creator" valueNumeric="1" type="int"/>
+		</update>
+	</changeSet>
+	<changeSet author="vshankar" id="201609171146-5.2">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="cohort_member" columnName="creator"/>
+		</preConditions>
+		<comment>Adding foreign key constraint to cohort_member.creator</comment>
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="cohort_member" constraintName="cohort_member_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet id="201610042145-1" author="vshankar">
+		<preConditions>
+			<not>
+				<columnExists tableName="cohort_member" columnName="date_created"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.date_created</comment>
+		<addColumn tableName="cohort_member">
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	<changeSet id="201610042145-1.1" author="vshankar">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT COUNT(*) from cohort_member
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Updating cohort_member.date_created with value cohort.date_created</comment>
+		<update tableName="cohort_member">
+			<column name="date_created" type="DATETIME"
+					valueComputed="(select date_created from cohort where cohort_member.cohort_id = cohort.cohort_id)"/>
+		</update>
+	</changeSet>
+	<changeSet author="vshankar" id="201610131530-1">
+		<preConditions>
+			<not>
+				<columnExists tableName="cohort_member" columnName="voided"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.voided</comment>
+		<addColumn tableName="cohort_member">
+			<column name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	<changeSet author="vshankar" id="201610131530-1.1">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="cohort_member" columnName="voided"/>
+		</preConditions>
+		<comment>Adding defaultValue for cohort_member.voided</comment>
+		<addDefaultValue tableName="cohort_member" columnName="voided" defaultValueBoolean="false"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201610131530-2">
+		<preConditions>
+			<not>
+				<columnExists tableName="cohort_member" columnName="voided_by"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.voided_by</comment>
+		<addColumn tableName="cohort_member">
+			<column name="voided_by" type="int"/>
+		</addColumn>
+	</changeSet>
+	<changeSet author="vshankar" id="201610131530-3">
+		<preConditions>
+			<not>
+				<columnExists tableName="cohort_member" columnName="date_voided"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.date_voided</comment>
+		<addColumn tableName="cohort_member">
+			<column name="date_voided" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+	<changeSet author="vshankar" id="201610131530-4">
+		<preConditions>
+			<not>
+				<columnExists tableName="cohort_member" columnName="void_reason"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.void_reason</comment>
+		<addColumn tableName="cohort_member">
+			<column name="void_reason" type="varchar(255)"/>
+		</addColumn>
+	</changeSet>
+	<changeSet id="201610042145-2" author="vshankar">
+		<preConditions>
+			<not>
+				<columnExists tableName="cohort_member" columnName="uuid"/>
+			</not>
+		</preConditions>
+		<comment>Adding column cohort_member.uuid</comment>
+		<addColumn tableName="cohort_member">
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	<changeSet id="201610042145-2.1" author="vshankar">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql"/><dbms type="oracle" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in cohort_member table via built in uuid function.</comment>
+		<update tableName="cohort_member" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+	</changeSet>
+	<changeSet id="201610242135-1" author="vshankar">
+		<comment>Adding foreign key constraint to cohort_member.cohort_id</comment>
+		<addForeignKeyConstraint baseColumnNames="cohort_id" baseTableName="cohort_member" constraintName="parent_cohort" deferrable="false" referencedColumnNames="cohort_id" referencedTableName="cohort"/>
+	</changeSet>
+	<changeSet id="201610242135-2" author="vshankar">
+		<comment>Adding foreign key constraint to cohort_member.patient_id</comment>
+		<addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="cohort_member" constraintName="member_patient" deferrable="false" initiallyDeferred="false" referencedColumnNames="patient_id" referencedTableName="patient"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201611121945-1">
+		<preConditions>
+			<columnExists tableName="cohort_member" columnName="cohort_id"/>
+		</preConditions>
+		<comment>Dropping defaultValue for cohort_member.cohort_id</comment>
+		<dropDefaultValue tableName="cohort_member" columnName="cohort_id"/>
+	</changeSet>
+	<changeSet author="vshankar" id="201611121945-2">
+		<preConditions>
+			<columnExists tableName="cohort_member" columnName="patient_id"/>
+		</preConditions>
+		<comment>Dropping defaultValue for cohort_member.patient_id</comment>
+		<dropDefaultValue tableName="cohort_member" columnName="patient_id"/>
+	</changeSet>
 
 </databaseChangeLog>

@@ -29,10 +29,10 @@
 		
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
-		
-		<set name="memberIds" cascade="none" lazy="true" table="cohort_member">
+
+		<set name="members" cascade="all-delete-orphan,evict" lazy="true" inverse="true">
 			<key column="cohort_id" not-null="true"/>
-		    <element column="patient_id" type="integer" not-null="true"/>
+			<one-to-many class="org.openmrs.CohortMembership"/>
 		</set>
 
 		<property name="dateCreated" type="java.util.Date"
@@ -49,7 +49,6 @@
 		<many-to-one name="creator" class="User" not-null="true" />
 		<many-to-one name="voidedBy" class="User" column="voided_by" />
 		<many-to-one name="changedBy" class="User" column="changed_by" />
-	
 	</class>
 
 </hibernate-mapping>
