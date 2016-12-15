@@ -114,7 +114,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 					IOUtils.copy((InputStream) data, fout);
 				}
 				catch (IOException e) {
-					throw new APIException("Obs.error.unable.convert.complex.data", new Object[] { "input stream" }, e);
+					throw new APIException("Failed to write complex obs to the file system.", e);
 				}
 			}
 			
