@@ -14,8 +14,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -131,6 +133,13 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 				}
 				catch (IOException e) {
 					throw new APIException("Obs.error.unable.convert.complex.data", new Object[] { "Reader" }, e);
+				}
+			} else if (InputStream.class.isAssignableFrom(data.getClass())) {
+				try {
+					IOUtils.copy((InputStream) data, fout);
+				}
+				catch (IOException e) {
+					throw new APIException("Obs.error.unable.convert.complex.data", new Object[] { "input stream" }, e);
 				}
 			}
 			
