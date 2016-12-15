@@ -266,9 +266,17 @@
 		<comment>Generating UUIDs for all rows in cohort_member table via built in uuid function.</comment>
 		<update tableName="cohort_member" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid = '' OR uuid is null</where>
 		</update>
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+	</changeSet>
+	<changeSet id="201610042145-2.2" author="vshankar">
+		<preConditions>
+			<columnExists tableName="cohort_member" columnName="uuid"/>
+		</preConditions>
+		<comment>Adding unique constraint to cohort_member.uuid</comment>
+		<addUniqueConstraint tableName="cohort_member" columnNames="uuid"/>
 	</changeSet>
 	<changeSet id="201610242135-1" author="vshankar">
 		<comment>Adding foreign key constraint to cohort_member.cohort_id</comment>
