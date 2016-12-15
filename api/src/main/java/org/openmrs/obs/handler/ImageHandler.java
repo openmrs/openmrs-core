@@ -143,8 +143,9 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 			throw new APIException("Obs.error.cannot.save.complex", new Object[] { obs.getObsId() });
 		}
 		
+		File outfile = null;
 		try {
-			File outfile = getOutputFileToWrite(obs);
+			outfile = getOutputFileToWrite(obs);
 			
 			String extension = getExtension(obs.getComplexData().getTitle());
 			
@@ -161,6 +162,9 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 			
 		}
 		catch (IOException ioe) {
+		   if (outfile != null && outfile.length() == 0) {
+		      outfile.delete(); // OpenJDK 7 & 8 may leave a 0-byte file when ImageIO.write(..) fails.
+		   }
 			throw new APIException("Obs.error.trying.write.complex", null, ioe);
 		}
 		
