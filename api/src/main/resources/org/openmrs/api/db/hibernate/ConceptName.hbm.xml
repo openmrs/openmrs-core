@@ -57,7 +57,11 @@
 		
 		<property name="localePreferred" type="java.lang.Boolean" column="locale_preferred" 
 		          length="1" not-null="true"/>
-		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />		
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true"/>
+
+		<many-to-one name="changedBy" class="org.openmrs.User" column="changed_by"/>
+		<property name="dateChanged" type="java.util.Date"
+				  column="date_changed" length="19"/>
 	</class>
 	
 </hibernate-mapping>

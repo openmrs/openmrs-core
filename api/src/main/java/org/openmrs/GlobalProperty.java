@@ -16,6 +16,8 @@ import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.SingleCustomValue;
 
+import java.util.Date;
+
 /**
  * Global properties are simple key-value pairs persisted in the database GPs can be thought of as
  * something similar to environment variables used in operating systems.
@@ -40,6 +42,10 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	private String preferredHandlerClassname;
 	
 	private String handlerConfig;
+	
+	private User changedBy;
+	
+	private Date dateChanged;
 	
 	/**
 	 * Default empty constructor
@@ -298,5 +304,33 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	public boolean getDirty() {
 		return dirty;
+	}
+	
+	/**
+	 * @return Returns the changedBy.
+	 */
+	public User getChangedBy() {
+		return changedBy;
+	}
+	
+	/**
+	 * @param changedBy The user that changed this object
+	 */
+	public void setChangedBy(User changedBy) {
+		this.changedBy = changedBy;
+	}
+	
+	/**
+	 * @return Returns the date this object was changed
+	 */
+	public Date getDateChanged() {
+		return dateChanged;
+	}
+	
+	/**
+	 * @param dateChanged The date this object was changed
+	 */
+	public void setDateChanged(Date dateChanged) {
+		this.dateChanged = dateChanged;
 	}
 }
