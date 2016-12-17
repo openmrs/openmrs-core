@@ -190,7 +190,7 @@ public class ModuleFilterMapping implements Serializable {
 		log.debug("Checking URL <" + requestPath + "> against pattern <" + patternToCheck + ">");
 		
 		// Match exact or full wildcard
-		if (patternToCheck.equals("*") || patternToCheck.equals("/*") || patternToCheck.equals(requestPath)) {
+		if ("*".equals(patternToCheck) || "/*".equals(patternToCheck) || patternToCheck.equals(requestPath)) {
 			return true;
 		}
 		

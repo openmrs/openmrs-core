@@ -79,6 +79,10 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@Field
 	private Boolean localePreferred = false;
 	
+	private User changedBy;
+	
+	private Date dateChanged;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -564,36 +568,30 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	}
 	
 	/**
-	 * Not currently used. Always returns null.
-	 *
-	 * @see org.openmrs.Auditable#getChangedBy()
+	 * @return Returns the changedBy.
 	 */
 	public User getChangedBy() {
-		return null;
+		return changedBy;
 	}
 	
 	/**
-	 * Not currently used. Always returns null.
-	 *
-	 * @see org.openmrs.Auditable#getDateChanged()
-	 */
-	public Date getDateChanged() {
-		return null;
-	}
-	
-	/**
-	 * Not currently used.
-	 *
-	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
+	 * @param changedBy The user that changed this object
 	 */
 	public void setChangedBy(User changedBy) {
+		this.changedBy = changedBy;
 	}
 	
 	/**
-	 * Not currently used.
-	 *
-	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
+	 * @return Returns the date this object was changed
+	 */
+	public Date getDateChanged() {
+		return dateChanged;
+	}
+	
+	/**
+	 * @param dateChanged The date this object was changed
 	 */
 	public void setDateChanged(Date dateChanged) {
+		this.dateChanged = dateChanged;
 	}
 }

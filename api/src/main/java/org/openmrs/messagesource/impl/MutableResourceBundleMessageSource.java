@@ -145,7 +145,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 			}
 			catch (Exception e) {
 				// skip over errors in loading a single file
-				log.error("Unable to load properties from file: " + propertiesFile.getFilename());
+				log.error("Unable to load properties from file: " + propertiesFile.getFilename(), e);
 			}
 		}
 		return presentations;
