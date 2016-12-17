@@ -28,7 +28,7 @@ import java.util.Collection;
 @Handler(supports = {Cohort.class}, order=50)
 public class CohortValidator implements Validator {
 
-	protected static final Log log = LogFactory.getLog(Cohort.class);
+	private static final Log LOG = LogFactory.getLog(Cohort.class);
 
 	public boolean supports(Class c) {
 		return Cohort.class.isAssignableFrom(c);

@@ -1785,7 +1785,7 @@ public class InitializationFilter extends StartupFilter {
 									Context.logout();
 								}
 								catch (ContextAuthenticationException ex) {
-									log.info("No need to change admin password.");
+									log.info("No need to change admin password.", ex);
 								}
 							}
 						}

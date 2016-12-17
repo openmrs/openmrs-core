@@ -12,7 +12,6 @@ package org.openmrs.api.cache;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
-import net.sf.ehcache.config.Configuration;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 
 import java.util.List;
