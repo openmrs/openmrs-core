@@ -784,7 +784,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public void checkIfFormsAreLocked() {
 		String locked = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FORMS_LOCKED,
 		    "false");
-		if (locked.toLowerCase().equals("true")) {
+		if ("true".equals(locked.toLowerCase())) {
 			throw new FormsLockedException();
 		}
 	}

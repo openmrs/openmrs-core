@@ -685,7 +685,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (checkLocation) {
 			query.setInteger("locationId", patientIdentifier.getLocation().getLocationId());
 		}
-		return !query.uniqueResult().toString().equals("0");
+		return !"0".equals(query.uniqueResult().toString());
 	}
 	
 	/**

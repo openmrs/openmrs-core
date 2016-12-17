@@ -230,7 +230,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 			if (comment.startsWith("MAP TYPE:")) {
 				comment = comment.substring(9).trim();
 				
-				if (comment.equals("SAME-AS FROM RXNORM")) {
+				if ("SAME-AS FROM RXNORM".equals(comment)) {
 					comment = "SAME-AS";
 				}
 				

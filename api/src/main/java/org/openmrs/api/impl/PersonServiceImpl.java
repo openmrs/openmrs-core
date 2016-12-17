@@ -932,7 +932,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public void checkIfPersonAttributeTypesAreLocked() {
 		String locked = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED, "false");
-		if (locked.toLowerCase().equals("true")) {
+		if ("true".equals(locked.toLowerCase())) {
 			throw new PersonAttributeTypeLockedException();
 		}
 	}

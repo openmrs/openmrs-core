@@ -193,7 +193,7 @@ public class ConceptNumeric extends Concept {
 	 */
 	@Override
 	public boolean isNumeric() {
-		return getDatatype().getName().equals("Numeric");
+		return "Numeric".equals(getDatatype().getName());
 	}
 	
 	/**

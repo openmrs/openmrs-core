@@ -673,7 +673,7 @@ public class ORUR01Handler implements Application {
 				concept = concept.hydrate(concept.getConceptId().toString());
 				obs.setConcept(concept);
 				if (concept.getDatatype().isBoolean()) {
-					obs.setValueBoolean(value.equals("1"));
+					obs.setValueBoolean("1".equals(value));
 				} else if (concept.getDatatype().isNumeric()) {
 					try {
 						obs.setValueNumeric(Double.valueOf(value));

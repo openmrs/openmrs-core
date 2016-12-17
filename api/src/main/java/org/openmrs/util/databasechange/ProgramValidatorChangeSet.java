@@ -85,7 +85,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		}
 		for (List<Object> row : results) {
 			Integer conceptId = Integer.valueOf(row.get(0).toString());
-			boolean isInitial = row.get(1).toString().equals("1");
+			boolean isInitial = "1".equals(row.get(1).toString());
 			int num = Integer.parseInt(row.get(2).toString());
 			if (isInitial && num > 0) {
 				missingInitial.remove(conceptId);
