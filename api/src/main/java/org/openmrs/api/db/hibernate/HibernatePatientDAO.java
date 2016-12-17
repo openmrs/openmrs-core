@@ -452,7 +452,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		List<Patient> patients = new Vector<Patient>();
 		List<Integer> patientIds = new Vector<Integer>();
 
-		if (attributes.size() > 0) {
+		if (CollectionsUtil.isNotEmpty(attributes)) {
 
 			String sqlString = getDuplicatePatientsSQLString(attributes);
 			if(sqlString != null) {

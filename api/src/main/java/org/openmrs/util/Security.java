@@ -102,7 +102,11 @@ public class Security {
 	 * @return the error message string with algorithm type used
 	 */
 	public static String passwordEncodeFail(String algo) {
+<<<<<<< HEAD
 		String errorMessage = "Can't encode password because the given algorithm: " + algo + "was not found! (fail)";
+=======
+	  String errorMessage = "Can't encode password because the given algorithm: " + algo + "was not found! (fail)";
+>>>>>>> aaa53b42be7cd36297e11b2596da858d92c767fd
 		return errorMessage;
 	}
 	
