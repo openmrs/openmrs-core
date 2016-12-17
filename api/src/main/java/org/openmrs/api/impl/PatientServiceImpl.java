@@ -1583,7 +1583,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public void checkIfPatientIdentifierTypesAreLocked() {
 		String locked = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED, "false");
-		if (locked.toLowerCase().equals("true")) {
+		if ("true".equals(locked.toLowerCase())) {
 			throw new PatientIdentifierTypeLockedException();
 		}
 	}

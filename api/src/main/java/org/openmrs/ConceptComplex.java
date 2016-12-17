@@ -85,7 +85,7 @@ public class ConceptComplex extends Concept {
 			return false;
 		}
 		
-		return getDatatype().getHl7Abbreviation().equals("ED");
+		return "ED".equals(getDatatype().getHl7Abbreviation());
 	}
 	
 	/**

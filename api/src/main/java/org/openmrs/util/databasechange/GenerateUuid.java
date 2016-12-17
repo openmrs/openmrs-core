@@ -106,7 +106,7 @@ public class GenerateUuid implements CustomTaskChange {
 			initialAutoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
 			
-			if (database.getTypeName().equals("mysql")) {
+			if ("mysql".equals(database.getTypeName())) {
 				String updateSql = "update %s set " + columnName + " = uuid() where " + columnName + " is null";
 				for (String tablename : tableNamesArray) {
 					String rawSql = String.format(updateSql, tablename);

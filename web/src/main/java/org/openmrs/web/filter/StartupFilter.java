@@ -149,9 +149,9 @@ public abstract class StartupFilter implements Filter {
 				httpResponse.sendRedirect("/" + WebConstants.WEBAPP_NAME + "/" + WebConstants.SETUP_PAGE_URL);
 			} else {
 				
-				if (httpRequest.getMethod().equals("GET")) {
+				if ("GET".equals(httpRequest.getMethod())) {
 					doGet(httpRequest, httpResponse);
-				} else if (httpRequest.getMethod().equals("POST")) {
+				} else if ("POST".equals(httpRequest.getMethod())) {
 					// only clear errors before POSTS so that redirects can show errors too.
 					errors.clear();
 					msgs.clear();

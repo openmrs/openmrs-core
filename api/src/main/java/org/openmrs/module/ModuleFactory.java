@@ -289,7 +289,7 @@ public class ModuleFactory {
 			
 			// if a 'moduleid.started' property doesn't exist, start the module anyway
 			// as this is probably the first time they are loading it
-			if (startedProp == null || startedProp.equals("true") || "true".equalsIgnoreCase(mandatoryProp)
+			if (startedProp == null || "true".equals(startedProp) || "true".equalsIgnoreCase(mandatoryProp)
 			        || mod.isMandatory() || isCoreToOpenmrs) {
 				modules.add(mod);
 			}
