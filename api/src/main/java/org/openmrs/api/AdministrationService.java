@@ -25,6 +25,7 @@ import org.openmrs.util.HttpClient;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.validation.Errors;
 
 /**

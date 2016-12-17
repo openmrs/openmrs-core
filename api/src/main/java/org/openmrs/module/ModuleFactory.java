@@ -613,9 +613,8 @@ public class ModuleFactory {
 					continue;
 				}
 				
-				if (!mod.isStarted()) {
+				if (!mod.isStarted())
 					startModule(mod);
-				}
 			}
 			
 			if (missingModules > 0) {
@@ -623,10 +622,7 @@ public class ModuleFactory {
 				log.error(message);
 				module.setStartupErrorMessage(message);
 				notifySuperUsersAboutModuleFailure(module);
-
-				// instead of return null, i realized that Daemon.startModule() 
-				// always returns a Module object,irrespective of whether the startup succeeded
-				return module;   
+				return module; // instead of return null, i realized that Daemon.startModule() always returns a Module object,irrespective of whether the startup succeeded  
 			}
 		}
 		return Daemon.startModule(module, isOpenmrsStartup, applicationContext);

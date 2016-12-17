@@ -297,7 +297,7 @@ public class WebUtil implements GlobalPropertyListener {
 			return null;
 		}
 		localeString = localeString.trim();
-		if (localeString.isEmpty() || "_".equals(localeString)) {
+		if (localeString.isEmpty() || localeString.equals("_")) {
 			return null;
 		}
 		int len = localeString.length();

@@ -10,12 +10,15 @@
 package org.openmrs.api.impl;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.openmrs.ConceptDescription;
 import org.openmrs.OrderSet;
 import org.openmrs.OrderSetMember;
+import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderSetDAO;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 

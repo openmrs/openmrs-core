@@ -87,27 +87,13 @@ public class Security {
 		}
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
-			log.error(passwordEncodeFail(algorithm), e);
+			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
 			throw new APIException("system.cannot.find.password.encryption.algorithm", null, e);
 		}
 		catch (UnsupportedEncodingException e) {
 			throw new APIException("system.cannot.find.encoding", new Object[] { encoding }, e);
 		}
 		return hexString(md.digest(input));
-	}
-	
-	/**
-	 * This method is called when password cannot be encoded
-	 * @param algo algorithm used for encoding
-	 * @return the error message string with algorithm type used
-	 */
-	public static String passwordEncodeFail(String algo) {
-<<<<<<< HEAD
-		String errorMessage = "Can't encode password because the given algorithm: " + algo + "was not found! (fail)";
-=======
-	  String errorMessage = "Can't encode password because the given algorithm: " + algo + "was not found! (fail)";
->>>>>>> aaa53b42be7cd36297e11b2596da858d92c767fd
-		return errorMessage;
 	}
 	
 	/**
@@ -126,7 +112,7 @@ public class Security {
 		}
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
-			log.error(passwordEncodeFail(algorithm), e);
+			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
 			throw new APIException("system.cannot.find.encryption.algorithm", null, e);
 		}
 		catch (UnsupportedEncodingException e) {
@@ -174,7 +160,7 @@ public class Security {
 		}
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
-			log.error(passwordEncodeFail(algorithm), e);
+			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
 			throw new APIException("system.cannot.find.encryption.algorithm", null, e);
 		}
 		catch (UnsupportedEncodingException e) {

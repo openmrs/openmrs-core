@@ -393,17 +393,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		return dao.getHL7InErrorByUuid(uuid);
 	}
 	
-	/** 
-	 * @param idNum id number
-	 * @param fName family name
-	 * @param gName given name
-	 * @return error string. User can not be resolveUserId
-	 */
-	public String errorFindingUser(String idNum, String fName, String gName) {
-		String cantFindUser = "Error resolving user with id '" + idNum + "' family name '" + fName
-				  + "' and given name '" + gName + "'";
-		return cantFindUser;
-	}
 	/**
 	 * @param xcn HL7 component of data type XCN (extended composite ID number and name for persons)
 	 *            (see HL7 2.5 manual Ch.2A.86)
@@ -441,7 +430,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			try {
 				List<User> users = Context.getUserService().getUsersByName(givenName,familyName,true);
 				if( users == null) {
-					log.error(errorFindingUser(idNumber, familyName, givenName) + ": User not found");
+					log.error("Error resolving user with id '" + idNumber + "' family name '" + familyName
+							  + "' and given name '" + givenName + "': User not found");
 					return null;
 				}
 				else if( users.size() == 1){
@@ -449,12 +439,14 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 				}
 				else{
 					//Return null if that user ambiguous
-					log.error(errorFindingUser(idNumber, familyName, givenName) + ": Found " + users.size() + " ambiguous users.");
+					log.error("Error resolving user with id '" + idNumber + "' family name '" + familyName
+							  + "' and given name '" + givenName + "': Found " + users.size() + " ambiguous users.");
 					return null;
 				}
 			}
 			catch (Exception e) {
-				log.error(errorFindingUser(idNumber, familyName, givenName), e);
+				log.error("Error resolving user with id '" + idNumber + "' family name '" + familyName
+				        + "' and given name '" + givenName + "'", e);
 				return null;
 			}
 		}

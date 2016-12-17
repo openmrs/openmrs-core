@@ -10,6 +10,7 @@
 package org.openmrs.util;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
