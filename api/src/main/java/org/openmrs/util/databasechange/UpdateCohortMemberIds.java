@@ -31,7 +31,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class UpdateCohortMemberIds implements CustomTaskChange {
 	
-	private final static Log log = LogFactory.getLog(UpdateCohortMemberIds.class);
+	private static final Log log = LogFactory.getLog(UpdateCohortMemberIds.class);
 	
 	/**
 	 * @see CustomTaskChange#execute(Database)
@@ -69,7 +69,7 @@ public class UpdateCohortMemberIds implements CustomTaskChange {
 					stmt.close();
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the statement object");
+					log.warn("Failed to close the statement object", e);
 				}
 			}
 			
@@ -78,7 +78,7 @@ public class UpdateCohortMemberIds implements CustomTaskChange {
 					pStmt.close();
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the prepared statement object");
+					log.warn("Failed to close the prepared statement object", e);
 				}
 			}
 		}
