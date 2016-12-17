@@ -293,8 +293,8 @@ public interface AdministrationService extends OpenmrsService {
 	 * (presentation layer). This set includes all the available locales (as indicated by the
 	 * MessageSourceService) filtered by the allowed locales (as indicated by this
 	 * AdministrationService).
-	 * 
-	 * @return list of allowed presentation locales TODO change this return type to list?
+         * 
+	 * @return list of allowed presentation locales
 	 * @should return at least one locale if no locales defined in database yet
 	 * @should not return more locales than message source service locales
 	 * @should return only country locale if both country locale and language locale are specified in allowed list
