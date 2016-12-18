@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -474,7 +475,8 @@ public class HibernatePatientDAO implements PatientDAO {
 
 	private String getDuplicatePatientsSQLString(List<String> attributes) {
 		String outerSelect = "select distinct t1.patient_id from patient t1 ";
-
+		final String t5 = " = t5.";
+		
 		Class patient = Patient.class;
 		Set<String> patientFieldNames = new HashSet<>(patient.getDeclaredFields().length);
 		for (Field field : patient.getDeclaredFields()) {
@@ -515,12 +517,12 @@ public class HibernatePatientDAO implements PatientDAO {
 			}
 			if (patientFieldNames.contains(attribute)) {
 
-				AbstractEntityPersister aep = ((AbstractEntityPersister) sessionFactory.getClassMetadata(Patient.class));
+				AbstractEntityPersister aep = (AbstractEntityPersister) sessionFactory.getClassMetadata(Patient.class);
 				String[] properties = aep.getPropertyColumnNames(attribute);
 				if (properties.length >= 1) {
 					attribute = properties[0];
 				}
-				whereConditions.add(" t1." + attribute + " = t5." + attribute);
+				whereConditions.add(" t1." + attribute + t5 + attribute);
 				innerFields.add("p1." + attribute);
 			} else if (personFieldNames.contains(attribute)) {
 				if (!outerSelect.contains("person")) {
@@ -528,7 +530,7 @@ public class HibernatePatientDAO implements PatientDAO {
 					innerSelect += "inner join person person1 on p1.patient_id = person1.person_id ";
 				}
 
-				AbstractEntityPersister aep = ((AbstractEntityPersister) sessionFactory.getClassMetadata(Person.class));
+				AbstractEntityPersister aep = (AbstractEntityPersister) sessionFactory.getClassMetadata(Person.class);
 				if (aep != null) {
 					String[] properties = aep.getPropertyColumnNames(attribute);
 					if (properties != null && properties.length >= 1) {
@@ -536,7 +538,7 @@ public class HibernatePatientDAO implements PatientDAO {
 					}
 				}
 
-				whereConditions.add(" t2." + attribute + " = t5." + attribute);
+				whereConditions.add(" t2." + attribute + t5 + attribute);
 				innerFields.add("person1." + attribute);
 			} else if (personNameFieldNames.contains(attribute)) {
 				if (!outerSelect.contains("person_name")) {
@@ -545,8 +547,8 @@ public class HibernatePatientDAO implements PatientDAO {
 				}
 
 				//Since we are firing a native query get the actual table column name from the field name of the entity
-				AbstractEntityPersister aep = ((AbstractEntityPersister) sessionFactory
-						.getClassMetadata(PersonName.class));
+				AbstractEntityPersister aep = (AbstractEntityPersister) sessionFactory
+						.getClassMetadata(PersonName.class);
 				if (aep != null) {
 					String[] properties = aep.getPropertyColumnNames(attribute);
 
@@ -555,7 +557,7 @@ public class HibernatePatientDAO implements PatientDAO {
 					}
 				}
 
-				whereConditions.add(" t3." + attribute + " = t5." + attribute);
+				whereConditions.add(" t3." + attribute + t5 + attribute);
 				innerFields.add("pn1." + attribute);
 			} else if (identifierFieldNames.contains(attribute)) {
 				if (!outerSelect.contains("patient_identifier")) {
@@ -573,13 +575,13 @@ public class HibernatePatientDAO implements PatientDAO {
 					}
 				}
 
-				whereConditions.add(" t4." + attribute + " = t5." + attribute);
+				whereConditions.add(" t4." + attribute + t5 + attribute);
 				innerFields.add("pi1." + attribute);
 			} else {
 				log.warn("Unidentified attribute: " + attribute);
 			}
 		}
-		if(innerFields.size() > 0 || whereConditions.size() > 0) {
+		if(CollectionUtils.isNotEmpty(innerFields) || CollectionUtils.isNotEmpty(whereConditions)) {
 			String innerFieldsJoined = StringUtils.join(innerFields, ", ");
 			String whereFieldsJoined = StringUtils.join(whereConditions, " and ");
 			String innerWhereCondition = "";

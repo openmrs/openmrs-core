@@ -70,6 +70,17 @@ public class Security {
 	}
 	
 	/**
+	 * Gets the error message for failing to encode password when the given algorithm was not found
+	 * @param algo algorithm used for encoding
+	 * @return the error message string with algorithm type used
+	 */
+	private static String getPasswordEncodeFailMessage(String algo) {
+		String errorMessage = "Can't encode password because the given algorithm: " + algo + " was not found! (fail)";
+		return errorMessage;
+	}
+	
+	/**
+	/**
 	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
 	 * OpenMRS's preferred algorithm is hard coded to be SHA-512.
 	 *
@@ -87,7 +98,7 @@ public class Security {
 		}
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
-			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
+			log.error(getPasswordEncodeFailMessage(algorithm), e);
 			throw new APIException("system.cannot.find.password.encryption.algorithm", null, e);
 		}
 		catch (UnsupportedEncodingException e) {
@@ -112,7 +123,7 @@ public class Security {
 		}
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
-			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
+			log.error(getPasswordEncodeFailMessage(algorithm), e);
 			throw new APIException("system.cannot.find.encryption.algorithm", null, e);
 		}
 		catch (UnsupportedEncodingException e) {
@@ -160,7 +171,7 @@ public class Security {
 		}
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
-			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
+			log.error(getPasswordEncodeFailMessage(algorithm), e);
 			throw new APIException("system.cannot.find.encryption.algorithm", null, e);
 		}
 		catch (UnsupportedEncodingException e) {

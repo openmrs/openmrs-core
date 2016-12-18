@@ -393,6 +393,18 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		return dao.getHL7InErrorByUuid(uuid);
 	}
 	
+	/** Gets the error message for failing to resolve a user with a certain id, family, and given name.
+ 	 * @param idNum id number
+ 	 * @param fName family name
+ 	 * @param gName given name
+ 	 * @return error string. User can not be resolveUserId
+ 	 */
+ 	private String getFindingUserErrorMessage(String idNum, String fName, String gName) {
+ 		String cantFindUser = "Error resolving user with id '" + idNum + "' family name '" + fName
+ 				  + "' and given name '" + gName + "'";
+ 		return cantFindUser;
+ 	}
+	
 	/**
 	 * @param xcn HL7 component of data type XCN (extended composite ID number and name for persons)
 	 *            (see HL7 2.5 manual Ch.2A.86)
@@ -430,8 +442,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			try {
 				List<User> users = Context.getUserService().getUsersByName(givenName,familyName,true);
 				if( users == null) {
-					log.error("Error resolving user with id '" + idNumber + "' family name '" + familyName
-							  + "' and given name '" + givenName + "': User not found");
+					log.error(getFindingUserErrorMessage(idNumber, familyName, givenName) + ": User not found");
 					return null;
 				}
 				else if( users.size() == 1){
@@ -439,14 +450,12 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 				}
 				else{
 					//Return null if that user ambiguous
-					log.error("Error resolving user with id '" + idNumber + "' family name '" + familyName
-							  + "' and given name '" + givenName + "': Found " + users.size() + " ambiguous users.");
+					log.error(getFindingUserErrorMessage(idNumber, familyName, givenName) + ": Found " + users.size() + " ambiguous users.");
 					return null;
 				}
 			}
 			catch (Exception e) {
-				log.error("Error resolving user with id '" + idNumber + "' family name '" + familyName
-				        + "' and given name '" + givenName + "'", e);
+				log.error(getFindingUserErrorMessage(idNumber, familyName, givenName), e);
 				return null;
 			}
 		}

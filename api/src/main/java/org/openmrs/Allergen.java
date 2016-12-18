@@ -11,8 +11,6 @@ package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Concept;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.api.context.Context;
 
 /**
  * Represent allergen

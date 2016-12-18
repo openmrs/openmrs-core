@@ -16,7 +16,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.BaseOpenmrsMetadata;
-import org.openmrs.User;
 
 /**
  * Represents the metadata for a task that can be scheduled.
