@@ -563,8 +563,7 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Convenience method to establish that a patient has died. In addition to exiting the patient
 	 * from care (see above), this method will also set the appropriate patient characteristics to
-	 * indicate that they have died, when they died, etc. TODO Keep this in the PatientService? Or
-	 * move to appropriate service
+	 * indicate that they have died, when they died, etc.
 	 * 
 	 * @param patient - the patient who has died
 	 * @param dateDied - the declared date/time of the patient's death
@@ -579,7 +578,7 @@ public interface PatientService extends OpenmrsService {
 	
 	/**
 	 * Convenience method that saves the Obs that indicates when and why the patient died (including
-	 * any "other" reason there might be) TODO keep this in the PatientService?
+	 * any "other" reason there might be)
 	 * 
 	 * @param patient - the patient who has died
 	 * @param dateDied - the declared date/time of the patient's death
