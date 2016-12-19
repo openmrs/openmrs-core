@@ -295,7 +295,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 					cal.set(Calendar.HOUR_OF_DAY, 23);
 					cal.set(Calendar.MINUTE, 59);
 					cal.set(Calendar.SECOND, 59);
-					cal.set(Calendar.MILLISECOND, 0); // the OpenMRS database is only precise to the second
+					// the OpenMRS database is only precise to the second
+					cal.set(Calendar.MILLISECOND, 0);
 					order.setAutoExpireDate(cal.getTime());
 				}
 			}
