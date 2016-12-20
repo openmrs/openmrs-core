@@ -911,4 +911,39 @@ public class PersonTest extends BaseContextSensitiveTest {
 			return personAddress;
 		}
 	}
+
+	/**
+	 * @see Person#Person(Person)
+	 * @verifies deep copy all collections
+	 */
+	@Test
+	public void Person_shouldDeepCopyAllCollections() throws Exception {
+		Person personSrc = personHelper(false, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
+		personSrc.setPersonId(1);
+		PersonAddress pa = new PersonAddress(222);
+		pa.setAddress1("Test Address");
+		personSrc.getAddresses().add(pa);
+		PersonName pn = new PersonName(333);
+		pn.setGivenName("A");
+		personSrc.getNames().add(pn);
+
+		Person personDst = new Person(personSrc);
+		
+		// check deep copy of Person
+		assertFalse(personDst == personSrc);
+		assertTrue(personDst.equals(personSrc));
+		// check deep copy of PersonAddress
+		PersonAddress paSrc = personSrc.getAddresses().iterator().next();
+		PersonAddress paDst = personDst.getAddresses().iterator().next();
+		assertFalse(paDst == paSrc);
+		assertTrue(paDst.equalsContent(paSrc));
+		// check deep copy of PersonName
+		PersonName pnSrc = personSrc.getNames().iterator().next();
+		PersonName pnDst = personDst.getNames().iterator().next();
+		assertFalse(pnDst == pnSrc);
+		assertTrue(pnDst.equalsContent(pnSrc));
+		// check deep copy of PersonAttribute
+		assertFalse(personDst.getAttribute(1) == personSrc.getAttribute(1));
+		assertTrue(personDst.getAttribute(1).equalsContent(personSrc.getAttribute(1)));
+	}
 }
