@@ -808,6 +808,7 @@
 						<include>**/*.xml</include>
 					</includes>
 					<excludes>
+						<exclude>**/list-repos-using-refapp-import.txt</exclude>
 						<exclude>**/license-header.txt</exclude>
 						<exclude>.git/**</exclude>
 						<exclude>**/NaturalStrings.java</exclude>
