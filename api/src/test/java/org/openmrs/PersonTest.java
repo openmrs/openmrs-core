@@ -926,7 +926,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		PersonName pn = new PersonName(333);
 		pn.setGivenName("A");
 		personSrc.getNames().add(pn);
-
+		
 		Person personDst = new Person(personSrc);
 		
 		// check deep copy of Person
