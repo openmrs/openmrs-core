@@ -1064,7 +1064,7 @@ public class Person extends BaseOpenmrsData {
 	 * @return Deep copy of given set of addresses.
 	 */
 	private void deepCopyAddresses(Set<PersonAddress> personAddressesSrc) {
-		for(PersonAddress personAddressSrc : personAddressesSrc) {
+		for (PersonAddress personAddressSrc : personAddressesSrc) {
 			PersonAddress personAddressDst = (PersonAddress) personAddressSrc.clone();
 			personAddressDst.setPerson(this);
 			this.getAddresses().add(personAddressDst);
@@ -1075,10 +1075,10 @@ public class Person extends BaseOpenmrsData {
 	 * Creates deep copy of set of names.
 	 * 
 	 * @param personNamesSrc Set of names to be copied.
-	 * @return Deep copy of given set of names. 
+	 * @return Deep copy of given set of names.
 	 */
 	private void deepCopyNames(Set<PersonName> personNamesSrc) {
-		for(PersonName personNameSrc : personNamesSrc) {
+		for (PersonName personNameSrc : personNamesSrc) {
 			PersonName personNameDst = PersonName.newInstance(personNameSrc);
 			personNameDst.setPerson(this);
 			this.getNames().add(personNameDst);
@@ -1089,10 +1089,10 @@ public class Person extends BaseOpenmrsData {
 	 * Creates deep copy of set of attributes.
 	 * 
 	 * @param personAttributesSrc Set of attributes to be copied.
-	 * @return Deep copy of given set of attributes. 
+	 * @return Deep copy of given set of attributes.
 	 */
 	private void deepCopyAttributes(Set<PersonAttribute> personAttributesSrc) {
-		for(PersonAttribute personAttributeSrc : personAttributesSrc) {
+		for (PersonAttribute personAttributeSrc : personAttributesSrc) {
 			PersonAttribute personAttributeDst = personAttributeSrc.copy();
 			personAttributeDst.setPerson(this);
 			personAttributeDst.setPersonAttributeId(personAttributeSrc.getPersonAttributeId());
