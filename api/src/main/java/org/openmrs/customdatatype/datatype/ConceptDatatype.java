@@ -41,8 +41,10 @@ public class ConceptDatatype extends BaseOpenmrsDatatype<Concept> {
 	@Override
 	public Summary doGetTextSummary(Concept concept) {
 		String name = "";
-		if (concept.getName() != null) {
-			name = concept.getName().getName();
+		if (concept != null) {
+			if (concept.getName() != null) {
+				name = concept.getName().getName();
+			}
 		}
 		return new CustomDatatype.Summary(name, true);
 	}
