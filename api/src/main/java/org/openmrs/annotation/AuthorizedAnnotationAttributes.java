@@ -48,7 +48,7 @@ import java.util.Set;
  * &lt;/bean&gt;
  * </pre>
  * <p>
- * These security annotations are similiar to the Commons Attributes approach, however they are
+ * These security annotations are similar to the Commons Attributes approach, however they are
  * using Java 5 language-level metadata support.
  * 
  * @see org.openmrs.annotation.Authorized

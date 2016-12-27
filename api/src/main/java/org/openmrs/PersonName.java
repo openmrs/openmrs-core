@@ -363,7 +363,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	}
 	
 	/**
-	 * Convenience method to get all the names of this PersonName and concatonating them together
+	 * Convenience method to get all the names of this PersonName and concatenating them together
 	 * with spaces in between. If any part of {@link #getPrefix()}, {@link #getGivenName()},
 	 * {@link #getMiddleName()}, etc are null, they are not included in the returned name
 	 *

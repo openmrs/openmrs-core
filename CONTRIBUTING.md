@@ -2,7 +2,7 @@
 
 ## Resources for Getting Started
 
-Your contributions are what make OpenMRS an awesome Health IT system in developing countries. We want to make it as easy and fun as possible for you to contribute to the project and interact with the community. Before you get started contributing to OpenMRS, we encourage you to read both our [OpenMRS Developers Guide](http://go.openmrs.org/newdev-web) and our [Getting Started as a Developer](https://wiki.openmrs.org/x/MQAJ) wiki page.
+Your contributions are what make OpenMRS an awesome Health IT system in developing countries. We want to make it as easy and fun as possible for you to contribute to the project and interact with the community. Before you get started contributing to OpenMRS, we encourage you to read both our [OpenMRS Developers Guide](http://om.rs/newdev) and our [Getting Started as a Developer](https://wiki.openmrs.org/x/MQAJ) wiki page.
 
 ## Reporting Bugs
 
