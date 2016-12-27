@@ -441,7 +441,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return the name explicitly marked as locale preferred if any is present
 	 * @should return the fully specified name in a locale if no preferred name is set
 	 * @should return null if the only added name is an index term
-	 * @should return name in broader locale incase none is found in specific one
+	 * @should return name in broader locale in case none is found in specific one
 	 */
 	public ConceptName getName() {
 		if (getNames().size() == 0) {

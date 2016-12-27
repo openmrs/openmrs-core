@@ -35,7 +35,7 @@ public class Duration implements Operand {
 	private Units units;
 	
 	/**
-	 * Private contructor used by the static methods on this class. Use the
+	 * Private constructor used by the static methods on this class. Use the
 	 * <code>Duration duration = Duration.days(5.0);</code> to get a duration object
 	 * 
 	 * @param duration

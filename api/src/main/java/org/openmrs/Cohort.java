@@ -126,7 +126,7 @@ public class Cohort extends BaseOpenmrsData  {
 	}
 	
 	/**
-	 * Convenience contructor taking in a string that is a list of comma separated patient ids This
+	 * Convenience constructor taking in a string that is a list of comma separated patient ids This
 	 * constructor does not check whether the database contains patients with the given ids, but
 	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
 	 * @param commaSeparatedIds

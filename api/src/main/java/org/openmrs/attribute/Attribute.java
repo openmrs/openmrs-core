@@ -42,7 +42,7 @@ public interface Attribute<AT extends AttributeType, OT extends Customizable<?>>
 	void setOwner(OT owner);
 	
 	/**
-	 * @return the AttributeType that controls this attribute's behavior
+	 * @return the AttributeType that controls the behavior of this attribute
 	 */
 	AT getAttributeType();
 	
