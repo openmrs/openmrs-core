@@ -221,7 +221,7 @@ public class Context {
 	 * same time.
 	 *
 	 * @return The current UserContext for this thread.
-	 * @should fail if session hasnt been opened
+	 * @should fail if session hasn't been opened
 	 */
 	public static UserContext getUserContext() {
 		Object[] arr = userContextHolder.get();
@@ -602,7 +602,7 @@ public class Context {
 	 * logs out the "active" (authenticated) user within context
 	 *
 	 * @see #authenticate
-	 * @should not fail if session hasnt been opened yet
+	 * @should not fail if session hasn't been opened yet
 	 */
 	public static void logout() {
 		if (!isSessionOpen()) {
@@ -687,7 +687,7 @@ public class Context {
 	/**
 	 * Convenience method. Passes through to {@link UserContext#getLocale()}
 	 *
-	 * @should not fail if session hasnt been opened
+	 * @should not fail if session hasn't been opened
 	 */
 	public static Locale getLocale() {
 		// if a session hasn't been opened, just fetch the default

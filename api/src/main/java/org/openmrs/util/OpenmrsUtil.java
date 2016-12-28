@@ -1564,7 +1564,7 @@ public class OpenmrsUtil {
 		Random gen = new Random();
 		File outFile;
 		do {
-			// format to print date in filenmae
+			// format to print date in filename
 			DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HHmm-ssSSS");
 			
 			// use current date if none provided

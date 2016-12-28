@@ -125,7 +125,7 @@ public interface EncounterService extends OpenmrsService {
 	 * Get encounters (not voided) for a patient identifier
 	 * 
 	 * @param identifier
-	 * @return all encounters (not retired) for the given patient identifer
+	 * @return all encounters (not retired) for the given patient identifier
 	 * @throws APIException
 	 * @should not get voided encounters
 	 * @should throw error if given null parameter

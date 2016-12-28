@@ -54,7 +54,7 @@ public class LoggingAdvice implements MethodInterceptor {
 		Method method = invocation.getMethod();
 		String name = method.getName();
 		
-		// decide what type of logging we're doing with the current method and loglevel
+		// decide what type of logging we're doing with the current method and the loglevel
 		boolean isSetterTypeOfMethod = OpenmrsUtil.stringStartsWith(name, SETTER_METHOD_PREFIXES);
 		boolean logGetter = !isSetterTypeOfMethod && log.isDebugEnabled();
 		boolean logSetter = isSetterTypeOfMethod && log.isInfoEnabled();

@@ -49,7 +49,7 @@ public class Security {
 	 * string-to-hash is usually of the form password + salt. <br>
 	 * <br>
 	 * This should be used so that this class can compare against the new correct hashing algorithm
-	 * and the old incorrect hashin algorithm.
+	 * and the old incorrect hashing algorithm.
 	 *
 	 * @param hashedPassword a stored password that has been hashed previously
 	 * @param passwordToHash a string to encode/hash and compare to hashedPassword
