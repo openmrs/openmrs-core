@@ -295,7 +295,6 @@ public class HL7Util {
 			        + "' in the application data directory as the root directory for hl7_in_archives");
 		}
 		
-		//TODO Should take care of the case where the user is using removable media, this might explode
 		return OpenmrsUtil.getDirectoryInApplicationDataDirectory(archiveDir);
 	}
 }
