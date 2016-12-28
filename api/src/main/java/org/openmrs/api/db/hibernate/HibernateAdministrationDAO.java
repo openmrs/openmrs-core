@@ -266,7 +266,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 * Fetches all validators that are registered
 	 *
 	 * @param obj the object that will be validated
-	 * @return list of compatibile validators
+	 * @return list of compatible validators
 	 */
 	protected List<Validator> getValidators(Object obj) {
 		List<Validator> matchingValidators = new Vector<Validator>();

@@ -1011,7 +1011,7 @@ public class ModuleFactory {
 	}
 	
 	/**
-	 * Execute all unrun changeSets in liquibase.xml for the given module
+	 * Execute all not run changeSets in liquibase.xml for the given module
 	 * 
 	 * @param module the module being executed on
 	 */

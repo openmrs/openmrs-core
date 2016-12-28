@@ -354,7 +354,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return locales
 	 * @throws APIException
 	 * @since 1.8.4, 1.9.1, 1.10
-	 * @should include currently selected full locale and langugage
+	 * @should include currently selected full locale and language
 	 * @should include users proficient locales
 	 * @should exclude not allowed locales
 	 * @should cache results for a user

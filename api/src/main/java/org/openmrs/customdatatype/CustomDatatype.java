@@ -84,7 +84,7 @@ public interface CustomDatatype<T> {
 	void validate(T typedValue) throws InvalidCustomValueException;
 	
 	/**
-	 * A short reprepresentation of a custom value, along with an indication of whether this is the complete value,
+	 * A short representation of a custom value, along with an indication of whether this is the complete value,
 	 * or just a summary.
 	 */
 	public class Summary {

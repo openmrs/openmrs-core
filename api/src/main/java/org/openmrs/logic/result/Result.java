@@ -39,7 +39,7 @@ public class Result extends ArrayList<Result> {
 	/**
 	 * Core datatypes for a result. Each result is one of these datatypes, but can be easily coerced
 	 * into the other datatypes. To promote flexibility and maximize re-usability of logic rules,
-	 * the value of a result can be controlled individually for each datatype &mdash; i.e., specfic
+	 * the value of a result can be controlled individually for each datatype &mdash; i.e., specific
 	 * datatype representations of a single result can be overridden. For example, a result could
 	 * have a <em>numeric</em> value of 0.15 and its text value could be overridden to be
 	 * "15 percent" or "Fifteen percent."

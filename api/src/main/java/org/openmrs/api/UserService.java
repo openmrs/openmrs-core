@@ -136,7 +136,7 @@ public interface UserService extends OpenmrsService {
 	public User saveUser(User user) throws APIException;
 	
 	/**
-	 * Deactive a user account so that it can no longer log in.
+	 * Deactivate a user account so that it can no longer log in.
 	 * 
 	 * @param user
 	 * @param reason

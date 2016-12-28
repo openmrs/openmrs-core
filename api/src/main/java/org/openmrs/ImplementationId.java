@@ -105,7 +105,7 @@ public class ImplementationId implements java.io.Serializable {
 	
 	/**
 	 * This text is a long text string that is used to validate who uses an implementation id.
-	 * Multiple installations of openmrs can use the same implmentation id, but they must all know
+	 * Multiple installations of openmrs can use the same implementation id, but they must all know
 	 * the passphrase. (Note that if an implementation id is shared, it is assumed that those
 	 * installations are the same implementation).
 	 *
@@ -117,7 +117,7 @@ public class ImplementationId implements java.io.Serializable {
 	
 	/**
 	 * This text is a long text string that is used to validate who uses an implementation id.
-	 * Multiple installations of openmrs can use the same implmentation id, but they must all know
+	 * Multiple installations of openmrs can use the same implementation id, but they must all know
 	 * the passphrase. (Note that if an implementation id is shared, it is assumed that those
 	 * installations are the same implementation).
 	 *

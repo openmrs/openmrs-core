@@ -78,7 +78,7 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	/**
 	 * Expose the xstream object, so that module can config with xstream as need
 	 *
-	 * @return xstream can be configed by module
+	 * @return xstream can be configured by module
 	 */
 	public XStream getXstream() {
 		return xstream;

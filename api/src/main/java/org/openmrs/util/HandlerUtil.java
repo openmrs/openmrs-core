@@ -165,7 +165,7 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 	 * 
 	 * @param handlerType the class that is an annotated {@link Handler} to retrieve
 	 * @param type the class that the annotated {@link Handler} must support
-	 * @return the class of the passed hanlerType with the lowest configured order
+	 * @return the class of the passed handlerType with the lowest configured order
 	 * @should return the preferred handler for the passed handlerType and type
 	 * @should throw a APIException if no handler is found
 	 * @should throw a APIException if multiple preferred handlers are found

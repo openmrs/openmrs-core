@@ -711,7 +711,7 @@ public class ModuleUtil {
 					}
 					http.disconnect();
 					// Redirection should be allowed only for HTTP and HTTPS
-					// and should be limited to 5 redirections at most.
+					// and should be limited to 5 redirects at most.
 					if (target == null || !("http".equals(target.getProtocol()) || "https".equals(target.getProtocol()))
 					        || redirects >= 5) {
 						throw new SecurityException("illegal URL redirect");
@@ -800,7 +800,7 @@ public class ModuleUtil {
 					log.debug("Update for mod: " + mod.getModuleId() + " compareVersion result: "
 					        + compareVersion(mod.getVersion(), parser.getCurrentVersion()));
 					
-					// check the udpate.rdf version against the installed version
+					// check the update.rdf version against the installed version
 					if (compareVersion(mod.getVersion(), parser.getCurrentVersion()) < 0) {
 						if (mod.getModuleId().equals(parser.getModuleId())) {
 							mod.setDownloadURL(parser.getDownloadURL());
