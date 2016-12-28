@@ -30,8 +30,6 @@ import org.openmrs.logic.LogicException;
  * results and has some prior knowledge of the objects returned by a particular rule can more easily
  * get to the full-featured objects instead of the simplified values in the date-value pairs.<br>
  * <br>
- * TODO: eliminate unnecessary methods (toDatetime(), getDatetime(), and getDate() should all do the
- * same thing)<br>
  * TODO: better support/handling of NULL_RESULT
  */
 public class Result extends ArrayList<Result> {
