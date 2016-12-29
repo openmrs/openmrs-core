@@ -382,7 +382,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	// patient identifier _type_ section
 	
 	/**
-	 * TODO: Add changedBy and DateChanged columns to table patient_identifier_type
 	 * 
 	 * @see org.openmrs.api.PatientService#savePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
