@@ -804,7 +804,20 @@ public class PersonTest extends BaseContextSensitiveTest {
 		Person person = personHelper(true, 1, 1, 3, "name1", "name2", "name3", "value1", "value2", "value3");
 		Assert.assertEquals(0, person.getAttributes(new Integer(1)).size());
 	}
+	
+	/**
+	 * @see Person#setDeathDate(Date)
+	 */
+	@Test
+	@Verifies(value = "should set dead to true if set deathdate", method = "setDeathDate(date)")
+	public void shouldSetDeadToTrueIfSetDeathdate() throws Exception {
 
+		Person p = new Person();
+		Date deathdate = new Date(2014, 10, 26);
+		p.setDeathDate(deathDate);
+		Assert.assertTrue(p.getDead());
+	}
+	
 	private Person personHelper(boolean isVoid, int attributeType1, int attributeType2, int attributeType3, String attributeName1, String attributeName2, String attributeName3, String attributeValue1, String attributeValue2, String attributeValue3) {
 		Person person = new Person();
 
