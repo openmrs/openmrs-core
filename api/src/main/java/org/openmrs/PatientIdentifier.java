@@ -39,9 +39,6 @@ import java.util.Comparator;
  * @see org.openmrs.PatientIdentifierType
  */
 @Indexed
-@AnalyzerDef(name = "PatientIdentifierAnalyzer", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
-		@TokenFilterDef(factory = StandardFilterFactory.class), @TokenFilterDef(factory = LowerCaseFilterFactory.class) })
-@Analyzer(definition = "PatientIdentifierAnalyzer")
 public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serializable, Comparable<PatientIdentifier> {
 	
 	public static final long serialVersionUID = 1123121L;

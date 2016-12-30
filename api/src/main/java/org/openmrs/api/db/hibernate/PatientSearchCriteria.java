@@ -36,7 +36,10 @@ import org.openmrs.util.OpenmrsConstants;
 /**
  * The PatientSearchCriteria class. It has API to return a criteria from the Patient Name and
  * identifier.
+ *
+ * @deprecated since 2.1.0 (in favor of Hibernate Search)
  */
+@Deprecated
 public class PatientSearchCriteria {
 	
 	private final static Log log = LogFactory.getLog(PatientSearchCriteria.class);

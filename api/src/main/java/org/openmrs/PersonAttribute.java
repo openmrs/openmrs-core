@@ -18,13 +18,16 @@ import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.TokenFilterDef;
 import org.hibernate.search.annotations.TokenizerDef;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -45,9 +48,6 @@ import java.util.Date;
  * @see org.openmrs.Attributable
  */
 @Indexed
-@AnalyzerDef(name = "PersonAttributeAnalyzer", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
-		@TokenFilterDef(factory = StandardFilterFactory.class), @TokenFilterDef(factory = LowerCaseFilterFactory.class) })
-@Analyzer(definition = "PersonAttributeAnalyzer")
 public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializable, Comparable<PersonAttribute> {
 	
 	public static final long serialVersionUID = 11231211232111L;
@@ -63,7 +63,11 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	
 	private PersonAttributeType attributeType;
 
-	@Field
+	@Fields({
+			@Field(name = "value", analyzer = @Analyzer(definition = LuceneAnalyzers.STARTS_WITH_ANALYZER)),
+			@Field(name = "valueExact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(2f)),
+			@Field(name = "valueAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.MATCH_ANYWHERE_ANALYZER))
+	})
 	private String value;
 	
 	/** default constructor */

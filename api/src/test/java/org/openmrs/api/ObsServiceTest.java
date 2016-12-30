@@ -1260,6 +1260,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should get obs matching patient identifier in searchString", method = "getObservations(String)")
 	public void getObservations_shouldGetObsMatchingPatientIdentifierInSearchString() throws Exception {
 		executeDataSet(INITIAL_OBS_XML);
+
+		updateSearchIndex();
 		
 		ObsService obsService = Context.getObsService();
 		

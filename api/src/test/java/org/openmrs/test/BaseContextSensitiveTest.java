@@ -879,7 +879,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 				
 				//Commit so that it is not rolled back after a test.
 				getConnection().commit();
-				
+
 				updateSearchIndex();
 				
 				isBaseSetup = true;

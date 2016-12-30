@@ -116,6 +116,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 		Context.clearSession();
 
+		updateSearchIndex();
+
 		enc = es.getEncounter(100);
 
 		Set<Obs> obsAtTopLevelUpdated = enc.getObsAtTopLevel(true);

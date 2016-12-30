@@ -12,27 +12,15 @@ package org.openmrs;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
-import org.apache.lucene.analysis.core.WhitespaceTokenizerFactory;
-import org.apache.lucene.analysis.ngram.EdgeNGramFilterFactory;
-import org.apache.lucene.analysis.ngram.NGramFilterFactory;
-import org.apache.lucene.analysis.standard.StandardFilterFactory;
-import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.AnalyzerDef;
-import org.hibernate.search.annotations.AnalyzerDefs;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.Parameter;
-import org.hibernate.search.annotations.TokenFilterDef;
-import org.hibernate.search.annotations.TokenizerDef;
+import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
@@ -48,29 +36,10 @@ import static org.apache.commons.lang.StringUtils.defaultString;
  * A Person can have zero to n PersonName(s).
  */
 @Indexed
-@AnalyzerDefs({
-		@AnalyzerDef(name = "PartialPersonNameAnalyzer",
-				tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
-				filters = {
-						@TokenFilterDef(factory = StandardFilterFactory.class),
-						@TokenFilterDef(factory = LowerCaseFilterFactory.class),
-						@TokenFilterDef(factory = EdgeNGramFilterFactory.class, params = {
-								@Parameter(name = "minGramSize", value = "2"),
-								@Parameter(name = "maxGramSize", value = "20") })
-				}),
-		@AnalyzerDef(name = "PartialPersonNameQueryAnalyzer",
-				tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
-				filters = {
-						@TokenFilterDef(factory = StandardFilterFactory.class),
-						@TokenFilterDef(factory = LowerCaseFilterFactory.class)
-				})
-}
-)
-
 public class PersonName extends BaseOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName> {
 	
 	public static final long serialVersionUID = 4353L;
-	
+
 	private static final Log log = LogFactory.getLog(PersonName.class);
 
 	// Fields
@@ -83,29 +52,33 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	private Boolean preferred = false;
 
 	@Fields({
-		@Field(name = "givenNameExact", analyzer = @Analyzer(definition = "PartialPersonNameQueryAnalyzer"), boost = @Boost(2f)),
-		@Field(analyzer = @Analyzer(definition = "PartialPersonNameAnalyzer"), boost = @Boost(2f))
+			@Field(name = "givenName", analyzer = @Analyzer(definition = LuceneAnalyzers.STARTS_WITH_ANALYZER), boost = @Boost(3f)),
+			@Field(name = "givenNameExact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(2f)),
+			@Field(name = "givenNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.MATCH_ANYWHERE_ANALYZER), boost = @Boost(3f))
 	})
 	private String givenName;
 	private String prefix;
 
 	@Fields({
-		@Field(name = "middleNameExact", analyzer = @Analyzer(definition = "PartialPersonNameQueryAnalyzer"), boost = @Boost(2f)),
-		@Field(analyzer = @Analyzer(definition = "PartialPersonNameAnalyzer"))
+			@Field(name = "middleName", analyzer = @Analyzer(definition = LuceneAnalyzers.STARTS_WITH_ANALYZER)),
+			@Field(name = "middleNameExact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(2f)),
+			@Field(name = "middleNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.MATCH_ANYWHERE_ANALYZER))
 	})
 	private String middleName;
 	
 	private String familyNamePrefix;
 
 	@Fields({
-		@Field(name = "familyNameExact", analyzer = @Analyzer(definition = "PartialPersonNameQueryAnalyzer"), boost = @Boost(2f)),
-		@Field(analyzer = @Analyzer(definition = "PartialPersonNameAnalyzer"), boost = @Boost(2f))
+			@Field(name = "familyName", analyzer = @Analyzer(definition = LuceneAnalyzers.STARTS_WITH_ANALYZER), boost = @Boost(3f)),
+			@Field(name = "familyNameExact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(2f)),
+			@Field(name = "familyNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.MATCH_ANYWHERE_ANALYZER), boost = @Boost(3f)),
 	})
 	private String familyName;
 
 	@Fields({
-		@Field(name = "familyName2Exact", analyzer = @Analyzer(definition = "PartialPersonNameQueryAnalyzer"), boost = @Boost(2f)),
-		@Field(analyzer = @Analyzer(definition = "PartialPersonNameAnalyzer"))
+			@Field(name = "familyName2", analyzer = @Analyzer(definition = LuceneAnalyzers.STARTS_WITH_ANALYZER)),
+			@Field(name = "familyName2Exact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(2f)),
+			@Field(name = "familyName2Anywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.MATCH_ANYWHERE_ANALYZER)),
 	})
 	private String familyName2;
 	

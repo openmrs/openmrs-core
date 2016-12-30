@@ -581,7 +581,7 @@ public final class OpenmrsConstants {
 	 * 
 	 * @since 1.11
 	 */
-	public static final Integer SEARCH_INDEX_VERSION = 3;
+	public static final Integer SEARCH_INDEX_VERSION = 4;
 
 	/**
 	 * @since 1.12

@@ -135,6 +135,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		personService = Context.getPersonService();
 		adminService = Context.getAdministrationService();
 		locationService = Context.getLocationService();
+
+		updateSearchIndex();
 	}
 	
 	private void voidOrders(Collection<Patient> patientsWithOrders) {
@@ -342,6 +344,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void shouldGetPatientsByIdentifier() throws Exception {
 		
 		executeDataSet(CREATE_PATIENT_XML);
+		updateSearchIndex();
 		
 		// get the first patient
 		Collection<Patient> johnPatients = patientService.getPatients("John", null, null, false);
@@ -389,6 +392,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldGetPatientsByNameShouldLimitSize() throws Exception {
 		executeDataSet(JOHN_PATIENTS_XML);
+		updateSearchIndex();
 		
 		Collection<Patient> patients = patientService.getPatients("John", null, null, false);
 		
@@ -439,6 +443,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
 		authenticate();
+		updateSearchIndex();
 		
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(new PatientIdentifierType(1));
@@ -560,6 +565,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldAllowSearchStringToBeOneAccordingToMinsearchcharactersGlobalProperty() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
+		updateSearchIndex();
 		
 		// make sure the default of "2" kicks in and blocks any results
 		assertEquals(0, Context.getPatientService().getPatients("J").size());
@@ -732,6 +738,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should search familyName2 with name", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
 	public void getPatients_shouldSearchFamilyName2WithName() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
+		updateSearchIndex();
 		
 		List<Patient> patients = patientService.getPatients("Johnson", null, null, false);
 		Assert.assertEquals(3, patients.size());
@@ -1845,6 +1852,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2);
 		patient.addIdentifier(identifier);
 		Context.getPatientService().savePatient(patient);
+
+		updateSearchIndex();
+
 		assertEquals(1, Context.getPatientService().getPatients("1234-4").size());
 	}
 	
@@ -1950,6 +1960,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
 		authenticate();
+		updateSearchIndex();
 		
 		List<Patient> patients = patientService.getPatients("Jea", null, null, false);
 		// patients with patientId of 4, 5, & 6 contain "Jea" at the start of a
@@ -2042,6 +2053,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2);
 		patient.addIdentifier(identifier);
 		Context.getPatientService().savePatient(patient);
+
+		updateSearchIndex();
+
 		assertEquals(1, Context.getPatientService().getPatients("12344").size());
 		assertEquals(1, Context.getPatientService().getPatients("1234-4").size());
 	}
@@ -3203,7 +3217,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		        locationService.getLocation(1));
 		patient.addIdentifier(pId);
 		patientService.savePatient(patient);
-		
+
+		updateSearchIndex();
+
 		Assert.assertEquals(1, patientService.getPatients(identifier).size());
 	}
 	
@@ -3220,6 +3236,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		        locationService.getLocation(1));
 		patient.addIdentifier(pId);
 		patientService.savePatient(patient);
+
+		updateSearchIndex();
 		
 		Assert.assertEquals(1, patientService.getCountOfPatients(identifier).intValue());
 	}

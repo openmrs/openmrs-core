@@ -67,5 +67,4 @@ public abstract class CollectionPart<E> {
 	public boolean isTotalElementsExact() {
 		return Boolean.TRUE.equals(totalElementsExact);
 	}
-	
 }

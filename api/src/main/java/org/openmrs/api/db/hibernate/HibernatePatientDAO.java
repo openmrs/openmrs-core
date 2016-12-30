@@ -18,12 +18,12 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -34,13 +34,8 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.persister.entity.AbstractEntityPersister;
-import org.hibernate.search.FullTextQuery;
-import org.hibernate.search.FullTextSession;
-import org.hibernate.search.Search;
-import org.hibernate.search.query.dsl.QueryBuilder;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 import org.openmrs.Location;
@@ -55,9 +50,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.api.db.hibernate.search.LuceneQuery;
-import org.openmrs.api.db.hibernate.search.SkipSame;
-
-import javax.persistence.EntityManager;
+import org.openmrs.collection.ListPart;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Hibernate specific database methods for the PatientService
@@ -693,13 +687,20 @@ public class HibernatePatientDAO implements PatientDAO {
          * @return               the number of patients matching the given search phrase
 	 * @see org.openmrs.api.db.PatientDAO#getCountOfPatients(String, boolean)
 	 */
-        @Override
+	@Override
 	public Long getCountOfPatients(String query, boolean includeVoided) {
 		if (StringUtils.isBlank(query)) {
 			return 0L;
 		}
 
-		return (long) findPatients(query, includeVoided).size();
+		query = LuceneQuery.escapeQuery(query);
+
+		LuceneQuery<PatientIdentifier> identifierQuery = getPatientIdentifierLuceneQuery(query, includeVoided);
+		LuceneQuery<PersonName> nameQuery = getPersonNameLuceneQuery(query, includeVoided, identifierQuery);
+		LuceneQuery<PersonAttribute> attributeQuery = getPersonAttributeLuceneQuery(query, includeVoided, nameQuery);
+		long size = identifierQuery.resultSize() + nameQuery.resultSize() + attributeQuery.resultSize();
+
+		return size;
 	}
 
     private List<Patient> findPatients(String query, boolean includeVoided) {
@@ -707,72 +708,204 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 
 	public List<Patient> findPatients(String query, boolean includeVoided, Integer start, Integer length){
-		String personId = "person.personId";
-		String patientId = "patient.personId";
-		query = LuceneQuery.escapeQuery(query);
-
-		LuceneQuery<PatientIdentifier> luceneQuery = getPatientIdentifierLuceneQuery(query, includeVoided);
-		List<PatientIdentifier> patientIdentifiers = luceneQuery.list();
-
-		LuceneQuery<PersonName> luceneQuery2 = getPersonNameLuceneQuery(query, includeVoided);
-		luceneQuery2.skipSame(personId, new SkipSame(luceneQuery, patientId));
-		List<PersonName> personNames = luceneQuery2.list();
-
-		LuceneQuery<PersonAttribute> luceneQuery3 = getPersonAttributeLuceneQuery(query, includeVoided);
-		luceneQuery3.skipSame(personId, new SkipSame(luceneQuery, patientId), new SkipSame(luceneQuery2, personId));
-		List<PersonAttribute> personAttributes = luceneQuery3.list();
-
-		List<Patient> patientList = new LinkedList<>();
-		patientIdentifiers.forEach(patientIdentifier -> patientList.add(patientIdentifier.getPatient()));
-		personNames.forEach(personName -> patientList.add(Context.getPatientService().getPatient(personName.getPerson().getId())));
-		personAttributes.forEach(personAttribute -> patientList.add(Context.getPatientService().getPatient(personAttribute.getPerson().getId())));
-
-		int size = patientList.size();
-		if(start == null || start < 0){
+		if (start == null) {
 			start = 0;
 		}
-		if(length == null){
-			length = size - start;
-		} else if(length > size-start){
-			length = size -start;
+		if (length == null) {
+			length = Integer.MAX_VALUE;
+		}
+		query = LuceneQuery.escapeQuery(query);
+
+		List<Patient> patients = new LinkedList<>();
+
+		String minChars = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS);
+
+		if (minChars == null || !StringUtils.isNumeric(minChars)) {
+			minChars = "" + OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS;
+		}
+		if (query.length() < Integer.valueOf(minChars)) {
+			return patients;
 		}
 
-		return patientList.subList(start, start+length);
+		LuceneQuery<PatientIdentifier> identifierQuery = getPatientIdentifierLuceneQuery(query, includeVoided);
+
+		long identifiersSize = identifierQuery.resultSize();
+		if (identifiersSize > start) {
+			ListPart<PatientIdentifier> patientIdentifiers = identifierQuery.listPart(start, length);
+			patientIdentifiers.getList().forEach(patientIdentifier -> patients.add(patientIdentifier.getPatient()));
+
+			length -= patientIdentifiers.getList().size();
+			start = 0;
+		} else {
+			start -= (int) identifiersSize;
+		}
+
+		if (length == 0) {
+			return patients;
+		}
+
+		LuceneQuery<PersonName> nameQuery = getPersonNameLuceneQuery(query, includeVoided, identifierQuery);
+
+		long namesSize = nameQuery.resultSize();
+		if (namesSize > start) {
+			ListPart<PersonName> personNames = nameQuery.listPart(start, length);
+			personNames.getList().forEach(personName -> patients.add(getPatient(personName.getPerson().getId())));
+
+			length -= personNames.getList().size();
+			start = 0;
+		} else {
+			start -= (int) namesSize;
+		}
+
+		if (length == 0) {
+			return patients;
+		}
+
+		LuceneQuery<PersonAttribute> attributeQuery = getPersonAttributeLuceneQuery(query, includeVoided, nameQuery);
+		attributeQuery.skipSame("person.personId", nameQuery);
+
+		long attributesSize = attributeQuery.resultSize();
+		if (attributesSize > start) {
+			ListPart<PersonAttribute> personAttributes = attributeQuery.listPart(start, length);
+			personAttributes.getList().forEach(personAttribute -> patients.add(getPatient(personAttribute.getPerson().getId())));
+		}
+
+		return patients;
 	}
 
     private LuceneQuery<PatientIdentifier> getPatientIdentifierLuceneQuery(String query, boolean includeVoided) {
-        StringBuilder newQuery = new StringBuilder();
-        newQuery.append("identifier:\"").append(query).append("\"");
-        LuceneQuery<PatientIdentifier> luceneQuery = LuceneQuery
-                .newQuery(PatientIdentifier.class, sessionFactory.getCurrentSession(), newQuery.toString());
+		query = removeIdentifierPadding(query);
+		List<String> tokens = tokenizeIdentifierQuery(query);
+
+		LuceneQuery<PatientIdentifier> luceneQuery = LuceneQuery
+                .newQuery(PatientIdentifier.class, sessionFactory.getCurrentSession(), "identifier:(" + StringUtils.join(tokens, " OR ") + ")");
         if(!includeVoided){
         	luceneQuery.include("voided", false);
 			luceneQuery.include("patient.voided", false);
         }
-        luceneQuery.skipSame("patient.personId");
+
+		luceneQuery.skipSame("patient.personId");
+
         return luceneQuery;
     }
 
-    private LuceneQuery<PersonName> getPersonNameLuceneQuery(String query, boolean includeVoided) {
-        String[] fields = {"givenName", "givenNameExact", "middleName", "middleNameExact", "familyName", "familyNameExact", "familyName2", "familyName2Exact"};
+	private String removeIdentifierPadding(String query) {
+		String regex = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "");
+		if (Pattern.matches("^\\^.{1}\\*.*$", regex)) {
+			String padding = regex.substring(regex.indexOf("^") + 1, regex.indexOf("*"));
+			Pattern pattern = Pattern.compile("^" + padding + "+");
+			query = pattern.matcher(query).replaceFirst("");
+		}
+		return query;
+	}
+
+	/**
+	 * Copied over from PatientSearchCriteria...
+	 *
+	 * I have no idea how it is supposed to work, but tests pass...
+	 *
+	 * @param query
+	 * @return
+	 * @see PatientSearchCriteria
+	 */
+	private List<String> tokenizeIdentifierQuery(String query) {
+		List<String> searchPatterns = new ArrayList<String>();
+
+		String patternSearch = Context.getAdministrationService().getGlobalProperty(
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN, "");
+
+		if (StringUtils.isBlank(patternSearch)) {
+			searchPatterns.add(query);
+		} else {
+			// split the pattern before replacing in case the user searched on a comma
+			// replace the @SEARCH@, etc in all elements
+			for (String pattern : patternSearch.split(",")) {
+				searchPatterns.add(replaceSearchString(pattern, query));
+			}
+		}
+		return searchPatterns;
+	}
+
+	/**
+	 * Copied over from PatientSearchCriteria...
+	 *
+	 * I have no idea how it is supposed to work, but tests pass...
+	 *
+	 * Puts @SEARCH@, @SEARCH-1@, and @CHECKDIGIT@ into the search string
+	 *
+	 * @param regex the admin-defined search string containing the @..@'s to be replaced
+	 * @param identifierSearched the user entered search string
+	 * @return substituted search strings.
+	 *
+	 * @see PatientSearchCriteria#replaceSearchString(String, String)
+	 */
+	private String replaceSearchString(String regex, String identifierSearched) {
+		String returnString = regex.replaceAll("@SEARCH@", identifierSearched);
+		if (identifierSearched.length() > 1) {
+			// for 2 or more character searches, we allow regex to use last character as check digit
+			returnString = returnString.replaceAll("@SEARCH-1@", identifierSearched.substring(0,
+					identifierSearched.length() - 1));
+			returnString = returnString.replaceAll("@CHECKDIGIT@", identifierSearched
+					.substring(identifierSearched.length() - 1));
+		} else {
+			returnString = returnString.replaceAll("@SEARCH-1@", "");
+			returnString = returnString.replaceAll("@CHECKDIGIT@", "");
+		}
+		return returnString;
+	}
+
+	private LuceneQuery<PersonName> getPersonNameLuceneQuery(String query, boolean includeVoided, LuceneQuery<?> skipSame) {
+		List<String> fields = new ArrayList<>();
+		fields.addAll(Arrays.asList("givenNameExact", "middleNameExact", "familyNameExact", "familyName2Exact"));
+
+		String matchMode = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
+		if (OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE.equals(matchMode)) {
+			fields.addAll(Arrays.asList("givenNameAnywhere", "middleNameAnywhere", "familyNameAnywhere", "familyName2Anywhere"));
+		} else {
+			fields.addAll(Arrays.asList("givenName", "middleName", "familyName", "familyName2"));
+		}
+
         LuceneQuery<PersonName> luceneQuery = LuceneQuery
                 .newQuery(PersonName.class, sessionFactory.getCurrentSession(), query, fields);
+
         if(!includeVoided){
 			luceneQuery.include("voided", false);
 			luceneQuery.include("person.voided", false);
         }
+
+        if (skipSame != null) {
+			luceneQuery.skipSame("person.personId", skipSame);
+		} else {
+			luceneQuery.skipSame("person.personId");
+		}
+
         return luceneQuery;
     }
 
-    private LuceneQuery<PersonAttribute> getPersonAttributeLuceneQuery(String query, boolean includeVoided) {
-        StringBuilder newQuery = new StringBuilder();
-        newQuery.append("value:\"").append(query).append("\"");
-        LuceneQuery<PersonAttribute> luceneQuery = LuceneQuery
-                .newQuery(PersonAttribute.class, sessionFactory.getCurrentSession(), newQuery.toString());
+    private LuceneQuery<PersonAttribute> getPersonAttributeLuceneQuery(String query, boolean includeVoided, LuceneQuery<?> skipSame) {
+		List<String> fields = new ArrayList<>();
+		fields.add("valueExact");
+		String matchMode = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE);
+		if (OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE.equals(matchMode)) {
+			fields.add("valueAnywhere");
+		} else {
+			fields.add("valueStartsWith");
+		}
+
+		LuceneQuery<PersonAttribute> luceneQuery = LuceneQuery
+                .newQuery(PersonAttribute.class, sessionFactory.getCurrentSession(), query, fields);
+
         if(!includeVoided){
 			luceneQuery.include("voided", false);
 			luceneQuery.include("person.voided", false);
         }
+
+		if (skipSame != null) {
+			luceneQuery.skipSame("person.personId", skipSame);
+		} else {
+			luceneQuery.skipSame("person.personId");
+		}
+
         return luceneQuery;
     }
 
