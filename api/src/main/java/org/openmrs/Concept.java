@@ -487,7 +487,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return getSynonyms().iterator().next();
 		}
 		
-		//we dont expect to get here since every concept name must have atleast
+		//we don't expect to get here since every concept name must have atleast
 		//one fully specified name, but just in case(probably inconsistent data)
 		
 		return null;
@@ -693,7 +693,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * Convenience method that returns the fully specified name in the locale
 	 * 
-	 * @param locale locale from which to look up the fully specified name
+	 * @param locale from which to look up the fully specified name
 	 * @return the name explicitly marked as fully specified for the locale
 	 * @should return the name marked as fully specified for the given locale
 	 */
@@ -729,7 +729,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * <br>
 	 * This is recommended when managing the concept dictionary.
 	 * 
-	 * @param locale locale for which names should be returned
+	 * @param locale for which names should be returned
 	 * @return Collection of ConceptNames with the given locale
 	 */
 	public Collection<ConceptName> getNames(Locale locale) {
@@ -746,7 +746,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * Returns all names available for locale langueage "or" country. <br>
 	 * <br>
 	 * 
-	 * @param locale locale for which names should be returned
+	 * @param locale for which names should be returned
 	 * @return Collection of ConceptNames with the given locale langueage or country
 	 */
 	private Collection<ConceptName> getPartiallyCompatibleNames(Locale locale) {
@@ -855,7 +855,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * Gets the explicitly specified short name for a locale.
 	 * 
-	 * @param locale locale for which to find a short name
+	 * @param locale for which to find a short name
 	 * @return the short name, or null if none has been explicitly set
 	 */
 	public ConceptName getShortNameInLocale(Locale locale) {
@@ -909,7 +909,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return the name marked as the shortName for the locale if it is present
 	 * @should return the shortest name in a given locale for a concept if exact is true
 	 * @should return the shortest name for the concept from any locale if exact is false
-	 * @should return null if their are no names in the specified locale and exact is true
+	 * @should return null if there are no names in the specified locale and exact is true
 	 */
 	public ConceptName getShortestName(Locale locale, Boolean exact) {
 		if (log.isDebugEnabled()) {
@@ -1497,7 +1497,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * Turns this concept into a very very simple serialized string
+	 * Turns this concept into a very simple serialized string
 	 * 
 	 * @see org.openmrs.Attributable#serialize()
 	 */
@@ -1635,7 +1635,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		
 		//after sorting, we need to reset the sort weights because retired
 		//sets have moved to the bottom and hence need to be reassigned
-		//higher sort weights than the non retired ones
+		//higher sort weights than the non-retired ones
 		double weight = 990.0;
 		for (ConceptSet set : sortedConceptSets) {
 			set.setSortWeight(weight += 10.0);
