@@ -134,7 +134,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	}
 	
 	/**
-	 * bitwise copy of the personName object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
+	 * Bitwise copy of the personName object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
 	 * PersonName.person object in this object AND the cloned object will point at the same person
 	 *
 	 * @return New PersonName object
@@ -457,7 +457,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	}
 	
 	/**
-	 * TODO: the behavior of this method needs to be controlled by some sort of global property
+	 * TODO: the behaviour of this method needs to be controlled by some sort of global property
 	 * because an implementation can define how they want their names to look (which fields to
 	 * show/hide)
 	 * 

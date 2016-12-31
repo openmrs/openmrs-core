@@ -487,7 +487,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return getSynonyms().iterator().next();
 		}
 		
-		//we dont expect to get here since every concept name must have atleast
+		//we don't expect to get here since every concept name must have atleast
 		//one fully specified name, but just in case(probably inconsistent data)
 		
 		return null;
@@ -909,7 +909,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return the name marked as the shortName for the locale if it is present
 	 * @should return the shortest name in a given locale for a concept if exact is true
 	 * @should return the shortest name for the concept from any locale if exact is false
-	 * @should return null if their are no names in the specified locale and exact is true
+	 * @should return null if there are no names in the specified locale and exact is true
 	 */
 	public ConceptName getShortestName(Locale locale, Boolean exact) {
 		if (log.isDebugEnabled()) {
@@ -1497,7 +1497,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * Turns this concept into a very very simple serialized string
+	 * Turns this concept into a very simple serialized string
 	 * 
 	 * @see org.openmrs.Attributable#serialize()
 	 */
