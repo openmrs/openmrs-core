@@ -34,7 +34,19 @@ import org.openmrs.test.Verifies;
  * This class does not touch the database, so it does not need to extend the normal openmrs BaseTest
  */
 public class PersonTest extends BaseContextSensitiveTest {
-	
+    /**
+     * @see setDeathDate(Date)
+     * @Verifies(value = "should set dead to true if set deathdate", method = "setDeathDate(date)")
+     */
+    @Test
+    public void shouldSetDeadToTrueIfSetDeathdate() throws Exception {
+
+        Person p = new Person();
+        Date dd = new Date(100000000);
+        p.setDeathDate(dd);
+        Assert.assertEquals(true, p.getDead());
+    }
+
 	/**
 	 * Test the add/removeAddresses method in the person object
 	 * 
