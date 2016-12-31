@@ -167,7 +167,6 @@ public class ADTA28Handler implements Application {
 			Context.getPatientService().savePatient(patient);
 			
 		} else {
-			// TODO: Add a global property that enables different behavior here.
 			log.info("Ignoring ADT_A28 message because patient (" + patientId + ") already exists.");
 		}
 		
