@@ -130,12 +130,6 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 			location = Context.getLocationService().getLocation(Integer.valueOf(1));
 		}
 		
-		// TODO Figure out if we should/could throw an exception if there's  
-		// no location to fall back on.
-		//if (location == null) { 
-		//	throw new APIException("Default location does not exist");
-		//}
-		
 		return location;
 	}
 	
