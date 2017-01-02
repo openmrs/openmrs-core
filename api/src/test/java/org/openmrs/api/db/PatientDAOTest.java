@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.db;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hamcrest.FeatureMatcher;
@@ -16,11 +18,15 @@ import org.hamcrest.Matcher;
 import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
@@ -32,15 +38,22 @@ import org.openmrs.test.Verifies;
 import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 public class PatientDAOTest extends BaseContextSensitiveTest {
 	
@@ -2149,5 +2162,143 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		attributes.add("birthdate");
 		List<Patient> patients = dao.getDuplicatePatientsByAttributes(attributes);
 		Assert.assertEquals(31, patients.size());
+	}
+
+	@Test
+	@Ignore("Designated for manual runs")
+	public void patientSearchPerformanceTest() throws Exception {
+		URL givenNamesIn = getClass().getResource("/org/openmrs/api/db/givenNames.csv");
+		List<String> givenNames = FileUtils.readLines(new File(givenNamesIn.toURI()));
+		URL familyNamesIn = getClass().getResource("/org/openmrs/api/db/familyNames.csv");
+		List<String> familyNames = FileUtils.readLines(new File(familyNamesIn.toURI()));
+		List<String> attributes = Arrays.asList("London", "Berlin", "Warsaw", "Paris", "Zurich", "Singapore");
+
+		PatientService patientService = Context.getPatientService();
+		PatientIdentifierType idType = patientService.getPatientIdentifierTypeByName("Old Identification Number");
+		PersonAttributeType attributeType = Context.getPersonService().getPersonAttributeTypeByName("Birthplace");
+		Location location = Context.getLocationService().getLocation(1);
+		Random random = new Random(100); //set the seed to have repeatable results
+		List<String> generatedPatients = new ArrayList<>();
+		for (int i = 0; i < 20000; i++) {
+			int given = random.nextInt(givenNames.size());
+			int family = random.nextInt(familyNames.size());
+			int attribute = random.nextInt(attributes.size());
+
+			generatedPatients.add((i + 1000) + " " + givenNames.get(given) + " " + familyNames.get(family) + " " + attributes.get(attribute));
+
+			PersonName personName = new PersonName(givenNames.get(given), null, familyNames.get(family));
+			Patient patient = new Patient();
+			patient.setGender("m");
+			patient.addIdentifier(new PatientIdentifier("" + (i + 1000), idType, location));
+			patient.addName(personName);
+			PersonAttribute personAttribute = new PersonAttribute();
+			personAttribute.setAttributeType(attributeType);
+			personAttribute.setValue(attributes.get(attribute));
+			patient.addAttribute(personAttribute);
+			patientService.savePatient(patient);
+
+			if (i % 100 == 0) {
+				System.out.println("Created " + i + " patients!");
+				Context.flushSession();
+				Context.clearSession();
+			}
+		}
+
+		File file = File.createTempFile("generated-patients-", ".csv");
+		FileUtils.writeLines(file, generatedPatients);
+		System.out.println("Dumped generated patients to " + file.getAbsolutePath());
+
+		updateSearchIndex();
+
+		long time = System.currentTimeMillis();
+		List<Patient> results = patientService.getPatients("Al");
+		time = System.currentTimeMillis() - time;
+		System.out.println("Starts with search for 'Al' name returned " + results.size() + " in " + time + " ms");
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("Al", 0, 15);
+		time = System.currentTimeMillis() - time;
+		System.out.println("Starts with search for 'Al' name limited to 15 results returned in " + time + " ms");
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("Al Dem");
+		time = System.currentTimeMillis() - time;
+		System.out.println("Starts with search for 'Al Dem' name returned " + results.size() + " in " + time + " ms");
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("Al Dem", 0, 15);
+		time = System.currentTimeMillis() - time;
+		System.out.println("Starts with search for 'Al Dem' name limited to 15 results returned in " + time + " ms");
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("Jack");
+		time = System.currentTimeMillis() - time;
+		System.out.println("Exact search for 'Jack' name returned " + results.size() + " in " + time + " ms");
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("Jack", 0, 15);
+		time = System.currentTimeMillis() - time;
+		System.out.println("Exact search for 'Jack' name limited to 15 results returned in " + time + " ms");
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("Jack Sehgal");
+		time = System.currentTimeMillis() - time;
+		System.out.println("Exact search for 'Jack Sehgal' name returned " + results.size() + " in " + time + " ms");
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("Jack Sehgal", 0, 15);
+		time = System.currentTimeMillis() - time;
+		System.out.println("Exact search for 'Jack Sehgal' name limited to 15 results returned in " + time + " ms");
+
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE);
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("aso");
+		time = System.currentTimeMillis() - time;
+		System.out.println("Anywhere search for 'aso' name returned " + results.size() + " in " + time + " ms");
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("aso", 0, 15);
+		time = System.currentTimeMillis() - time;
+		System.out.println("Anywhere search for 'aso' name limited to 15 results returned in " + time + " ms");
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("aso os");
+		time = System.currentTimeMillis() - time;
+		System.out.println("Anywhere search for 'aso os' name returned " + results.size() + " in " + time + " ms");
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("aso os", 0, 15);
+		time = System.currentTimeMillis() - time;
+		System.out.println("Anywhere search for 'aso os' limited to 15 results returned in " + time + " ms");
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("9243");
+		time = System.currentTimeMillis() - time;
+		System.out.println("Exact search for '9243' identifier returned " + results.size() + " in " + time + " ms");
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("London");
+		time = System.currentTimeMillis() - time;
+		System.out.println("Exact search for 'London' attribute returned " + results.size() + " in " + time + " ms");
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("London", 0, 15);
+		time = System.currentTimeMillis() - time;
+		System.out.println("Exact search for 'London' attribute limited to 15 results returned in " + time + " ms");
+
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+				OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("uric");
+		time = System.currentTimeMillis() - time;
+		System.out.println("Anywhere search for 'uric' attribute returned " + results.size() + " in " + time + " ms");
+
+		time = System.currentTimeMillis();
+		results = patientService.getPatients("uric", 0, 15);
+		time = System.currentTimeMillis() - time;
+		System.out.println("Anywhere search for 'uric' attribute limited to 15 results returned in " + time + " ms");
 	}
 }
