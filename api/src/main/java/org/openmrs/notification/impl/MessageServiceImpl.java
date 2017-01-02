@@ -46,7 +46,7 @@ public class MessageServiceImpl implements MessageService {
 	
 	/**
 	 * Public constructor Required for use with spring's method injection. Be careful because this
-	 * class requires a DAO Context in order to work properly. Please set the DAO context
+	 * Class requires a DAO Context in order to work properly. Please set the DAO context.
 	 */
 	public MessageServiceImpl() {
 	}
@@ -207,7 +207,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 	
 	/**
-	 * Sends a message to a group of users identifier by thir role.
+	 * Sends a message to a group of users identifier by their role.
 	 */
 	public void sendMessage(Message message, Role role) throws MessageException {
 		log.debug("Sending message to role " + role);
