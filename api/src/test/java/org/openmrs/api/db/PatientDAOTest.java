@@ -2231,9 +2231,14 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		FileUtils.writeLines(file, generatedPatients);
 		System.out.println("Dumped generated patients to " + file.getAbsolutePath());
 
-		updateSearchIndex();
-
 		long time = System.currentTimeMillis();
+		updateSearchIndex();
+		time = System.currentTimeMillis() - time;
+		System.out.println("Indexing took " + time + " ms.");
+
+		patientService.getPatients("Aaaaa"); //get Lucene up to speed...
+
+		time = System.currentTimeMillis();
 		List<Patient> results = patientService.getPatients("Al");
 		time = System.currentTimeMillis() - time;
 		System.out.println("Starts with search for 'Al' name returned " + results.size() + " in " + time + " ms");
@@ -2256,22 +2261,22 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		time = System.currentTimeMillis();
 		results = patientService.getPatients("Jack");
 		time = System.currentTimeMillis() - time;
-		System.out.println("Exact search for 'Jack' name returned " + results.size() + " in " + time + " ms");
+		System.out.println("Starts with search for 'Jack' name returned " + results.size() + " in " + time + " ms");
 
 		time = System.currentTimeMillis();
 		results = patientService.getPatients("Jack", 0, 15);
 		time = System.currentTimeMillis() - time;
-		System.out.println("Exact search for 'Jack' name limited to 15 results returned in " + time + " ms");
+		System.out.println("Starts with search for 'Jack' name limited to 15 results returned in " + time + " ms");
 
 		time = System.currentTimeMillis();
 		results = patientService.getPatients("Jack Sehgal");
 		time = System.currentTimeMillis() - time;
-		System.out.println("Exact search for 'Jack Sehgal' name returned " + results.size() + " in " + time + " ms");
+		System.out.println("Starts with search for 'Jack Sehgal' name returned " + results.size() + " in " + time + " ms");
 
 		time = System.currentTimeMillis();
 		results = patientService.getPatients("Jack Sehgal", 0, 15);
 		time = System.currentTimeMillis() - time;
-		System.out.println("Exact search for 'Jack Sehgal' name limited to 15 results returned in " + time + " ms");
+		System.out.println("Starts with search for 'Jack Sehgal' name limited to 15 results returned in " + time + " ms");
 
 		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE);
