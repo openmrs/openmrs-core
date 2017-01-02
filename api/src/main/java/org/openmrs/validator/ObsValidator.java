@@ -181,7 +181,7 @@ public class ObsValidator implements Validator {
 					// If the concept numeric is not precise, the value cannot be a float, so raise an error 
 					if (!cn.isAllowDecimal() && Math.ceil(obs.getValueNumeric()) != obs.getValueNumeric()) {
 						if (atRootNode) {
-							errors.rejectValue("valueNumeric", "error.precision");
+							errors.rejectValue("valueNumeric", "Obs.error.precision");
 						} else {
 							errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
 						}
