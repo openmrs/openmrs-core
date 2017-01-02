@@ -10,7 +10,6 @@
 package org.openmrs.api.db;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hamcrest.FeatureMatcher;
@@ -24,11 +23,11 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernatePatientDAO;
 import org.openmrs.api.db.hibernate.HibernatePersonDAO;
@@ -37,10 +36,9 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,10 +48,10 @@ import java.util.Random;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 public class PatientDAOTest extends BaseContextSensitiveTest {
 	
@@ -66,6 +64,9 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	private PatientDAO dao = null;
 	
 	private PatientService pService = null;
+
+	@Autowired
+	private PersonService personService;
 	
 	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
 	
@@ -2165,8 +2166,26 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void getPatients_shouldFindOnlySearchablePersonAttributes() throws Exception {
+		PersonAttributeType attributeType = personService.getPersonAttributeTypeByName("Birthplace");
+		attributeType.setSearchable(false);
+		personService.savePersonAttributeType(attributeType);
+
+		List<Patient> patients = pService.getPatients("London");
+		assertThat(patients, is(empty()));
+
+		attributeType = personService.getPersonAttributeTypeByName("Birthplace");
+		attributeType.setSearchable(true);
+		personService.savePersonAttributeType(attributeType);
+
+		patients = pService.getPatients("London");
+		Patient patient = pService.getPatient(501);
+		assertThat(patients, contains(patient));
+	}
+
+	@Test
 	@Ignore("Designated for manual runs")
-	public void patientSearchPerformanceTest() throws Exception {
+	public void getPatients_shouldFindPatientsEfficiently() throws Exception {
 		URL givenNamesIn = getClass().getResource("/org/openmrs/api/db/givenNames.csv");
 		List<String> givenNames = FileUtils.readLines(new File(givenNamesIn.toURI()));
 		URL familyNamesIn = getClass().getResource("/org/openmrs/api/db/familyNames.csv");
@@ -2175,7 +2194,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 
 		PatientService patientService = Context.getPatientService();
 		PatientIdentifierType idType = patientService.getPatientIdentifierTypeByName("Old Identification Number");
+
 		PersonAttributeType attributeType = Context.getPersonService().getPersonAttributeTypeByName("Birthplace");
+		attributeType.setSearchable(true);
+		Context.getPersonService().savePersonAttributeType(attributeType);
+
 		Location location = Context.getLocationService().getLocation(1);
 		Random random = new Random(100); //set the seed to have repeatable results
 		List<String> generatedPatients = new ArrayList<>();

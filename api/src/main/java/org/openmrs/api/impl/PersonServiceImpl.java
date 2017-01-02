@@ -132,6 +132,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException {
 		checkIfPersonAttributeTypesAreLocked();
+
 		if (type.getSortWeight() == null) {
 			List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
 			if (allTypes.size() > 0) {
@@ -140,8 +141,12 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 				type.setSortWeight(1.0);
 			}
 		}
-		
+
+		boolean updateExisting = false;
+
 		if (type.getId() != null) {
+			updateExisting = true;
+
 			String oldTypeName = dao.getSavedPersonAttributeTypeName(type);
 			String newTypeName = type.getName();
 			
@@ -165,8 +170,15 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 				}
 			}
 		}
-		
-		return dao.savePersonAttributeType(type);
+
+		PersonAttributeType attributeType = dao.savePersonAttributeType(type);
+
+		if (updateExisting) {
+			//we need to update index in case searchable property has changed
+			Context.updateSearchIndexForType(PersonAttribute.class);
+		}
+
+		return attributeType;
 	}
 	
 	/**

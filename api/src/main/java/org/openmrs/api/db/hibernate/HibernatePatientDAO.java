@@ -711,8 +711,9 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (start == null) {
 			start = 0;
 		}
-		if (length == null) {
-			length = Integer.MAX_VALUE;
+		Integer maxLength = HibernatePersonDAO.getMaximumSearchResults();
+		if (length == null || length > maxLength) {
+			length = maxLength;
 		}
 		query = LuceneQuery.escapeQuery(query);
 
@@ -899,6 +900,8 @@ public class HibernatePatientDAO implements PatientDAO {
 			luceneQuery.include("voided", false);
 			luceneQuery.include("person.voided", false);
         }
+
+        luceneQuery.include("attributeType.searchable", true);
 
 		if (skipSame != null) {
 			luceneQuery.skipSame("person.personId", skipSame);

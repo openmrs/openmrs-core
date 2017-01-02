@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.Comparator;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.search.annotations.Field;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -28,7 +29,8 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	private Integer foreignKey;
 	
 	private Double sortWeight;
-	
+
+	@Field
 	private Boolean searchable = false;
 	
 	private Privilege editPrivilege;
