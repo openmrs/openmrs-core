@@ -133,7 +133,7 @@ public class PersonValidator implements Validator {
 			return;
 		}
 		rejectIfFutureDate(errors, deathDate, "deathDate");
-		rejectDeathDateIfBeforeBirthDate(errors, deathDate, birthdate, "deathDate");
+		rejectDeathDateIfBeforeBirthDate(errors, deathDate,birthDate, "deathDate");
 	}
 	
 	/**
@@ -164,7 +164,7 @@ public class PersonValidator implements Validator {
 			errors.rejectValue(dateField, "error.date.nonsensical");
 		}
 	}
-
+	
 	/**
 	 * Rejects a death date if it is before birth date
 	 * 
@@ -175,7 +175,8 @@ public class PersonValidator implements Validator {
 	 */
 	private void rejectDeathDateIfBeforeBirthDate(Errors errors, Date deathdate, Date birthdate, String dateField) {
 		if (deathdate.before(birthdate)) {
-			errors.rejectValue(dateField, "error.date.nonsensical");
+			errors.rejectValue(dateField, "error.deathdate.notpossible");
+			
 		}
 	}
 	
