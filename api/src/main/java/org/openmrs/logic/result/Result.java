@@ -758,17 +758,6 @@ public class Result extends ArrayList<Result> {
 		return new Result(uniqueList);
 	}
 	
-	//TODO rewrite this method
-	//
-	//	/**
-	//	 * @see java.lang.Object#hashCode()
-	//	 */
-	//	public int hashCode() {
-	//		int hashCode = 49867; // some random number
-	//		hashCode += this.hashCode();
-	//	
-	//		return hashCode;
-	//	}
 	
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
