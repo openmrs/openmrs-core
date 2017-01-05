@@ -10,14 +10,19 @@
 package org.openmrs.util;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -30,6 +35,7 @@ import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +59,6 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	private static GlobalProperty luhnGP = new GlobalProperty(
 	        OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR,
 	        OpenmrsConstants.LUHN_IDENTIFIER_VALIDATOR);
-	
 	/**
 	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onSetUpInTransaction()
 	 */
@@ -138,7 +143,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void url2file_shouldReturnNullGivenNullParameter() throws Exception {
 		assertNull(OpenmrsUtil.url2file(null));
 	}
-	
+
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
@@ -721,7 +726,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		String expectedValue = "[^\\p{InBasicLatin}\\p{InLatin1Supplement}]";
 		Properties properties = new Properties();
 		properties.setProperty(expectedProperty, expectedValue);
-		
+
 		ByteArrayOutputStream actual = new ByteArrayOutputStream();
 		ByteArrayOutputStream expected = new ByteArrayOutputStream();
 		
@@ -735,4 +740,59 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		
 		assertThat(actual.toByteArray(), is(expected.toByteArray()));
 	}
+
+	/**
+	 * @verifies not copy the outputstream when outputstream is null
+	 * @see OpenmrsUtil#copyFile(InputStream, OutputStream)
+	 */
+	@Test
+	public void copyFile_shouldNotCopyTheOutputstreamWhenOutputstreamIsNull() throws Exception {
+		String exampleInputStreamString = "ExampleInputStream";
+		ByteArrayInputStream input = new ByteArrayInputStream(exampleInputStreamString.getBytes());
+
+		OutputStream output = null;
+
+		OpenmrsUtil.copyFile(input, output);
+
+		assertNull(output);
+		assertNotNull(input);
+	}
+
+
+	/**
+	 * @verifies not copy the outputstream if inputstream is null
+	 * @see OpenmrsUtil#copyFile(InputStream, OutputStream)
+	 */
+	@Test
+	public void copyFile_shouldNotCopyTheOutputstreamIfInputstreamIsNull() throws Exception {
+		InputStream input = null;
+
+		ByteArrayOutputStream output = spy(new ByteArrayOutputStream());
+		OpenmrsUtil.copyFile(input, output);
+
+		assertNull(input);
+		assertNotNull(output);
+		verify(output, times(1)).close();
+	}
+
+	/**
+	 * @verifies copy inputstream to outputstream and close the outputstream
+	 * @see OpenmrsUtil#copyFile(InputStream, OutputStream)
+	 */
+	@Test
+	public void copyFile_shouldCopyInputstreamToOutputstreamAndCloseTheOutputstream() throws Exception {
+
+		String exampleInputStreamString = "ExampleInputStream";
+		ByteArrayInputStream expectedByteArrayInputStream = new ByteArrayInputStream(exampleInputStreamString.getBytes());
+
+		ByteArrayOutputStream output = spy(new ByteArrayOutputStream());
+		OpenmrsUtil.copyFile(expectedByteArrayInputStream, output);
+
+		expectedByteArrayInputStream.reset();
+		ByteArrayInputStream byteArrayInputStreamFromOutputStream = new ByteArrayInputStream(output.toByteArray());
+
+		assertTrue(IOUtils.contentEquals(expectedByteArrayInputStream, byteArrayInputStreamFromOutputStream));
+		verify(output, times(1)).close();
+	}
+
 }

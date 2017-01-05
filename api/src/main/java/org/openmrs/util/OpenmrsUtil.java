@@ -10,7 +10,6 @@
 package org.openmrs.util;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -66,6 +65,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -124,7 +124,7 @@ public class OpenmrsUtil {
 	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<Locale, SimpleDateFormat>();
 	
 	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<Locale, SimpleDateFormat>();
-		
+
 	/**
 	 * Compares origList to newList returning map of differences
 	 * 
@@ -270,47 +270,25 @@ public class OpenmrsUtil {
 	 * @param inputStream Stream to copy from
 	 * @param outputStream Stream/location to copy to
 	 * @throws IOException thrown if an error occurs during read/write
+	 * @should not copy the outputstream if outputstream is null
+	 * @should not copy the outputstream if inputstream is null
+	 * @should copy inputstream to outputstream and close the outputstream
 	 */
 	public static void copyFile(InputStream inputStream, OutputStream outputStream) throws IOException {
+
 		if (inputStream == null || outputStream == null) {
 			if (outputStream != null) {
-				try {
-					outputStream.close();
-				}
-				catch (Exception e) { /* pass */
-				}
+				IOUtils.closeQuietly(outputStream);
 			}
-			
 			return;
 		}
-		
-		InputStream in = null;
-		OutputStream out = null;
+
 		try {
-			in = new BufferedInputStream(inputStream);
-			out = new BufferedOutputStream(outputStream);
-			while (true) {
-				int data = in.read();
-				if (data == -1) {
-					break;
-				}
-				out.write(data);
-			}
+			IOUtils.copy(inputStream, outputStream);
+		} finally {
+			IOUtils.closeQuietly(outputStream);
 		}
-		finally {
-			if (in != null) {
-				in.close();
-			}
-			if (out != null) {
-				out.close();
-			}
-			try {
-				outputStream.close();
-			}
-			catch (Exception e) { /* pass */
-			}
-		}
-		
+
 	}
 	
 	/**
@@ -2211,4 +2189,5 @@ public class OpenmrsUtil {
 		return (c1.get(Calendar.ERA) == c2.get(Calendar.ERA) && c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) && c1
 		        .get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR));
 	}
+
 }
