@@ -1,4 +1,3 @@
-
 /**
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -12,7 +11,6 @@ package org.openmrs.api.db.hibernate;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -77,7 +75,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
      * @param patientId  internal patient identifier
      * @return           patient with given internal identifier
@@ -696,8 +694,11 @@ public class HibernatePatientDAO implements PatientDAO {
 		query = LuceneQuery.escapeQuery(query);
 
 		LuceneQuery<PatientIdentifier> identifierQuery = getPatientIdentifierLuceneQuery(query, includeVoided);
-		LuceneQuery<PersonName> nameQuery = getPersonNameLuceneQuery(query, includeVoided, identifierQuery);
-		LuceneQuery<PersonAttribute> attributeQuery = getPersonAttributeLuceneQuery(query, includeVoided, nameQuery);
+
+		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
+
+		LuceneQuery<PersonName> nameQuery = personLuceneQuery.getPersonNameQuery(query, includeVoided, identifierQuery);
+		LuceneQuery<PersonAttribute> attributeQuery = personLuceneQuery.getPersonAttributeQuery(query, includeVoided, nameQuery);
 		long size = identifierQuery.resultSize() + nameQuery.resultSize() + attributeQuery.resultSize();
 
 		return size;
@@ -732,8 +733,8 @@ public class HibernatePatientDAO implements PatientDAO {
 
 		long identifiersSize = identifierQuery.resultSize();
 		if (identifiersSize > start) {
-			ListPart<PatientIdentifier> patientIdentifiers = identifierQuery.listPart(start, length);
-			patientIdentifiers.getList().forEach(patientIdentifier -> patients.add(patientIdentifier.getPatient()));
+			ListPart<Object[]> patientIdentifiers = identifierQuery.listPartProjection(start, length, "patient.personId");
+			patientIdentifiers.getList().forEach(patientIdentifier -> patients.add(getPatient((Integer) patientIdentifier[0])));
 
 			length -= patientIdentifiers.getList().size();
 			start = 0;
@@ -745,12 +746,13 @@ public class HibernatePatientDAO implements PatientDAO {
 			return patients;
 		}
 
-		LuceneQuery<PersonName> nameQuery = getPersonNameLuceneQuery(query, includeVoided, identifierQuery);
+		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
 
+		LuceneQuery<PersonName> nameQuery = personLuceneQuery.getPersonNameQuery(query, includeVoided, identifierQuery);
 		long namesSize = nameQuery.resultSize();
 		if (namesSize > start) {
-			ListPart<PersonName> personNames = nameQuery.listPart(start, length);
-			personNames.getList().forEach(personName -> patients.add(getPatient(personName.getPerson().getId())));
+			ListPart<Object[]> personNames = nameQuery.listPartProjection(start, length, "person.personId");
+			personNames.getList().forEach(personName -> patients.add(getPatient((Integer) personName[0])));
 
 			length -= personNames.getList().size();
 			start = 0;
@@ -762,13 +764,11 @@ public class HibernatePatientDAO implements PatientDAO {
 			return patients;
 		}
 
-		LuceneQuery<PersonAttribute> attributeQuery = getPersonAttributeLuceneQuery(query, includeVoided, nameQuery);
-		attributeQuery.skipSame("person.personId", nameQuery);
-
+		LuceneQuery<PersonAttribute> attributeQuery = personLuceneQuery.getPersonAttributeQuery(query, includeVoided, nameQuery);
 		long attributesSize = attributeQuery.resultSize();
 		if (attributesSize > start) {
-			ListPart<PersonAttribute> personAttributes = attributeQuery.listPart(start, length);
-			personAttributes.getList().forEach(personAttribute -> patients.add(getPatient(personAttribute.getPerson().getId())));
+			ListPart<Object[]> personAttributes = attributeQuery.listPartProjection(start, length, "person.personId");
+			personAttributes.getList().forEach(personAttribute -> patients.add(getPatient((Integer) personAttribute[0])));
 		}
 
 		return patients;
@@ -854,63 +854,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		return returnString;
 	}
-
-	private LuceneQuery<PersonName> getPersonNameLuceneQuery(String query, boolean includeVoided, LuceneQuery<?> skipSame) {
-		List<String> fields = new ArrayList<>();
-		fields.addAll(Arrays.asList("givenNameExact", "middleNameExact", "familyNameExact", "familyName2Exact"));
-
-		String matchMode = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
-		if (OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE.equals(matchMode)) {
-			fields.addAll(Arrays.asList("givenNameAnywhere", "middleNameAnywhere", "familyNameAnywhere", "familyName2Anywhere"));
-		} else {
-			fields.addAll(Arrays.asList("givenName", "middleName", "familyName", "familyName2"));
-		}
-
-        LuceneQuery<PersonName> luceneQuery = LuceneQuery
-                .newQuery(PersonName.class, sessionFactory.getCurrentSession(), query, fields);
-
-        if(!includeVoided){
-			luceneQuery.include("voided", false);
-			luceneQuery.include("person.voided", false);
-        }
-
-        if (skipSame != null) {
-			luceneQuery.skipSame("person.personId", skipSame);
-		} else {
-			luceneQuery.skipSame("person.personId");
-		}
-
-        return luceneQuery;
-    }
-
-    private LuceneQuery<PersonAttribute> getPersonAttributeLuceneQuery(String query, boolean includeVoided, LuceneQuery<?> skipSame) {
-		List<String> fields = new ArrayList<>();
-		fields.add("valueExact");
-		String matchMode = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE);
-		if (OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE.equals(matchMode)) {
-			fields.add("valueAnywhere");
-		} else {
-			fields.add("valueStartsWith");
-		}
-
-		LuceneQuery<PersonAttribute> luceneQuery = LuceneQuery
-                .newQuery(PersonAttribute.class, sessionFactory.getCurrentSession(), query, fields);
-
-        if(!includeVoided){
-			luceneQuery.include("voided", false);
-			luceneQuery.include("person.voided", false);
-        }
-
-        luceneQuery.include("attributeType.searchable", true);
-
-		if (skipSame != null) {
-			luceneQuery.skipSame("person.personId", skipSame);
-		} else {
-			luceneQuery.skipSame("person.personId");
-		}
-
-        return luceneQuery;
-    }
 
     /**
 	 * @see org.openmrs..api.db.PatientDAO#getAllergies(org.openmrs.Patient)

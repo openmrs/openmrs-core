@@ -15,10 +15,10 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
+import org.apache.lucene.analysis.core.WhitespaceTokenizerFactory;
 import org.apache.lucene.analysis.ngram.EdgeNGramFilterFactory;
 import org.apache.lucene.analysis.ngram.NGramFilterFactory;
 import org.apache.lucene.analysis.standard.StandardFilterFactory;
-import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.Hibernate;
 import org.hibernate.search.annotations.AnalyzerDef;
 import org.hibernate.search.annotations.AnalyzerDefs;
@@ -36,7 +36,7 @@ import javax.persistence.Column;
  */
 @AnalyzerDefs({
 		@AnalyzerDef(name = LuceneAnalyzers.STARTS_WITH_ANALYZER,
-				tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
+				tokenizer = @TokenizerDef(factory = WhitespaceTokenizerFactory.class),
 				filters = {
 						@TokenFilterDef(factory = StandardFilterFactory.class),
 						@TokenFilterDef(factory = LowerCaseFilterFactory.class),
@@ -45,7 +45,7 @@ import javax.persistence.Column;
 								@Parameter(name = "maxGramSize", value = "20") })
 				}),
 		@AnalyzerDef(name = LuceneAnalyzers.MATCH_ANYWHERE_ANALYZER,
-				tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
+				tokenizer = @TokenizerDef(factory = WhitespaceTokenizerFactory.class),
 				filters = {
 						@TokenFilterDef(factory = StandardFilterFactory.class),
 						@TokenFilterDef(factory = LowerCaseFilterFactory.class),
@@ -54,7 +54,7 @@ import javax.persistence.Column;
 								@Parameter(name = "maxGramSize", value = "20") })
 				}),
 		@AnalyzerDef(name = LuceneAnalyzers.EXACT_ANALYZER,
-				tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
+				tokenizer = @TokenizerDef(factory = WhitespaceTokenizerFactory.class),
 				filters = {
 						@TokenFilterDef(factory = StandardFilterFactory.class),
 						@TokenFilterDef(factory = LowerCaseFilterFactory.class)

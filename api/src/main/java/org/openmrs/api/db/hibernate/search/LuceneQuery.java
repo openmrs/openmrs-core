@@ -10,12 +10,10 @@
 package org.openmrs.api.db.hibernate.search;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -24,8 +22,6 @@ import org.apache.lucene.queries.TermsFilter;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.queryparser.classic.QueryParser.Operator;
-import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.hibernate.Session;
@@ -36,7 +32,6 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.collection.ListPart;
-import org.openmrs.logic.LogicService;
 
 /**
  * Performs Lucene queries.
@@ -51,7 +46,11 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 
 	private TermsFilter termsFilter;
 
+	private boolean noUniqueTerms = false;
+
 	private Set<Object> skipSameValues = new HashSet<>();
+
+	boolean useOrQueryParser = false;
 
 	public static <T> LuceneQuery<T> newQuery(final Class<T> type, final Session session, final String query, final Collection<String> fields) {
 		return new LuceneQuery<T>(
@@ -104,7 +103,13 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	public LuceneQuery(Class<T> type, Session session) {
 		super(session, type);
 	}
-	
+
+	public LuceneQuery<T> useOrQueryParser() {
+		useOrQueryParser = true;
+
+		return this;
+	}
+
 	/**
 	 * Include items with the given value in the specified field.
 	 * <p>
@@ -225,7 +230,8 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	protected QueryParser newQueryParser() {
 		Analyzer analyzer = getFullTextSession().getSearchFactory().getAnalyzer(getType());
 		QueryParser queryParser = new QueryParser(null, analyzer);
-		queryParser.setDefaultOperator(Operator.AND);
+
+		setDefaultOperator(queryParser);
 		return queryParser;
 	}
 
@@ -238,11 +244,20 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 			analyzer = getFullTextSession().getSearchFactory().getAnalyzer(getType());
 		}
 		MultiFieldQueryParser queryParser = new MultiFieldQueryParser(fields.toArray(new String[fields.size()]), analyzer);
-		queryParser.setDefaultOperator(Operator.AND);
+
+		setDefaultOperator(queryParser);
 		return queryParser;
 	}
 
-	
+	private void setDefaultOperator(QueryParser queryParser) {
+		if (useOrQueryParser) {
+			queryParser.setDefaultOperator(QueryParser.Operator.OR);
+		} else {
+			queryParser.setDefaultOperator(QueryParser.Operator.AND);
+		}
+	}
+
+
 	/**
 	 * Gives you access to the full text session.
 	 * 
@@ -270,7 +285,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	public LuceneQuery<T> skipSame(String field, LuceneQuery<?> luceneQuery){
 		String idPropertyName = getSession().getSessionFactory().getClassMetadata(getType()).getIdentifierPropertyName();
 
-		List<Object> documents = listProjection(idPropertyName, field);
+		List<Object[]> documents = listProjection(idPropertyName, field);
 
 		skipSameValues = new HashSet<>();
 		if (luceneQuery != null) {
@@ -280,14 +295,15 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		termsFilter = null;
 		if (!documents.isEmpty()) {
 			List<Term> terms = new ArrayList<>();
-			for (Object document : documents) {
-				Object[] row = (Object[]) document;
+			for (Object[] row : documents) {
 				if (skipSameValues.add(row[1])) {
 					terms.add(new Term(idPropertyName, row[0].toString()));
 				}
 			}
 			if (!terms.isEmpty()) {
 				termsFilter = new TermsFilter(terms);
+			} else {
+				noUniqueTerms = true;
 			}
 		}
 
@@ -296,6 +312,10 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
 	@Override
 	public T uniqueResult() {
+		if (noUniqueTerms) {
+			return null;
+		}
+
 		@SuppressWarnings("unchecked")
 		T result = (T) buildQuery().uniqueResult();
 		
@@ -312,6 +332,10 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 				FullTextQuery.THIS );
 		@SuppressWarnings("unchecked") List<Object[]> results = fullTextQuery.list();*/
 
+		if (noUniqueTerms) {
+			return Collections.emptyList();
+		}
+
 		@SuppressWarnings("unchecked")
 		List<T> list = buildQuery().list();
 		
@@ -320,6 +344,10 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
 	@Override
 	public ListPart<T> listPart(Long firstResult, Long maxResults) {
+		if (noUniqueTerms) {
+			return ListPart.newListPart(Collections.emptyList(), firstResult, maxResults, 0L, true);
+		}
+
 		FullTextQuery fullTextQuery = buildQuery();
 		applyPartialResults(fullTextQuery, firstResult, maxResults);
 		
@@ -335,34 +363,46 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 */
 	@Override
 	public long resultSize() {
+		if (noUniqueTerms) {
+			return 0;
+		}
+
 		return buildQuery().getResultSize();
 	}
 	
-	public List<Object> listProjection(String... fields) {
+	public List<Object[]> listProjection(String... fields) {
+		if (noUniqueTerms) {
+			return Collections.emptyList();
+		}
+
 		FullTextQuery fullTextQuery = buildQuery();
 		fullTextQuery.setProjection(fields);
 		
 		@SuppressWarnings("unchecked")
-		List<Object> list = fullTextQuery.list();
+		List<Object[]> list = fullTextQuery.list();
 
 		return list;
 	}
 	
-	public ListPart<Object> listPartProjection(Long firstResult, Long maxResults, String... fields) {
+	public ListPart<Object[]> listPartProjection(Long firstResult, Long maxResults, String... fields) {
+		if (noUniqueTerms) {
+			return ListPart.newListPart(Collections.emptyList(), firstResult, maxResults, 0L, true);
+		}
+
 		FullTextQuery fullTextQuery = buildQuery();
 		applyPartialResults(fullTextQuery, firstResult, maxResults);
 		
 		fullTextQuery.setProjection(fields);
 		
 		@SuppressWarnings("unchecked")
-		List<Object> list = fullTextQuery.list();
+		List<Object[]> list = fullTextQuery.list();
 		
 		return ListPart.newListPart(list, firstResult, maxResults, Long.valueOf(fullTextQuery.getResultSize()),
 		    !fullTextQuery.hasPartialResults());
 		
 	}
 	
-	public ListPart<Object> listPartProjection(Integer firstResult, Integer maxResults, String... fields) {
+	public ListPart<Object[]> listPartProjection(Integer firstResult, Integer maxResults, String... fields) {
 		Long first = (firstResult != null) ? Long.valueOf(firstResult) : null;
 		Long max = (maxResults != null) ? Long.valueOf(maxResults) : null;
 		return listPartProjection(first, max, fields);

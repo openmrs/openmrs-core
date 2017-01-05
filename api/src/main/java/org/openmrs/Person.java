@@ -71,6 +71,7 @@ public class Person extends BaseOpenmrsData {
 
 	private Boolean deathdateEstimated = false;
 
+	@Field
 	private Boolean dead = false;
 	
 	private Date deathDate;

@@ -954,7 +954,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldGetPatientByShortFamilyName_SignatureNo1() throws Exception {
 		List<Patient> patients = dao.getPatients("ki", 0, 11);
 		
-		Assert.assertEquals(4, patients.size());
+		Assert.assertEquals(3, patients.size());
 		Assert.assertEquals("ki", patients.get(0).getFamilyName());
 		Assert.assertEquals("ki", patients.get(1).getFamilyName());
 		Assert.assertFalse(patients.get(0).getMiddleName().equalsIgnoreCase(patients.get(1).getMiddleName()));
@@ -1381,7 +1381,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldGetPatientByShortFamilyName_SignatureNo2() throws Exception {
 		List<Patient> patients = dao.getPatients("ki", 0, 11);
 		
-		Assert.assertEquals(4, patients.size());
+		Assert.assertEquals(3, patients.size());
 		Assert.assertEquals("ki", patients.get(0).getFamilyName());
 		Assert.assertEquals("ki", patients.get(1).getFamilyName());
 		Assert.assertFalse(patients.get(0).getMiddleName().equalsIgnoreCase(patients.get(1).getMiddleName()));
@@ -1733,7 +1733,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, patientsByName.size());
 		
 		List<Patient> patientsByNameOrAttribute = dao.getPatients("Cook", 0, 11);
-		Assert.assertEquals(2, patientsByNameOrAttribute.size());
+		Assert.assertEquals(1, patientsByNameOrAttribute.size());
 	}
 	
 	/**
@@ -2043,7 +2043,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getCountOfPatients_shouldObeyAttributeMatchMode() throws Exception {
 		// exact match mode
 		long patientCount = dao.getCountOfPatients("Cook");
-		Assert.assertEquals(2, patientCount);
+		Assert.assertEquals(1, patientCount);
 		
 		patientCount = dao.getCountOfPatients("ook");
 		Assert.assertEquals(0, patientCount);

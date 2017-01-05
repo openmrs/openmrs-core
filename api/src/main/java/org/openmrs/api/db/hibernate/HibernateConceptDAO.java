@@ -1291,7 +1291,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		} else if (searchDrugConceptNames) {
 			LuceneQuery<ConceptName> conceptNameQuery = newConceptNameLuceneQuery(drugName, searchKeywords, Arrays
 			        .asList(locale), exactLocale, includeRetired, null, null, null, null, null);
-			List<Object> conceptIds = conceptNameQuery.listProjection("concept.conceptId");
+			List<Object[]> conceptIds = conceptNameQuery.listProjection("concept.conceptId");
 			if (!conceptIds.isEmpty()) {
 				CollectionUtils.transform(conceptIds, new Transformer() {
 					

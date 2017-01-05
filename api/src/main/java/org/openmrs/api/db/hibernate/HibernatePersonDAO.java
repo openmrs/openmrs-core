@@ -15,14 +15,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
@@ -36,6 +35,8 @@ import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PersonDAO;
+import org.openmrs.api.db.hibernate.search.LuceneQuery;
+import org.openmrs.collection.ListPart;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -235,44 +236,46 @@ public class HibernatePersonDAO implements PersonDAO {
 	@SuppressWarnings("unchecked")
 	public List<Person> getPeople(String searchString, Boolean dead, Boolean voided) {
 		if (searchString == null) {
-			return new ArrayList<Person>();
+			return new ArrayList<>();
 		}
-		
-		PersonSearchCriteria personSearchCriteria = new PersonSearchCriteria();
-		
-		searchString = searchString.replace(", ", " ");
-		String[] values = searchString.split(" ");
-		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Person.class);
-		
-		personSearchCriteria.addAliasForName(criteria);
-		personSearchCriteria.addAliasForAttribute(criteria);
-		if (voided == null || voided == false) {
-			criteria.add(Restrictions.eq("personVoided", false));
-		}
-		if (dead != null) {
-			criteria.add(Restrictions.eq("dead", dead));
-		}
-		
-		Disjunction disjunction = Restrictions.disjunction();
-		MatchMode matchMode = personSearchCriteria.getAttributeMatchMode();
-		
-		for (String value : values) {
-			if (value != null && value.length() > 0) {
-				disjunction.add(personSearchCriteria.prepareCriterionForName(value, voided)).add(
-				    personSearchCriteria.prepareCriterionForAttribute(value, voided, matchMode));
+
+		int maxResults = HibernatePersonDAO.getMaximumSearchResults();
+
+		boolean includeVoided = (voided != null) ? voided : false;
+
+		if (StringUtils.isBlank(searchString)) {
+			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Person.class);
+			if (dead != null) {
+				criteria.add(Restrictions.eq("dead", dead));
 			}
+
+			if (!includeVoided) {
+				criteria.add(Restrictions.eq("personVoided", false));
+			}
+
+			criteria.setMaxResults(maxResults);
+			return criteria.list();
 		}
-		criteria.add(disjunction);
-		
-		criteria.addOrder(Order.asc("personId"));
-		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-		criteria.setMaxResults(getMaximumSearchResults());
-		
-		// TODO - remove
-		log.debug(criteria.toString());
-		
-		return criteria.list();
+
+		String query = LuceneQuery.escapeQuery(searchString);
+
+		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
+
+		LuceneQuery<PersonName> nameQuery = personLuceneQuery.getPersonNameQueryWithOrParser(query, includeVoided);
+		if (dead != null) {
+			nameQuery.include("person.dead", dead);
+		}
+
+		List<Person> people = new ArrayList<>();
+
+		ListPart<Object[]> names = nameQuery.listPartProjection(0, maxResults, "person.personId");
+		names.getList().stream().forEach(name -> people.add(getPerson((Integer) name[0])));
+
+		LuceneQuery<PersonAttribute> attributeQuery = personLuceneQuery.getPersonAttributeQueryWithOrParser(query, includeVoided, nameQuery);
+		ListPart<Object[]> attributes = attributeQuery.listPartProjection(0, maxResults, "person.personId");
+		attributes.getList().stream().forEach(attribute -> people.add(getPerson((Integer) attribute[0])));
+
+		return people;
 	}
 	
 	public List<Person> getPeople(String searchString, Boolean dead) {

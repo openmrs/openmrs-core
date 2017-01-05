@@ -23,7 +23,6 @@ import org.openmrs.util.OpenmrsConstants;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Date;
 
 public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	
@@ -38,10 +37,12 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	private PersonAttributeHelper personAttributeHelper;
 	
  	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
-	
+
 	@Before
 	public void getPersonDAO() throws Exception {
 		executeDataSet(PEOPLE_FROM_THE_SHIRE_XML);
+
+		updateSearchIndex();
 		
 		hibernatePersonDAO = (HibernatePersonDAO) applicationContext.getBean("personDAO");
 		sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
