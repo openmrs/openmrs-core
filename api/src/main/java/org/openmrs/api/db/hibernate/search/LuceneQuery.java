@@ -48,7 +48,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 
 	private boolean noUniqueTerms = false;
 
-	private Set<Object> skipSameValues = new HashSet<>();
+	private Set<Object> skipSameValues;
 
 	boolean useOrQueryParser = false;
 
@@ -270,10 +270,10 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	/**
 	 * Skip elements, values of which repeat in the given field.
 	 * <p>
-	 * Only the first element will be included in the results.
+	 * Only first elements will be included in the results.
 	 * <p>
-	 * <b>Note:</b> For performance reasons you should call this method as last when constructing a
-	 * query. When called it will project the query and create a filter to eliminate duplicates.
+	 * <b>Note:</b> This method must be called as last when constructing a query. When called it
+	 * will project the query and create a filter to eliminate duplicates.
 	 * 
 	 * @param field
 	 * @return this
@@ -282,13 +282,30 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		return skipSame(field, null);
 	}
 
+	/**
+	 * Skip elements, values of which repeat in the given field.
+	 * <p>
+	 * Only first elements will be included in the results.
+	 * <p>
+	 * <b>Note:</b> This method must be called as last when constructing a query. When called it
+	 * will project the query and create a filter to eliminate duplicates.
+	 *
+	 * @param field
+	 * @param luceneQuery results of which should be skipped too. It works only for queries, which called skipSame as well.
+	 * @return this
+	 */
 	public LuceneQuery<T> skipSame(String field, LuceneQuery<?> luceneQuery){
 		String idPropertyName = getSession().getSessionFactory().getClassMetadata(getType()).getIdentifierPropertyName();
 
-		List<Object[]> documents = listProjection(idPropertyName, field);
+		FullTextQuery query = buildQuery();
+		query.setProjection(idPropertyName, field);
+		List<Object[]> documents = query.list();
 
 		skipSameValues = new HashSet<>();
 		if (luceneQuery != null) {
+			if (luceneQuery.skipSameValues == null) {
+				throw new IllegalArgumentException("The skipSame method must be called on the given luceneQuery before calling this method.");
+			}
 			skipSameValues.addAll(luceneQuery.skipSameValues);
 		}
 
