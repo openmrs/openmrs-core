@@ -35,7 +35,7 @@ public final class NaturalStrings {
 	
 	/**
 	 * <p>
-	 * A string comparator that does case sensitive comparisons and handles embedded numbers
+	 * A string comparator that does case-sensitive comparisons and handles embedded numbers
 	 * correctly.
 	 * </p>
 	 * <p>
@@ -123,7 +123,7 @@ public final class NaturalStrings {
 	 * compares other parts based on each character's Unicode value.
 	 * 
 	 * @return <p>
-	 *         a string comparator that does case sensitive comparisons on pure ascii strings and
+	 *         a string comparator that does case-sensitive comparisons on pure ascii strings and
 	 *         handles embedded numbers correctly.
 	 *         </p>
 	 *         <b>Do not use</b> if your app might ever run on any locale that uses more than 7-bit
@@ -162,7 +162,7 @@ public final class NaturalStrings {
 	 * </p>
 	 * <p>
 	 * If you know that the texts to be compared are in a certain language that differs from the
-	 * default locale's langage, then get a collator for the desired locale (
+	 * default locale's language, then get a collator for the desired locale (
 	 * {@link java.text.Collator#getInstance(java.util.Locale)}) and pass it to
 	 * {@link #compareNatural(java.text.Collator, String, String)}
 	 * </p>
@@ -343,7 +343,7 @@ public final class NaturalStrings {
 			} else {
 				// Compare words
 				if (collator != null) {
-					// To use the collator the whole subwords have to be compared - character-by-character comparision
+					// To use the collator the whole subwords have to be compared - character-by-character comparison
 					// is not possible. So find the two subwords first
 					int aw = sIndex;
 					int bw = tIndex;
