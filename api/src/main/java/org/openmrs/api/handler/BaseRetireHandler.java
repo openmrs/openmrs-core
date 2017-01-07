@@ -27,7 +27,7 @@ import org.openmrs.aop.RequiredDataAdvice;
  * over and also retired by the {@link RequiredDataAdvice} class.<br>
  * <br>
  * This class will only set the retiredBy and dateRetired attributes if retired is set to false. If
- * retired is set to true it is assumed that this object is in a list of things that is getting
+ * retired is set to true, it is assumed that this object is in a list of things that is getting
  * retired but that it itself was previously retired. The workaround to this is that if the retired
  * bit is true OR the retiredBy is null, the retiredBy, dateRetired, and retireReason will be set.
  * 
