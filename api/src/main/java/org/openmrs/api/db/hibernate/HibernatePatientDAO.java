@@ -697,8 +697,8 @@ public class HibernatePatientDAO implements PatientDAO {
 
 		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
 
-		LuceneQuery<PersonName> nameQuery = personLuceneQuery.getPersonNameQuery(query, includeVoided, identifierQuery);
-		LuceneQuery<PersonAttribute> attributeQuery = personLuceneQuery.getPersonAttributeQuery(query, includeVoided, nameQuery);
+		LuceneQuery<PersonName> nameQuery = personLuceneQuery.getPatientNameQuery(query, includeVoided, identifierQuery);
+		LuceneQuery<PersonAttribute> attributeQuery = personLuceneQuery.getPatientAttributeQuery(query, includeVoided, nameQuery);
 		long size = identifierQuery.resultSize() + nameQuery.resultSize() + attributeQuery.resultSize();
 
 		return size;
@@ -748,7 +748,7 @@ public class HibernatePatientDAO implements PatientDAO {
 
 		PersonLuceneQuery personLuceneQuery = new PersonLuceneQuery(sessionFactory);
 
-		LuceneQuery<PersonName> nameQuery = personLuceneQuery.getPersonNameQuery(query, includeVoided, identifierQuery);
+		LuceneQuery<PersonName> nameQuery = personLuceneQuery.getPatientNameQuery(query, includeVoided, identifierQuery);
 		long namesSize = nameQuery.resultSize();
 		if (namesSize > start) {
 			ListPart<Object[]> personNames = nameQuery.listPartProjection(start, length, "person.personId");
@@ -764,7 +764,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			return patients;
 		}
 
-		LuceneQuery<PersonAttribute> attributeQuery = personLuceneQuery.getPersonAttributeQuery(query, includeVoided, nameQuery);
+		LuceneQuery<PersonAttribute> attributeQuery = personLuceneQuery.getPatientAttributeQuery(query, includeVoided, nameQuery);
 		long attributesSize = attributeQuery.resultSize();
 		if (attributesSize > start) {
 			ListPart<Object[]> personAttributes = attributeQuery.listPartProjection(start, length, "person.personId");
@@ -784,6 +784,8 @@ public class HibernatePatientDAO implements PatientDAO {
         	luceneQuery.include("voided", false);
 			luceneQuery.include("patient.voided", false);
         }
+
+        luceneQuery.include("patient.isPatient", true);
 
 		luceneQuery.skipSame("patient.personId");
 

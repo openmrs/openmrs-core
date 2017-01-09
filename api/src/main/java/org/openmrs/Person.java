@@ -93,7 +93,8 @@ public class Person extends BaseOpenmrsData {
 	private Date personDateVoided;
 	
 	private String personVoidReason;
-	
+
+	@Field
 	private boolean isPatient;
 	
 	/**

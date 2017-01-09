@@ -23,6 +23,7 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
@@ -51,7 +52,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 public class PatientDAOTest extends BaseContextSensitiveTest {
 	
@@ -2181,6 +2185,15 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		patients = pService.getPatients("London");
 		Patient patient = pService.getPatient(501);
 		assertThat(patients, contains(patient));
+	}
+
+	@Test
+	public void getPatients_shouldReturnOnlyPatients() throws Exception {
+		Person person = personService.getPerson(501);
+		assertThat(person.getIsPatient(), is(false));
+
+		List<Patient> patients = pService.getPatients(person.getGivenName());
+		assertThat(patients, is(empty()));
 	}
 
 	@Test

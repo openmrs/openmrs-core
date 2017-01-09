@@ -37,22 +37,38 @@ public class PersonLuceneQuery {
 	}
 
 	public LuceneQuery<PersonName> getPersonNameQuery(String query, boolean includeVoided) {
-		return getPersonNameQuery(query, false, includeVoided, null);
+		return getPersonNameQuery(query, false, includeVoided, false, null);
+	}
+
+	public LuceneQuery<PersonName> getPatientNameQuery(String query, boolean includeVoided) {
+		return getPersonNameQuery(query, false, includeVoided, true, null);
 	}
 
 	public LuceneQuery<PersonName> getPersonNameQuery(String query, boolean includeVoided, LuceneQuery<?> skipSame) {
-		return getPersonNameQuery(query, false, includeVoided, skipSame);
+		return getPersonNameQuery(query, false, includeVoided, false, skipSame);
+	}
+
+	public LuceneQuery<PersonName> getPatientNameQuery(String query, boolean includeVoided, LuceneQuery<?> skipSame) {
+		return getPersonNameQuery(query, false, includeVoided, true, skipSame);
 	}
 
 	public LuceneQuery<PersonName> getPersonNameQueryWithOrParser(String query, boolean includeVoided) {
-		return getPersonNameQuery(query, true, includeVoided, null);
+		return getPersonNameQuery(query, true, includeVoided, false, null);
+	}
+
+	public LuceneQuery<PersonName> getPatientNameQueryWithOrParser(String query, boolean includeVoided) {
+		return getPersonNameQuery(query, true, includeVoided, true, null);
 	}
 
 	public LuceneQuery<PersonName> getPersonNameQueryWithOrParser(String query, boolean includeVoided, LuceneQuery<?> skipSame) {
-		return getPersonNameQuery(query, true, includeVoided, skipSame);
+		return getPersonNameQuery(query, true, includeVoided, false, skipSame);
 	}
 
-	private LuceneQuery<PersonName> getPersonNameQuery(String query, boolean orQueryParser, boolean includeVoided, LuceneQuery<?> skipSame) {
+	public LuceneQuery<PersonName> getPatientNameQueryWithOrParser(String query, boolean includeVoided, LuceneQuery<?> skipSame) {
+		return getPersonNameQuery(query, true, includeVoided, true, skipSame);
+	}
+
+	private LuceneQuery<PersonName> getPersonNameQuery(String query, boolean orQueryParser, boolean includeVoided, boolean patientsOnly, LuceneQuery<?> skipSame) {
 		List<String> fields = new ArrayList<>();
 		fields.addAll(Arrays.asList("givenNameExact", "middleNameExact", "familyNameExact", "familyName2Exact"));
 
@@ -75,6 +91,10 @@ public class PersonLuceneQuery {
 			luceneQuery.include("person.voided", false);
 		}
 
+		if (patientsOnly) {
+			luceneQuery.include("person.isPatient", true);
+		}
+
 		if (skipSame != null) {
 			luceneQuery.skipSame("person.personId", skipSame);
 		} else {
@@ -85,14 +105,22 @@ public class PersonLuceneQuery {
 	}
 
 	public LuceneQuery<PersonAttribute> getPersonAttributeQuery(String query, boolean includeVoided, LuceneQuery<?> skipSame) {
-		return getPersonAttributeQuery(query, false, includeVoided, skipSame);
+		return getPersonAttributeQuery(query, false, includeVoided, false, skipSame);
+	}
+
+	public LuceneQuery<PersonAttribute> getPatientAttributeQuery(String query, boolean includeVoided, LuceneQuery<?> skipSame) {
+		return getPersonAttributeQuery(query, false, includeVoided, true, skipSame);
 	}
 
 	public LuceneQuery<PersonAttribute> getPersonAttributeQueryWithOrParser(String query, boolean includeVoided, LuceneQuery<?> skipSame) {
-		return getPersonAttributeQuery(query, true, includeVoided, skipSame);
+		return getPersonAttributeQuery(query, true, includeVoided, false, skipSame);
 	}
 
-	private LuceneQuery<PersonAttribute> getPersonAttributeQuery(String query, boolean orQueryParser, boolean includeVoided, LuceneQuery<?> skipSame) {
+	public LuceneQuery<PersonAttribute> getPatientAttributeQueryWithOrParser(String query, boolean includeVoided, LuceneQuery<?> skipSame) {
+		return getPersonAttributeQuery(query, true, includeVoided, true, skipSame);
+	}
+
+	private LuceneQuery<PersonAttribute> getPersonAttributeQuery(String query, boolean orQueryParser, boolean includeVoided, boolean patientsOnly, LuceneQuery<?> skipSame) {
 		List<String> fields = new ArrayList<>();
 		fields.add("value");
 		String matchMode = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE);
@@ -113,6 +141,10 @@ public class PersonLuceneQuery {
 		}
 
 		luceneQuery.include("attributeType.searchable", true);
+
+		if (patientsOnly) {
+			luceneQuery.include("person.isPatient", true);
+		}
 
 		if (skipSame != null) {
 			luceneQuery.skipSame("person.personId", skipSame);
