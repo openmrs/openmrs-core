@@ -52,10 +52,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 public class PatientDAOTest extends BaseContextSensitiveTest {
 	
@@ -958,7 +955,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldGetPatientByShortFamilyName_SignatureNo1() throws Exception {
 		List<Patient> patients = dao.getPatients("ki", 0, 11);
 		
-		Assert.assertEquals(3, patients.size());
+		Assert.assertEquals(2, patients.size());
 		Assert.assertEquals("ki", patients.get(0).getFamilyName());
 		Assert.assertEquals("ki", patients.get(1).getFamilyName());
 		Assert.assertFalse(patients.get(0).getMiddleName().equalsIgnoreCase(patients.get(1).getMiddleName()));
@@ -1385,7 +1382,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldGetPatientByShortFamilyName_SignatureNo2() throws Exception {
 		List<Patient> patients = dao.getPatients("ki", 0, 11);
 		
-		Assert.assertEquals(3, patients.size());
+		Assert.assertEquals(2, patients.size());
 		Assert.assertEquals("ki", patients.get(0).getFamilyName());
 		Assert.assertEquals("ki", patients.get(1).getFamilyName());
 		Assert.assertFalse(patients.get(0).getMiddleName().equalsIgnoreCase(patients.get(1).getMiddleName()));
@@ -2183,7 +2180,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		personService.savePersonAttributeType(attributeType);
 
 		patients = pService.getPatients("London");
-		Patient patient = pService.getPatient(501);
+		Patient patient = pService.getPatient(2);
 		assertThat(patients, contains(patient));
 	}
 
