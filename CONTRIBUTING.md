@@ -2,11 +2,11 @@
 
 ## Resources for Getting Started
 
-Your contributions are what make OpenMRS an awesome Health IT system in developing countries. We want to make it as easy and fun as possible for you to contribute to the project and interact with the community. Before you get started contributing to OpenMRS, we encourage you to read both our [OpenMRS Developers Guide](http://om.rs/newdev) and our [Getting Started as a Developer](https://wiki.openmrs.org/x/MQAJ) wiki page.
+Your contributions are what make OpenMRS an awesome Health IT system in developing countries. We want to make it as easy and fun as possible for you to contribute to the project and interact with the community. Before you get started contributing to the OpenMRS, we encourage you to read both our web page [OpenMRS Developers Guide](http://om.rs/newdev) and our [Getting Started as a Developer](https://wiki.openmrs.org/x/MQAJ) wiki page.
 
 ## Reporting Bugs
 
-1. Please check to see if you are running the latest version of OpenMRS; the bug may already be resolved. If you are running an old version, it may no longer be supported. Check our [Unsupported Releases](https://wiki.openmrs.org/x/2RAz) page for details.
+1. Please check to see if you are running the latest version of OpenMRS; the bug may already be resolved. If you are running an older version, it may no longer be supported. Check our [Unsupported Releases](https://wiki.openmrs.org/x/2RAz) page for details.
 
 2. Search for similar problems using the [OpenMRS Global Search](http://search.openmrs.org); it may already be an identified problem.
 
