@@ -2,7 +2,7 @@
 
 ## Resources for Getting Started
 
-Your contributions are what make OpenMRS an awesome Health IT system in developing countries. We want to make it as easy and fun as possible for you to contribute to the project and interact with the community. Before you get started contributing to the OpenMRS, we encourage you to read both our web page [OpenMRS Developers Guide](http://om.rs/newdev) and our [Getting Started as a Developer](https://wiki.openmrs.org/x/MQAJ) wiki page.
+Your contributions are what which makes OpenMRS an awesome Health IT system in developing countries. We want to make it as easy and fun as possible for you to contribute to the project and interact with the community. Before you get started contributing to the OpenMRS, we encourage you to read both our web page [OpenMRS Developers Guide](http://om.rs/newdev) and our [Getting Started as a Developer](https://wiki.openmrs.org/x/MQAJ) wiki page.
 
 ## Reporting Bugs
 
@@ -101,7 +101,7 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
   * Click "Pull Request".
   * Write your branch name in the branch field (this is filled with "master" by default)
   * Click "Update Commit Range".
-  * Ensure the changesets you introduced are included in the "Commits" tab.
+  * Ensure the change-sets you introduced are included in the "Commits" tab.
   * Ensure that the "Files Changed" incorporate all of your changes.
   * Fill in some details about your potential patch including a meaningful title.
   * Click "Send pull request".
@@ -125,7 +125,7 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
 
 ### Interact with the community
 
-* Chat live with developers on [IRC](http://irc.openmrs.org) within #openmrs on freenode
+* Chat live with developers on [IRC](http://irc.openmrs.org) within #openmrs
 * Join our [developers mailing list](https://wiki.openmrs.org/x/lwLn)
 * Hang out with other community members at [OpenMRS Talk](http://talk.openmrs.org)
 
