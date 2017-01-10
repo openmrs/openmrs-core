@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/openmrs/openmrs-core.png?branch=master)](https://travis-ci.org/openmrs/openmrs-core) [![Coverage Status](https://coveralls.io/repos/github/openmrs/openmrs-core/badge.svg?branch=master)](https://coveralls.io/github/openmrs/openmrs-core?branch=master)
 
-OpenMRS is a patient-based medical record system focusing on giving providers a free customizable EMR.
+OpenMRS is a patient-based medical record system focusing on giving providers a free customisable EMR.
 
 Read more at http://openmrs.org/about
 
@@ -27,7 +27,7 @@ The project tree is set up as follows:
  </tr>
  <tr>
   <td>web/</td>
-  <td>java and resource files that are used in the webapp/war file.</td>
+  <td>java and resource files that are used in the web-app/war file.</td>
  </tr>
  <tr>
   <td>webapp/</td>
@@ -47,7 +47,7 @@ The project tree is set up as follows:
  </tr>
  <tr>
   <td>openmrs-checkstyle.properties</td>
-  <td>properties for the checkstyle library</td>
+  <td>properties for the check-style library</td>
  </tr>
  <tr>
   <td>pom.xml</td>

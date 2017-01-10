@@ -101,7 +101,7 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
   * Click "Pull Request".
   * Write your branch name in the branch field (this is filled with "master" by default)
   * Click "Update Commit Range".
-  * Ensure the changesets you introduced are included in the "Commits" tab.
+  * Ensure the change sets you introduced are included in the "Commits" tab.
   * Ensure that the "Files Changed" incorporate all of your changes.
   * Fill in some details about your potential patch including a meaningful title.
   * Click "Send pull request".
