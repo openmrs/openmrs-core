@@ -98,13 +98,13 @@ Mozilla Public License, version 2.0
      non-exclusive license:
 
      a. under intellectual property rights (other than patent or trademark)
-        Licensable by such Contributor to use, reproduce, make available,
+        License by such Contributor to use, reproduce, make available,
         modify, display, perform, distribute, and otherwise exploit its
         Contributions, either on an unmodified basis, with Modifications, or
         as part of a Larger Work; and
 
      b. under Patent Claims of such Contributor to make, use, sell, offer for
-        sale, have made, import, and otherwise transfer either its
+        sale, have made, import and otherwise transfer either its
         Contributions or its Contributor Version.
 
 2.2. Effective Date
@@ -190,7 +190,7 @@ Mozilla Public License, version 2.0
 3.3. Distribution of a Larger Work
 
      You may create and distribute a Larger Work under terms of Your choice,
-     provided that You also comply with the requirements of this License for
+     provided that You can also comply with the requirements of this License for
      the Covered Software. If the Larger Work is a combination of Covered
      Software with a work governed by one or more Secondary Licenses, and the
      Covered Software is not Incompatible With Secondary Licenses, this
@@ -271,7 +271,7 @@ Mozilla Public License, version 2.0
    is with You. Should any Covered Software prove defective in any respect,
    You (not any Contributor) assume the cost of any necessary servicing,
    repair, or correction. This disclaimer of warranty constitutes an essential
-   part of this License. No use of  any Covered Software is authorized under
+   part of this License. No use of  any Covered Software is authorised under
    this License except under this disclaimer.
 
 7. Limitation of Liability
@@ -382,7 +382,7 @@ hereby incorporated into the terms and conditions of MPL 2.0:
       care provider to verify all medical history and treatment plans with
       each patient.
 
-2.    Under no circumstances and under no legal theory, whether tort
+2.    Under no circumstances and legal theories, whether tort
       (including negligence), contract, or otherwise, shall any Contributor,
       or anyone who distributes Covered Software as permitted by the
       license, be liable to You for any indirect, special, incidental,
