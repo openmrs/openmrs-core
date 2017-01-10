@@ -81,7 +81,7 @@ public class PersonValidator implements Validator {
 		if (!person.isVoided() && !atLeastOneNonVoidPersonNameLeft) {
 			errors.rejectValue("names", "Person.shouldHaveAtleastOneNonVoidedName");
 		}
-		
+
 		// validate the personAddress
 		index = 0;
 		for (PersonAddress address : person.getAddresses()) {
@@ -104,8 +104,7 @@ public class PersonValidator implements Validator {
 		if (person.isDead()) {
 			ValidationUtils.rejectIfEmpty(errors, "causeOfDeath", "Person.dead.causeOfDeathNull");
 		}
-		
-		ValidateUtil.validateFieldLengths(errors, Person.class, "gender", "personVoidReason");
+        	ValidateUtil.validateFieldLengths(errors, Person.class, "gender", "personVoidReason");
 	}
 	
 	/**
@@ -121,7 +120,22 @@ public class PersonValidator implements Validator {
 		rejectIfFutureDate(errors, birthDate, "birthdate");
 		rejectDateIfBefore120YearsAgo(errors, birthDate, "birthdate");
 	}
-	
+
+	/**
+	 * Checks if the deathDate is in accordance with dead status.
+	 * @param deathDate the death date.
+	 * @param dead status of patient.
+	 * @param errors Stores information about errors encountered during validation.
+	 */
+	private void validatedeadDeathdate(Errors errors, Date deathDate, boolean dead) {
+		if (deathDate == null || dead == true) {
+			return;
+		}
+		if(deathDate != null && dead == false) {
+			errors.rejectValue("deathDate", "person.dead.false");
+		}
+	}
+
 	/**
 	 * Checks if the death date is in the future.
 	 * 

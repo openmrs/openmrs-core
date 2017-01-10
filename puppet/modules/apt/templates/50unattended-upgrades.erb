@@ -24,7 +24,7 @@ Unattended-Upgrade::AutoFixInterruptedDpkg "<%= @auto_fix %>";
 // is running is possible (with a small delay)
 Unattended-Upgrade::MinimalSteps "<%= @minimal_steps %>";
 
-// Install all unattended-upgrades when the machine is shuting down
+// Install all unattended-upgrades when the machine is shutting down
 // instead of doing it in the background while the machine is running
 // This will (obviously) make shutdown slower
 Unattended-Upgrade::InstallOnShutdown "<%= @install_on_shutdown %>";
@@ -40,7 +40,7 @@ Unattended-Upgrade::InstallOnShutdown "<%= @install_on_shutdown %>";
 <% if @mail_to != "NONE" %>Unattended-Upgrade::MailOnlyOnError "<%= @mail_only_on_error %>";<% end %>
 
 // Do automatic removal of new unused dependencies after the upgrade
-// (equivalent to apt-get autoremove)
+// (equivalent to apt-get auto-remove)
 Unattended-Upgrade::Remove-Unused-Dependencies "<%= @remove_unused %>";
 
 // Automatically reboot *WITHOUT CONFIRMATION* if a 

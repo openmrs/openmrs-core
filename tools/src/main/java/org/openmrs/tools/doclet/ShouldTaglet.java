@@ -20,7 +20,7 @@ public class ShouldTaglet implements Taglet {
 	
 	private static final String NAME = "should";
 	
-	private static final String HEADER = "Expected Behavior:";
+	private static final String HEADER = "Expected Behaviour:";
 	
 	/**
 	 * Return the name of this custom tag.
