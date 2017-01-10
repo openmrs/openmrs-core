@@ -14,7 +14,7 @@ Your contributions are what make OpenMRS an awesome Health IT system in developi
 
 4. If you know the problem is related to the function or performance of a specific add-on module you're running, please consult the [Module Repository](http://modules.openmrs.org) and that module's documentation about how to get support.
 
-5. If you believe the problem is with OpenMRS itself, or if you're honestly not sure, you can [file the bug report in the OpenMRS Trunk project in JIRA](https://tickets.openmrs.org/secure/CreateIssue.jspa?pid=10000&issuetype=1&Create=Create). You'll need to have an [OpenMRS ID](http://id.openmrs.org) to do so. You'll receive e-mail updates as the bug is investigated and resolved.
+5. If you believe the problem is within OpenMRS itself, or if you're honestly not sure, you can [file the bug report in the OpenMRS Trunk project in JIRA](https://tickets.openmrs.org/secure/CreateIssue.jspa?pid=10000&issuetype=1&Create=Create). You'll need to have an [OpenMRS ID](http://id.openmrs.org) to do so. You'll receive e-mail updates as the bug is investigated and resolved.
 
 ### Bug report contents
 
@@ -60,7 +60,7 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
 
 5. Code
   * Adhere to common conventions you see in the existing code
-  * Include tests, and ensure they pass
+  * Include tests, and ensure that they pass
   * Search to see if your new functionality has been discussed using our [OpenMRS global search](http://search.openmrs.org), and include updates as appropriate
 
 6. Follow the [Coding Conventions described on our wiki](https://wiki.openmrs.org/x/MxEz).
@@ -88,7 +88,7 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
         git checkout TRUNK-123
         git rebase -i master
 
-  Make sure all unit tests still pass:
+  Make sure that all unit tests still pass:
 
         mvn clean package
 
