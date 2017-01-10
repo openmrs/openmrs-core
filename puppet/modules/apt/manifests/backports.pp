@@ -4,7 +4,7 @@
 #
 # [*release*]
 #   The ubuntu/debian release name. Defaults to $lsbdistcodename. Setting this
-#   manually can cause undefined behavior. (Read: universe exploding)
+#   manually can cause undefined behaviour. (Read: universe exploding)
 #
 # == Examples
 #
