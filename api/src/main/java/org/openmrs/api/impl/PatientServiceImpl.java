@@ -524,7 +524,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		return rel.getRelationshipType().getRelationshipTypeId().toString() + (isA ? "A" : "B")
 		        + (isA ? rel.getPersonB().getPersonId().toString() : rel.getPersonA().getPersonId().toString());
 	}
-	
+
 	/**
 	 * 1) Moves object (encounters/obs) pointing to <code>nonPreferred</code> to
 	 * <code>preferred</code> 2) Copies data (gender/birthdate/names/ids/etc) from
@@ -543,12 +543,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			log.debug("Merge operation cancelled: Cannot merge user" + preferred.getPatientId() + " to self");
 			throw new APIException("Patient.merge.cancelled", new Object[] { preferred.getPatientId() });
 		}
-		List<Order> orders = Context.getOrderService().getAllOrdersByPatient(notPreferred);
-		for (Order order : orders) {
-			if (!order.isVoided()) {
-				throw new APIException("Patient.cannot.merge", (Object[]) null);
-			}
-		}
+		requireNoActiveOrderOfSameType(preferred,notPreferred);
 		PersonMergeLogData mergedData = new PersonMergeLogData();
 		mergeVisits(preferred, notPreferred, mergedData);
 		mergeEncounters(preferred, notPreferred, mergedData);
@@ -587,6 +582,23 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		Context.getPersonService().savePersonMergeLog(personMergeLog);
 	}
 	
+	private void requireNoActiveOrderOfSameType(Patient patient1, Patient patient2) {
+		String messageKey = "Patient.merge.cannotHaveSameTypeActiveOrders";
+		List<Order> ordersByPatient1 = Context.getOrderService().getAllOrdersByPatient(patient1);
+		List<Order> ordersByPatient2 = Context.getOrderService().getAllOrdersByPatient(patient2);
+		ordersByPatient1.forEach((Order order1) -> {
+			ordersByPatient2.forEach((Order order2) -> {
+				if (order1.isActive() && order2.isActive() && order1.getOrderType().equals(order2.getOrderType())) {
+					Object[] parameters = { patient1.getPatientId(), patient2.getPatientId(), order1.getOrderType() };
+					String message = Context.getMessageSourceService().getMessage(messageKey, parameters,
+							Context.getLocale());
+					log.debug(message);
+					throw new APIException(message);
+				}
+			});
+		});
+	}
+
 	private void mergeProgramEnrolments(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy all program enrollments
 		ProgramWorkflowService programService = Context.getProgramWorkflowService();
