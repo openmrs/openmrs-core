@@ -52,33 +52,33 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	private Boolean preferred = false;
 
 	@Fields({
-			@Field(name = "givenName", analyzer = @Analyzer(definition = LuceneAnalyzers.STARTS_WITH_ANALYZER), boost = @Boost(3f)),
-			@Field(name = "givenNameExact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(2f)),
-			@Field(name = "givenNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.MATCH_ANYWHERE_ANALYZER), boost = @Boost(3f))
+			@Field(name = "givenNameExact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(8f)),
+			@Field(name = "givenNameStart", analyzer = @Analyzer(definition = LuceneAnalyzers.START_ANALYZER), boost = @Boost(4f)),
+			@Field(name = "givenNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER), boost = @Boost(2f))
 	})
 	private String givenName;
 	private String prefix;
 
 	@Fields({
-			@Field(name = "middleName", analyzer = @Analyzer(definition = LuceneAnalyzers.STARTS_WITH_ANALYZER)),
-			@Field(name = "middleNameExact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(2f)),
-			@Field(name = "middleNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.MATCH_ANYWHERE_ANALYZER))
+			@Field(name = "middleNameExact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(4f)),
+			@Field(name = "middleNameStart", analyzer = @Analyzer(definition = LuceneAnalyzers.START_ANALYZER), boost = @Boost(2f)),
+			@Field(name = "middleNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER))
 	})
 	private String middleName;
 	
 	private String familyNamePrefix;
 
 	@Fields({
-			@Field(name = "familyName", analyzer = @Analyzer(definition = LuceneAnalyzers.STARTS_WITH_ANALYZER), boost = @Boost(3f)),
-			@Field(name = "familyNameExact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(2f)),
-			@Field(name = "familyNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.MATCH_ANYWHERE_ANALYZER), boost = @Boost(3f)),
+			@Field(name = "familyNameExact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(8f)),
+			@Field(name = "familyNameStart", analyzer = @Analyzer(definition = LuceneAnalyzers.START_ANALYZER), boost = @Boost(4f)),
+			@Field(name = "familyNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER), boost = @Boost(2f)),
 	})
 	private String familyName;
 
 	@Fields({
-			@Field(name = "familyName2", analyzer = @Analyzer(definition = LuceneAnalyzers.STARTS_WITH_ANALYZER)),
-			@Field(name = "familyName2Exact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(2f)),
-			@Field(name = "familyName2Anywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.MATCH_ANYWHERE_ANALYZER)),
+			@Field(name = "familyName2Exact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(4f)),
+			@Field(name = "familyName2Start", analyzer = @Analyzer(definition = LuceneAnalyzers.START_ANALYZER), boost = @Boost(2f)),
+			@Field(name = "familyName2Anywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER)),
 	})
 	private String familyName2;
 	

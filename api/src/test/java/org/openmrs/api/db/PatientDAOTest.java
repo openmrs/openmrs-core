@@ -27,6 +27,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
@@ -68,6 +69,9 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private PersonService personService;
+
+	@Autowired
+	private LocationService locationService;
 	
 	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
 	
@@ -2191,6 +2195,20 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 
 		List<Patient> patients = pService.getPatients(person.getGivenName());
 		assertThat(patients, is(empty()));
+	}
+
+	@Test
+	public void getPatients_shouldFindIdentifierIgnoringCase() throws Exception {
+		Patient patient = pService.getPatient(2);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("AS_567", pService.getPatientIdentifierType(5),
+				locationService.getLocation(1));
+		patient.addIdentifier(patientIdentifier);
+		pService.savePatient(patient);
+
+		updateSearchIndex();
+
+		List<Patient> patients = pService.getPatients("as_567");
+		assertThat(patients, contains(patient));
 	}
 
 	@Test

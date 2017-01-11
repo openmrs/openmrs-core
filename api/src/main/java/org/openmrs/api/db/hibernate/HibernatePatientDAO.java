@@ -779,7 +779,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		List<String> tokens = tokenizeIdentifierQuery(query);
 
 		LuceneQuery<PatientIdentifier> luceneQuery = LuceneQuery
-                .newQuery(PatientIdentifier.class, sessionFactory.getCurrentSession(), "identifier:(" + StringUtils.join(tokens, " OR ") + ")");
+                .newQuery(PatientIdentifier.class, sessionFactory.getCurrentSession(), "identifierPhrase:(" + StringUtils.join(tokens, " OR ") + ")");
         if(!includeVoided){
         	luceneQuery.include("voided", false);
 			luceneQuery.include("patient.voided", false);

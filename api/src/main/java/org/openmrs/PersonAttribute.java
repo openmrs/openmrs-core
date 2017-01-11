@@ -58,8 +58,10 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	private PersonAttributeType attributeType;
 
 	@Fields({
-			@Field(name = "value", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(2f)),
-			@Field(name = "valueAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.MATCH_ANYWHERE_ANALYZER))
+			@Field(name = "valuePhrase", analyzer = @Analyzer(definition = LuceneAnalyzers.PHRASE_ANALYZER), boost = @Boost(8f)),
+			@Field(name = "valueExact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(4f)),
+			@Field(name = "valueStart", analyzer = @Analyzer(definition = LuceneAnalyzers.START_ANALYZER), boost = @Boost(2f)),
+			@Field(name = "valueAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER))
 	})
 	private String value;
 	

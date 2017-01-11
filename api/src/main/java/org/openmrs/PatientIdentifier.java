@@ -11,19 +11,16 @@ package org.openmrs;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.standard.StandardFilterFactory;
-import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.TokenFilterDef;
-import org.hibernate.search.annotations.TokenizerDef;
+import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
+import org.openmrs.api.db.hibernate.search.LuceneQuery;
 import org.openmrs.util.OpenmrsUtil;
 
 import java.lang.reflect.InvocationTargetException;
@@ -56,7 +53,12 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Patient patient;
 
-	@Field(analyze = Analyze.NO)
+	@Fields({
+			@Field(name = "identifierPhrase", analyzer = @Analyzer(definition = LuceneAnalyzers.PHRASE_ANALYZER), boost = @Boost(8f)),
+			@Field(name = "identifierExact", analyzer = @Analyzer(definition = LuceneAnalyzers.EXACT_ANALYZER), boost = @Boost(4f)),
+			@Field(name = "identifierStart", analyzer = @Analyzer(definition = LuceneAnalyzers.START_ANALYZER), boost = @Boost(2f)),
+			@Field(name = "identifierAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER))
+	})
 	private String identifier;
 	
 	private PatientIdentifierType identifierType;

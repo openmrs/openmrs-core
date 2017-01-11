@@ -71,12 +71,11 @@ public class PersonLuceneQuery {
 	private LuceneQuery<PersonName> getPersonNameQuery(String query, boolean orQueryParser, boolean includeVoided, boolean patientsOnly, LuceneQuery<?> skipSame) {
 		List<String> fields = new ArrayList<>();
 		fields.addAll(Arrays.asList("givenNameExact", "middleNameExact", "familyNameExact", "familyName2Exact"));
+		fields.addAll(Arrays.asList("givenNameStart", "middleNameStart", "familyNameStart", "familyName2Start"));
 
 		String matchMode = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
 		if (OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE.equals(matchMode)) {
 			fields.addAll(Arrays.asList("givenNameAnywhere", "middleNameAnywhere", "familyNameAnywhere", "familyName2Anywhere"));
-		} else {
-			fields.addAll(Arrays.asList("givenName", "middleName", "familyName", "familyName2"));
 		}
 
 		LuceneQuery<PersonName> luceneQuery = LuceneQuery
@@ -122,9 +121,11 @@ public class PersonLuceneQuery {
 
 	private LuceneQuery<PersonAttribute> getPersonAttributeQuery(String query, boolean orQueryParser, boolean includeVoided, boolean patientsOnly, LuceneQuery<?> skipSame) {
 		List<String> fields = new ArrayList<>();
-		fields.add("value");
+		fields.add("valuePhrase"); //will position whole phrase match higher
+		fields.add("valueExact");
 		String matchMode = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE);
 		if (OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE.equals(matchMode)) {
+			fields.add("valueStart"); //will position "starts with" match higher
 			fields.add("valueAnywhere");
 		}
 
