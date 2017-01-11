@@ -195,4 +195,29 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors("gender"));
 		Assert.assertTrue(errors.hasFieldErrors("personVoidReason"));
 	}
+
+
+	/**
+ 	 * @see org.openmrs.validator.PersonValidator#validate(Object,Errors)
+	 * @verifies pass validation if birth date is before death date
+     */
+    @Test
+	@Verifies(value = "should fail validation if birthdate is after  death date", method = "validate(Object,Errors)")
+	public void shouldNotSetDeathBeforeBirth() throws Exception {
+		Patient pa = new Patient(1);
+		Calendar birth = Calendar.getInstance();
+		birth.setTime(new Date());
+		birth.add(Calendar.YEAR, +5);
+		pa.setBirthdate(birth.getTime());
+  		Calendar death = Calendar.getInstance();
+		death.setTime(new Date());
+		pa.setDeathDate(death.getTime());
+  
+  		Errors errors = new BindException(pa, "patient");
+		validator.validate(pa, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("deathDate"));
+	}
+
+
 }
