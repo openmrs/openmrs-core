@@ -852,7 +852,7 @@ public class WebModuleUtil {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext) WebApplicationContextUtils
 		        .getWebApplicationContext(servletContext);
 		if (log.isDebugEnabled()) {
-			log.debug("Refreshing web applciation Context of class: " + wac.getClass().getName());
+			log.debug("Refreshing web application Context of class: " + wac.getClass().getName());
 		}
 		
 		if (dispatcherServlet != null) {
