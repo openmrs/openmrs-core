@@ -11,7 +11,7 @@ package org.openmrs.web.filter.util;
 
 /**
  * This class contains all constants that describes names of properties, which are used as keys,
- * when showing localized error messages on pages of install and databtase wizard
+ * when showing localized error messages on pages of install and database wizard
  */
 public class ErrorMessageConstants {
 	
