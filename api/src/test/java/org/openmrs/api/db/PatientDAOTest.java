@@ -27,6 +27,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
@@ -62,17 +63,25 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	private final static String PEOPLE_FROM_THE_SHIRE_XML = "org/openmrs/api/db/hibernate/include/HibernatePersonDAOTest-people.xml";
 	
 	private final static String PATIENTS_FROM_THE_SHIRE_XML = "org/openmrs/api/db/hibernate/include/HibernatePatientDAOTest-patients.xml";
-	
-	private PatientDAO dao = null;
-	
-	private PatientService pService = null;
+
+	@Autowired
+	private SessionFactory sessionFactory;
+
+	@Autowired
+	private PatientDAO dao;
+
+	@Autowired
+	private PatientService patientService;
 
 	@Autowired
 	private PersonService personService;
 
 	@Autowired
 	private LocationService locationService;
-	
+
+	@Autowired
+	private AdministrationService adminService;
+
 	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
 	
 	private PersonAttributeHelper personAttributeHelper;
@@ -85,22 +94,13 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		
 		executeDataSet(PEOPLE_FROM_THE_SHIRE_XML);
 		executeDataSet(PATIENTS_FROM_THE_SHIRE_XML);
-		
-		if (dao == null)
-			// fetch the dao from the spring application context
-			// this bean name matches the name in /metadata/spring/applicationContext-service.xml
-			dao = (PatientDAO) applicationContext.getBean("patientDAO");
-		if (pService == null)
-			pService = Context.getPatientService();
-		
-		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
-		personAttributeHelper = new PersonAttributeHelper(sessionFactory);
-		globalPropertiesTestHelper = new GlobalPropertiesTestHelper(Context.getAdministrationService());
 
 		updateSearchIndex();
+
+		personAttributeHelper = new PersonAttributeHelper(sessionFactory);
+		globalPropertiesTestHelper = new GlobalPropertiesTestHelper(adminService);
 
 		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
@@ -132,19 +132,19 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldEscapeAnAsterixCharacterInIdentifierPhrase() throws Exception {
 		//Note that all tests for wildcard should be pass in 2s due to the behaviour of wildcards,
 		//that is we test for the size and actual patient object returned
-		Patient patient2 = pService.getPatient(2);
-		PatientIdentifier patientIdentifier = new PatientIdentifier("*567", pService.getPatientIdentifierType(5), Context
+		Patient patient2 = patientService.getPatient(2);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("*567", patientService.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));
 		patient2.addIdentifier(patientIdentifier);
-		pService.savePatient(patient2);
+		patientService.savePatient(patient2);
 		
 		//add closely matching identifier to a different patient
-		Patient patient6 = pService.getPatient(6);
-		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", pService.getPatientIdentifierType(5), Context
+		Patient patient6 = patientService.getPatient(6);
+		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", patientService.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));
 		patientIdentifier6.setPreferred(true);
 		patient6.addIdentifier(patientIdentifier6);
-		pService.savePatient(patient6);
+		patientService.savePatient(patient6);
 
 		updateSearchIndex();
 
@@ -165,19 +165,19 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should escape percentage character in identifier phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
 	public void getPatients_shouldEscapePercentageCharacterInIdentifierPhrase() throws Exception {
 		
-		Patient patient2 = pService.getPatient(2);
-		PatientIdentifier patientIdentifier = new PatientIdentifier("%567", pService.getPatientIdentifierType(5), Context
+		Patient patient2 = patientService.getPatient(2);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("%567", patientService.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));
 		patient2.addIdentifier(patientIdentifier);
-		pService.savePatient(patient2);
+		patientService.savePatient(patient2);
 		
 		//add closely matching identifier to a different patient
-		Patient patient6 = pService.getPatient(6);
-		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", pService.getPatientIdentifierType(5), Context
+		Patient patient6 = patientService.getPatient(6);
+		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", patientService.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));
 		patientIdentifier6.setPreferred(true);
 		patient6.addIdentifier(patientIdentifier6);
-		pService.savePatient(patient6);
+		patientService.savePatient(patient6);
 
 		updateSearchIndex();
 		
@@ -199,19 +199,19 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldEscapeUnderscoreCharacterInIdentifierPhrase() throws Exception {
 		deleteAllData();
 		baseSetupWithStandardDataAndAuthentication();
-		Patient patient2 = pService.getPatient(2);
-		PatientIdentifier patientIdentifier = new PatientIdentifier("_567", pService.getPatientIdentifierType(5), Context
+		Patient patient2 = patientService.getPatient(2);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("_567", patientService.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));
 		patient2.addIdentifier(patientIdentifier);
-		pService.savePatient(patient2);
+		patientService.savePatient(patient2);
 		
 		//add closely matching identifier to a different patient
-		Patient patient6 = pService.getPatient(6);
-		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", pService.getPatientIdentifierType(5), Context
+		Patient patient6 = patientService.getPatient(6);
+		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", patientService.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));
 		patientIdentifier6.setPreferred(true);
 		patient6.addIdentifier(patientIdentifier6);
-		pService.savePatient(patient6);
+		patientService.savePatient(patient6);
 
 		updateSearchIndex();
 		
@@ -232,17 +232,17 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should escape percentage character in name phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
 	public void getPatients_shouldEscapePercentageCharacterInNamePhrase() throws Exception {
 		
-		Patient patient2 = pService.getPatient(2);
+		Patient patient2 = patientService.getPatient(2);
 		PersonName name = new PersonName("%cats", "and", "dogs");
 		patient2.addName(name);
-		pService.savePatient(patient2);
+		patientService.savePatient(patient2);
 		
 		//add a new closely matching identifier to another patient
-		Patient patient6 = pService.getPatient(6);
+		Patient patient6 = patientService.getPatient(6);
 		PersonName name6 = new PersonName("acats", "and", "dogs");
 		patient6.addName(name6);
 		patient6.getPatientIdentifier().setPreferred(true);
-		pService.savePatient(patient6);
+		patientService.savePatient(patient6);
 
 		updateSearchIndex();
 		
@@ -262,17 +262,17 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should escape underscore character in name phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
 	public void getPatients_shouldEscapeUnderscoreCharacterInNamePhrase() throws Exception {
 		
-		Patient patient2 = pService.getPatient(2);
+		Patient patient2 = patientService.getPatient(2);
 		PersonName name = new PersonName("_cats", "and", "dogs");
 		patient2.addName(name);
-		pService.savePatient(patient2);
+		patientService.savePatient(patient2);
 		
 		//add a new closely matching name to another patient
-		Patient patient6 = pService.getPatient(6);
+		Patient patient6 = patientService.getPatient(6);
 		PersonName name6 = new PersonName("acats", "and", "dogs");
 		patient6.addName(name6);
 		patient6.getPatientIdentifier().setPreferred(true);
-		pService.savePatient(patient6);
+		patientService.savePatient(patient6);
 
 		updateSearchIndex();
 		
@@ -293,17 +293,17 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should escape an asterix character in name phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
 	public void getPatients_shouldEscapeAnAsterixCharacterInNamePhrase() throws Exception {
 		
-		Patient patient2 = pService.getPatient(2);
+		Patient patient2 = patientService.getPatient(2);
 		PersonName name = new PersonName("*cats", "and", "dogs");
 		patient2.addName(name);
-		pService.savePatient(patient2);
+		patientService.savePatient(patient2);
 		
 		//add a new closely matching name to another patient
-		Patient patient6 = pService.getPatient(6);
+		Patient patient6 = patientService.getPatient(6);
 		PersonName name6 = new PersonName("acats", "and", "dogs");
 		patient6.addName(name6);
 		patient6.getPatientIdentifier().setPreferred(true);
-		pService.savePatient(patient6);
+		patientService.savePatient(patient6);
 
 		updateSearchIndex();
 		
@@ -2176,15 +2176,15 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		attributeType.setSearchable(false);
 		personService.savePersonAttributeType(attributeType);
 
-		List<Patient> patients = pService.getPatients("London");
+		List<Patient> patients = patientService.getPatients("London");
 		assertThat(patients, is(empty()));
 
 		attributeType = personService.getPersonAttributeTypeByName("Birthplace");
 		attributeType.setSearchable(true);
 		personService.savePersonAttributeType(attributeType);
 
-		patients = pService.getPatients("London");
-		Patient patient = pService.getPatient(2);
+		patients = patientService.getPatients("London");
+		Patient patient = patientService.getPatient(2);
 		assertThat(patients, contains(patient));
 	}
 
@@ -2193,21 +2193,21 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Person person = personService.getPerson(501);
 		assertThat(person.getIsPatient(), is(false));
 
-		List<Patient> patients = pService.getPatients(person.getGivenName());
+		List<Patient> patients = patientService.getPatients(person.getGivenName());
 		assertThat(patients, is(empty()));
 	}
 
 	@Test
 	public void getPatients_shouldFindIdentifierIgnoringCase() throws Exception {
-		Patient patient = pService.getPatient(2);
-		PatientIdentifier patientIdentifier = new PatientIdentifier("AS_567", pService.getPatientIdentifierType(5),
+		Patient patient = patientService.getPatient(2);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("AS_567", patientService.getPatientIdentifierType(5),
 				locationService.getLocation(1));
 		patient.addIdentifier(patientIdentifier);
-		pService.savePatient(patient);
+		patientService.savePatient(patient);
 
 		updateSearchIndex();
 
-		List<Patient> patients = pService.getPatients("as_567");
+		List<Patient> patients = patientService.getPatients("as_567");
 		assertThat(patients, contains(patient));
 	}
 
@@ -2220,14 +2220,13 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		List<String> familyNames = FileUtils.readLines(new File(familyNamesIn.toURI()));
 		List<String> attributes = Arrays.asList("London", "Berlin", "Warsaw", "Paris", "Zurich", "Singapore");
 
-		PatientService patientService = Context.getPatientService();
 		PatientIdentifierType idType = patientService.getPatientIdentifierTypeByName("Old Identification Number");
 
-		PersonAttributeType attributeType = Context.getPersonService().getPersonAttributeTypeByName("Birthplace");
+		PersonAttributeType attributeType = personService.getPersonAttributeTypeByName("Birthplace");
 		attributeType.setSearchable(true);
 		Context.getPersonService().savePersonAttributeType(attributeType);
 
-		Location location = Context.getLocationService().getLocation(1);
+		Location location = locationService.getLocation(1);
 		Random random = new Random(100); //set the seed to have repeatable results
 		List<String> generatedPatients = new ArrayList<>();
 		for (int i = 0; i < 20000; i++) {
