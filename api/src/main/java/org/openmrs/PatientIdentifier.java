@@ -20,7 +20,6 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Field;
 import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
-import org.openmrs.api.db.hibernate.search.LuceneQuery;
 import org.openmrs.util.OpenmrsUtil;
 
 import java.lang.reflect.InvocationTargetException;

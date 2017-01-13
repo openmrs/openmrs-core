@@ -10,9 +10,6 @@
 package org.openmrs;
 
 import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Field;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -42,6 +39,7 @@ public class Patient extends Person {
 	
 	/** default constructor */
 	public Patient() {
+		setPatient(true);
 	}
 	
 	/**
@@ -61,6 +59,7 @@ public class Patient extends Person {
 				this.setUuid(person.getUuid());
 			}
 		}
+		setPatient(true);
 	}
 	
 	/**
@@ -71,6 +70,7 @@ public class Patient extends Person {
 	public Patient(Integer patientId) {
 		super(patientId);
 		this.patientId = patientId;
+		setPatient(true);
 	}
 	
 	// Property accessors
@@ -127,7 +127,7 @@ public class Patient extends Person {
 		super.setPersonId(personId);
 		this.patientId = personId;
 	}
-	
+
 	/**
 	 * Get all of this patients identifiers -- both voided and non-voided ones. If you want only
 	 * non-voided identifiers, use {@link #getActiveIdentifiers()}

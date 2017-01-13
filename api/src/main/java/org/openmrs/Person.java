@@ -144,7 +144,7 @@ public class Person extends BaseOpenmrsData {
 		// base creator/voidedBy/changedBy info is not copied here
 		// because that is specific to and will be recreated
 		// by the subobject upon save
-		
+
 		setPersonCreator(person.getPersonCreator());
 		setPersonDateCreated(person.getPersonDateCreated());
 		setPersonChangedBy(person.getPersonChangedBy());
@@ -153,6 +153,8 @@ public class Person extends BaseOpenmrsData {
 		setPersonVoidedBy(person.getPersonVoidedBy());
 		setPersonDateVoided(person.getPersonDateVoided());
 		setPersonVoidReason(person.getPersonVoidReason());
+
+		setPatient(person.getIsPatient());
 	}
 	
 	/**
@@ -1034,6 +1036,7 @@ public class Person extends BaseOpenmrsData {
 	public boolean getIsPatient() {
 		return isPatient;
 	}
+
 	/**
 	 * This should only be set by the database layer by looking at whether a row exists in the
 	 * patient table
@@ -1041,7 +1044,7 @@ public class Person extends BaseOpenmrsData {
 	 * @param isPatient whether this person is a patient or not
 	 */
 	@SuppressWarnings("unused")
-	private void setPatient(boolean isPatient) {
+	protected void setPatient(boolean isPatient) {
 		this.isPatient = isPatient;
 	}
 	
