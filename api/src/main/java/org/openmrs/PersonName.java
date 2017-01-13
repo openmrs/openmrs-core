@@ -105,11 +105,12 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @param givenName String this person's first name
 	 * @param middleName String this person's middle name
 	 * @param familyName String this person's last name
+	 * @should trim leading and trailing whitespaces on each name attribute
 	 */
 	public PersonName(String givenName, String middleName, String familyName) {
-		this.givenName = givenName;
-		this.middleName = middleName;
-		this.familyName = familyName;
+		setGivenName(givenName);
+		setMiddleName(middleName);
+		setFamilyName(familyName);
 	}
 	
 	/**
@@ -139,6 +140,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 *
 	 * @return New PersonName object
 	 * @should copy every property of given personName
+	 * @should trim leading and trailing whitespaces on each name attribute
 	 */
 	public static PersonName newInstance(PersonName pn) {
 		if (pn == null) {
@@ -225,11 +227,12 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	/**
 	 * @param familyName The familyName to set.
+	 * @should trim leading and trailing whitespaces
 	 */
 	public void setFamilyName(String familyName) {
-		this.familyName = familyName;
+		this.familyName = StringUtils.trimWhitespace(familyName);
 	}
-	
+
 	/**
 	 * @return Returns the familyName2.
 	 * @should return null if obscure_patients is set to true
@@ -240,14 +243,15 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 		}
 		return familyName2;
 	}
-	
+
 	/**
 	 * @param familyName2 The familyName2 to set.
+	 * @should trim leading and trailing whitespaces
 	 */
 	public void setFamilyName2(String familyName2) {
-		this.familyName2 = familyName2;
+		this.familyName2 = StringUtils.trimWhitespace(familyName2);
 	}
-	
+
 	/**
 	 * @return Returns the familyNamePrefix.
 	 * @should return null if obscure_patients is set to true
@@ -258,12 +262,13 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 		}
 		return familyNamePrefix;
 	}
-	
+
 	/**
 	 * @param familyNamePrefix The familyNamePrefix to set.
+	 * @should trim leading and trailing whitespaces
 	 */
 	public void setFamilyNamePrefix(String familyNamePrefix) {
-		this.familyNamePrefix = familyNamePrefix;
+		this.familyNamePrefix = StringUtils.trimWhitespace(familyNamePrefix);
 	}
 	
 	/**
@@ -279,9 +284,10 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	/**
 	 * @param familyNameSuffix The familyNameSuffix to set.
+	 * @should trim leading and trailing whitespaces
 	 */
 	public void setFamilyNameSuffix(String familyNameSuffix) {
-		this.familyNameSuffix = familyNameSuffix;
+		this.familyNameSuffix = StringUtils.trimWhitespace(familyNameSuffix);
 	}
 	
 	/**
@@ -297,9 +303,10 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	/**
 	 * @param givenName The givenName to set.
+	 * @should trim leading and trailing whitespaces
 	 */
 	public void setGivenName(String givenName) {
-		this.givenName = givenName;
+		this.givenName = StringUtils.trimWhitespace(givenName);
 	}
 	
 	/**
@@ -315,9 +322,10 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	/**
 	 * @param middleName The middleName to set.
+	 * @should trim leading and trailing whitespaces
 	 */
 	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
+		this.middleName = StringUtils.trimWhitespace(middleName);
 	}
 	
 	/**
