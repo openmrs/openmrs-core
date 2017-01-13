@@ -12,25 +12,25 @@ Unattended-Upgrade::Package-Blacklist {
 <% end -%>
 };
 
-// This option allows you to control if on a unclean dpkg exit
+// This option allows you to control if on an unclean dpkg exit
 // unattended-upgrades will automatically run 
 //   dpkg --force-confold --configure -a
-// The default is true, to ensure updates keep getting installed
+// The default is true to ensure updates keep getting installed
 Unattended-Upgrade::AutoFixInterruptedDpkg "<%= @auto_fix %>";
 
 // Split the upgrade into the smallest possible chunks so that
 // they can be interrupted with SIGUSR1. This makes the upgrade
-// a bit slower but it has the benefit that shutdown while a upgrade
+// a bit slower but it has the benefit that a shutdown while an upgrade
 // is running is possible (with a small delay)
 Unattended-Upgrade::MinimalSteps "<%= @minimal_steps %>";
 
-// Install all unattended-upgrades when the machine is shutting down
+// Install all unattended upgrades when the machine is shutting down
 // instead of doing it in the background while the machine is running
 // This will (obviously) make shutdown slower
 Unattended-Upgrade::InstallOnShutdown "<%= @install_on_shutdown %>";
 
-// Send email to this address for problems or packages upgrades
-// If empty or unset then no email is sent, make sure that you
+// Send email to this address for problems or package upgrades
+// If empty or unset, then no email will be sent.  Make sure that you
 // have a working mail setup on your system. A package that provides
 // 'mailx' must be installed.
 <% if @mail_to != "NONE" %>Unattended-Upgrade::Mail "<%= @mail_to %>";<% end %>
@@ -48,6 +48,6 @@ Unattended-Upgrade::Remove-Unused-Dependencies "<%= @remove_unused %>";
 Unattended-Upgrade::Automatic-Reboot "<%= @auto_reboot %>";
 
 
-// Use apt bandwidth limit feature, this example limits the download
+// Use the apt bandwidth limit feature; this example limits the download
 // speed to 70kb/sec
 <% if @dl_limit != "NONE" %>Acquire::http::Dl-Limit "<%= @dl_limit %>";<% end %>
