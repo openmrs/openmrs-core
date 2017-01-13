@@ -96,7 +96,7 @@ public class PersonValidator implements Validator {
 		}
 		
 		validateBirthDate(errors, person.getBirthdate());
-		validateDeathDate(errors, person.getDeathDate());
+		validateDeathDate(errors, person.getDeathDate(),person.getBirthdate());
 		
 		if (person.isVoided()) {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
@@ -128,11 +128,12 @@ public class PersonValidator implements Validator {
 	 * @param errors Stores information about errors encountered during validation
 	 * @param deathDate the deathdate to validate
 	 */
-	private void validateDeathDate(Errors errors, Date deathDate) {
+	private void validateDeathDate(Errors errors, Date deathDate, Date birthDate) {
 		if (deathDate == null) {
 			return;
 		}
 		rejectIfFutureDate(errors, deathDate, "deathDate");
+		rejectDeathDateIfBeforeBirthDate(errors, deathDate,birthDate, "deathDate");
 	}
 	
 	/**
@@ -161,6 +162,21 @@ public class PersonValidator implements Validator {
 		c.add(Calendar.YEAR, -120);
 		if (date.before(c.getTime())) {
 			errors.rejectValue(dateField, "error.date.nonsensical");
+		}
+	}
+	
+	/**
+	 * Rejects a death date if it is before birth date
+	 * 
+	 * @param errors the error object
+	 * @param deathdate the date to check
+	 * @param birthdate to check with
+	 * @param dateField the name of the field
+	 */
+	private void rejectDeathDateIfBeforeBirthDate(Errors errors, Date deathdate, Date birthdate, String dateField) {
+		if (deathdate.before(birthdate)) {
+			errors.rejectValue(dateField, "error.deathdate.notpossible");
+			
 		}
 	}
 	
