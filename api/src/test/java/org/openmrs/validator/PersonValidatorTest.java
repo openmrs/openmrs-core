@@ -76,7 +76,26 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(errors.hasFieldErrors("deathDate"));
 	}
-	
+
+	/**
+	 * @see PersonValidator#validate(Object,Errors)
+	 * @verifies fail validation if deathDate is set if dead is set as false.
+	 */
+	@Test
+	public void validate_shouldFailValidationIfDeathDateSetAndDeadFalse() throws Exception {
+		Patient pa = new Patient(1);
+		Calendar date = Calendar.getInstance();
+		date.setTime(new Date());
+		date.add(Calendar.YEAR, -1);
+		pa.setDeathDate(date.getTime());
+		pa.setDead(false);
+		Errors errors = new BindException(pa, "patient");
+		validator.validate(pa, errors);
+
+		Assert.assertTrue(errors.hasFieldErrors("dead"));
+	}
+
+
 	/**
 	 * @see PersonValidator#validate(Object,Errors)
 	 * @verifies fail validation if birthdate makes patient older that 120 years old

@@ -94,7 +94,8 @@ public class PersonValidator implements Validator {
 				index++;
 			}
 		}
-		
+
+		validateDeathDateDead(errors, person.getDeathDate(), person.getDead());
 		validateBirthDate(errors, person.getBirthdate());
 		validateDeathDate(errors, person.getDeathDate());
 		
@@ -107,7 +108,36 @@ public class PersonValidator implements Validator {
 		
 		ValidateUtil.validateFieldLengths(errors, Person.class, "gender", "personVoidReason");
 	}
-	
+
+	/**
+	 * Checks if the death date is in accordance with dead status.
+	 *
+	 * @param errors Stores information about errors encountered during validation
+	 * @param deathDate the deathdate to validate
+	 * @param dead is the dead status
+	 */
+	private void validateDeathDateDead(Errors errors, Date deathDate, boolean dead) {
+		if(deathDate == null || dead == true) {
+			return;
+		}
+		rejectIfConflict(errors, deathDate, dead,"dead");
+	}
+
+	/**
+	 * Checks if the death date is in accordance with dead status.
+	 *
+	 * @param errors Stores information about errors encountered during validation
+	 * @param date the deathDate to validate
+	 * @param dead is the dead status
+	 * @param field the name of field
+	 */
+	private void rejectIfConflict(Errors errors, Date date, boolean dead, String field) {
+		if (date != null && dead == false) {
+			errors.rejectValue(field, "error.dead.false");
+		}
+	}
+
+
 	/**
 	 * Checks if the birth date specified is in the future or older than 120 years old..
 	 *
