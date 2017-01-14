@@ -13,14 +13,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.FullTextFilterDef;
-import org.hibernate.search.annotations.FullTextFilterDefs;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Resolution;
-import org.openmrs.api.db.hibernate.search.TermsFilterFactory;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
 
@@ -476,11 +470,9 @@ public class Person extends BaseOpenmrsData {
 	 * @should remove attribute when exist
 	 */
 	public void removeAttribute(PersonAttribute attribute) {
-		if (attributes != null) {
-			if (attributes.remove(attribute)) {
-				attributeMap = null;
-				allAttributeMap = null;
-			}
+		if (attributes != null && attributes.remove(attribute)) {
+			attributeMap = null;
+			allAttributeMap = null;
 		}
 	}
 	
@@ -758,7 +750,7 @@ public class Person extends BaseOpenmrsData {
 	public PersonName getPersonName() {
 		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
 		// has fetched a Person, changed their names around, and then calls this method, so we have to be careful.
-		if (getNames() != null && getNames().size() > 0) {
+		if (getNames() != null && !getNames().isEmpty()) {
 			for (PersonName name : getNames()) {
 				if (name.isPreferred() && !name.isVoided()) {
 					return name;
@@ -840,7 +832,7 @@ public class Person extends BaseOpenmrsData {
 	public PersonAddress getPersonAddress() {
 		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
 		// has fetched a Person, changed their addresses around, and then calls this method, so we have to be careful.
-		if (getAddresses() != null && getAddresses().size() > 0) {
+		if (getAddresses() != null && !getAddresses().isEmpty()) {
 			for (PersonAddress addr : getAddresses()) {
 				if (addr.isPreferred() && !addr.isVoided()) {
 					return addr;
