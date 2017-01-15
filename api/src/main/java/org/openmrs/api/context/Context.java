@@ -85,11 +85,11 @@ import org.springframework.aop.Advisor;
  * <br>
  * The Context is split into a {@link UserContext} and {@link ServiceContext}. The UserContext is
  * lightweight and there is an instance for every user logged into the system. The ServiceContext is
- * heavier and contains each service class. This is more static and there is only one ServiceContext
+ * heavier and it contains each service class. This is more static and there is only one ServiceContext
  * per OpenMRS instance. <br>
  * <br>
  * Both the {@link UserContext} and the {@link ServiceContext} should not be used directly. This
- * Context class has methods to pass through to the currently defined UserContext for the thread and
+ * context class has methods to pass through to the currently defined UserContext for the thread and
  * the currently defined ServiceContext. <br>
  * <br>
  * To use the OpenMRS api there are four things that have to be done:
@@ -442,7 +442,7 @@ public class Context {
 	public static OrderSetService getOrderSetService() {
 		return getServiceContext().getOrderSetService();
 	}
-	
+
 	/**
 	 * @return form service
 	 */
