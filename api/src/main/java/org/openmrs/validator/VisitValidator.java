@@ -79,23 +79,24 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		}
 		try 
 		{
-			Date birthDate = visit.getPatient().getBirthdate(); 
+			Date birthDateTime = visit.getPatient().getBirthdate();
 			Date startDateTime = visit.getStartDatetime();    
-			String dateFormat = "dd-MM-YYYY"; 
-			if(new SimpleDateFormat(dateFormat).format(startDateTime).compareTo(new SimpleDateFormat(dateFormat).format(birthDate)) < 0) { 
+			String dateFormat = "dd-MM-YYYY";
+			birthDateTime = new SimpleDateFormat(dateFormat).parse(new SimpleDateFormat(dateFormat).format(startDateTime));
+			startDateTime = new SimpleDateFormat(dateFormat).parse(new SimpleDateFormat(dateFormat).format(birthDateTime));
+			if(startDateTime.compareTo(birthDateTime) < 0) {
 			errors.rejectValue("startDatetime","Visit.error.startDateBeforeBirthDate"); 
 			} 
 			else { 
-        		int diffInDays = (int) ((startDateTime.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24)); 
-                System.out.println("date diff is : "+diffInDays); 
-                if(diffInDays<365) { 
+        		int diffInDays = (int) ((startDateTime.getTime() - birthDateTime.getTime()) / (1000 * 60 * 60 * 24));
+                if(diffInDays<365 && diffInDays !=0) {
                 	errors.rejectValue("startDatetime","Visit.error.birthDateTooLess"); 
-        } 
-    } 
-}
-catch (Exception ex) {
-	System.out.println("[EXCEPTION] - "+ex); 
-}
+                }
+            }
+        }
+        catch (Exception ex) {
+	        System.out.println("[EXCEPTION] - "+ex);
+        }
 
 		//If this is not a new visit, validate based on its existing encounters.
 		if (visit.getId() != null) {
