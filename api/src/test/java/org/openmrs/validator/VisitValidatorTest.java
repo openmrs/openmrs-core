@@ -194,6 +194,42 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
+	@Verifies(value = "should fail if the startDate is before the birthDate", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfTheStartDatetimeIsBeforeTheBirthDate() throws Exception {
+        Patient patient = new Patient();
+        patient.setBirthdate(new SimpleDateFormat("dd-MM-YYYY").parse("24-04-1996"));
+        Visit visit = new Visit();
+        visit.setPatient(patient);
+		Calendar c = Calendar.getInstance();
+		visit.setStartDatetime(c.getTime());
+		c.set(1994, 3, 15);//set to an older date
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+		assertEquals(true, errors.hasFieldErrors("startDatetime"));
+	}
+
+    /**
+     * @see VisitValidator#validate(Object,Errors)
+     */
+    @Test
+    @Verifies(value = "should fail if the age of the patient is less than one year", method = "validate(Object,Errors)")
+    public void validate_shouldFailIfTheAgeOfThePatientIsLessThanOneYear() throws Exception {
+        Patient patient = new Patient();
+        patient.setBirthdate(new SimpleDateFormat("dd-MM-YYYY").parse("24-04-1996"));
+        Visit visit = new Visit();
+        visit.setPatient(patient);
+        Calendar c = Calendar.getInstance();
+        visit.setStartDatetime(c.getTime());
+        c.set(1996, 5, 1);//set to a date within one year of date of birth of patient
+        Errors errors = new BindException(visit, "visit");
+        new VisitValidator().validate(visit, errors);
+        assertEquals(true, errors.hasFieldErrors("startDatetime"));
+    }
+	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 */
+	@Test
 	@Verifies(value = "should fail if the startDatetime is after any encounter", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfTheStartDatetimeIsAfterAnyEncounter() throws Exception {
 		Visit visit = Context.getVisitService().getVisit(1);

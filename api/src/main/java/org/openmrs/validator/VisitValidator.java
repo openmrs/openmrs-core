@@ -9,6 +9,7 @@
  */
 package org.openmrs.validator;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -47,6 +48,8 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 	 * @should fail if visit type is not set
 	 * @should fail if startDatetime is not set
 	 * @should fail if the endDatetime is before the startDatetime
+	 * @should fail if the startDatetime is before the birthDate
+	 * @should fail if the startDatetime is within an year of the patient's birthDate
 	 * @should fail if the startDatetime is after any encounter
 	 * @should fail if the stopDatetime is before any encounter
 	 * @should fail if an attribute is bad
@@ -74,7 +77,26 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		        && OpenmrsUtil.compareWithNullAsLatest(visit.getStartDatetime(), visit.getStopDatetime()) > 0) {
 			errors.rejectValue("stopDatetime", "Visit.error.endDateBeforeStartDate");
 		}
-		
+		try 
+		{
+			Date birthDate = visit.getPatient().getBirthdate(); 
+			Date startDateTime = visit.getStartDatetime();    
+			String dateFormat = "dd-MM-YYYY"; 
+			if(new SimpleDateFormat(dateFormat).format(startDateTime).compareTo(new SimpleDateFormat(dateFormat).format(birthDate)) < 0) { 
+			errors.rejectValue("startDatetime","Visit.error.startDateBeforeBirthDate"); 
+			} 
+			else { 
+        		int diffInDays = (int) ((startDateTime.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24)); 
+                System.out.println("date diff is : "+diffInDays); 
+                if(diffInDays<365) { 
+                	errors.rejectValue("startDatetime","Visit.error.birthDateTooLess"); 
+        } 
+    } 
+}
+catch (Exception ex) {
+	System.out.println("[EXCEPTION] - "+ex); 
+}
+
 		//If this is not a new visit, validate based on its existing encounters.
 		if (visit.getId() != null) {
 			Date startDateTime = visit.getStartDatetime();
