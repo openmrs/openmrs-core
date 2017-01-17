@@ -91,8 +91,11 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
                 }
             }
         }
-        catch (Exception ex) {
-	        System.out.println("[EXCEPTION] - "+ex);
+        catch (NullPointerException ex) {
+            errors.rejectValue("attributes","Patient is Null");
+        }
+        catch (IllegalArgumentException ex) {
+            errors.rejectValue("attributes","Illegal Argument is passed");
         }
 
 		//If this is not a new visit, validate based on its existing encounters.
