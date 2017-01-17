@@ -397,7 +397,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		
 		List<Obs> returnList = new Vector<Obs>();
 		
-		if (encounters.size() > 0 || persons.size() > 0) {
+		if (!encounters.isEmpty() || !persons.isEmpty()) {
 			returnList = Context.getObsService().getObservations(persons, encounters, null, null, null, null, null, null,
 			    null, null, null, false);
 		}

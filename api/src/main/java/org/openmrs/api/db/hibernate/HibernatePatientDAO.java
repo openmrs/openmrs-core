@@ -260,16 +260,16 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		
 		// TODO add junit test for getting by identifier type
-		if (patientIdentifierTypes.size() > 0) {
+		if (!patientIdentifierTypes.isEmpty()) {
 			criteria.add(Restrictions.in("identifierType", patientIdentifierTypes));
 		}
 		
-		if (locations.size() > 0) {
+		if (!locations.isEmpty()) {
 			criteria.add(Restrictions.in("location", locations));
 		}
 		
 		// TODO add junit test for getting by patients
-		if (patients.size() > 0) {
+		if (!patients.isEmpty()) {
 			criteria.add(Restrictions.in("patient", patients));
 		}
 		
@@ -395,7 +395,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		List<Patient> patients = new Vector<Patient>();
 		List<Integer> patientIds = new Vector<Integer>();
 
-		if (attributes.size() > 0) {
+		if (!attributes.isEmpty()) {
 
 			String sqlString = getDuplicatePatientsSQLString(attributes);
 			if(sqlString != null) {
@@ -508,8 +508,8 @@ public class HibernatePatientDAO implements PatientDAO {
 					innerSelect += "inner join patient_identifier pi1 on p1.patient_id = pi1.patient_id ";
 				}
 
-				AbstractEntityPersister aep = ((AbstractEntityPersister) sessionFactory
-						.getClassMetadata(PatientIdentifier.class));
+				AbstractEntityPersister aep = (AbstractEntityPersister) sessionFactory
+						.getClassMetadata(PatientIdentifier.class);
 				if (aep != null) {
 
 					String[] properties = aep.getPropertyColumnNames(attribute);

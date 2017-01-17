@@ -257,7 +257,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public void checkPatientIdentifiers(Patient patient) throws PatientIdentifierException {
 		// check patient has at least one identifier
-		if (!patient.isVoided() && patient.getActiveIdentifiers().size() < 1) {
+		if (!patient.isVoided() && patient.getActiveIdentifiers().isEmpty()) {
 			throw new InsufficientIdentifiersException("At least one nonvoided Patient Identifier is required");
 		}
 		
@@ -304,7 +304,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			}
 		}
 		
-		if (requiredTypes.size() > 0) {
+		if (!requiredTypes.isEmpty()) {
 			String missingNames = "";
 			for (PatientIdentifierType pit : requiredTypes) {
 				missingNames += (missingNames.length() > 0) ? ", " + pit.getName() : pit.getName();
@@ -426,7 +426,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public PatientIdentifierType getPatientIdentifierTypeByName(String name) throws APIException {
 		List<PatientIdentifierType> types = getPatientIdentifierTypes(name, null, null, null);
 		
-		if (types.size() > 0) {
+		if (!types.isEmpty()) {
 			return types.get(0);
 		}
 		
@@ -504,7 +504,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) throws APIException {
 		
-		if (attributes == null || attributes.size() < 1) {
+		if (attributes == null || attributes.isEmpty()) {
 			throw new APIException("Patient.no.attribute", (Object[]) null);
 		}
 		
@@ -1038,7 +1038,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @throws APIException
 	 */
 	public void processDeath(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason) throws APIException {
-		//SQLStateConverter s = null;
 		
 		if (patient != null && dateDied != null && causeOfDeath != null) {
 			// set appropriate patient characteristics
@@ -1275,7 +1274,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 		
 		try {
-			return getIdentifierValidator(((Class<IdentifierValidator>) Context.loadClass(pivClassName)));
+			return getIdentifierValidator((Class<IdentifierValidator>) Context.loadClass(pivClassName));
 		}
 		catch (ClassNotFoundException e) {
 			log.error("Could not find patient identifier validator " + pivClassName, e);
@@ -1371,7 +1370,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		Allergies allergies = new Allergies();
 		List<Allergy> allergyList = dao.getAllergies(patient);
-		if (allergyList.size() > 0) {
+		if (!allergyList.isEmpty()) {
 			allergies.addAll(allergyList);
 		} else {
 			String status = dao.getAllergyStatus(patient);
@@ -1577,7 +1576,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public void checkIfPatientIdentifierTypesAreLocked() {
 		String locked = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED, "false");
-		if ("true".equals(locked.toLowerCase())) {
+		if ("true".equalsIgnoreCase(locked)) {
 			throw new PatientIdentifierTypeLockedException();
 		}
 	}
