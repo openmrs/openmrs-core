@@ -248,7 +248,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			}
 		}
 		
-		// those were the first seven, now the eigth request 
+		// those were the first seven, now the eighth request
 		// (with the same user and right pw) should fail
 		dao.authenticate("admin", "test");
 	}

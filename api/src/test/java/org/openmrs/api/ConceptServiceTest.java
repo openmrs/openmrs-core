@@ -85,7 +85,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.Errors;
 
 /**
- * This test class (should) contain tests for all of the ConcepService methods TODO clean up and
+ * This test class (should) contain tests for all of the ConceptService methods TODO clean up and
  * finish this test class
  * 
  * @see org.openmrs.api.ConceptService

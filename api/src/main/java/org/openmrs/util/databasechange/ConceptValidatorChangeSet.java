@@ -315,7 +315,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 						        + conceptName.getName() + ") in locale '" + defaultLocale.getDisplayName()
 						        + "' has been set as the fully specified name for concept with id : " + conceptId);
 					}
-					//convert to a synonym and should not be preferred, this will avoid inconsistencies, incase
+					//convert to a synonym and should not be preferred, this will avoid inconsistencies, in case
 					//already short, fully specified and preferred names exist
 					else {
 						conceptName.setLocalePreferred(false);

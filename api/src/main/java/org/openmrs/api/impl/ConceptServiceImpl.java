@@ -170,7 +170,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				
 				// Make the voided name a synonym, this would help to avoid
 				// having multiple fully specified or preferred
-				// names in a locale incase the name is unvoided
+				// names in a locale in case the name is unvoided
 				if (!nameInDB.isSynonym()) {
 					nameInDB.setConceptNameType(null);
 				}

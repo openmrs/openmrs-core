@@ -2308,7 +2308,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		encounter.setEncounterDatetime(new Date());
 		encounter.setPatient(Context.getPatientService().getPatient(3));
 		EncounterType encounterType = new EncounterType(1);
-		// viewPrivilige on encounter type intentionally left null
+		// viewPrivilege on encounter type intentionally left null
 		encounter.setEncounterType(encounterType);
 		
 		EncounterRole role = new EncounterRole();

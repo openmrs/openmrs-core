@@ -155,7 +155,7 @@ public class Encounter extends BaseOpenmrsData {
 			for (Obs o : this.obs) {
 				ret.addAll(getObsLeaves(o));
 			}
-			// this should be all thats needed unless the encounter has been built by hand
+			// this should be all that is needed unless the encounter has been built by hand
 			//if (o.isVoided() == false && o.isObsGrouping() == false)
 			//	ret.add(o);
 		}
@@ -301,7 +301,7 @@ public class Encounter extends BaseOpenmrsData {
 				o.setEncounter(this);
 				
 				//if the attribute was already set, preserve it
-				//if not, inherit the values sfrom the encounter
+				//if not, inherit the values from the encounter
 				if (o.getObsDatetime() == null) {
 					o.setObsDatetime(getEncounterDatetime());
 				}

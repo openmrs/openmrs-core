@@ -84,7 +84,7 @@ public class Drug extends BaseOpenmrsMetadata {
 	}
 	
 	/**
-	 * Gets the entires concept drug name in the form of CONCEPTNAME (Drug: DRUGNAME)
+	 * Gets the entries concept drug name in the form of CONCEPTNAME (Drug: DRUGNAME)
 	 * 
 	 * @param locale
 	 * @return full drug name (with concept name appended)
