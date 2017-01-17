@@ -201,8 +201,8 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
         Visit visit = new Visit();
         visit.setPatient(patient);
 		Calendar c = Calendar.getInstance();
-		visit.setStartDatetime(c.getTime());
 		c.set(1994, 3, 15);//set to an older date
+		visit.setStartDatetime(c.getTime());
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
 		assertEquals(true, errors.hasFieldErrors("startDatetime"));
@@ -219,8 +219,8 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
         Visit visit = new Visit();
         visit.setPatient(patient);
         Calendar c = Calendar.getInstance();
+        c.set(1996, 6, 6);//set to a date within one year of date of birth of patient
         visit.setStartDatetime(c.getTime());
-        c.set(1996, 5, 1);//set to a date within one year of date of birth of patient
         Errors errors = new BindException(visit, "visit");
         new VisitValidator().validate(visit, errors);
         assertEquals(true, errors.hasFieldErrors("startDatetime"));

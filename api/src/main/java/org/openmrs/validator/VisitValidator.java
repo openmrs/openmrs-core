@@ -80,10 +80,7 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		try 
 		{
 			Date birthDateTime = visit.getPatient().getBirthdate();
-			Date startDateTime = visit.getStartDatetime();    
-			String dateFormat = "dd-MM-YYYY";
-			birthDateTime = new SimpleDateFormat(dateFormat).parse(new SimpleDateFormat(dateFormat).format(startDateTime));
-			startDateTime = new SimpleDateFormat(dateFormat).parse(new SimpleDateFormat(dateFormat).format(birthDateTime));
+			Date startDateTime = visit.getStartDatetime();
 			if(startDateTime.compareTo(birthDateTime) < 0) {
 			errors.rejectValue("startDatetime","Visit.error.startDateBeforeBirthDate"); 
 			} 
