@@ -17,7 +17,7 @@ import org.openmrs.ConceptName;
  * <b>FULLY_SPECIFIED</b> - Indicates that the name is marked as the fully specified name, which is
  * returned by default for a locale in case there is no preferred name set, a concept can have only
  * one fully specified name per locale. It will also be set as the preferred name in its locale if
- * no name is explicitly set as prefererred for the same locale and concept.<br>
+ * no name is explicitly set as preferred for the same locale and concept.<br>
  * <br>
  * <b>SHORT</b> - Indicates the name is marked as the short name for the concept, only one name can
  * be marked short per locale for a concept <br>

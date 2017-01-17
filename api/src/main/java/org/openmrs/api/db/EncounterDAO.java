@@ -54,7 +54,7 @@ public interface EncounterDAO {
 	
 	/**
 	 * @param patientId
-	 * @return all encounters for the given patient identifer
+	 * @return all encounters for the given patient identifier
 	 * @throws DAOException
 	 */
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException;
@@ -217,7 +217,7 @@ public interface EncounterDAO {
 	public EncounterRole getEncounterRoleByUuid(String uuid);
 	
 	/**
-	 * Get all enconter roles and optionally specify whehter to include retired encontered roles
+	 * Get all encounter roles and optionally specify whether to include retired encountered roles
 	 * 
 	 * @param includeRetired include retired
 	 * @return enconter roles

@@ -487,8 +487,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return getSynonyms().iterator().next();
 		}
 		
-		//we don't expect to get here since every concept name must have atleast
-		//one fully specified name, but just in case(probably inconsistent data)
+		// we don't expect to get here since every concept name must have at least
+		// one fully specified name, but just in case (probably inconsistent data)
 		
 		return null;
 	}
@@ -586,7 +586,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return loose match given exact equals false
 	 * @should return null if no names are found in locale given exact equals true
 	 * @should return any name if no locale match given exact equals false
-	 * @should return name in broader locale incase none is found in specific one
+	 * @should return name in broader locale in case none is found in specific one
 	 */
 	public ConceptName getName(Locale locale, boolean exact) {
 		
@@ -743,11 +743,11 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * Returns all names available for locale langueage "or" country. <br>
+	 * Returns all names available for locale language "or" country. <br>
 	 * <br>
 	 * 
 	 * @param locale locale for which names should be returned
-	 * @return Collection of ConceptNames with the given locale langueage or country
+	 * @return Collection of ConceptNames with the given locale language or country
 	 */
 	private Collection<ConceptName> getPartiallyCompatibleNames(Locale locale) {
 		Collection<ConceptName> localeNames = new Vector<ConceptName>();

@@ -717,7 +717,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should throw APIException when mapping to null concept
 	 * @should set value coded name when add synonym is selected
 	 * @should not set value coded name when add concept is selected
-	 * @should fail when adding a duplicate syonymn
+	 * @should fail when adding a duplicate synonym
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
 	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept, Locale locale) throws APIException;
@@ -827,7 +827,7 @@ public interface ConceptService extends OpenmrsService {
 	public Set<Locale> getLocalesOfConceptNames();
 	
 	/**
-	 * Return a list of concept sources currenly in the database Whether or not to return retired
+	 * Return a list of concept sources currently in the database Whether or not to return retired
 	 * concept sources is decided by the boolean includeRetired param
 	 * 
 	 * @param includeRetired whether or not to include retired sources
@@ -1172,7 +1172,7 @@ public interface ConceptService extends OpenmrsService {
 	public void updateConceptIndex(Concept concept) throws APIException;
 	
 	/**
-	 * Iterates over all concepts and calls upddateConceptIndexes(Concept concept)
+	 * Iterates over all concepts and calls updateConceptIndexes(Concept concept)
 	 * 
 	 * @throws APIException
 	 * @since 1.8

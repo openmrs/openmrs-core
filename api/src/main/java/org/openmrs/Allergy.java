@@ -317,7 +317,7 @@ public class Allergy extends BaseOpenmrsData {
 	 * Copies all property values, apart from the id and uuid,
 	 * from the given allergy into this object
 	 * 
-	 * @param allergy the allergy whose propery values to copy
+	 * @param allergy the allergy whose property values to copy
 	 * @throws InvocationTargetException
 	 * @throws IllegalAccessException
 	 */
