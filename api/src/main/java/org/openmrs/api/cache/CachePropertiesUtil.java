@@ -29,7 +29,7 @@ import java.util.Set;
 public class CachePropertiesUtil {
 
     /**
-     * This method look for all apiCacheConfig.properties file located in cacheConfig folder in classpath
+     * This method looks for all apiCacheConfig.properties file located in cacheConfig folder in classpath
      * @return list of CacheConfiguration objects
      */
     public static List<CacheConfiguration> getCacheConfigurations(){
