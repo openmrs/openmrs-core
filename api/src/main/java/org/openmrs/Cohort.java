@@ -314,11 +314,18 @@ public class Cohort extends BaseOpenmrsData  {
 	}
 
 	public Set<Integer> getMemberIds() {
+		memberIds = new TreeSet<Integer>();
+		for (CohortMembership member : getMembers()) {
+			memberIds.add(member.getPatient().getPatientId());
+		}
 		return memberIds;
 	}
 
 	public void setMemberIds(Set<Integer> memberIds) {
 		this.memberIds = new TreeSet<Integer>(memberIds);
+		for (Integer id : memberIds) {
+			addMembership(new CohortMembership(new Patient(id)));
+		}
 	}
 
 	public Collection<CohortMembership> getMembers() {
