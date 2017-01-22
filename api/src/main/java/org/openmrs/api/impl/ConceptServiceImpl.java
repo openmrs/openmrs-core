@@ -1161,6 +1161,14 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public ConceptSource getConceptSourceByName(String conceptSourceName) throws APIException {
 		return dao.getConceptSourceByName(conceptSourceName);
 	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptSourceByHL7Code(java.lang.String)
+	 */
+	@Transactional(readOnly = true)
+	public ConceptSource getConceptSourceByHL7Code(String conceptSourceName) throws APIException {
+		return dao.getConceptSourceByHL7Code(conceptSourceName);
+	}
 
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptSourceByUniqueId(java.lang.String)

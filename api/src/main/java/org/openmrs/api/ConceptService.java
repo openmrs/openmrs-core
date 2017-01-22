@@ -506,11 +506,25 @@ public interface ConceptService extends OpenmrsService {
 	public ConceptSource getConceptSourceByUuid(String uuid);
 	
 	/**
+	 * Get ConceptSource by its HL7Code
+	 * 
+	 * @param uuid
+	 * @return concept source or null
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid
+	 */
+	
+	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
+	public ConceptSource getConceptSourceByHL7Code(String hl7code);
+	
+	/**
 	 * Creates or updates a concept class
 	 * 
 	 * @param cc ConceptClass to create or update
 	 * @throws APIException
 	 */
+	
+	
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_CLASSES)
 	public ConceptClass saveConceptClass(ConceptClass cc) throws APIException;
 	
