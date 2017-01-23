@@ -122,6 +122,7 @@ public class UserContext implements Serializable {
 			user = Context.getUserService().getUser(user.getUserId());
 			//update the stored location in the user's session
 			setUserLocation();
+			setUserLocale();
 		}
 	}
 	
@@ -439,6 +440,18 @@ public class UserContext implements Serializable {
 			} else {
 				if (this.locationId != null) {
 					this.locationId = null;
+				}
+			}
+		}
+	}
+	
+	public void setUserLocale() {
+		if (this.user != null) {
+			String locale = this.user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
+			if (StringUtils.isNotBlank(locale)) {
+				Locale userLocale = LocaleUtility.fromSpecification(locale);
+				if(LocaleUtility.isValid(userLocale)){
+					this.setLocale(userLocale);
 				}
 			}
 		}
