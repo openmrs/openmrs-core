@@ -29,6 +29,8 @@
   <obs obs_id="9" person_id="9" concept_id="1" obs_datetime="2004-01-01 00:00:00.0" location_id="1" value_numeric="9.0" obs_group_id="2" creator="1" date_created="2006-02-17 15:57:35.0" voided="false" uuid="0ee1248e-08aa-4a2c-9f38-fb3875f605e1"/>
   <obs obs_id="10" person_id="9" concept_id="1" obs_datetime="2009-01-01 00:00:00.0" location_id="1" value_numeric="10.0" obs_group_id="2" creator="1" date_created="2006-02-17 15:57:35.0" voided="true" void_reason="testing" voided_by="1" date_voided="2006-03-17 15:57:35.0" uuid="0ee1248e-08aa-4a2c-9f38-fb3875f605e2"/>
   <obs obs_id="11" person_id="2" concept_id="21" obs_datetime="2009-01-01 00:00:00.0" location_id="1" value_coded="7" creator="1" date_created="2006-02-17 15:57:35.0" voided="false" uuid="0ee1248e-08aa-4a2c-9f38-fb3875f605e3"/>
+  <obs obs_id="17" person_id="2" concept_id="1" obs_datetime="2006-02-10 00:00:00.0" location_id="1" obs_group_id="2" creator="1" date_created="2006-02-11 15:57:35.0" voided="false" uuid="b5499df2-b17c-4b39-88a6-44591c165369"/>
+  <obs obs_id="18" person_id="2" concept_id="21" obs_datetime="2009-01-01 00:00:00.0" location_id="1" obs_group_id="17" value_coded="7" creator="1" date_created="2006-02-17 15:57:35.0" voided="false" uuid="0ee1248e-08aa-4a2c-9f34-fb3875f605e3"/>
 
   <!-- an obs assigned to a user only -->
   <obs obs_id="12" person_id="1" concept_id="1" obs_datetime="2009-02-09 00:00:00.0" location_id="1" value_numeric="1.0" creator="1" date_created="2006-02-10 15:57:35.0" voided="false" uuid="be3a4d7a-f9ab-47bb-aaad-bc0b452fcda3"/>

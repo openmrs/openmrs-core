@@ -128,7 +128,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			// fetch a clean copy of this obs from the database so that
 			// we don't write the changes to the database when we save
 			// the fact that the obs is now voided
-			Context.evictFromSession(obs);
+			evictObsAndChildren(obs);
 			obs = Context.getObsService().getObs(obs.getObsId());
 			//delete the previous file from the appdata/complex_obs folder
 			if (newObs.hasPreviousVersion() && newObs.getPreviousVersion().isComplex()) {
@@ -200,6 +200,15 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		Obs ret = dao.saveObs(obs);
 		saveObsGroup(ret,changeMessage);
 		return ret;
+	}
+
+	private void evictObsAndChildren(Obs obs) {
+		Context.evictFromSession(obs);
+		if(obs.hasGroupMembers()) {
+			for(Obs member : obs.getGroupMembers()) {
+				evictObsAndChildren(member);
+			}
+		}
 	}
 
 	private void ensureRequirePrivilege(Obs obs){
