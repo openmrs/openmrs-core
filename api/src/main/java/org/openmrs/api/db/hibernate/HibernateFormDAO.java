@@ -45,6 +45,7 @@ import org.openmrs.util.OpenmrsUtil;
  *
  * @see org.openmrs.api.db.FormDAO
  * @see org.openmrs.api.FormService
+ * @should add  TODO junit test on line on line 436 ==> if (!containingAnyFormField.isEmpty()) {
  */
 public class HibernateFormDAO implements FormDAO {
 	
@@ -431,7 +432,7 @@ public class HibernateFormDAO implements FormDAO {
 			crit.add(Restrictions.eq("retired", retired));
 		}
 		
-		// TODO junit test
+		
 		if (!containingAnyFormField.isEmpty()) {
 			// Convert form field persistents to integers
 			Set<Integer> anyFormFieldIds = new HashSet<Integer>();

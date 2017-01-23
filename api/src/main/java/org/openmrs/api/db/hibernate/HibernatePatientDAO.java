@@ -57,6 +57,7 @@ import org.openmrs.util.OpenmrsConstants;
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.db.PatientDAO
  * @see org.openmrs.api.PatientService
+ * @should add TODO add junit test for getting by identifier type on line 264 ==> if (!patientIdentifierTypes.isEmpty()) {
  */
 public class HibernatePatientDAO implements PatientDAO {
 	
@@ -259,7 +260,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			criteria.add(Restrictions.eq("identifier", identifier));
 		}
 		
-		// TODO add junit test for getting by identifier type
+		
 		if (!patientIdentifierTypes.isEmpty()) {
 			criteria.add(Restrictions.in("identifierType", patientIdentifierTypes));
 		}
