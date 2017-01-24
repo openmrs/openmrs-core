@@ -45,7 +45,6 @@ import org.openmrs.util.OpenmrsUtil;
  *
  * @see org.openmrs.api.db.FormDAO
  * @see org.openmrs.api.FormService
- * @should add  TODO junit test on line on line 436 ==> if (!containingAnyFormField.isEmpty()) {
  */
 public class HibernateFormDAO implements FormDAO {
 	
@@ -409,6 +408,7 @@ public class HibernateFormDAO implements FormDAO {
 	 * @param containingAllFormFields
 	 * @param fields
 	 * @return
+	 * @should return criteria if containingAnyFormField any formField is not empty
 	 */
 	private Criteria getFormCriteria(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
 	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,

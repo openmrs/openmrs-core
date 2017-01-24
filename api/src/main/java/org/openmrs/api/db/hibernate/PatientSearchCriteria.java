@@ -38,7 +38,6 @@ import org.openmrs.util.OpenmrsConstants;
  * identifier.
  *
  * @deprecated since 2.1.0 (in favor of Hibernate Search)
- * @should add TODO add a junit test for patientIdentifierType restrictions	on line 318 ==> if (!CollectionUtils.isEmpty(identifierTypes)) {
  */
 @Deprecated
 public class PatientSearchCriteria {
@@ -265,6 +264,7 @@ public class PatientSearchCriteria {
 	 * @param identifierTypes
 	 * @param matchIdentifierExactly
 	 * @param includeVoided true/false whether or not to included voided patients
+	 * @should return a criterion when identifierTypes is not empty
 	 */
 	private Criterion prepareCriterionForIdentifier(String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, boolean includeVoided) {
