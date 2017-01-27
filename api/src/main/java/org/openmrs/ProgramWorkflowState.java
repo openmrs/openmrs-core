@@ -25,8 +25,8 @@ public class ProgramWorkflowState extends BaseOpenmrsMetadata implements Seriali
 	private Integer programWorkflowStateId;
 	
 	private ProgramWorkflow programWorkflow;
-	
-	private Concept concept;
+	private String name;
+	private String description;
 	
 	private Boolean initial;
 	
@@ -58,12 +58,38 @@ public class ProgramWorkflowState extends BaseOpenmrsMetadata implements Seriali
 	// Property Access
 	// ******************
 	
+	/**
+	 * @deprecated As of 2.0.1
+	 * 
+	 * replaced by {@link #getName())}
+	 */
 	public Concept getConcept() {
 		return concept;
 	}
 	
+	/**
+	 * @deprecated As of 2.0.1
+	 * 
+	 * replaced by {@link #setName(String name)}
+	 */
+	 @deprecated
 	public void setConcept(Concept concept) {
 		this.concept = concept;
+	}
+	 @deprecated
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getDescription() {
+		return description;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	public Boolean getInitial() {
