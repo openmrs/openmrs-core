@@ -63,6 +63,7 @@ public class ProgramWorkflowState extends BaseOpenmrsMetadata implements Seriali
 	 * 
 	 * replaced by {@link #getName())}
 	 */
+	 @deprecated
 	public Concept getConcept() {
 		return concept;
 	}
@@ -76,7 +77,7 @@ public class ProgramWorkflowState extends BaseOpenmrsMetadata implements Seriali
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-	 @deprecated
+	 
 	public String getName() {
 		return name;
 	}
