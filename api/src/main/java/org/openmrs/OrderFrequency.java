@@ -27,6 +27,8 @@ public class OrderFrequency extends BaseOpenmrsMetadata {
 	private String uuid;
 	
 	private Concept concept;
+        
+        private Double sortWeight;
 	
 	/**
 	 * Get the orderFrequencyId
@@ -114,6 +116,17 @@ public class OrderFrequency extends BaseOpenmrsMetadata {
 			return getConcept().getDescription().getDescription();
 		}
 		return null;
+	}
+        
+        public Double getSortWeight() {
+		return sortWeight;
+	}
+	
+	public void setSortWeight(Double sortWeight) {
+           // if(sortWeight != null)
+		this.sortWeight = sortWeight;
+            //else
+                //this.sortWeight = 0.0;
 	}
 	
 	@Override

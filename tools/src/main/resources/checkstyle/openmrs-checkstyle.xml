@@ -213,7 +213,6 @@
 			java.lang.Throwable, java.lang.Error, and java.lang.RuntimeException.
 		-->
 		<module name="IllegalThrows" />
-
 		<!--
 			Check for instantiation of specific classes. For example, check for
 			constructor invocations for java.lang.Boolean, which should be
