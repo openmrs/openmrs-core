@@ -9535,4 +9535,29 @@
         </sql>
     </changeSet>
 
+    <changeSet id="TRUNK-4903-20160809-1039" author="teleivo">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="changed_by" /></not>
+        </preConditions>
+        <comment>Add changed_by column to orders table</comment>
+
+        <addColumn tableName="orders">
+            <column name="changed_by" type="int" />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="orders_changed_by_fk"
+            baseTableName="orders" baseColumnNames="changed_by"
+            referencedTableName="users" referencedColumnNames="user_id" />
+    </changeSet>
+
+    <changeSet id="TRUNK-4903-20160809-1040" author="teleivo">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="date_changed" /></not>
+        </preConditions>
+        <comment>Add date_changed column to orders table</comment>
+
+        <addColumn tableName="orders">
+            <column name="date_changed" type="datetime" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

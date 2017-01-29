@@ -18,6 +18,19 @@ import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
 
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 /**
  * Encapsulates information about the clinical action of a provider requesting something for a
  * patient e.g requesting a test to be performed, prescribing a medication, requesting the patient
@@ -32,9 +45,12 @@ import org.openmrs.util.OpenmrsUtil;
  * 
  * @version 1.0
  */
+@Entity
+@Table(name = "orders")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
-	
+
 	public static final long serialVersionUID = 4334343L;
 	
 	/**
@@ -57,41 +73,75 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	private static final Log log = LogFactory.getLog(Order.class);
-	
+
+	// generator class="native" from Order.hbm.xml should ruather be GenerationType.AUTO
+	// but the param name="sequence" looks like MySQL sequence is used. bit mixed
+	// sequence would be like this:
+	// @GeneratedValue(generator = "orders-sequence", strategy = GenerationType.SEQUENCE)
+	// @SequenceGenerator(name = "orders-sequence", sequenceName = "orders_order_id_seq")
+	//
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "order_id")
 	private Integer orderId;
 	
+	@ManyToOne
+	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 	
+	@ManyToOne
+	@JoinColumn(name = "order_type_id", nullable = false)
 	private OrderType orderType;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
+	@Column(name = "instructions", length = 65535)
 	private String instructions;
 	
+	@Column(name = "date_activated", nullable = false)
 	private Date dateActivated;
 	
+	@Column(name = "auto_expire_date")
 	private Date autoExpireDate;
 	
+	@ManyToOne
+	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
 	
+	@ManyToOne
+	@JoinColumn(name = "orderer", nullable = false)
 	private Provider orderer;
 	
+	@Column(name = "date_stopped")
 	private Date dateStopped;
 	
+	@ManyToOne
+	@JoinColumn(name = "order_reason")
 	private Concept orderReason;
 	
+	@Column(name = "accession_number", length = 255)
 	private String accessionNumber;
 	
+	@Column(name = "order_reason_non_coded", length = 255)
 	private String orderReasonNonCoded;
 	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "urgency", nullable = false, length = 50)
 	private Urgency urgency = Urgency.ROUTINE;
 	
+	@Column(name = "order_number", nullable = false, length = 50)
 	private String orderNumber;
 	
+	@Column(name = "comment_to_fulfiller", length = 1024)
 	private String commentToFulfiller;
 	
+	@ManyToOne
+	@JoinColumn(name = "care_setting", nullable = false)
 	private CareSetting careSetting;
 	
+	@Column(name = "scheduled_date")
 	private Date scheduledDate;
 	
 	/**
@@ -99,12 +149,15 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * added in the group ex - for two orders of isoniazid and ampicillin, the sequence of 1 and 2
 	 * needed to be maintained
 	 */
+	@Column(name = "sort_weight")
 	private Double sortWeight;
 	
 	/**
 	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
 	 * to the original ampicillin order (the D/C gets its own order number)
 	 */
+	@ManyToOne
+	@JoinColumn(name = "previous_order_id")
 	private Order previousOrder;
 	
 	/**
@@ -112,11 +165,15 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @see org.openmrs.Order.Action
 	 */
+	@Enumerated(EnumType.STRING)
+	@Column(name = "order_action", nullable = false, length = 50)
 	private Action action = Action.NEW;
 	
 	/**
 	 * {@link org.openmrs.OrderGroup}
 	 */
+	@ManyToOne
+	@JoinColumn(name = "order_group_id")
 	private OrderGroup orderGroup;
 	
 	// Constructors
