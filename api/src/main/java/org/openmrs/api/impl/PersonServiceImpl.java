@@ -112,7 +112,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public PersonAttributeType getPersonAttributeTypeByName(String typeName) throws APIException {
 		List<PersonAttributeType> types = Context.getPersonService().getPersonAttributeTypes(typeName, null, null, null);
 		
-		if (types.size() < 1) {
+		if (types.isEmpty()) {
 			return null;
 		} else {
 			return types.get(0);
@@ -135,7 +135,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 
 		if (type.getSortWeight() == null) {
 			List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
-			if (allTypes.size() > 0) {
+			if (!allTypes.isEmpty()) {
 				type.setSortWeight(allTypes.get(allTypes.size() - 1).getSortWeight() + 1);
 			} else {
 				type.setSortWeight(1.0);
@@ -257,7 +257,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public RelationshipType getRelationshipTypeByName(String relationshipTypeName) throws APIException {
 		List<RelationshipType> types = dao.getRelationshipTypes(relationshipTypeName, null);
 		
-		if (types.size() < 1) {
+		if (types.isEmpty()) {
 			return null;
 		} else {
 			return types.get(0);
@@ -530,7 +530,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		AdministrationService as = Context.getAdministrationService();
 		
 		String attrString = "";
-		
+
+		final String fatalString = "Should not be here.";
+
 		// TODO cache the global properties to speed this up??
 		// Is hibernate taking care of caching and not hitting the db every time? (hopefully it is)
 		if (viewType == null) {
@@ -545,7 +547,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			} else if (personType == PERSON_TYPE.USER) {
 				attrString = userListing;
 			} else {
-				log.fatal("Should not be here.");
+				log.fatal(fatalString);
 			}
 		} else if (viewType == ATTR_VIEW_TYPE.VIEWING) {
 			String patientViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "");
@@ -557,7 +559,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			} else if (personType == PERSON_TYPE.USER) {
 				attrString = userViewing;
 			} else {
-				log.fatal("Should not be here");
+				log.fatal(fatalString);
 			}
 		} else if (viewType == ATTR_VIEW_TYPE.HEADER) {
 			String patientHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, "");
@@ -569,11 +571,11 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			} else if (personType == PERSON_TYPE.USER) {
 				attrString = userHeader;
 			} else {
-				log.fatal("Should not be here");
+				log.fatal(fatalString);
 			}
 			
 		} else {
-			log.fatal("Should not be here");
+			log.fatal(fatalString);
 		}
 		
 		// the java list object to hold the values from the global properties
@@ -595,7 +597,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		List<PersonAttributeType> attrObjects = new Vector<PersonAttributeType>();
 		
 		// get the PersonAttribute objects for each name/id
-		if (attrNames.size() > 0) {
+		if (!attrNames.isEmpty()) {
 			for (String nameOrId : attrNames) {
 				if (nameOrId.matches("\\d")) {
 					attrObjects.add(Context.getPersonService().getPersonAttributeType(Integer.valueOf(nameOrId)));

@@ -444,7 +444,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return name in broader locale in case none is found in specific one
 	 */
 	public ConceptName getName() {
-		if (getNames().size() == 0) {
+		if (getNames().isEmpty()) {
 			if (log.isDebugEnabled()) {
 				log.debug("there are no names defined for: " + conceptId);
 			}
@@ -483,12 +483,12 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			}
 		}
 		
-		if (getSynonyms().size() > 0) {
+		if (!getSynonyms().isEmpty()) {
 			return getSynonyms().iterator().next();
 		}
 		
-		//we don't expect to get here since every concept name must have atleast
-		//one fully specified name, but just in case(probably inconsistent data)
+		// we don't expect to get here since every concept name must have at least
+		// one fully specified name, but just in case (probably inconsistent data)
 		
 		return null;
 	}
@@ -586,12 +586,12 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return loose match given exact equals false
 	 * @should return null if no names are found in locale given exact equals true
 	 * @should return any name if no locale match given exact equals false
-	 * @should return name in broader locale incase none is found in specific one
+	 * @should return name in broader locale in case none is found in specific one
 	 */
 	public ConceptName getName(Locale locale, boolean exact) {
 		
 		// fail early if this concept has no names defined
-		if (getNames().size() == 0) {
+		if (getNames().isEmpty()) {
 			if (log.isDebugEnabled()) {
 				log.debug("there are no names defined for: " + conceptId);
 			}
@@ -631,7 +631,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		ConceptName fullySpecifiedName = getFullySpecifiedName(locale);
 		if (fullySpecifiedName != null) {
 			return fullySpecifiedName;
-		} else if (getSynonyms(locale).size() > 0) {
+		} else if (!getSynonyms(locale).isEmpty()) {
 			return getSynonyms(locale).iterator().next();
 		}
 		
@@ -652,7 +652,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			log.debug("Getting preferred conceptName for locale: " + forLocale);
 		}
 		// fail early if this concept has no names defined
-		if (getNames(forLocale).size() == 0) {
+		if (getNames(forLocale).isEmpty()) {
 			if (log.isDebugEnabled()) {
 				log.debug("there are no names defined for concept with id: " + conceptId + " in the  locale: " + forLocale);
 			}
@@ -698,7 +698,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return the name marked as fully specified for the given locale
 	 */
 	public ConceptName getFullySpecifiedName(Locale locale) {
-		if (locale != null && getNames(locale).size() > 0) {
+		if (locale != null && !getNames(locale).isEmpty()) {
 			//get the first fully specified name, since every concept must have a fully specified name,
 			//then, this loop will have to return a name
 			for (ConceptName conceptName : getNames(locale)) {
@@ -743,11 +743,11 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * Returns all names available for locale langueage "or" country. <br>
+	 * Returns all names available for locale language "or" country. <br>
 	 * <br>
 	 * 
 	 * @param locale locale for which names should be returned
-	 * @return Collection of ConceptNames with the given locale langueage or country
+	 * @return Collection of ConceptNames with the given locale language or country
 	 */
 	private Collection<ConceptName> getPartiallyCompatibleNames(Locale locale) {
 		Collection<ConceptName> localeNames = new Vector<ConceptName>();
@@ -860,7 +860,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public ConceptName getShortNameInLocale(Locale locale) {
 		ConceptName bestMatch = null;
-		if (locale != null && getShortNames().size() > 0) {
+		if (locale != null && !getShortNames().isEmpty()) {
 			for (ConceptName shortName : getShortNames()) {
 				Locale nameLocale = shortName.getLocale();
 				if (nameLocale.equals(locale)) {
@@ -885,7 +885,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public Collection<ConceptName> getShortNames() {
 		Vector<ConceptName> shortNames = new Vector<ConceptName>();
-		if (getNames().size() == 0) {
+		if (getNames().isEmpty()) {
 			if (log.isDebugEnabled()) {
 				log.debug("The Concept with id: " + conceptId + " has no names");
 			}
@@ -988,7 +988,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public Collection<ConceptName> getIndexTermsForLocale(Locale locale) {
 		
 		Vector<ConceptName> indexTermsForLocale = new Vector<ConceptName>();
-		if (getIndexTerms().size() > 0) {
+		if (!getIndexTerms().isEmpty()) {
 			for (ConceptName name : getIndexTerms()) {
 				if (name.getLocale().equals(locale)) {
 					indexTermsForLocale.add(name);
@@ -1053,7 +1053,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				names = new HashSet<ConceptName>();
 			}
 			if (!names.contains(conceptName)) {
-				if (getNames().size() == 0
+				if (getNames().isEmpty()
 				        && !OpenmrsUtil.nullSafeEquals(conceptName.getConceptNameType(), ConceptNameType.FULLY_SPECIFIED)) {
 					conceptName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 				} else {
@@ -1529,7 +1529,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return all locales for conceptNames for this concept without duplicates
 	 */
 	public Set<Locale> getAllConceptNameLocales() {
-		if (getNames().size() == 0) {
+		if (getNames().isEmpty()) {
 			if (log.isDebugEnabled()) {
 				log.debug("The Concept with id: " + conceptId + " has no names");
 			}

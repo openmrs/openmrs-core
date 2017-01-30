@@ -320,7 +320,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		String newKey = "new_gp_key";
 		
 		String initialValue = adminService.getGlobalProperty(newKey);
-		Assert.assertNull(initialValue); // ensure gp doesnt exist before test
+		Assert.assertNull(initialValue); // ensure gp doesn't exist before test
 		adminService.setGlobalProperty(newKey, "new_key");
 		
 		String newValue = adminService.getGlobalProperty(newKey);
@@ -756,7 +756,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see AdministrationService#getSearchLocales(User)
-	 * @verifies include currently selected full locale and langugage
+	 * @verifies include currently selected full locale and language
 	 */
 	@Test
 	public void getSearchLocales_shouldIncludeCurrentlySelectedFullLocaleAndLangugage() throws Exception {

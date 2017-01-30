@@ -293,7 +293,7 @@ public class WebModuleUtil {
 			outFile.deleteOnExit();
 			
 			// additional checks on module needing a context refresh
-			if (moduleNeedsContextRefresh == false && mod.getAdvicePoints() != null && mod.getAdvicePoints().size() > 0) {
+			if (!moduleNeedsContextRefresh && mod.getAdvicePoints() != null && !mod.getAdvicePoints().isEmpty()) {
 				
 				// AOP advice points are only loaded during the context refresh now.
 				// if the context hasn't been marked to be refreshed yet, mark it
@@ -304,7 +304,7 @@ public class WebModuleUtil {
 			
 			// refresh the spring web context to get the just-created xml
 			// files into it (if we copied an xml file)
-			if (moduleNeedsContextRefresh && delayContextRefresh == false) {
+			if (moduleNeedsContextRefresh && !delayContextRefresh) {
 				if (log.isDebugEnabled()) {
 					log.debug("Refreshing context for module" + mod);
 				}
@@ -354,7 +354,7 @@ public class WebModuleUtil {
 			}
 			
 			// return true if the module needs a context refresh and we didn't do it here
-			return (moduleNeedsContextRefresh && delayContextRefresh == true);
+			return (moduleNeedsContextRefresh && delayContextRefresh);
 			
 		}
 		
@@ -825,7 +825,7 @@ public class WebModuleUtil {
 			}
 		}
 		
-		if (skipRefresh == false) {
+		if (!skipRefresh) {
 			//try {
 			//	if (dispatcherServlet != null)
 			//		dispatcherServlet.reInitFrameworkServlet();

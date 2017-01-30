@@ -46,7 +46,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	private String visibleConceptMapTypes;
 	
 	/**
-	 * The "hiddenConceptMapTypess" parameter defined in the liquibase xml changeSet element that is
+	 * The "hiddenConceptMapTypes" parameter defined in the liquibase xml changeSet element that is
 	 * calling this class, it value is expected to be a comma separated list of concept map type
 	 * names to add as the hidden ones
 	 */

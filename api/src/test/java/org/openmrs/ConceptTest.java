@@ -1081,7 +1081,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Concept#getName()
-	 * @verifies return name in broader locale incase none is found in specific one
+	 * @verifies return name in broader locale in case none is found in specific one
 	 */
 	@Test
 	public void getName_shouldReturnNameInBroaderLocaleIncaseNoneIsFoundInSpecificOne() throws Exception {
@@ -1131,7 +1131,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see Concept#hasName(String, Locale)
-	 * @verifies hasName returns ture if locale parameter Is Null but name is found
+	 * @verifies hasName returns true if locale parameter Is Null but name is found
 	 */
 	@Test
 	public void hasName_shouldReturnTrueIfLocaleIsNullButNameExists()

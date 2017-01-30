@@ -131,7 +131,7 @@ public class ModuleUtil {
 		// some debugging info
 		if (log.isDebugEnabled()) {
 			Collection<Module> modules = ModuleFactory.getStartedModules();
-			if (modules == null || modules.size() == 0) {
+			if (modules == null || modules.isEmpty()) {
 				log.debug("No modules loaded");
 			} else {
 				log.debug("Found and loaded " + modules.size() + " module(s)");
@@ -971,7 +971,7 @@ public class ModuleUtil {
 		mandatoryModuleIds.removeAll(startedModuleIds);
 		
 		// any module ids left in the list are not started
-		if (mandatoryModuleIds.size() > 0) {
+		if (!mandatoryModuleIds.isEmpty()) {
 			throw new MandatoryModuleException(mandatoryModuleIds);
 		}
 	}

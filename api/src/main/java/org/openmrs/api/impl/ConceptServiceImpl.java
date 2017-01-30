@@ -88,6 +88,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	private static Concept falseConcept;
 	
 	private static Concept unknownConcept;
+
+	private static final String errorMessage = "Error generated";
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#setConceptDAO(org.openmrs.api.db.ConceptDAO)
@@ -147,10 +149,10 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 							BeanUtils.copyProperties(conceptName, clone);
 						}
 						catch (IllegalAccessException e) {
-							log.error("Error generated", e);
+							log.error(errorMessage, e);
 						}
 						catch (InvocationTargetException e) {
-							log.error("Error generated", e);
+							log.error(errorMessage, e);
 						}
 					}
 				}
@@ -168,7 +170,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				
 				// Make the voided name a synonym, this would help to avoid
 				// having multiple fully specified or preferred
-				// names in a locale incase the name is unvoided
+				// names in a locale in case the name is unvoided
 				if (!nameInDB.isSynonym()) {
 					nameInDB.setConceptNameType(null);
 				}
@@ -224,7 +226,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		concept.setChangedBy(Context.getAuthenticatedUser());
 		
 		// force isSet when concept has members
-		if (!concept.isSet() && (concept.getSetMembers().size() > 0)) {
+		if (!concept.isSet() && (!concept.getSetMembers().isEmpty())) {
                     concept.setSet(true);
 		}
 
@@ -454,7 +456,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			if (drugs.size() > 1) {
 				log.warn("more than one drug name returned with name:" + drugNameOrId);
 			}
-			if (drugs.size() == 0) {
+			if (drugs.isEmpty()) {
 				return null;
 			}
 			return drugs.get(0);
@@ -1048,7 +1050,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public Concept getConceptByMapping(String code, String sourceName, Boolean includeRetired) throws APIException {
 		List<Concept> concepts = Context.getConceptService().getConceptsByMapping(code, sourceName, includeRetired);
 		
-		if (concepts.size() == 0) {
+		if (concepts.isEmpty()) {
 			return null;
 		}
 		// we want to throw an exception if there is more than one non-retired concept; 
@@ -1271,19 +1273,19 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		catch (IllegalAccessException e) {
 			
-			log.warn("Error generated", e);
+			log.warn(errorMessage, e);
 		}
 		catch (InstantiationException e) {
 			
-			log.warn("Error generated", e);
+			log.warn(errorMessage, e);
 		}
 		catch (InvocationTargetException e) {
 			
-			log.warn("Error generated", e);
+			log.warn(errorMessage, e);
 		}
 		catch (NoSuchMethodException e) {
 			
-			log.warn("Error generated", e);
+			log.warn(errorMessage, e);
 		}
 		return copy;
 	}

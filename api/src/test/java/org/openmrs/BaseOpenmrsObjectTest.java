@@ -254,7 +254,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies return false if HibernateProxy of onething is compared to Non-HibernateProxy of something
+	 * @verifies return false if HibernateProxy of one thing is compared to Non-HibernateProxy of something
 	 */
 	@Test
 	public void equals_shouldReturnFalseIfHibernateProxyOfOneThingIsComparedtoNonHibernateProxyofSomething() throws Exception {

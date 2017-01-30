@@ -44,7 +44,7 @@ import org.hibernate.stat.SessionStatistics;
  * This class has been created to provide backwards compatibility for modules, which need to support
  * OpenMRS 1.12 and before. It is because org.hibernate.classic.Session has been removed in
  * Hibernate 4 (used in OpenMRS 1.12) and sessionFactory.getCurrentSession() has been changed to
- * return org.hiberante.Session. It wraps SessionFactory so that any calls to getCurrentSession()
+ * return org.hibernate.Session. It wraps SessionFactory so that any calls to getCurrentSession()
  * are directed to the correct Session class.
  * 
  * @since 1.12, 1.11.3, 1.10.2, 1.9.9

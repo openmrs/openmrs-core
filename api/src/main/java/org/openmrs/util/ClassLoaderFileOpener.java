@@ -18,7 +18,7 @@ import liquibase.resource.ResourceAccessor;
 
 /**
  * Implementation of liquibase FileOpener interface so that the {@link OpenmrsClassLoader} will be
- * used to find files (or any other classloader that is passed into the contructor). This allows
+ * used to find files (or any other classloader that is passed into the constructor). This allows
  * liquibase xml files in modules to be found.
  */
 public class ClassLoaderFileOpener implements ResourceAccessor {

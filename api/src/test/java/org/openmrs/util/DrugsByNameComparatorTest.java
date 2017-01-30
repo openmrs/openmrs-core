@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.openmrs.Drug;
 
 /**
- * The Class DrugsByNameComparatorTest. Contains tests for DrugsByNameCOmparator
+ * The Class DrugsByNameComparatorTest. Contains tests for DrugsByNameComparator
  */
 public class DrugsByNameComparatorTest {
 	
