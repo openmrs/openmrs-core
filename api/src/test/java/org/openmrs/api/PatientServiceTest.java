@@ -52,6 +52,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
+import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -143,7 +144,17 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 	}
-	
+
+	private void voidOrdersForType(Collection<Patient> patients, OrderType ot) {
+		patients.forEach(patient -> {
+			Context.getOrderService().getAllOrdersByPatient(patient).forEach(order -> {
+				if(order.getOrderType().equals(ot)){
+					order.setVoided(true);
+				}
+			});
+		});
+	}
+
 	/**
 	 * @see PatientService#getAllIdentifierValidators()
 	 */
@@ -3304,15 +3315,43 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if not preferred patient has unvoided orders
+	 * @verifies fail if multiple patients has active order of same type
+	 * @see PatientService#mergePatients(org.openmrs.Patient, org.openmrs.Patient)
+	 * @throws APIException
+	 */
+	@Test
+	public void mergePatients_shouldFailIfMultiplePatientsHasActiveOrderOfSameType() throws Exception {
+		expectedException.expect(APIException.class);
+		String message = Context.getMessageSourceService().getMessage("Patient.merge.cannotHaveSameTypeActiveOrders",
+				new Object[] { "2", "7", "Drug order" }, Context.getLocale());
+		expectedException.expectMessage(Matchers.is(message));
+		Patient preferredPatient = patientService.getPatient(2);
+		Patient notPreferredPatient = patientService.getPatient(7);
+		patientService.mergePatients(preferredPatient, notPreferredPatient);
+	}
+
+	/**
+	 * @verifies not fail if one patient has active order
 	 * @see PatientService#mergePatients(org.openmrs.Patient, org.openmrs.Patient)
 	 */
 	@Test
-	public void mergePatients_shouldFailIfNotPreferredPatientHasUnvoidedOrders() throws Exception {
-		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers.is(Context.getMessageSourceService().getMessage("Patient.cannot.merge")));
-		Patient preferredPatient = patientService.getPatient(8);
+	public void mergePatients_shouldNotFailIfOnePatientHasActiveOrder() throws Exception {
+		Patient preferredPatient = patientService.getPatient(2);
 		Patient notPreferredPatient = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferredPatient));
+		patientService.mergePatients(preferredPatient, notPreferredPatient);
+	}
+
+	/**
+	 * @verifies not fail if multiple patients has active order of different types
+	 * @see PatientService#mergePatients(org.openmrs.Patient, org.openmrs.Patient)
+	 */
+	@Test
+	public void mergePatients_shouldNotFailIfMultiplePatientsHasActiveOrderOfDifferentTypes() throws Exception {
+		Patient preferredPatient = patientService.getPatient(2);
+		Patient notPreferredPatient = patientService.getPatient(7);
+		OrderType DrugOrder = Context.getOrderService().getOrderTypeByName("Drug order");
+		voidOrdersForType(Collections.singleton(preferredPatient), DrugOrder);
 		patientService.mergePatients(preferredPatient, notPreferredPatient);
 	}
 }
