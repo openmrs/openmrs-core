@@ -273,7 +273,8 @@ public class HibernatePatientDAO implements PatientDAO {
 
 		
 		if (!patients.isEmpty()) {
-
+			criteria.add(Restrictions.in("patient", patients));
+		}
 		
 		if (patients.size() > 0) {
 
