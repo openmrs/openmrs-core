@@ -508,7 +508,7 @@ public interface ConceptService extends OpenmrsService {
 	/**
 	 * Get ConceptSource by its HL7Code
 	 * 
-	 * @param uuid
+	 * @param hl7code
 	 * @return concept source or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
