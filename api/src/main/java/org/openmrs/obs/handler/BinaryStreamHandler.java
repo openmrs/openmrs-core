@@ -9,12 +9,6 @@
  */
 package org.openmrs.obs.handler;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
@@ -24,6 +18,12 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.Assert;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Handler for storing generic binary data for complex obs to the file system.
@@ -58,11 +58,11 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 	@Override
 	public Obs getObs(Obs obs, String view) {
 		ComplexData complexData = null;
-		
+		File file;
 		// Raw stream
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
 			try {
-				File file = getComplexDataFile(obs);
+				file = getComplexDataFile(obs);
 				String[] names = obs.getValueComplex().split("\\|");
 				String originalFilename = names[0];
 				originalFilename = originalFilename.replace(",", "").replace(" ", "");
@@ -84,7 +84,7 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 		}
 		
 		Assert.notNull(complexData, "Complex data must not be null");
-		complexData.setMimeType("application/octet-stream");
+		complexData.setMimeType(getMimeTypeFromFile(file));
 		obs.setComplexData(complexData);
 		
 		return obs;
