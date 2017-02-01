@@ -9,21 +9,20 @@
  */
 package org.openmrs.obs.handler;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.springframework.util.Assert;
-
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.util.Assert;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 
 /**
  * Handler for storing files for complex obs to the file system. Files are stored in the location
@@ -72,8 +71,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			catch (IOException e) {
 				log.error("Trying to read file: " + file.getAbsolutePath(), e);
 			}
-			
-			obs.setComplexData(complexData);
+
 		} else {
 			// No other view supported
 			// NOTE: if adding support for another view, don't forget to update supportedViews list above
@@ -81,7 +79,17 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		}
 		
 		Assert.notNull(complexData, "Complex data must not be null");
-		complexData.setMimeType("application/octet-stream");
+
+		String mimeType;
+		try {
+			mimeType = Files.probeContentType(file.toPath());
+		} catch (IOException e) {
+			log.error("Trying to read file: " + file.getAbsolutePath(), e);
+			mimeType = null;
+		}
+		mimeType = mimeType != null ? mimeType : "application/octet-stream";
+
+		complexData.setMimeType(mimeType);
 		obs.setComplexData(complexData);
 		
 		return obs;
