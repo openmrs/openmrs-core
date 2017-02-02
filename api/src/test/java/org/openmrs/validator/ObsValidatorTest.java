@@ -33,6 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import junit.framework.Assert;
+
 /**
  * Tests methods on the {@link ObsValidator} class.
  */
@@ -313,11 +315,11 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setConcept(Context.getConceptService().getConcept(19));
 		obs.setObsDatetime(new Date());
 		
-		// Generate 1800+ characters length text.
+		// Generate 65535+ characters length text.
 		String valueText = "";
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 730; i++) {
 			valueText = valueText
-			        + "This text should not exceed 1000 characters. Below code will generate a text more than 1000";
+			        + "This text should not exceed 65535 characters. Below code will generate a text more than 65535";
 		}
 		
 		obs.setValueText(valueText);
@@ -505,5 +507,34 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage(CoreMatchers.equalTo("Obs can't be null"));
 		obsValidator.validate(null, null);
+	}
+	
+	/**
+	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	@Verifies(value = "should pass validation if concept value for text datatype is less than the maximum length", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
+	public void validate_shouldPassValidationIfValueTextIsLessThanTheMaximumLength() throws Exception {
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(2));
+		obs.setConcept(Context.getConceptService().getConcept(19));
+		obs.setObsDatetime(new Date());
+
+		// Generate 2700+ characters length text.
+		String valueText = "";
+		for (int i = 0; i < 30; i++) {
+			valueText = valueText
+					+ "This text should not exceed 65535 characters. Below code will generate a text Less than 65535";
+		}
+
+		obs.setValueText(valueText);
+
+		Errors errors = new BindException(obs, "obs");
+		new ObsValidator().validate(obs, errors);
+
+		Assert.assertFalse(errors.hasFieldErrors("person"));
+		Assert.assertFalse(errors.hasFieldErrors("concept"));
+		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
+		Assert.assertFalse(errors.hasFieldErrors("valueText"));
 	}
 }
