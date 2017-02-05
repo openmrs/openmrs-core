@@ -34,7 +34,11 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	
 	private Program program;
 	
+	@Deprecated 
 	private Concept concept;
+    private String name;
+	
+	private String description;
 	
 	private Set<ProgramWorkflowState> states = new HashSet<ProgramWorkflowState>();
 	
@@ -257,13 +261,63 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 		this.states = states;
 	}
 	
+	/**
+	 * @deprecated since 2.1.0 replaced with {@link getName() and getDescription()}
+	 *
+	 * 
+	 */
+	@Deprecated 
 	public Concept getConcept() {
 		return concept;
 	}
 	
+	/**
+	 * @deprecated since 2.1.0 replaced with {@link setName(String name) and setDescription(String description)}
+	 *
+	 * 
+	 */
+	@Deprecated 
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
+	
+	/**
+	 *  since 2.1.0 
+	 *
+	 * 
+	 */
+	public String getName() {
+		return name;
+	}
+	
+	/**
+	 *  since 2.1.0 
+	 *
+	 * 
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	/**
+	 *  since 2.1.0 
+	 *
+	 * 
+	 */
+	public String getDescription() {
+		return description;
+	}
+	
+	/**
+	 *  since 2.1.0 
+	 *
+	 * 
+	 */
+	public void setDescription(String description) {
+		this.description= description;
+	}
+	
+	
 	
 	public Program getProgram() {
 		return program;
