@@ -807,7 +807,7 @@ public class Context {
 	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
 	 *      the required question/datatypes
 	 */
-	public static void startup(Properties props) throws DatabaseUpdateException, InputRequiredException,
+	public synchronized static void startup(Properties props) throws DatabaseUpdateException, InputRequiredException,
 	        ModuleMustStartException {
 		// do any context database specific startup
 		getContextDAO().startup(props);
@@ -851,7 +851,7 @@ public class Context {
 	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
 	 *      the required question/datatypes
 	 */
-	public static void startup(String url, String username, String password, Properties properties)
+	public synchronized static void startup(String url, String username, String password, Properties properties)
 	        throws DatabaseUpdateException, InputRequiredException, ModuleMustStartException {
 		if (properties == null) {
 			properties = new Properties();
