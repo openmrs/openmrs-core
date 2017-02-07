@@ -44,7 +44,10 @@
  
 		<!-- Associations -->
 
-		
+		<!-- bi-directional many-to-one association to Concept -->
+		<many-to-one name="concept" class="Concept" not-null="true">
+			<column name="concept_id" />
+		</many-to-one>
 
         <!-- property describing possible outcomes -->
         <many-to-one name="outcomesConcept" class="Concept" not-null="false">

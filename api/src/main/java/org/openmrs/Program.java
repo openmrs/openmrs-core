@@ -27,9 +27,12 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	// ******************
 	
 	private Integer programId;
-	
+	@Deprecated
+	private Concept concept;
 	private String name;
 	private String description;
+	
+	
 	/**
 	 * Represents the possible outcomes for this program. The concept should have answers or a
 	 * memberSet.
@@ -123,40 +126,50 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	// ******************
 	
 	/**
-	 * @deprecated As of 2.0.1
-	 * 
-	 * replaced by {@link #getName())}
+	 * @deprecated since 2.1.0 
+	 * replaced with {@link getName() and getDescription()}  
 	 */
-	 @deprecated
+	@Deprecated
 	public Concept getConcept() {
 		return concept;
 	}
 	
 	/**
-	 * @deprecated As of 2.0.1
-	 * 
-	 * replaced by {@link #setName(String name)}
+	 * @deprecated since 2.1.0 
+	 * replaced with {@link setName() and setDescription()} 
 	 */
-	 @deprecated
+	@Deprecated
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
 	
+	/**
+	 * since 2.1.0 
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * since 2.1.0 
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	/**
+	 * since 2.1.0 
+	 */
 	public String getDescription() {
 		return description;
 	}
 	
+	/**
+	 * since 2.1.0 
+	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
 	public Concept getOutcomesConcept() {
 		return outcomesConcept;
 	}
