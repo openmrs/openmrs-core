@@ -13,8 +13,5 @@ public enum AllergenType {
 	DRUG,
 	FOOD,
 	ENVIRONMENT,
-	ANIMAL,
-	PLANT,
-	POLLEN,
 	OTHER
 }
