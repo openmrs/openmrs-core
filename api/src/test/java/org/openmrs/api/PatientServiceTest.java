@@ -33,8 +33,10 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
@@ -153,6 +155,15 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 				}
 			});
 		});
+	}
+
+	private boolean hasActiveOrderOfType(Patient patient, String orderTypeName) {
+		OrderType drugOrder = Context.getOrderService().getOrderTypeByName(orderTypeName);
+		List<Order> preferredPatientOrders = Context.getOrderService().getAllOrdersByPatient(patient).stream()
+				.filter(Order::isActive)
+				.filter(order -> Objects.equals(drugOrder, order.getOrderType()))
+				.collect(Collectors.toList());
+		return !preferredPatientOrders.isEmpty();
 	}
 
 	/**
@@ -3315,18 +3326,23 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if multiple patients has active order of same type
+	 * @verifies fail if multiple patients have active order of same type
 	 * @see PatientService#mergePatients(org.openmrs.Patient, org.openmrs.Patient)
 	 * @throws APIException
 	 */
 	@Test
-	public void mergePatients_shouldFailIfMultiplePatientsHasActiveOrderOfSameType() throws Exception {
+	public void mergePatients_shouldFailIfMultiplePatientsHaveActiveOrderOfSameType() throws Exception {
 		expectedException.expect(APIException.class);
 		String message = Context.getMessageSourceService().getMessage("Patient.merge.cannotHaveSameTypeActiveOrders",
 				new Object[] { "2", "7", "Drug order" }, Context.getLocale());
 		expectedException.expectMessage(Matchers.is(message));
 		Patient preferredPatient = patientService.getPatient(2);
 		Patient notPreferredPatient = patientService.getPatient(7);
+		
+		assertTrue("Test pre-request: No Active Drug order in " + preferredPatient,
+				hasActiveOrderOfType(preferredPatient, "Drug order"));
+		assertTrue("Test pre-request: No Active Drug order in " + notPreferredPatient,
+				hasActiveOrderOfType(preferredPatient, "Drug order"));
 		patientService.mergePatients(preferredPatient, notPreferredPatient);
 	}
 
@@ -3339,19 +3355,34 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient preferredPatient = patientService.getPatient(2);
 		Patient notPreferredPatient = patientService.getPatient(7);
 		voidOrders(Collections.singleton(notPreferredPatient));
+		
+		assertTrue("Test pre-request: No Active Drug order in " + preferredPatient,
+				hasActiveOrderOfType(preferredPatient, "Drug order"));
+		assertFalse("Test pre-request: At least one Active Drug order in " + notPreferredPatient,
+				hasActiveOrderOfType(notPreferredPatient, "Drug order"));
 		patientService.mergePatients(preferredPatient, notPreferredPatient);
 	}
 
 	/**
-	 * @verifies not fail if multiple patients has active order of different types
+	 * @verifies not fail if multiple patients have active order of different types
 	 * @see PatientService#mergePatients(org.openmrs.Patient, org.openmrs.Patient)
 	 */
 	@Test
-	public void mergePatients_shouldNotFailIfMultiplePatientsHasActiveOrderOfDifferentTypes() throws Exception {
+	public void mergePatients_shouldNotFailIfMultiplePatientsHaveActiveOrderOfDifferentTypes() throws Exception {
 		Patient preferredPatient = patientService.getPatient(2);
 		Patient notPreferredPatient = patientService.getPatient(7);
 		OrderType DrugOrder = Context.getOrderService().getOrderTypeByName("Drug order");
 		voidOrdersForType(Collections.singleton(preferredPatient), DrugOrder);
+		
+		assertFalse("Test pre-request: No Active Drug order in " + preferredPatient,
+				hasActiveOrderOfType(preferredPatient, "Drug order"));
+		assertTrue("Test pre-request: At least one Active Test order in " + preferredPatient,
+				hasActiveOrderOfType(preferredPatient, "Test order"));
+		
+		assertTrue("Test pre-request: At least one Active Drug order in " + notPreferredPatient,
+				hasActiveOrderOfType(notPreferredPatient, "Drug order"));
+		assertFalse("Test pre-request: No Active Test order in " + notPreferredPatient,
+				hasActiveOrderOfType(notPreferredPatient, "Test order"));
 		patientService.mergePatients(preferredPatient, notPreferredPatient);
 	}
 }
