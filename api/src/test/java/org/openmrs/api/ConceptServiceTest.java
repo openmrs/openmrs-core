@@ -1256,7 +1256,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test public void getConceptSourceByHL7Code_shouldFailIfGivenNull() throws Exception {
 
 		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("hl7code is required");
+		expectedException.expectMessage("hl7Code is required");
 		conceptService.getConceptSourceByHL7Code(null);
 	}
 	

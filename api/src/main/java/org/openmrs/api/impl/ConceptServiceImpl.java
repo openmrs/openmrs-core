@@ -1170,7 +1170,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		if (hl7Code == null) {
 			throw new IllegalArgumentException("hl7Code is required");
 		}
-		return dao.getConceptSourceByHL7Code(conceptSourceName);
+		return dao.getConceptSourceByHL7Code(hl7Code);
 	}
 
 	/**
