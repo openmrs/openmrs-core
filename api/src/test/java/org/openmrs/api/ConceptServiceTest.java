@@ -1238,7 +1238,27 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		expectedException.expectMessage("uniqueId is required");
 		conceptService.getConceptSourceByUniqueId(null);
 	}
+	/**
+	 * @verifies return null if given an empty string
+	 * @see ConceptService#getConceptSourceByhl7Code(String)
+	 */
+	
+	@Test public void getConceptSourceByhl7Code_shouldReturnNullIfGivenAnEmptyString() throws Exception {
 
+		assertThat(conceptService.getConceptSourceByhl7Code(""), is(nullValue()));
+		assertThat(conceptService.getConceptSourceByhl7Code("    "), is(nullValue()));
+	}
+
+	/**
+	 * @verifies fail if given null
+	 * @see ConceptService#getConceptSourceByhl7Code(String)
+	 */
+	@Test public void getConceptSourceByhl7Code_shouldFailIfGivenNull() throws Exception {
+
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("hl7Code is required");
+		conceptService.getConceptSourceByhl7Code(null);
+	}
 	/**
 	 * @verifies {@link ConceptService#getConceptsByConceptSource(ConceptSource)} test = should
 	 *           return a List of ConceptMaps if concept mappings found
