@@ -264,7 +264,7 @@ public class PatientSearchCriteria {
 	 * @param identifierTypes
 	 * @param matchIdentifierExactly
 	 * @param includeVoided true/false whether or not to included voided patients
-	 * @should return a criterion when identifierTypes is not empty
+	 * @should return  criterion of given identifierTypes 
 	 */
 	private Criterion prepareCriterionForIdentifier(String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, boolean includeVoided) {

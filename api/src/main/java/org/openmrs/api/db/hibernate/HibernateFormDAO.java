@@ -408,7 +408,7 @@ public class HibernateFormDAO implements FormDAO {
 	 * @param containingAllFormFields
 	 * @param fields
 	 * @return
-	 * @should return criteria if containingAnyFormField any formField is not empty.
+	 * @should return criteria if containingAnyFormField is not empty.
 	 */
 	private Criteria getFormCriteria(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
 	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
