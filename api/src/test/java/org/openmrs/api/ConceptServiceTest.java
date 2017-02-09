@@ -1235,7 +1235,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test public void getConceptSourceByUniqueId_shouldFailIfGivenNull() throws Exception {
 
 		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("uniqueId is required");
+		expectedException.expectMessage("hl7code is required");
 		conceptService.getConceptSourceByUniqueId(null);
 	}
 	
