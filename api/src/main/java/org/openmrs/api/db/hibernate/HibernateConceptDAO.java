@@ -1153,7 +1153,17 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Restrictions.eq("uniqueId", uniqueId));
 		return (ConceptSource) criteria.uniqueResult();
 	}
-
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptSourceByhl7Code(java.lang.String)
+	 */
+	public ConceptSource getConceptSourceByhl7Code(String hl7Code) {
+		if (StringUtils.isBlank(hl7Code)) {
+			return null;
+		}
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class);
+		criteria.add(Restrictions.eq("hl7Code", hl7Code));
+		return (ConceptSource) criteria.uniqueResult();
+	}
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getSavedConceptDatatype(org.openmrs.Concept)
 	 */
