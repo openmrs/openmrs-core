@@ -510,8 +510,8 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @param hl7code
 	 * @return concept source or null
-	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid
+	 * @should find object given valid hl7Code
+	 * @should return null if no object found with given hl7Code
 	 */
 	
 	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
