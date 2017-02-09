@@ -508,14 +508,14 @@ public interface ConceptService extends OpenmrsService {
 	/**
 	 * Get ConceptSource by its HL7Code
 	 * 
-	 * @param hl7code
+	 * @param hl7Code
 	 * @return concept source or null
 	 * @should find object given valid hl7Code
 	 * @should return null if no object found with given hl7Code
 	 */
 	
 	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
-	public ConceptSource getConceptSourceByHL7Code(String hl7code);
+	public ConceptSource getConceptSourceByHL7Code(String hl7Code);
 	
 	/**
 	 * Creates or updates a concept class

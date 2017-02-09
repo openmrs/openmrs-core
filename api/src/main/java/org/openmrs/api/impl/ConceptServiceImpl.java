@@ -1166,7 +1166,10 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#getConceptSourceByHL7Code(java.lang.String)
 	 */
 	@Transactional(readOnly = true)
-	public ConceptSource getConceptSourceByHL7Code(String conceptSourceName) throws APIException {
+	public ConceptSource getConceptSourceByHL7Code(String hl7Code) throws APIException {
+		if (hl7Code == null) {
+			throw new IllegalArgumentException("hl7Code is required");
+		}
 		return dao.getConceptSourceByHL7Code(conceptSourceName);
 	}
 
