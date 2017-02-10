@@ -15,10 +15,15 @@ import java.util.List;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.Encounter;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -37,7 +42,8 @@ import org.springframework.validation.Validator;
 public class ObsValidator implements Validator {
 	
 	public final static int VALUE_TEXT_MAX_LENGTH = 65535;
-	
+	private static Logger log = LoggerFactory.getLogger(ObsValidator.class);
+
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 * @should support Obs class
@@ -68,6 +74,7 @@ public class ObsValidator implements Validator {
 	 * @should not validate if obs is voided
 	 * @should not validate a voided child obs
 	 * @should fail for a null object
+	 * @should should fail if the obs and its encounter point to different persons
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -81,6 +88,16 @@ public class ObsValidator implements Validator {
 		validateHelper(obs, errors, ancestors, true);
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "accessionNumber", "valueModifier", "valueComplex",
 		    "comment", "voidReason");
+		try {
+			Encounter encounter = obs.getEncounter();
+			Patient patient = encounter.getPatient();
+			if (obs.getPerson() != patient){
+				throw new ValidationException("Obs.error.patient.id.mismatch");
+			}
+		}catch (Exception ex){
+			log.error("Data contains null values",ex);
+		}
+
 	}
 	
 	/**
