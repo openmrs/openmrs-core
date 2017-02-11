@@ -1289,4 +1289,35 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(patient, encounterCopy.getPatient());
 	}
+
+	/**
+	 * @see Encounter#removeProvider(EncounterRole,Provider)
+	 * @verifies multiple adding and removing of same provider not failing
+	 */
+	@Test
+	@Verifies(value = "multiple adding and removing of same provider should not fail", method = "removeProvider(EncounterRole,Provider)")
+	public void multipleAddingAndRemovingOfSameProvider_shouldNotFail() throws Exception {
+
+		Encounter encounter = new Encounter();
+		EncounterRole role = new EncounterRole();
+		Provider provider = new Provider();
+
+		encounter.addProvider(role, provider);
+
+		Assert.assertEquals(1, encounter.getProvidersByRole(role).size());
+		Assert.assertTrue(encounter.getProvidersByRole(role).contains(provider));
+
+		encounter.removeProvider(role, provider);
+
+		//the size should be 0 for non voided providers
+		Assert.assertEquals(0, encounter.getProvidersByRole(role).size());
+
+		encounter.addProvider(role, provider);
+		Assert.assertEquals(1, encounter.getProvidersByRole(role).size());
+
+		encounter.removeProvider(role, provider);
+		Assert.assertEquals(0, encounter.getProvidersByRole(role).size());
+
+	}
+
 }

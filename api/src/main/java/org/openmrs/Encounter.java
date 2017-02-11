@@ -669,7 +669,7 @@ public class Encounter extends BaseOpenmrsData {
 	 */
 	public void removeProvider(EncounterRole role, Provider provider) {
 		for (EncounterProvider encounterProvider : encounterProviders) {
-			if (encounterProvider.getEncounterRole().equals(role) && encounterProvider.getProvider().equals(provider)) {
+			if (encounterProvider.getEncounterRole().equals(role) && encounterProvider.getProvider().equals(provider) && !encounterProvider.isVoided()) {
 				encounterProvider.setVoided(true);
 				encounterProvider.setDateVoided(new Date());
 				encounterProvider.setVoidedBy(Context.getAuthenticatedUser());
