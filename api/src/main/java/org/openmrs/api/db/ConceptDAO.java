@@ -393,10 +393,10 @@ public interface ConceptDAO {
 	public ConceptSource getConceptSourceByUniqueId(String uniqueId);
 
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptSourceByhl7Code(java.lang.String)
+	 * @see org.openmrs.api.ConceptService#getConceptSourceByHL7Code(java.lang.String)
 	 */
 	
-	public ConceptSource getConceptSourceByhl7Code(String hl7Code);
+	public ConceptSource getConceptSourceByHL7Code(String hl7Code);
 
 	/**
 	 * Gets the value of conceptDatatype currently saved in the database for the given concept,

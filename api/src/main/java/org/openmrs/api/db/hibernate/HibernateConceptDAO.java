@@ -1154,9 +1154,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 		return (ConceptSource) criteria.uniqueResult();
 	}
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getConceptSourceByhl7Code(java.lang.String)
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptSourceByHL7Code(java.lang.String)
 	 */
-	public ConceptSource getConceptSourceByhl7Code(String hl7Code) {
+	public ConceptSource getConceptSourceByHL7Code(String hl7Code) {
 		if (StringUtils.isBlank(hl7Code)) {
 			return null;
 		}

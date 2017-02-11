@@ -1238,12 +1238,34 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		expectedException.expectMessage("uniqueId is required");
 		conceptService.getConceptSourceByUniqueId(null);
 	}
+	
+	/**
+	 * @verifies get concept source with the given hl7Code
+	 * @see ConceptService#getConceptSourceByHL7Code(String)
+	 */
+	@Test public void getConceptSourceByHL7Code_shouldGetConceptSourceWithTheGivenUniqueId() throws Exception {
+
+		String existinghl7Code = "SCT";
+		ConceptSource conceptSource = conceptService.getConceptSourceByHL7Code(existinghl7Code);
+		assertThat(conceptSource, is(not(nullValue())));
+		assertThat(conceptSource.getHl7Code(), is(existinghl7Code));
+	}	
+	
+	/**
+	 * @verifies return null if no concept source with given hl7Code is found
+	 * @see ConceptService#getConceptSourceByHL7Code(String)
+	 */
+	@Test public void getConceptSourceByHL7Code_shouldReturnNullIfNoConceptSourceWithGivenUniqueIdIsFound()
+			throws Exception {
+
+		assertThat(conceptService.getConceptSourceByHL7Code("XXXXX"), is(nullValue()));
+	}
+	
 	/**
 	 * @verifies return null if given an empty string
-	 * @see ConceptService#getConceptSourceByhl7Code(String)
+	 * @see ConceptService#getConceptSourceByHL7Code(String)
 	 */
-	
-	@Test public void getConceptSourceByhl7Code_shouldReturnNullIfGivenAnEmptyString() throws Exception {
+	@Test public void getConceptSourceByHL7Code_shouldReturnNullIfGivenAnEmptyString() throws Exception {
 
 		assertThat(conceptService.getConceptSourceByhl7Code(""), is(nullValue()));
 		assertThat(conceptService.getConceptSourceByhl7Code("    "), is(nullValue()));
@@ -1251,13 +1273,13 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @verifies fail if given null
-	 * @see ConceptService#getConceptSourceByhl7Code(String)
+	 * @see ConceptService#getConceptSourceByHL7Code(String)
 	 */
-	@Test public void getConceptSourceByhl7Code_shouldFailIfGivenNull() throws Exception {
+	@Test public void getConceptSourceByHL7Code_shouldFailIfGivenNull() throws Exception {
 
 		expectedException.expect(IllegalArgumentException.class);
 		expectedException.expectMessage("hl7Code is required");
-		conceptService.getConceptSourceByhl7Code(null);
+		conceptService.getConceptSourceByHL7Code(null);
 	}
 	/**
 	 * @verifies {@link ConceptService#getConceptsByConceptSource(ConceptSource)} test = should
