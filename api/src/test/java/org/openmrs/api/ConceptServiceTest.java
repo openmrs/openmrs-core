@@ -1238,7 +1238,49 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		expectedException.expectMessage("uniqueId is required");
 		conceptService.getConceptSourceByUniqueId(null);
 	}
+	
+	/**
+	 * @verifies get concept source with the given hl7Code
+	 * @see ConceptService#getConceptSourceByHL7Code(String)
+	 */
+	@Test public void getConceptSourceByHL7Code_shouldGetConceptSourceWithTheGivenUniqueId() throws Exception {
 
+		String existinghl7Code = "SCT";
+		ConceptSource conceptSource = conceptService.getConceptSourceByHL7Code(existinghl7Code);
+		assertThat(conceptSource, is(not(nullValue())));
+		assertThat(conceptSource.getHl7Code(), is(existinghl7Code));
+	}	
+	
+	/**
+	 * @verifies return null if no concept source with given hl7Code is found
+	 * @see ConceptService#getConceptSourceByHL7Code(String)
+	 */
+	@Test public void getConceptSourceByHL7Code_shouldReturnNullIfNoConceptSourceWithGivenUniqueIdIsFound()
+			throws Exception {
+
+		assertThat(conceptService.getConceptSourceByHL7Code("XXXXX"), is(nullValue()));
+	}
+	
+	/**
+	 * @verifies return null if given an empty string
+	 * @see ConceptService#getConceptSourceByHL7Code(String)
+	 */
+	@Test public void getConceptSourceByHL7Code_shouldReturnNullIfGivenAnEmptyString() throws Exception {
+
+		assertThat(conceptService.getConceptSourceByHL7Code(""), is(nullValue()));
+		assertThat(conceptService.getConceptSourceByHL7Code("    "), is(nullValue()));
+	}
+
+	/**
+	 * @verifies fail if given null
+	 * @see ConceptService#getConceptSourceByHL7Code(String)
+	 */
+	@Test public void getConceptSourceByHL7Code_shouldFailIfGivenNull() throws Exception {
+
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("hl7Code is required");
+		conceptService.getConceptSourceByHL7Code(null);
+	}
 	/**
 	 * @verifies {@link ConceptService#getConceptsByConceptSource(ConceptSource)} test = should
 	 *           return a List of ConceptMaps if concept mappings found
