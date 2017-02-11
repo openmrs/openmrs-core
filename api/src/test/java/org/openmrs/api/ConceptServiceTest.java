@@ -1267,8 +1267,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test public void getConceptSourceByHL7Code_shouldReturnNullIfGivenAnEmptyString() throws Exception {
 
-		assertThat(conceptService.getConceptSourceByhl7Code(""), is(nullValue()));
-		assertThat(conceptService.getConceptSourceByhl7Code("    "), is(nullValue()));
+		assertThat(conceptService.getConceptSourceByHL7Code(""), is(nullValue()));
+		assertThat(conceptService.getConceptSourceByHL7Code("    "), is(nullValue()));
 	}
 
 	/**
