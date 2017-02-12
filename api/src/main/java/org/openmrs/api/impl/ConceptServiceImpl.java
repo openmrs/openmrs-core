@@ -1174,6 +1174,17 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 
 	/**
+	 * @see org.openmrs.api.ConceptService#getConceptSourceByHL7Code(java.lang.String)
+	 */
+	@Transactional(readOnly = true)
+	public ConceptSource getConceptSourceByHL7Code(String hl7Code) throws APIException {
+		if (hl7Code == null) {
+			throw new IllegalArgumentException("hl7Code is required");
+		}
+		return dao.getConceptSourceByHL7Code(hl7Code);
+	}
+
+	/**
 	 * Utility method to check if the concept is already attached to an observation (including
 	 * voided ones) and if the datatype of the concept has changed, an exception indicating that the
 	 * datatype cannot be modified will be reported if the concept is attached to an observation.
