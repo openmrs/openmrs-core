@@ -1055,6 +1055,20 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
 	public ConceptSource getConceptSourceByUniqueId(String uniqueId) throws APIException;
+	
+	/**
+	 * Get a ConceptSource by its hl7Code.
+	 *
+	 * @param hl7Code the hl7Code
+	 * @return the concept source matching given hl7Code
+	 * @throws APIException
+	 * @should get concept source with the given hl7Code
+	 * @should return null if no concept source with given hl7Code is found
+	 * @should return null if given an empty string
+	 * @should fail if given null
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
+	public ConceptSource getConceptSourceByHL7Code(String hl7Code) throws APIException;
 
 	/**
 	 * Checks if there are any observations (including voided observations) for a concept.
