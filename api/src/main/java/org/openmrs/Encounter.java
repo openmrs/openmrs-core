@@ -438,7 +438,7 @@ public class Encounter extends BaseOpenmrsData {
     public Set<EncounterProvider> getActiveEncounterProviders() {
         Set<EncounterProvider> activeEncounterProviders = new LinkedHashSet<EncounterProvider>();
         Set<EncounterProvider> providers = getEncounterProviders();
-        if (providers != null && providers.size() > 0) {
+        if (providers != null && !providers.isEmpty()) {
             for (EncounterProvider provider : providers) {
                 if (provider.isVoided() == false) {
                     activeEncounterProviders.add(provider);

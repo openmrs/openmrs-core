@@ -201,7 +201,7 @@ public class HibernateFormDAO implements FormDAO {
 		
 		String err = "FormField warning.  No FormField matching concept '" + concept + "' for form '" + form + "'";
 		
-		if (formFields.size() < 1) {
+		if (formFields.isEmpty()) {
 			log.debug(err);
 			return null;
 		}
@@ -214,7 +214,7 @@ public class HibernateFormDAO implements FormDAO {
 		
 		// if we ended up removing all of the formfields, check to see if we're
 		// in a "force" situation
-		if (formFields.size() < 1) {
+		if (formFields.isEmpty()) {
 			if (!force) {
 				return backupPlan;
 			} else {

@@ -93,7 +93,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 			
 		}
 		
-		if (foundLocales.size() == 0) {
+		if (foundLocales.isEmpty()) {
 			log.warn("no locales found.");
 		}
 		return foundLocales;

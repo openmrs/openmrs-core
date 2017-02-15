@@ -190,7 +190,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 			prioritizedHandlerClasses = new LinkedHashMap<Class<? extends CustomDatatype>, Class<? extends CustomDatatypeHandler>>();
 			for (Class dt : getAllDatatypeClasses()) {
 				List<Class<? extends CustomDatatypeHandler>> handlerClasses = getHandlerClasses(dt);
-				if (handlerClasses == null || handlerClasses.size() == 0) {
+				if (handlerClasses == null || handlerClasses.isEmpty()) {
 					prioritizedHandlerClasses.put(dt, null);
 				} else {
 					prioritizedHandlerClasses.put(dt, handlerClasses.get(0));

@@ -210,7 +210,7 @@ public class PatientProgram extends BaseOpenmrsData {
 		}
 		PatientState last = null;
 		PatientState nextToLast = null;
-		if (states.size() > 0) {
+		if (!states.isEmpty()) {
 			last = states.get(states.size() - 1);
 		}
 		if (states.size() > 1) {

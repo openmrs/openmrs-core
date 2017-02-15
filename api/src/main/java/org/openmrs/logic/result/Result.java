@@ -109,7 +109,7 @@ public class Result extends ArrayList<Result> {
 	 * @should not fail with empty list
 	 */
 	public Result(List<Result> list) {
-		if (!(list == null || list.size() < 1)) {
+		if (!(list == null || list.isEmpty())) {
 			this.addAll(list);
 		}
 	}

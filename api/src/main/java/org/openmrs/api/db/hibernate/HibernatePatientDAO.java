@@ -402,7 +402,7 @@ public class HibernatePatientDAO implements PatientDAO {
 
 				SQLQuery sqlquery = sessionFactory.getCurrentSession().createSQLQuery(sqlString);
 				patientIds = sqlquery.list();
-				if (patientIds.size() >= 1) {
+				if (!patientIds.isEmpty()) {
 					Query query = sessionFactory.getCurrentSession().createQuery(
 							"from Patient p1 where p1.patientId in (:ids)");
 					query.setParameterList("ids", patientIds);

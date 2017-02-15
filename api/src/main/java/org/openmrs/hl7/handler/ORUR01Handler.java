@@ -688,7 +688,7 @@ public class ORUR01Handler implements Application {
 					        .getConceptService().getFalseConcept();
 					boolean isValidAnswer = false;
 					Collection<ConceptAnswer> conceptAnswers = concept.getAnswers();
-					if (conceptAnswers != null && conceptAnswers.size() > 0) {
+					if (conceptAnswers != null && !conceptAnswers.isEmpty()) {
 						for (ConceptAnswer conceptAnswer : conceptAnswers) {
 							if (conceptAnswer.getAnswerConcept().getId().equals(answer.getId())) {
 								obs.setValueCoded(answer);
