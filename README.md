@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/openmrs/openmrs-core.png?branch=master)](https://travis-ci.org/openmrs/openmrs-core) [![Coverage Status](https://coveralls.io/repos/github/openmrs/openmrs-core/badge.svg?branch=master)](https://coveralls.io/github/openmrs/openmrs-core?branch=master)
 
-OpenMRS is a patient-based medical record system focusing on giving providers a free customizable EMR.
+OpenMRS is a patient-based medical record system focusing on giving providers a free customisable EMR.
 
 Read more at http://openmrs.org/about
 

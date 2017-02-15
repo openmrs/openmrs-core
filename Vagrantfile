@@ -23,7 +23,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Change host name and allocated memory
   config.vm.host_name = "openmrs-dev"
 
-  config.vm.provider "virtualbox" do |v|
+  config.vm.provider "virtual box" do |v|
     v.name = "openmrs-dev"
     v.memory = 1024
   end

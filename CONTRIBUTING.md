@@ -2,11 +2,11 @@
 
 ## Resources for Getting Started
 
-Your contributions are what make OpenMRS an awesome Health IT system in developing countries. We want to make it as easy and fun as possible for you to contribute to the project and interact with the community. Before you get started contributing to OpenMRS, we encourage you to read both our [OpenMRS Developers Guide](http://om.rs/newdev) and our [Getting Started as a Developer](https://wiki.openmrs.org/x/MQAJ) wiki page.
+Your contributions are what which makes OpenMRS an awesome Health IT system in developing countries. We want to make it as easy and fun as possible for you to contribute to the project and interact with the community. Before you start contributing to the OpenMRS, we encourage you to read both our web pages [OpenMRS Developers Guide](http://om.rs/newdev) and our [Getting Started as a Developer](https://wiki.openmrs.org/x/MQAJ) wiki pages.
 
 ## Reporting Bugs
 
-1. Please check to see if you are running the latest version of OpenMRS; the bug may already be resolved. If you are running an old version, it may no longer be supported. Check our [Unsupported Releases](https://wiki.openmrs.org/x/2RAz) page for details.
+1. Please check to see if you are running the latest version of OpenMRS; the bug may already be resolved. If you are running an older version, it may no longer be supported. Check our [Unsupported Releases](https://wiki.openmrs.org/x/2RAz) page for details.
 
 2. Search for similar problems using the [OpenMRS Global Search](http://search.openmrs.org); it may already be an identified problem.
 
@@ -14,7 +14,7 @@ Your contributions are what make OpenMRS an awesome Health IT system in developi
 
 4. If you know the problem is related to the function or performance of a specific add-on module you're running, please consult the [Module Repository](http://modules.openmrs.org) and that module's documentation about how to get support.
 
-5. If you believe the problem is with OpenMRS itself, or if you're honestly not sure, you can [file the bug report in the OpenMRS Trunk project in JIRA](https://tickets.openmrs.org/secure/CreateIssue.jspa?pid=10000&issuetype=1&Create=Create). You'll need to have an [OpenMRS ID](http://id.openmrs.org) to do so. You'll receive e-mail updates as the bug is investigated and resolved.
+5. If you believe the problem is within OpenMRS itself, or if you're honestly not sure, you can [file the bug report in the OpenMRS Trunk project in JIRA](https://tickets.openmrs.org/secure/CreateIssue.jspa?pid=10000&issuetype=1&Create=Create). You'll need to have an [OpenMRS ID](http://id.openmrs.org) to do so. You'll receive e-mail updates as the bug is investigated and resolved.
 
 ### Bug report contents
 
@@ -60,7 +60,7 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
 
 5. Code
   * Adhere to common conventions you see in the existing code
-  * Include tests, and ensure they pass
+  * Include tests, and ensure that they pass
   * Search to see if your new functionality has been discussed using our [OpenMRS global search](http://search.openmrs.org), and include updates as appropriate
 
 6. Follow the [Coding Conventions described on our wiki](https://wiki.openmrs.org/x/MxEz).
@@ -88,7 +88,7 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
         git checkout TRUNK-123
         git rebase -i master
 
-  Make sure all unit tests still pass:
+  Make sure that all unit tests still pass:
 
         mvn clean package
 
@@ -101,7 +101,7 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
   * Click "Pull Request".
   * Write your branch name in the branch field (this is filled with "master" by default)
   * Click "Update Commit Range".
-  * Ensure the changesets you introduced are included in the "Commits" tab.
+  * Ensure the change-sets you introduced are included in the "Commits" tab.
   * Ensure that the "Files Changed" incorporate all of your changes.
   * Fill in some details about your potential patch including a meaningful title.
   * Click "Send pull request".
@@ -125,7 +125,7 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
 
 ### Interact with the community
 
-* Chat live with developers on [IRC](http://irc.openmrs.org) within #openmrs on freenode
+* Chat live with developers on [IRC](http://irc.openmrs.org) within #openmrs
 * Join our [developers mailing list](https://wiki.openmrs.org/x/lwLn)
 * Hang out with other community members at [OpenMRS Talk](http://talk.openmrs.org)
 
