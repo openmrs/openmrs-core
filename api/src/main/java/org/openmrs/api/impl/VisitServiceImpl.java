@@ -209,7 +209,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		if (visit.getVisitId() == null) {
 			return;
 		}
-		if (Context.getEncounterService().getEncountersByVisit(visit, true).size() > 0) {
+		if (!Context.getEncounterService().getEncountersByVisit(visit, true).isEmpty()) {
 			throw new APIException("Visit.purge.inUse", (Object[]) null);
 		}
 		dao.deleteVisit(visit);
@@ -366,7 +366,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 				}
 			}
 			
-			if (visitTypesToStop.size() > 0) {
+			if (!visitTypesToStop.isEmpty()) {
 				int counter = 0;
 				Date stopDate = new Date();
 				Visit nextVisit = dao.getNextVisit(null, visitTypesToStop, maximumStartDate);

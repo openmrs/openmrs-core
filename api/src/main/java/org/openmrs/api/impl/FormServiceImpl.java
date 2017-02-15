@@ -342,7 +342,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Transactional(readOnly = true)
 	public Form getForm(String name) throws APIException {
 		List<Form> forms = dao.getFormsByName(name);
-		if (forms == null || forms.size() == 0) {
+		if (forms == null || forms.isEmpty()) {
 			return null;
 		} else {
 			return forms.get(0);

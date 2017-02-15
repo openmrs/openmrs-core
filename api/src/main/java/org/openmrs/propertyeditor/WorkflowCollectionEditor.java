@@ -113,7 +113,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	@SuppressWarnings("unchecked")
 	public String getAsText() {
 		Collection<ProgramWorkflow> pws = (Collection<ProgramWorkflow>) getValue();
-		if (pws == null || pws.size() == 0) {
+		if (pws == null || pws.isEmpty()) {
 			return ":";
 		} else {
 			Integer progId = null;

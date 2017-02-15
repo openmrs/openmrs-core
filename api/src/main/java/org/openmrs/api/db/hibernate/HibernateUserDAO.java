@@ -98,7 +98,7 @@ public class HibernateUserDAO implements UserDAO {
 		query.setString(1, username);
 		List<User> users = query.list();
 		
-		if (users == null || users.size() == 0) {
+		if (users == null || users.isEmpty()) {
 			log.warn("request for username '" + username + "' not found");
 			return null;
 		}
@@ -572,7 +572,7 @@ public class HibernateUserDAO implements UserDAO {
 			searchOnRoles = true;
 		}
 		
-		if (criteria.size() > 0 || searchOnRoles) {
+		if (!criteria.isEmpty() || searchOnRoles) {
 			hql.append("where ");
 		}
 		for (Iterator<String> i = criteria.iterator(); i.hasNext();) {
@@ -584,7 +584,7 @@ public class HibernateUserDAO implements UserDAO {
 		
 		//Match against the specified roles
 		if (searchOnRoles) {
-			if (criteria.size() > 0) {
+			if (!criteria.isEmpty()) {
 				hql.append(" and ");
 			}
 			hql.append(" role in (:roleList)");

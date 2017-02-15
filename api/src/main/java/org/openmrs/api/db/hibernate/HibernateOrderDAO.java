@@ -122,22 +122,22 @@ public class HibernateOrderDAO implements OrderDAO {
 			crit.add(Restrictions.eq("orderType", orderType));
 		}
 		
-		if (patients.size() > 0) {
+		if (!patients.isEmpty()) {
 			crit.add(Restrictions.in("patient", patients));
 		}
 		
-		if (concepts.size() > 0) {
+		if (!concepts.isEmpty()) {
 			crit.add(Restrictions.in("concept", concepts));
 		}
 		
 		// we are not checking the other status's here because they are
 		// algorithm dependent  
 		
-		if (orderers.size() > 0) {
+		if (!orderers.isEmpty()) {
 			crit.add(Restrictions.in("orderer", orderers));
 		}
 		
-		if (encounters.size() > 0) {
+		if (!encounters.isEmpty()) {
 			crit.add(Restrictions.in("encounter", encounters));
 		}
 		
@@ -326,7 +326,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		if (careSetting != null) {
 			criteria.add(Restrictions.eq("careSetting", careSetting));
 		}
-		if (orderTypes != null && orderTypes.size() > 0) {
+		if (orderTypes != null && !orderTypes.isEmpty()) {
 			criteria.add(Restrictions.in("orderType", orderTypes));
 		}
 		if (!includeVoided) {
@@ -490,7 +490,7 @@ public class HibernateOrderDAO implements OrderDAO {
 					Criteria criteria = sessionFactory.getCurrentSession().createCriteria(entityClass);
 					criteria.add(Restrictions.eq(name, orderFrequency));
 					criteria.setMaxResults(1);
-					if (criteria.list().size() > 0) {
+					if (!criteria.list().isEmpty()) {
 						return true;
 					}
 				}
@@ -581,6 +581,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	public boolean isOrderTypeInUse(OrderType orderType) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Order.class);
 		criteria.add(Restrictions.eq("orderType", orderType));
-		return criteria.list().size() > 0;
+		return !criteria.list().isEmpty();
 	}
 }
