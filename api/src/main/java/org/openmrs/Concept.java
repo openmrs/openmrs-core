@@ -1241,15 +1241,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param description the description to add
 	 */
 	public void addDescription(ConceptDescription description) {
-		if (description != null && StringUtils.isNotBlank(description.getDescription())) {
-			if (getDescriptions() == null) {
-				descriptions = new HashSet<ConceptDescription>();
-				description.setConcept(this);
-				descriptions.add(description);
-			} else if (!descriptions.contains(description)) {
-				description.setConcept(this);
-				descriptions.add(description);
-			}
+		if (description != null && StringUtils.isNotBlank(description.getDescription()) && !descriptions.contains(description)) {
+			description.setConcept(this);
+			descriptions.add(description);
 		}
 	}
 	
@@ -1261,11 +1255,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @Should should remove description passed from list of descriptions
 	 */
 	public boolean removeDescription(ConceptDescription description) {
-		if (getDescriptions() != null) {
-			return descriptions.remove(description);
-		} else {
-			return false;
-		}
+		return descriptions.remove(description);
 	}
 	
 	/**
