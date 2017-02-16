@@ -216,7 +216,7 @@ public class Cohort extends BaseOpenmrsData  {
 
 
 	public int size() {
-		return getMembers() == null ? 0 : getMembers().size();
+		return getMembers().size();
 	}
 	
 	public int getSize() {
