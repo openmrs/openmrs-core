@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -174,19 +175,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should not return retired answers if includeRetired is false
 	 */
 	public Collection<ConceptAnswer> getAnswers(boolean includeRetired) {
-		if (!includeRetired) {
-			Collection<ConceptAnswer> newAnswers = new HashSet<ConceptAnswer>();
-			if (answers != null) {
-				for (ConceptAnswer ca : answers) {
-					if (!ca.getAnswerConcept().isRetired()) {
-						newAnswers.add(ca);
-					}
-				}
-			}
-			return newAnswers;
-		} else {
-			return getAnswers();
-		}
+		return getAnswers().stream()
+				.filter(a -> includeRetired || !a.getAnswerConcept().getRetired())
+				.collect(Collectors.toSet());
 	}
 	
 	/**
@@ -369,7 +360,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public void setPreferredName(ConceptName preferredName) {
 		
-		if (preferredName == null || preferredName.isVoided() || preferredName.isIndexTerm()) {
+		if (preferredName == null || preferredName.getVoided() || preferredName.isIndexTerm()) {
 			throw new APIException("Concept.error.preferredName.null", (Object[]) null);
 		} else if (preferredName.getLocale() == null) {
 			throw new APIException("Concept.name.locale.null", (Object[]) null);
@@ -554,7 +545,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				return matches.get(0);
 			} else if (matches.size() > 1) {
 				for (ConceptName match : matches) {
-					if (match.isLocalePreferred()) {
+					if (match.getLocalePreferred()) {
 						return match;
 					}
 				}
@@ -663,7 +654,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		
 		for (ConceptName nameInLocale : getNames(forLocale)) {
-			if (ObjectUtils.nullSafeEquals(nameInLocale.isLocalePreferred(), true)) {
+			if (ObjectUtils.nullSafeEquals(nameInLocale.getLocalePreferred(), true)) {
 				return nameInLocale;
 			}
 		}
@@ -672,7 +663,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		ConceptName bestMatch = null;
 		
 		for (ConceptName nameInLocale : getPartiallyCompatibleNames(forLocale)) {
-			if (ObjectUtils.nullSafeEquals(nameInLocale.isLocalePreferred(), true)) {
+			if (ObjectUtils.nullSafeEquals(nameInLocale.getLocalePreferred(), true)) {
 				Locale nameLocale = nameInLocale.getLocale();
 				if (forLocale.getLanguage().equals(nameLocale.getLanguage())) {
 					return nameInLocale;
@@ -733,13 +724,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return Collection of ConceptNames with the given locale
 	 */
 	public Collection<ConceptName> getNames(Locale locale) {
-		Collection<ConceptName> localeNames = new Vector<ConceptName>();
-		for (ConceptName possibleName : getNames()) {
-			if (possibleName.getLocale().equals(locale)) {
-				localeNames.add(possibleName);
-			}
-		}
-		return localeNames;
+		return getNames().stream()
+				.filter(n -> n.getLocale().equals(locale))
+				.collect(Collectors.toSet());
 	}
 	
 	/**
@@ -750,17 +737,13 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return Collection of ConceptNames with the given locale language or country
 	 */
 	private Collection<ConceptName> getPartiallyCompatibleNames(Locale locale) {
-		Collection<ConceptName> localeNames = new Vector<ConceptName>();
 		String language = locale.getLanguage();
 		String country = locale.getCountry();
-		for (ConceptName possibleName : getNames()) {
-			Locale possibleLocale = possibleName.getLocale();
-			if (language.equals(possibleLocale.getLanguage())
-			        || (StringUtils.isNotBlank(country) && country.equals(possibleLocale.getCountry()))) {
-				localeNames.add(possibleName);
-			}
-		}
-		return localeNames;
+		
+		return getNames().stream()
+				.filter(n -> language.equals(n.getLocale().getLanguage()) || 
+							StringUtils.isNotBlank(country) && country.equals(n.getLocale().getCountry()))
+				.collect(Collectors.toSet());
 	}
 	
 	/**
@@ -807,7 +790,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setFullySpecifiedName(ConceptName fullySpecifiedName) {
 		if (fullySpecifiedName == null || fullySpecifiedName.getLocale() == null) {
 			throw new APIException("Concept.name.locale.null", (Object[]) null);
-		} else if (fullySpecifiedName.isVoided()) {
+		} else if (fullySpecifiedName.getVoided()) {
 			throw new APIException("Concept.error.fullySpecifiedName.null", (Object[]) null);
 		}
 		
@@ -884,17 +867,15 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return a collection of all short names for this concept
 	 */
 	public Collection<ConceptName> getShortNames() {
-		Vector<ConceptName> shortNames = new Vector<ConceptName>();
+		List<ConceptName> shortNames = new Vector<ConceptName>();
 		if (getNames().isEmpty()) {
 			if (log.isDebugEnabled()) {
 				log.debug("The Concept with id: " + conceptId + " has no names");
 			}
 		} else {
-			for (ConceptName name : getNames()) {
-				if (name.isShort()) {
-					shortNames.add(name);
-				}
-			}
+			shortNames = getNames().stream()
+							.filter(n -> n.isShort())
+							.collect(Collectors.toList());
 		}
 		return shortNames;
 	}
@@ -954,12 +935,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return whether this concept has the given name in any locale
 	 */
 	public boolean isNamed(String name) {
-		for (ConceptName cn : getNames()) {
-			if (name.equals(cn.getName())) {
-				return true;
-			}
-		}
-		return false;
+		return getNames().stream()
+				.filter(cn -> name.equals(cn.getName()))
+				.count() > 0;
 	}
 	
 	/**
@@ -969,13 +947,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @since 1.7
 	 */
 	public Collection<ConceptName> getIndexTerms() {
-		Collection<ConceptName> indexTerms = new Vector<ConceptName>();
-		for (ConceptName name : getNames()) {
-			if (name.isIndexTerm()) {
-				indexTerms.add(name);
-			}
-		}
-		return indexTerms;
+		return getNames().stream()
+				.filter(n -> n.isIndexTerm())
+				.collect(Collectors.toSet());		
 	}
 	
 	/**
@@ -986,17 +960,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @since 1.7
 	 */
 	public Collection<ConceptName> getIndexTermsForLocale(Locale locale) {
-		
-		Vector<ConceptName> indexTermsForLocale = new Vector<ConceptName>();
-		if (!getIndexTerms().isEmpty()) {
-			for (ConceptName name : getIndexTerms()) {
-				if (name.getLocale().equals(locale)) {
-					indexTermsForLocale.add(name);
-				}
-			}
-		}
-		
-		return indexTermsForLocale;
+		return getIndexTerms().stream()
+				.filter(n -> n.getLocale().equals(locale))
+				.collect(Collectors.toSet());		
 	}
 	
 	/**
@@ -1011,23 +977,13 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param includeVoided Include voided ConceptNames if true.
 	 */
 	public Collection<ConceptName> getNames(boolean includeVoided) {
-		Collection<ConceptName> ret = new HashSet<ConceptName>();
-		if (includeVoided) {
-			if (names != null) {
-				return names;
-			} else {
-				return ret;
-			}
-		} else {
-			if (names != null) {
-				for (ConceptName cn : names) {
-					if (!cn.isVoided()) {
-						ret.add(cn);
-					}
-				}
-			}
-			return ret;
+		if (names == null) {
+			names = new HashSet<ConceptName>();
 		}
+
+		return names.stream()
+				.filter(n -> includeVoided || !n.getVoided())
+				.collect(Collectors.toSet());
 	}
 	
 	/**
@@ -1324,14 +1280,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @since 1.7
 	 */
 	public Collection<ConceptName> getSynonyms() {
-		Collection<ConceptName> synonyms = new Vector<ConceptName>();
-		for (ConceptName possibleSynonym : getNames()) {
-			if (possibleSynonym.isSynonym()) {
-				synonyms.add(possibleSynonym);
-			}
-		}
-		log.debug("returning: " + synonyms);
-		return synonyms;
+		return getNames().stream()
+				.filter(n -> n.isSynonym())
+				.collect(Collectors.toSet());
 	}
 	
 	/**
@@ -1397,18 +1348,14 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param newConceptMap
 	 */
 	public void addConceptMapping(ConceptMap newConceptMap) {
-		if (conceptMappings == null) {
-			conceptMappings = new HashSet<ConceptMap>();
-		}
-		
 		if (newConceptMap != null) {
 			newConceptMap.setConcept(this);
 		}
-		if (newConceptMap != null && !conceptMappings.contains(newConceptMap)) {
+		if (newConceptMap != null && !getConceptMappings().contains(newConceptMap)) {
 			if (newConceptMap.getConceptMapType() == null) {
 				newConceptMap.setConceptMapType(Context.getConceptService().getDefaultConceptMapType());
 			}
-			conceptMappings.add(newConceptMap);
+			getConceptMappings().add(newConceptMap);
 		}
 	}
 	
@@ -1655,6 +1602,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@Override
 	public Set<ConceptAttribute> getAttributes() {
+		if (attributes == null) {
+			attributes = new LinkedHashSet<ConceptAttribute>();
+		}
 		return attributes;
 	}
 
@@ -1663,16 +1613,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@Override
 	public Collection<ConceptAttribute> getActiveAttributes() {
-		List<ConceptAttribute> activeConceptAttributes = new ArrayList<>();
-		Collection<ConceptAttribute> allConceptAttributes = getAttributes();
-		if (allConceptAttributes != null) {
-			for (ConceptAttribute attr : allConceptAttributes) {
-				if (!attr.isVoided()) {
-					activeConceptAttributes.add(attr);
-				}
-			}
-		}
-		return activeConceptAttributes;
+		return getAttributes().stream()
+				.filter(attr -> !attr.getVoided())
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -1680,17 +1623,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@Override
 	public List<ConceptAttribute> getActiveAttributes(CustomValueDescriptor ofType) {
-		List<ConceptAttribute> conceptAttributesOfGivenType = new ArrayList<>();
-		Collection<ConceptAttribute> allConceptAttributes = getAttributes();
-		if (allConceptAttributes != null) {
-			for (ConceptAttribute attr : allConceptAttributes) {
-				if (attr.getAttributeType().equals(ofType) && !attr.isVoided()) {
-					conceptAttributesOfGivenType.add(attr);
-				}
-			}
-		}
-		return conceptAttributesOfGivenType;
-
+		return getAttributes().stream()
+				.filter(attr -> attr.getAttributeType().equals(ofType) && !attr.getVoided())
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -1705,9 +1640,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@Override
 	public void addAttribute(ConceptAttribute attribute) {
-		if (getAttributes() == null) {
-			setAttributes(new LinkedHashSet<>());
-		}
 		getAttributes().add(attribute);
 		attribute.setOwner(this);
 	}
