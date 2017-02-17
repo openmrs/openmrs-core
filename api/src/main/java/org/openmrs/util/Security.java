@@ -139,7 +139,7 @@ public class Security {
 	 * @return Hexidecimal based string
 	 */
 	private static String hexString(byte[] block) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		char[] hexChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 		int len = block.length;
 		int high = 0;
@@ -194,7 +194,7 @@ public class Security {
 		if (b == null || b.length < 1) {
 			return "";
 		}
-		StringBuffer s = new StringBuffer();
+		StringBuilder s = new StringBuilder();
 		for (int i = 0; i < b.length; i++) {
 			s.append(Integer.toHexString(b[i] & 0xFF));
 		}

@@ -38,7 +38,7 @@ public class EventListeners {
 	 */
 	public void setGlobalPropertyListeners(List<GlobalPropertyListener> globalPropertyListeners) {
 		if (log.isDebugEnabled()) {
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			for (GlobalPropertyListener gpl : globalPropertyListeners) {
 				if (sb.length() > 0) {
 					sb.append(", ");
