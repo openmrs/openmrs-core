@@ -127,7 +127,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		        + databaseName;
 		
 		// run the command line string
-		StringBuffer output = new StringBuffer();
+		StringBuilder output = new StringBuilder();
 		Integer exitValue = -1; // default to a non-zero exit value in case of exceptions
 		try {
 			exitValue = execCmd(tmpOutputFile.getParentFile(), commands.toArray(new String[] {}), output);
@@ -190,7 +190,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	 * @param the string
 	 * @return process exit value
 	 */
-	private Integer execCmd(File wd, String[] cmdWithArguments, StringBuffer out) throws Exception {
+	private Integer execCmd(File wd, String[] cmdWithArguments, StringBuilder out) throws Exception {
 		log.debug("executing command: " + Arrays.toString(cmdWithArguments));
 		
 		Integer exitValue = -1;

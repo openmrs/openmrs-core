@@ -751,7 +751,7 @@ public final class Module {
 			throw new ModuleException("Startup error value cannot be null", this.getModuleId());
 		}
 		
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		
 		// if exceptionMessage is not null, append it
 		if (exceptionMessage != null) {

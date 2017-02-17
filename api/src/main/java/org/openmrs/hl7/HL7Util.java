@@ -78,7 +78,7 @@ public class HL7Util {
 			throw new HL7Exception("Invalid date '" + s + "'");
 		}
 		
-		StringBuffer dateString = new StringBuffer();
+		StringBuilder dateString = new StringBuilder();
 		dateString.append(s.substring(0, 4)); // year
 		if (s.length() >= 6) {
 			dateString.append(s.substring(4, 6)); // month
@@ -225,7 +225,7 @@ public class HL7Util {
 		String timeZoneOffset = getTimeZoneOffset(s, new Date());
 		s = s.replace(timeZoneOffset, ""); // remove the timezone from the string
 		
-		StringBuffer timeString = new StringBuffer();
+		StringBuilder timeString = new StringBuilder();
 		
 		if (s.length() < 2 || s.length() > 16) {
 			throw new HL7Exception("Invalid time format '" + s + "'");

@@ -218,7 +218,7 @@ public class OpenmrsUtil {
 	 * @throws IOException
 	 */
 	public static String getFileAsString(File file) throws IOException {
-		StringBuffer fileData = new StringBuffer(1000);
+		StringBuilder fileData = new StringBuilder(1000);
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		char[] buf = new char[1024];
 		int numRead = 0;
@@ -1583,7 +1583,7 @@ public class OpenmrsUtil {
 	 */
 	public static String generateUid(Integer size) {
 		Random gen = new Random();
-		StringBuffer sb = new StringBuffer(size);
+		StringBuilder sb = new StringBuilder(size);
 		for (int i = 0; i < size; i++) {
 			int ch = gen.nextInt() * 62;
 			if (ch < 10) {

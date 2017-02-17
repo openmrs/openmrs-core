@@ -498,7 +498,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		
 		if (log.isDebugEnabled()) {
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append("New code URL's populated for module " + getModule() + ":\r\n");
 			for (URL u : newUrls) {
 				buf.append("\t");

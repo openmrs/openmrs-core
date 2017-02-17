@@ -153,7 +153,7 @@ public class WebModuleUtil {
 						// trim out the starting path of "web/module/"
 						String filepath = name.substring(11);
 						
-						StringBuffer absPath = new StringBuffer(realPath + "/WEB-INF");
+						StringBuilder absPath = new StringBuilder(realPath + "/WEB-INF");
 						
 						// If this is within the tag file directory, copy it into /WEB-INF/tags/module/moduleId/...
 						if (filepath.startsWith("tags/")) {

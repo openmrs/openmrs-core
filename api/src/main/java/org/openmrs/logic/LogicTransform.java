@@ -51,7 +51,7 @@ public class LogicTransform {
 	}
 	
 	public String toString() {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		
 		if (transformOperator != null) {
 			result.append(transformOperator);

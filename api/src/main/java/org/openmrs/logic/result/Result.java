@@ -634,7 +634,7 @@ public class Result extends ArrayList<Result> {
 					return valueText;
 			}
 		}
-		StringBuffer s = new StringBuffer();
+		StringBuilder s = new StringBuilder();
 		for (Result r : this) {
 			if (s.length() > 0) {
 				s.append(",");
