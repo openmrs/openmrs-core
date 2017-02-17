@@ -78,7 +78,7 @@ public class HttpClient {
 			rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			String line;
 			while ((line = rd.readLine()) != null) {
-				response = String.format("%s%s\n", response, line);
+				response = String.format("%s%s%n", response, line);
 			}
 			
 		}
