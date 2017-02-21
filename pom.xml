@@ -58,40 +58,40 @@
 
 	<dependencyManagement>
 		<dependencies>
-            <!-- OpenMRS Dependencies -->
-            <dependency>
-                <groupId>org.openmrs.tools</groupId>
-                <artifactId>openmrs-tools</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openmrs.test</groupId>
-                <artifactId>openmrs-test</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.openmrs.api</groupId>
-                <artifactId>openmrs-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openmrs.api</groupId>
-                <artifactId>openmrs-api</artifactId>
-                <version>${project.version}</version>
-                <type>test-jar</type>
-            </dependency>
-            <dependency>
-                <groupId>org.openmrs.web</groupId>
-                <artifactId>openmrs-web</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openmrs.web</groupId>
-                <artifactId>openmrs-webapp</artifactId>
-                <version>${project.version}</version>
-                <type>war</type>
-            </dependency>
+			<!-- OpenMRS Dependencies -->
+			<dependency>
+				<groupId>org.openmrs.tools</groupId>
+				<artifactId>openmrs-tools</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openmrs.test</groupId>
+				<artifactId>openmrs-test</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>org.openmrs.api</groupId>
+				<artifactId>openmrs-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openmrs.api</groupId>
+				<artifactId>openmrs-api</artifactId>
+				<version>${project.version}</version>
+				<type>test-jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.openmrs.web</groupId>
+				<artifactId>openmrs-web</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openmrs.web</groupId>
+				<artifactId>openmrs-webapp</artifactId>
+				<version>${project.version}</version>
+				<type>war</type>
+			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
@@ -139,17 +139,17 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-            <dependency>
-                <groupId>org.apache.velocity</groupId>
-                <artifactId>velocity-tools</artifactId>
-                <version>2.0</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>velocity-tools</artifactId>
+				<version>2.0</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
 
 			<dependency>
 				<groupId>commons-collections</groupId>
@@ -222,11 +222,11 @@
 				<artifactId>spring-oxm</artifactId>
 				<version>${springVersion}</version>
 			</dependency>
-		    <dependency>
-			   <groupId>org.springframework</groupId>
-			   <artifactId>spring-context-support</artifactId>
-			   <version>${springVersion}</version>
-		    </dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context-support</artifactId>
+				<version>${springVersion}</version>
+			</dependency>
 			<dependency>
 				<groupId>asm</groupId>
 				<artifactId>asm</artifactId>
@@ -248,9 +248,9 @@
 				<version>2.2</version>
 			</dependency>
 			<dependency>
-                <groupId>org.javassist</groupId>
-                <artifactId>javassist</artifactId>
-                <version>3.19.0-GA</version>
+				<groupId>org.javassist</groupId>
+				<artifactId>javassist</artifactId>
+				<version>3.19.0-GA</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -300,21 +300,21 @@
 				<artifactId>liquibase-core</artifactId>
 				<version>2.0.5</version>
 			</dependency>
-            <dependency>
-                <groupId>org.openmrs.liquibase.ext</groupId>
-                <artifactId>modify-column</artifactId>
-                <version>2.0.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openmrs.liquibase.ext</groupId>
-                <artifactId>identity-insert</artifactId>
-                <version>1.2.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openmrs.liquibase.ext</groupId>
-                <artifactId>type-converter</artifactId>
-                <version>1.0.1</version>
-            </dependency>
+			<dependency>
+				<groupId>org.openmrs.liquibase.ext</groupId>
+				<artifactId>modify-column</artifactId>
+				<version>2.0.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openmrs.liquibase.ext</groupId>
+				<artifactId>identity-insert</artifactId>
+				<version>1.2.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openmrs.liquibase.ext</groupId>
+				<artifactId>type-converter</artifactId>
+				<version>1.0.1</version>
+			</dependency>
 
 			<dependency>
 				<groupId>log4j</groupId>
@@ -371,11 +371,11 @@
 				<artifactId>dom4j</artifactId>
 				<version>1.6.1</version>
 			</dependency>
-            <dependency>
-                <groupId>xerces</groupId>
-                <artifactId>xercesImpl</artifactId>
-                <version>2.8.0</version>
-            </dependency>
+			<dependency>
+				<groupId>xerces</groupId>
+				<artifactId>xercesImpl</artifactId>
+				<version>2.8.0</version>
+			</dependency>
 			<dependency>
 				<groupId>com.thoughtworks.xstream</groupId>
 				<artifactId>xstream</artifactId>
@@ -408,11 +408,11 @@
 				<version>5.1.28</version>
 				<scope>runtime</scope>
 			</dependency>
-            <dependency>
-                <groupId>com.mysql</groupId>
-                <artifactId>mysql-connector-mxj</artifactId>
-                <version>5.0.11</version>
-            </dependency>
+			<dependency>
+				<groupId>com.mysql</groupId>
+				<artifactId>mysql-connector-mxj</artifactId>
+				<version>5.0.11</version>
+			</dependency>
 			<dependency>
 				<groupId>postgresql</groupId>
 				<artifactId>postgresql</artifactId>
@@ -471,16 +471,16 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-core</artifactId>
-                <version>1.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-library</artifactId>
-                <version>1.3</version>
-            </dependency>
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-core</artifactId>
+				<version>1.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-library</artifactId>
+				<version>1.3</version>
+			</dependency>
 			<dependency>
 				<groupId>org.databene</groupId>
 				<artifactId>databene-benerator</artifactId>
@@ -512,31 +512,31 @@
 				<version>1.3</version>
 			</dependency>
 			<dependency>
-			    <groupId>com.carrotsearch</groupId>
-			    <artifactId>junit-benchmarks</artifactId>
-			    <version>0.7.0</version>
+				<groupId>com.carrotsearch</groupId>
+				<artifactId>junit-benchmarks</artifactId>
+				<version>0.7.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openmrs.contrib</groupId>
 				<artifactId>mvpconceptdictionary</artifactId>
-				<version>1.12.0-5a9ecce-20120727</version> 
+				<version>1.12.0-5a9ecce-20120727</version>
 			</dependency>
-            <dependency>
-                <groupId>com.googlecode.lambdaj</groupId>
-                <artifactId>lambdaj</artifactId>
-                <version>2.2</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>javax.validation</groupId>
-                <artifactId>validation-api</artifactId>
-                <version>1.0.0.GA</version>
-            </dependency>
+			<dependency>
+				<groupId>com.googlecode.lambdaj</groupId>
+				<artifactId>lambdaj</artifactId>
+				<version>2.2</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>javax.validation</groupId>
+				<artifactId>validation-api</artifactId>
+				<version>1.0.0.GA</version>
+			</dependency>
 			<dependency>
 				<groupId>org.codehaus.sonar-plugins.java</groupId>
 				<artifactId>sonar-jacoco-listeners</artifactId>
@@ -547,7 +547,7 @@
 				<artifactId>ehcache</artifactId>
 				<version>2.10.0</version>
 			</dependency>
-        </dependencies>
+		</dependencies>
 	</dependencyManagement>
 
 	<build>
@@ -595,9 +595,9 @@
 					</executions>
 				</plugin>
 				<plugin>
-			        <groupId>org.apache.maven.plugins</groupId>
-			        <artifactId>maven-war-plugin</artifactId>
-			        <version>2.4</version>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>2.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -731,7 +731,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore/>
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -750,7 +750,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore/>
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -771,7 +771,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore/>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -782,7 +782,7 @@
 					<groupId>org.codehaus.sonar</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
 					<version>4.5.4</version>
-				</plugin>	
+				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
@@ -800,7 +800,7 @@
 							</goals>
 						</execution>
 					</executions>
-				</plugin>	
+				</plugin>
 				<plugin>
 					<groupId>org.eluder.coveralls</groupId>
 					<artifactId>coveralls-maven-plugin</artifactId>
@@ -848,7 +848,7 @@
 						<exclude>nbactions.xml</exclude>
 						<exclude>nb-configuration.xml</exclude>
 						<exclude>**/dwr-modules.xml</exclude>
-                        <exclude>build-number.txt</exclude>
+						<exclude>build-number.txt</exclude>
 					</excludes>
 				</configuration>
 				<executions>
@@ -906,35 +906,35 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<profiles>
 		<profile>
 			<id>skip-default-test</id>
 			<build>
 				<plugins>
 					<plugin>
-        				<groupId>org.apache.maven.plugins</groupId>
-        				<artifactId>maven-surefire-plugin</artifactId>
-        				<executions>
-        					<execution>
-        						<id>default-test</id>
-        						<configuration>
-        							<skipTests>true</skipTests>
-        						</configuration>
-        					</execution>
-        				</executions>
-        			</plugin>
-        		</plugins>
-        	</build>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>default-test</id>
+								<configuration>
+									<skipTests>true</skipTests>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 		<profile>
 			<id>integration-test</id>
 			<build>
 				<plugins>
 					<plugin>
-        				<groupId>org.apache.maven.plugins</groupId>
-        				<artifactId>maven-surefire-plugin</artifactId>
-        				<executions>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<executions>
 							<execution>
 								<id>integration-test</id>
 								<phase>test</phase>
@@ -943,12 +943,12 @@
 								</goals>
 								<configuration>
 									<includes>
-		            					<include>**/*IT.java</include>
-		          					</includes>
+										<include>**/*IT.java</include>
+									</includes>
 								</configuration>
 							</execution>
 						</executions>
-      				</plugin>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -957,14 +957,14 @@
 			<!-- Uncomment if you want to run performance tests from Eclipse
 			<activation>
 				<activeByDefault>true</activeByDefault>
-			</activation> 
+			</activation>
 			-->
 			<build>
 				<plugins>
 					<plugin>
-        				<groupId>org.apache.maven.plugins</groupId>
-        				<artifactId>maven-surefire-plugin</artifactId>
-        				<executions>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<executions>
 							<execution>
 								<id>performance-test</id>
 								<phase>test</phase>
@@ -978,7 +978,7 @@
 								</configuration>
 							</execution>
 						</executions>
-      				</plugin>
+					</plugin>
 				</plugins>
 			</build>
 			<properties>
@@ -1013,9 +1013,9 @@
 								</goals>
 								<phase>validate</phase>
 								<configuration>
-									 <includes>
-                                        <include>org.openmrs.*</include>
-                                    </includes>
+									<includes>
+										<include>org.openmrs.*</include>
+									</includes>
 								</configuration>
 							</execution>
 						</executions>
@@ -1042,16 +1042,9 @@
 				<version>2.10.3</version>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
-					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these
-						libraries are in active
-						development and subject to
-						change&lt;/small&gt;&lt;/em&gt;</bottom>
-					<header>&lt;a href="http://www.openmrs.org"
-						target=_top&gt;&lt;img
-						src="resources/openmrs-logo-small.gif"
-						border=0/&gt;&lt;/a&gt;</header>
-					<footer>&lt;a href="http://www.openmrs.org"
-						target=_top&gt;${project.name}&lt;/a&gt;</footer>
+					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active development and subject to change&lt;/small&gt;&lt;/em&gt;</bottom>
+					<header>&lt;a href="http://www.openmrs.org" target=_top&gt;&lt;img src="resources/openmrs-logo-small.gif" border=0/&gt;&lt;/a&gt;</header>
+					<footer>&lt;a href="http://www.openmrs.org" target=_top&gt;${project.name}&lt;/a&gt;</footer>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -1103,18 +1096,18 @@
 		<openmrs.version.long>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion} ${parsedVersion.qualifier} Build ${revisionNumber}</openmrs.version.long>
 		<openmrs.version.short>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-${revisionNumber}</openmrs.version.short>
 		<openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</openmrs.version.shortnumericonly>
-        <openmrs.version>${project.version}</openmrs.version>
+		<openmrs.version>${project.version}</openmrs.version>
 
 		<springVersion>4.1.4.RELEASE</springVersion>
 		<hibernateVersion>4.3.9.Final</hibernateVersion>
-		<customArgLineForTesting />
-		
+		<customArgLineForTesting/>
+
 		<sonar.host.url>https://ci.openmrs.org/sonar</sonar.host.url>
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
 		<sonar.issuesReport.lightModeOnly>true</sonar.issuesReport.lightModeOnly>
 		<sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
 		<sonar.analysis.mode>incremental</sonar.analysis.mode>
-		
+
 		<argLine>-Duser.language=en -Duser.region=US -Xmx2g ${customArgLineForTesting}</argLine>
 	</properties>
 </project>
