@@ -129,7 +129,7 @@ public class ShortPatientFormValidator implements Validator {
 			if (OpenmrsUtil.nullSafeEquals(possibleDuplicate.getId(), personAddress.getId()))
 				continue;
 			
-			if (!possibleDuplicate.isBlank() && !personAddress.isBlank()
+			if (!possibleDuplicate.isVoided() && !possibleDuplicate.isBlank() && !personAddress.isBlank()
 			        && possibleDuplicate.toString().equalsIgnoreCase(personAddress.toString())) {
 				errors.reject("Patient.duplicateAddress", new Object[] { personAddress.toString() }, personAddress
 				        .toString()
