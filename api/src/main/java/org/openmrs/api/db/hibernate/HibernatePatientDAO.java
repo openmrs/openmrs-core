@@ -239,6 +239,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.Boolean)
+	 * @should return a list of patientIdentifiers when patientIdentifierTypes  is not null
+	 * @should return a list of patientIdentifiers when patients is not empty
 	 */
 	@SuppressWarnings("unchecked")
         @Override
@@ -268,7 +270,6 @@ public class HibernatePatientDAO implements PatientDAO {
 			criteria.add(Restrictions.in("location", locations));
 		}
 		
-		// TODO add junit test for getting by patients
 		if (!patients.isEmpty()) {
 			criteria.add(Restrictions.in("patient", patients));
 		}
