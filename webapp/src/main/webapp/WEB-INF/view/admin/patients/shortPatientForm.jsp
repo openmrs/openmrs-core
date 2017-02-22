@@ -293,7 +293,7 @@
 								<select id="locationId" name="${status.expression}">
 									<option></option>
 									<c:forEach items="${locations}" var="loc"> 
-										<option value="${loc.locationId}">${loc.name}</option>
+										<option value="${loc.locationId}"<c:if test="${id.location.locationId == loc.locationId}"> selected="selected"</c:if>>${loc.name}</option>
 									</c:forEach> 
 								</select>
 							</spring:bind>
