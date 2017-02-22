@@ -150,15 +150,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		// this method doesn't copy the obs_id
 		Obs newObs = Obs.newInstance(obs);
 
-		// unset any voided properties on the new obs
-		newObs.setVoided(false);
-		newObs.setVoidReason(null);
-		newObs.setDateVoided(null);
-		newObs.setVoidedBy(null);
-		// unset the creation stats
-		newObs.setCreator(null);
-		newObs.setDateCreated(null);
-		newObs.setPreviousVersion(obs);
+		unsetVoidedAndCreationProperties(newObs,obs);
 
 		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, newObs, changeMessage);
 
@@ -173,6 +165,18 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		return newObs;
 
 	}
+        
+        private void unsetVoidedAndCreationProperties(Obs newObs,Obs obs) {
+                // unset any voided properties on the new obs
+		newObs.setVoided(false);
+		newObs.setVoidReason(null);
+		newObs.setDateVoided(null);
+		newObs.setVoidedBy(null);
+		// unset the creation stats
+		newObs.setCreator(null);
+		newObs.setDateCreated(null);
+		newObs.setPreviousVersion(obs);
+        }
 
 	private Obs saveObsNotDirty(Obs obs, String changeMessage) {
 		if(!obs.isObsGrouping()){
