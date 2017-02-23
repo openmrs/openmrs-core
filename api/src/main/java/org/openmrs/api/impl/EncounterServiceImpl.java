@@ -881,7 +881,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public void checkIfEncounterTypesAreLocked() {
 		String locked = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED, "false");
-		if ("true".equals(locked.toLowerCase())) {
+		if (Boolean.valueOf(locked)) {
 			throw new EncounterTypeLockedException();
 		}
 	}
