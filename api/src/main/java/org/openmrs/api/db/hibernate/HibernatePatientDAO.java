@@ -50,6 +50,7 @@ import org.openmrs.api.db.PatientDAO;
 import org.openmrs.api.db.hibernate.search.LuceneQuery;
 import org.openmrs.collection.ListPart;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Hibernate specific database methods for the PatientService
@@ -420,34 +421,11 @@ public class HibernatePatientDAO implements PatientDAO {
 		String outerSelect = "select distinct t1.patient_id from patient t1 ";
 		final String t5 = " = t5.";
 		
-		Class patient = Patient.class;
-		Set<String> patientFieldNames = new HashSet<>(patient.getDeclaredFields().length);
-		for (Field field : patient.getDeclaredFields()) {
-			patientFieldNames.add(field.getName());
-			log.debug(field.getName());
-		}
+		Set<String> patientFieldNames = OpenmrsUtil.getDeclaredFields(Patient.class);
+		Set<String> personFieldNames = OpenmrsUtil.getDeclaredFields(Person.class);
+		Set<String> personNameFieldNames = OpenmrsUtil.getDeclaredFields(PersonName.class);
+		Set<String> identifierFieldNames = OpenmrsUtil.getDeclaredFields(PatientIdentifier.class);
 
-		Class person = Person.class;
-		Set<String> personFieldNames = new HashSet<>(person.getDeclaredFields().length);
-		for (Field field : person.getDeclaredFields()) {
-			personFieldNames.add(field.getName());
-			log.debug(field.getName());
-		}
-
-		Class personName = PersonName.class;
-
-		Set<String> personNameFieldNames = new HashSet<>(personName.getDeclaredFields().length);
-		for (Field field : personName.getDeclaredFields()) {
-			personNameFieldNames.add(field.getName());
-			log.debug(field.getName());
-		}
-
-		Class identifier = PatientIdentifier.class;
-		Set<String> identifierFieldNames = new HashSet<>(identifier.getDeclaredFields().length);
-		for (Field field : identifier.getDeclaredFields()) {
-			identifierFieldNames.add(field.getName());
-			log.debug(field.getName());
-		}
 		List<String> whereConditions = new ArrayList<>();
 
 

@@ -55,6 +55,7 @@ import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -82,6 +83,7 @@ import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
+import org.openmrs.Patient;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
@@ -2190,4 +2192,13 @@ public class OpenmrsUtil {
 		        .get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR));
 	}
 
+	/**
+	 * Get declared field names of a class
+	 * @param clazz
+	 * @return
+	 */
+	public static Set<String> getDeclaredFields(Class<?> clazz) {
+		return Arrays.asList(clazz.getDeclaredFields()).stream().map(f -> f.getName()).collect(Collectors.toSet());
+	}
+	
 }
