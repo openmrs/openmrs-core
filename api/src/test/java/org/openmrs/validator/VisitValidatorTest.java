@@ -12,6 +12,7 @@ package org.openmrs.validator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -27,6 +28,7 @@ import org.openmrs.Patient;
 import org.openmrs.Visit;
 import org.openmrs.VisitAttribute;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ValidationException;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -93,6 +95,79 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldRejectAVisitIfItHasFewerThanMinOccursOfAnAttribute() throws Exception {
 		Visit visit = makeVisit();
 		visit.addAttribute(makeAttribute("one"));
+		ValidateUtil.validate(visit);
+	}
+	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 * @verifies reject a visit if it has more than max occurs of an attribute when expected exactly one
+	 */
+	@Test
+	public void validate_shouldRejectAVisitIfItHasMoreThanMaxOccursOfAnAttributeWhenExpectedExactlyOne() throws Exception {
+		executeDataSet("org/openmrs/validator/include/VisitValidatorTest-additionalAttributeType1.xml");
+		
+		Visit visit = makeVisit();
+		visit.addAttribute(makeAttribute("one"));
+		visit.addAttribute(makeAttribute("two"));
+		visit.addAttribute(makeAttribute("three"));
+		visit.addAttribute(makeAttribute("four"));
+		try {
+			ValidateUtil.validate(visit);
+			fail();
+		}
+		catch (ValidationException e) {
+			Errors errors = e.getErrors();
+			assertEquals(1, errors.getErrorCount());
+			assertEquals("attribute.error.maxOccurs", errors.getFieldError("activeAttributes").getCode());
+		}
+	}
+	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 * @verifies reject a visit if it has less than min occurs of an attribute when expected exactly one
+	 */
+	@Test
+	public void validate_shouldRejectAVisitIfItHasLessThanMinOccursOfAnAttributeWhenExpectedExactlyOne() throws Exception {
+		executeDataSet("org/openmrs/validator/include/VisitValidatorTest-additionalAttributeType1.xml");
+		
+		Visit visit = makeVisit();
+		try {
+			ValidateUtil.validate(visit);
+			fail();
+		}
+		catch (ValidationException e) {
+			Errors errors = e.getErrors();
+			assertEquals(1, errors.getErrorCount());
+			assertEquals("error.required", errors.getFieldError("activeAttributes").getCode());
+		}
+	}
+	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 * @verifies accept a visit when expected min occurs of an attribute is zero
+	 */
+	@Test
+	public void validate_shouldAcceptAVisitWhenExpectedMinOccursOfAnAttributeIsZero() throws Exception {
+		executeDataSet("org/openmrs/validator/include/VisitValidatorTest-additionalAttributeType2.xml");
+		
+		Visit visit = makeVisit();
+		ValidateUtil.validate(visit);
+	}
+	
+	/**
+	 * @see VisitValidator#validate(Object,Errors)
+	 * @verifies accept a visit with attributes when expected min occurs is zero
+	 */
+	@Test
+	public void validate_shouldAcceptAVisitWithAttributesWhenExpectedMinOccursIsZero() throws Exception {
+		executeDataSet("org/openmrs/validator/include/VisitValidatorTest-additionalAttributeType2.xml");
+		
+		Visit visit = makeVisit();
+		visit.addAttribute(makeAttribute("one"));
+		visit.addAttribute(makeAttribute("two"));
+		visit.addAttribute(makeAttribute("three"));
+		visit.addAttribute(makeAttribute("four"));
+		
 		ValidateUtil.validate(visit);
 	}
 	

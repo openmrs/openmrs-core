@@ -9,124 +9,46 @@
  */
 package org.openmrs;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.openmrs.attribute.Attribute;
-import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
 
 /**
- * Extension of {@link BaseOpenmrsData} for classes that support customization via user-defined attributes.
+ * Extension of {@link BaseOpenmrsData} for classes that support customization via user-defined
+ * attributes.
+ * 
  * @param <A> the type of attribute held
  * @since 1.9
  */
 public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpenmrsData implements Customizable<A> {
 	
-	private Set<A> attributes = new LinkedHashSet<A>();
+	private Collection<A> attributes = new LinkedHashSet<A>();
 	
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
 	 */
 	@Override
-	public Set<A> getAttributes() {
+	public Collection<A> getAttributes() {
 		return attributes;
 	}
 	
 	/**
-	 * @param attributes the attributes to set
+	 * @see org.openmrs.customdatatype.Customizable#setAttributes()
 	 */
-	public void setAttributes(Set<A> attributes) {
+	@Override
+	public void setAttributes(Collection<A> attributes) {
 		this.attributes = attributes;
 	}
 	
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes()
+	 * @hint has do be passed through, otherwise BeanWrapper.getPropertyValue() throws
+	 *       NotReadablePropertyException
 	 */
 	@Override
 	public Collection<A> getActiveAttributes() {
-		List<A> ret = new ArrayList<A>();
-		if (getAttributes() != null) {
-			for (A attr : getAttributes()) {
-				if (!attr.getVoided()) {
-					ret.add(attr);
-				}
-			}
-		}
-		return ret;
+		return Customizable.super.getActiveAttributes();
 	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes(org.openmrs.customdatatype.CustomValueDescriptor)
-	 */
-	@Override
-	public List<A> getActiveAttributes(CustomValueDescriptor ofType) {
-		List<A> ret = new ArrayList<A>();
-		if (getAttributes() != null) {
-			for (A attr : getAttributes()) {
-				if (attr.getAttributeType().equals(ofType) && !attr.getVoided()) {
-					ret.add(attr);
-				}
-			}
-		}
-		return ret;
-	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.Customizable#addAttribute(Attribute)
-	 */
-	@Override
-	public void addAttribute(A attribute) {
-		if (getAttributes() == null) {
-			setAttributes(new LinkedHashSet<A>());
-		}
-		getAttributes().add(attribute);
-		attribute.setOwner(this);
-	}
-	
-	/**
-	 * Convenience method that voids all existing attributes of the given type, and sets this new one.
-	 * @should void the attribute if an attribute with same attribute type already exists and the maxOccurs is set to 1
-	 *
-	 * @param attribute
-	 */
-	@SuppressWarnings("unchecked")
-	public void setAttribute(A attribute) {
-		if (getAttributes() == null) {
-			addAttribute(attribute);
-			return;
-		}
-		
-		if (getActiveAttributes(attribute.getAttributeType()).size() == 1) {
-			A existing = getActiveAttributes(attribute.getAttributeType()).get(0);
-			if (existing.getValue().equals(attribute.getValue())) {
-				// do nothing, since the value is already as-specified
-			} else {
-				if (existing.getId() != null) {
-					existing.setVoided(true);
-				} else {
-					getAttributes().remove(existing);
-				}
-				getAttributes().add(attribute);
-				attribute.setOwner(this);
-			}
-			
-		} else {
-			for (A existing : getActiveAttributes(attribute.getAttributeType())) {
-				if (existing.getAttributeType().equals(attribute.getAttributeType())) {
-					if (existing.getId() != null) {
-						existing.setVoided(true);
-					} else {
-						getAttributes().remove(existing);
-					}
-				}
-			}
-			getAttributes().add(attribute);
-			attribute.setOwner(this);
-		}
-	}
-	
 }
