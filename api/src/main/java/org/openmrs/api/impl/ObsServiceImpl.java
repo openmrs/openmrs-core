@@ -167,12 +167,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
         
         private void unsetVoidedAndCreationProperties(Obs newObs,Obs obs) {
-                // unset any voided properties on the new obs
 		newObs.setVoided(false);
 		newObs.setVoidReason(null);
 		newObs.setDateVoided(null);
 		newObs.setVoidedBy(null);
-		// unset the creation stats
 		newObs.setCreator(null);
 		newObs.setDateCreated(null);
 		newObs.setPreviousVersion(obs);
