@@ -9,16 +9,28 @@
  */
 package org.openmrs.api;
 
-import junit.framework.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.TransientObjectException;
-import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
-import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
 import org.openmrs.VisitAttribute;
@@ -31,21 +43,6 @@ import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.assertNull;
 
 /**
  * Tests methods in the {@link VisitService}
@@ -179,14 +176,14 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void retireVisitType_shouldRetireGivenVisitType() throws Exception {
 		VisitType visitType = Context.getVisitService().getVisitType(1);
 		assertNotNull(visitType);
-		Assert.assertFalse(visitType.isRetired());
+		Assert.assertFalse(visitType.getRetired());
 		Assert.assertNull(visitType.getRetireReason());
 		
 		Context.getVisitService().retireVisitType(visitType, "retire reason");
 		
 		visitType = Context.getVisitService().getVisitType(1);
 		assertNotNull(visitType);
-		assertTrue(visitType.isRetired());
+		assertTrue(visitType.getRetired());
 		assertEquals("retire reason", visitType.getRetireReason());
 		
 		//Should not change the number of visit types.
@@ -198,14 +195,14 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void unretireVisitType_shouldUnretireGivenVisitType() throws Exception {
 		VisitType visitType = Context.getVisitService().getVisitType(3);
 		assertNotNull(visitType);
-		assertTrue(visitType.isRetired());
+		assertTrue(visitType.getRetired());
 		assertEquals("Some Retire Reason", visitType.getRetireReason());
 		
 		Context.getVisitService().unretireVisitType(visitType);
 		
 		visitType = Context.getVisitService().getVisitType(3);
 		assertNotNull(visitType);
-		Assert.assertFalse(visitType.isRetired());
+		Assert.assertFalse(visitType.getRetired());
 		Assert.assertNull(visitType.getRetireReason());
 		
 		//Should not change the number of visit types.
@@ -344,13 +341,13 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should void the visit and set the voidReason", method = "voidVisit(Visit,String)")
 	public void voidVisit_shouldVoidTheVisitAndSetTheVoidReason() throws Exception {
 		Visit visit = Context.getVisitService().getVisit(1);
-		Assert.assertFalse(visit.isVoided());
+		Assert.assertFalse(visit.getVoided());
 		Assert.assertNull(visit.getVoidReason());
 		Assert.assertNull(visit.getVoidedBy());
 		Assert.assertNull(visit.getDateVoided());
 		
 		visit = Context.getVisitService().voidVisit(visit, "test reason");
-		assertTrue(visit.isVoided());
+		assertTrue(visit.getVoided());
 		assertEquals("test reason", visit.getVoidReason());
 		assertEquals(Context.getAuthenticatedUser(), visit.getVoidedBy());
 		assertNotNull(visit.getDateVoided());
@@ -365,7 +362,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		//given
 		executeDataSet(VISITS_WITH_DATES_XML);
 		Visit visit = visitService.getVisit(7);
-		Assert.assertFalse(visit.isVoided());
+		Assert.assertFalse(visit.getVoided());
 		
 		List<Encounter> encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, false);
 		Assert.assertFalse(encountersByVisit.isEmpty());
@@ -374,7 +371,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		visit = visitService.voidVisit(visit, "test reason");
 		
 		//then
-		assertTrue(visit.isVoided());
+		assertTrue(visit.getVoided());
 		
 		encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, false);
 		assertTrue(encountersByVisit.isEmpty());
@@ -387,13 +384,13 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should unvoid the visit and unset all the void related fields", method = "unvoidVisit(Visit)")
 	public void unvoidVisit_shouldUnvoidTheVisitAndUnsetAllTheVoidRelatedFields() throws Exception {
 		Visit visit = Context.getVisitService().getVisit(6);
-		assertTrue(visit.isVoided());
+		assertTrue(visit.getVoided());
 		assertNotNull(visit.getVoidReason());
 		assertNotNull(visit.getVoidedBy());
 		assertNotNull(visit.getDateVoided());
 		
 		visit = Context.getVisitService().unvoidVisit(visit);
-		Assert.assertFalse(visit.isVoided());
+		Assert.assertFalse(visit.getVoided());
 		Assert.assertNull(visit.getVoidReason());
 		Assert.assertNull(visit.getVoidedBy());
 		Assert.assertNull(visit.getDateVoided());
@@ -413,7 +410,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, encountersByVisit.size());
 		
 		visitService.voidVisit(visit, "test reason");
-		assertTrue(visit.isVoided());
+		assertTrue(visit.getVoided());
 		
 		encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, false);
 		assertTrue(encountersByVisit.isEmpty());
@@ -422,7 +419,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		visit = visitService.unvoidVisit(visit);
 		
 		//then
-		Assert.assertFalse(visit.isVoided());
+		Assert.assertFalse(visit.getVoided());
 		
 		encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, false);
 		assertEquals(1, encountersByVisit.size());
@@ -490,7 +487,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get visits by locations", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean)")
 	public void getVisits_shouldGetVisitsByLocations() throws Exception {
-		List<Location> locations = new ArrayList<Location>();
+		List<Location> locations = new ArrayList<>();
 		locations.add(new Location(1));
 		assertEquals(1, Context.getVisitService().getVisits(null, null, locations, null, null, null, null, null, null, true,
 		    false).size());
@@ -502,7 +499,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get visits by visit type", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean)")
 	public void getVisits_shouldGetVisitsByVisitType() throws Exception {
-		List<VisitType> visitTypes = new ArrayList<VisitType>();
+		List<VisitType> visitTypes = new ArrayList<>();
 		visitTypes.add(new VisitType(1));
 		assertEquals(4, Context.getVisitService().getVisits(visitTypes, null, null, null, null, null, null, null, null,
 		    true, false).size());
@@ -653,10 +650,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void retireVisitAttributeType_shouldRetireAVisitAttributeType() throws Exception {
 		executeDataSet(VISITS_ATTRIBUTES_XML);
 		VisitAttributeType vat = visitService.getVisitAttributeType(1);
-		Assert.assertFalse(vat.isRetired());
+		Assert.assertFalse(vat.getRetired());
 		visitService.retireVisitAttributeType(vat, "for testing");
 		vat = visitService.getVisitAttributeType(1);
-		assertTrue(vat.isRetired());
+		assertTrue(vat.getRetired());
 		assertNotNull(vat.getRetiredBy());
 		assertNotNull(vat.getDateRetired());
 		assertEquals("for testing", vat.getRetireReason());
@@ -701,12 +698,12 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void unretireVisitAttributeType_shouldUnretireARetiredVisitAttributeType() throws Exception {
 		executeDataSet(VISITS_ATTRIBUTES_XML);
 		VisitAttributeType vat = visitService.getVisitAttributeType(2);
-		assertTrue(vat.isRetired());
+		assertTrue(vat.getRetired());
 		assertNotNull(vat.getDateRetired());
 		assertNotNull(vat.getRetiredBy());
 		assertNotNull(vat.getRetireReason());
 		visitService.unretireVisitAttributeType(vat);
-		Assert.assertFalse(vat.isRetired());
+		Assert.assertFalse(vat.getRetired());
 		Assert.assertNull(vat.getDateRetired());
 		Assert.assertNull(vat.getRetiredBy());
 		Assert.assertNull(vat.getRetireReason());
@@ -740,7 +737,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getVisits_shouldGetAllVisitsWithGivenAttributeValues() throws Exception {
 		executeDataSet(VISITS_ATTRIBUTES_XML);
-		Map<VisitAttributeType, Object> attrs = new HashMap<VisitAttributeType, Object>();
+		Map<VisitAttributeType, Object> attrs = new HashMap<>();
 		attrs.put(visitService.getVisitAttributeType(1), new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-25"));
 		List<Visit> visits = visitService.getVisits(null, null, null, null, null, null, null, null, attrs, true, false);
 		assertEquals(1, visits.size());
@@ -754,7 +751,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getVisits_shouldNotFindAnyVisitsIfNoneHaveGivenAttributeValues() throws Exception {
 		executeDataSet(VISITS_ATTRIBUTES_XML);
-		Map<VisitAttributeType, Object> attrs = new HashMap<VisitAttributeType, Object>();
+		Map<VisitAttributeType, Object> attrs = new HashMap<>();
 		attrs.put(visitService.getVisitAttributeType(1), new SimpleDateFormat("yyyy-MM-dd").parse("1411-04-25"));
 		List<Visit> visits = visitService.getVisits(null, null, null, null, null, null, null, null, attrs, true, false);
 		assertEquals(0, visits.size());

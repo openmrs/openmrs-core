@@ -9,11 +9,11 @@
  */
 package org.openmrs;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.openmrs.customdatatype.Customizable;
 
@@ -62,7 +62,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * {@link VisitType} and dateStarted
 	 * 
 	 * @see VisitType
-	 * @param patient the patient asscociated to this visit
+	 * @param patient the patient associated to this visit
 	 * @param visitType The type of visit
 	 * @param startDatetime the date this visit was started
 	 */
@@ -198,6 +198,9 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * @return the encounters
 	 */
 	public Set<Encounter> getEncounters() {
+		if (encounters == null) {
+			encounters = new HashSet<>();
+		}
 		return encounters;
 	}
 	
@@ -215,15 +218,9 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * @since 1.11.0, 1.12.0
 	 */
 	public List<Encounter> getNonVoidedEncounters() {
-		List<Encounter> encounterList = new ArrayList<Encounter>();
-		if (encounters != null) {
-			for (Encounter encounter : encounters) {
-				if (!encounter.isVoided()) {
-					encounterList.add(encounter);
-				}
-			}
-		}
-		return encounterList;
+		return getEncounters().stream()
+				.filter(e -> !e.getVoided())
+				.collect(Collectors.toList());
 	}
 	
 	/**
@@ -233,13 +230,9 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * @since 1.9.2, 1.10.0
 	 */
 	public void addEncounter(Encounter encounter) {
-		if (encounters == null) {
-			encounters = new HashSet<Encounter>();
-		}
-		
 		if (encounter != null) {
 			encounter.setVisit(this);
-			encounters.add(encounter);
+			getEncounters().add(encounter);
 		}
 	}
 }

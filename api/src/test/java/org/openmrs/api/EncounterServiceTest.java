@@ -837,7 +837,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// get a nonvoided encounter
 		Encounter encounter = encounterService.getEncounter(1);
-		assertFalse(encounter.isVoided());
+		assertFalse(encounter.getVoided());
 		assertNull(encounter.getVoidedBy());
 		assertNull(encounter.getVoidReason());
 		assertNull(encounter.getDateVoided());
@@ -848,7 +848,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertEquals(voidedEnc, encounter);
 		
 		// make sure that all the values were filled in
-		assertTrue(voidedEnc.isVoided());
+		assertTrue(voidedEnc.getVoided());
 		assertNotNull(voidedEnc.getDateVoided());
 		assertEquals(Context.getAuthenticatedUser(), voidedEnc.getVoidedBy());
 		assertEquals("Just Testing", voidedEnc.getVoidReason());
@@ -867,7 +867,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		encounterService.voidEncounter(encounter, "Just Testing");
 		
 		Obs obs = Context.getObsService().getObs(1);
-		assertTrue(obs.isVoided());
+		assertTrue(obs.getVoided());
 		assertEquals("Just Testing", obs.getVoidReason());
 	}
 	
@@ -884,7 +884,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		encounterService.voidEncounter(encounter, "Just Testing");
 		
 		Order order = Context.getOrderService().getOrder(1);
-		assertTrue(order.isVoided());
+		assertTrue(order.getVoided());
 		assertEquals("Just Testing", order.getVoidReason());
 	}
 	
@@ -901,7 +901,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		encounterService.unvoidEncounter(encounter);
 		
 		Obs obs = Context.getObsService().getObs(4);
-		assertFalse(obs.isVoided());
+		assertFalse(obs.getVoided());
 		assertNull(obs.getVoidReason());
 	}
 	
@@ -918,7 +918,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		encounterService.unvoidEncounter(encounter);
 		
 		Order order = Context.getOrderService().getOrder(2);
-		assertFalse(order.isVoided());
+		assertFalse(order.getVoided());
 		assertNull(order.getVoidReason());
 	}
 	
@@ -943,7 +943,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// get an already voided encounter
 		Encounter encounter = encounterService.getEncounter(2);
-		assertTrue(encounter.isVoided());
+		assertTrue(encounter.getVoided());
 		assertNotNull(encounter.getVoidedBy());
 		assertNotNull(encounter.getVoidReason());
 		assertNotNull(encounter.getDateVoided());
@@ -954,7 +954,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertEquals(unvoidedEnc, encounter);
 		
 		// make sure that all the values were unfilled in
-		assertFalse(unvoidedEnc.isVoided());
+		assertFalse(unvoidedEnc.getVoided());
 		assertNull(unvoidedEnc.getDateVoided());
 		assertNull(unvoidedEnc.getVoidedBy());
 		assertNull(unvoidedEnc.getVoidReason());
@@ -1032,7 +1032,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get encounters by form", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldGetEncountersByForm() throws Exception {
-		List<Form> forms = new Vector<Form>();
+		List<Form> forms = new Vector<>();
 		forms.add(new Form(1));
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setEnteredViaForms(forms)
 		        .setIncludeVoided(true).createEncounterSearchCriteria();
@@ -1047,7 +1047,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get encounters by type", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldGetEncountersByType() throws Exception {
-		List<EncounterType> types = new Vector<EncounterType>();
+		List<EncounterType> types = new Vector<>();
 		types.add(new EncounterType(1));
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setEncounterTypes(types)
 		        .setIncludeVoided(true).createEncounterSearchCriteria();
@@ -1247,7 +1247,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// that the retired "Test Enc Type C" exists
 		boolean foundRetired = false;
 		for (EncounterType encType : encounterService.getAllEncounterTypes(true)) {
-			if (encType.getName().equals("Test Enc Type C") && encType.isRetired()) {
+			if (encType.getName().equals("Test Enc Type C") && encType.getRetired()) {
 				foundRetired = true;
 			}
 		}
@@ -1268,7 +1268,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// sanity check to make sure 'some retired type' is in the dataset
-		assertTrue(encounterService.getEncounterType(4).isRetired());
+		assertTrue(encounterService.getEncounterType(4).getRetired());
 		assertEquals("Some Retired Type", encounterService.getEncounterType(4).getName());
 		
 		// we should get a null here because this named type is retired
@@ -1343,7 +1343,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertEquals(5, types.size());
 		
 		for (EncounterType type : types) {
-			if (type.isRetired())
+			if (type.getRetired())
 				foundRetired = true;
 		}
 		assertTrue("Retired types should be returned as well", foundRetired);
@@ -1384,7 +1384,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// make sure at least one of the types was retired
 		boolean foundRetired = false;
 		for (EncounterType type : types) {
-			if (type.isRetired())
+			if (type.getRetired())
 				foundRetired = true;
 		}
 		assertTrue("Retired types should be returned as well", foundRetired);
@@ -1430,7 +1430,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void retireEncounterType_shouldRetireTypeAndSetAttributes() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterType type = encounterService.getEncounterType(1);
-		assertFalse(type.isRetired());
+		assertFalse(type.getRetired());
 		assertNull(type.getRetiredBy());
 		assertNull(type.getRetireReason());
 		assertNull(type.getDateRetired());
@@ -1441,7 +1441,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertEquals(retiredEncType, type);
 		
 		// make sure that all the values were filled in
-		assertTrue(retiredEncType.isRetired());
+		assertTrue(retiredEncType.getRetired());
 		assertNotNull(retiredEncType.getDateRetired());
 		assertEquals(Context.getAuthenticatedUser(), retiredEncType.getRetiredBy());
 		assertEquals("Just Testing", retiredEncType.getRetireReason());
@@ -1669,7 +1669,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get encounters by visit", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QVisitType;>,Collection<QVisit;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldGetEncountersByVisit() throws Exception {
-		List<Visit> visits = new ArrayList<Visit>();
+		List<Visit> visits = new ArrayList<>();
 		visits.add(new Visit(1));
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setVisits(visits)
 		        .setIncludeVoided(true).createEncounterSearchCriteria();
@@ -1685,7 +1685,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get encounters by visit type", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QVisitType;>,Collection<QVisit;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldGetEncountersByVisitType() throws Exception {
-		List<VisitType> visitTypes = new Vector<VisitType>();
+		List<VisitType> visitTypes = new Vector<>();
 		visitTypes.add(new VisitType(2));
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setVisitTypes(visitTypes)
 		        .setIncludeVoided(true).createEncounterSearchCriteria();
@@ -1724,7 +1724,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * TODO see ticket https://tickets.openmrs.org/browse/TRUNK-1956 to fix this test
 	 *
 	 * @see EncounterService#getEncounters(String,Integer,Integer,null,null)
 	 */
@@ -1840,14 +1839,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void retireEncounterRole_shouldRetireTypeAndSetAttributes() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterRole encounterRole = encounterService.getEncounterRole(1);
-		assertFalse(encounterRole.isRetired());
+		assertFalse(encounterRole.getRetired());
 		assertNull(encounterRole.getRetiredBy());
 		assertNull(encounterRole.getRetireReason());
 		assertNull(encounterRole.getDateRetired());
 		EncounterRole retiredEncounterRole = encounterService.retireEncounterRole(encounterRole, "Just Testing");
 		
 		assertEquals(retiredEncounterRole, encounterRole);
-		assertTrue(retiredEncounterRole.isRetired());
+		assertTrue(retiredEncounterRole.getRetired());
 		assertNotNull(retiredEncounterRole.getDateRetired());
 		assertEquals(Context.getAuthenticatedUser(), retiredEncounterRole.getRetiredBy());
 		assertEquals("Just Testing", retiredEncounterRole.getRetireReason());
@@ -1872,14 +1871,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void unretireEncounterRole_shouldUnretireTypeAndUnmarkAttributes() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterRole encounterRole = encounterService.getEncounterRole(2);
-		assertTrue(encounterRole.isRetired());
+		assertTrue(encounterRole.getRetired());
 		assertNotNull(encounterRole.getRetiredBy());
 		assertNotNull(encounterRole.getRetireReason());
 		assertNotNull(encounterRole.getDateRetired());
 		EncounterRole unretiredEncounterRole = encounterService.unretireEncounterRole(encounterRole);
 		
 		assertEquals(unretiredEncounterRole, encounterRole);
-		assertFalse(unretiredEncounterRole.isRetired());
+		assertFalse(unretiredEncounterRole.getRetired());
 		assertNull(unretiredEncounterRole.getDateRetired());
 		assertNull(unretiredEncounterRole.getRetiredBy());
 		assertNull(unretiredEncounterRole.getRetireReason());
@@ -2932,8 +2931,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		//transfer
 		Encounter transferredEncounter = Context.getEncounterService().transferEncounter(sourceEncounter, targetPatient);
-		List<Order> transferredOrders = new ArrayList<Order>(transferredEncounter.getOrders());
-		List<Obs> transferredObservations = new ArrayList<Obs>(transferredEncounter.getObs());
+		List<Order> transferredOrders = new ArrayList<>(transferredEncounter.getOrders());
+		List<Obs> transferredObservations = new ArrayList<>(transferredEncounter.getObs());
 		
 		//check if transferredEncounter is newly created encounter
 		Assert.assertNotEquals(sourceEncounter.getId(), transferredEncounter.getId());
@@ -2966,7 +2965,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.getEncounterService().transferEncounter(sourceEncounter, anyPatient);
 		//get fresh encounter from db
 		Encounter sourceEncounterAfterTransfer = Context.getEncounterService().getEncounter(sourceEncounter.getId());
-		Assert.assertTrue(sourceEncounterAfterTransfer.isVoided());
+		Assert.assertTrue(sourceEncounterAfterTransfer.getVoided());
 	}
 	
 	/**
@@ -2981,7 +2980,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Encounter sourceEncounter = Context.getEncounterService().getEncounter(200);
 		Context.getEncounterService().transferEncounter(sourceEncounter, anyPatient);
 		Visit visit = Context.getVisitService().getVisit(200);
-		Assert.assertTrue(visit.isVoided());
+		Assert.assertTrue(visit.getVoided());
 	}
 	
 	private EncounterSearchCriteria encounterSearchForVoidedWithDateChanged(String dateChanged) throws Exception {
@@ -2992,7 +2991,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	private Person newPerson(String name) {
 		Person person = new Person();
-		Set<PersonName> personNames = new TreeSet<PersonName>();
+		Set<PersonName> personNames = new TreeSet<>();
 		PersonName personName = new PersonName();
 		personName.setFamilyName(name);
 		personNames.add(personName);
@@ -3040,7 +3039,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		Context.flushSession();
 		
-		List<Order> orders = new ArrayList<Order>();
+		List<Order> orders = new ArrayList<>();
 		orders.addAll(Context.getEncounterService().getEncounterByUuid(encounter.getUuid()).getOrders());
 		
 		assertNotNull("OrderGroup is saved", orders.get(0).getOrderGroup());
