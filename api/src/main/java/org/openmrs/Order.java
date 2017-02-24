@@ -9,8 +9,6 @@
  */
 package org.openmrs;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.order.OrderUtil;
@@ -55,8 +53,6 @@ public class Order extends BaseOpenmrsData {
 		DISCONTINUE,
 		RENEW
 	}
-	
-	private static final Log log = LogFactory.getLog(Order.class);
 	
 	private Integer orderId;
 	
@@ -162,7 +158,7 @@ public class Order extends BaseOpenmrsData {
 		target.setOrderReason(getOrderReason());
 		target.setOrderReasonNonCoded(getOrderReasonNonCoded());
 		target.setAccessionNumber(getAccessionNumber());
-		target.setVoided(isVoided());
+		target.setVoided(getVoided());
 		target.setVoidedBy(getVoidedBy());
 		target.setDateVoided(getDateVoided());
 		target.setVoidReason(getVoidReason());
@@ -420,14 +416,11 @@ public class Order extends BaseOpenmrsData {
 	 * @should return false for an order activated after the check date
 	 * @should return false for a discontinuation order
 	 */
-	public boolean isActive(Date checkDate) {
-		if (isVoided() || action == Action.DISCONTINUE) {
+	public boolean isActive(Date aCheckDate) {
+		if (getVoided() || action == Action.DISCONTINUE) {
 			return false;
 		}
-		if (checkDate == null) {
-			checkDate = new Date();
-		}
-		
+		Date checkDate = aCheckDate == null ? new Date() : aCheckDate;
 		return isActivated(checkDate) && !isDiscontinued(checkDate) && !isExpired(checkDate);
 	}
 	
@@ -458,16 +451,14 @@ public class Order extends BaseOpenmrsData {
 	 * @should return true if the order was scheduled to start before the check date
 	 * @should return true if the order is started and not scheduled
 	 */
-	public boolean isStarted(Date checkDate) {
-		if (isVoided()) {
+	public boolean isStarted(Date aCheckDate) {
+		if (getVoided()) {
 			return false;
-		}
-		if (checkDate == null) {
-			checkDate = new Date();
 		}
 		if (getEffectiveStartDate() == null) {
 			return false;
 		}
+		Date checkDate = aCheckDate == null ? new Date() : aCheckDate;
 		return !checkDate.before(getEffectiveStartDate());
 	}
 	
@@ -488,16 +479,14 @@ public class Order extends BaseOpenmrsData {
 	 * @should return true if the order is scheduled for the future and activated on check date but
 	 *         the check date is after date stopped
 	 */
-	public boolean isDiscontinued(Date checkDate) {
+	public boolean isDiscontinued(Date aCheckDate) {
 		if (dateStopped != null && autoExpireDate != null && dateStopped.after(autoExpireDate)) {
 			throw new APIException("Order.error.invalidDateStoppedAndAutoExpireDate", (Object[]) null);
 		}
-		if (isVoided()) {
+		if (getVoided()) {
 			return false;
 		}
-		if (checkDate == null) {
-			checkDate = new Date();
-		}
+		Date checkDate = aCheckDate == null ? new Date() : aCheckDate;
 		if (!isActivated(checkDate) || dateStopped == null) {
 			return false;
 		}
@@ -530,23 +519,21 @@ public class Order extends BaseOpenmrsData {
 	 * @should return true if date stopped is null and auto expire date is before check date
 	 * @since 1.10.1
 	 */
-	public boolean isExpired(Date checkDate) {
+	public boolean isExpired(Date aCheckDate) {
 		if (dateStopped != null && autoExpireDate != null && dateStopped.after(autoExpireDate)) {
 			throw new APIException("Order.error.invalidDateStoppedAndAutoExpireDate", (Object[]) null);
 		}
-		if (isVoided()) {
+		if (getVoided()) {
 			return false;
 		}
-		if (checkDate == null) {
-			checkDate = new Date();
-		}
+		Date checkDate = aCheckDate == null ? new Date() : aCheckDate;
 		if (!isActivated(checkDate)) {
 			return false;
 		}
 		if (isDiscontinued(checkDate) || autoExpireDate == null) {
 			return false;
 		}
-		
+
 		return checkDate.after(autoExpireDate);
 	}
 	
@@ -568,6 +555,7 @@ public class Order extends BaseOpenmrsData {
 		this.patient = patient;
 	}
 	
+	@Override
 	public Integer getId() {
 		return getOrderId();
 	}
@@ -575,6 +563,7 @@ public class Order extends BaseOpenmrsData {
 	/**
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		String prefix = Action.DISCONTINUE == getAction() ? "DC " : "";
 		return prefix + "Order. orderId: " + orderId + " patient: " + patient + " concept: " + concept + " care setting: "
@@ -585,6 +574,7 @@ public class Order extends BaseOpenmrsData {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setOrderId(id);
 	}
