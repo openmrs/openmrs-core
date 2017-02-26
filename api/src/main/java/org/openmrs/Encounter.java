@@ -243,7 +243,7 @@ public class Encounter extends BaseOpenmrsData {
 	
 		return getAllObs(includeVoided).stream()
 				.filter(o -> o.getObsGroup() == null)
-				.collect(Collectors.toSet());
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 	
 	/**
