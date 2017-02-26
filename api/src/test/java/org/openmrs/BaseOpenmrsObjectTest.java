@@ -9,7 +9,7 @@
  */
 package org.openmrs;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -266,18 +266,22 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 			private Integer id;
 			TestClass() {
 			}
+			@Override
 			public Integer getId() {
 				return id;
 			}
+			@Override
 			public void setId(Integer id) {
 				this.id = id;
 			}
+			@Override
 			public int hashCode() {
 				if (getUuid() == null) {
 					return super.hashCode();
 				}
 				return getUuid().hashCode();
 			}
+			@Override
 			public boolean equals(Object obj) {
 				if (this == obj) {
 					return true;
@@ -291,6 +295,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 				}
 				return getUuid().equals(other.getUuid());
 			}
+			@Override
 			public String toString() {
 				return new org.apache.commons.lang3.builder.ToStringBuilder(this, org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE).append("hashCode",
 						Integer.toHexString(hashCode())).append("uuid", getUuid()).build();
@@ -319,18 +324,22 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 			private Integer id;
 			TestClass() {
 			}
+			@Override
 			public Integer getId() {
 				return id;
 			}
+			@Override
 			public void setId(Integer id) {
 				this.id = id;
 			}
+			@Override
 			public int hashCode() {
 				if (getUuid() == null) {
 					return super.hashCode();
 				}
 				return getUuid().hashCode();
 			}
+			@Override
 			public boolean equals(Object obj) {
 				if (this == obj) {
 					return true;
@@ -346,6 +355,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 					return getUuid().equals(other.getUuid());
 				}
 			}
+			@Override
 			public String toString() {
 				return new org.apache.commons.lang3.builder.ToStringBuilder(this, org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE).append("hashCode",
 						Integer.toHexString(hashCode())).append("uuid", getUuid()).build();
@@ -355,6 +365,7 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		//Another NonHibernate managed class
 		class AnotherTestClass extends BaseOpenmrsObject {
 			private int id;
+			@Override
 			public boolean equals(Object obj) {
 				if (this == obj) {
 					return true;
@@ -369,10 +380,12 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 				return getUuid().equals(other.getUuid());
 			}
 
+			@Override
 			public Integer getId() {
 				return id;
 			}
 
+			@Override
 			public void setId(Integer id) {
 				this.id = id;
 			}

@@ -292,7 +292,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		// Test that default values are correct
 		assertNull(p.getAge());
-		assertFalse(p.isBirthdateEstimated());
+		assertFalse(p.getBirthdateEstimated());
 		
 		// Test standard case and ensure estimated field is set to true
 		p.setBirthdateFromAge(10, df.parse("2008-05-20"));
@@ -517,8 +517,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("Something changed ...", 1, p.getAttributes().size());
 		
 		// make sure the new attribute effectively voided the original
-		Assert.assertTrue("The original attribute is not voided", ((PersonAttribute) p.getAttributes().toArray()[0])
-		        .isVoided());
+		Assert.assertTrue("The original attribute is not voided", p.getAttributes().iterator().next().getVoided());
 		
 	}
 	
@@ -553,7 +552,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		PersonAddress notVoidedAddress = PersonAddressBuilder.newBuilder().withPreferred(false).withVoided(false).build();
 		
 		PersonAddress expectedPersonAddress = notVoidedAddress;
-		Set<PersonAddress> personAddresses = new HashSet<PersonAddress>(Arrays.asList(voidedAddress, notVoidedAddress));
+		Set<PersonAddress> personAddresses = new HashSet<>(Arrays.asList(voidedAddress, notVoidedAddress));
 		
 		checkGetPersonAddressResultForVoidedPerson(expectedPersonAddress, personAddresses);
 	}
@@ -572,7 +571,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		        .build();
 		
 		PersonAddress expectedPersonAddress = preferredNotVoidedAddress;
-		HashSet<PersonAddress> personAddresses = new HashSet<PersonAddress>(Arrays.asList(voidedAddress,
+		HashSet<PersonAddress> personAddresses = new HashSet<>(Arrays.asList(voidedAddress,
 		    preferredNotVoidedAddress));
 		
 		checkGetPersonAddressResultForVoidedPerson(expectedPersonAddress, personAddresses);
@@ -591,7 +590,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		PersonAddress voidedAddress1 = PersonAddressBuilder.newBuilder().withVoided(true).build();
 		PersonAddress voidedAddress2 = PersonAddressBuilder.newBuilder().withVoided(true).build();
 		
-		Set<PersonAddress> personAddresses = new HashSet<PersonAddress>(Arrays.asList(voidedAddress1, voidedAddress2));
+		Set<PersonAddress> personAddresses = new HashSet<>(Arrays.asList(voidedAddress1, voidedAddress2));
 		
 		Person person = new Person();
 		person.setVoided(true);
@@ -599,7 +598,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		PersonAddress actualPersonAddress = person.getPersonAddress();
 		
-		assertTrue(actualPersonAddress.isVoided());
+		assertTrue(actualPersonAddress.getVoided());
 	}
 	
 	/**
@@ -614,7 +613,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		PersonName expectedPersonName = notVoidedName;
 		
-		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<PersonName>(Arrays.asList(notVoidedName,
+		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<>(Arrays.asList(notVoidedName,
 				voidedName)));
 	}
 	
@@ -631,7 +630,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		PersonName expectedPersonName = preferredNotVoidedName;
 		
-		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<PersonName>(Arrays.asList(
+		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<>(Arrays.asList(
 		    preferredNotVoidedName, notVoidedName, voidedName)));
 	}
 	
@@ -646,7 +645,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		PersonName expectedPersonName = voidedName;
 		
-		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<PersonName>(Arrays.asList(voidedName)));
+		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<>(Arrays.asList(voidedName)));
 		
 	}
 	

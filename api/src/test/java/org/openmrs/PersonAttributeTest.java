@@ -112,7 +112,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 		PersonAttribute pa = new PersonAttribute(2);
 		pa.setVoided(false);
 		pa.voidAttribute("Because");
-		Assert.assertTrue(pa.isVoided());
+		Assert.assertTrue(pa.getVoided());
 	}
 	
 }

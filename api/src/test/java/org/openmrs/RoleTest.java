@@ -11,12 +11,11 @@ package org.openmrs;
 
 import java.util.HashSet;
 import java.util.Set;
-import junit.framework.Assert;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.RoleConstants;
 import static org.junit.Assert.assertNotNull;
@@ -134,25 +133,25 @@ public class RoleTest {
 		Role child2 = new Role("Child 2");
 		Role niece = new Role("Niece");
 		
-		Set<Role> inheritedRoles = new HashSet<Role>();
+		Set<Role> inheritedRoles = new HashSet<>();
 		
 		// grandparent -> aunt, uncle, parent
 		inheritedRoles.add(grandparent);
-		parent.setInheritedRoles(new HashSet(inheritedRoles));
-		aunt.setInheritedRoles(new HashSet(inheritedRoles));
-		uncle.setInheritedRoles(new HashSet(inheritedRoles));
+		parent.setInheritedRoles(new HashSet<>(inheritedRoles));
+		aunt.setInheritedRoles(new HashSet<>(inheritedRoles));
+		uncle.setInheritedRoles(new HashSet<>(inheritedRoles));
 		
 		// aunt, uncle -> niece
 		inheritedRoles.clear();
 		inheritedRoles.add(uncle);
 		inheritedRoles.add(aunt);
-		niece.setInheritedRoles(new HashSet(inheritedRoles));
+		niece.setInheritedRoles(new HashSet<>(inheritedRoles));
 		
 		// parent -> child1, child2
 		inheritedRoles.clear();
 		inheritedRoles.add(parent);
-		child1.setInheritedRoles(new HashSet(inheritedRoles));
-		child2.setInheritedRoles(new HashSet(inheritedRoles));
+		child1.setInheritedRoles(new HashSet<>(inheritedRoles));
+		child2.setInheritedRoles(new HashSet<>(inheritedRoles));
 		
 		// ensure only inherited roles are found
 		Assert.assertEquals(3, niece.getAllParentRoles().size());
@@ -178,25 +177,25 @@ public class RoleTest {
 		Role child2 = new Role("Child 2");
 		Role niece = new Role("Niece");
 		
-		Set<Role> childRoles = new HashSet<Role>();
+		Set<Role> childRoles = new HashSet<>();
 		
 		// grandparent -> aunt, uncle, parent
 		childRoles.add(aunt);
 		childRoles.add(uncle);
 		childRoles.add(parent);
-		grandparent.setChildRoles(new HashSet(childRoles));
+		grandparent.setChildRoles(new HashSet<>(childRoles));
 		
 		// aunt, uncle -> niece
 		childRoles.clear();
 		childRoles.add(niece);
-		aunt.setChildRoles(new HashSet(childRoles));
-		uncle.setChildRoles(new HashSet(childRoles));
+		aunt.setChildRoles(new HashSet<>(childRoles));
+		uncle.setChildRoles(new HashSet<>(childRoles));
 		
 		// parent -> child1, child2
 		childRoles.clear();
 		childRoles.add(child1);
 		childRoles.add(child2);
-		parent.setChildRoles(new HashSet(childRoles));
+		parent.setChildRoles(new HashSet<>(childRoles));
 		
 		// ensure only child roles are found
 		Assert.assertEquals(0, niece.getAllChildRoles().size());

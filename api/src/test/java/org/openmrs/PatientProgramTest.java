@@ -14,8 +14,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -58,8 +56,8 @@ public class PatientProgramTest {
 		program.voidLastState(workflow, new User(), new Date(), "");
 		
 		//then
-		Assert.assertTrue(state1.isVoided());
-		Assert.assertFalse(state2.isVoided());
+		Assert.assertTrue(state1.getVoided());
+		Assert.assertFalse(state2.getVoided());
 	}
 	
 	@Test
@@ -70,7 +68,7 @@ public class PatientProgramTest {
 		getSortedStates.setAccessible(true);
 		Assert.assertNotNull(getSortedStates);
 		
-		Set<PatientState> patientStates = new HashSet<PatientState>();
+		Set<PatientState> patientStates = new HashSet<>();
 		PatientState patientState = new PatientState();
 		patientState.setStartDate(date);
 		patientState.setEndDate(laterDate);

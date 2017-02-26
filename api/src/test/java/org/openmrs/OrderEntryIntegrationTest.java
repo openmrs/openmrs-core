@@ -312,14 +312,13 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		Order dcOrder = orderService.getOrder(22);
 		Order previousOrder = dcOrder.getPreviousOrder();
 		assertNotNull(previousOrder);
-		DrugOrder previousDrugOrder = (DrugOrder) previousOrder;
 		
 		Order testOrder = orderService.getOrder(7);
 		Order dcTestOrder = orderService.discontinueOrder(testOrder, "Testing", null, testOrder.getOrderer(), testOrder
 		        .getEncounter());
 		Context.flushSession();
 		Context.clearSession();
-		dcTestOrder = (TestOrder) orderService.getOrder(dcTestOrder.getOrderId()).getPreviousOrder();
+		dcTestOrder = orderService.getOrder(dcTestOrder.getOrderId()).getPreviousOrder();
 	}
 	
 	@Test
@@ -341,7 +340,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		
 		//We need to flush so that we ensure the interceptor is okay with all this
 		Context.flushSession();
-		assertTrue(originalDCOrder.isVoided());
+		assertTrue(originalDCOrder.getVoided());
 		List<Order> newPatientOrders = orderService.getAllOrdersByPatient(originalDCOrder.getPatient());
 		assertEquals(originalPatientOrders.size() + 1, newPatientOrders.size());
 		Collection<Order> newOrders = CollectionUtils.disjunction(originalPatientOrders, newPatientOrders);

@@ -11,8 +11,8 @@ package org.openmrs;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import junit.framework.Assert;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;

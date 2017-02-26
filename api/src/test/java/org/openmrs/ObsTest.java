@@ -409,7 +409,7 @@ public class ObsTest {
 	@Test
 	public void getGroupMembers_shouldGetAllGroupMembersIfPassedTrueAndNonvoidedIfPassedFalse() throws Exception {
 		Obs parent = new Obs(1);
-		Set<Obs> members = new HashSet<Obs>();
+		Set<Obs> members = new HashSet<>();
 		members.add(new Obs(101));
 		members.add(new Obs(103));
 		Obs voided = new Obs(99);
@@ -944,7 +944,7 @@ public class ObsTest {
 	public void setGroupMembers_shouldNotMarkTheExistingObsAsDirtyWhenTheSetIsChangedFromNullToANonEmptyOne() throws Exception {
 		Obs obs = new Obs(5);
 		assertNull(Obs.class.getDeclaredField("groupMembers").get(obs));
-		Set members = new HashSet<>();
+		Set<Obs> members = new HashSet<>();
 		members.add(new Obs());
 		obs.setGroupMembers(members);
 		assertFalse(obs.isDirty());
@@ -958,7 +958,7 @@ public class ObsTest {
 	public void setGroupMembers_shouldNotMarkNewObsAsDirtyWhenTheSetIsChangedFromNullToANonEmptyOne() throws Exception {
 		Obs obs = new Obs();
 		assertNull(Obs.class.getDeclaredField("groupMembers").get(obs));
-		Set members = new HashSet<>();
+		Set<Obs> members = new HashSet<>();
 		members.add(new Obs());
 		obs.setGroupMembers(members);
 		assertFalse(obs.isDirty());
@@ -972,11 +972,11 @@ public class ObsTest {
 	public void setGroupMembers_shouldNotMarkTheExistingObsAsDirtyWhenTheSetIsReplacedWithAnotherWithDifferentMembers()
 	    throws Exception {
 		Obs obs = new Obs(2);
-		Set members1 = new HashSet<>();
+		Set<Obs> members1 = new HashSet<>();
 		members1.add(new Obs());
 		obs.setGroupMembers(members1);
 		resetObs(obs);
-		Set members2 = new HashSet<>();
+		Set<Obs> members2 = new HashSet<>();
 		members2.add(new Obs());
 		obs.setGroupMembers(members2);
 		assertFalse(obs.isDirty());
@@ -990,11 +990,11 @@ public class ObsTest {
 	public void setGroupMembers_shouldNotMarkTheNewObsAsDirtyWhenTheSetIsReplacedWithAnotherWithDifferentMembers()
 			throws Exception {
 		Obs obs = new Obs();
-		Set members1 = new HashSet<>();
+		Set<Obs> members1 = new HashSet<>();
 		members1.add(new Obs());
 		obs.setGroupMembers(members1);
 		assertFalse(obs.isDirty());
-		Set members2 = new HashSet<>();
+		Set<Obs> members2 = new HashSet<>();
 		members2.add(new Obs());
 		obs.setGroupMembers(members2);
 		assertFalse(obs.isDirty());
@@ -1020,11 +1020,11 @@ public class ObsTest {
 	public void setGroupMembers_shouldNotMarkTheObsAsDirtyWhenTheSetIsReplacedWithAnotherWithSameMembers() throws Exception {
 		Obs obs = new Obs();
 		Obs o = new Obs();
-		Set members1 = new HashSet<>();
+		Set<Obs> members1 = new HashSet<>();
 		members1.add(o);
 		obs.setGroupMembers(members1);
 		resetObs(obs);
-		Set members2 = new HashSet<>();
+		Set<Obs> members2 = new HashSet<>();
 		members2.add(o);
 		obs.setGroupMembers(members2);
 		assertFalse(obs.isDirty());

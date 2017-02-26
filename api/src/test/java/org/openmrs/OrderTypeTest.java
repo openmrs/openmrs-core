@@ -9,8 +9,8 @@
  */
 package org.openmrs;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class OrderTypeTest {
 		OrderType orderType = new OrderType();
 		
 		//Test with Integer class
-		Class clazz = Integer.class;
+		Class<?> clazz = Integer.class;
 		
 		orderType.setJavaClassName(clazz.getName());
 		Assert.assertEquals(clazz, orderType.getJavaClass());

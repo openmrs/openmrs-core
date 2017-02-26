@@ -15,7 +15,6 @@ import static org.openmrs.test.TestUtil.createDateTime;
 import java.util.Date;
 import java.util.Random;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.context.Context;

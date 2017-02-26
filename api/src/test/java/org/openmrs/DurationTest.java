@@ -9,8 +9,8 @@
  */
 package org.openmrs;
 
-import static junit.framework.Assert.assertNull;
 import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.openmrs.test.TestUtil.createDateTime;
 
 import java.text.ParseException;

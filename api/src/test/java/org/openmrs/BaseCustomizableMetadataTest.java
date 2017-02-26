@@ -9,7 +9,7 @@
  */
 package org.openmrs;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.ProviderService;
@@ -101,7 +101,7 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	
 	private Person newPerson(String name) {
 		Person person = new Person();
-		Set<PersonName> personNames = new TreeSet<PersonName>();
+		Set<PersonName> personNames = new TreeSet<>();
 		PersonName personName = new PersonName();
 		personName.setFamilyName(name);
 		personNames.add(personName);

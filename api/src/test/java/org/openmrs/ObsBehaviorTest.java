@@ -50,9 +50,7 @@ public class ObsBehaviorTest extends BaseContextSensitiveTest {
 		Encounter e = encounterService.getEncounter(3);
 		Collection<Obs> allObs = e.getAllObs(true);
 		assertFalse(allObs.isEmpty());
-		for (Obs o : allObs) {
-			assertFalse(o.isDirty());
-		}
+		allObs.forEach(o -> assertFalse(o.isDirty()));
 	}
 	
 	@Test
@@ -63,7 +61,7 @@ public class ObsBehaviorTest extends BaseContextSensitiveTest {
 		final Integer encounterId = 201;
 		Encounter encounter = encounterService.getEncounter(encounterId);
 		final int initialAllObsCount = encounter.getAllObs(true).size();
-		final int c = obsService.getObservationsByPerson(encounter.getPatient()).size();
+		obsService.getObservationsByPerson(encounter.getPatient()).size();
 		Obs alreadyVoidedObs = obsService.getObs(101);
 		Obs toBeVoidedObs = obsService.getObs(103);
 		Obs unVoidedObsToUpdate = obsService.getObs(102);
