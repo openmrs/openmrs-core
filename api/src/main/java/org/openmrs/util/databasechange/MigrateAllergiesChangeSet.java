@@ -137,7 +137,10 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 				reactionInsertStatement.setInt(2, rs.getInt("reaction_concept_id"));
 				reactionInsertStatement.setString(3, UUID.randomUUID().toString());
 				
-				reactionInsertStatement.execute();
+				//some active lists do not have reactions recorded
+				if (!rs.wasNull()) {
+					reactionInsertStatement.execute();
+				}
 			}
 		}
 		catch (Exception ex) {
