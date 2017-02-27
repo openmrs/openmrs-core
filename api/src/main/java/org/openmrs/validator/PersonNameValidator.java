@@ -32,7 +32,8 @@ public class PersonNameValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return PersonName.class.isAssignableFrom(c);
 	}
 	
@@ -46,6 +47,7 @@ public class PersonNameValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object object, Errors errors) {
 		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".validate...");
@@ -55,7 +57,7 @@ public class PersonNameValidator implements Validator {
 			// Validate that the person name object is not null
 			if (personName == null) {
 				errors.reject("error.name");
-			} else if (!personName.isVoided()) {
+			} else if (!personName.getVoided()) {
 				validatePersonName(personName, errors, false, true);
 			}
 		}

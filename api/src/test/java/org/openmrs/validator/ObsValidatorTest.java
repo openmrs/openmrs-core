@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -32,8 +33,6 @@ import org.openmrs.test.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-
-import junit.framework.Assert;
 
 /**
  * Tests methods on the {@link ObsValidator} class.
@@ -107,7 +106,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setValueNumeric(1212.0);
 		obs.setValueText("test");
 		
-		Set<Obs> group = new HashSet<Obs>();
+		Set<Obs> group = new HashSet<>();
 		group.add(Context.getObsService().getObs(7));
 		group.add(Context.getObsService().getObs(9));
 		obs.setGroupMembers(group);
@@ -273,7 +272,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setConcept(Context.getConceptService().getConcept(3)); // datatype = N/A
 		obs.setObsDatetime(new Date());
 		
-		Set<Obs> group = new HashSet<Obs>();
+		Set<Obs> group = new HashSet<>();
 		group.add(obs);
 		obs.setGroupMembers(group);
 		

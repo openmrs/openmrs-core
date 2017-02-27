@@ -36,8 +36,8 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return c.equals(Location.class);
 	}
 	
@@ -56,6 +56,7 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		Location location = (Location) obj;
 		if (location == null) {
@@ -63,14 +64,14 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			
-			if (location.isRetired() && !StringUtils.hasLength(location.getRetireReason())) {
+			if (location.getRetired() && !StringUtils.hasLength(location.getRetireReason())) {
 				location.setRetired(false); // so that the jsp page displays
 				// properly again
 				errors.rejectValue("retireReason", "error.null");
 			}
 			
 			Location exist = Context.getLocationService().getLocation(location.getName());
-			if (exist != null && !exist.isRetired() && !OpenmrsUtil.nullSafeEquals(location.getUuid(), exist.getUuid())) {
+			if (exist != null && !exist.getRetired() && !OpenmrsUtil.nullSafeEquals(location.getUuid(), exist.getUuid())) {
 				errors.rejectValue("name", "location.duplicate.name");
 			}
 			

@@ -72,13 +72,13 @@ public class PersonValidator implements Validator {
 		for (PersonName personName : person.getNames()) {
 			errors.pushNestedPath("names[" + index + "]");
 			personNameValidator.validate(personName, errors);
-			if (!personName.isVoided()) {
+			if (!personName.getVoided()) {
 				atLeastOneNonVoidPersonNameLeft = true;
 			}
 			errors.popNestedPath();
 			index++;
 		}
-		if (!person.isVoided() && !atLeastOneNonVoidPersonNameLeft) {
+		if (!person.getVoided() && !atLeastOneNonVoidPersonNameLeft) {
 			errors.rejectValue("names", "Person.shouldHaveAtleastOneNonVoidedName");
 		}
 		
@@ -98,10 +98,10 @@ public class PersonValidator implements Validator {
 		validateBirthDate(errors, person.getBirthdate());
 		validateDeathDate(errors, person.getDeathDate(), person.getBirthdate());
 		
-		if (person.isVoided()) {
+		if (person.getVoided()) {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 		}
-		if (person.isDead()) {
+		if (person.getDead()) {
 			ValidationUtils.rejectIfEmpty(errors, "causeOfDeath", "Person.dead.causeOfDeathNull");
 		}
 		

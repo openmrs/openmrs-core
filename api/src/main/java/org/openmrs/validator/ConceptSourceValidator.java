@@ -30,7 +30,8 @@ public class ConceptSourceValidator implements Validator {
 	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return c.equals(ConceptSource.class);
 	}
 	
@@ -46,6 +47,7 @@ public class ConceptSourceValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) throws IllegalArgumentException {
 		if (obj == null || !(obj instanceof ConceptSource)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type "

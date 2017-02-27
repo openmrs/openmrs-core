@@ -38,8 +38,8 @@ public class TestOrderValidator extends OrderValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return TestOrder.class.isAssignableFrom(c);
 	}
 	
@@ -51,6 +51,7 @@ public class TestOrderValidator extends OrderValidator implements Validator {
 	 * @should fail validation if the specimen source is invalid
 	 * @should pass validation if the specimen source is valid
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
 		TestOrder order = (TestOrder) obj;

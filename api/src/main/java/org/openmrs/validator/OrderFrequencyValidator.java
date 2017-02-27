@@ -36,9 +36,8 @@ public class OrderFrequencyValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	public boolean supports(Class c) {
+	public boolean supports(Class<?> c) {
 		return OrderFrequency.class.isAssignableFrom(c);
 	}
 	

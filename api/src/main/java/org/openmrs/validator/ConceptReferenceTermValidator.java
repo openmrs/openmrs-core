@@ -36,8 +36,8 @@ public class ConceptReferenceTermValidator implements Validator {
 	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("rawtypes")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return ConceptReferenceTerm.class.isAssignableFrom(c);
 	}
 	
@@ -63,6 +63,7 @@ public class ConceptReferenceTermValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) throws APIException {
 		
 		if (obj == null || !(obj instanceof ConceptReferenceTerm)) {
@@ -124,7 +125,7 @@ public class ConceptReferenceTermValidator implements Validator {
 				}
 				
 				if (mappedTermUuids == null) {
-					mappedTermUuids = new HashSet<String>();
+					mappedTermUuids = new HashSet<>();
 				}
 				
 				//if we already have a mapping to this term, reject it this map

@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
 import org.springframework.util.Assert;
@@ -63,7 +64,7 @@ public class ValidateUtil {
 		Context.getAdministrationService().validate(obj, errors);
 		
 		if (errors.hasErrors()) {
-			Set<String> uniqueErrorMessages = new LinkedHashSet<String>();
+			Set<String> uniqueErrorMessages = new LinkedHashSet<>();
 			for (Object objerr : errors.getAllErrors()) {
 				ObjectError error = (ObjectError) objerr;
 				String message = Context.getMessageSourceService().getMessage(error.getCode());
@@ -108,7 +109,7 @@ public class ValidateUtil {
 	 * @should fail validation if name field length is too long
 	 * @should return immediately if validation is disabled and have no errors
 	 */
-	public static void validateFieldLengths(Errors errors, Class aClass, String... fields) {
+	public static void validateFieldLengths(Errors errors, Class<?> aClass, String... fields) {
 		if (disableValidation) {
 			return;
 		}
@@ -119,7 +120,7 @@ public class ValidateUtil {
 			if (value == null || !(value instanceof String)) {
 				continue;
 			}
-			int length = Context.getAdministrationService().getMaximumPropertyLength(aClass, field);
+			int length = Context.getAdministrationService().getMaximumPropertyLength((Class<? extends OpenmrsObject>) aClass, field);
 			if (length == -1) {
 				return;
 			}

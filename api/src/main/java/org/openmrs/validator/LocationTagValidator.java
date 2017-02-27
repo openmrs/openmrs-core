@@ -27,8 +27,8 @@ public class LocationTagValidator implements Validator {
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
-	public boolean supports(Class clazz) {
-		return LocationTag.class.isAssignableFrom(clazz);
+	public boolean supports(Class<?> c) {
+		return LocationTag.class.isAssignableFrom(c);
 	}
 	
 	/**

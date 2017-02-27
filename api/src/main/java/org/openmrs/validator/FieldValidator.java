@@ -34,8 +34,8 @@ public class FieldValidator implements Validator {
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("rawtypes")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".supports: " + c.getName());
 		}
@@ -60,6 +60,7 @@ public class FieldValidator implements Validator {
 	 * @should fail validation if field lengths are not correct
 	 * should not fail if fieldType is null
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) throws APIException {
 		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".validate...");

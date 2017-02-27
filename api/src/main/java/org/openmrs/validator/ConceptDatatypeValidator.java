@@ -33,8 +33,8 @@ public class ConceptDatatypeValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return c.equals(ConceptDatatype.class);
 	}
 	
@@ -49,6 +49,7 @@ public class ConceptDatatypeValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		ConceptDatatype cd = (ConceptDatatype) obj;
 		if (cd == null) {

@@ -67,7 +67,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
 		
-		Assert.assertFalse(location.isRetired());
+		Assert.assertFalse(location.getRetired());
 	}
 	
 	/**

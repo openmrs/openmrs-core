@@ -35,8 +35,8 @@ public class ConceptNameTagValidator implements Validator {
 	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return ConceptNameTag.class.isAssignableFrom(c);
 	}
 	
@@ -53,6 +53,7 @@ public class ConceptNameTagValidator implements Validator {
 	 * @should fail validation if field lengths are not correct
 	 */
 	
+	@Override
 	public void validate(Object obj, Errors errors) {
 		ConceptNameTag cnt = (ConceptNameTag) obj;
 		if (cnt == null) {

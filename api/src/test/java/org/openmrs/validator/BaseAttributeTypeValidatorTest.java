@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.VisitAttributeType;
-import org.openmrs.attribute.AttributeType;
 import org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
@@ -23,7 +22,6 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	VisitAttributeTypeValidator validator;
 	
-	@SuppressWarnings("rawtypes")
 	VisitAttributeType attributeType;
 	
 	BindException errors;

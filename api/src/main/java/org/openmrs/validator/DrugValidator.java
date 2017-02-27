@@ -39,8 +39,8 @@ public class DrugValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("rawtypes")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return Drug.class.isAssignableFrom(c);
 	}
 	
@@ -66,7 +66,7 @@ public class DrugValidator implements Validator {
 		} else {
 			Drug drug = (Drug) obj;
 			Set<DrugReferenceMap> drugReferenceMaps = drug.getDrugReferenceMaps();
-			Set<String> mappedTermUuids = new HashSet<String>();
+			Set<String> mappedTermUuids = new HashSet<>();
 			int index = 0;
 			for (DrugReferenceMap referenceMap : drugReferenceMaps) {
 				Drug mappedDrug = referenceMap.getDrug();

@@ -65,7 +65,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosenForVoidedPatients() throws Exception {
 		Patient pa = Context.getPatientService().getPatient(432);
 		
-		Assert.assertTrue(pa.isVoided());//sanity check
+		Assert.assertTrue(pa.getVoided());//sanity check
 		Assert.assertNotNull(pa.getPatientIdentifier());
 		for (PatientIdentifier id : pa.getIdentifiers())
 			id.setPreferred(false);
@@ -125,6 +125,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	/**
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
+	@Override
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
@@ -163,6 +164,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	/**
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
+	@Override
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {

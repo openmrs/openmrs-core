@@ -35,8 +35,8 @@ public class RelationshipTypeValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return RelationshipType.class.isAssignableFrom(c);
 	}
 	
@@ -50,6 +50,7 @@ public class RelationshipTypeValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		RelationshipType relationshipType = (RelationshipType) obj;
 		if (relationshipType == null) {
@@ -60,7 +61,7 @@ public class RelationshipTypeValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "RelationshipType.description.required");
 			RelationshipType exist = Context.getPersonService().getRelationshipTypeByName(
 			    relationshipType.getaIsToB() + "/" + relationshipType.getbIsToA());
-			if (exist != null && !exist.isRetired()
+			if (exist != null && !exist.getRetired()
 			        && !OpenmrsUtil.nullSafeEquals(relationshipType.getUuid(), exist.getUuid())) {
 				errors.reject("duplicate.relationshipType");
 			}

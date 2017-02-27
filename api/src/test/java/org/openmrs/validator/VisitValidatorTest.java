@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -249,7 +248,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		Visit visit = visitService.getVisit(1);
 		visit.addAttribute(makeAttribute(new Date()));
 		visit.addAttribute(makeAttribute("not a date"));
-		Collection<VisitAttribute> activeAttributes = visit.getActiveAttributes();
+		visit.getActiveAttributes();
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
 		assertEquals(true, errors.hasFieldErrors("attributes"));
@@ -434,7 +433,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		for (Visit visit : visitList) {
 			if (visit.getStartDatetime() != null && visit.getStartDatetime().getTime() == startInMillis
 			        && visit.getStopDatetime() != null && visit.getStopDatetime().getTime() == stopInMillis
-			        && visit.isVoided()) {
+			        && visit.getVoided()) {
 				return true;
 			}
 		}

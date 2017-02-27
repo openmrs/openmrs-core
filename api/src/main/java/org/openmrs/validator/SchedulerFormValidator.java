@@ -30,8 +30,8 @@ public class SchedulerFormValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return c.equals(TaskDefinition.class);
 	}
 	
@@ -51,6 +51,7 @@ public class SchedulerFormValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		TaskDefinition taskDefinition = (TaskDefinition) obj;
 		

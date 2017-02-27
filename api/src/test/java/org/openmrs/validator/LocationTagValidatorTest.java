@@ -11,7 +11,6 @@ package org.openmrs.validator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;

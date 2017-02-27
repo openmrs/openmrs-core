@@ -11,7 +11,6 @@ package org.openmrs.validator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;

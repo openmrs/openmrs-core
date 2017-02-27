@@ -35,8 +35,8 @@ public class ConceptDrugValidator implements Validator {
 	 * @should support Drug class
 	 * @should reject classes not extending Drug
 	 */
-	@SuppressWarnings("rawtypes")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return Drug.class.isAssignableFrom(c);
 	}
 	
@@ -51,6 +51,7 @@ public class ConceptDrugValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail if a concept is not specified
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) throws IllegalArgumentException {
 		if (obj == null || !(obj instanceof Drug)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type" + Drug.class);

@@ -37,8 +37,8 @@ public class PatientValidator extends PersonValidator {
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("rawtypes")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".supports: " + c.getName());
 		}
@@ -64,6 +64,7 @@ public class PatientValidator extends PersonValidator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".validate...");
@@ -83,10 +84,10 @@ public class PatientValidator extends PersonValidator {
 		Boolean preferredIdentifierChosen = false;
 		//Voided patients have only voided identifiers since they were voided with the patient, 
 		//so get all otherwise get the active ones
-		Collection<PatientIdentifier> identifiers = patient.isVoided() ? patient.getIdentifiers() : patient
+		Collection<PatientIdentifier> identifiers = patient.getVoided() ? patient.getIdentifiers() : patient
 		        .getActiveIdentifiers();
 		for (PatientIdentifier pi : identifiers) {
-			if (pi.isPreferred()) {
+			if (pi.getPreferred()) {
 				preferredIdentifierChosen = true;
 			}
 		}

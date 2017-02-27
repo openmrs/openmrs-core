@@ -9,7 +9,7 @@
  */
 package org.openmrs.validator;
 
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Assert;
 import org.junit.Rule;

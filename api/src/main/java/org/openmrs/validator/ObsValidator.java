@@ -42,8 +42,8 @@ public class ObsValidator implements Validator {
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 * @should support Obs class
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return Obs.class.isAssignableFrom(c);
 	}
 	
@@ -69,6 +69,7 @@ public class ObsValidator implements Validator {
 	 * @should not validate a voided child obs
 	 * @should fail for a null object
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		Obs obs = (Obs) obj;
 		if (obs == null) {
@@ -76,7 +77,7 @@ public class ObsValidator implements Validator {
 		} else if (obs.getVoided()) {
 			return;
 		}
-		List<Obs> ancestors = new ArrayList<Obs>();
+		List<Obs> ancestors = new ArrayList<>();
 		validateHelper(obs, errors, ancestors, true);
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "accessionNumber", "valueModifier", "valueComplex",
 		    "comment", "voidReason");
@@ -179,7 +180,7 @@ public class ObsValidator implements Validator {
 				} else if (dt.isNumeric()) {
 					ConceptNumeric cn = Context.getConceptService().getConceptNumeric(c.getConceptId());
 					// If the concept numeric is not precise, the value cannot be a float, so raise an error 
-					if (!cn.isAllowDecimal() && Math.ceil(obs.getValueNumeric()) != obs.getValueNumeric()) {
+					if (!cn.getAllowDecimal() && Math.ceil(obs.getValueNumeric()) != obs.getValueNumeric()) {
 						if (atRootNode) {
 							errors.rejectValue("valueNumeric", "Obs.error.precision");
 						} else {

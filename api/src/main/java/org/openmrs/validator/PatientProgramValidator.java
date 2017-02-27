@@ -39,8 +39,8 @@ public class PatientProgramValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("rawtypes")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return PatientProgram.class.isAssignableFrom(c);
 	}
 	
@@ -71,6 +71,7 @@ public class PatientProgramValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".validate...");
@@ -113,12 +114,12 @@ public class PatientProgramValidator implements Validator {
 			Set<PatientState> patientStates = patientProgram.getStates();
 			if (patientStates != null) {
 				//Set to store to keep track of unique valid state and start date combinations
-				Set<String> statesAndStartDates = new HashSet<String>();
+				Set<String> statesAndStartDates = new HashSet<>();
 				PatientState latestState = null;
 				boolean foundCurrentPatientState = false;
 				boolean foundStateWithNullStartDate = false;
 				for (PatientState patientState : patientStates) {
-					if (patientState.isVoided()) {
+					if (patientState.getVoided()) {
 						continue;
 					}
 					

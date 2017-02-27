@@ -35,8 +35,8 @@ public class EncounterTypeValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return c.equals(EncounterType.class);
 	}
 	
@@ -53,6 +53,7 @@ public class EncounterTypeValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		EncounterType encounterType = (EncounterType) obj;
 		if (encounterType == null) {
@@ -63,7 +64,7 @@ public class EncounterTypeValidator implements Validator {
 			if (!errors.hasErrors()) {
 				EncounterType duplicate = Context.getEncounterService().getEncounterType(encounterType.getName().trim());
 				if (duplicate != null && !OpenmrsUtil.nullSafeEquals(encounterType.getUuid(), duplicate.getUuid())
-				        && !duplicate.isRetired()) {
+				        && !duplicate.getRetired()) {
 					errors.rejectValue("name", "EncounterType.error.duplicateEncounterTypeNameSpecified",
 					    "Specified Encounter Type name already exists, please specify another ");
 				}

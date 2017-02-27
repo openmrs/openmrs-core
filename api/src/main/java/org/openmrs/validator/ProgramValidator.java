@@ -33,6 +33,7 @@ public class ProgramValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
+	@Override
 	public boolean supports(Class<?> c) {
 		return c.equals(Program.class);
 	}
@@ -51,6 +52,7 @@ public class ProgramValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		Program p = (Program) obj;
 		if (p == null) {

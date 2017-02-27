@@ -26,6 +26,7 @@ public class VisitAttributeTypeValidator extends BaseAttributeTypeValidator<Visi
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
+	@Override
 	public boolean supports(Class<?> c) {
 		return c.equals(VisitAttributeType.class);
 	}
@@ -34,6 +35,7 @@ public class VisitAttributeTypeValidator extends BaseAttributeTypeValidator<Visi
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		if (obj != null) {
 			super.validate(obj, errors);

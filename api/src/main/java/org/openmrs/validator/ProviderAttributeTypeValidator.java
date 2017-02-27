@@ -28,10 +28,12 @@ public class ProviderAttributeTypeValidator extends BaseAttributeTypeValidator<P
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public boolean supports(Class<?> c) {
 		return ProviderAttributeType.class.isAssignableFrom(c);
 	}
 	
+	@Override
 	public void validate(Object obj, Errors errors) {
 		if (obj != null) {
 			super.validate(obj, errors);

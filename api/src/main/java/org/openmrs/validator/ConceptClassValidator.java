@@ -35,8 +35,8 @@ public class ConceptClassValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return c.equals(ConceptClass.class);
 	}
 	
@@ -53,6 +53,7 @@ public class ConceptClassValidator implements Validator {
 	 * @should fail validation if field lengths are not correct
 	 */
 	
+	@Override
 	public void validate(Object obj, Errors errors) {
 		ConceptClass cc = (ConceptClass) obj;
 		if (cc == null) {
@@ -61,7 +62,7 @@ public class ConceptClassValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			if (!errors.hasErrors()) {
 				ConceptClass exist = Context.getConceptService().getConceptClassByName(cc.getName());
-				if (exist != null && !exist.isRetired() && !OpenmrsUtil.nullSafeEquals(cc.getUuid(), exist.getUuid())) {
+				if (exist != null && !exist.getRetired() && !OpenmrsUtil.nullSafeEquals(cc.getUuid(), exist.getUuid())) {
 					errors.rejectValue("name", "conceptclass.duplicate.name");
 				}
 			}

@@ -9,8 +9,8 @@
  */
 package org.openmrs.validator;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -170,7 +170,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		OrderType orderType = new OrderType();
 		orderType.setName("unique name");
 		orderType.setJavaClassName("org.openmrs.TestDrugOrder");
-		Collection<ConceptClass> col = new HashSet<ConceptClass>();
+		Collection<ConceptClass> col = new HashSet<>();
 		col.add(Context.getConceptService().getConceptClass(2));
 		orderType.setConceptClasses(col);
 		Errors errors = new BindException(orderType, "orderType");
@@ -216,7 +216,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		OrderType orderType = new OrderType();
 		orderType.setName("unique name");
 		orderType.setJavaClassName("org.openmrs.TestDrugOrder");
-		Collection<ConceptClass> col = new HashSet<ConceptClass>();
+		Collection<ConceptClass> col = new HashSet<>();
 		col.add(Context.getConceptService().getConceptClass(2));
 		orderType.setConceptClasses(col);
 		
@@ -240,7 +240,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		orderType
 		        .setJavaClassName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		Collection<ConceptClass> col = new HashSet<ConceptClass>();
+		Collection<ConceptClass> col = new HashSet<>();
 		col.add(Context.getConceptService().getConceptClass(2));
 		orderType.setConceptClasses(col);
 		

@@ -59,7 +59,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		provider.setIdentifier(null);
 		
 		Person person = new Person();
-		Set<PersonName> personNames = new HashSet<PersonName>(1);
+		Set<PersonName> personNames = new HashSet<>(1);
 		PersonName personName = new PersonName();
 		personName.setFamilyName("name");
 		personNames.add(personName);
@@ -219,7 +219,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldAcceptDuplicateIdentifierIfTheExistingProviderIsRetired() throws Exception {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateRetiredProvider = providerService.getProvider(201);
-		Assert.assertTrue(duplicateRetiredProvider.isRetired());
+		Assert.assertTrue(duplicateRetiredProvider.getRetired());
 		
 		Provider provider = providerService.getProvider(1);
 		provider.setIdentifier(duplicateRetiredProvider.getIdentifier());
@@ -235,7 +235,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should accept a duplicate identifier for a new provider which is not retired", method = "validate(Object,Errors)")
 	public void validate_shouldAcceptADuplicateIdentifierForANewProviderWhichIsNotRetired() throws Exception {
 		Provider duplicateProvider = providerService.getProvider(1);
-		Assert.assertFalse(duplicateProvider.isRetired());
+		Assert.assertFalse(duplicateProvider.getRetired());
 		
 		Provider provider = new Provider();
 		provider.setIdentifier(duplicateProvider.getIdentifier());
@@ -252,10 +252,10 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldAcceptADuplicateIdentifierForANewProviderWhichIsRetired() throws Exception {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateProvider = providerService.getProvider(1);
-		Assert.assertFalse(duplicateProvider.isRetired());
+		Assert.assertFalse(duplicateProvider.getRetired());
 		
 		Provider providerToValidate = providerService.getProvider(201);
-		Assert.assertTrue(providerToValidate.isRetired());
+		Assert.assertTrue(providerToValidate.getRetired());
 		providerToValidate.setIdentifier(duplicateProvider.getIdentifier());
 		
 		providerValidator.validate(providerToValidate, errors);
@@ -273,7 +273,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		provider.setRetireReason("retireReason");
 		
 		Person person = new Person();
-		Set<PersonName> personNames = new HashSet<PersonName>(1);
+		Set<PersonName> personNames = new HashSet<>(1);
 		PersonName personName = new PersonName();
 		personName.setFamilyName("name");
 		personNames.add(personName);

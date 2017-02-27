@@ -44,8 +44,8 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return DrugOrder.class.isAssignableFrom(c);
 	}
 	
@@ -82,6 +82,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
 		

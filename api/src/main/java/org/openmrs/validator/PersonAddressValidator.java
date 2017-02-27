@@ -37,7 +37,8 @@ public class PersonAddressValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return PersonAddress.class.isAssignableFrom(c);
 	}
 	
@@ -55,6 +56,7 @@ public class PersonAddressValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object object, Errors errors) {
 		//TODO Validate other aspects of the personAddress object
 		if (log.isDebugEnabled()) {

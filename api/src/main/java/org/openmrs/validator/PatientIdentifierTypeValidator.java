@@ -35,8 +35,8 @@ public class PatientIdentifierTypeValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return c.equals(PatientIdentifierType.class);
 	}
 	
@@ -55,6 +55,7 @@ public class PatientIdentifierTypeValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		PatientIdentifierType identifierType = (PatientIdentifierType) obj;
 		if (identifierType == null) {
@@ -65,7 +66,7 @@ public class PatientIdentifierTypeValidator implements Validator {
 			    "validator", "retireReason");
 			PatientIdentifierType exist = Context.getPatientService().getPatientIdentifierTypeByName(
 			    identifierType.getName());
-			if (exist != null && !exist.isRetired()
+			if (exist != null && !exist.getRetired()
 			        && !OpenmrsUtil.nullSafeEquals(identifierType.getUuid(), exist.getUuid())) {
 				errors.rejectValue("name", "identifierType.duplicate.name");
 			}

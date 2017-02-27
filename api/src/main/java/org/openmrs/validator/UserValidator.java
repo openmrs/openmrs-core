@@ -25,7 +25,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
@@ -50,6 +49,7 @@ public class UserValidator implements Validator {
 	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
+	@Override
 	public boolean supports(Class<?> clazz) {
 		return User.class.isAssignableFrom(clazz);
 	}
@@ -69,12 +69,13 @@ public class UserValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		User user = (User) obj;
 		if (user == null) {
 			errors.reject("error.general");
 		} else {
-			if (user.isRetired() && StringUtils.isBlank(user.getRetireReason())) {
+			if (user.getRetired() && StringUtils.isBlank(user.getRetireReason())) {
 				errors.rejectValue("retireReason", "error.null");
 			}
 			if (user.getPerson() == null) {

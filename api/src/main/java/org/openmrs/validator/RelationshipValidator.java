@@ -29,8 +29,8 @@ public class RelationshipValidator implements Validator {
 	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return Relationship.class.isAssignableFrom(c);
 	}
 	

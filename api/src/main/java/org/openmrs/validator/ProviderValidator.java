@@ -36,8 +36,8 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("rawtypes")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".supports: " + c.getName());
 		}
@@ -67,6 +67,7 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) throws APIException {
 		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".validate...");
@@ -83,7 +84,7 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 			errors.rejectValue("person", "Provider.error.personOrName.required");
 		}
 		
-		if (provider.isRetired() && StringUtils.isEmpty(provider.getRetireReason())) {
+		if (provider.getRetired() && StringUtils.isEmpty(provider.getRetireReason())) {
 			errors.rejectValue("retireReason", "Provider.error.retireReason.required");
 		}
 		

@@ -27,15 +27,17 @@ public class ConceptAttributeTypeValidator extends BaseAttributeTypeValidator<Co
     /**
      * Determines if the command object being submitted is a valid type
      *
-     * @see org.springframework.validation.Validator#supports(Class)
+     * @see org.springframework.validation.Validator#T)
      * @should pass validation if field lengths are correct
      * @should fail validation if field lengths are not correct
      */
-    public boolean supports(Class<?> c) {
+    @Override
+	public boolean supports(Class<?> c) {
         return ConceptAttributeType.class.isAssignableFrom(c);
     }
 
-    public void validate(Object obj, Errors errors) {
+    @Override
+	public void validate(Object obj, Errors errors) {
         super.validate(obj, errors);
         ConceptAttributeType conceptAttributeType = (ConceptAttributeType) obj;
         ConceptService conceptService = Context.getConceptService();

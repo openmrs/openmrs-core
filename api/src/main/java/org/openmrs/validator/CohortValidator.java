@@ -10,8 +10,6 @@
 package org.openmrs.validator;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Patient;
@@ -28,12 +26,12 @@ import java.util.Collection;
 @Handler(supports = {Cohort.class}, order=50)
 public class CohortValidator implements Validator {
 
-	private static final Log log = LogFactory.getLog(Cohort.class);
-
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return Cohort.class.isAssignableFrom(c);
 	}
 
+	@Override
 	public void validate(Object obj, Errors errors) {
 		if (obj == null || !(obj instanceof Cohort)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type"

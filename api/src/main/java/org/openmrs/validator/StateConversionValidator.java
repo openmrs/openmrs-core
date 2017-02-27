@@ -32,8 +32,8 @@ public class StateConversionValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return c.equals(ConceptStateConversion.class);
 	}
 	
@@ -47,6 +47,7 @@ public class StateConversionValidator implements Validator {
 	 * @should fail validation if programWorkflowState is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		ConceptStateConversion c = (ConceptStateConversion) obj;
 		if (c == null) {

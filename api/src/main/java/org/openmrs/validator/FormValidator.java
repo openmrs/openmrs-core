@@ -32,8 +32,8 @@ public class FormValidator implements Validator {
 	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return c.equals(Form.class);
 	}
 	
@@ -51,6 +51,7 @@ public class FormValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		Form form = (Form) obj;
 		if (form == null) {
@@ -64,7 +65,7 @@ public class FormValidator implements Validator {
 				errors.rejectValue("version", "Form.version.invalid");
 			}
 			
-			if (form.isRetired()) {
+			if (form.getRetired()) {
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "retireReason", "general.retiredReason.empty");
 			}
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "version", "description", "retireReason");

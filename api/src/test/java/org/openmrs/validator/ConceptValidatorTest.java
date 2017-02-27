@@ -10,7 +10,6 @@
 package org.openmrs.validator;
 
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -307,8 +306,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		ConceptName otherName = cs.getConceptName(1439);
 		//sanity check since names should only be unique amongst preferred and fully specified names
 		Assert.assertTrue(otherName.isFullySpecifiedName() || otherName.isPreferred());
-		Assert.assertFalse(otherName.isVoided());
-		Assert.assertFalse(otherName.getConcept().isRetired());
+		Assert.assertFalse(otherName.getVoided());
+		Assert.assertFalse(otherName.getConcept().getRetired());
 		
 		//change to a duplicate name in the same locale
 		ConceptName duplicateName = cs.getConceptName(2477);

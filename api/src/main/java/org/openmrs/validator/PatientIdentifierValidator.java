@@ -39,7 +39,8 @@ public class PatientIdentifierValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return PatientIdentifier.class.isAssignableFrom(c);
 	}
 	
@@ -51,6 +52,7 @@ public class PatientIdentifierValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		PatientIdentifier pi = (PatientIdentifier) obj;
 		try {
@@ -81,7 +83,7 @@ public class PatientIdentifierValidator implements Validator {
 		}
 		
 		// Only validate if the PatientIdentifier is not voided
-		if (!pi.isVoided()) {
+		if (!pi.getVoided()) {
 			
 			// Check that this is a valid identifier
 			validateIdentifier(pi.getIdentifier(), pi.getIdentifierType());

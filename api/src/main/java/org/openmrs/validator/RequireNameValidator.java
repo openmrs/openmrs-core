@@ -26,9 +26,10 @@ public class RequireNameValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	public boolean supports(Class clz) {
+	@Override
+	public boolean supports(Class<?> c) {
 		try {
-			PropertyDescriptor pd = new PropertyDescriptor("name", clz);
+			PropertyDescriptor pd = new PropertyDescriptor("name", c);
 			if (pd.getReadMethod() == null) {
 				return false;
 			}
@@ -47,6 +48,7 @@ public class RequireNameValidator implements Validator {
 	 * @should fail validation if name is null or empty or whitespace
 	 * @should pass validation if name has proper value
 	 */
+	@Override
 	public void validate(Object o, Errors errors) {
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 	}

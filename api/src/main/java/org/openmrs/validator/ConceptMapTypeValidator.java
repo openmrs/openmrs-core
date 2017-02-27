@@ -9,8 +9,6 @@
  */
 package org.openmrs.validator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptMapType;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
@@ -27,16 +25,13 @@ import org.springframework.validation.Validator;
 @Handler(supports = { ConceptMapType.class }, order = 50)
 public class ConceptMapTypeValidator implements Validator {
 	
-	// Log for this class
-	private static final Log log = LogFactory.getLog(ConceptMapTypeValidator.class);
-	
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("rawtypes")
-	public boolean supports(Class c) {
+	@Override
+	public boolean supports(Class<?> c) {
 		return ConceptMapType.class.isAssignableFrom(c);
 	}
 	
@@ -54,6 +49,7 @@ public class ConceptMapTypeValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		
 		if (obj == null || !(obj instanceof ConceptMapType)) {

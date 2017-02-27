@@ -267,7 +267,6 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see UserValidator#validate(Object,Errors)
 	 */
-	@SuppressWarnings("deprecation")
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
@@ -288,7 +287,6 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see UserValidator#validate(Object,Errors)
 	 */
-	@SuppressWarnings("deprecation")
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
