@@ -17,6 +17,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.annotation.Handler;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -49,6 +50,7 @@ public class PersonValidator implements Validator {
 	 * @should fail validation if birthdate makes patient older that 120 years old
 	 * @should fail validation if birthdate is a future date
 	 * @should fail validation if deathdate is a future date
+	 * @should fail validation if birthdate is after death date
 	 * @should fail validation if voidReason is blank when patient is voided
 	 * @should fail validation if causeOfDeath is blank when patient is dead
 	 * @should pass validation if gender is blank for Persons
@@ -136,7 +138,7 @@ public class PersonValidator implements Validator {
 		if (birthDate == null) {
 			return;
 		}
-		rejectDeathDateIfBeforeBirthDate(errors, deathDate, birthDate, "deathDate");
+		rejectDeathDateIfBeforeBirthDate(errors, deathDate, birthDate);
 	}
 	
 	/**
@@ -147,7 +149,7 @@ public class PersonValidator implements Validator {
 	 * @param dateField the name of the field
 	 */
 	private void rejectIfFutureDate(Errors errors, Date date, String dateField) {
-		if (date.after(new Date())) {
+		if (OpenmrsUtil.compare(date, new Date()) > 0) {
 			errors.rejectValue(dateField, "error.date.future");
 		}
 	}
@@ -163,7 +165,7 @@ public class PersonValidator implements Validator {
 		Calendar c = Calendar.getInstance();
 		c.setTime(new Date());
 		c.add(Calendar.YEAR, -120);
-		if (date.before(c.getTime())) {
+		if (OpenmrsUtil.compare(date, c.getTime()) < 0) {
 			errors.rejectValue(dateField, "error.date.nonsensical");
 		}
 	}
@@ -174,11 +176,10 @@ public class PersonValidator implements Validator {
 	 * @param errors the error object
 	 * @param deathdate the date to check
 	 * @param birthdate to check with
-	 * @param dateField the name of the field
 	 */
-	private void rejectDeathDateIfBeforeBirthDate(Errors errors, Date deathdate, Date birthdate, String dateField) {
-		if (deathdate.before(birthdate)) {
-			errors.rejectValue(dateField, "error.deathdate.before.birthdate");
+	private void rejectDeathDateIfBeforeBirthDate(Errors errors, Date deathdate, Date birthdate) {
+		if (OpenmrsUtil.compare(deathdate, birthdate) < 0) {
+			errors.rejectValue("deathDate", "error.deathdate.before.birthdate");
 		}
 	}
 

@@ -155,10 +155,9 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see org.openmrs.validator.PersonValidator#validate(Object,Errors)
-	 * @verifies pass validation if gender is blank for Persons
+	 * @verifies should pass validation if field lengths are correct
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		Person person = new Person(1);
 		person.setBirthdate(new Date());
@@ -175,10 +174,9 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see org.openmrs.validator.PersonValidator#validate(Object,Errors)
-	 * @verifies pass validation if gender is blank for Persons
+	 * @verifies should fail validation if field lengths are not correct
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		Person person = new Person(1);
 		person.setBirthdate(new Date());
@@ -198,10 +196,9 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 
 	/**
  	 * @see org.openmrs.validator.PersonValidator#validate(Object,Errors)
-	 * @verifies pass validation if birth date is before death date
+	 * @verifies should fail validation if birthdate is after death date
      */
     @Test
-	@Verifies(value = "should fail validation if birthdate is after  death date", method = "validate(Object,Errors)")
 	public void shouldNotSetDeathBeforeBirth() throws Exception {
 		Patient pa = new Patient(1);
 		Calendar birth = Calendar.getInstance();
