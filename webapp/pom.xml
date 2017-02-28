@@ -136,23 +136,6 @@
 		          <path>/${project.build.finalName}</path>
 		        </configuration>
          </plugin>
-         <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.9.1</version>
-                <configuration>
-                    <includes>**/*.jsp</includes>
-                    <sourceDirectory>../webapp</sourceDirectory>
-                    <configLocation>checkstyle/webapp-checkstyle.xml</configLocation>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.openmrs.tools</groupId>
-                        <artifactId>openmrs-tools</artifactId>
-                        <version>${project.version}</version>
-                    </dependency>
-                </dependencies>
-         </plugin>
       </plugins>
    </build>
    <profiles>
