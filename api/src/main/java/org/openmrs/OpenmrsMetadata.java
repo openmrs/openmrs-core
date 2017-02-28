@@ -13,8 +13,7 @@ package org.openmrs;
  * In OpenMRS, we distinguish between data and metadata within our data model. Metadata represent
  * system and descriptive data such as data types &mdash; a relationship type or encounter type.
  * Metadata are generally referenced by clinical data but don't represent patient-specific data
- * themselves. OpenMRS objects that represent metadata should implement this interface. TODO:
- * Support localized names and descriptions
+ * themselves. OpenMRS objects that represent metadata should implement this interface. 
  * 
  * @see OpenmrsData
  * @since 1.5
