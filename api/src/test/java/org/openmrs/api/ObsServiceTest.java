@@ -9,8 +9,37 @@
  */
 package org.openmrs.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.CharArrayReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.imageio.ImageIO;
+
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -36,38 +65,6 @@ import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.OpenmrsUtil;
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.CharArrayReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * TODO clean up and add tests for all methods in ObsService
@@ -91,8 +88,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ObsService os = Context.getObsService();
 		Obs o = os.saveObs(null,"Null Obs");
 	}
-
-
 	
 	/**
 	 * This test tests multi-level heirarchy obsGroup cascades for create, delete, update, void, and
@@ -538,6 +533,22 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		ComplexObsHandler textHandler = os.getHandler("TextHandler");
 		Assert.assertNotNull(textHandler);
+	}
+	
+	@Test
+	@Verifies(value = "should purge complex obs when complex data file is missing from disk", method = "purgeObs(Obs)")
+	public void purgeComplexObs_shouldSucceedWhenCompleDataFileMissingFromDisk() throws Exception {
+		executeDataSet(COMPLEX_OBS_XML);
+		
+		ObsService os = Context.getObsService();
+		Obs obs = os.getComplexObs(44, ComplexObsHandler.RAW_VIEW);
+		// obs #44 is coded by the concept complex #8473 pointing to ImageHandler
+		// ImageHandler inherits AbstractHandler which handles complex data files on disk
+		assertNotNull(obs.getComplexData());
+
+		os.purgeObs(obs);
+		
+		assertNull(os.getObs(obs.getObsId()));
 	}
 	
 	/**
