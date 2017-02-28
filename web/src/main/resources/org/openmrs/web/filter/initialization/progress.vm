@@ -25,7 +25,11 @@
 								jQuery("#"+data.executedTasks[i]+"_task_loading").hide();
 							if(!jQuery("#"+data.executedTasks[i]+"_task_checkmark").is(':visible'))
 								jQuery("#"+data.executedTasks[i]+"_task_checkmark").show();
-								
+							//Ensuring that the last checkmark does not show up
+							if(data.executedTasks[i]=="UPDATE_TO_LATEST"){
+								jQuery("#"+data.executedTasks[i]+"_task_loading").show();
+								jQuery("#"+data.executedTasks[i]+"_task_checkmark").hide();
+								}
 							if(jQuery("#"+data.executedTasks[i]+"_progressbar")){
 								//show and initialize the progress bar the first time it is updated, if the task takes a short
 								//time to execute it is possible that its progress bar was never shown at all since it was 
@@ -34,9 +38,16 @@
 									jQuery("#"+data.executedTasks[i]+"_progressbar").progressbar({ disabled : false});
 									
 								if(jQuery("#"+data.executedTasks[i]+"_progressbar").progressbar("option","value") < 100){
+									//Ensuring that the last progress bar does not show 100% so as to avoid confusion
+									if(data.executedTasks[i]=="UPDATE_TO_LATEST"){
+										jQuery("#"+data.executedTasks[i]+"_progressbar").progressbar("option", "value", 99);
+										jQuery("#"+data.executedTasks[i]+"_progressPercentage").html("99%");
+									}
+									else{
 									//set to complete status
 									jQuery("#"+data.executedTasks[i]+"_progressbar").progressbar("option", "value", 100);
 									jQuery("#"+data.executedTasks[i]+"_progressPercentage").html("100%");
+									}
 								}
 							}													
 						}						
@@ -49,7 +60,12 @@
 							//show and initialize the progress bar the first time it is updated
 							if(jQuery("#"+data.executingTask+"_progressbar").progressbar("option", "disabled"))
 								jQuery("#"+data.executingTask+"_progressbar").progressbar({ disabled : false});
-								
+							//To ensure that last progress bar shows a maximum of 99%
+							if(data.executingTask=="UPDATE_TO_LATEST"){
+								if(Number(data.completedPercentage)>98){
+									Number(data.completedPercentage)=99;
+								}
+							}	
 							updateProgressBar(data.executingTask, data.completedPercentage);
 						}															
 					}									
