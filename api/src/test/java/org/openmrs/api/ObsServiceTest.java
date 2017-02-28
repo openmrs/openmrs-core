@@ -59,8 +59,8 @@ import org.openmrs.obs.handler.TextHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * TODO clean up and add tests for all methods in ObsService
@@ -517,6 +517,21 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		ComplexObsHandler textHandler = os.getHandler("TextHandler");
 		Assert.assertNotNull(textHandler);
+	}
+	
+	@Test
+	@Verifies(value = "should purge complex obs when complex data file is missing from disk", method = "purgeObs(Obs)")
+	public void purgeComplexObs_shouldSucceedWhenCompleDataFileMissingFromDisk() throws Exception {
+		executeDataSet(COMPLEX_OBS_XML);
+		
+		ObsService os = Context.getObsService();
+		Obs obs = os.getComplexObs(44, OpenmrsConstants.RAW_VIEW);
+		// obs #44 is coded by the concept complex #8473 pointing to ImageHandler
+		// ImageHandler inherits AbstractHandler which handles complex data files on disk
+
+		os.purgeObs(obs);
+		
+		assertNull(os.getObs(obs.getObsId()));
 	}
 	
 	/**
