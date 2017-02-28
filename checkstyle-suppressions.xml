@@ -61,6 +61,8 @@
 	<suppress checks="MethodName" files="ArdenBaseTreeParser.java" />
 	<suppress checks="MethodName" files="ArdenClause.java" />
 	<suppress checks="MethodName" files="ArdenValue.java" />
+	<!-- Test classes are allowed to have underscores in method names -->
+	<suppress checks="MethodName" files="\*Test.java" />
 
 	<!--
 		Exceptions for throwing Throwable, Exception, or RuntimeException

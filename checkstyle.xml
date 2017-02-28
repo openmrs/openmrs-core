@@ -31,7 +31,7 @@
 		Limit checks by their severity (e.g., error or warning) 
 	-->
 	<module name="SeverityMatchFilter">
-		<property name="severity" value="${checkstyle.severityMatchFilter}"
+		<property name="severity" value="error"
 			default="error" />
 	</module>
 
@@ -40,12 +40,10 @@
 		audits that should be suppressed.
 		http://checkstyle.sourceforge.net/config.html
 	-->
-	<!--
 	<module name="SuppressionFilter">
 		<property name="file"
-			value="${checkstyle.suppressions.file}" />
+			value="checkstyle-suppressions.xml" />
 	</module>
-	-->
 
 	<!--                                                -->
 	<!--                FILE CHECKS                     -->
@@ -67,7 +65,7 @@
 	-->
 	<module name="FileLength">
 		<property name="fileExtensions" value="java" />
-		<property name="max" value="${checkstyle.fileLength.maxLines}" />
+		<property name="max" value="2500" />
 	</module>
 
 	<!--
@@ -129,7 +127,7 @@
 
 	<!-- Ensure translation files contain the same keys -->
 	<module name="Translation">
-		<property name="severity" value="${checkstyle.translation.severity}"
+		<property name="severity" value="warning"
 			default="error" />
 	</module>
 
@@ -140,7 +138,7 @@
 	<!-- TreeWalker is used to process individual Java files -->
 	<module name="TreeWalker">
 		<!-- Defines expected tab width for checks that require a tab width -->
-		<property name="tabWidth" value="${checkstyle.tabWidth}" />
+		<property name="tabWidth" value="4" />
 
 		<!--                                                -->
 		<!--              CODING STYLE CHECKS               -->
@@ -158,7 +156,7 @@
 			Check that class and interface names follow convention.
 		-->
 		<module name="TypeName">
-			<property name="format" value="${checkstyle.typeName.format}" />
+			<property name="format" value="^[A-Z][a-zA-Z0-9]*$" />
 		</module>
 
 		<!-- 
@@ -175,18 +173,18 @@
 			Check for overly long methods (too many lines).
 		-->
 		<module name="MethodLength">
-			<property name="max" value="${checkstyle.methodLength.max}" />
+			<property name="max" value="400" />
 		</module>
 
 		<!--
 			Check for parameter names that do not follow convention
 		-->
 		<module name="ParameterName">
-			<property name="format" value="${checklist.parameterName.format}" />
+			<property name="format" value="^[a-z]+[a-zA-Z0-9]*$" />
 		</module>
 
 		<module name="ParameterNumber">
-			<property name="max" value="${checkstyle.parameterNumber.max}" />
+			<property name="max" value="20" />
 		</module>
 
 		<!--
@@ -274,14 +272,14 @@
 			Check for too many nested if statements.
 		-->
 		<module name="NestedIfDepth">
-			<property name="max" value="${checkstyle.nestedIfDepth.max}" />
+			<property name="max" value="8" />
 		</module>
 
 		<!--
 			Check for too many nested try/catch blocks.
 		-->
 		<module name="NestedTryDepth">
-			<property name="max" value="${checkstyle.nestedTryDepth.max}" />
+			<property name="max" value="3" />
 		</module>
 
 		<!--
@@ -368,7 +366,7 @@
 		<!--                                                -->
 
 		<module name="LeftCurly">
-			<property name="option" value="${checkstyle.leftCurly.policy}" />
+			<property name="option" value="eol" />
 		</module>
 
 		<!-- 
