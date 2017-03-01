@@ -9,10 +9,14 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.text.DateFormat;
@@ -944,5 +948,38 @@ public class PersonTest extends BaseContextSensitiveTest {
 		// check deep copy of PersonAttribute
 		assertFalse(personDst.getAttribute(1) == personSrc.getAttribute(1));
 		assertTrue(personDst.getAttribute(1).equalsContent(personSrc.getAttribute(1)));
+	}
+	
+	/**
+	 * This test covers a regression introduced in the first attempt at TRUNK-4925.
+	 * See https://issues.openmrs.org/browse/TRUNK-4925?focusedCommentId=236916
+	 * @see Person#Person(Person)
+	 * @verifies not fail for a collection element with no primary key assigned
+	 */
+	@Test
+	public void Person_shouldNotFailForACollectionElementWithNoPrimaryKeyAssigned() throws Exception {
+		PersonName name = new PersonName("test", "", "patient");
+		
+		PersonAddress address = new PersonAddress();
+		address.setAddress1("1600 Pennsylvania Ave");
+		address.setCityVillage("Washington");
+		address.setStateProvince("D.C.");
+		address.setCountry("USA");
+		
+		PersonAttribute attribute = new PersonAttribute(new PersonAttributeType(88), "attribute");
+		
+		Person person = new Person();
+		person.addName(name);
+		person.addAddress(address);
+		person.addAttribute(attribute);
+		
+		Person clone = new Person(person);
+		
+		assertThat(clone.getPersonName(), not(sameInstance(name)));
+		assertThat(clone.getPersonName().getGivenName(), equalTo(name.getGivenName()));
+		assertThat(clone.getPersonAddress(), not(sameInstance(address)));
+		assertThat(clone.getPersonAddress().getAddress1(), equalTo(address.getAddress1()));
+		assertThat(clone.getAttribute(88), not(sameInstance(attribute)));
+		assertThat(clone.getAttribute(88).getValue(), equalTo(attribute.getValue()));
 	}
 }
