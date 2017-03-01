@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.search.annotations.Field;
 
 /**
  * PatientIdentifierType
@@ -59,7 +60,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata {
 	private Integer patientIdentifierTypeId;
 	
 	private String format;
-	
+
+	@Field
 	private Boolean required = Boolean.FALSE;
 	
 	private String formatDescription;

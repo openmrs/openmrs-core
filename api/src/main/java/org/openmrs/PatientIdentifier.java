@@ -59,11 +59,13 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 			@Field(name = "identifierAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER))
 	})
 	private String identifier;
-	
+
+	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private PatientIdentifierType identifierType;
 	
 	private Location location;
-	
+
+	@Field
 	private Boolean preferred = false;
 	
 	/** default constructor */
