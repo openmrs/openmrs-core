@@ -9,11 +9,13 @@
  */
 package org.openmrs.validator;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Encounter;
 import org.openmrs.Visit;
+import org.openmrs.Patient;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -28,7 +30,7 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { Visit.class }, order = 50)
 public class VisitValidator extends BaseCustomizableValidator implements Validator {
-	
+
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -36,7 +38,7 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 	public boolean supports(Class<?> clazz) {
 		return Visit.class.isAssignableFrom(clazz);
 	}
-	
+
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
@@ -47,6 +49,8 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 	 * @should fail if visit type is not set
 	 * @should fail if startDatetime is not set
 	 * @should fail if the endDatetime is before the startDatetime
+	 * @should fail if the startDatetime is before the birthDate
+	 * @should fail if the startDatetime is within an year of the patient's birthDate
 	 * @should fail if the startDatetime is after any encounter
 	 * @should fail if the stopDatetime is before any encounter
 	 * @should fail if an attribute is bad
@@ -74,12 +78,12 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		        && OpenmrsUtil.compareWithNullAsLatest(visit.getStartDatetime(), visit.getStopDatetime()) > 0) {
 			errors.rejectValue("stopDatetime", "Visit.error.endDateBeforeStartDate");
 		}
-		
+
 		//If this is not a new visit, validate based on its existing encounters.
 		if (visit.getId() != null) {
 			Date startDateTime = visit.getStartDatetime();
 			Date stopDateTime = visit.getStopDatetime();
-			
+
 			List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(visit, false);
 			for (Encounter encounter : encounters) {
 				if (encounter.getEncounterDatetime().before(startDateTime)) {
@@ -93,12 +97,12 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 				}
 			}
 		}
-		
+
 		ValidateUtil.validateFieldLengths(errors, target.getClass(), "voidReason");
-		
+
 		// check attributes
 		super.validateAttributes(visit, errors, Context.getVisitService().getAllVisitAttributeTypes());
-		
+
 		// check start and end dates
 		if (disallowOverlappingVisits()) {
 			List<Visit> otherVisitList = Context.getVisitService().getVisitsByPatient(visit.getPatient());
@@ -107,28 +111,49 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 				validateStopDatetime(visit, otherVisit, errors);
 			}
 		}
+		Date startDate = visit.getStartDatetime();
+		Patient patient = visit.getPatient();
+		Date birthDate;
+		if(patient!=null) {
+			birthDate = patient.getBirthdate();
+			if(startDate!=null && birthDate!=null) {
+  			if(OpenmrsUtil.compare(startDate,birthDate) < 0) {
+					errors.rejectValue("startDatetime","Visit.error.startDateBeforeBirthDate");
+				}
+				else {
+					// Get the difference between the dates to check if the patient is at least 1 year old
+					double diffInDays = ((startDate.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 ));
+					Calendar inst = Calendar.getInstance();
+					inst.setTime(startDate);
+					//Check if the patient is less than one year and also making sure that leap year condition is checked
+					if((diffInDays<=365 || (diffInDays<=366 && inst.get(Calendar.YEAR)%4==0)) && diffInDays !=0) {
+						errors.rejectValue("startDatetime","Visit.error.birthDateTooLess");
+					}
+				}
+			}
+		}
 	}
-	
+
 	/*
 	 * Convenience method to make the code more readable.
 	 */
 	private boolean disallowOverlappingVisits() {
 		return !allowOverlappingVisits();
 	}
-	
+
 	private boolean allowOverlappingVisits() {
 		return Boolean.parseBoolean(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true"));
 	}
-	
+
 	private void validateStartDatetime(Visit visit, Visit otherVisit, Errors errors) {
-		
+
 		if (visit.getStartDatetime() != null && otherVisit.getStartDatetime() != null
 		        && visit.getStartDatetime().equals(otherVisit.getStartDatetime())) {
 			errors.rejectValue("startDatetime", "Visit.startCannotBeTheSameAsOtherStartDateOfTheSamePatient",
 			    "This visit has the same start date and time as another visit of this patient.");
 		}
-		
+
 		if (visit.getStartDatetime() != null && otherVisit.getStartDatetime() != null
 		        && otherVisit.getStopDatetime() != null && visit.getStartDatetime().after(otherVisit.getStartDatetime())
 		        && visit.getStartDatetime().before(otherVisit.getStopDatetime())) {
@@ -136,29 +161,29 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 			    "This visit has a start date that falls into another visit of the same patient.");
 		}
 	}
-	
+
 	private void validateStopDatetime(Visit visit, Visit otherVisit, Errors errors) {
-		
+
 		if (visit.getStopDatetime() != null && otherVisit.getStartDatetime() != null && otherVisit.getStopDatetime() != null
 		        && visit.getStopDatetime().after(otherVisit.getStartDatetime())
 		        && visit.getStopDatetime().before(otherVisit.getStopDatetime())) {
 			errors.rejectValue("stopDatetime", "Visit.stopDateCannotFallIntoAnotherVisitOfTheSamePatient",
 			    "This visit has a stop date that falls into another visit of the same patient.");
-			
+
 		}
-		
+
 		if (visit.getStartDatetime() != null && visit.getStopDatetime() != null && otherVisit.getStartDatetime() != null
 		        && otherVisit.getStopDatetime() != null && visit.getStartDatetime().before(otherVisit.getStartDatetime())
 		        && visit.getStopDatetime().after(otherVisit.getStopDatetime())) {
-			
+
 			StringBuilder messageBuilder = new StringBuilder();
 			messageBuilder.append("This visit contains another visit of the same patient, ");
 			messageBuilder.append("i.e. its start date is before the start date of the other visit ");
 			messageBuilder.append("and its stop date is after the stop date of the other visit.");
-			
+
 			errors.rejectValue("stopDatetime", "Visit.visitCannotContainAnotherVisitOfTheSamePatient", messageBuilder
 			        .toString());
 		}
-		
+
 	}
 }
