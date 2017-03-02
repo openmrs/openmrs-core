@@ -1,39 +1,38 @@
 <?xml version="1.0"?>
 <!--
-
     This Source Code Form is subject to the terms of the Mozilla Public License,
     v. 2.0. If a copy of the MPL was not distributed with this file, You can
     obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
     the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
-
     Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
     graphic logo is a trademark of OpenMRS Inc.
-
 -->
 <!DOCTYPE module PUBLIC
-	  "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
-	  "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+		  "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+		  "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 
-<module name="Checker">
+<!--
+	This Checkstyle configuration is based on the Google coding conventions from Google Java Style
+	with some modifications specific to OpenMRS.
 
-	<!--                                                -->
-	<!--           CHECKSTYLE CONFIGURATION             -->
-	<!--                                                -->
+	You can find a list of the rules with explanations and a references to a sample checkstyle.xml at
+
+	http://checkstyle.sourceforge.net/google_style.html
+
+
+	Checkstyle is very configurable. Be sure to read the documentation at
+	http://checkstyle.sf.net (or in your downloaded distribution).
+ -->
+
+<module name = "Checker">
+	<property name="charset" value="UTF-8"/>
 
 	<!--
-		All reported file names will be relative to the specified directory.
+		We default to 'warning' and set only specific rules to 'error'
 	-->
-	<!--
-	<property name="basedir" value="${src.dir}" />
-	-->
+	<property name="severity" value="warning"/>
 
-	<!--
-		Limit checks by their severity (e.g., error or warning) 
-	-->
-	<module name="SeverityMatchFilter">
-		<property name="severity" value="error"
-			default="error" />
-	</module>
+	<property name="fileExtensions" value="java, xml"/>
 
 	<!--
 		SuppressionFilter can supply a file that contains a list of specific
@@ -41,85 +40,36 @@
 		http://checkstyle.sourceforge.net/config.html
 	-->
 	<module name="SuppressionFilter">
-		<property name="file"
-			value="checkstyle-suppressions.xml" />
+		<property name="file" value="checkstyle-suppressions.xml"/>
 	</module>
 
-	<!--                                                -->
-	<!--                FILE CHECKS                     -->
-	<!--                                                -->
-
-	<!--
-		Verify that all java files have the MPL 2.0 HD header.
-	-->
-	<!--
-	<module name="Header">
-		<property name="headerFile" value="${checkstyle.header.file}" />
-		<property name="fileExtensions" value="java" />
-		<property name="id" value="header" />
-	</module>
-	-->
-
-	<!--
-		Define a maximum number of lines in a java file.
-	-->
 	<module name="FileLength">
-		<property name="fileExtensions" value="java" />
-		<property name="max" value="2500" />
+		<property name="fileExtensions" value="java"/>
+		<property name="max" value="2500"/>
+		<property name="severity" value="error"/>
 	</module>
 
-	<!--
-		Check for use of System.out.println()
-	-->
 	<module name="RegexpSingleline">
-		<property name="format" value="System\.out\.println\(\)" />
+		<property name="format" value="System\.out\.println\(\)"/>
 		<property name="message"
-			value="System.out.println() should not be used. Use logging convention instead." />
+			value="System.out.println() should not be used. Use logging convention instead."/>
+		<property name="severity" value="error"/>
 	</module>
 
-	<!--
-		Check for use of ex.printStackTrace()
-	-->
 	<module name="RegexpSingleline">
-		<property name="id" value="IllegalPrintStackTrace" />
-		<property name="format" value="\.printStackTrace\(\)" />
+		<property name="id" value="IllegalPrintStackTrace"/>
+		<property name="format" value="\.printStackTrace\(\)"/>
 		<property name="message"
-			value="ex.PrintStackTrace() should not be used. Use logging convention instead." />
+			value="ex.PrintStackTrace() should not be used. Use logging convention instead."/>
+		<property name="severity" value="error"/>
 	</module>
 
-	<!--
-		Check for use of 'new Date().getTime()'.
-	-->
 	<module name="RegexpSingleline">
 		<property name="id" value="InefficientCurrentTime" />
 		<property name="format" value="new Date\(\)\.getTime\(\)"/>
 		<property name="message" value="Use System.currentTimeMillis() instead of new Date().getTime()."/>
+		<property name="severity" value="error"/>
 	</module>
-
-	<!--
-		Check source files for tab (\t) characters. If "eachLine" is true,
-		then check will report on each offending line
-	-->
-	<!--
-		<module name="FileTabCharacter"> <property name="eachLine"
-		value="${checkstyle.fileTabCharacter.eachLine}"/> </module>
-	-->
-
-	<!-- Find lines with trailing spaces -->
-	<!--
-		<module name="RegexpSingleline"> <property name="format"
-		value="\s+$"/> <property name="minimum" value="0"/> <property
-		name="maximum" value="0"/> </module>
-	-->
-
-	<!--                                                -->
-	<!--        PACKAGE DOCUMENTATION CHECKS            -->
-	<!--                                                -->
-	<!-- Require a package level Javadoc -->
-	<!--
-		<module name="JavadocPackage"> <property name="allowLegacy"
-		value="${checkstyle.javadocPackage.allowLegacy}" /> </module>
-	-->
 
 	<!--                                                -->
 	<!--                MISCELLANEOUS CHECKS            -->
@@ -127,313 +77,299 @@
 
 	<!-- Ensure translation files contain the same keys -->
 	<module name="Translation">
-		<property name="severity" value="warning"
-			default="error" />
+		<property name="severity" value="warning" default="error"/>
 	</module>
 
-	<!--                                                -->
-	<!--                 FILE LEVEL CHECKS              -->
-	<!--                                                -->
-
-	<!-- TreeWalker is used to process individual Java files -->
 	<module name="TreeWalker">
 		<!-- Defines expected tab width for checks that require a tab width -->
-		<property name="tabWidth" value="4" />
+		<property name="tabWidth" value="4"/>
 
-		<!--                                                -->
-		<!--              CODING STYLE CHECKS               -->
-		<!--                                                -->
-
-		<!-- Do not use "import com.example.*"" -->
-		<module name="AvoidStarImport" />
-
-		<!--
-			Check for package names that do not follow convention. 
-		-->
-		<module name="PackageName" />
-
-		<!--
-			Check that class and interface names follow convention.
-		-->
-		<module name="TypeName">
-			<property name="format" value="^[A-Z][a-zA-Z0-9]*$" />
+		<module name="OuterTypeFilename"/>
+		<module name="IllegalTokenText">
+			<property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>
+			<property name="format" value="\\u00(09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\\(0(10|11|12|14|15|42|47)|134)"/>
+			<property name="message"
+					  value="Consider using special escape sequence instead of octal value or Unicode escaped value."/>
 		</module>
-
-		<!-- 
-			Check for one outer class per file
-		-->
-		<module name="OuterTypeNumber" />
-
-		<!-- 
-			Check for method names that do not follow convention.
-		-->
-		<module name="MethodName" />
-
-		<!--
-			Check for overly long methods (too many lines).
-		-->
-		<module name="MethodLength">
-			<property name="max" value="400" />
+		<module name="AvoidEscapedUnicodeCharacters">
+			<property name="allowEscapesForControlCharacters" value="true"/>
+			<property name="allowByTailComment" value="true"/>
+			<property name="allowNonPrintableEscapes" value="true"/>
 		</module>
-
-		<!--
-			Check for parameter names that do not follow convention
-		-->
-		<module name="ParameterName">
-			<property name="format" value="^[a-z]+[a-zA-Z0-9]*$" />
-		</module>
-
-		<module name="ParameterNumber">
-			<property name="max" value="20" />
-		</module>
-
-		<!--
-			Check for duplicate imports.
-		-->
-		<module name="RedundantImport" />
-
-		<!--
-			Check for illegal imports. By default this is only sun.* packages
-		-->
-		<module name="IllegalImport" />
-
-		<!--
-			Check for catch statements that catch Exception, Throwable, or
-			RunTimeException. In most (if not all) cases, these exceptions should
-			not be caught; rather, more specific exceptions should be caught.
-		-->
-		<module name="IllegalCatch">
-			<property name="illegalClassNames" value=" java.lang.Throwable, java.lang.RuntimeException"/>
-		</module>
-
-		<!--
-			Prevent specific types from being thrown. Defaults to
-			java.lang.Throwable, java.lang.Error, and java.lang.RuntimeException.
-		-->
-		<module name="IllegalThrows" />
-
-		<!--
-			Check for instantiation of specific classes. For example, check for
-			constructor invocations for java.lang.Boolean, which should be
-			replaced with predefined constants TRUE and FALSE. Other
-			possibilities would be classes that should always be created via a
-			factory method.
-		-->
-		<module name="IllegalInstantiation">
-			<property name="classes" value="java.lang.Boolean" />
-		</module>
-
-		<!--
-			Check for assignments within subexpressions, which may reduce the
-			readability of code or represent an assignment where a comparison was
-			intended.
-		-->
-		<module name="InnerAssignment" />
-
-		<!--
-			Check for long lines
-		-->
 		<module name="LineLength">
-			<property name="max" value="125" />
-			<property name="ignorePattern" value="^ *\* *[^ ]+$" />
+			<property name="max" value="125"/>
+			<property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
 		</module>
-
-		<!-- 
-			Check for switch statements without a "default" case
-		 -->
-		<module name="MissingSwitchDefault" />
-
-		<!--
-			Check for switch statement cases with java code, but without a break,
-			return, or throw.
-		-->
-		<module name="FallThrough" />
-
-		<!--
-			Check that there are no "magic numbers", where a magic number is a
-			numeric literal that is not defined as a constant. By default, -1, 0,
-			1, and 2 are not considered to be magic numbers.
-		-->
-		<module name="MagicNumber" />
-
-		<!--
-			Check that literal Longs use a capital "L" to avoid confusion with
-			the number one (1).
-		-->
-		<module name="UpperEll" />
-
-		<!--
-			Check for classes that override equals() without overriding
-			hashCode().
-		-->
-		<module name="EqualsHashCode" />
-
-		<!--
-			Check for too many nested if statements.
-		-->
-		<module name="NestedIfDepth">
-			<property name="max" value="8" />
+		<module name="AvoidStarImport">
+			<property name="severity" value="error"/>
 		</module>
-
-		<!--
-			Check for too many nested try/catch blocks.
-		-->
-		<module name="NestedTryDepth">
-			<property name="max" value="3" />
+		<module name="RedundantImport">
+			<property name="severity" value="error"/>
 		</module>
-
-		<!--
-			Check that the java.lang.Override annotation is present when the
-			{@inheritDoc} javadoc tag is present.
-		-->
-		<module name="MissingOverride">
-			<property name="javaFiveCompatibility" value="false" />
+		<module name="IllegalImport">
+			<property name="severity" value="error"/>
 		</module>
-
-		<!--
-			Check that string literals are not used with == or !=. 
-		-->
-		<module name="StringLiteralEquality" />
-
-		<!--
-			Check to see if classes override Object's clone() method.
-		-->
-		<module name="NoClone" />
-
-		<!--
-			Checks that the order of modifiers conforms to the suggestions in the
-			Java Language specification, sections 8.1.1, 8.3.1 and 8.4.3. The
-			correct order is: public, protected, private, abstract, static,
-			final, transient, volatile, synchronized, native, strictfp.
-		-->
-		<module name="ModifierOrder" />
-
-		<!--
-			Check for overly complicated boolean return statements.
-		-->
-		<module name="SimplifyBooleanReturn" />
-
-		<!--
-			Check for (expression == true) or (expression == false), which can be
-			simpllified as (expression) and (!expression), respectively.
-		-->
-		<!--
-		<module name="SimplifyBooleanExpression" />
-		-->
-
-		<!--
-			Check for redundant modifiers. Since interface methods are implicitly
-			public according to the Java Language Specification, declaring
-			methods within interfaces as public is redundant.
-			http://java.sun.com/docs/books/jls/third_edition/html/names.html#104285
-		-->
-		<!--
-			<module name="RedundantModifier" />
-		-->
-
-		<!--
-			Check for empty blocks
-			(http://checkstyle.sourceforge.net/config_blocks.html)
-		-->
-		<!--
-			option: text = require at least some text, stmt = require at least
-			one statement
-		-->
-		<!--
-			<module name="EmptyBlock"> <property name="option"
-			value="${checkstyle.emptyBlock.option}" /> </module>
-		-->
-
-		<!-- Check names of constants -->
-		<!-- Allow for "log" constant name for logging -->
-		<!--
-			<module name="ConstantName"> <property name="format"
-			value="^(log)|([A-Z][A-Z0-9]*(_[A-Z0-9]+)*)$" /> </module>
-		-->
-
-		<!--
-			ImportControl can check to see that packages aren't being imported in
-			the wrong context. For example, it could be used to prevent Hibernate
-			packages from being imported above the DAO layer.
-		-->
-		<!--
-			<module name="ImportControl"> <property name="file"
-			value="${checkstyle.importcontrol.file}"/> </module>
-		-->
-
-		<!--                                                -->
-		<!--              FORMAT CHECKS                     -->
-		<!--                                                -->
-
+		<module name="OneTopLevelClass">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="NoLineWrap"/>
+		<module name="EmptyBlock">
+			<property name="option" value="TEXT"/>
+			<property name="tokens" value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
+		</module>
+		<module name="NeedBraces">
+			<property name="severity" value="error"/>
+		</module>
 		<module name="LeftCurly">
 			<property name="option" value="eol" />
+			<property name="maxLineLength" value="100"/>
 		</module>
-
-		<!-- 
-			Check for space between method name and opening parens
-		-->
-		<module name="MethodParamPad" />
-
-		<!--
-			Check for whitespace before and after certain tokens
-		-->
-		<module name="NoWhitespaceBefore" />
+		<module name="RightCurly">
+			<property name="id" value="RightCurlySame"/>
+			<property name="tokens"
+					  value="LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_DO"/>
+		</module>
+		<module name="RightCurly">
+			<property name="id" value="RightCurlyAlone"/>
+			<property name="option" value="alone"/>
+			<property name="tokens"
+					  value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, STATIC_INIT, INSTANCE_INIT"/>
+		</module>
+		<module name="WhitespaceAround">
+			<property name="allowEmptyConstructors" value="true"/>
+			<property name="allowEmptyMethods" value="true"/>
+			<property name="allowEmptyTypes" value="true"/>
+			<property name="allowEmptyLoops" value="true"/>
+			<message key="ws.notFollowed"
+			 value="WhitespaceAround: ''{0}'' is not followed by whitespace. Empty blocks may only be represented as '{}' when not part of a multi-block statement (4.1.3)"/>
+			 <message key="ws.notPreceded"
+			 value="WhitespaceAround: ''{0}'' is not preceded with whitespace."/>
+		</module>
+		<module name="OneStatementPerLine"/>
+		<module name="MultipleVariableDeclarations">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="ArrayTypeStyle"/>
+		<module name="MissingSwitchDefault"/>
+		<module name="FallThrough">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="UpperEll">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="EqualsHashCode">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="StringLiteralEquality">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="NoClone"/>
+		<module name="ModifierOrder"/>
+		<module name="EmptyLineSeparator">
+			<property name="allowNoEmptyLineBetweenFields" value="true"/>
+			<property name="tokens"
+					  value="IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF, STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
+		</module>
+		<module name="SeparatorWrap">
+			<property name="id" value="SeparatorWrapDot"/>
+			<property name="tokens" value="DOT"/>
+			<property name="option" value="nl"/>
+		</module>
+		<module name="SeparatorWrap">
+			<property name="id" value="SeparatorWrapComma"/>
+			<property name="tokens" value="COMMA"/>
+			<property name="option" value="EOL"/>
+		</module>
+		<module name="PackageName">
+			<property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+			<message key="name.invalidPattern"
+			 value="Package name ''{0}'' must match pattern ''{1}''."/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="TypeName">
+			<message key="name.invalidPattern"
+			 value="Type name ''{0}'' must match pattern ''{1}''."/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="MemberName">
+			<property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$"/>
+			<message key="name.invalidPattern"
+			 value="Member name ''{0}'' must match pattern ''{1}''."/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="ParameterName">
+			<property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+			<message key="name.invalidPattern"
+			 value="Parameter name ''{0}'' must match pattern ''{1}''."/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="ParameterNumber">
+			<property name="max" value="10" />
+			<property name="severity" value="error"/>
+		</module>
+		<module name="LocalVariableName">
+			<property name="tokens" value="VARIABLE_DEF"/>
+			<property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+			<message key="name.invalidPattern"
+			 value="Local variable name ''{0}'' must match pattern ''{1}''."/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="ClassTypeParameterName">
+			<property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
+			<message key="name.invalidPattern"
+			 value="Class type name ''{0}'' must match pattern ''{1}''."/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="MethodTypeParameterName">
+			<property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
+			<message key="name.invalidPattern"
+			 value="Method type name ''{0}'' must match pattern ''{1}''."/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="InterfaceTypeParameterName">
+			<property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
+			<message key="name.invalidPattern"
+			 value="Interface type name ''{0}'' must match pattern ''{1}''."/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="NoFinalizer"/>
+		<module name="NoWhitespaceBefore"/>
 		<module name="NoWhitespaceAfter">
 			<property name="tokens"
-				value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS" />
+				value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
 		</module>
-		<module name="GenericWhitespace" />
-
-		<!--
-			Check that lines wrapped on an operator place the operator at the
-			beginning of the next line.
-		-->
-		<module name="OperatorWrap" />
-
-		<!--
-			Checks whether a space is after a left parenthesis and before a right
-			parenthesis, or such spaces are forbidden.
-		-->
-		<module name="TypecastParenPad" />
-
-		<!--                                                -->
-		<!--              DOCUMENTATION CHECKS              -->
-		<!--                                                -->
-
-		<!-- Public classes and interfaces should have a Javadoc comment -->
-		<module name="JavadocType">
-			<property name="scope" value="public" />
-			<property name="allowMissingParamTags" value="true" />
-			<!-- allowUnknownTags is not available until CheckStyle 5.1 -->
-			<!--
-			<property name="allowUnknownTags" value="true" />
-			-->
+		<module name="GenericWhitespace">
+			<message key="ws.followed"
+			 value="GenericWhitespace ''{0}'' is followed by whitespace."/>
+			 <message key="ws.preceded"
+			 value="GenericWhitespace ''{0}'' is preceded with whitespace."/>
+			 <message key="ws.illegalFollow"
+			 value="GenericWhitespace ''{0}'' should followed by whitespace."/>
+			 <message key="ws.notPreceded"
+			 value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>
 		</module>
-
-		<!--  Public methods should have Javadoc -->
+		<!--<module name="Indentation">-->
+			<!--<property name="basicOffset" value="4"/>-->
+			<!--<property name="braceAdjustment" value="0"/>-->
+			<!--<property name="caseIndent" value="4"/>-->
+			<!--<property name="throwsIndent" value="4"/>-->
+			<!--<property name="lineWrappingIndentation" value="4"/>-->
+			<!--<property name="arrayInitIndent" value="4"/>-->
+		<!--</module>-->
+		<module name="NestedIfDepth">
+			<property name="max" value="4"/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="NestedTryDepth">
+			<property name="max" value="2"/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="AbbreviationAsWordInName">
+			<property name="ignoreFinal" value="false"/>
+			<property name="allowedAbbreviationLength" value="1"/>
+		</module>
+		<module name="MagicNumber">
+			<property name="ignoreAnnotation" value="true"/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="OverloadMethodsDeclarationOrder">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="VariableDeclarationUsageDistance">
+			<property name="severity" value="error"/>
+		</module>
 		<!--
-			<module name="JavadocMethod"> <property name="scope" value="public"
-			/> <property name="allowUndeclaredRTE" value="true" /> <property
-			name="allowThrowsTagsForSubclasses" value="true" /> <property
-			name="allowMissingParamTags" value="true" /> <property
-			name="allowMissingThrowsTags" value="true" /> <property
-			name="allowMissingReturnTag" value="true" /> <property
-			name="allowMissingJavadoc" value="true" /> <property
-			name="allowMissingPropertyJavadoc" value="true" /> </module>
+			The order should match the default Eclipse behavior see
+				http://checkstyle.sourceforge.net/config_imports.html#CustomImportOrder_Example
+			But import ordering is known to be tricky and hard to
+			configure correctly across IDEs. Also the maven formatter does not take care of import ordering.
+			This has to be configured by every developer in their IDE and executed in every file they touch!
 		-->
-
-		<!-- Public variables should have Javadoc -->
-		<!--
-			<module name="JavadocVariable"> <property name="scope" value="public"
-			/> </module>
-		-->
-
-		<!-- Avoid empty Javadoc comments -->
-		<!--
-			<module name="JavadocStyle"> <property name="checkFirstSentence"
-			value="false" /> <property name="checkEmptyJavadoc" value="true" />
-			</module>
-		-->
-
+		<module name="CustomImportOrder">
+			<property name="customImportOrderRules"
+					  value="STATIC###STANDARD_JAVA_PACKAGE###SPECIAL_IMPORTS###THIRD_PARTY_PACKAGE"/>
+			<property name="specialImportsRegExp" value="^org\."/>
+			<property name="thirdPartyPackageRegExp" value="^com\."/>
+			<property name="sortImportsInGroupAlphabetically" value="true"/>
+			<property name="separateLineBetweenGroups" value="true"/>
+		</module>
+		<module name="MethodParamPad"/>
+		<module name="TypecastParenPad"/>
+		<module name="ParenPad"/>
+		<module name="OperatorWrap">
+			<property name="option" value="NL"/>
+			<property name="tokens"
+					  value="BAND, BOR, BSR, BXOR, DIV, EQUAL, GE, GT, LAND, LE, LITERAL_INSTANCEOF, LOR, LT, MINUS, MOD, NOT_EQUAL, PLUS, QUESTION, SL, SR, STAR"/>
+		</module>
+		<module name="AnnotationLocation">
+			<property name="id" value="AnnotationLocationMostCases"/>
+			<property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF"/>
+		</module>
+		<module name="AnnotationLocation">
+			<property name="id" value="AnnotationLocationVariables"/>
+			<property name="tokens" value="VARIABLE_DEF"/>
+			<property name="allowSamelineMultipleAnnotations" value="true"/>
+		</module>
+		<module name="MissingOverride">
+			<property name="javaFiveCompatibility" value="false"/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="NonEmptyAtclauseDescription"/>
+		<module name="JavadocTagContinuationIndentation"/>
+		<module name="SummaryJavadoc">
+			<property name="forbiddenSummaryFragments"
+					  value="^@return the *|^This method returns |^A [{]@code [a-zA-Z0-9]+[}]( is a )"/>
+			<property name="period" value=""/>
+		</module>
+		<module name="JavadocParagraph"/>
+		<module name="AtclauseOrder">
+			<property name="tagOrder" value="@param, @return, @throws, @deprecated"/>
+			<property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
+		</module>
+		<module name="JavadocMethod">
+			<property name="scope" value="public"/>
+			<property name="allowMissingParamTags" value="true"/>
+			<property name="allowMissingThrowsTags" value="true"/>
+			<property name="allowMissingReturnTag" value="true"/>
+			<property name="minLineCount" value="2"/>
+			<property name="allowedAnnotations" value="Override, Test"/>
+			<property name="allowThrowsTagsForSubclasses" value="true"/>
+		</module>
+		<module name="MethodName">
+			<property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
+			<message key="name.invalidPattern"
+			 value="Method name ''{0}'' must match pattern ''{1}''."/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="MethodLength">
+			<property name="max" value="400"/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="NPathComplexity">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="SimplifyBooleanReturn"/>
+		<module name="SingleLineJavadoc">
+			<property name="ignoreInlineTags" value="false"/>
+		</module>
+		<module name="EmptyCatchBlock">
+			<property name="exceptionVariableName" value="expected"/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="IllegalCatch">
+			<property name="illegalClassNames" value=" java.lang.Throwable, java.lang.RuntimeException"/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="IllegalThrows">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="IllegalInstantiation">
+			<property name="classes" value="java.lang.Boolean"/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="InnerAssignment">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="CommentsIndentation"/>
 	</module>
 </module>
