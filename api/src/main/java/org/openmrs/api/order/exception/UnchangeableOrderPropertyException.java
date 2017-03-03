@@ -7,14 +7,12 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.api.order.exceptions;
-
-import org.openmrs.api.APIException;
+package org.openmrs.api.order.exception;
 
 /**
  * Thrown when trying to change unchangeable order properties.
  */
-public class UnchangeableOrderPropertyException extends APIException {
+public class UnchangeableOrderPropertyException extends OrderEntryException {
 	
 	public static final long serialVersionUID = 22121217L;
 	

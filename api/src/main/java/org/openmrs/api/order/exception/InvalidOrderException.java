@@ -7,18 +7,16 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.api.order.exceptions;
-
-import org.openmrs.api.APIException;
+package org.openmrs.api.order.exception;
 
 /**
- * Thrown when trying to stop a retrospective discontinued order.
+ * Thrown when the order is invalid.
  */
-public class CannotStopRetrospectiveDiscontinuedOrderException extends APIException {
+public class InvalidOrderException extends OrderEntryException {
 	
-	public static final long serialVersionUID = 22221215L;
+	public static final long serialVersionUID = 22121219L;
 	
-	public CannotStopRetrospectiveDiscontinuedOrderException() {
-		super("Order.retrospective.stopped.cannot.discontinued");
+	public InvalidOrderException(String message) {
+		super(message);
 	}
 }

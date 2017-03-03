@@ -7,22 +7,22 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.api.order.exceptions;
+package org.openmrs.api.order.exception;
 
 import org.openmrs.api.APIException;
 
 /**
- * Thrown when the new edited order contains modified properties that must be the same as previous order.
+ * Thrown when trying to edit an order property which is still in use.
  */
-public class EditedOrderDoesNotMatchPreviousException extends APIException {
+public class CannotEditOrderPropertyInUseException extends APIException {
 	
-	public static final long serialVersionUID = 22121218L;
+	public static final long serialVersionUID = 22121220L;
 	
-	public EditedOrderDoesNotMatchPreviousException(String message) {
+	private CannotEditOrderPropertyInUseException(String message) {
 		super(message);
 	}
 	
-	public EditedOrderDoesNotMatchPreviousException(String message, Object[] params) {
-		super(message, params);
+	public static CannotEditOrderPropertyInUseException withProperty(String property) {
+		return new CannotEditOrderPropertyInUseException(String.format("Order.%s.cannot.edit", property));
 	}
 }

@@ -49,17 +49,17 @@ import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
-import org.openmrs.api.order.exceptions.CannotDeleteOrderPropertyInUseException;
-import org.openmrs.api.order.exceptions.CannotDiscontinueAlreadyDiscontinuedOrderException;
-import org.openmrs.api.order.exceptions.CannotDiscontinueOrderWithActionException;
-import org.openmrs.api.order.exceptions.CannotEditAlreadyExistingOrderException;
-import org.openmrs.api.order.exceptions.CannotEditOrderPropertyInUseException;
-import org.openmrs.api.order.exceptions.CannotStopRetrospectiveDiscontinuedOrderException;
-import org.openmrs.api.order.exceptions.CannotUnvoidOrderException;
-import org.openmrs.api.order.exceptions.EditedOrderDoesNotMatchPreviousException;
-import org.openmrs.api.order.exceptions.InvalidOrderException;
-import org.openmrs.api.order.exceptions.PreviousOrderRequiredException;
-import org.openmrs.api.order.exceptions.UnchangeableOrderPropertyException;
+import org.openmrs.api.order.exception.CannotDeleteOrderPropertyInUseException;
+import org.openmrs.api.order.exception.CannotDiscontinueAlreadyDiscontinuedOrderException;
+import org.openmrs.api.order.exception.CannotDiscontinueOrderWithActionException;
+import org.openmrs.api.order.exception.CannotEditAlreadyExistingOrderException;
+import org.openmrs.api.order.exception.CannotEditOrderPropertyInUseException;
+import org.openmrs.api.order.exception.CannotStopRetrospectiveDiscontinuedOrderException;
+import org.openmrs.api.order.exception.CannotUnvoidOrderException;
+import org.openmrs.api.order.exception.EditedOrderDoesNotMatchPreviousException;
+import org.openmrs.api.order.exception.InvalidOrderException;
+import org.openmrs.api.order.exception.PreviousOrderRequiredException;
+import org.openmrs.api.order.exception.UnchangeableOrderPropertyException;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -172,8 +172,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 			
 			//this order's order type should match that of the previous
-			if (orderType == null || (previousOrder != null && !orderType.equals(previousOrder.getOrderType()))) {
+			if (orderType == null) {
 				throw new InvalidOrderException("Order.type.cannot.determine");
+			}
+			if (previousOrder != null && !orderType.equals(previousOrder.getOrderType())) {
+				throw new InvalidOrderException("Order.type.does.not.match");
 			}
 			
 			order.setOrderType(orderType);

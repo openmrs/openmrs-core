@@ -7,18 +7,16 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.api.order.exceptions;
-
-import org.openmrs.api.APIException;
+package org.openmrs.api.order.exception;
 
 /**
- * Thrown when the order is invalid.
+ * Thrown when a previous order is required.
  */
-public class InvalidOrderException extends APIException {
+public class PreviousOrderRequiredException extends OrderEntryException {
 	
-	public static final long serialVersionUID = 22121219L;
+	public static final long serialVersionUID = 22121216L;
 	
-	public InvalidOrderException(String message) {
-		super(message);
+	public PreviousOrderRequiredException() {
+		super("Order.previous.required");
 	}
 }

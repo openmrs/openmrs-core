@@ -7,22 +7,22 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.api.order.exceptions;
+package org.openmrs.api.order.exception;
 
 import org.openmrs.api.APIException;
 
 /**
- * Thrown when trying to edit an order property which is still in use.
+ * Thrown when trying to delete an order property that is still in use.
  */
-public class CannotEditOrderPropertyInUseException extends APIException {
+public class CannotDeleteOrderPropertyInUseException extends APIException {
 	
-	public static final long serialVersionUID = 22121220L;
+	public static final long serialVersionUID = 22121221L;
 	
-	private CannotEditOrderPropertyInUseException(String message) {
+	private CannotDeleteOrderPropertyInUseException(String message) {
 		super(message);
 	}
 	
-	public static CannotEditOrderPropertyInUseException withProperty(String property) {
-		return new CannotEditOrderPropertyInUseException(String.format("Order.%s.cannot.edit", property));
+	public static CannotDeleteOrderPropertyInUseException withProperty(String property) {
+		return new CannotDeleteOrderPropertyInUseException(String.format("Order.%s.cannot.delete", property));
 	}
 }
