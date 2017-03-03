@@ -38,8 +38,8 @@
 	</organization>
 
 	<scm>
-		<connection>scm:git:git@github.com:openmrs/openmrs-core.git</connection>
-		<developerConnection>scm:git:git@github.com:openmrs/openmrs-core.git</developerConnection>
+		<connection>scm:git:git@github.com/openmrs/openmrs-core.git</connection>
+		<developerConnection>scm:git:git@github.com/openmrs/openmrs-core.git</developerConnection>
 		<url>https://github.com/openmrs/openmrs-core</url>
 	</scm>
 
