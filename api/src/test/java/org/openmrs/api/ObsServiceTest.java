@@ -55,8 +55,8 @@ import org.openmrs.obs.handler.TextHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * TODO clean up and add tests for all methods in ObsService
@@ -1193,6 +1193,22 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		obsService.purgeObs(obs);
 		
 		Assert.assertNull(obsService.getObs(7));
+		
+		executeDataSet(COMPLEX_OBS_XML);
+		Obs complexObs = obsService.getComplexObs(44, OpenmrsConstants.RAW_VIEW);
+		// obs #44 is coded by the concept complex #8473 pointing to ImageHandler
+		// ImageHandler inherits AbstractHandler which handles complex data files on disk
+		assertNotNull(complexObs.getComplexData());
+		AdministrationService as = Context.getAdministrationService();
+		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+		for (File file : complexObsDir.listFiles()) {
+			file.delete();
+		}
+		
+		obsService.purgeObs(complexObs);
+		
+		assertNull(obsService.getObs(complexObs.getObsId()));
 	}
 	
 	/**
