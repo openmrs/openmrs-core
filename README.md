@@ -10,17 +10,18 @@ The mission of OpenMRS is to improve health care delivery in resource-constraine
 
 1. [Build](#build)
 2. [Navigating the repository](#navigating-the-repository)
-3. [Documentation](#documentation)
+3. [Software Development Kit](#software-development-kit)
+4. [Documentation](#documentation)
   * [Developer guides](#developer-guides)
   * [Wiki](#wiki)
   * [Website](#website)
-4. [Contributing](#contributing)
+5. [Contributing](#contributing)
   * [Code](#code)
   * [Translation](#translation)
-5. [Issues](#issues)
-6. [Community](#community)
-7. [Support](#support)
-8. [License](#license)
+6. [Issues](#issues)
+7. [Community](#community)
+8. [Support](#support)
+9. [License](#license)
 
 ## Build
 
@@ -105,6 +106,13 @@ The project tree is set up as follows:
   <td>The main maven file used to build and package OpenMRS.</td>
  </tr>  
 </table>
+
+## Software Development Kit
+
+For rapid development of modules and the OpenMRS Platform code check out the
+awesome SDK at
+
+https://wiki.openmrs.org/display/docs/OpenMRS+SDK
 
 ## Documentation
 
