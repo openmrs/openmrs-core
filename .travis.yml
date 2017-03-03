@@ -6,7 +6,7 @@ matrix:
     - jdk: oraclejdk8
 branches:
   only:
-    - master
+    - 2.1.x
 after_success:
   - mvn jacoco:report coveralls:report
 notifications:
