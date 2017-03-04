@@ -10,10 +10,15 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.Objects;
 
+import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @since 2.1.0
+ */
 public class CohortMembership extends BaseOpenmrsData implements Comparable<CohortMembership> {
 	
 	public static final long serialVersionUID = 0L;
@@ -24,7 +29,7 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 	
 	private Cohort cohort;
 	
-	private Patient patient;
+	private Integer patientId;
 	
 	private Date startDate;
 	
@@ -34,17 +39,33 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 	public CohortMembership() {
 	}
 
-	public CohortMembership(Patient patient, Date startDate) {
-		this.patient = patient;
+	public CohortMembership(Integer patientId, Date startDate) {
+		this.patientId = patientId;
 		this.startDate = startDate;
 	}
 
-	public CohortMembership(Patient patient) {
-		this(patient, new Date());
+	public CohortMembership(Integer patientId) {
+		this(patientId, new Date());
 	}
 	
-	public boolean isMemberActive() {
-		return this.getStartDate() != null && !getStartDate().after(new Date()) && this.getEndDate() == null;
+	/**
+	 * @param asOfDate date to compare if membership is active or inactive
+	 * @return boolean true/false if membership is active/inactive
+	 */
+	public boolean isActive(Date asOfDate) {
+		Date date;
+		if (asOfDate == null) {
+			date = new Date();
+		} else {
+			date = asOfDate;
+		}
+		return !this.getVoided()
+				&& (date.equals(this.getStartDate()) || date.after(this.getStartDate()))
+				&& (this.getEndDate() == null || date.before(this.getEndDate()));
+	}
+
+	public boolean isActive() {
+		return isActive(null);
 	}
 
 	@Override
@@ -73,12 +94,12 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 		this.cohort = cohort;
 	}
 	
-	public Patient getPatient() {
-		return patient;
+	public Integer getPatientId() {
+		return patientId;
 	}
 	
-	public void setPatient(Patient patient) {
-		this.patient = patient;
+	public void setPatientId(Integer patientId) {
+		this.patientId = patientId;
 	}
 	
 	public Date getStartDate() {
@@ -99,6 +120,20 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 
 	@Override
 	public int compareTo(CohortMembership o) {
-		return this.getPatient().getPatientId() - o.getPatient().getPatientId();
+		int ret = -1;
+		if (Objects.equals(this.getPatientId(), o.getPatientId())
+				&& Objects.equals(this.getCohort().getCohortId(), o.getCohort().getCohortId())
+				&& this.getStartDate().equals(o.getStartDate())
+				&& OpenmrsUtil.compare(this.getStartDate(), o.getStartDate()) == 0
+				&& ((this.getEndDate() != null && o.getEndDate() != null
+				&& OpenmrsUtil.compare(this.getEndDate(), o.getEndDate()) == 0)
+				|| (this.getEndDate() == null && o.getEndDate() == null))) {
+			ret = 0;
+		} else if (this.isActive() && !o.isActive()) {
+			ret = -1;
+		} else if (!this.isActive() && o.isActive()) {
+			ret = 1;
+		}
+		return ret;
 	}
 }

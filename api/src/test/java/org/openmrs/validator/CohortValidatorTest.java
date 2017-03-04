@@ -9,6 +9,9 @@
  */
 package org.openmrs.validator;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,6 +20,7 @@ import org.junit.rules.ExpectedException;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Patient;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -39,16 +43,19 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 	private Patient patient;
 	
 	private CohortMembership cohortMembership;
-	
+
+	protected static final String COHORT_XML = "org/openmrs/api/include/CohortServiceTest-cohort.xml";
+
 	private Errors errors;
 	
 	@Before
 	public void setUp() {
 		validator = new CohortValidator();
-		
-		cohort = new Cohort(2);
-		patient = new Patient(7);
-		cohortMembership = new CohortMembership(patient);
+
+		executeDataSet(COHORT_XML);
+		cohort = Context.getCohortService().getCohort(2);
+		patient = Context.getPatientService().getPatient(7);
+		cohortMembership = new CohortMembership(patient.getPatientId());
 		cohort.addMembership(cohortMembership);
 		
 		errors = new BindException(cohort, "cohort");
@@ -77,12 +84,12 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailIfPatientIsVoided() {
 		
 		patient.setVoided(true);
-		
+
 		validator.validate(cohort, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("members"));
+		Assert.assertTrue(errors.hasFieldErrors("memberships"));
 		String eMessage = "Patient " + patient.getPatientId() + " is voided, cannot add voided members to a cohort";
-		Assert.assertTrue(errors.getFieldErrors().stream().anyMatch(e -> e.getDefaultMessage().equals(eMessage)));
+		Assert.assertEquals(errors.getFieldError("memberships").getDefaultMessage(), eMessage);
 	}
 
 	@Test
@@ -91,18 +98,18 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(cohort, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
-		Assert.assertFalse(errors.hasFieldErrors("members"));
+		Assert.assertFalse(errors.hasFieldErrors("memberships"));
 	}
 
 	@Test
 	public void validate_shouldPassIfMembershipisVoided() {
 		
 		cohortMembership.setVoided(true);
-		
+
 		validator.validate(cohort, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
-		Assert.assertFalse(errors.hasFieldErrors("members"));
+		Assert.assertFalse(errors.hasFieldErrors("memberships"));
 	}
 
 	@Test
@@ -110,10 +117,24 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 		
 		patient.setVoided(true);
 		cohortMembership.setVoided(true);
-		
+
 		validator.validate(cohort, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
-		Assert.assertFalse(errors.hasFieldErrors("members"));
+		Assert.assertFalse(errors.hasFieldErrors("memberships"));
+	}
+
+	@Test
+	public void validate_shouldPassIfMembershipStartDateIsAfterEndDate() throws Exception {
+		Cohort cohort = new Cohort(2);
+		CohortMembership membership = new CohortMembership(patient.getPatientId());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = dateFormat.parse("2016-11-01 00:00:00");
+		Date endDate = dateFormat.parse("2015-01-01 00:00:00");
+		membership.setStartDate(startDate);
+		membership.setEndDate(endDate);
+		Errors errors = new BindException(cohort, "cohort");
+		new CohortValidator().validate(cohort, errors);
+		Assert.assertFalse(errors.hasFieldErrors("memberships"));
 	}
 }
