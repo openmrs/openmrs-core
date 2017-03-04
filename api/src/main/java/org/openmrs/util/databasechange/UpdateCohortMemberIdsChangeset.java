@@ -29,10 +29,10 @@ import liquibase.resource.ResourceAccessor;
 /**
  * This change set is run to update cohort member ids
  */
-public class UpdateCohortMemberIds implements CustomTaskChange {
+public class UpdateCohortMemberIdsChangeset implements CustomTaskChange {
 	
-	private final static Logger log = LoggerFactory.getLogger(UpdateCohortMemberIds.class);
-	
+	private static final Logger log = LoggerFactory.getLogger(UpdateCohortMemberIdsChangeset.class);
+
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */

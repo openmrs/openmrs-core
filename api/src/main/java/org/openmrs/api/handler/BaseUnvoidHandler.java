@@ -31,7 +31,7 @@ import org.openmrs.aop.RequiredDataAdvice;
  * @see VoidHandler
  * @since 1.5
  */
-@Handler(supports = Voidable.class)
+@Handler(supports = {Voidable.class}, order = 10)
 public class BaseUnvoidHandler implements UnvoidHandler<Voidable> {
 	
 	/**

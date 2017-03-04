@@ -421,10 +421,10 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(COHORT_XML);
 		
 		// make a patient, add it using the method
-		Patient patientToAdd = new Patient(4);
+		Patient patientToAdd = Context.getPatientService().getPatient(3);
 		service.addPatientToCohort(service.getCohort(2), patientToAdd);
 		// proof of "save the cohort": see if the patient is in the cohort
-		assertTrue(service.getCohort(2).contains(4));
+		assertTrue(service.getCohort(2).contains(3));
 	}
 	
 	/**
@@ -435,9 +435,9 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(COHORT_XML);
 		
 		// make a patient, add it using the method
-		Patient patientToAdd = new Patient(4);
+		Patient patientToAdd = Context.getPatientService().getPatient(3);
 		service.addPatientToCohort(service.getCohort(2), patientToAdd);
-		assertTrue(service.getCohort(2).contains(4));
+		assertTrue(service.getCohort(2).contains(3));
 		
 		// do it again to see if it fails
 		try {
@@ -470,13 +470,13 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(COHORT_XML);
 		
 		// make a patient, add it using the method
-		Patient patientToAddThenRemove = new Patient(4);
+		Patient patientToAddThenRemove = Context.getPatientService().getPatient(3);
 		service.addPatientToCohort(service.getCohort(2), patientToAddThenRemove);
 		assertTrue(service.getCohort(2).contains(patientToAddThenRemove.getPatientId()));
 		service.removePatientFromCohort(service.getCohort(2), patientToAddThenRemove);
 		List<CohortMembership> memberList = service.getCohort(2)
-				.getMembers().stream()
-				.filter(m -> m.getPatient().getPatientId().equals(patientToAddThenRemove.getPatientId()))
+				.getMemberships().stream()
+				.filter(m -> m.getPatientId().equals(patientToAddThenRemove.getPatientId()))
 				.collect(Collectors.toList());
 		CohortMembership memberWithPatientToRemove = memberList.get(0);
 		assertNotNull(memberWithPatientToRemove.getEndDate());
@@ -487,22 +487,26 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(COHORT_XML);
 		
 		Patient p = new Patient(4);
-		CohortMembership memberToAdd = new CohortMembership(p);
-		service.addMembershipToCohort(service.getCohort(1), memberToAdd);
-		assertTrue(service.getCohort(1).contains(p));
+		CohortMembership memberToAdd = new CohortMembership(p.getPatientId());
+		Cohort cohort = service.getCohort(1);
+		if (!cohort.contains(p)) {
+			service.addMembershipToCohort(cohort, memberToAdd);
+		}
+		assertTrue(cohort.contains(p));
 	}
 
 	@Test
 	public void removeMembershipFromCohort_shouldRemoveMembershipFromCohort() {
 		executeDataSet(COHORT_XML);
 
-		CohortMembership memberToAddThenRemove = new CohortMembership(new Patient(4));
+		CohortMembership memberToAddThenRemove = new CohortMembership(4);
 		service.addMembershipToCohort(service.getCohort(1), memberToAddThenRemove);
-		assertTrue(service.getCohort(1).contains(memberToAddThenRemove.getPatient()));
+		assertTrue(service.getCohort(1).contains(memberToAddThenRemove.getPatientId()));
 		assertNull(memberToAddThenRemove.getEndDate());
 
-		service.removeMemberShipFromCohort(service.getCohort(1), memberToAddThenRemove);
+		service.removeMembershipFromCohort(service.getCohort(1), memberToAddThenRemove);
 		assertNotNull(memberToAddThenRemove.getEndDate());
+		assertFalse(service.getCohort(1).contains(memberToAddThenRemove.getPatientId()));
 	}
 
 	@Test
@@ -516,9 +520,11 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		voidedPatient.setVoidedBy(Context.getAuthenticatedUser());
 		voidedPatient.setVoidReason("Voided as a result of the associated patient getting voided");
 
-		CohortMembership newMemberContainingVoidedPatient = new CohortMembership(voidedPatient);
+		CohortMembership newMemberContainingVoidedPatient = new CohortMembership(voidedPatient.getPatientId());
 		cohort.addMembership(newMemberContainingVoidedPatient);
 		assertTrue(cohort.contains(voidedPatient));
+		
+		assertEquals(service.getCohortsContainingPatient(voidedPatient).size(), 1);
 
 		service.patientVoided(voidedPatient);
 		assertTrue(newMemberContainingVoidedPatient.getVoided());
@@ -537,35 +543,177 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		Date dateVoided = new Date();
 		String voidReason = "Associated patient is voided";
 		
-		CohortMembership voidedMembership = new CohortMembership(unvoidedPatient);
+		CohortMembership voidedMembership = new CohortMembership(unvoidedPatient.getPatientId());
+		cohort.addMembership(voidedMembership);
 		voidedMembership.setVoided(true);
 		voidedMembership.setVoidedBy(voidedBy);
 		voidedMembership.setDateVoided(dateVoided);
 		voidedMembership.setVoidReason(voidReason);
 		
-		cohort.addMembership(voidedMembership);
-		service.patientUnvoided(unvoidedPatient, voidedBy, dateVoided, voidReason);
+		service.patientUnvoided(unvoidedPatient, voidedBy, dateVoided);
 		
 		assertFalse(voidedMembership.getVoided());
 		assertNull(voidedMembership.getVoidedBy());
 		assertNull(voidedMembership.getDateVoided());
 		assertNull(voidedMembership.getVoidReason());
 	}
-	
+
+	/**
+	 * @verifies {@link Cohort#getActiveMemberships(Date)}
+	 */
 	@Test
 	public void getMemberships_shouldGetMembershipsAsOfADate() throws ParseException {
 		executeDataSet(COHORT_XML);
 
 		Cohort cohort = Context.getCohortService().getCohort(1);
 
-		CohortMembership newMember = new CohortMembership((new Patient(4)));
+		CohortMembership newMember = new CohortMembership(4);
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date dateToTest = dateFormat.parse("2016-11-01 00:00:00");
 		newMember.setStartDate(dateToTest);
 		service.addMembershipToCohort(cohort, newMember);
 
-		List<CohortMembership> membersAsOfDate = cohort.getMemberships(dateToTest);
+		List<CohortMembership> membersAsOfDate = cohort.getActiveMemberships(dateToTest);
 		assertFalse(membersAsOfDate.isEmpty());
 		assertTrue(membersAsOfDate.stream().anyMatch(m -> m.getStartDate().equals(dateToTest)));
+	}
+
+	/**
+	 * @verifies not get matching memberships of a cohort as of a date
+	 * @see Cohort#getActiveMemberships(Date)
+	 */
+	@Test
+	public void getMemberships_shouldNotGetMatchingMembershipsAsOfADate() throws Exception {
+		executeDataSet(COHORT_XML);
+		
+		Cohort cohort = Context.getCohortService().getCohort(1);
+		
+		CohortMembership newMember = new CohortMembership(4);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = dateFormat.parse("2017-11-01 00:00:00");
+		newMember.setStartDate(startDate);
+		service.addMembershipToCohort(cohort, newMember);
+
+		Date dateToTest = dateFormat.parse("2016-11-01 00:00:00");
+		List<CohortMembership> membersAsOfDate = cohort.getActiveMemberships(dateToTest);
+		assertFalse(membersAsOfDate.stream().anyMatch(m -> m.getStartDate().equals(dateToTest)));
+	}
+
+	/**
+	 * @verifies return voided memberships
+	 * @see Cohort#getMemberships(boolean)
+	 */
+	@Test
+	public void getMemberships_shouldReturnVoidedMemberships() throws Exception {
+		executeDataSet(COHORT_XML);
+
+		CohortMembership voidedMembership = new CohortMembership(7);
+		voidedMembership.setVoided(true);
+		voidedMembership.setVoidedBy(Context.getAuthenticatedUser());
+		voidedMembership.setDateVoided(new Date());
+		voidedMembership.setVoidReason("Void reason");
+		CohortMembership nonVoidedMembership = new CohortMembership(4);
+
+		Cohort cohort = Context.getCohortService().getCohort(1);
+		cohort.addMembership(nonVoidedMembership);
+		cohort.addMembership(voidedMembership);
+
+		Context.getCohortService().saveCohort(cohort);
+		List<CohortMembership> voidedMemberships = cohort.getMemberships(true);
+		assertEquals(voidedMemberships.size(), 1);
+	}
+	
+	/**
+	 * @verifies return unvoided memberships
+	 * @see Cohort#getMemberships(boolean)
+	 */
+	@Test
+	public void getMemberships_shouldReturnUnvoidedMemberships() throws Exception {
+		executeDataSet(COHORT_XML);
+
+		Cohort cohort = Context.getCohortService().getCohort(1);
+
+		CohortMembership nonVoidedMembership = new CohortMembership(4);
+		CohortMembership voidedMembership = new CohortMembership(7);
+		voidedMembership.setVoided(true);
+		voidedMembership.setVoidedBy(Context.getAuthenticatedUser());
+		voidedMembership.setDateVoided(new Date());
+		voidedMembership.setVoidReason("Void reason");
+
+		cohort.addMembership(nonVoidedMembership);
+		cohort.addMembership(voidedMembership);
+
+		Context.getCohortService().saveCohort(cohort);
+		List<CohortMembership> unvoidedMemberships = cohort.getMemberships(false);
+		assertEquals(unvoidedMemberships.size(), 2);
+	}
+
+	/**
+	 * @verifies not return ended memberships
+	 * @see CohortService#getCohortsContainingPatient(org.openmrs.Patient)
+	 */
+	@Test
+	public void getCohortsContainingPatient_shouldNotReturnEndedMemberships() throws Exception {
+		executeDataSet(COHORT_XML);
+		
+		Cohort cohort = service.getCohort(2);
+		
+		Patient patient = new Patient(7);
+		CohortMembership membership = new CohortMembership(patient.getPatientId());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = dateFormat.parse("2017-01-01 00:00:00");
+		membership.setStartDate(startDate);
+		cohort.addMembership(membership);
+		assertTrue(cohort.contains(patient.getPatientId()));
+		
+		Date endDate = dateFormat.parse("2017-01-31 00:00:00");
+		membership.setEndDate(endDate);
+		
+		List<Cohort> cohortsWithPatientAdded = service.getCohortsContainingPatient(patient);
+		assertEquals(cohortsWithPatientAdded.size(), 0);
+	}
+	
+	/**
+	 * @verifies not return memberships outside a specified date
+	 * @see CohortService#getCohortsContainingPatient(org.openmrs.Patient)
+	 */
+	@Test
+	public void getCohortsContainingPatient_shouldNotReturnMembershipsOutsideSpecifiedDate() throws Exception {
+		executeDataSet(COHORT_XML);
+		
+		Cohort cohort = service.getCohort(2);
+		
+		Patient patient = new Patient(7);
+		CohortMembership membership = new CohortMembership(patient.getPatientId());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = dateFormat.parse("2017-01-01 00:00:00");
+		membership.setStartDate(startDate);
+		cohort.addMembership(membership);
+		assertTrue(cohort.contains(patient.getPatientId()));
+		
+		Date date = dateFormat.parse("2016-01-01 00:00:00");
+		assertEquals(service.getCohortsContainingPatient(patient, false, date).size(), 0);
+	}
+	
+	/**
+	 * @verifies return memberships on specified date
+	 * @see CohortService#getCohortsContainingPatient(org.openmrs.Patient)
+	 */
+	@Test
+	public void getCohortsContainingPatient_shouldReturnMembershipsOnSpecifiedDate() throws Exception {
+		executeDataSet(COHORT_XML);
+		
+		Cohort cohort = service.getCohort(2);
+		
+		Patient patient = new Patient(7);
+		CohortMembership membership = new CohortMembership(patient.getPatientId());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = dateFormat.parse("2017-01-01 00:00:00");
+		membership.setStartDate(startDate);
+		cohort.addMembership(membership);
+		assertTrue(cohort.contains(patient.getPatientId()));
+		
+		Date date = dateFormat.parse("2017-01-01 00:00:00");
+		assertEquals(service.getCohortsContainingPatient(patient, false, date).size(), 1);
 	}
 }

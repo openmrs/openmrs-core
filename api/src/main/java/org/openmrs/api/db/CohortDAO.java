@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Cohort;
@@ -52,12 +53,12 @@ public interface CohortDAO {
 	 * Finds all cohorts that contain the given patientId
 	 *
 	 * @param patientId patient id to get the cohorts containing the patient
-	 * @param voided voided true/false whether or not to include voided patients
-	 * @return List&lt;Cohort&gt; object of matching Cohorts
+	 * @param includeVoided voided true/false whether or not to include voided cohorts
+	 * @param asOfDate  @return List&lt;Cohort&gt; object of matching Cohorts
 	 * @throws DAOException
 	 */
-	public List<Cohort> getCohortsContainingPatientId(Integer patientId, Boolean voided) throws DAOException;
-
+	public List<Cohort> getCohortsContainingPatientId(Integer patientId, boolean includeVoided, Date asOfDate);
+	
 	/**
 	 * Finds all cohorts that contain the given patientId
 	 *
