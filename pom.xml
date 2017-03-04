@@ -14,7 +14,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs</artifactId>
-	<version>2.1.0-SNAPSHOT</version>
+	<version>2.1.0-alpha</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>
 	<description>Master project for the modules of OpenMRS</description>
@@ -41,7 +41,8 @@
 		<connection>scm:git:git@github.com:openmrs/openmrs-core</connection>
 		<developerConnection>scm:git:git@github.com:openmrs/openmrs-core</developerConnection>
 		<url>https://github.com/openmrs/openmrs-core</url>
-	</scm>
+	  <tag>2.1.0-alpha</tag>
+  </scm>
 
 	<ciManagement>
 		<system>Bamboo</system>
@@ -721,7 +722,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -740,7 +741,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -761,7 +762,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -1090,7 +1091,7 @@
 
 		<springVersion>4.1.4.RELEASE</springVersion>
 		<hibernateVersion>4.3.9.Final</hibernateVersion>
-		<customArgLineForTesting/>
+		<customArgLineForTesting />
 
 		<sonar.host.url>https://ci.openmrs.org/sonar</sonar.host.url>
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
