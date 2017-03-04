@@ -23,7 +23,7 @@
 
 		<many-to-one name="cohort" column="cohort_id" class="Cohort" not-null="true" access="field"/>
 
-		<many-to-one name="patient" column="patient_id" class="Patient" not-null="true"/>
+		<property name="patientId" type="int" column="patient_id" not-null="true"/>
 
 		<property name="startDate" column="start_date"
 				  not-null="true" length="19" type="java.util.Date" />

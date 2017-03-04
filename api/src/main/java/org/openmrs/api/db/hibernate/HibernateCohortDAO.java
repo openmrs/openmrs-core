@@ -22,7 +22,6 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Cohort;
-import org.openmrs.Patient;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.api.db.DAOException;
 
@@ -59,19 +58,23 @@ public class HibernateCohortDAO implements CohortDAO {
 	 * @see org.openmrs.api.db.CohortDAO#getCohortsContainingPatientId(java.lang.Integer)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Cohort> getCohortsContainingPatientId(Integer patientId, Boolean voided) throws DAOException {
-		Disjunction orDisjunction = Restrictions.disjunction();
-		orDisjunction.add(Restrictions.isNull("m.endDate"));
-		orDisjunction.add(Restrictions.gt("m.endDate", new Date()));
-		Patient p = new Patient(patientId);
-		return (List<Cohort>) sessionFactory.getCurrentSession().createCriteria(Cohort.class)
-				.add(Restrictions.eq("voided", voided))
-				.createAlias("members", "m")
-				.add(Restrictions.le("m.startDate", new Date()))
-				.add(orDisjunction)
-				.add(Restrictions.eq("m.patient", p))
-				.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
-				.list();
+	public List<Cohort> getCohortsContainingPatientId(Integer patientId, boolean includeVoided,
+	                                                  Date asOfDate) throws DAOException {
+		Disjunction orEndDate = Restrictions.disjunction();
+		orEndDate.add(Restrictions.isNull("m.endDate"));
+		orEndDate.add(Restrictions.gt("m.endDate", asOfDate));
+
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
+		criteria.createAlias("memberships", "m");
+		criteria.add(Restrictions.le("m.startDate", asOfDate));
+		criteria.add(orEndDate);
+		criteria.add(Restrictions.eq("m.patientId", patientId));
+		criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+		
+		if (!includeVoided) {
+			criteria.add(Restrictions.eq("voided", includeVoided));
+		}
+		return criteria.list();
 	}
 
 	/**
@@ -79,7 +82,7 @@ public class HibernateCohortDAO implements CohortDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException {
-		return getCohortsContainingPatientId(patientId, false);
+		return getCohortsContainingPatientId(patientId, false, new Date());
 	}
 
 	/**
@@ -87,7 +90,7 @@ public class HibernateCohortDAO implements CohortDAO {
 	 */
 	public Cohort getCohortByUuid(String uuid) {
 		return (Cohort) sessionFactory.getCurrentSession().createQuery("from Cohort c where c.uuid = :uuid").setString(
-		    "uuid", uuid).uniqueResult();
+			"uuid", uuid).uniqueResult();
 	}
 
 	/**

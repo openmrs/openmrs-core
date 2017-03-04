@@ -30,7 +30,7 @@
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
 
-		<set name="members" cascade="all-delete-orphan,evict" lazy="true" inverse="true">
+		<set name="memberships" cascade="all-delete-orphan,evict" lazy="true" inverse="true">
 			<key column="cohort_id" not-null="true"/>
 			<one-to-many class="org.openmrs.CohortMembership"/>
 		</set>

@@ -14,8 +14,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -29,10 +29,10 @@ import liquibase.resource.ResourceAccessor;
 /**
  * This change set is run to update cohort member ids
  */
-public class UpdateCohortMemberIds implements CustomTaskChange {
+public class UpdateCohortMemberIdsChangeset implements CustomTaskChange {
 	
-	private final static Log log = LogFactory.getLog(UpdateCohortMemberIds.class);
-	
+	private static final Logger log = LoggerFactory.getLogger(UpdateCohortMemberIdsChangeset.class);
+
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */

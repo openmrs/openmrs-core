@@ -16,10 +16,13 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.Cohort;
+import org.openmrs.CohortMembership;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.api.CohortService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
@@ -33,6 +36,8 @@ import org.openmrs.test.Verifies;
  * Contains the tests for the {@link PatientDataUnvoidHandler}
  */
 public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
+	
+	private static final String COHORT_XML = "org/openmrs/api/include/CohortServiceTest-cohort.xml";
 	
 	/**
 	 * @see PatientDataUnvoidHandler#handle(Patient,User,Date,String)
@@ -143,5 +148,35 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(testOrder.getVoidedBy());
 		Assert.assertNotNull(testOrder.getVoidReason());
 		
+	}
+	
+	/**
+	 * @verifies unvoid the members associated with the patient
+	 * @see PatientDataUnvoidHandler#handle(Patient,User,Date,String)
+	 */
+	@Test
+	public void handle_shouldUnvoidMembersAssociatedWithThePatient() throws Exception {
+		executeDataSet(COHORT_XML);
+		CohortService cs = Context.getCohortService();
+		Cohort cohort = cs.getCohort(2);
+		Patient patient = Context.getPatientService().getPatient(7);
+		CohortMembership membership = new CohortMembership(patient.getPatientId());
+		cs.addMembershipToCohort(cohort, membership);
+		Assert.assertTrue(cohort.contains(patient));
+		
+		patient = Context.getPatientService().voidPatient(patient, "Void Reason");
+		Assert.assertTrue(patient.getVoided());
+		
+		Assert.assertTrue(membership.getVoided());
+		Assert.assertNotNull(membership.getDateVoided());
+		Assert.assertNotNull(membership.getVoidedBy());
+		Assert.assertNotNull(membership.getVoidReason());
+
+		Context.getPatientService().unvoidPatient(patient);
+
+		Assert.assertFalse(membership.getVoided());
+		Assert.assertNull(membership.getDateVoided());
+		Assert.assertNull(membership.getVoidedBy());
+		Assert.assertNull(membership.getVoidReason());
 	}
 }

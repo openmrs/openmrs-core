@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -29,7 +30,6 @@ import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests methods in the CohortService class TODO add all the rest of the tests
@@ -49,7 +49,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeAllTests() throws Exception {
+	public void runBeforeAllTests() {
 		service = Context.getCohortService();
 	}
 	
@@ -57,7 +57,6 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getCohort(String)
 	 */
 	@Test
-	@Verifies(value = "should only get non voided cohorts by name", method = "getCohort(String)")
 	public void getCohort_shouldOnlyGetNonVoidedCohortsByName() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -65,22 +64,20 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		List<Cohort> allCohorts = service.getAllCohorts(true);
 		assertNotNull(allCohorts);
 		assertEquals(2, allCohorts.size());
-		assertTrue(allCohorts.get(0).isVoided());
-		assertFalse(allCohorts.get(1).isVoided());
+		assertTrue(allCohorts.get(0).getVoided());
+		assertFalse(allCohorts.get(1).getVoided());
 		
 		// now do the actual test: getCohort by name and expect a non voided cohort
 		Cohort exampleCohort = service.getCohort("Example Cohort");
 		assertNotNull(exampleCohort);
 		assertEquals(1, exampleCohort.size());
-		assertFalse(exampleCohort.isVoided());
+		assertFalse(exampleCohort.getVoided());
 	}
 	
 	/**
 	 * @see CohortService#getCohortByUuid(String)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getCohortByUuid(String)")
 	public void getCohortByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		executeDataSet(COHORT_XML);
 		String uuid = "h9a9m0i6-15e6-467c-9d4b-mbi7teu9lf0f";
@@ -90,11 +87,9 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CohortService#getCohortByUuid(String)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getCohortByUuid(String)")
-	public void getCohortByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getCohortByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		assertNull(Context.getCohortService().getCohortByUuid("some invalid uuid"));
 	}
 	
@@ -102,7 +97,6 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#purgeCohort(Cohort)
 	 */
 	@Test
-	@Verifies(value = "should delete cohort from database", method = "purgeCohort(Cohort)")
 	public void purgeCohort_shouldDeleteCohortFromDatabase() throws Exception {
 		executeDataSet(COHORT_XML);
 		List<Cohort> allCohorts = service.getAllCohorts(true);
@@ -116,7 +110,6 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getCohorts(String)
 	 */
 	@Test
-	@Verifies(value = "should match cohorts by partial name", method = "getCohorts(String)")
 	public void getCohorts_shouldMatchCohortsByPartialName() throws Exception {
 		executeDataSet(COHORT_XML);
 		List<Cohort> matchedCohorts = service.getCohorts("Example");
@@ -131,10 +124,8 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CohortService#saveCohort(Cohort)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should create new cohorts", method = "saveCohort(Cohort)")
 	public void saveCohort_shouldCreateNewCohorts() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -156,10 +147,8 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CohortService#saveCohort(Cohort)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should update an existing cohort", method = "saveCohort(Cohort)")
 	public void saveCohort_shouldUpdateAnExistingCohort() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -175,22 +164,20 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CohortService#voidCohort(Cohort,String)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should fail if reason is empty", method = "voidCohort(Cohort,String)")
 	public void voidCohort_shouldFailIfReasonIsEmpty() throws Exception {
 		executeDataSet(COHORT_XML);
 		
 		// Get a non-voided, valid Cohort and try to void it with a null reason
 		Cohort exampleCohort = service.getCohort("Example Cohort");
 		assertNotNull(exampleCohort);
-		assertFalse(exampleCohort.isVoided());
+		assertFalse(exampleCohort.getVoided());
 		
 		// Now get the Cohort and try to void it with an empty reason
 		exampleCohort = service.getCohort("Example Cohort");
 		assertNotNull(exampleCohort);
-		assertFalse(exampleCohort.isVoided());
+		assertFalse(exampleCohort.getVoided());
 		
 		try {
 			service.voidCohort(exampleCohort, "");
@@ -201,17 +188,15 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CohortService#voidCohort(Cohort,String)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should fail if reason is null", method = "voidCohort(Cohort,String)")
 	public void voidCohort_shouldFailIfReasonIsNull() throws Exception {
 		executeDataSet(COHORT_XML);
 		
 		// Get a non-voided, valid Cohort and try to void it with a null reason
 		Cohort exampleCohort = service.getCohort("Example Cohort");
 		assertNotNull(exampleCohort);
-		assertFalse(exampleCohort.isVoided());
+		assertFalse(exampleCohort.getVoided());
 		
 		try {
 			service.voidCohort(exampleCohort, null);
@@ -222,7 +207,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		// Now get the Cohort and try to void it with an empty reason
 		exampleCohort = service.getCohort("Example Cohort");
 		assertNotNull(exampleCohort);
-		assertFalse(exampleCohort.isVoided());
+		assertFalse(exampleCohort.getVoided());
 		
 		try {
 			service.voidCohort(exampleCohort, "");
@@ -233,10 +218,8 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CohortService#voidCohort(Cohort,String)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should not change an already voided cohort", method = "voidCohort(Cohort,String)")
 	public void voidCohort_shouldNotChangeAnAlreadyVoidedCohort() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -244,7 +227,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		List<Cohort> allCohorts = service.getAllCohorts(true);
 		assertNotNull(allCohorts);
 		assertEquals(2, allCohorts.size());
-		assertTrue(allCohorts.get(0).isVoided());
+		assertTrue(allCohorts.get(0).getVoided());
 		
 		// Make sure the void reason is different from the reason to be given in the test
 		assertNotNull(allCohorts.get(0).getVoidReason());
@@ -261,10 +244,8 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CohortService#voidCohort(Cohort,String)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should void cohort", method = "voidCohort(Cohort,String)")
 	public void voidCohort_shouldVoidCohort() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -272,19 +253,16 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		List<Cohort> allCohorts = service.getAllCohorts(true);
 		assertNotNull(allCohorts);
 		assertEquals(2, allCohorts.size());
-		assertFalse(allCohorts.get(1).isVoided());
+		assertFalse(allCohorts.get(1).getVoided());
 		
-		// now void the cohort and see if it's voided
-		Cohort voidedCohort = service.voidCohort(allCohorts.get(1), "voided for Test");
-		assertTrue(allCohorts.get(1).isVoided());
+		service.voidCohort(allCohorts.get(1), "voided for Test");
+		assertTrue(allCohorts.get(1).getVoided());
 	}
 	
 	/**
 	 * @see CohortService#getCohort(Integer)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should get cohort by id", method = "getCohort(Integer)")
 	public void getCohort_shouldGetCohortById() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -295,10 +273,8 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CohortService#getCohort(String)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should get cohort given a name", method = "getCohort(String)")
 	public void getCohort_shouldGetCohortGivenAName() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -308,10 +284,8 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CohortService#getCohort(String)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should get the nonvoided cohort if two exist with same name", method = "getCohort(String)")
 	public void getCohort_shouldGetTheNonvoidedCohortIfTwoExistWithSameName() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -319,8 +293,8 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		List<Cohort> allCohorts = service.getAllCohorts(true);
 		assertNotNull(allCohorts);
 		assertEquals(allCohorts.get(0).getName(), allCohorts.get(1).getName());
-		assertTrue(allCohorts.get(0).isVoided());
-		assertFalse(allCohorts.get(1).isVoided());
+		assertTrue(allCohorts.get(0).getVoided());
+		assertFalse(allCohorts.get(1).getVoided());
 		// the non-voided cohort should have an id of 2
 		assertTrue(allCohorts.get(1).getCohortId() == 2);
 		
@@ -330,12 +304,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertTrue(cohortToGet.getCohortId() == 2);
 	}
 	
-	/**
-	 * @verifies {@link CohortService#getAllCohorts()}
-	 * test = should get all nonvoided cohorts in database
-	 */
 	@Test
-	@Verifies(value = "should get all nonvoided cohorts in database", method = "getAllCohorts()")
 	public void getAllCohorts_shouldGetAllNonvoidedCohortsInDatabase() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -344,15 +313,13 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(allCohorts);
 		// there is only one non-voided cohort in the data set
 		assertEquals(1, allCohorts.size());
-		assertFalse(allCohorts.get(0).isVoided());
+		assertFalse(allCohorts.get(0).getVoided());
 	}
 	
 	/**
 	 * @see CohortService#getAllCohorts()
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should not return any voided cohorts", method = "getAllCohorts()")
 	public void getAllCohorts_shouldNotReturnAnyVoidedCohorts() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -360,23 +327,21 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		List<Cohort> allCohorts = service.getAllCohorts(true);
 		assertNotNull(allCohorts);
 		assertEquals(2, allCohorts.size());
-		assertTrue(allCohorts.get(0).isVoided());
-		assertFalse(allCohorts.get(1).isVoided());
+		assertTrue(allCohorts.get(0).getVoided());
+		assertFalse(allCohorts.get(1).getVoided());
 		
 		// now call the target method and see if the voided cohort shows up
 		allCohorts = service.getAllCohorts();
 		assertNotNull(allCohorts);
 		// only the non-voided cohort should be returned
 		assertEquals(1, allCohorts.size());
-		assertFalse(allCohorts.get(0).isVoided());
+		assertFalse(allCohorts.get(0).getVoided());
 	}
 	
 	/**
 	 * @see CohortService#getAllCohorts(null)
-	 *
 	 */
 	@Test
-	@Verifies(value = "should return all cohorts and voided", method = "getAllCohorts(null)")
 	public void getAllCohorts_shouldReturnAllCohortsAndVoided() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -384,23 +349,21 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		List<Cohort> allCohorts = service.getAllCohorts(true);
 		assertNotNull(allCohorts);
 		assertEquals(2, allCohorts.size());
-		assertTrue(allCohorts.get(0).isVoided());
-		assertFalse(allCohorts.get(1).isVoided());
+		assertTrue(allCohorts.get(0).getVoided());
+		assertFalse(allCohorts.get(1).getVoided());
 		
 		// if called with false parameter, should not return the voided one
 		allCohorts = service.getAllCohorts(false);
 		assertNotNull(allCohorts);
 		// only the non-voided cohort should be returned
 		assertEquals(1, allCohorts.size());
-		assertFalse(allCohorts.get(0).isVoided());
+		assertFalse(allCohorts.get(0).getVoided());
 	}
 	
 	/**
 	 * @see CohortService#getCohorts(String)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should never return null", method = "getCohorts(String)")
 	public void getCohorts_shouldNeverReturnNull() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -412,16 +375,14 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CohortService#getCohortsContainingPatient(Patient)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should not return voided cohorts", method = "getCohortsContainingPatient(Patient)")
 	public void getCohortsContainingPatient_shouldNotReturnVoidedCohorts() throws Exception {
 		executeDataSet(COHORT_XML);
 		
 		// make sure we have two cohorts, the first of which is voided
-		assertTrue(service.getCohort(1).isVoided());
-		assertFalse(service.getCohort(2).isVoided());
+		assertTrue(service.getCohort(1).getVoided());
+		assertFalse(service.getCohort(2).getVoided());
 		
 		// add a patient to both cohorts
 		Patient patientToAdd = new Patient(7);
@@ -439,10 +400,8 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CohortService#getCohortsContainingPatient(Patient)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should return cohorts that have given patient", method = "getCohortsContainingPatient(Patient)")
 	public void getCohortsContainingPatient_shouldReturnCohortsThatHaveGivenPatient() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -456,33 +415,29 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CohortService#addPatientToCohort(Cohort,Patient)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should add a patient and save the cohort", method = "addPatientToCohort(Cohort,Patient)")
 	public void addPatientToCohort_shouldAddAPatientAndSaveTheCohort() throws Exception {
 		executeDataSet(COHORT_XML);
 		
 		// make a patient, add it using the method
-		Patient patientToAdd = new Patient(4);
+		Patient patientToAdd = Context.getPatientService().getPatient(3);
 		service.addPatientToCohort(service.getCohort(2), patientToAdd);
 		// proof of "save the cohort": see if the patient is in the cohort
-		assertTrue(service.getCohort(2).contains(4));
+		assertTrue(service.getCohort(2).contains(3));
 	}
 	
 	/**
 	 * @see CohortService#addPatientToCohort(Cohort,Patient)
-	 * 
 	 */
 	@Test
-	@Verifies(value = "should not fail if cohort already contains patient", method = "addPatientToCohort(Cohort,Patient)")
 	public void addPatientToCohort_shouldNotFailIfCohortAlreadyContainsPatient() throws Exception {
 		executeDataSet(COHORT_XML);
 		
 		// make a patient, add it using the method
-		Patient patientToAdd = new Patient(4);
+		Patient patientToAdd = Context.getPatientService().getPatient(3);
 		service.addPatientToCohort(service.getCohort(2), patientToAdd);
-		assertTrue(service.getCohort(2).contains(4));
+		assertTrue(service.getCohort(2).contains(3));
 		
 		// do it again to see if it fails
 		try {
@@ -493,12 +448,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		}
 	}
 	
-	/**
-	 * @verifies {@link CohortService#removePatientFromCohort(Cohort,Patient)}
-	 * test = should not fail if cohort does not contain patient
-	 */
 	@Test
-	@Verifies(value = "should not fail if cohort doesn't contain patient", method = "removePatientFromCohort(Cohort,Patient)")
 	public void removePatientFromCohort_shouldNotFailIfCohortDoesNotContainPatient() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -515,64 +465,51 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		}
 	}
 	
-	/**
-	 * @verifies {@link CohortService#removePatientFromCohort(Cohort,Patient)}
-	 * test = should save cohort after removing patient
-	 */
 	@Test
-	@Verifies(value = "should save cohort after removing patient", method = "removePatientFromCohort(Cohort,Patient)")
 	public void removePatientFromCohort_shouldSaveCohortAfterRemovingPatient() throws Exception {
 		executeDataSet(COHORT_XML);
 		
 		// make a patient, add it using the method
-		Patient patientToAddThenRemove = new Patient(4);
+		Patient patientToAddThenRemove = Context.getPatientService().getPatient(3);
 		service.addPatientToCohort(service.getCohort(2), patientToAddThenRemove);
 		assertTrue(service.getCohort(2).contains(patientToAddThenRemove.getPatientId()));
 		service.removePatientFromCohort(service.getCohort(2), patientToAddThenRemove);
 		List<CohortMembership> memberList = service.getCohort(2)
-				.getMembers().stream()
-				.filter(m -> m.getPatient().getPatientId().equals(patientToAddThenRemove.getPatientId()))
+				.getMemberships().stream()
+				.filter(m -> m.getPatientId().equals(patientToAddThenRemove.getPatientId()))
 				.collect(Collectors.toList());
 		CohortMembership memberWithPatientToRemove = memberList.get(0);
 		assertNotNull(memberWithPatientToRemove.getEndDate());
 	}
 
-	/**
-	 * @verifies {@link CohortService#addMembershipToCohort(Cohort, CohortMembership)}
-	 */
 	@Test
-	@Verifies(value = "should add membership to cohort", method = "addMembershipToCohort(Cohort, CohortMembership)")
 	public void addMembershipToCohort_shouldAddMembershipToCohort() throws Exception {
 		executeDataSet(COHORT_XML);
 		
 		Patient p = new Patient(4);
-		CohortMembership memberToAdd = new CohortMembership(p);
-		service.addMembershipToCohort(service.getCohort(1), memberToAdd);
-		assertTrue(service.getCohort(1).contains(p));
+		CohortMembership memberToAdd = new CohortMembership(p.getPatientId());
+		Cohort cohort = service.getCohort(1);
+		if (!cohort.contains(p)) {
+			service.addMembershipToCohort(cohort, memberToAdd);
+		}
+		assertTrue(cohort.contains(p));
 	}
 
-	/**
-	 * @verifies {@link CohortService#removeMemberShipFromCohort(Cohort, CohortMembership)}
-	 */
 	@Test
-	@Verifies(value = "should remove membership from cohort", method = "removeMemberShipFromCohort(Cohort, CohortMembership)")
 	public void removeMembershipFromCohort_shouldRemoveMembershipFromCohort() throws Exception {
 		executeDataSet(COHORT_XML);
 
-		CohortMembership memberToAddThenRemove = new CohortMembership(new Patient(4));
+		CohortMembership memberToAddThenRemove = new CohortMembership(4);
 		service.addMembershipToCohort(service.getCohort(1), memberToAddThenRemove);
-		assertTrue(service.getCohort(1).contains(memberToAddThenRemove.getPatient()));
+		assertTrue(service.getCohort(1).contains(memberToAddThenRemove.getPatientId()));
 		assertNull(memberToAddThenRemove.getEndDate());
 
-		service.removeMemberShipFromCohort(service.getCohort(1), memberToAddThenRemove);
+		service.removeMembershipFromCohort(service.getCohort(1), memberToAddThenRemove);
 		assertNotNull(memberToAddThenRemove.getEndDate());
+		assertFalse(service.getCohort(1).contains(memberToAddThenRemove.getPatientId()));
 	}
 
-	/**
-	 * @verifies {@link CohortService#patientVoided(Patient)}
-	 */
 	@Test
-	@Verifies(value = "should void membership for every patient voided", method = "patientVoided(Patient)")
 	public void patientVoided_shouldVoidMemberships() throws Exception {
 		executeDataSet(COHORT_XML);
 
@@ -583,9 +520,11 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		voidedPatient.setVoidedBy(Context.getAuthenticatedUser());
 		voidedPatient.setVoidReason("Voided as a result of the associated patient getting voided");
 
-		CohortMembership newMemberContainingVoidedPatient = new CohortMembership(voidedPatient);
+		CohortMembership newMemberContainingVoidedPatient = new CohortMembership(voidedPatient.getPatientId());
 		cohort.addMembership(newMemberContainingVoidedPatient);
 		assertTrue(cohort.contains(voidedPatient));
+		
+		assertEquals(service.getCohortsContainingPatient(voidedPatient).size(), 1);
 
 		service.patientVoided(voidedPatient);
 		assertTrue(newMemberContainingVoidedPatient.getVoided());
@@ -594,12 +533,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertEquals(voidedPatient.getVoidReason(), newMemberContainingVoidedPatient.getVoidReason());
 	}
 	
-	/**
-	 * @verifies {@link CohortService#patientUnvoided(Patient, User, Date, String)}
-	 */
 	@Test
-	@Verifies(value = "should unvoid membership for every patient unvoided", method = "patientUnvoided(Patient, User, "
-			+ "Date, String)")
 	public void patientUnvoided_shouldUnvoidMemberships() throws Exception {
 		executeDataSet(COHORT_XML);
 		
@@ -609,40 +543,177 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		Date dateVoided = new Date();
 		String voidReason = "Associated patient is voided";
 		
-		CohortMembership voidedMembership = new CohortMembership(unvoidedPatient);
+		CohortMembership voidedMembership = new CohortMembership(unvoidedPatient.getPatientId());
+		cohort.addMembership(voidedMembership);
 		voidedMembership.setVoided(true);
 		voidedMembership.setVoidedBy(voidedBy);
 		voidedMembership.setDateVoided(dateVoided);
 		voidedMembership.setVoidReason(voidReason);
 		
-		cohort.addMembership(voidedMembership);
-		service.patientUnvoided(unvoidedPatient, voidedBy, dateVoided, voidReason);
+		service.patientUnvoided(unvoidedPatient, voidedBy, dateVoided);
 		
 		assertFalse(voidedMembership.getVoided());
 		assertNull(voidedMembership.getVoidedBy());
 		assertNull(voidedMembership.getDateVoided());
 		assertNull(voidedMembership.getVoidReason());
 	}
-	
+
 	/**
-	 * @verifies {@link Cohort#getMemberships(Date)}
+	 * @verifies {@link Cohort#getActiveMemberships(Date)}
 	 */
 	@Test
-	@Verifies(value = "should get memberships of a cohort as of a date", method = "getMemberships(Date)")
 	public void getMemberships_shouldGetMembershipsAsOfADate() throws Exception {
 		executeDataSet(COHORT_XML);
 
 		Cohort cohort = Context.getCohortService().getCohort(1);
 
-		CohortMembership newMember = new CohortMembership((new Patient(4)));
+		CohortMembership newMember = new CohortMembership(4);
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date dateToTest = dateFormat.parse("2016-11-01 00:00:00");
 		newMember.setStartDate(dateToTest);
 		service.addMembershipToCohort(cohort, newMember);
 
-		List<CohortMembership> membersAsOfDate = cohort.getMemberships(dateToTest);
+		List<CohortMembership> membersAsOfDate = cohort.getActiveMemberships(dateToTest);
 		assertFalse(membersAsOfDate.isEmpty());
 		assertTrue(membersAsOfDate.stream().anyMatch(m -> m.getStartDate().equals(dateToTest)));
 	}
 
+	/**
+	 * @verifies not get matching memberships of a cohort as of a date
+	 * @see Cohort#getActiveMemberships(Date)
+	 */
+	@Test
+	public void getMemberships_shouldNotGetMatchingMembershipsAsOfADate() throws Exception {
+		executeDataSet(COHORT_XML);
+		
+		Cohort cohort = Context.getCohortService().getCohort(1);
+		
+		CohortMembership newMember = new CohortMembership(4);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = dateFormat.parse("2017-11-01 00:00:00");
+		newMember.setStartDate(startDate);
+		service.addMembershipToCohort(cohort, newMember);
+
+		Date dateToTest = dateFormat.parse("2016-11-01 00:00:00");
+		List<CohortMembership> membersAsOfDate = cohort.getActiveMemberships(dateToTest);
+		assertFalse(membersAsOfDate.stream().anyMatch(m -> m.getStartDate().equals(dateToTest)));
+	}
+
+	/**
+	 * @verifies return voided memberships
+	 * @see Cohort#getMemberships(boolean)
+	 */
+	@Test
+	public void getMemberships_shouldReturnVoidedMemberships() throws Exception {
+		executeDataSet(COHORT_XML);
+
+		CohortMembership voidedMembership = new CohortMembership(7);
+		voidedMembership.setVoided(true);
+		voidedMembership.setVoidedBy(Context.getAuthenticatedUser());
+		voidedMembership.setDateVoided(new Date());
+		voidedMembership.setVoidReason("Void reason");
+		CohortMembership nonVoidedMembership = new CohortMembership(4);
+
+		Cohort cohort = Context.getCohortService().getCohort(1);
+		cohort.addMembership(nonVoidedMembership);
+		cohort.addMembership(voidedMembership);
+
+		Context.getCohortService().saveCohort(cohort);
+		List<CohortMembership> voidedMemberships = cohort.getMemberships(true);
+		assertEquals(voidedMemberships.size(), 1);
+	}
+	
+	/**
+	 * @verifies return unvoided memberships
+	 * @see Cohort#getMemberships(boolean)
+	 */
+	@Test
+	public void getMemberships_shouldReturnUnvoidedMemberships() throws Exception {
+		executeDataSet(COHORT_XML);
+
+		Cohort cohort = Context.getCohortService().getCohort(1);
+
+		CohortMembership nonVoidedMembership = new CohortMembership(4);
+		CohortMembership voidedMembership = new CohortMembership(7);
+		voidedMembership.setVoided(true);
+		voidedMembership.setVoidedBy(Context.getAuthenticatedUser());
+		voidedMembership.setDateVoided(new Date());
+		voidedMembership.setVoidReason("Void reason");
+
+		cohort.addMembership(nonVoidedMembership);
+		cohort.addMembership(voidedMembership);
+
+		Context.getCohortService().saveCohort(cohort);
+		List<CohortMembership> unvoidedMemberships = cohort.getMemberships(false);
+		assertEquals(unvoidedMemberships.size(), 2);
+	}
+
+	/**
+	 * @verifies not return ended memberships
+	 * @see CohortService#getCohortsContainingPatient(org.openmrs.Patient)
+	 */
+	@Test
+	public void getCohortsContainingPatient_shouldNotReturnEndedMemberships() throws Exception {
+		executeDataSet(COHORT_XML);
+		
+		Cohort cohort = service.getCohort(2);
+		
+		Patient patient = new Patient(7);
+		CohortMembership membership = new CohortMembership(patient.getPatientId());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = dateFormat.parse("2017-01-01 00:00:00");
+		membership.setStartDate(startDate);
+		cohort.addMembership(membership);
+		assertTrue(cohort.contains(patient.getPatientId()));
+		
+		Date endDate = dateFormat.parse("2017-01-31 00:00:00");
+		membership.setEndDate(endDate);
+		
+		List<Cohort> cohortsWithPatientAdded = service.getCohortsContainingPatient(patient);
+		assertEquals(cohortsWithPatientAdded.size(), 0);
+	}
+	
+	/**
+	 * @verifies not return memberships outside a specified date
+	 * @see CohortService#getCohortsContainingPatient(org.openmrs.Patient)
+	 */
+	@Test
+	public void getCohortsContainingPatient_shouldNotReturnMembershipsOutsideSpecifiedDate() throws Exception {
+		executeDataSet(COHORT_XML);
+		
+		Cohort cohort = service.getCohort(2);
+		
+		Patient patient = new Patient(7);
+		CohortMembership membership = new CohortMembership(patient.getPatientId());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = dateFormat.parse("2017-01-01 00:00:00");
+		membership.setStartDate(startDate);
+		cohort.addMembership(membership);
+		assertTrue(cohort.contains(patient.getPatientId()));
+		
+		Date date = dateFormat.parse("2016-01-01 00:00:00");
+		assertEquals(service.getCohortsContainingPatient(patient, false, date).size(), 0);
+	}
+	
+	/**
+	 * @verifies return memberships on specified date
+	 * @see CohortService#getCohortsContainingPatient(org.openmrs.Patient)
+	 */
+	@Test
+	public void getCohortsContainingPatient_shouldReturnMembershipsOnSpecifiedDate() throws Exception {
+		executeDataSet(COHORT_XML);
+		
+		Cohort cohort = service.getCohort(2);
+		
+		Patient patient = new Patient(7);
+		CohortMembership membership = new CohortMembership(patient.getPatientId());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = dateFormat.parse("2017-01-01 00:00:00");
+		membership.setStartDate(startDate);
+		cohort.addMembership(membership);
+		assertTrue(cohort.contains(patient.getPatientId()));
+		
+		Date date = dateFormat.parse("2017-01-01 00:00:00");
+		assertEquals(service.getCohortsContainingPatient(patient, false, date).size(), 1);
+	}
 }

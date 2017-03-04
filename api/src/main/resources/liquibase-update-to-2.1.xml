@@ -81,7 +81,7 @@
 			</and>
 		</preConditions>
 		<comment>Updating cohort member ids</comment>
-		<customChange class="org.openmrs.util.databasechange.UpdateCohortMemberIds"/>
+		<customChange class="org.openmrs.util.databasechange.UpdateCohortMemberIdsChangeset"/>
 	</changeSet>
 	<changeSet author="vshankar" id="201609171146-2.2" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
@@ -279,10 +279,20 @@
 		<addUniqueConstraint tableName="cohort_member" columnNames="uuid"/>
 	</changeSet>
 	<changeSet id="201610242135-1" author="vshankar">
+		<preConditions onError="MARK_RAN">
+			<not>
+				<foreignKeyConstraintExists foreignKeyName="parent_cohort" foreignKeyTableName="cohort_member"/>
+			</not>
+		</preConditions>
 		<comment>Adding foreign key constraint to cohort_member.cohort_id</comment>
 		<addForeignKeyConstraint baseColumnNames="cohort_id" baseTableName="cohort_member" constraintName="parent_cohort" deferrable="false" referencedColumnNames="cohort_id" referencedTableName="cohort"/>
 	</changeSet>
 	<changeSet id="201610242135-2" author="vshankar">
+		<preConditions onError="MARK_RAN">
+			<not>
+				<foreignKeyConstraintExists foreignKeyName="member_patient" foreignKeyTableName="cohort_member"/>
+			</not>
+		</preConditions>
 		<comment>Adding foreign key constraint to cohort_member.patient_id</comment>
 		<addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="cohort_member" constraintName="member_patient" deferrable="false" initiallyDeferred="false" referencedColumnNames="patient_id" referencedTableName="patient"/>
 	</changeSet>

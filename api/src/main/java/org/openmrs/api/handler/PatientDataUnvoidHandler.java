@@ -38,7 +38,7 @@ import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
  * @see Patient
  * @since 1.9
  */
-@Handler(supports = Patient.class)
+@Handler(supports = {Patient.class}, order = 50)
 public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 	
 	@SuppressWarnings("unchecked")
@@ -75,7 +75,7 @@ public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 			}
 
 			CohortService cs = Context.getCohortService();
-			cs.patientUnvoided(patient, patient.getVoidedBy(), patient.getDateVoided(), patient.getVoidReason());
+			cs.patientUnvoided(patient, originalVoidingUser, origParentVoidedDate);
 		}
 	}
 }
