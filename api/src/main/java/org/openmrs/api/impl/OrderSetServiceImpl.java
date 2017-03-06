@@ -10,6 +10,7 @@
 package org.openmrs.api.impl;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.OrderSet;
 import org.openmrs.OrderSetMember;
 import org.openmrs.api.APIException;
@@ -17,7 +18,6 @@ import org.openmrs.api.OrderSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderSetDAO;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -45,7 +45,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	@Override
 	@Transactional(readOnly = false)
 	public OrderSet retireOrderSet(OrderSet orderSet, String retireReason) throws APIException {
-		if (!StringUtils.hasLength(retireReason)) {
+		if (StringUtils.isBlank(retireReason)) {
 			throw new IllegalArgumentException("retire reason cannot be empty or null");
 		}
 		for (OrderSetMember orderSetMember : orderSet.getOrderSetMembers()) {
