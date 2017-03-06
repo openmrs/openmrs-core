@@ -108,14 +108,6 @@ The project tree is set up as follows:
   <td>webapp/</td>
   <td>files used in building the war file (contains JSP files on older versions).</td>
  </tr>
- <tr> 
-  <td>build.properties</td>
-  <td>(deprecated) Default properties used by the deprecated ANT build.xml file.</td>
- </tr>
- <tr>
-  <td>build.xml</td>
-  <td>(deprecated) ANT build file containing convenience methods into the maven build.</td>
- </tr>
  <tr>
   <td>liquibase.build.xml</td>
   <td>ANT build file containing convenience methods to run liquibase actions.</td>
