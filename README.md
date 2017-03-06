@@ -9,19 +9,24 @@ The mission of OpenMRS is to improve health care delivery in resource-constraine
 ####Table of Contents
 
 1. [Build](#build)
+  * [Prerequisites](#prerequisites)
+  * [Build Command](#build-command)
+  * [Deploy](#deploy)
 2. [Navigating the repository](#navigating-the-repository)
 3. [Software Development Kit](#software-development-kit)
-4. [Documentation](#documentation)
+4. [Extending OpenMRS with Modules](#extending-openmrs-with-modules)
+5. [Documentation](#documentation)
   * [Developer guides](#developer-guides)
   * [Wiki](#wiki)
   * [Website](#website)
-5. [Contributing](#contributing)
+6. [Contributing](#contributing)
   * [Code](#code)
+  * [Code Reviews](#code-reviews)
   * [Translation](#translation)
-6. [Issues](#issues)
-7. [Community](#community)
-8. [Support](#support)
-9. [License](#license)
+7. [Issues](#issues)
+8. [Community](#community)
+9. [Support](#support)
+10. [License](#license)
 
 ## Build
 
@@ -55,7 +60,7 @@ Install the version control tool [git](https://git-scm.com/) and clone this repo
 git clone https://github.com/openmrs/openmrs-core.git
 ```
 
-### Command
+### Build Command
 
 After you have taken care of the [Prerequisites](#prerequisites)
 
@@ -67,6 +72,20 @@ mvn clean package
 ```
 
 This will generate the OpenMRS application in `webapp/target/openmrs.war` which you will have to deploy into an application server like for example [tomcat](https://tomcat.apache.org/) or [jetty](http://www.eclipse.org/jetty/).
+
+### Deploy
+
+For development purposes you can simply deploy the `openmrs.war` into the application server jetty via
+
+```bash
+cd openmrs-core/webapp
+mvn jetty:run
+```
+
+If all goes well (check the console output) you can access the OpenMRS application at `localhost:8080/openmrs`.
+
+Refer to [Getting Started as a Developer - Maven](https://wiki.openmrs.org/display/docs/Maven) for some more information
+on useful Maven commands and build options.
 
 ## Navigating the repository
 
@@ -114,6 +133,14 @@ awesome SDK at
 
 https://wiki.openmrs.org/display/docs/OpenMRS+SDK
 
+## Extending OpenMRS with Modules
+
+OpenMRS has a modular architecture that allows developers to extend the OpenMRS core functionality by creating modules that can easily be added or removed to meet the needs of a specific implementation.
+
+Before creating your own module go to the [OpenMRS Module Repository](https://modules.openmrs.org) and see if there is already a module for your specific use case. If so deploy and try it and if a functionality is missing join the developers of the module to add a feature.
+
+If you haven't found what you were looking for refer to the [Module - wiki](https://wiki.openmrs.org/display/docs/Modules) to learn how you can create a new module.
+
 ## Documentation
 
 ### Developer guides
@@ -142,11 +169,28 @@ http://openmrs.org
 
 Contributions are very welcome, we can definitely use your help!
 
+OpenMRS organizes the privileges of its contributors in developer stages which
+are documented [here](https://wiki.openmrs.org/display/RES/OpenMRS+Developer+Stages).
+
+Read the following sections to find out where you could help.
+
 ### Code
 
 Check out our [contributing guidelines](CONTRIBUTING.md), read through the [Developer guides](#developer-guides).
 
 After you've read up :eyeglasses: [grab an introductory issue](https://wiki.openmrs.org/display/docs/Getting+Started+as+a+Developer) that is `Ready For Work`.
+
+### Code Reviews
+
+You might not have the time to develop yourself but enough experience with
+OpenMRS and/or reviewing code, your help on code reviews will be much
+appreciated!
+
+Read
+
+https://wiki.openmrs.org/display/docs/Code+Review
+
+and get started with re-:eyes: pull requests!
 
 ### Translation
 
