@@ -48,7 +48,7 @@
 
 	<module name="FileLength">
 		<property name="fileExtensions" value="java"/>
-		<property name="max" value="2500"/>
+		<property name="max" value="1500"/>
 		<property name="severity" value="error"/>
 	</module>
 
@@ -189,6 +189,9 @@
 			<property name="tokens" value="COMMA"/>
 			<property name="option" value="EOL"/>
 		</module>
+		<module name="PackageDeclaration">
+			<property name="severity" value="error"/>
+		</module>
 		<module name="PackageName">
 			<property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
 			<message key="name.invalidPattern"
@@ -213,7 +216,7 @@
 			<property name="severity" value="error"/>
 		</module>
 		<module name="ParameterNumber">
-			<property name="max" value="10" />
+			<property name="max" value="5" />
 			<property name="severity" value="error"/>
 		</module>
 		<module name="LocalVariableName">
@@ -370,6 +373,8 @@
 			<property name="severity" value="error"/>
 		</module>
 		<module name="IllegalThrows">
+			<property name="illegalClassNames"
+			          value="java.lang.Throwable, java.lang.Exception, java.lang.Error, java.lang.RuntimeException, java.lang.NullPointerException"/>
 			<property name="severity" value="error"/>
 		</module>
 		<module name="IllegalInstantiation">
