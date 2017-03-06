@@ -109,10 +109,6 @@ The project tree is set up as follows:
   <td>files used in building the war file (contains JSP files on older versions).</td>
  </tr>
  <tr>
-  <td>liquibase.build.xml</td>
-  <td>ANT build file containing convenience methods to run liquibase actions.</td>
- </tr>
- <tr>
   <td>pom.xml</td>
   <td>The main maven file used to build and package OpenMRS.</td>
  </tr>  
