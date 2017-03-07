@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -19,8 +21,6 @@ import org.openmrs.OrderSet;
 import org.openmrs.OrderSetMember;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderSetDAO;
-
-import java.util.List;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderSetDAO that

@@ -9,11 +9,11 @@
  */
 package org.openmrs;
 
-import org.openmrs.annotation.AllowDirectAccess;
-
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+
+import org.openmrs.annotation.AllowDirectAccess;
 
 /**
  * Program

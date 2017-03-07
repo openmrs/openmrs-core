@@ -9,14 +9,14 @@
  */
 package org.openmrs;
 
-import org.hibernate.search.annotations.ContainedIn;
-
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
+
+import org.hibernate.search.annotations.ContainedIn;
 
 /**
  * Defines a Patient in the system. A patient is simply an extension of a person and all that that

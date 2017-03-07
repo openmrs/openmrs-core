@@ -9,6 +9,9 @@
  */
 package org.openmrs.api.handler;
 
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
@@ -18,9 +21,6 @@ import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * This class deals with {@link Patient} objects when they are voided via a void* method in an

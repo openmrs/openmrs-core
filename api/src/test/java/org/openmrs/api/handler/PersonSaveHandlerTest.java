@@ -9,16 +9,16 @@
  */
 package org.openmrs.api.handler;
 
+import java.util.Date;
+
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.User;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-
-import java.util.Date;
 
 /**
  * Tests the {@link PersonSaveHandler} class

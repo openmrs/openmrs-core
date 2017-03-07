@@ -9,8 +9,6 @@
  */
 package org.openmrs.util;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.Date;

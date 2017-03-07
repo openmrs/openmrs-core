@@ -9,16 +9,15 @@
  */
 package org.openmrs.api.builder;
 
+import java.util.Date;
+
 import org.openmrs.Order;
 import org.openmrs.OrderGroup;
-import org.openmrs.OrderSet;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-
-import java.util.Date;
 
 public class OrderBuilder {
 	

@@ -9,9 +9,10 @@
  */
 package org.openmrs.test;
 
-import junit.framework.Assert;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
+
+import junit.framework.Assert;
 
 @StartModule( { "org/openmrs/module/include/dssmodule-1.44.omod", "org/openmrs/module/include/atdproducer-0.51.omod" })
 public class StartModuleAnnotatioTest extends BaseModuleContextSensitiveTest {

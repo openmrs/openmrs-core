@@ -9,6 +9,21 @@
  */
 package org.openmrs.web.filter.update;
 
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.zip.GZIPOutputStream;
+
+import javax.servlet.FilterChain;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -20,21 +35,6 @@ import org.openmrs.web.filter.GZIPFilter;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.zip.GZIPOutputStream;
-
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests some of the methods on the {@link org.openmrs.web.filter.update.GZIPFilter}

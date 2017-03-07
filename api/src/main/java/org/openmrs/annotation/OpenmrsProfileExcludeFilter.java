@@ -9,6 +9,9 @@
  */
 package org.openmrs.annotation;
 
+import java.io.IOException;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
@@ -17,9 +20,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
-
-import java.io.IOException;
-import java.util.Map;
 
 /**
  * Prevents creating a bean if profile is not matched. It returns true if a bean should not be created.

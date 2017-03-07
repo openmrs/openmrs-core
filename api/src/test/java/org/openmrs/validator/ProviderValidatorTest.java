@@ -9,6 +9,9 @@
  */
 package org.openmrs.validator;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,9 +26,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	

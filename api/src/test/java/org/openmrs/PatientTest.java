@@ -9,7 +9,9 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -17,9 +19,6 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
-
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
 
 /**
  * This class should test all methods on the patient object. It should not worry about the extended

@@ -11,8 +11,8 @@ package org.openmrs.validator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.hl7.HL7Source;
 import org.openmrs.annotation.Handler;
+import org.openmrs.hl7.HL7Source;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;

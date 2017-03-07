@@ -9,11 +9,11 @@
  */
 package org.openmrs;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.hibernate.search.annotations.Indexed;
-
 import java.util.HashSet;
 import java.util.TreeSet;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.search.annotations.Indexed;
 
 /**
  * The ConceptNumeric extends upon the Concept object by adding some number range values

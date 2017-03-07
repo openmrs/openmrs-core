@@ -9,10 +9,10 @@
  */
 package org.openmrs.api.db;
 
+import java.util.List;
+
 import org.openmrs.OrderSet;
 import org.openmrs.OrderSetMember;
-
-import java.util.List;
 
 /**
  * OrderSet-related database functions

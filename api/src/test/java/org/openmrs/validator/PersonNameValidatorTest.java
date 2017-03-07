@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import java.util.HashMap;
+
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,8 +25,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.MapBindingResult;
-
-import java.util.HashMap;
 
 /**
  * Tests methods on the {@link PersonNameValidator} class.

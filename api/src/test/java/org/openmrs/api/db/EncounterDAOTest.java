@@ -14,22 +14,16 @@ import static org.junit.Assert.assertNotSame;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Encounter;
-import org.openmrs.Patient;
-import org.openmrs.PersonName;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateEncounterDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-
-import junit.framework.Assert;
 
 /**
  * This class tests the {@link EncounterDAO} linked to from the Context. Currently that file is the

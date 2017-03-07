@@ -9,8 +9,6 @@
  */
 package org.openmrs;
 
-import org.openmrs.util.NaturalStrings;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -18,6 +16,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
+
+import org.openmrs.util.NaturalStrings;
 
 /**
  * ProgramWorkflow

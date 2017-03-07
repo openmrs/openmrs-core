@@ -9,6 +9,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.text.SimpleDateFormat;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
@@ -20,9 +23,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
-
-import java.text.SimpleDateFormat;
-import java.util.List;
 
 public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	

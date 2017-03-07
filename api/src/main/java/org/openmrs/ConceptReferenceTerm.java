@@ -9,12 +9,12 @@
  */
 package org.openmrs;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * A concept reference term is typically name for a concept by which it is referred in another

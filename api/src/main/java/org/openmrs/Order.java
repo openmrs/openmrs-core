@@ -9,12 +9,12 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
-
-import java.util.Date;
 
 /**
  * Encapsulates information about the clinical action of a provider requesting something for a

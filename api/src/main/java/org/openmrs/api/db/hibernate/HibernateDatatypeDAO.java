@@ -12,8 +12,8 @@ package org.openmrs.api.db.hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
-import org.openmrs.api.db.DatatypeDAO;
 import org.openmrs.api.db.ClobDatatypeStorage;
+import org.openmrs.api.db.DatatypeDAO;
 
 /**
  * Hibernate-specific Datatype-related functions. This class should not be used directly. All calls

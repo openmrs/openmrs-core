@@ -14,6 +14,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.OpenmrsConstants;
+
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
@@ -22,9 +25,6 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
-
-import org.openmrs.util.DatabaseUtil;
-import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This changeset creates provider accounts for orderers that have no providers accounts, and then

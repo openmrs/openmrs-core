@@ -12,7 +12,6 @@ package org.openmrs.api.handler;
 import java.util.Date;
 
 import org.openmrs.OpenmrsMetadata;
-
 import org.openmrs.User;
 
 /**

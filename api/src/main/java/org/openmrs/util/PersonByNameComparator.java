@@ -9,10 +9,10 @@
  */
 package org.openmrs.util;
 
+import java.util.Comparator;
+
 import org.openmrs.Person;
 import org.openmrs.PersonName;
-
-import java.util.Comparator;
 
 /**
  * A simple person comparator for sorting persons by name. Sorts names based on the following

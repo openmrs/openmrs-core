@@ -9,10 +9,10 @@
  */
 package org.openmrs;
 
+import static org.openmrs.Order.Action.DISCONTINUE;
+
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.util.OpenmrsUtil;
-
-import static org.openmrs.Order.Action.DISCONTINUE;
 
 /**
  * DrugOrder

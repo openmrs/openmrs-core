@@ -9,12 +9,12 @@
  */
 package org.openmrs.propertyeditor;
 
+import java.beans.PropertyEditorSupport;
+
 import org.openmrs.ConceptAttributeType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
-
-import java.beans.PropertyEditorSupport;
 
 public class ConceptAttributeTypeEditor extends PropertyEditorSupport {
 	

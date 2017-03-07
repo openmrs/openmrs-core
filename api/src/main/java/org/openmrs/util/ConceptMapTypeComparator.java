@@ -9,9 +9,9 @@
  */
 package org.openmrs.util;
 
-import org.openmrs.ConceptMapType;
-
 import java.util.Comparator;
+
+import org.openmrs.ConceptMapType;
 
 /**
  * A utility class which sorts a collection of ConceptMapType objects in the following order:

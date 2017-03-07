@@ -9,6 +9,9 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.OrderSet;
@@ -18,9 +21,6 @@ import org.openmrs.api.OrderSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderSetDAO;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.List;
 
 public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetService {
 	

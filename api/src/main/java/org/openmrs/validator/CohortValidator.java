@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import java.util.Collection;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
@@ -16,8 +18,6 @@ import org.openmrs.Patient;
 import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-
-import java.util.Collection;
 
 /**
  * Validates {@link Cohort} objects.

@@ -9,6 +9,10 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,10 +21,6 @@ import org.openmrs.Provider;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class HibernateProviderDAOTest extends BaseContextSensitiveTest {
 	

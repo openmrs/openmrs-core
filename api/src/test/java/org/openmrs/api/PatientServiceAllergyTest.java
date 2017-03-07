@@ -14,17 +14,15 @@ import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.Concept;
-import org.openmrs.Patient;
-import org.openmrs.api.context.Context;
 import org.openmrs.Allergen;
 import org.openmrs.AllergenType;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 import org.openmrs.AllergyReaction;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
-import org.openmrs.api.APIException;
+import org.openmrs.Concept;
+import org.openmrs.Patient;
+import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 
 /**

@@ -12,15 +12,15 @@ package org.openmrs.util.databasechange;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.UpgradeUtil;
+
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.CustomPreconditionErrorException;
 import liquibase.exception.CustomPreconditionFailedException;
 import liquibase.precondition.CustomPrecondition;
-
-import org.apache.commons.lang.StringUtils;
-import org.openmrs.util.DatabaseUtil;
-import org.openmrs.util.UpgradeUtil;
 
 /**
  * This changesets finds all free text drug order dose units and frequencies and checks that they

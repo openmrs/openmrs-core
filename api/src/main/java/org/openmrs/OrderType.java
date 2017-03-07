@@ -9,13 +9,13 @@
  */
 package org.openmrs;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
 
 /**
  * OrderTypes are used to classify different types of Orders e.g to distinguish between Serology and

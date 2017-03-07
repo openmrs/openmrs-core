@@ -9,7 +9,6 @@
  */
 package org.openmrs;
 
-import org.openmrs.Concept;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.springframework.beans.factory.annotation.Autowired;

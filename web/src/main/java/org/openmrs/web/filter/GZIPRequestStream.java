@@ -9,10 +9,11 @@
  */
 package org.openmrs.web.filter;
 
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
+
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Wraps Request Stream for GZipFilter

@@ -9,15 +9,15 @@
  */
 package org.openmrs;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-
-import java.util.Set;
-import java.util.TreeSet;
 
 public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	

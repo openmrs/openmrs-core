@@ -9,6 +9,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -26,8 +29,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 
 public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	

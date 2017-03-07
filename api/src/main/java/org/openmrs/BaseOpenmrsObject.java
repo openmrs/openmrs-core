@@ -12,6 +12,9 @@ package org.openmrs;
 import java.io.Serializable;
 import java.util.UUID;
 
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.lucene.analysis.core.KeywordTokenizerFactory;
@@ -27,9 +30,6 @@ import org.hibernate.search.annotations.Parameter;
 import org.hibernate.search.annotations.TokenFilterDef;
 import org.hibernate.search.annotations.TokenizerDef;
 import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
-
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Column;
 
 /**
  * This is the base implementation of the {@link OpenmrsObject} interface.<br>

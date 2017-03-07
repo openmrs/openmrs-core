@@ -10,13 +10,12 @@
 package org.openmrs.validator;
 
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.PatientService;
+import org.openmrs.Allergen;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
-import org.openmrs.Allergen;
-
+import org.openmrs.annotation.Handler;
+import org.openmrs.api.PatientService;
+import org.openmrs.api.context.Context;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

@@ -9,18 +9,6 @@
  */
 package org.openmrs;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.annotation.AllowDirectAccess;
-import org.openmrs.api.APIException;
-import org.openmrs.api.context.Context;
-import org.openmrs.obs.ComplexData;
-import org.openmrs.obs.ComplexObsHandler;
-import org.openmrs.util.Format;
-import org.openmrs.util.Format.FORMAT_TYPE;
-import org.openmrs.util.OpenmrsUtil;
-
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -32,6 +20,18 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.annotation.AllowDirectAccess;
+import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
+import org.openmrs.obs.ComplexData;
+import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.util.Format;
+import org.openmrs.util.Format.FORMAT_TYPE;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * An observation is a single unit of clinical information. <br>

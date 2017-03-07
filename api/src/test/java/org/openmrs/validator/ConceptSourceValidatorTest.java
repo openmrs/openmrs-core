@@ -15,8 +15,8 @@ import org.junit.Test;
 import org.openmrs.ConceptSource;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-import org.springframework.validation.Errors;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 
 /**
  *Tests methods on the {@link org.openmrs.validator.ConceptSourceValidator} class.

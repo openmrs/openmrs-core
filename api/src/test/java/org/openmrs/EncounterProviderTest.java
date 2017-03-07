@@ -9,11 +9,11 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
-
-import java.util.Date;
 
 /**
  * This class tests the all of the {@link EncounterProvider} non-trivial object methods.

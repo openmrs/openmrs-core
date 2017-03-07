@@ -9,11 +9,11 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.List;
+
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.openmrs.PersonAttribute;
-
-import java.util.List;
 
 public class PersonAttributeHelper {
 	

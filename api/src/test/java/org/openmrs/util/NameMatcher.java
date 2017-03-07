@@ -9,11 +9,11 @@
  */
 package org.openmrs.util;
 
+import java.util.Set;
+
 import org.hamcrest.Description;
 import org.junit.internal.matchers.TypeSafeMatcher;
 import org.openmrs.PersonName;
-
-import java.util.Set;
 
 public class NameMatcher extends TypeSafeMatcher<Set<PersonName>> {
 	

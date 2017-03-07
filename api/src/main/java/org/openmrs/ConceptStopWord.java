@@ -9,10 +9,10 @@
  */
 package org.openmrs;
 
+import java.util.Locale;
+
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
-
-import java.util.Locale;
 
 /**
  * ConceptStopWord is the real world term used to filter the words for indexing

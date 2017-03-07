@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.db;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;

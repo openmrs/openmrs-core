@@ -9,8 +9,6 @@
  */
 package org.openmrs.api;
 
-import org.openmrs.util.OpenmrsConstants;
-
 /**
  * This exception is thrown when a user tries manipulate of a person attribute type while person attribute types are locked
  * 

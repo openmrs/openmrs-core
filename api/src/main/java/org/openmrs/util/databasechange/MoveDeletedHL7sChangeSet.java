@@ -13,6 +13,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.hl7.HL7Constants;
+
 import liquibase.change.custom.CustomChange;
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -20,12 +24,8 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.CustomChangeException;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
-
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.hl7.HL7Constants;
 
 /**
  * This change set moves "deleted" HL7s from the archive table to the queue table

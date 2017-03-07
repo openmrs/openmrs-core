@@ -9,16 +9,13 @@
  */
 package org.openmrs.util;
 
-import junit.framework.TestCase;
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.test.Verifies;
-
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+import org.openmrs.test.Verifies;
 
 /**
  * Contains methods to test behavior of DoubleRange methods

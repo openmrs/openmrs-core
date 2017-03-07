@@ -9,10 +9,10 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.Date;
 
 public class CohortMembership extends BaseOpenmrsData implements Comparable<CohortMembership> {
 	

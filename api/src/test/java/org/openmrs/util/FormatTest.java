@@ -9,11 +9,11 @@
  */
 package org.openmrs.util;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.util.Date;
 import java.util.Locale;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 public class FormatTest {
 

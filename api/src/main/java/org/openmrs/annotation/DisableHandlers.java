@@ -9,14 +9,14 @@
  */
 package org.openmrs.annotation;
 
-import org.openmrs.api.handler.RequiredDataHandler;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.openmrs.api.handler.RequiredDataHandler;
 
 /**
  *    In {@link org.openmrs.aop.RequiredDataAdvice}, by default, RequiredDataHandlers are called on all child collections

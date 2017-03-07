@@ -10,15 +10,13 @@
 package org.openmrs.module;
 
 import java.io.File;
-
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.AfterClass;
 import org.junit.Test;
-
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 

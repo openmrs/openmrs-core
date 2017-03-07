@@ -9,6 +9,9 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Date;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,9 +20,6 @@ import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-
-import java.util.Date;
-import java.util.List;
 
 public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 	

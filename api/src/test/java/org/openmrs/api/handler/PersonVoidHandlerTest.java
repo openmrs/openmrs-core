@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.handler;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
 
 import org.junit.Assert;
@@ -18,8 +20,6 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for the {@link PersonVoidHandler} class.

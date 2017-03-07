@@ -9,13 +9,14 @@
  */
 package org.openmrs.api.cache;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class creates cache configurations from apiCacheConfig.properties files in the classpath. This file should be

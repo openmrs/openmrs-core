@@ -15,8 +15,8 @@ import org.junit.Test;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.springframework.validation.BindException;
 import org.openmrs.test.Verifies;
+import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
 /**

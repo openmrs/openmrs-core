@@ -9,16 +9,16 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.hibernate.SessionFactory;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.LuceneQuery;
 import org.openmrs.util.OpenmrsConstants;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Provides common queries for HibernatePatientDAO and HibernatePersonDAO.

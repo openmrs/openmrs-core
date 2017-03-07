@@ -9,10 +9,10 @@
  */
 package org.openmrs.notification;
 
+import java.util.Date;
+
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
-
-import java.util.Date;
 
 /**
  * This class is essentially a wrapper for the user object. The alert is assigned to each recipient.

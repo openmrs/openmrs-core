@@ -10,12 +10,11 @@
 package org.openmrs;
 
 import org.junit.Assert;
-import org.junit.Test;
 import org.junit.Before;
-import org.openmrs.Concept;
-import org.openmrs.util.OpenmrsConstants;
+import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Tests methods in {@link org.openmrs.Allergen}.

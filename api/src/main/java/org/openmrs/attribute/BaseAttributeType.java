@@ -9,11 +9,11 @@
  */
 package org.openmrs.attribute;
 
-import org.openmrs.BaseOpenmrsMetadata;
-import org.openmrs.customdatatype.Customizable;
-
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+
+import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.customdatatype.Customizable;
 
 /**
  * Abstract base implementation of {@link AttributeType}. Actual implementations (e.g. VisitAttributeType,

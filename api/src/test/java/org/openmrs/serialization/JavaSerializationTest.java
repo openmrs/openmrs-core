@@ -9,6 +9,11 @@
  */
 package org.openmrs.serialization;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.Date;
+
 import org.apache.commons.lang.SerializationUtils;
 import org.junit.Test;
 import org.openmrs.Concept;
@@ -16,11 +21,6 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.Person;
 import org.openmrs.User;
-
-import java.util.Date;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 public class JavaSerializationTest {
 	

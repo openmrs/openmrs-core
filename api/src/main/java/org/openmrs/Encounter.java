@@ -9,11 +9,6 @@
  */
 package org.openmrs;
 
-import org.openmrs.annotation.AllowDirectAccess;
-import org.openmrs.annotation.DisableHandlers;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.handler.VoidHandler;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +20,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.openmrs.annotation.AllowDirectAccess;
+import org.openmrs.annotation.DisableHandlers;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.handler.VoidHandler;
 
 /**
  * An Encounter represents one visit or interaction of a patient with a healthcare worker. Every

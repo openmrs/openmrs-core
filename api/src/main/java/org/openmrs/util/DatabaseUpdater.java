@@ -29,6 +29,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.annotation.Authorized;
+import org.openmrs.api.context.Context;
+
 import liquibase.Liquibase;
 import liquibase.changelog.ChangeLogIterator;
 import liquibase.changelog.ChangeLogParameters;
@@ -48,12 +54,6 @@ import liquibase.parser.core.xml.XMLChangeLogSAXParser;
 import liquibase.resource.CompositeResourceAccessor;
 import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.annotation.Authorized;
-import org.openmrs.api.context.Context;
 
 /**
  * This class uses Liquibase to update the database. <br>

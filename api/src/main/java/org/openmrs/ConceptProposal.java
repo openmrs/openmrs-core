@@ -9,11 +9,11 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
-
-import java.util.Date;
 
 /**
  * A ConceptProposal is a temporary holder for concept that should be in the system. When defining

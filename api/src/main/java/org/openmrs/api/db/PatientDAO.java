@@ -11,13 +11,12 @@ package org.openmrs.api.db;
 
 import java.util.List;
 
+import org.openmrs.Allergies;
+import org.openmrs.Allergy;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-
-import org.openmrs.Allergy;
-import org.openmrs.Allergies;
 
 /**
  * Database methods for the PatientService

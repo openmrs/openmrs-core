@@ -9,15 +9,15 @@
  */
 package org.openmrs.api.db;
 
+import java.util.List;
+import java.util.Map;
+
 import org.hibernate.SessionFactory;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.LocationService;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Location-related database functions

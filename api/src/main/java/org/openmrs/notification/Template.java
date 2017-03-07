@@ -9,9 +9,9 @@
  */
 package org.openmrs.notification;
 
-import org.openmrs.BaseOpenmrsObject;
-
 import java.util.Map;
+
+import org.openmrs.BaseOpenmrsObject;
 
 public class Template extends BaseOpenmrsObject {
 	

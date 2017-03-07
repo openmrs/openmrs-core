@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openmrs.Concept;
 
 /**
  * Represent allergen

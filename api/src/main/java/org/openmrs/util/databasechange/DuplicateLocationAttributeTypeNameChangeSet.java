@@ -24,6 +24,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.DatabaseUtil;
+
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
@@ -32,11 +37,6 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.util.DatabaseUpdater;
-import org.openmrs.util.DatabaseUtil;
 
 /**
  * Liquibase custom changeset used to identify and resolve duplicate LocationAttributeType names. If a

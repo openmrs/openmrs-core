@@ -9,7 +9,7 @@
  */
 package org.openmrs;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

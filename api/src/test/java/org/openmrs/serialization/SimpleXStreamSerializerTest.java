@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.thoughtworks.xstream.XStreamException;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -24,6 +23,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.test.Verifies;
+
+import com.thoughtworks.xstream.XStreamException;
 
 public class SimpleXStreamSerializerTest {
 	

@@ -9,6 +9,12 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+
+import java.util.ArrayList;
+import java.util.Date;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Order;
@@ -17,12 +23,6 @@ import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
-import java.util.Date;
-
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 
 /**
  * Tests the saving of orders as part of the OrderGroup

@@ -9,10 +9,10 @@
  */
 package org.openmrs;
 
-import org.openmrs.api.APIException;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.openmrs.api.APIException;
 
 /**
  * Represents the grouping of orders into a set,

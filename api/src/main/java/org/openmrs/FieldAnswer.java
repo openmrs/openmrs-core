@@ -9,9 +9,9 @@
  */
 package org.openmrs;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-
 import java.util.Date;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * FieldAnswer

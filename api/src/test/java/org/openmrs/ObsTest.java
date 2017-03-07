@@ -9,13 +9,13 @@
  */
 package org.openmrs;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.api.APIException;
-import org.openmrs.obs.ComplexData;
-import org.openmrs.test.Verifies;
-import org.openmrs.util.Reflect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
@@ -30,13 +30,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.apache.commons.beanutils.BeanUtils;
+import org.junit.Assert;
+import org.junit.Test;
+import org.openmrs.api.APIException;
+import org.openmrs.obs.ComplexData;
+import org.openmrs.test.Verifies;
+import org.openmrs.util.Reflect;
 
 /**
  * This class tests all methods that are not getter or setters in the Obs java object TODO: finish

@@ -9,21 +9,19 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.openmrs.LocationTag;
-import org.openmrs.api.LocationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.openmrs.LocationTag;
+import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class HibernateLocationDAOTest extends BaseContextSensitiveTest {
 	

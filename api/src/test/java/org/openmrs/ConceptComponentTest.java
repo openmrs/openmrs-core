@@ -9,12 +9,12 @@
  */
 package org.openmrs;
 
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Locale;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
  * Contains integration tests of the Concept class.

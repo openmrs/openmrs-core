@@ -10,8 +10,6 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openmrs.BaseOpenmrsObject;
-import org.openmrs.Concept;
 import org.openmrs.util.OpenmrsUtil;
 
 /**

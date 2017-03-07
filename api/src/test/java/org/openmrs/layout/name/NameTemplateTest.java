@@ -9,17 +9,18 @@
  */
 package org.openmrs.layout.name;
 
-import junit.framework.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.openmrs.PersonName;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.openmrs.PersonName;
+
+import junit.framework.Assert;
 
 public class NameTemplateTest {
 	
