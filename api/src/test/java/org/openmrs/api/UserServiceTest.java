@@ -43,7 +43,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * TODO add more tests to cover the methods in <code>UserService</code>

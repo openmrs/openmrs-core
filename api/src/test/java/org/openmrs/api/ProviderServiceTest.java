@@ -39,7 +39,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * This test class (should) contain tests for all of the ProviderService

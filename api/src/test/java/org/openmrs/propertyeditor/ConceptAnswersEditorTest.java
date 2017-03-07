@@ -17,7 +17,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  *

@@ -23,7 +23,7 @@ import org.openmrs.Visit;
 import org.openmrs.test.Verifies;
 import org.springframework.util.ReflectionUtils;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * Tests the {@link Reflect} class.

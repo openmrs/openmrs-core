@@ -21,7 +21,7 @@ import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * Contains methods to test behavior of OpenmrsService methods
