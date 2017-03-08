@@ -31,6 +31,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
@@ -404,8 +405,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 				criteria.createAlias("enc.form", "form");
 				criteria.createAlias("enc.encounterProviders", "enc_prov");
 				criteria.createAlias("enc_prov.provider", "prov");
-				criteria.createAlias("prov.person", "person", Criteria.LEFT_JOIN);
-				criteria.createAlias("person.names", "personName", Criteria.LEFT_JOIN);
+				criteria.createAlias("prov.person", "person", JoinType.LEFT_OUTER_JOIN);
+				criteria.createAlias("person.names", "personName", JoinType.LEFT_OUTER_JOIN);
 				
 				Disjunction or = Restrictions.disjunction();
 				or.add(Restrictions.ilike("loc.name", query, mode));
@@ -621,8 +622,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		}
 		
 		if (query != null && !StringUtils.isBlank(query)) {
-			criteria.createAlias("visitType", "visitType", Criteria.LEFT_JOIN);
-			criteria.createAlias("location", "location", Criteria.LEFT_JOIN);
+			criteria.createAlias("visitType", "visitType", JoinType.LEFT_OUTER_JOIN);
+			criteria.createAlias("location", "location", JoinType.LEFT_OUTER_JOIN);
 			
 			Disjunction or = Restrictions.disjunction();
 			criteria.add(or);
@@ -636,17 +637,17 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	
 	private void addEncountersByPatientCriteria(Criteria criteria, Patient patient, boolean includeVoided, String query) {
 		criteria.add(Restrictions.eq("patient", patient));
-		criteria.createAlias("visit", "visit", Criteria.LEFT_JOIN);
+		criteria.createAlias("visit", "visit", JoinType.LEFT_OUTER_JOIN);
 		
 		if (!includeVoided) {
 			criteria.add(Restrictions.eq("voided", includeVoided));
 		}
 		
 		if (query != null && !StringUtils.isBlank(query)) {
-			criteria.createAlias("visit.visitType", "visitType", Criteria.LEFT_JOIN);
-			criteria.createAlias("visit.location", "visitLocation", Criteria.LEFT_JOIN);
-			criteria.createAlias("location", "location", Criteria.LEFT_JOIN);
-			criteria.createAlias("encounterType", "encounterType", Criteria.LEFT_JOIN);
+			criteria.createAlias("visit.visitType", "visitType", JoinType.LEFT_OUTER_JOIN);
+			criteria.createAlias("visit.location", "visitLocation", JoinType.LEFT_OUTER_JOIN);
+			criteria.createAlias("location", "location", JoinType.LEFT_OUTER_JOIN);
+			criteria.createAlias("encounterType", "encounterType", JoinType.LEFT_OUTER_JOIN);
 			
 			Disjunction or = Restrictions.disjunction();
 			criteria.add(or);
