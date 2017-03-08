@@ -9,9 +9,10 @@
  */
 package org.openmrs.tools.doclet;
 
-import com.sun.tools.doclets.Taglet;
-import com.sun.javadoc.Tag;
 import java.util.Map;
+
+import com.sun.javadoc.Tag;
+import com.sun.tools.doclets.Taglet;
 
 /**
  * Taglet for @should annotations.
