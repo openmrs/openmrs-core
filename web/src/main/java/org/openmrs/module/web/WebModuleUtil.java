@@ -570,7 +570,7 @@ public class WebModuleUtil {
 	public static void unloadFilters(Module module) {
 		
 		// Unload Filter Mappings
-		for (java.util.Iterator<ModuleFilterMapping> mapIter = moduleFilterMappings.iterator(); mapIter.hasNext();) {
+		for (Iterator<ModuleFilterMapping> mapIter = moduleFilterMappings.iterator(); mapIter.hasNext();) {
 			ModuleFilterMapping mapping = mapIter.next();
 			if (module.equals(mapping.getModule())) {
 				mapIter.remove();

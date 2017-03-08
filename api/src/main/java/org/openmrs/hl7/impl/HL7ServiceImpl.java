@@ -771,7 +771,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		catch (EncodingNotSupportedException e) {
 			throw new HL7Exception("HL7 encoding not supported", e);
 		}
-		catch (ca.uhn.hl7v2.HL7Exception e) {
+		catch (HL7Exception e) {
 			throw new HL7Exception("Error parsing message", e);
 		}
 		

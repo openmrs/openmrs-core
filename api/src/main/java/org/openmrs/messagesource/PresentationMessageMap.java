@@ -57,7 +57,7 @@ public class PresentationMessageMap implements Map<String, PresentationMessage> 
 	/**
 	 * @see java.util.Map#entrySet()
 	 */
-	public Set<java.util.Map.Entry<String, PresentationMessage>> entrySet() {
+	public Set<Entry<String, PresentationMessage>> entrySet() {
 		return internalMap.entrySet();
 	}
 	
