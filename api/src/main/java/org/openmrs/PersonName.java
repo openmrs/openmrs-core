@@ -122,7 +122,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @return boolean true/false whether or not they are the same names
 	 * @should return true if given middle and family name are equal
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean equalsContent(PersonName otherName) {
 		return new EqualsBuilder().append(defaultString(otherName.getPrefix()), defaultString(prefix)).append(
 		    defaultString(otherName.getGivenName()), defaultString(givenName)).append(

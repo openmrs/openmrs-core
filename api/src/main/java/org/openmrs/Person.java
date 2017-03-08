@@ -1036,7 +1036,6 @@ public class Person extends BaseOpenmrsData {
 	 * 
 	 * @param isPatient whether this person is a patient or not
 	 */
-	@SuppressWarnings("unused")
 	protected void setPatient(boolean isPatient) {
 		this.isPatient = isPatient;
 	}

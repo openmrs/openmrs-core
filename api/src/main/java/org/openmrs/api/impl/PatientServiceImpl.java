@@ -1582,7 +1582,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * @see PatientService#getPatients(String, Integer, Integer)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException {
@@ -1597,7 +1596,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * @see PatientService#getPatients(String, boolean, Integer, Integer)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws APIException {

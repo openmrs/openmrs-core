@@ -29,14 +29,12 @@ import org.azeckoski.reflectutils.exceptions.FieldnameNotFoundException;
  */
 public class Reflect {
 	
-	@SuppressWarnings("unchecked")
 	private Class parametrizedClass;
 	
 	/**
 	 * @param parametrizedClass Class
 	 * @should throw exception when null is passed
 	 */
-	@SuppressWarnings("unchecked")
 	public Reflect(Class parametrizedClass) {
 		
 		if (parametrizedClass == null) {

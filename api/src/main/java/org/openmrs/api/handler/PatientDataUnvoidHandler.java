@@ -41,7 +41,6 @@ import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 @Handler(supports = Patient.class)
 public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void handle(Patient patient, User originalVoidingUser, Date origParentVoidedDate, String unused) {
 		//can't be unvoiding a patient that doesn't exist in the database

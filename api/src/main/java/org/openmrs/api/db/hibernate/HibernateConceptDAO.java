@@ -1342,7 +1342,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @should return a drug if phrase match drug_name No need to match both concept_name and
 	 *         drug_name
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchKeywords, boolean searchDrugConceptNames,
 	        boolean includeRetired, Integer start, Integer length) throws DAOException {

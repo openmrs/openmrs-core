@@ -105,7 +105,6 @@ public class ChainingInterceptor implements Interceptor {
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public void postFlush(Iterator entities) {
 		for (Interceptor i : interceptors) {
 			i.postFlush(entities);
@@ -113,7 +112,6 @@ public class ChainingInterceptor implements Interceptor {
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public void preFlush(Iterator entities) {
 		for (Interceptor i : interceptors) {
 			i.preFlush(entities);

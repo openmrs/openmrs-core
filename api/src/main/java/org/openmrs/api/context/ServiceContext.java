@@ -85,15 +85,12 @@ public class ServiceContext implements ApplicationContextAware {
 	private boolean useSystemClassLoader = false;
 	
 	// Cached service objects
-	@SuppressWarnings("unchecked")
 	Map<Class, Object> services = new HashMap<Class, Object>();
 	
 	// Advisors added to services by this service
-	@SuppressWarnings("unchecked")
 	Map<Class, Set<Advisor>> addedAdvisors = new HashMap<Class, Set<Advisor>>();
 	
 	// Advice added to services by this service
-	@SuppressWarnings("unchecked")
 	Map<Class, Set<Advice>> addedAdvice = new HashMap<Class, Set<Advice>>();
 	
 	/**
@@ -102,7 +99,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 *
 	 * @since 1.9
 	 */
-	@SuppressWarnings("unchecked")
 	Map<String, OpenmrsService> moduleOpenmrsServices = new HashMap<String, OpenmrsService>();
 	
 	/**
@@ -475,7 +471,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @param cls
 	 * @param advisor
 	 */
-	@SuppressWarnings("unchecked")
 	public void addAdvisor(Class cls, Advisor advisor) {
 		Advised advisedService = (Advised) services.get(cls);
 		if (advisedService.indexOf(advisor) < 0) {
@@ -491,7 +486,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @param cls
 	 * @param advice
 	 */
-	@SuppressWarnings("unchecked")
 	public void addAdvice(Class cls, Advice advice) {
 		Advised advisedService = (Advised) services.get(cls);
 		if (advisedService.indexOf(advice) < 0) {
@@ -507,7 +501,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @param cls
 	 * @param advisor
 	 */
-	@SuppressWarnings("unchecked")
 	public void removeAdvisor(Class cls, Advisor advisor) {
 		Advised advisedService = (Advised) services.get(cls);
 		advisedService.removeAdvisor(advisor);
@@ -518,7 +511,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @param cls
 	 * @param advice
 	 */
-	@SuppressWarnings("unchecked")
 	public void removeAdvice(Class cls, Advice advice) {
 		Advised advisedService = (Advised) services.get(cls);
 		advisedService.removeAdvice(advice);
@@ -531,7 +523,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @param source the existing service
 	 * @param target the new service
 	 */
-	@SuppressWarnings("unchecked")
 	private void moveAddedAOP(Advised source, Advised target) {
 		Class serviceClass = source.getClass();
 		Set<Advisor> existingAdvisors = getAddedAdvisors(serviceClass);
@@ -552,7 +543,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 *
 	 * @param cls the class of the cached service to cleanup
 	 */
-	@SuppressWarnings("unchecked")
 	private void removeAddedAOP(Class cls) {
 		removeAddedAdvisors(cls);
 		removeAddedAdvice(cls);
@@ -563,7 +553,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 *
 	 * @param cls the class of the cached service to cleanup
 	 */
-	@SuppressWarnings("unchecked")
 	private void removeAddedAdvisors(Class cls) {
 		Advised advisedService = (Advised) services.get(cls);
 		Set<Advisor> advisorsToRemove = addedAdvisors.get(cls);
@@ -591,7 +580,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 *
 	 * @param cls the class of the caches service to cleanup
 	 */
-	@SuppressWarnings("unchecked")
 	private void removeAddedAdvice(Class cls) {
 		Advised advisedService = (Advised) services.get(cls);
 		Set<Advice> adviceToRemove = addedAdvice.get(cls);
@@ -662,7 +650,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @param cls Interface to proxy
 	 * @param classInstance the actual instance of the <code>cls</code> interface
 	 */
-	@SuppressWarnings("unchecked")
 	public void setService(Class cls, Object classInstance) {
 		
 		log.debug("Setting service: " + cls);
@@ -714,7 +701,6 @@ public class ServiceContext implements ApplicationContextAware {
 	 *
 	 * @param params list of parameters
 	 */
-	@SuppressWarnings("unchecked")
 	public void setModuleService(List<Object> params) {
 		String classString = (String) params.get(0);
 		Object classInstance = params.get(1);

@@ -211,7 +211,6 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * @should return toString of hydrated value
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public String toString() {
 		Object o = getHydratedObject();
 		if (o instanceof Attributable) {

@@ -550,7 +550,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * 
 	 * @return Connection jdbc connection to the database
 	 */
-	@SuppressWarnings("deprecation")
 	public Connection getConnection() {
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		

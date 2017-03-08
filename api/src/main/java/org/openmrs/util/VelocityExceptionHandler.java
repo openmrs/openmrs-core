@@ -30,7 +30,6 @@ public class VelocityExceptionHandler implements MethodExceptionEventHandler {
 	 *      java.lang.String, java.lang.Exception)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public Object methodException(Class claz, String method, Exception e) throws Exception {
 		
 		log.debug("Claz: " + claz.getName() + " method: " + method, e);

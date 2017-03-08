@@ -275,7 +275,6 @@ class OpenmrsObjectImp extends NormalClass implements OpenmrsObject {
 	@SuppressWarnings("unused")
 	private String nonCollectionField;
 	
-	@SuppressWarnings("unchecked")
 	Collection genericCollectionField;
 	
 	@Override

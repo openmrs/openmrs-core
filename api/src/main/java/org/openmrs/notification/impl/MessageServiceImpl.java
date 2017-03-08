@@ -257,7 +257,6 @@ public class MessageServiceImpl implements MessageService {
 	 * @return the prepared Message
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public Message prepareMessage(String templateName, Map data) throws MessageException {
 		try {
@@ -276,7 +275,6 @@ public class MessageServiceImpl implements MessageService {
 	 * @return list of Templates
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public List getAllTemplates() throws MessageException {
 		return templateDAO.getTemplates();
@@ -301,7 +299,6 @@ public class MessageServiceImpl implements MessageService {
 	 * @return list of Templates
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public List getTemplatesByName(String name) throws MessageException {
 		return templateDAO.getTemplatesByName(name);

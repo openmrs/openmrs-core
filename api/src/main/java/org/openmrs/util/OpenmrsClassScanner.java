@@ -90,7 +90,6 @@ public class OpenmrsClassScanner {
 					if (typeFilter.match(metadataReader, metadataReaderFactory)) {
 						String classname = metadataReader.getClassMetadata().getClassName();
 						try {
-							@SuppressWarnings("unchecked")
 							Class<?> metadata = (Class<?>) OpenmrsClassLoader.getInstance().loadClass(classname);
 							types.add(metadata);
 						}
