@@ -110,12 +110,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public Concept saveConcept(Concept concept) throws APIException {
-		ConceptMapType defaultConceptMapType = null;
+		ConceptMapType defaultConceptMapType = Context.getConceptService().getDefaultConceptMapType();
 		for (ConceptMap map : concept.getConceptMappings()) {
 			if (map.getConceptMapType() == null) {
-				if (defaultConceptMapType == null) {
-					defaultConceptMapType = Context.getConceptService().getDefaultConceptMapType();
-				}
 				map.setConceptMapType(defaultConceptMapType);
 			}
 		}
