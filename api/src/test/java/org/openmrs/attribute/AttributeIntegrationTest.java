@@ -11,6 +11,7 @@ package org.openmrs.attribute;
 
 import java.text.SimpleDateFormat;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Visit;
@@ -20,8 +21,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-
-import org.junit.Assert;
 
 /**
  * Integration tests for using {@link BaseAttribute}, {@link BaseAttributeType}, and {@link AttributeHandler}

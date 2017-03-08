@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,8 +43,6 @@ import org.openmrs.test.Verifies;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
-
-import org.junit.Assert;
 
 /**
  * TODO add more tests to cover the methods in <code>UserService</code>
