@@ -25,16 +25,19 @@ public abstract class BaseHyphenatedIdentifierValidator implements IdentifierVal
 	/**
 	 * @see org.openmrs.patient.IdentifierValidator#getAllowedCharacters()
 	 */
+	@Override
 	public abstract String getAllowedCharacters();
 	
 	/**
 	 * @see org.openmrs.patient.IdentifierValidator#getName()
 	 */
+	@Override
 	public abstract String getName();
 	
 	/**
 	 * @see org.openmrs.patient.IdentifierValidator#getValidIdentifier(java.lang.String)
 	 */
+	@Override
 	public String getValidIdentifier(String undecoratedIdentifier) throws UnallowedIdentifierException {
 		
 		checkAllowedIdentifier(undecoratedIdentifier);
@@ -48,6 +51,7 @@ public abstract class BaseHyphenatedIdentifierValidator implements IdentifierVal
 	/**
 	 * @see org.openmrs.patient.IdentifierValidator#isValid(java.lang.String)
 	 */
+	@Override
 	public boolean isValid(String identifier) throws UnallowedIdentifierException {
 		
 		if (identifier.indexOf("-") < 1) {

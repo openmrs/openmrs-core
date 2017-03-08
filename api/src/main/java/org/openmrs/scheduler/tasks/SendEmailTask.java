@@ -24,6 +24,7 @@ public class SendEmailTask extends AbstractTask {
 	/**
 	 * Process the next form entry in the database and then remove the form entry from the database.
 	 */
+	@Override
 	public void execute() {
 		try {
 			Context.openSession();
@@ -38,6 +39,7 @@ public class SendEmailTask extends AbstractTask {
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#shutdown()
 	 */
+	@Override
 	public void shutdown() {
 		log.info("****************************** SEND EMAIL TASK:  Shutting down task ...");
 	}

@@ -49,6 +49,7 @@ public class LoggingAdvice implements MethodInterceptor {
 	 *
 	 * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
 	 */
+	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		
 		Method method = invocation.getMethod();

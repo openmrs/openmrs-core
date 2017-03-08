@@ -35,6 +35,7 @@ public class CheckInternetConnectivityTask extends AbstractTask {
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
 	 */
+	@Override
 	public void execute() {
 		
 		// TODO url should be provided as a property to taskconfig

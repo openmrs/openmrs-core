@@ -31,20 +31,24 @@ public class MemoryAppender extends AppenderSkeleton {
 	public MemoryAppender() {
 	}
 	
+	@Override
 	protected void append(LoggingEvent loggingEvent) {
 		if (buffer != null) {
 			buffer.add(loggingEvent);
 		}
 	}
 	
+	@Override
 	public void close() {
 		buffer.clear();
 	}
 	
+	@Override
 	public boolean requiresLayout() {
 		return true;
 	}
 	
+	@Override
 	public void activateOptions() {
 		this.buffer = new CircularFifoBuffer(bufferSize);
 	}

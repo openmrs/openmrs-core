@@ -20,6 +20,7 @@ package org.openmrs.logic.op;
  */
 public class Last implements TransformOperator {
 	
+	@Override
 	public String toString() {
 		return "LAST";
 	}

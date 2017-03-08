@@ -64,6 +64,7 @@ public class ModuleFilterChain implements FilterChain {
 	 * @see javax.servlet.FilterChain#doFilter(javax.servlet.ServletRequest,
 	 *      javax.servlet.ServletResponse)
 	 */
+	@Override
 	public void doFilter(ServletRequest request, ServletResponse response) throws ServletException, IOException {
 		if (filterIterator.hasNext()) {
 			Filter f = filterIterator.next();

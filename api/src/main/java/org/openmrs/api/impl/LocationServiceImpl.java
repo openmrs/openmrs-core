@@ -48,6 +48,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#setLocationDAO(org.openmrs.api.db.LocationDAO)
 	 */
+	@Override
 	public void setLocationDAO(LocationDAO dao) {
 		this.dao = dao;
 	}
@@ -55,6 +56,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#saveLocation(org.openmrs.Location)
 	 */
+	@Override
 	public Location saveLocation(Location location) throws APIException {
 		if (location.getName() == null) {
 			throw new APIException("Location.name.required", (Object[]) null);
@@ -89,6 +91,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getLocation(java.lang.Integer)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Location getLocation(Integer locationId) throws APIException {
 		return dao.getLocation(locationId);
@@ -97,6 +100,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getLocation(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Location getLocation(String name) throws APIException {
 		return dao.getLocation(name);
@@ -105,6 +109,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getDefaultLocation()
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Location getDefaultLocation() throws APIException {
 		Location location = null;
@@ -136,6 +141,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getLocationByUuid(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Location getLocationByUuid(String uuid) throws APIException {
 		return dao.getLocationByUuid(uuid);
@@ -144,6 +150,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getLocationTagByUuid(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public LocationTag getLocationTagByUuid(String uuid) throws APIException {
 		return dao.getLocationTagByUuid(uuid);
@@ -152,6 +159,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getAllLocations()
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<Location> getAllLocations() throws APIException {
 		return dao.getAllLocations(true);
@@ -160,6 +168,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getAllLocations(boolean)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<Location> getAllLocations(boolean includeRetired) throws APIException {
 		return dao.getAllLocations(includeRetired);
@@ -168,6 +177,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getLocations(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<Location> getLocations(String nameFragment) throws APIException {
 		return Context.getLocationService().getLocations(nameFragment, null, null, false, null, null);
@@ -176,6 +186,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getLocationsByTag(LocationTag)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<Location> getLocationsByTag(LocationTag tag) throws APIException {
 		List<Location> locations = new ArrayList<Location>();
@@ -192,6 +203,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getLocationsHavingAllTags(List)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<Location> getLocationsHavingAllTags(List<LocationTag> tags) throws APIException {
 		return CollectionUtils.isEmpty(tags) ? getAllLocations(false) : dao.getLocationsHavingAllTags(tags);
@@ -200,6 +212,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getLocationsHavingAnyTag(List)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<Location> getLocationsHavingAnyTag(List<LocationTag> tags) throws APIException {
 		List<Location> locations = new ArrayList<Location>();
@@ -218,6 +231,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#retireLocation(Location, String)
 	 */
+	@Override
 	public Location retireLocation(Location location, String reason) throws APIException {
 		location.setRetired(true);
 		location.setRetireReason(reason);
@@ -227,6 +241,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#unretireLocation(org.openmrs.Location)
 	 */
+	@Override
 	public Location unretireLocation(Location location) throws APIException {
 		location.setRetired(false);
 		return Context.getLocationService().saveLocation(location);
@@ -235,6 +250,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#purgeLocation(org.openmrs.Location)
 	 */
+	@Override
 	public void purgeLocation(Location location) throws APIException {
 		dao.deleteLocation(location);
 	}
@@ -242,6 +258,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#saveLocationTag(org.openmrs.LocationTag)
 	 */
+	@Override
 	public LocationTag saveLocationTag(LocationTag tag) throws APIException {
 		return dao.saveLocationTag(tag);
 	}
@@ -249,6 +266,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getLocationTag(java.lang.Integer)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public LocationTag getLocationTag(Integer locationTagId) throws APIException {
 		return dao.getLocationTag(locationTagId);
@@ -257,6 +275,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getLocationTagByName(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public LocationTag getLocationTagByName(String tag) throws APIException {
 		return dao.getLocationTagByName(tag);
@@ -265,6 +284,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getAllLocationTags()
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<LocationTag> getAllLocationTags() throws APIException {
 		return dao.getAllLocationTags(true);
@@ -273,6 +293,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getAllLocationTags(boolean)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<LocationTag> getAllLocationTags(boolean includeRetired) throws APIException {
 		return dao.getAllLocationTags(includeRetired);
@@ -281,6 +302,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getLocationTags(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<LocationTag> getLocationTags(String search) throws APIException {
 		if (StringUtils.isEmpty(search)) {
@@ -293,6 +315,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#retireLocationTag(LocationTag, String)
 	 */
+	@Override
 	public LocationTag retireLocationTag(LocationTag tag, String reason) throws APIException {
 		if (tag.isRetired()) {
 			return tag;
@@ -311,6 +334,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#unretireLocationTag(org.openmrs.LocationTag)
 	 */
+	@Override
 	public LocationTag unretireLocationTag(LocationTag tag) throws APIException {
 		tag.setRetired(false);
 		tag.setRetireReason(null);
@@ -322,6 +346,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#purgeLocationTag(org.openmrs.LocationTag)
 	 */
+	@Override
 	public void purgeLocationTag(LocationTag tag) throws APIException {
 		dao.deleteLocationTag(tag);
 	}
@@ -361,6 +386,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	/**
 	 * @see org.openmrs.api.LocationService#getPossibleAddressValues(Address, String)
 	 */
+	@Override
 	public List<String> getPossibleAddressValues(Address incomplete, String fieldName) throws APIException {
 		// not implemented by default
 		return null;

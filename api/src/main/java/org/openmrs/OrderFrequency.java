@@ -58,10 +58,12 @@ public class OrderFrequency extends BaseOpenmrsMetadata {
 	/**
 	 * Get the uuid
 	 */
+	@Override
 	public String getUuid() {
 		return uuid;
 	}
 	
+	@Override
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
@@ -69,6 +71,7 @@ public class OrderFrequency extends BaseOpenmrsMetadata {
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getOrderFrequencyId();
 	}
@@ -76,6 +79,7 @@ public class OrderFrequency extends BaseOpenmrsMetadata {
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setOrderFrequencyId(id);
 	}

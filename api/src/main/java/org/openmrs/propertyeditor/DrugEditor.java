@@ -43,6 +43,7 @@ public class DrugEditor extends PropertyEditorSupport {
 	 * @should set using uuid
 	 * @should fail if drug does not exist with non-empty identifier
 	 */
+	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		ConceptService es = Context.getConceptService();
 		if (StringUtils.hasText(text)) {
@@ -69,6 +70,7 @@ public class DrugEditor extends PropertyEditorSupport {
 	 * @should return drug identifier as string when editor has a value
 	 * @should return empty string when editor has a null value
 	 */
+	@Override
 	public String getAsText() {
 		Drug d = (Drug) getValue();
 		if (d == null) {

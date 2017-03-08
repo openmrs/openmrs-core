@@ -146,10 +146,12 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 			this.locations = locs;
 		}
 		
+		@Override
 		public Integer getId() {
 			return null;
 		}
 		
+		@Override
 		public void setId(Integer id) {
 		}
 	}
@@ -197,10 +199,12 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 			this.locations = locs;
 		}
 		
+		@Override
 		public Integer getId() {
 			return null;
 		}
 		
+		@Override
 		public void setId(Integer id) {
 		}
 	}
@@ -244,10 +248,12 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 			this.locales = locs;
 		}
 		
+		@Override
 		public Integer getId() {
 			return id;
 		}
 		
+		@Override
 		public void setId(Integer id) {
 			this.id = id;
 		}
@@ -346,10 +352,12 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 			this.notAnnotatedPersons = notAnnotatedPersons;
 		}
 		
+		@Override
 		public Integer getId() {
 			return null;
 		}
 		
+		@Override
 		public void setId(Integer id) {
 		}
 	}
@@ -433,10 +441,12 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 			this.notAnnotatedPersons = notAnnotatedPersons;
 		}
 		
+		@Override
 		public Integer getId() {
 			return null;
 		}
 		
+		@Override
 		public void setId(Integer id) {
 		}
 	}
@@ -479,10 +489,12 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 			this.concepts = concepts;
 		}
 		
+		@Override
 		public Integer getId() {
 			return null;
 		}
 		
+		@Override
 		public void setId(Integer id) {
 		}
 	}

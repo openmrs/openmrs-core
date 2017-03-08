@@ -49,6 +49,7 @@ public class TaskThreadedInitializationWrapper implements Task {
 	 * @see org.openmrs.scheduler.Task#execute() Executes the task defined in the task definition
 	 *      but waits until the initialize method has finished
 	 */
+	@Override
 	public void execute() {
 		lock.lock();
 		try {
@@ -72,9 +73,11 @@ public class TaskThreadedInitializationWrapper implements Task {
 	 *      the task and sets the task definition. This method is non-blocking by executing in a new
 	 *      thread.
 	 */
+	@Override
 	public void initialize(final TaskDefinition config) {
 		Runnable r = new Runnable() {
 			
+			@Override
 			public void run() {
 				lock.lock();
 				try {
@@ -94,6 +97,7 @@ public class TaskThreadedInitializationWrapper implements Task {
 	/**
 	 * @see org.openmrs.scheduler.Task#getTaskDefinition()
 	 */
+	@Override
 	public TaskDefinition getTaskDefinition() {
 		return task != null ? task.getTaskDefinition() : null;
 	}
@@ -101,6 +105,7 @@ public class TaskThreadedInitializationWrapper implements Task {
 	/**
 	 * @see org.openmrs.scheduler.Task#isExecuting()
 	 */
+	@Override
 	public boolean isExecuting() {
 		return task.isExecuting();
 	}
@@ -108,6 +113,7 @@ public class TaskThreadedInitializationWrapper implements Task {
 	/**
 	 * @see org.openmrs.scheduler.Task#shutdown()
 	 */
+	@Override
 	public void shutdown() {
 		task.shutdown();
 	}

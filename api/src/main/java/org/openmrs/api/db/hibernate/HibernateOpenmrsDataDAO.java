@@ -34,6 +34,7 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 	/**
 	 * @see org.openmrs.api.db.OpenmrsDataDAO#getAll(boolean)
 	 */
+	@Override
 	public List<T> getAll(boolean includeVoided) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(mappedClass);
 		
@@ -47,6 +48,7 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 	/**
 	 * @see org.openmrs.api.db.OpenmrsDataDAO#getAll(boolean, java.lang.Integer, java.lang.Integer)
 	 */
+	@Override
 	public List<T> getAll(boolean includeVoided, Integer firstResult, Integer maxResults) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(mappedClass);
 		
@@ -63,6 +65,7 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 	/**
 	 * @see org.openmrs.api.db.OpenmrsDataDAO#getAllCount(boolean)
 	 */
+	@Override
 	public int getAllCount(boolean includeVoided) {
 		
 		String hql = "select count(*)" + " from " + mappedClass;

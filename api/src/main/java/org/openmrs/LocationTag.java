@@ -60,6 +60,7 @@ public class LocationTag extends BaseOpenmrsMetadata {
 		this.locationTagId = locationTagId;
 	}
 	
+	@Override
 	public String toString() {
 		return getName();
 	}
@@ -67,6 +68,7 @@ public class LocationTag extends BaseOpenmrsMetadata {
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getLocationTagId();
 	}
@@ -74,6 +76,7 @@ public class LocationTag extends BaseOpenmrsMetadata {
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setLocationTagId(id);
 		

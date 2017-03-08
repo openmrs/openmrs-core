@@ -116,6 +116,7 @@ public class PatientState extends BaseOpenmrsData implements java.io.Serializabl
 	}
 	
 	/** @see Object#toString() */
+	@Override
 	public String toString() {
 		return "id=" + getPatientStateId() + ", patientProgram=" + getPatientProgram() + ", state=" + getState()
 		        + ", startDate=" + getStartDate() + ", endDate=" + getEndDate() + ", dateCreated=" + getDateCreated()
@@ -170,6 +171,7 @@ public class PatientState extends BaseOpenmrsData implements java.io.Serializabl
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getPatientStateId();
 	}
@@ -178,6 +180,7 @@ public class PatientState extends BaseOpenmrsData implements java.io.Serializabl
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setPatientStateId(id);
 	}

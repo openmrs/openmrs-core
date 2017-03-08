@@ -61,6 +61,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	 *
 	 * @see liquibase.change.custom.CustomTaskChange#execute(liquibase.database.Database)
 	 */
+	@Override
 	public void execute(Database database) throws CustomChangeException {
 		runBatchInsert((JdbcConnection) database.getConnection());
 	}
@@ -252,6 +253,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	 *
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
+	@Override
 	public void setUp() throws SetupException {
 		if (StringUtils.isNotBlank(visibleConceptMapTypes)) {
 			visibleConceptMapTypeArray = StringUtils.split(visibleConceptMapTypes, ",");
@@ -278,6 +280,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	/**
 	 * @see liquibase.change.custom.CustomChange#getConfirmationMessage()
 	 */
+	@Override
 	public String getConfirmationMessage() {
 		return "Finished inserting core concept map types";
 	}

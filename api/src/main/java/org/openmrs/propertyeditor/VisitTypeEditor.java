@@ -35,6 +35,7 @@ public class VisitTypeEditor extends PropertyEditorSupport {
 	 * @should set using id
 	 * @should set using uuid
 	 */
+	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		VisitService vs = Context.getVisitService();
 		if (StringUtils.hasText(text)) {
@@ -53,6 +54,7 @@ public class VisitTypeEditor extends PropertyEditorSupport {
 		}
 	}
 	
+	@Override
 	public String getAsText() {
 		VisitType vt = (VisitType) getValue();
 		if (vt == null) {

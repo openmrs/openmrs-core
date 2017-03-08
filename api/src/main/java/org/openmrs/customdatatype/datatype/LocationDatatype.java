@@ -26,6 +26,7 @@ public class LocationDatatype extends BaseMetadataDatatype<Location> {
 	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(String)
 	 * @override
 	 */
+	@Override
 	public Location deserialize(String uuid) {
 		if (StringUtils.isBlank(uuid)) {
 			return null;

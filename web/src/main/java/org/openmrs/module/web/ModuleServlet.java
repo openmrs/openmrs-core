@@ -85,20 +85,24 @@ public class ModuleServlet extends HttpServlet {
 			this.servletContext = servletContext;
 		}
 		
+		@Override
 		public String getServletName() {
 			return name;
 		}
 		
+		@Override
 		public ServletContext getServletContext() {
 			return servletContext;
 		}
 		
 		// not implemented in a module's config.xml yet
+		@Override
 		public String getInitParameter(String paramName) {
 			return null;
 		}
 		
 		// not implemented in a module's config.xml yet
+		@Override
 		@SuppressWarnings("unchecked")
 		public Enumeration getInitParameterNames() {
 			return null;

@@ -41,6 +41,7 @@ public class RequireVoidReasonVoidHandler implements VoidHandler<Voidable> {
 	 * @should not throw Exception if voidReason is not blank
 	 * @should not throw Exception if voidReason is null for unsupported types
 	 */
+	@Override
 	public void handle(Voidable voidableObject, User voidingUser, Date voidedDate, String voidReason) {
 		
 		if (StringUtils.isBlank(voidReason)) {

@@ -59,6 +59,7 @@ public class PseudoStaticContentController implements Controller, LastModified, 
 		this.rewrites = rewrites;
 	}
 	
+	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 	        IOException {
 		String path = request.getServletPath() + request.getPathInfo();

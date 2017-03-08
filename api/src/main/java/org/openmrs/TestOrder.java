@@ -45,6 +45,7 @@ public class TestOrder extends Order {
 	 * @see org.openmrs.Order#copy()
 	 * @should copy all test order fields
 	 */
+	@Override
 	public TestOrder copy() {
 		return copyHelper(new TestOrder());
 	}

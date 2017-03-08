@@ -250,6 +250,7 @@ public class Duration implements Operand {
 	/**
 	 * @see org.openmrs.logic.op.Operand#supports(org.openmrs.logic.op.ComparisonOperator)
 	 */
+	@Override
 	public boolean supports(ComparisonOperator operator) {
 		return (ComparisonOperator.WITHIN.equals(operator));
 	}

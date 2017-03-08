@@ -18,6 +18,7 @@ package org.openmrs.logic.op;
  */
 public class Equals implements ComparisonOperator {
 	
+	@Override
 	public String toString() {
 		return "EQUALS";
 	}

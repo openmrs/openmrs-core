@@ -23,6 +23,7 @@ package org.openmrs.logic.op;
  */
 public class LessThanEquals implements ComparisonOperator {
 	
+	@Override
 	public String toString() {
 		return "LESS THAN EQUALS";
 	}

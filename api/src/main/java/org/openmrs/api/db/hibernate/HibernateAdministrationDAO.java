@@ -77,6 +77,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalProperty(java.lang.String)
 	 */
+	@Override
 	public String getGlobalProperty(String propertyName) throws DAOException {
 		GlobalProperty gp = getGlobalPropertyObject(propertyName);
 		
@@ -91,6 +92,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertyObject(java.lang.String)
 	 */
+	@Override
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
 		if (isDatabaseStringComparisonCaseSensitive()) {
 			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
@@ -102,6 +104,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		}
 	}
 	
+	@Override
 	public GlobalProperty getGlobalPropertyByUuid(String uuid) throws DAOException {
 		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession()
 		        .createQuery("from GlobalProperty t where t.uuid = :uuid").setString("uuid", uuid).uniqueResult();
@@ -112,6 +115,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getAllGlobalProperties()
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<GlobalProperty> getAllGlobalProperties() throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
@@ -121,6 +125,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertiesByPrefix(java.lang.String)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix) {
 		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class)
@@ -130,6 +135,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertiesBySuffix(java.lang.String)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix) {
 		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class)
@@ -139,6 +145,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#deleteGlobalProperty(GlobalProperty)
 	 */
+	@Override
 	public void deleteGlobalProperty(GlobalProperty property) throws DAOException {
 		sessionFactory.getCurrentSession().delete(property);
 	}
@@ -146,6 +153,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
+	@Override
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws DAOException {
 		GlobalProperty gpObject = getGlobalPropertyObject(gp.getProperty());
 		if (gpObject != null) {
@@ -162,6 +170,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#executeSQL(java.lang.String, boolean)
 	 */
+	@Override
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException {
 		
 		// (solution for junit tests that usually use hsql

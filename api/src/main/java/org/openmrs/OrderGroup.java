@@ -185,10 +185,12 @@ public class OrderGroup extends BaseOpenmrsData {
 		this.orderSet = orderSet;
 	}
 	
+	@Override
 	public Integer getId() {
 		return getOrderGroupId();
 	}
 	
+	@Override
 	public void setId(Integer id) {
 		setOrderGroupId(id);
 	}

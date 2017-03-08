@@ -101,6 +101,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return new StringBuilder().append("a1:").append(getAddress1()).append(", a2:").append(getAddress2()).append(", cv:")
 		        .append(getCityVillage()).append(", sp:").append(getStateProvince()).append(", c:").append(getCountry())
@@ -152,6 +153,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 *
 	 * @return New PersonAddress object
 	 */
+	@Override
 	public Object clone() {
 		try {
 			return super.clone();
@@ -164,6 +166,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @return Returns the address1.
 	 */
+	@Override
 	public String getAddress1() {
 		return address1;
 	}
@@ -171,6 +174,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @param address1 The address1 to set.
 	 */
+	@Override
 	public void setAddress1(String address1) {
 		this.address1 = address1;
 	}
@@ -178,6 +182,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @return Returns the address2.
 	 */
+	@Override
 	public String getAddress2() {
 		return address2;
 	}
@@ -185,6 +190,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @param address2 The address2 to set.
 	 */
+	@Override
 	public void setAddress2(String address2) {
 		this.address2 = address2;
 	}
@@ -192,6 +198,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @return Returns the cityVillage.
 	 */
+	@Override
 	public String getCityVillage() {
 		return cityVillage;
 	}
@@ -199,6 +206,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @param cityVillage The cityVillage to set.
 	 */
+	@Override
 	public void setCityVillage(String cityVillage) {
 		this.cityVillage = cityVillage;
 	}
@@ -206,6 +214,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @return Returns the country.
 	 */
+	@Override
 	public String getCountry() {
 		return country;
 	}
@@ -213,6 +222,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @param country The country to set.
 	 */
+	@Override
 	public void setCountry(String country) {
 		this.country = country;
 	}
@@ -242,6 +252,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @return Returns the latitude.
 	 */
+	@Override
 	public String getLatitude() {
 		return latitude;
 	}
@@ -249,6 +260,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @param latitude The latitude to set.
 	 */
+	@Override
 	public void setLatitude(String latitude) {
 		this.latitude = latitude;
 	}
@@ -256,6 +268,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @return Returns the longitude.
 	 */
+	@Override
 	public String getLongitude() {
 		return longitude;
 	}
@@ -263,6 +276,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @param longitude The longitude to set.
 	 */
+	@Override
 	public void setLongitude(String longitude) {
 		this.longitude = longitude;
 	}
@@ -298,6 +312,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @return Returns the postalCode.
 	 */
+	@Override
 	public String getPostalCode() {
 		return postalCode;
 	}
@@ -305,6 +320,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @param postalCode The postalCode to set.
 	 */
+	@Override
 	public void setPostalCode(String postalCode) {
 		this.postalCode = postalCode;
 	}
@@ -312,6 +328,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @return Returns the stateProvince.
 	 */
+	@Override
 	public String getStateProvince() {
 		return stateProvince;
 	}
@@ -319,6 +336,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @param stateProvince The stateProvince to set.
 	 */
+	@Override
 	public void setStateProvince(String stateProvince) {
 		this.stateProvince = stateProvince;
 	}
@@ -326,6 +344,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @return Returns the countyDistrict.
 	 */
+	@Override
 	public String getCountyDistrict() {
 		return countyDistrict;
 	}
@@ -333,6 +352,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * @param countyDistrict The countyDistrict to set.
 	 */
+	@Override
 	public void setCountyDistrict(String countyDistrict) {
 		this.countyDistrict = countyDistrict;
 	}
@@ -360,6 +380,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
+	@Override
 	@SuppressWarnings("squid:S1210")
 	public int compareTo(PersonAddress other) {
 		int retValue = 0;
@@ -389,6 +410,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @since 1.8
 	 * @return the address3
 	 */
+	@Override
 	public String getAddress3() {
 		return address3;
 	}
@@ -397,6 +419,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @since 1.8
 	 * @param address3 the address3 to set
 	 */
+	@Override
 	public void setAddress3(String address3) {
 		this.address3 = address3;
 	}
@@ -405,6 +428,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @since 1.8
 	 * @return the address4
 	 */
+	@Override
 	public String getAddress4() {
 		return address4;
 	}
@@ -413,6 +437,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @since 1.8
 	 * @param address4 the address4 to set
 	 */
+	@Override
 	public void setAddress4(String address4) {
 		this.address4 = address4;
 	}
@@ -421,6 +446,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @since 1.8
 	 * @return the address6
 	 */
+	@Override
 	public String getAddress6() {
 		return address6;
 	}
@@ -429,6 +455,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @since 1.8
 	 * @param address6 the address6 to set
 	 */
+	@Override
 	public void setAddress6(String address6) {
 		this.address6 = address6;
 	}
@@ -437,6 +464,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @since 1.8
 	 * @return the address5
 	 */
+	@Override
 	public String getAddress5() {
 		return address5;
 	}
@@ -445,6 +473,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @since 1.8
 	 * @param address5 the address5 to set
 	 */
+	@Override
 	public void setAddress5(String address5) {
 		this.address5 = address5;
 	}
@@ -453,6 +482,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		
 		return getPersonAddressId();
@@ -462,6 +492,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setPersonAddressId(id);
 		
@@ -530,6 +561,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getAddress7() {
 		return address7;
 	}
@@ -537,6 +569,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setAddress7(String address7) {
 		this.address7 = address7;
 	}
@@ -544,6 +577,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getAddress8() {
 		return address8;
 	}
@@ -551,6 +585,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setAddress8(String address8) {
 		this.address8 = address8;
 	}
@@ -558,6 +593,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getAddress9() {
 		return address9;
 	}
@@ -565,6 +601,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setAddress9(String address9) {
 		this.address9 = address9;
 	}
@@ -572,6 +609,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getAddress10() {
 		return address10;
 	}
@@ -579,6 +617,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setAddress10(String address10) {
 		this.address10 = address10;
 	}
@@ -586,6 +625,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getAddress11() {
 		return address11;
 	}
@@ -593,6 +633,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setAddress11(String address11) {
 		this.address11 = address11;
 	}
@@ -600,6 +641,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getAddress12() {
 		return address12;
 	}
@@ -607,6 +649,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setAddress12(String address12) {
 		this.address12 = address12;
 	}
@@ -614,6 +657,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getAddress13() {
 		return address13;
 	}
@@ -621,6 +665,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setAddress13(String address13) {
 		this.address13 = address13;
 	}
@@ -628,6 +673,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getAddress14() {
 		return address14;
 	}
@@ -635,6 +681,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setAddress14(String address14) {
 		this.address14 = address14;
 	}
@@ -642,6 +689,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getAddress15() {
 		return address15;
 	}
@@ -649,6 +697,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setAddress15(String address15) {
 		this.address15 = address15;
 	}

@@ -1089,6 +1089,7 @@ public class Obs extends BaseOpenmrsData {
 	/**
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		if (obsId == null) {
 			return "obs id is null";
@@ -1101,6 +1102,7 @@ public class Obs extends BaseOpenmrsData {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getObsId();
 		
@@ -1110,6 +1112,7 @@ public class Obs extends BaseOpenmrsData {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setObsId(id);
 		

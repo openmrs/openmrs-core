@@ -26,6 +26,7 @@ public class LocationAttributeTypeEditor extends PropertyEditorSupport {
 	/**
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
+	@Override
 	public String getAsText() {
 		LocationAttributeType lat = (LocationAttributeType) getValue();
 		return lat == null ? null : lat.getId().toString();
@@ -37,6 +38,7 @@ public class LocationAttributeTypeEditor extends PropertyEditorSupport {
 	 * 
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
+	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		LocationService ls = Context.getLocationService();
 		if (Context.isAuthenticated() && StringUtils.hasText(text)) {

@@ -27,6 +27,7 @@ public class PersonNameSaveHandler implements SaveHandler<PersonName> {
 	 * @see org.openmrs.api.handler.SaveHandler#handle(org.openmrs.OpenmrsObject, org.openmrs.User,
 	 *      java.util.Date, java.lang.String)
 	 */
+	@Override
 	public void handle(PersonName personName, User creator, Date dateCreated, String other) {
 		if (personName.getGivenName() != null) {
 			personName.setGivenName(personName.getGivenName().trim());

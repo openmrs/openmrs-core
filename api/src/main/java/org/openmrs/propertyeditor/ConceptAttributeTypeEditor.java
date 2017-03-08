@@ -21,6 +21,7 @@ public class ConceptAttributeTypeEditor extends PropertyEditorSupport {
 	/**
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
+	@Override
 	public String getAsText() {
 		ConceptAttributeType conceptAttributeType = (ConceptAttributeType) getValue();
 		return conceptAttributeType == null ? null : conceptAttributeType.getId().toString();
@@ -32,6 +33,7 @@ public class ConceptAttributeTypeEditor extends PropertyEditorSupport {
 	 *
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
+	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		ConceptService conceptService = Context.getConceptService();
 		if (Context.isAuthenticated() && StringUtils.hasText(text)) {

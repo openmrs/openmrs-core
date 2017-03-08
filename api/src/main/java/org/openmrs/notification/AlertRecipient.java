@@ -150,6 +150,7 @@ public class AlertRecipient extends BaseOpenmrsObject {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		throw new UnsupportedOperationException();
 	}
@@ -158,6 +159,7 @@ public class AlertRecipient extends BaseOpenmrsObject {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		throw new UnsupportedOperationException();
 	}

@@ -279,17 +279,21 @@ class OpenmrsObjectImp extends NormalClass implements OpenmrsObject {
 	@SuppressWarnings("unchecked")
 	Collection genericCollectionField;
 	
+	@Override
 	public Integer getId() {
 		return null;
 	}
 	
+	@Override
 	public String getUuid() {
 		return null;
 	}
 	
+	@Override
 	public void setId(Integer id) {
 	}
 	
+	@Override
 	public void setUuid(String uuid) {
 	}
 	

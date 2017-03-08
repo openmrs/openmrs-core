@@ -88,10 +88,12 @@ public class ConceptStopWord extends BaseOpenmrsObject {
 		this.conceptStopWordId = conceptStopWordId;
 	}
 	
+	@Override
 	public Integer getId() {
 		return getConceptStopWordId();
 	}
 	
+	@Override
 	public void setId(Integer id) {
 		setConceptStopWordId(id);
 	}

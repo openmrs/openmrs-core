@@ -185,11 +185,13 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 */
 	public static class LatchInitializeTask extends LatchTask {
 		
+		@Override
 		public void initialize(TaskDefinition config) {
 			super.initialize(config);
 			waitForLatch();
 		}
 		
+		@Override
 		public void execute() {
 		}
 	}
@@ -200,10 +202,12 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 */
 	public static class LatchExecuteTask extends LatchTask {
 		
+		@Override
 		public void initialize(TaskDefinition config) {
 			super.initialize(config);
 		}
 		
+		@Override
 		public void execute() {
 			waitForLatch();
 		}
@@ -214,6 +218,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 */
 	public static class InitSequenceTestTask extends AbstractTask {
 		
+		@Override
 		public void initialize(TaskDefinition config) {
 			
 			super.initialize(config);
@@ -300,21 +305,26 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 */
 	public static class BareTask implements Task {
 		
+		@Override
 		public void execute() {
 			latch.countDown();
 		}
 		
+		@Override
 		public TaskDefinition getTaskDefinition() {
 			return null;
 		}
 		
+		@Override
 		public void initialize(TaskDefinition definition) {
 		}
 		
+		@Override
 		public boolean isExecuting() {
 			return false;
 		}
 		
+		@Override
 		public void shutdown() {
 		}
 	}
@@ -350,6 +360,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 */
 	public static class StoreExecutionTimeTask extends AbstractTask {
 		
+		@Override
 		public void execute() {
 			actualExecutionTime = System.currentTimeMillis();
 			// signal the test method that the task has executed

@@ -37,6 +37,7 @@ public class EncounterProvider extends BaseOpenmrsData {
 	/**
 	 * @see OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getEncounterProviderId();
 	}
@@ -44,6 +45,7 @@ public class EncounterProvider extends BaseOpenmrsData {
 	/**
 	 * @see OpenmrsObject#setId(Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setEncounterProviderId(id);
 	}

@@ -40,6 +40,7 @@ public class Allergies implements List<Allergy> {
     	return allergyStatus;
     }
 
+	@Override
 	public boolean add(Allergy allergy) {
 		throwExceptionIfHasDuplicateAllergen(allergy);
 		allergyStatus = SEE_LIST;
@@ -54,6 +55,7 @@ public class Allergies implements List<Allergy> {
 		return result;
 	}
 	
+	@Override
 	public void clear() {
 		allergyStatus = UNKNOWN;
 		allergies.clear();

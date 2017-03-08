@@ -43,6 +43,7 @@ public class ProcessHL7InQueueTask extends AbstractTask {
 	/**
 	 * Process the next form entry in the database and then remove the form entry from the database.
 	 */
+	@Override
 	public void execute() {
 		Context.openSession();
 		try {

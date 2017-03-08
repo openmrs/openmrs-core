@@ -46,6 +46,7 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 	 * 
 	 * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
 	 */
+	@Override
 	public Properties getRuntimeProperties() {
 		Properties props = super.getRuntimeProperties();
 		

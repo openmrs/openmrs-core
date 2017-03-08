@@ -37,5 +37,6 @@ public interface VoidHandler<V extends Voidable> extends RequiredDataHandler<V> 
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
 	 */
+	@Override
 	public void handle(V voidableObject, User voidingUser, Date voidedDate, String voidReason);
 }

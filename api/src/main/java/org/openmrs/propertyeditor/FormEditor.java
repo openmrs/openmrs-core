@@ -37,6 +37,7 @@ public class FormEditor extends PropertyEditorSupport {
 	 * @should set using id
 	 * @should set using uuid
 	 */
+	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		FormService ps = Context.getFormService();
 		if (StringUtils.hasText(text)) {
@@ -56,6 +57,7 @@ public class FormEditor extends PropertyEditorSupport {
 		}
 	}
 	
+	@Override
 	public String getAsText() {
 		Form t = (Form) getValue();
 		if (t == null) {

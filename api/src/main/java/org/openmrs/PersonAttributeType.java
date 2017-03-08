@@ -130,6 +130,7 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return getName();
 	}
@@ -159,6 +160,7 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getPersonAttributeTypeId();
 	}
@@ -167,6 +169,7 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setPersonAttributeTypeId(id);
 		

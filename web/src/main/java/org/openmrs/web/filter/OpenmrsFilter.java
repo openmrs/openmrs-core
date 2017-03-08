@@ -41,6 +41,7 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 	/**
 	 * @see javax.servlet.Filter#destroy()
 	 */
+	@Override
 	public void destroy() {
 		log.debug("Destroying filter");
 	}

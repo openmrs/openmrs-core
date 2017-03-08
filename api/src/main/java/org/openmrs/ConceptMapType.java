@@ -67,6 +67,7 @@ public class ConceptMapType extends BaseOpenmrsMetadata {
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getConceptMapTypeId();
 	}
@@ -74,6 +75,7 @@ public class ConceptMapType extends BaseOpenmrsMetadata {
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setConceptMapTypeId(id);
 	}
@@ -81,6 +83,7 @@ public class ConceptMapType extends BaseOpenmrsMetadata {
 	/**
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		if (getName() == null) {
 			return "";

@@ -20,6 +20,7 @@ import org.openmrs.logic.LogicCriteria;
  */
 public class Or implements LogicalOperator {
 	
+	@Override
 	public String toString() {
 		return "OR";
 	}

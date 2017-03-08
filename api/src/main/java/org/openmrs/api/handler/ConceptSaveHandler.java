@@ -40,6 +40,7 @@ public class ConceptSaveHandler implements SaveHandler<Concept> {
 	 * @see org.openmrs.api.handler.SaveHandler#handle(org.openmrs.OpenmrsObject, org.openmrs.User,
 	 *      java.util.Date, java.lang.String)
 	 */
+	@Override
 	public void handle(Concept concept, User creator, Date dateCreated, String other) {
 		if (concept.getNames() != null) {
 			for (ConceptName cn : concept.getNames()) {

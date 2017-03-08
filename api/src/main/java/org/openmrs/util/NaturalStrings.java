@@ -45,6 +45,7 @@ public final class NaturalStrings {
 	 */
 	private static final Comparator<String> NATURAL_COMPARATOR_ASCII = new Comparator<String>() {
 		
+		@Override
 		public int compare(String o1, String o2) {
 			return compareNaturalAscii(o1, o2);
 		}
@@ -62,6 +63,7 @@ public final class NaturalStrings {
 	 */
 	private static final Comparator<String> IGNORE_CASE_NATURAL_COMPARATOR_ASCII = new Comparator<String>() {
 		
+		@Override
 		public int compare(String o1, String o2) {
 			return compareNaturalIgnoreCaseAscii(o1, o2);
 		}
@@ -112,6 +114,7 @@ public final class NaturalStrings {
 		}
 		return new Comparator<String>() {
 			
+			@Override
 			public int compare(String o1, String o2) {
 				return compareNatural(collator, o1, o2);
 			}

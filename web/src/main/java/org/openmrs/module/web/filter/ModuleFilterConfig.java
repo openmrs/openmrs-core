@@ -50,6 +50,7 @@ public class ModuleFilterConfig implements FilterConfig {
 	/**
 	 * @see javax.servlet.FilterConfig#getFilterName()
 	 */
+	@Override
 	public String getFilterName() {
 		return filterDefinition.getFilterName();
 	}
@@ -57,6 +58,7 @@ public class ModuleFilterConfig implements FilterConfig {
 	/**
 	 * @see javax.servlet.FilterConfig#getInitParameter(java.lang.String)
 	 */
+	@Override
 	public String getInitParameter(String paramName) {
 		return filterDefinition.getInitParameters().get(paramName);
 	}
@@ -64,6 +66,7 @@ public class ModuleFilterConfig implements FilterConfig {
 	/**
 	 * @see javax.servlet.FilterConfig#getInitParameterNames()
 	 */
+	@Override
 	public Enumeration<String> getInitParameterNames() {
 		Vector<String> v = new Vector<String>(filterDefinition.getInitParameters().keySet());
 		return v.elements();
@@ -81,6 +84,7 @@ public class ModuleFilterConfig implements FilterConfig {
 		this.filterDefinition = filterDefinition;
 	}
 	
+	@Override
 	public ServletContext getServletContext() {
 		return servletContext;
 	}
