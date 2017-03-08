@@ -530,7 +530,7 @@ public class Context {
 	 *
 	 * @return a java mail session
 	 */
-	private static javax.mail.Session getMailSession() {
+	private static Session getMailSession() {
 		if (mailSession == null) {
 			AdministrationService adminService = getAdministrationService();
 

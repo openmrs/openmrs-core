@@ -342,8 +342,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		
 		criteria.add(Restrictions.eq("voided", false));
 		
-		criteria.addOrder(org.hibernate.criterion.Order.desc("patient.personId"));
-		criteria.addOrder(org.hibernate.criterion.Order.desc("encounterDatetime"));
+		criteria.addOrder(Order.desc("patient.personId"));
+		criteria.addOrder(Order.desc("encounterDatetime"));
 		return criteria;
 	}
 	
