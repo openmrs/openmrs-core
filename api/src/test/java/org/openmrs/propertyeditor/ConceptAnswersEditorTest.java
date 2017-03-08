@@ -9,6 +9,7 @@
  */
 package org.openmrs.propertyeditor;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -16,8 +17,6 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-
-import org.junit.Assert;
 
 /**
  *

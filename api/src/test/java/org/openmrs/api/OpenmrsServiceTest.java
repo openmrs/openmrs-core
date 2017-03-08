@@ -12,6 +12,7 @@ package org.openmrs.api;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Cohort;
@@ -20,8 +21,6 @@ import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-
-import org.junit.Assert;
 
 /**
  * Contains methods to test behavior of OpenmrsService methods

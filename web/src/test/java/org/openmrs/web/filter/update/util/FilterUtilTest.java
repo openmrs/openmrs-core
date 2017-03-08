@@ -9,13 +9,12 @@
  */
 package org.openmrs.web.filter.update.util;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
-
-import org.junit.Assert;
 
 /**
  * Tests some of the methods on the {@link FilterUtil}

@@ -16,14 +16,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Visit;
 import org.openmrs.test.Verifies;
 import org.springframework.util.ReflectionUtils;
-
-import org.junit.Assert;
 
 /**
  * Tests the {@link Reflect} class.
