@@ -10,19 +10,19 @@
 package org.openmrs.api.handler;
 
 import java.util.Date;
-import java.util.List;
 
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
-import org.openmrs.aop.RequiredDataAdvice;
 
 /**
  * This is the super interface for all save*, void*, and retire* actions that take place on all
- * services. The {@link RequiredDataAdvice} uses AOP around each method to call all handlers that a
- * certain interface. Having this superinterface makes it easier to have one method for this.
+ * services. The {@link org.openmrs.aop.RequiredDataAdvice} uses AOP around each method to call all
+ * handlers that a certain interface. Having this super interface makes it easier to have one method
+ * for this.
  * 
- * @see RequiredDataAdvice#recursivelyHandle(Class, OpenmrsObject, User, Date, String, List)
- * @see RequiredDataAdvice
+ * @see org.openmrs.aop.RequiredDataAdvice#recursivelyHandle(Class, OpenmrsObject, User, Date,
+ *      String, java.util.List)
+ * @see org.openmrs.aop.RequiredDataAdvice
  * @see SaveHandler
  * @see VoidHandler
  * @see RetireHandler
