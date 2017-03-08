@@ -97,13 +97,10 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	@Before
 	public void setUp() {
 
-		context.setUserContext(userContext);
+		Context.setUserContext(userContext);
 		context.setServiceContext(serviceContext);
-		context.setContext(serviceContext);
+		Context.setContext(serviceContext);
 		serviceContext.setApplicationContext(applicationContext);
-		
-		//when(context.getUserContext()).thenReturn(userContext);
-		//when(serviceContext.getApplicationContext()).thenReturn(applicationContext);
 		
 		User user = new User();
 		user.setUuid("1010d442-e134-11de-babe-001e378eb67e");

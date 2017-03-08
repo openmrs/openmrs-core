@@ -2537,7 +2537,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order discontinuationOrder = new SomeTestOrder();
 		discontinuationOrder.setCareSetting(order.getCareSetting());
 		discontinuationOrder.setConcept(order.getConcept());
-		discontinuationOrder.setAction(Order.Action.DISCONTINUE.DISCONTINUE);
+		discontinuationOrder.setAction(Action.DISCONTINUE);
 		discontinuationOrder.setPreviousOrder(order);
 		discontinuationOrder.setPatient(order.getPatient());
 		assertTrue(order.getOrderType().getJavaClass().isAssignableFrom(discontinuationOrder.getClass()));

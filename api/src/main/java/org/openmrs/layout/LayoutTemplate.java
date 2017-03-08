@@ -73,7 +73,7 @@ public abstract class LayoutTemplate {
 		LayoutSupport<?> as = getLayoutSupportInstance();
 		List<String> specialTokens = nonUniqueStringsGoLast(as.getSpecialTokens());
 		for (String token : specialTokens) {
-			line = line.replaceAll(token, this.LAYOUT_TOKEN);
+			line = line.replaceAll(token, LAYOUT_TOKEN);
 		}
 		return line;
 	}
@@ -184,7 +184,7 @@ public abstract class LayoutTemplate {
 					ret = new Vector<List<Map<String, String>>>();
 				}
 				String tokenizedLine = replaceTokens(line);
-				String[] nonTokens = tokenizedLine.split(this.LAYOUT_TOKEN);
+				String[] nonTokens = tokenizedLine.split(LAYOUT_TOKEN);
 				List<Map<String, String>> lineTokens = convertToTokens(line, nonTokens);
 				ret.add(lineTokens);
 			}

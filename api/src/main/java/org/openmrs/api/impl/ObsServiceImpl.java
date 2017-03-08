@@ -134,7 +134,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			obs = Context.getObsService().getObs(obs.getObsId());
 			//delete the previous file from the appdata/complex_obs folder
 			if (newObs.hasPreviousVersion() && newObs.getPreviousVersion().isComplex()) {
-				File previousFile = new AbstractHandler().getComplexDataFile(obs);
+				File previousFile = AbstractHandler.getComplexDataFile(obs);
 				previousFile.delete();
 			}
 			// calling this via the service so that AOP hooks are called
