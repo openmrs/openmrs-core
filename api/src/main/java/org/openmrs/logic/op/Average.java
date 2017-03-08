@@ -19,6 +19,7 @@ package org.openmrs.logic.op;
  */
 public class Average implements TransformOperator {
 	
+	@Override
 	public String toString() {
 		return "Average";
 	}

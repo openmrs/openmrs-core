@@ -54,6 +54,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getAllVisitTypes()
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public List<VisitType> getAllVisitTypes() throws APIException {
@@ -72,6 +73,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitType(java.lang.Integer)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public VisitType getVisitType(Integer visitTypeId) {
 		return (VisitType) sessionFactory.getCurrentSession().get(VisitType.class, visitTypeId);
@@ -80,6 +82,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitTypeByUuid(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public VisitType getVisitTypeByUuid(String uuid) {
 		return (VisitType) sessionFactory.getCurrentSession().createQuery("from VisitType vt where vt.uuid = :uuid")
@@ -89,6 +92,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisitTypes(java.lang.String)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public List<VisitType> getVisitTypes(String fuzzySearchPhrase) {
@@ -101,6 +105,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#saveVisitType(org.openmrs.VisitType)
 	 */
+	@Override
 	@Transactional
 	public VisitType saveVisitType(VisitType visitType) {
 		sessionFactory.getCurrentSession().saveOrUpdate(visitType);
@@ -110,6 +115,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	/**
 	 * @see org.openmrs.api.db.VisitDAO#purgeVisitType(org.openmrs.VisitType)
 	 */
+	@Override
 	@Transactional
 	public void purgeVisitType(VisitType visitType) {
 		sessionFactory.getCurrentSession().delete(visitType);

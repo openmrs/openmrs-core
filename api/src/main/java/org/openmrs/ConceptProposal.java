@@ -207,6 +207,7 @@ public class ConceptProposal extends BaseOpenmrsObject {
 		this.encounter = encounter;
 	}
 	
+	@Override
 	public String toString() {
 		if (conceptProposalId == null) {
 			return "";
@@ -269,6 +270,7 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getConceptProposalId();
 	}
@@ -277,6 +279,7 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setConceptProposalId(id);
 	}

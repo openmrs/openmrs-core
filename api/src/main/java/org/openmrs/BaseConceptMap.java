@@ -45,6 +45,7 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	/**
 	 * @return the creator
 	 */
+	@Override
 	public User getCreator() {
 		return creator;
 	}
@@ -52,6 +53,7 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	/**
 	 * @param creator the creator to set
 	 */
+	@Override
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -59,6 +61,7 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	/**
 	 * @return the changedBy
 	 */
+	@Override
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -66,6 +69,7 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	/**
 	 * @param changedBy the changedBy to set
 	 */
+	@Override
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -73,6 +77,7 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	/**
 	 * @return the dateCreated
 	 */
+	@Override
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -80,6 +85,7 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	/**
 	 * @param dateCreated the dateCreated to set
 	 */
+	@Override
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -87,6 +93,7 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	/**
 	 * @return the dateChanged
 	 */
+	@Override
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -94,6 +101,7 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	/**
 	 * @param dateChanged the dateChanged to set
 	 */
+	@Override
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}

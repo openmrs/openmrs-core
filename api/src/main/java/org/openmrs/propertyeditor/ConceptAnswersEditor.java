@@ -54,6 +54,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 	 * @param text list of conceptIds (not conceptAnswerIds)
 	 * @should set the sort weights with the least possible changes
 	 */
+	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.hasText(text)) {
 			ConceptService cs = Context.getConceptService();

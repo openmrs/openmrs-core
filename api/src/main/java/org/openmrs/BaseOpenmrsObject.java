@@ -76,6 +76,7 @@ public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	/**
 	 * @see org.openmrs.OpenmrsObject#getUuid()
 	 */
+	@Override
 	public String getUuid() {
 		return uuid;
 	}
@@ -83,6 +84,7 @@ public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 	/**
 	 * @see org.openmrs.OpenmrsObject#setUuid(java.lang.String)
 	 */
+	@Override
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}

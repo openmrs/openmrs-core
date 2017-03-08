@@ -50,6 +50,7 @@ public class LogicTransform {
 		return transformOperator;
 	}
 	
+	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
 		

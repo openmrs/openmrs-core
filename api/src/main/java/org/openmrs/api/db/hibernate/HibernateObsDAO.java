@@ -61,6 +61,7 @@ public class HibernateObsDAO implements ObsDAO {
 	/**
 	 * @see org.openmrs.api.ObsService#deleteObs(org.openmrs.Obs)
 	 */
+	@Override
 	public void deleteObs(Obs obs) throws DAOException {
 		sessionFactory.getCurrentSession().delete(obs);
 	}
@@ -68,6 +69,7 @@ public class HibernateObsDAO implements ObsDAO {
 	/**
 	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
 	 */
+	@Override
 	public Obs getObs(Integer obsId) throws DAOException {
 		return (Obs) sessionFactory.getCurrentSession().get(Obs.class, obsId);
 	}
@@ -75,6 +77,7 @@ public class HibernateObsDAO implements ObsDAO {
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#saveObs(org.openmrs.Obs)
 	 */
+	@Override
 	public Obs saveObs(Obs obs) throws DAOException {
 		if (obs.hasGroupMembers() && obs.getObsId() != null) {
 			// hibernate has a problem updating child collections
@@ -96,6 +99,7 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List,
 	 *      Integer, Integer, Date, Date, boolean, String)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
@@ -111,6 +115,7 @@ public class HibernateObsDAO implements ObsDAO {
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#getObservationCount(List, List, List, List, List, List, Integer, Date, Date, List, boolean, String)
 	 */
+	@Override
 	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs,
@@ -251,6 +256,7 @@ public class HibernateObsDAO implements ObsDAO {
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#getObsByUuid(java.lang.String)
 	 */
+	@Override
 	public Obs getObsByUuid(String uuid) {
 		return (Obs) sessionFactory.getCurrentSession().createQuery("from Obs o where o.uuid = :uuid").setString("uuid",
 		    uuid).uniqueResult();

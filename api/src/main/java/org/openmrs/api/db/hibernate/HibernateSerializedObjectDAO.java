@@ -67,6 +67,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#getSerializedObject(Integer)
 	 */
+	@Override
 	public SerializedObject getSerializedObject(Integer id) throws DAOException {
 		if (id != null) {
 			return (SerializedObject) sessionFactory.getCurrentSession().get(SerializedObject.class, id);
@@ -77,6 +78,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#getObject(Class, Integer)
 	 */
+	@Override
 	public <T extends OpenmrsObject> T getObject(Class<T> baseClass, Integer id) throws DAOException {
 		SerializedObject serializedObject = getSerializedObject(id);
 		return convertSerializedObject(baseClass, serializedObject);
@@ -85,6 +87,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#getSerializedObjectByUuid(String)
 	 */
+	@Override
 	public SerializedObject getSerializedObjectByUuid(String uuid) throws DAOException {
 		SerializedObject ret = null;
 		if (uuid != null) {
@@ -98,6 +101,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#getObjectByUuid(Class, String)
 	 */
+	@Override
 	public <T extends OpenmrsObject> T getObjectByUuid(Class<T> baseClass, String uuid) throws DAOException {
 		SerializedObject o = getSerializedObjectByUuid(uuid);
 		if (o != null) {
@@ -109,6 +113,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#getAllSerializedObjectsByName(Class, String, boolean)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<SerializedObject> getAllSerializedObjectsByName(Class<?> type, String name, boolean exactMatchOnly)
 	        throws DAOException {
@@ -125,6 +130,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#getAllObjectsByName(Class, String, boolean)
 	 */
+	@Override
 	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, String name, boolean exactMatchOnly)
 	        throws DAOException {
 		List<T> ret = new ArrayList<T>();
@@ -138,6 +144,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#getAllObjects(Class, boolean)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<SerializedObject> getAllSerializedObjects(Class<?> type, boolean includeRetired) throws DAOException {
 		Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
@@ -151,6 +158,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#getAllObjects(Class, boolean)
 	 */
+	@Override
 	public <T extends OpenmrsObject> List<T> getAllObjects(Class<T> type, boolean includeRetired) throws DAOException {
 		List<T> ret = new ArrayList<T>();
 		List<SerializedObject> objects = getAllSerializedObjects(type, includeRetired);
@@ -163,6 +171,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#getAllObjects(Class)
 	 */
+	@Override
 	public <T extends OpenmrsObject> List<T> getAllObjects(Class<T> type) throws DAOException {
 		return getAllObjects(type, false);
 	}
@@ -170,6 +179,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#saveObject(OpenmrsObject)
 	 */
+	@Override
 	public <T extends OpenmrsObject> T saveObject(T object) throws DAOException {
 		return saveObject(object, null);
 	}
@@ -177,6 +187,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#saveObject(OpenmrsObject, OpenmrsSerializer)
 	 */
+	@Override
 	public <T extends OpenmrsObject> T saveObject(T object, OpenmrsSerializer serializer) throws DAOException {
 		
 		Class<? extends OpenmrsObject> baseType = getRegisteredTypeForObject(object);
@@ -249,6 +260,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#purgeObject(Integer)
 	 */
+	@Override
 	public void purgeObject(Integer id) throws DAOException {
 		SerializedObject o = getSerializedObject(id);
 		sessionFactory.getCurrentSession().delete(o);
@@ -257,6 +269,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#registerSupportedType(Class)
 	 */
+	@Override
 	public void registerSupportedType(Class<? extends OpenmrsObject> clazz) throws DAOException {
 		if (!getSupportedTypes().contains(clazz)) {
 			supportedTypes.add(clazz);
@@ -266,6 +279,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#unregisterSupportedType(Class)
 	 */
+	@Override
 	public void unregisterSupportedType(Class<? extends OpenmrsObject> clazz) throws DAOException {
 		getSupportedTypes().remove(clazz);
 	}
@@ -273,6 +287,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#getRegisteredTypeForObject(OpenmrsObject)
 	 */
+	@Override
 	public Class<? extends OpenmrsObject> getRegisteredTypeForObject(OpenmrsObject object) {
 		for (Class<? extends OpenmrsObject> clazz : getSupportedTypes()) {
 			if (clazz.isAssignableFrom(object.getClass())) {
@@ -285,6 +300,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#convertSerializedObject(Class, SerializedObject)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends OpenmrsObject> T convertSerializedObject(Class<T> clazz, SerializedObject serializedObject)
 	        throws DAOException {
@@ -336,6 +352,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @return the supportedTypes
 	 */
+	@Override
 	public List<Class<? extends OpenmrsObject>> getSupportedTypes() {
 		if (supportedTypes == null) {
 			supportedTypes = new ArrayList<Class<? extends OpenmrsObject>>();

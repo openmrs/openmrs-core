@@ -56,10 +56,12 @@ public class MessageServiceImpl implements MessageService {
 	 *
 	 * @param messagePreparator
 	 */
+	@Override
 	public void setMessagePreparator(MessagePreparator messagePreparator) {
 		this.messagePreparator = messagePreparator;
 	}
 	
+	@Override
 	public MessagePreparator getMessagePreparator() {
 		return this.messagePreparator;
 	}
@@ -69,10 +71,12 @@ public class MessageServiceImpl implements MessageService {
 	 *
 	 * @param messageSender
 	 */
+	@Override
 	public void setMessageSender(MessageSender messageSender) {
 		this.messageSender = messageSender;
 	}
 	
+	@Override
 	public MessageSender getMessageSender() {
 		return this.messageSender;
 	}
@@ -83,6 +87,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param message the Message to be sent
 	 * @see org.openmrs.notification.MessageService#sendMessage(org.openmrs.notification.Message)
 	 */
+	@Override
 	public void sendMessage(Message message) throws MessageException {
 		try {
 			messageSender.send(message);
@@ -101,6 +106,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param subject the subject of the message
 	 * @param content the content or body of the message
 	 */
+	@Override
 	public Message createMessage(String recipients, String sender, String subject, String content) throws MessageException {
 		return Context.getMessageService().createMessage(recipients, sender, subject, content, null, null, null);
 	}
@@ -112,6 +118,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param subject the subject of the message
 	 * @param content the content or body of the message
 	 */
+	@Override
 	public Message createMessage(String sender, String subject, String content) throws MessageException {
 		return Context.getMessageService().createMessage(null, sender, subject, content);
 	}
@@ -122,6 +129,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param subject the subject of the message
 	 * @param content the content or body of the message
 	 */
+	@Override
 	public Message createMessage(String subject, String content) throws MessageException {
 		return Context.getMessageService().createMessage(null, null, subject, content);
 	}
@@ -131,6 +139,7 @@ public class MessageServiceImpl implements MessageService {
 	 *      java.lang.String, java.lang.String, java.lang.String, java.lang.String,
 	 *      java.lang.String, java.lang.String)
 	 */
+	@Override
 	public Message createMessage(String recipients, String sender, String subject, String content, String attachment,
 	        String attachmentContentType, String attachmentFileName) throws MessageException {
 		Message message = new Message();
@@ -148,6 +157,7 @@ public class MessageServiceImpl implements MessageService {
 	 * Send a message using the given parameters. This is a convenience method so that the client
 	 * does not need to create its own Message object.
 	 */
+	@Override
 	public void sendMessage(String recipients, String sender, String subject, String content) throws MessageException {
 		Message message = createMessage(recipients, sender, subject, content);
 		Context.getMessageService().sendMessage(message);
@@ -159,6 +169,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param message <code>Message</code> to be sent
 	 * @param recipientId Integer identifier of user (recipient)
 	 */
+	@Override
 	public void sendMessage(Message message, Integer recipientId) throws MessageException {
 		log.debug("Sending message to user with user id " + recipientId);
 		User user = Context.getUserService().getUser(recipientId);
@@ -173,6 +184,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param message the <code>Message</code> to be sent
 	 * @param user the recipient of the message
 	 */
+	@Override
 	public void sendMessage(Message message, User user) throws MessageException {
 		log.debug("Sending message to user " + user);
 		String address = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS);
@@ -186,6 +198,7 @@ public class MessageServiceImpl implements MessageService {
 	/**
 	 * Send message to a collection of recipients.
 	 */
+	@Override
 	public void sendMessage(Message message, Collection<User> users) throws MessageException {
 		log.debug("Sending message to users " + users);
 		for (User user : users) {
@@ -200,6 +213,7 @@ public class MessageServiceImpl implements MessageService {
 	/**
 	 * Send a message to a group of users identified by their role.
 	 */
+	@Override
 	public void sendMessage(Message message, String roleName) throws MessageException {
 		log.debug("Sending message to role with name " + roleName);
 		Role role = Context.getUserService().getRole(roleName);
@@ -209,6 +223,7 @@ public class MessageServiceImpl implements MessageService {
 	/**
          * Sends a message to a group of users identifier by their role.
 	 */
+	@Override
 	public void sendMessage(Message message, Role role) throws MessageException {
 		log.debug("Sending message to role " + role);
 		log.debug("User Service : " + Context.getUserService());
@@ -229,6 +244,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param template the given <code>Template</code>
 	 * @return the prepared <code>Message</code>
 	 */
+	@Override
 	public Message prepareMessage(Template template) throws MessageException {
 		return messagePreparator.prepare(template);
 	}
@@ -240,6 +256,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param data mapping used for variable substitution within template
 	 * @return the prepared Message
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public Message prepareMessage(String templateName, Map data) throws MessageException {
@@ -258,6 +275,7 @@ public class MessageServiceImpl implements MessageService {
 	 *
 	 * @return list of Templates
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public List getAllTemplates() throws MessageException {
@@ -270,6 +288,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param id template identifier
 	 * @return Template
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Template getTemplate(Integer id) throws MessageException {
 		return templateDAO.getTemplate(id);
@@ -281,6 +300,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param name the name of the template
 	 * @return list of Templates
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public List getTemplatesByName(String name) throws MessageException {

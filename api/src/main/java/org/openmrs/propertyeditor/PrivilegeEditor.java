@@ -37,6 +37,7 @@ public class PrivilegeEditor extends PropertyEditorSupport {
 	 * @should set using name
 	 * @should set using uuid
 	 */
+	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		UserService es = Context.getUserService();
 		if (StringUtils.hasText(text)) {
@@ -61,6 +62,7 @@ public class PrivilegeEditor extends PropertyEditorSupport {
 		}
 	}
 	
+	@Override
 	public String getAsText() {
 		Privilege p = (Privilege) getValue();
 		if (p == null) {

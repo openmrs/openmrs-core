@@ -49,6 +49,7 @@ public abstract class BaseAttribute<AT extends AttributeType, OwningType extends
 	/**
 	 * @see org.openmrs.attribute.Attribute#setOwner(org.openmrs.customdatatype.Customizable)
 	 */
+	@Override
 	public void setOwner(OwningType owner) {
 		this.owner = owner;
 	}
@@ -120,6 +121,7 @@ public abstract class BaseAttribute<AT extends AttributeType, OwningType extends
 	/**
 	 * @return the dirty
 	 */
+	@Override
 	public boolean isDirty() {
 		return dirty;
 	}

@@ -37,6 +37,7 @@ public class RoleEditor extends PropertyEditorSupport {
 	 * @should set using name
 	 * @should set using uuid
 	 */
+	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		UserService es = Context.getUserService();
 		if (StringUtils.hasText(text)) {
@@ -61,6 +62,7 @@ public class RoleEditor extends PropertyEditorSupport {
 		}
 	}
 	
+	@Override
 	public String getAsText() {
 		Role r = (Role) getValue();
 		if (r == null) {

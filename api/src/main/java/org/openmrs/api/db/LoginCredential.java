@@ -151,6 +151,7 @@ public class LoginCredential extends BaseOpenmrsObject implements OpenmrsObject 
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return userId;
 	}
@@ -158,6 +159,7 @@ public class LoginCredential extends BaseOpenmrsObject implements OpenmrsObject 
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setUserId(id);
 	}

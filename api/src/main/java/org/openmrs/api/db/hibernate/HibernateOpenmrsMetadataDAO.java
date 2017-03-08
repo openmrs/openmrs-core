@@ -34,6 +34,7 @@ public class HibernateOpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> extends 
 	/**
 	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#getAll(boolean)
 	 */
+	@Override
 	public List<T> getAll(boolean includeRetired) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(mappedClass);
 		
@@ -47,6 +48,7 @@ public class HibernateOpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> extends 
 	/**
 	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#getAll(boolean, java.lang.Integer, java.lang.Integer)
 	 */
+	@Override
 	public List<T> getAll(boolean includeRetired, Integer firstResult, Integer maxResults) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(mappedClass);
 		
@@ -63,6 +65,7 @@ public class HibernateOpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> extends 
 	/**
 	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#getAllCount(boolean)
 	 */
+	@Override
 	public int getAllCount(boolean includeRetired) {
 		
 		String hql = "select count(*)" + " from " + mappedClass;

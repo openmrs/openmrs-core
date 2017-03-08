@@ -36,6 +36,7 @@ public class OrderEditor extends PropertyEditorSupport {
 	 * 
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
+	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		OrderService ps = Context.getOrderService();
 		if (StringUtils.hasText(text)) {
@@ -58,6 +59,7 @@ public class OrderEditor extends PropertyEditorSupport {
 	/**
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
+	@Override
 	public String getAsText() {
 		Order t = (Order) getValue();
 		if (t == null) {

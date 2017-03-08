@@ -53,6 +53,7 @@ public class TestTypeFilter implements TypeFilter {
 	 * @see org.springframework.core.type.filter.TypeFilter#match(org.springframework.core.type.classreading.MetadataReader,
 	 *      org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
+	@Override
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
 		String superClassName = metadataReader.getClassMetadata().getSuperClassName();
 		if (superClassName != null) {

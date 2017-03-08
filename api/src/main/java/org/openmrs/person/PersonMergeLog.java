@@ -93,10 +93,12 @@ public class PersonMergeLog extends BaseOpenmrsData {
 		this.personMergeLogData = personMergeLogData;
 	}
 	
+	@Override
 	public void setId(Integer id) {
 		setPersonMergeLogId(id);
 	}
 	
+	@Override
 	public Integer getId() {
 		return getPersonMergeLogId();
 	}

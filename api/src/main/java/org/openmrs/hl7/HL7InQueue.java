@@ -110,6 +110,7 @@ public class HL7InQueue extends HL7QueueItem {
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 * @since 1.5
 	 */
+	@Override
 	public Integer getId() {
 		return getHL7InQueueId();
 	}
@@ -118,6 +119,7 @@ public class HL7InQueue extends HL7QueueItem {
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 * @since 1.5
 	 */
+	@Override
 	public void setId(Integer id) {
 		setHL7InQueueId(id);
 	}

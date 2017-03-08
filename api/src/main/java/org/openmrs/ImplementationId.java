@@ -31,6 +31,7 @@ public class ImplementationId implements java.io.Serializable {
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof ImplementationId) {
 			ImplementationId other = (ImplementationId) o;
@@ -47,6 +48,7 @@ public class ImplementationId implements java.io.Serializable {
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public int hashCode() {
 		if (getImplementationId() != null) {
 			return getImplementationId().hashCode() * 342 + 3;
@@ -145,6 +147,7 @@ public class ImplementationId implements java.io.Serializable {
 		this.name = name;
 	}
 	
+	@Override
 	public String toString() {
 		return "Impl Id: " + getImplementationId() + " name: " + getName() + " desc: " + getDescription();
 	}

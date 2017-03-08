@@ -57,6 +57,7 @@ public class StartupErrorFilter extends StartupFilter {
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
+	@Override
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	        ServletException {
 		
@@ -109,6 +110,7 @@ public class StartupErrorFilter extends StartupFilter {
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#getModel()
 	 */
+	@Override
 	protected StartupErrorFilterModel getModel() {
 		// this object was initialized in the #init(FilterConfig) method
 		return new StartupErrorFilterModel(Listener.getErrorAtStartup());
@@ -117,6 +119,7 @@ public class StartupErrorFilter extends StartupFilter {
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#skipFilter(HttpServletRequest)
 	 */
+	@Override
 	public boolean skipFilter(HttpServletRequest request) {
 		return !Listener.errorOccurredAtStartup();
 	}
@@ -124,6 +127,7 @@ public class StartupErrorFilter extends StartupFilter {
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#getTemplatePrefix()
 	 */
+	@Override
 	protected String getTemplatePrefix() {
 		return "org/openmrs/web/filter/startuperror/";
 	}

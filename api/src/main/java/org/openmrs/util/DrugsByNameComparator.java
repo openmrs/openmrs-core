@@ -28,6 +28,7 @@ public class DrugsByNameComparator implements Comparator<Drug> {
 	/* (non-Jsdoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
+	@Override
 	public int compare(Drug d1, Drug d2) {
 		return compareDrugNamesIgnoringNumericals(d1, d2);
 	}

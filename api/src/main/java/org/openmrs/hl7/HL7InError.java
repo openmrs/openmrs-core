@@ -93,6 +93,7 @@ public class HL7InError extends HL7QueueItem {
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 * @since 1.5
 	 */
+	@Override
 	public Integer getId() {
 		return getHL7InErrorId();
 	}
@@ -101,6 +102,7 @@ public class HL7InError extends HL7QueueItem {
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 * @since 1.5
 	 */
+	@Override
 	public void setId(Integer id) {
 		setHL7InErrorId(id);
 	}

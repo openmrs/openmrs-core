@@ -93,6 +93,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#setOrderDAO(org.openmrs.api.db.OrderDAO)
 	 */
+	@Override
 	public void setOrderDAO(OrderDAO dao) {
 		this.dao = dao;
 	}
@@ -100,6 +101,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
 	 */
+	@Override
 	public synchronized Order saveOrder(Order order, OrderContext orderContext) throws APIException {
 		return saveOrder(order, orderContext, false);
 	}
@@ -426,6 +428,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#purgeOrder(org.openmrs.Order)
 	 */
+	@Override
 	public void purgeOrder(Order order) throws APIException {
 		purgeOrder(order, false);
 	}
@@ -433,6 +436,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#purgeOrder(Order)
 	 */
+	@Override
 	public void purgeOrder(Order order, boolean cascade) throws APIException {
 		if (cascade) {
 			dao.deleteObsThatReference(order);
@@ -444,6 +448,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#voidOrder(org.openmrs.Order, java.lang.String)
 	 */
+	@Override
 	public Order voidOrder(Order order, String voidReason) throws APIException {
 		if (!StringUtils.hasLength(voidReason)) {
 			throw new IllegalArgumentException("voidReason cannot be empty or null");
@@ -460,6 +465,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#unvoidOrder(org.openmrs.Order)
 	 */
+	@Override
 	public Order unvoidOrder(Order order) throws APIException {
 		Order previousOrder = order.getPreviousOrder();
 		if (previousOrder != null && isDiscontinueOrReviseOrder(order)) {
@@ -476,6 +482,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Order getOrder(Integer orderId) throws APIException {
 		return dao.getOrder(orderId);
@@ -516,6 +523,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderByUuid(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Order getOrderByUuid(String uuid) throws APIException {
 		return dao.getOrderByUuid(uuid);

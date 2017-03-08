@@ -32,6 +32,7 @@ public class OrderSaveHandler implements SaveHandler<Order> {
 	 * @see org.openmrs.api.handler.SaveHandler#handle(org.openmrs.OpenmrsObject, org.openmrs.User,
 	 *      java.util.Date, java.lang.String)
 	 */
+	@Override
 	public void handle(Order order, User creator, Date dateCreated, String other) {
 		if (order.getPatient() == null && order.getEncounter() != null) {
 			order.setPatient(order.getEncounter().getPatient());

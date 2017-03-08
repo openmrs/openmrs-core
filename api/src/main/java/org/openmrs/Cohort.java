@@ -161,6 +161,7 @@ public class Cohort extends BaseOpenmrsData  {
 		return contains(patient.getPatientId());
 	}
 
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("Cohort id=" + getCohortId());
 		if (getName() != null) {
@@ -343,6 +344,7 @@ public class Cohort extends BaseOpenmrsData  {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		
 		return getCohortId();
@@ -352,6 +354,7 @@ public class Cohort extends BaseOpenmrsData  {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setCohortId(id);
 

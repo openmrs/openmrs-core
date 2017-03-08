@@ -47,6 +47,7 @@ public class BaseUnretireHandler implements UnretireHandler<Retireable> {
 	 * @should not act on already unretired objects
 	 * @should not act on retired objects with a different dateRetired
 	 */
+	@Override
 	public void handle(Retireable retireableObject, User retiringUser, Date origParentRetiredDate, String unused) {
 		
 		// only act on retired objects

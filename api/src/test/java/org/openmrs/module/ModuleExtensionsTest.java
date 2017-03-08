@@ -116,6 +116,7 @@ public class ModuleExtensionsTest {
 	}
 
 	private class MockExtension extends Extension {
+		@Override
 		public Extension.MEDIA_TYPE getMediaType() {
 			return null;
 		}

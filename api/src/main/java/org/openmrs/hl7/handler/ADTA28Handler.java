@@ -102,6 +102,7 @@ public class ADTA28Handler implements Application {
 	 *
 	 * @return true
 	 */
+	@Override
 	public boolean canProcess(Message message) {
 		return message != null && "ADT_A28".equals(message.getName());
 	}
@@ -109,6 +110,7 @@ public class ADTA28Handler implements Application {
 	/**
 	 * Processes an ADT A28 event message
 	 */
+	@Override
 	public Message processMessage(Message message) throws ApplicationException {
 		
 		log.debug("Processing ADT_A28 message");

@@ -84,6 +84,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	/**
 	 * @return Returns the defaultLayoutFormat
 	 */
+	@Override
 	public String getDefaultLayoutFormat() {
 		return defaultLayoutFormat;
 	}
@@ -118,6 +119,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#supportsPropertyName(String)
 	 */
+	@Override
 	public boolean supportsPropertyName(String propertyName) {
 		return OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE.equals(propertyName);
 	}
@@ -125,6 +127,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
 	 */
+	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
 		if (!OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE.equals(newValue.getProperty())) {
 			return;

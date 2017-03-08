@@ -18,6 +18,7 @@ package org.openmrs.logic.op;
  */
 public class Count implements TransformOperator {
 	
+	@Override
 	public String toString() {
 		return "Count";
 	}

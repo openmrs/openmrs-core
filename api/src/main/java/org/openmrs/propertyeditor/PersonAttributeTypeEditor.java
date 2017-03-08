@@ -34,6 +34,7 @@ public class PersonAttributeTypeEditor extends PropertyEditorSupport {
 	 * @should set using id
 	 * @should set using uuid
 	 */
+	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		PersonService ps = Context.getPersonService();
 		if (StringUtils.hasText(text)) {
@@ -53,6 +54,7 @@ public class PersonAttributeTypeEditor extends PropertyEditorSupport {
 		}
 	}
 	
+	@Override
 	public String getAsText() {
 		PersonAttributeType t = (PersonAttributeType) getValue();
 		if (t == null) {

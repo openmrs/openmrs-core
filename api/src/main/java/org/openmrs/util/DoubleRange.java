@@ -86,6 +86,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	 * @should return zero if both lows and both highs are equal
 	 * @should return 1 if this range is wider than other range
 	 */
+	@Override
 	public int compareTo(DoubleRange other) {
 		int temp = low.compareTo(other.low);
 		if (temp == 0) {
@@ -144,6 +145,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	 * @should print empty low if low is infinite
 	 * @should print empty string if low and high are infinite
 	 */
+	@Override
 	public String toString() {
 		StringBuilder ret = new StringBuilder();
 		if (low != null && low.doubleValue() != Double.NEGATIVE_INFINITY) {
@@ -167,6 +169,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 		return ret.toString();
 	}
 	
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof DoubleRange) {
 			DoubleRange other = (DoubleRange) o;

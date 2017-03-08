@@ -28,6 +28,7 @@ public class TestTask extends AbstractTask {
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(TaskDefinition)
 	 */
+	@Override
 	public void initialize(TaskDefinition taskDefinition) {
 		log.info("Initializing task " + taskDefinition);
 	}
@@ -54,6 +55,7 @@ public class TestTask extends AbstractTask {
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#shutdown()
 	 */
+	@Override
 	public void shutdown() {
 		log.info("Shutting down task ...");
 		super.shutdown();

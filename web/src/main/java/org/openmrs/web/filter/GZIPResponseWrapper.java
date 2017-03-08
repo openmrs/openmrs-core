@@ -61,12 +61,14 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 		}
 	}
 	
+	@Override
 	public void flushBuffer() throws IOException {
 		if (stream != null) {
 			stream.flush();
 		}
 	}
 	
+	@Override
 	public ServletOutputStream getOutputStream() throws IOException {
 		if (writer != null) {
 			throw new IllegalStateException("getWriter() has already been called!");
@@ -79,6 +81,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 		return (stream);
 	}
 	
+	@Override
 	public PrintWriter getWriter() throws IOException {
 		// From cmurphy@intechtual.com to fix:
 		// https://appfuse.dev.java.net/issues/show_bug.cgi?id=59
@@ -100,12 +103,14 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 		return (writer);
 	}
 	
+	@Override
 	public void setContentLength(int length) {
 	}
 	
 	/**
 	 * @see javax.servlet.http.HttpServletResponse#sendError(int, java.lang.String)
 	 */
+	@Override
 	public void sendError(int error, String message) throws IOException {
 		super.sendError(error, message);
 		this.error = error;

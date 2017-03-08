@@ -114,6 +114,7 @@ public class Program extends BaseOpenmrsMetadata {
 	}
 	
 	/** @see Object#toString() */
+	@Override
 	public String toString() {
 		return "Program(id=" + getProgramId() + ", concept=" + getConcept() + ", workflows=" + getWorkflows() + ")";
 	}
@@ -198,6 +199,7 @@ public class Program extends BaseOpenmrsMetadata {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		
 		return getProgramId();
@@ -207,6 +209,7 @@ public class Program extends BaseOpenmrsMetadata {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setProgramId(id);
 		

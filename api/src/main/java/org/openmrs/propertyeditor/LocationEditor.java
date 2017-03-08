@@ -37,6 +37,7 @@ public class LocationEditor extends PropertyEditorSupport {
 	 * @should set using id
 	 * @should set using uuid
 	 */
+	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		LocationService ls = Context.getLocationService();
 		if (StringUtils.hasText(text)) {
@@ -56,6 +57,7 @@ public class LocationEditor extends PropertyEditorSupport {
 		}
 	}
 	
+	@Override
 	public String getAsText() {
 		Location t = (Location) getValue();
 		if (t == null && Context.isAuthenticated()) {

@@ -32,6 +32,7 @@ public class AlertReminderTask extends AbstractTask {
 	/**
 	 * Send alert reminder email to user(s) associated with the alert.
 	 */
+	@Override
 	public void execute() {
 		try {
 			// Get all unread alerts

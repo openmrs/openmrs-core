@@ -53,6 +53,7 @@ public class NativeIfNotAssignedIdentityGenerator extends IdentityGenerator impl
 	 * @see org.hibernate.id.Configurable#configure(org.hibernate.type.Type, java.util.Properties,
 	 *      org.hibernate.dialect.Dialect)
 	 */
+	@Override
 	public void configure(Type type, Properties params, Dialect dialect) throws MappingException {
 		this.entityName = params.getProperty(ENTITY_NAME);
 		if (entityName == null) {

@@ -47,6 +47,7 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 	 *
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */
+	@Override
 	public Obs getObs(Obs obs, String view) {
 		File file = getComplexDataFile(obs);
 		
@@ -90,6 +91,7 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(org.openmrs.Obs)
 	 */
+	@Override
 	public Obs saveObs(Obs obs) throws APIException {
 		
 		try {

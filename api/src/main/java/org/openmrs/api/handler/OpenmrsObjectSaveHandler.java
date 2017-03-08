@@ -55,6 +55,7 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 	 * @should trim strings without AllowLeadingOrTrailingWhitespace annotation
 	 * @should trim empty strings for AllowEmptyStrings annotation
 	 */
+	@Override
 	public void handle(OpenmrsObject openmrsObject, User creator, Date dateCreated, String reason) {
 		if (openmrsObject.getUuid() == null) {
 			openmrsObject.setUuid(UUID.randomUUID().toString());

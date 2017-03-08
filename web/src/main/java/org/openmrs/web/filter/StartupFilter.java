@@ -99,6 +99,7 @@ public abstract class StartupFilter implements Filter {
 	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
 	 *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
+	@Override
 	public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
 	    ServletException {
 		if (skipFilter((HttpServletRequest) request)) {
@@ -277,6 +278,7 @@ public abstract class StartupFilter implements Filter {
 	/**
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
+	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		this.filterConfig = filterConfig;
 		initializeVelocity();
@@ -285,6 +287,7 @@ public abstract class StartupFilter implements Filter {
 	/**
 	 * @see javax.servlet.Filter#destroy()
 	 */
+	@Override
 	public void destroy() {
 	}
 	

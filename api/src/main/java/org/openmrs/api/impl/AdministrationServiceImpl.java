@@ -86,6 +86,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#setAdministrationDAO(org.openmrs.api.db.AdministrationDAO)
 	 */
+	@Override
 	public void setAdministrationDAO(AdministrationDAO dao) {
 		this.dao = dao;
 	}
@@ -110,6 +111,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#getSystemVariables()
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public SortedMap<String, String> getSystemVariables() throws APIException {
 		if (systemVariables == null) {
@@ -141,6 +143,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public String getGlobalProperty(String propertyName) throws APIException {
 		// This method should not have any authorization check
@@ -155,6 +158,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String,
 	 *      java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public String getGlobalProperty(String propertyName, String defaultValue) throws APIException {
 		String s = Context.getAdministrationService().getGlobalProperty(propertyName);
@@ -167,6 +171,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyObject(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
 		return dao.getGlobalPropertyObject(propertyName);
@@ -176,6 +181,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#setGlobalProperty(java.lang.String,
 	 *      java.lang.String)
 	 */
+	@Override
 	public void setGlobalProperty(String propertyName, String propertyValue) throws APIException {
 		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(propertyName);
 		if (gp == null) {
@@ -190,6 +196,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#updateGlobalProperty(java.lang.String,
 	 *      java.lang.String)
 	 */
+	@Override
 	public void updateGlobalProperty(String propertyName, String propertyValue) throws IllegalStateException {
 		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(propertyName);
 		if (gp == null) {
@@ -202,6 +209,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#getAllGlobalProperties()
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<GlobalProperty> getAllGlobalProperties() throws APIException {
 		return dao.getAllGlobalProperties();
@@ -210,6 +218,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertiesByPrefix(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix) {
 		return dao.getGlobalPropertiesByPrefix(prefix);
@@ -218,6 +227,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertiesBySuffix(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix) {
 		return dao.getGlobalPropertiesBySuffix(suffix);
@@ -226,6 +236,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#purgeGlobalProperty(org.openmrs.GlobalProperty)
 	 */
+	@Override
 	public void purgeGlobalProperty(GlobalProperty globalProperty) throws APIException {
 		notifyGlobalPropertyDelete(globalProperty.getProperty());
 		dao.deleteGlobalProperty(globalProperty);
@@ -234,6 +245,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#saveGlobalProperties(java.util.List)
 	 */
+	@Override
 	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public List<GlobalProperty> saveGlobalProperties(List<GlobalProperty> props) throws APIException {
 		log.debug("saving a list of global properties");
@@ -251,6 +263,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
+	@Override
 	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws APIException {
 		// only try to save it if the global property has a key
@@ -294,6 +307,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#executeSQL(java.lang.String, boolean)
 	 */
+	@Override
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException {
 		if (sql == null || "".equals(sql.trim())) {
 			return null;
@@ -305,6 +319,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#addGlobalPropertyListener(GlobalPropertyListener)
 	 */
+	@Override
 	public void addGlobalPropertyListener(GlobalPropertyListener listener) {
 		eventListeners.getGlobalPropertyListeners().add(listener);
 	}
@@ -312,6 +327,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#removeGlobalPropertyListener(GlobalPropertyListener)
 	 */
+	@Override
 	public void removeGlobalPropertyListener(GlobalPropertyListener listener) {
 		eventListeners.getGlobalPropertyListeners().remove(listener);
 	}
@@ -345,6 +361,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#getImplementationId()
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public ImplementationId getImplementationId() throws APIException {
 		String property = Context.getAdministrationService().getGlobalProperty(
@@ -369,6 +386,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#setImplementationId(org.openmrs.ImplementationId)
 	 */
+	@Override
 	public void setImplementationId(ImplementationId implementationId) throws APIException {
 		
 		if (implementationId == null) {
@@ -485,6 +503,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#getAllowedLocales()
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<Locale> getAllowedLocales() {
 		// lazy-load the global locale list and initialize with current global property value
@@ -523,6 +542,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#getPresentationLocales()
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Set<Locale> getPresentationLocales() {
 		if (presentationLocales == null) {
@@ -574,6 +594,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
 	 */
+	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
 		if (newValue.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST)) {
 			// reset the calculated locale values
@@ -584,6 +605,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyDeleted(java.lang.String)
 	 */
+	@Override
 	public void globalPropertyDeleted(String propertyName) {
 		// TODO Auto-generated method stub
 		
@@ -592,6 +614,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#supportsPropertyName(java.lang.String)
 	 */
+	@Override
 	public boolean supportsPropertyName(String propertyName) {
 		return propertyName.equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST);
 	}
@@ -599,6 +622,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyByUuid(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public GlobalProperty getGlobalPropertyByUuid(String uuid) {
 		return dao.getGlobalPropertyByUuid(uuid);
@@ -608,6 +632,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyValue(java.lang.String,
 	 *      java.lang.Object)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T getGlobalPropertyValue(String propertyName, T defaultValue) throws APIException {
 		if (defaultValue == null) {
@@ -638,6 +663,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#getSystemInformation()
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public Map<String, Map<String, String>> getSystemInformation() throws APIException {
 		Map<String, Map<String, String>> systemInfoMap = new LinkedHashMap<String, Map<String, String>>();
@@ -775,6 +801,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		dao.validate(object, errors);
 	}
 
+	@Override
 	@Cacheable(value = "userSearchLocales")
 	public List<Locale> getSearchLocales(Locale currentLocale, User user) throws APIException {
 		Set<Locale> locales = new LinkedHashSet<Locale>();

@@ -134,10 +134,12 @@ public class OrderSet extends BaseOpenmrsMetadata {
 		this.addOrderSetMember(orderSetMember, null);
 	}
 	
+	@Override
 	public Integer getId() {
 		return getOrderSetId();
 	}
 	
+	@Override
 	public void setId(Integer id) {
 		setOrderSetId(id);
 	}

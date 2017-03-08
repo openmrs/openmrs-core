@@ -62,6 +62,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#getAllVisitTypes()
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<VisitType> getAllVisitTypes() {
 		return getVisitDAO().getAllVisitTypes();
@@ -79,6 +80,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#getVisitType(java.lang.Integer)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public VisitType getVisitType(Integer visitTypeId) {
 		return getVisitDAO().getVisitType(visitTypeId);
@@ -87,6 +89,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#getVisitTypeByUuid(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public VisitType getVisitTypeByUuid(String uuid) {
 		return getVisitDAO().getVisitTypeByUuid(uuid);
@@ -95,6 +98,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#getVisitTypes(java.lang.String)
 	 */
+	@Override
 	@Transactional(readOnly = true)
 	public List<VisitType> getVisitTypes(String fuzzySearchPhrase) {
 		return getVisitDAO().getVisitTypes(fuzzySearchPhrase);
@@ -103,6 +107,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#saveVisitType(org.openmrs.VisitType)
 	 */
+	@Override
 	public VisitType saveVisitType(VisitType visitType) throws APIException {
 		ValidateUtil.validate(visitType);
 		return getVisitDAO().saveVisitType(visitType);
@@ -111,6 +116,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#retireVisitType(org.openmrs.VisitType, java.lang.String)
 	 */
+	@Override
 	public VisitType retireVisitType(VisitType visitType, String reason) {
 		return Context.getVisitService().saveVisitType(visitType);
 	}
@@ -118,6 +124,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#unretireVisitType(org.openmrs.VisitType)
 	 */
+	@Override
 	public VisitType unretireVisitType(VisitType visitType) {
 		return Context.getVisitService().saveVisitType(visitType);
 	}
@@ -125,6 +132,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#purgeVisitType(org.openmrs.VisitType)
 	 */
+	@Override
 	public void purgeVisitType(VisitType visitType) {
 		getVisitDAO().purgeVisitType(visitType);
 	}

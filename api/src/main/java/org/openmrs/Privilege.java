@@ -54,6 +54,7 @@ public class Privilege extends BaseOpenmrsMetadata {
 		this.privilege = privilege;
 	}
 	
+	@Override
 	public String getName() {
 		return this.getPrivilege();
 	}
@@ -61,6 +62,7 @@ public class Privilege extends BaseOpenmrsMetadata {
 	/**
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return this.privilege;
 	}
@@ -69,6 +71,7 @@ public class Privilege extends BaseOpenmrsMetadata {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		throw new UnsupportedOperationException();
 		
@@ -78,6 +81,7 @@ public class Privilege extends BaseOpenmrsMetadata {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		throw new UnsupportedOperationException();
 		

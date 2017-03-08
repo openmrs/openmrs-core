@@ -74,6 +74,7 @@ public class DrugOrder extends Order {
 	 * @see org.openmrs.Order#copy()
 	 * @should copy all drug order fields
 	 */
+	@Override
 	public DrugOrder copy() {
 		return copyHelper(new DrugOrder());
 	}
@@ -484,6 +485,7 @@ public class DrugOrder extends Order {
 		}
 	}
 
+	@Override
 	public String toString() {
 		String prefix = DISCONTINUE == getAction() ? "DC " : "";
 		return prefix + "DrugOrder(" + getDose() + getDoseUnits() + " of "

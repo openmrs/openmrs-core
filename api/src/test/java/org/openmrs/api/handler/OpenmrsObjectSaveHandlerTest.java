@@ -127,10 +127,12 @@ public class OpenmrsObjectSaveHandlerTest {
 			this.description = description;
 		}
 		
+		@Override
 		public void setId(Integer id) {
 			this.id = id;
 		}
 		
+		@Override
 		public Integer getId() {
 			return id;
 		}

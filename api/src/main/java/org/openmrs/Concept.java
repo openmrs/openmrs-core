@@ -230,6 +230,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the changedBy.
 	 */
+	@Override
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -237,6 +238,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param changedBy The changedBy to set.
 	 */
+	@Override
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -308,6 +310,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the creator.
 	 */
+	@Override
 	public User getCreator() {
 		return creator;
 	}
@@ -315,6 +318,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param creator The creator to set.
 	 */
+	@Override
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -322,6 +326,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the dateChanged.
 	 */
+	@Override
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -329,6 +334,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param dateChanged The dateChanged to set.
 	 */
+	@Override
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
@@ -336,6 +342,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the dateCreated.
 	 */
+	@Override
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -343,6 +350,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
+	@Override
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -1133,6 +1141,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return the retiredBy
 	 */
+	@Override
 	public User getRetiredBy() {
 		return retiredBy;
 	}
@@ -1140,6 +1149,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param retiredBy the retiredBy to set
 	 */
+	@Override
 	public void setRetiredBy(User retiredBy) {
 		this.retiredBy = retiredBy;
 	}
@@ -1147,6 +1157,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return the dateRetired
 	 */
+	@Override
 	public Date getDateRetired() {
 		return dateRetired;
 	}
@@ -1154,6 +1165,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param dateRetired the dateRetired to set
 	 */
+	@Override
 	public void setDateRetired(Date dateRetired) {
 		this.dateRetired = dateRetired;
 	}
@@ -1161,6 +1173,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return the retireReason
 	 */
+	@Override
 	public String getRetireReason() {
 		return retireReason;
 	}
@@ -1168,6 +1181,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param retireReason the retireReason to set
 	 */
+	@Override
 	public void setRetireReason(String retireReason) {
 		this.retireReason = retireReason;
 	}
@@ -1219,6 +1233,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * 
 	 * @deprecated as of 2.0, use {@link #getRetired()}
 	 */
+	@Override
 	@Deprecated
 	@JsonIgnore
 	public Boolean isRetired() {
@@ -1232,6 +1247,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * 
 	 * @see org.openmrs.Retireable#isRetired()
 	 */
+	@Override
 	public Boolean getRetired() {
 		return retired;
 	}
@@ -1239,6 +1255,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param retired The retired to set.
 	 */
+	@Override
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
@@ -1392,6 +1409,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
 	 */
+	@Override
 	public List<Concept> findPossibleValues(String searchText) {
 		List<Concept> concepts = new Vector<Concept>();
 		try {
@@ -1410,6 +1428,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @see org.openmrs.Attributable#getPossibleValues()
 	 */
+	@Override
 	public List<Concept> getPossibleValues() {
 		try {
 			return Context.getConceptService().getConceptsByName("");
@@ -1423,6 +1442,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @see org.openmrs.Attributable#hydrate(java.lang.String)
 	 */
+	@Override
 	public Concept hydrate(String s) {
 		try {
 			return Context.getConceptService().getConcept(Integer.valueOf(s));
@@ -1438,6 +1458,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * 
 	 * @see org.openmrs.Attributable#serialize()
 	 */
+	@Override
 	public String serialize() {
 		if (this.getConceptId() == null) {
 			return "";
@@ -1449,6 +1470,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @see org.openmrs.Attributable#getDisplayString()
 	 */
+	@Override
 	public String getDisplayString() {
 		if (getName() == null) {
 			return toString();
@@ -1486,6 +1508,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getConceptId();
 	}
@@ -1494,6 +1517,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setConceptId(id);
 	}

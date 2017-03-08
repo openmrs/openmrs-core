@@ -78,6 +78,7 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	 * 
 	 * @return <code>Integer</code> identifier of the task
 	 */
+	@Override
 	public Integer getId() {
 		return this.id;
 	}
@@ -87,6 +88,7 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	 * 
 	 * @param id
 	 */
+	@Override
 	public void setId(Integer id) {
 		this.id = id;
 	}

@@ -52,10 +52,12 @@ public class ConceptSource extends BaseOpenmrsMetadata {
 		this.conceptSourceId = conceptSourceId;
 	}
 	
+	@Override
 	public User getCreator() {
 		return super.getCreator();
 	}
 	
+	@Override
 	public void setCreator(User creator) {
 		super.setCreator(creator);
 	}
@@ -63,6 +65,7 @@ public class ConceptSource extends BaseOpenmrsMetadata {
 	/**
 	 * @return Returns the dateCreated.
 	 */
+	@Override
 	public Date getDateCreated() {
 		return super.getDateCreated();
 	}
@@ -70,14 +73,17 @@ public class ConceptSource extends BaseOpenmrsMetadata {
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
+	@Override
 	public void setDateCreated(Date dateCreated) {
 		super.setDateCreated(dateCreated);
 	}
 	
+	@Override
 	public String getDescription() {
 		return super.getDescription();
 	}
 	
+	@Override
 	public void setDescription(String description) {
 		super.setDescription(description);
 	}
@@ -110,10 +116,12 @@ public class ConceptSource extends BaseOpenmrsMetadata {
 		this.uniqueId = uniqueId;
 	}
 	
+	@Override
 	public String getName() {
 		return super.getName();
 	}
 	
+	@Override
 	public void setName(String name) {
 		super.setName(name);
 	}
@@ -122,6 +130,7 @@ public class ConceptSource extends BaseOpenmrsMetadata {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getConceptSourceId();
 	}
@@ -130,6 +139,7 @@ public class ConceptSource extends BaseOpenmrsMetadata {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setConceptSourceId(id);
 	}

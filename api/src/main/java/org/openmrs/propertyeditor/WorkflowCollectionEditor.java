@@ -52,6 +52,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	 * 
 	 * @should update workflows in program
 	 */
+	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.hasText(text)) {
 			ConceptService cs = Context.getConceptService();
@@ -110,6 +111,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	 * 
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public String getAsText() {
 		Collection<ProgramWorkflow> pws = (Collection<ProgramWorkflow>) getValue();

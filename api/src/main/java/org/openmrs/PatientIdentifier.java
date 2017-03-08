@@ -223,6 +223,7 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	 * @deprecated since 1.12. Use DefaultComparator instead.
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
+	@Override
 	@SuppressWarnings("squid:S1210")
 	public int compareTo(PatientIdentifier other) {
 		DefaultComparator piDefaultComparator = new DefaultComparator();
@@ -233,6 +234,7 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getPatientIdentifierId();
 	}
@@ -241,6 +243,7 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setPatientIdentifierId(id);
 	}
@@ -267,6 +270,7 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	 **/
 	public static class DefaultComparator implements Comparator<PatientIdentifier> {
 		
+		@Override
 		public int compare(PatientIdentifier pi1, PatientIdentifier pi2) {
 			int retValue = 0;
 			if (pi2 != null) {

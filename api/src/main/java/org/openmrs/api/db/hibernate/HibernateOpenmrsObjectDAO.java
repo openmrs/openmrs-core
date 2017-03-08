@@ -43,6 +43,7 @@ public class HibernateOpenmrsObjectDAO<T extends BaseOpenmrsObject> implements O
 	/**
 	 * @see org.openmrs.api.db.OpenmrsObjectDAO#getByUuid(java.lang.String)
 	 */
+	@Override
 	public T getByUuid(String uuid) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(mappedClass);
 		return (T) crit.add(Restrictions.eq("uuid", uuid)).uniqueResult();
@@ -51,6 +52,7 @@ public class HibernateOpenmrsObjectDAO<T extends BaseOpenmrsObject> implements O
 	/** 
 	 * @see org.openmrs.api.db.OpenmrsObjectDAO#delete(org.openmrs.BaseOpenmrsObject)
 	 */
+	@Override
 	public void delete(T persistent) {
 		sessionFactory.getCurrentSession().delete(persistent);
 	}
@@ -58,6 +60,7 @@ public class HibernateOpenmrsObjectDAO<T extends BaseOpenmrsObject> implements O
 	/**
 	 * @see org.openmrs.api.db.OpenmrsObjectDAO#saveOrUpdate(org.openmrs.BaseOpenmrsObject)
 	 */
+	@Override
 	public T saveOrUpdate(T persistent) {
 		sessionFactory.getCurrentSession().saveOrUpdate(persistent);
 		return persistent;

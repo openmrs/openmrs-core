@@ -149,6 +149,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		throw new UnsupportedOperationException();
 	}
@@ -157,6 +158,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		throw new UnsupportedOperationException();
 	}
@@ -232,6 +234,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	/**
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return "property: " + getProperty() + " value: " + getPropertyValue();
 	}

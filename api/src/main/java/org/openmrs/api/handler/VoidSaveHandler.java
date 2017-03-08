@@ -58,6 +58,7 @@ public class VoidSaveHandler implements SaveHandler<Voidable> {
 	 * @should set dateVoided to null if voided is true
 	 * @should set voidedBy to null if voided is true
 	 */
+	@Override
 	public void handle(Voidable voidableObject, User currentUser, Date currentDate, String notUsed) {
 		
 		// void reason is not set here, it should be set prior to this method

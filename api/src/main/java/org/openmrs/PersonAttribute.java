@@ -210,6 +210,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * @see java.lang.Object#toString()
 	 * @should return toString of hydrated value
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public String toString() {
 		Object o = getHydratedObject();
@@ -304,6 +305,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * @should not throw exception if attribute type is null
 	 * Note: this comparator imposes orderings that are inconsistent with equals
 	 */
+	@Override
 	public int compareTo(PersonAttribute other) {
 		DefaultComparator paDComparator = new DefaultComparator();
 		return paDComparator.compare(this, other);
@@ -313,6 +315,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		
 		return getPersonAttributeId();
@@ -322,6 +325,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setPersonAttributeId(id);
 		

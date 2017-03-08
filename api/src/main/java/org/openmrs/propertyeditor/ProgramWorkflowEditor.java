@@ -37,6 +37,7 @@ public class ProgramWorkflowEditor extends PropertyEditorSupport {
 	 * @should set using id
 	 * @should set using uuid
 	 */
+	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		if (StringUtils.hasText(text)) {
@@ -56,6 +57,7 @@ public class ProgramWorkflowEditor extends PropertyEditorSupport {
 		}
 	}
 	
+	@Override
 	public String getAsText() {
 		ProgramWorkflow pw = (ProgramWorkflow) getValue();
 		if (pw == null) {

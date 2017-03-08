@@ -50,10 +50,12 @@ public class Template extends BaseOpenmrsObject {
 		this.template = template;
 	}
 	
+	@Override
 	public void setId(Integer id) {
 		this.id = id;
 	}
 	
+	@Override
 	public Integer getId() {
 		return id;
 	}

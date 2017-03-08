@@ -72,6 +72,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Auditable#getCreator()
 	 */
+	@Override
 	public User getCreator() {
 		return creator;
 	}
@@ -79,6 +80,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Auditable#setCreator(org.openmrs.User)
 	 */
+	@Override
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -86,6 +88,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Auditable#getDateCreated()
 	 */
+	@Override
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -93,6 +96,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Auditable#setDateCreated(java.util.Date)
 	 */
+	@Override
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -100,6 +104,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Auditable#getChangedBy()
 	 */
+	@Override
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -107,6 +112,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
 	 */
+	@Override
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -114,6 +120,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Auditable#getDateChanged()
 	 */
+	@Override
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -121,6 +128,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
 	 */
+	@Override
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
@@ -130,6 +138,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * 
 	 * @see org.openmrs.Voidable#isVoided()
 	 */
+	@Override
 	@Deprecated
 	@JsonIgnore
 	public Boolean isVoided() {
@@ -143,6 +152,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 * 
 	 * @see org.openmrs.Voidable#isVoided()
 	 */
+	@Override
 	public Boolean getVoided() {
 		return voided;
 	}
@@ -150,6 +160,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Voidable#setVoided(java.lang.Boolean)
 	 */
+	@Override
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
@@ -157,6 +168,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Voidable#getDateVoided()
 	 */
+	@Override
 	public Date getDateVoided() {
 		return dateVoided;
 	}
@@ -164,6 +176,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Voidable#setDateVoided(java.util.Date)
 	 */
+	@Override
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
@@ -171,6 +184,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Voidable#getVoidedBy()
 	 */
+	@Override
 	public User getVoidedBy() {
 		return voidedBy;
 	}
@@ -178,6 +192,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Voidable#setVoidedBy(org.openmrs.User)
 	 */
+	@Override
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
@@ -185,6 +200,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Voidable#getVoidReason()
 	 */
+	@Override
 	public String getVoidReason() {
 		return voidReason;
 	}
@@ -192,6 +208,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	/**
 	 * @see org.openmrs.Voidable#setVoidReason(java.lang.String)
 	 */
+	@Override
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}

@@ -47,11 +47,13 @@ public abstract class AbstractTask implements Task {
 	/**
 	 * @see org.openmrs.scheduler.Task#execute()
 	 */
+	@Override
 	public abstract void execute();
 	
 	/**
 	 * @see org.openmrs.scheduler.Task#isExecuting()
 	 */
+	@Override
 	public boolean isExecuting() {
 		return isExecuting;
 	}
@@ -59,6 +61,7 @@ public abstract class AbstractTask implements Task {
 	/**
 	 * @see org.openmrs.scheduler.Task#initialize(TaskDefinition)
 	 */
+	@Override
 	public void initialize(final TaskDefinition definition) {
 		this.taskDefinition = definition;
 	}
@@ -66,6 +69,7 @@ public abstract class AbstractTask implements Task {
 	/**
 	 * @see org.openmrs.scheduler.Task#getTaskDefinition()
 	 */
+	@Override
 	public TaskDefinition getTaskDefinition() {
 		return this.taskDefinition;
 	}
@@ -73,6 +77,7 @@ public abstract class AbstractTask implements Task {
 	/**
 	 * @see org.openmrs.scheduler.Task#shutdown()
 	 */
+	@Override
 	public void shutdown() {
 		taskDefinition = null;
 	}

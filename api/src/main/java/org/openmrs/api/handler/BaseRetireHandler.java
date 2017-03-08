@@ -52,6 +52,7 @@ public class BaseRetireHandler implements RetireHandler<Retireable> {
 	 * @should not set the retireReason if already voided
 	 * @should set retiredBy even if retired bit is set but retiredBy is null
 	 */
+	@Override
 	public void handle(Retireable retireableObject, User retiringUser, Date retireDate, String retireReason) {
 		
 		// skip over doing retire stuff if already retired

@@ -290,6 +290,7 @@ public class PatientProgram extends BaseOpenmrsData {
 	}
 	
 	/** @see Object#toString() */
+	@Override
 	public String toString() {
 		return "PatientProgram(id=" + getPatientProgramId() + ", patient=" + getPatient() + ", program=" + getProgram()
 		        + ")";
@@ -359,6 +360,7 @@ public class PatientProgram extends BaseOpenmrsData {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getPatientProgramId();
 	}
@@ -367,6 +369,7 @@ public class PatientProgram extends BaseOpenmrsData {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setPatientProgramId(id);
 	}

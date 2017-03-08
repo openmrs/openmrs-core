@@ -452,6 +452,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getPersonNameId();
 	}
@@ -473,6 +474,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @should return negative if other dateCreated is greater
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
+	@Override
 	public int compareTo(PersonName other) {
 		DefaultComparator pnDefaultComparator = new DefaultComparator();
 		return pnDefaultComparator.compare(this, other);
@@ -482,6 +484,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setPersonNameId(id);
 		
@@ -505,6 +508,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 **/
 	public static class DefaultComparator implements Comparator<PersonName> {
 		
+		@Override
 		public int compare(PersonName pn1, PersonName pn2) {
 			int ret = pn1.isVoided().compareTo(pn2.isVoided());
 			if (ret == 0) {

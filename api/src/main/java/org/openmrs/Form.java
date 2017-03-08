@@ -214,6 +214,7 @@ public class Form extends BaseOpenmrsMetadata {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		
 		return getFormId();
@@ -223,6 +224,7 @@ public class Form extends BaseOpenmrsMetadata {
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setFormId(id);
 		

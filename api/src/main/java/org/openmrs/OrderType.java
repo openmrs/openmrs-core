@@ -85,6 +85,7 @@ public class OrderType extends BaseOpenmrsMetadata {
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getOrderTypeId();
 	}
@@ -92,6 +93,7 @@ public class OrderType extends BaseOpenmrsMetadata {
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setOrderTypeId(id);
 		

@@ -62,6 +62,7 @@ public class MailMessageSender implements MessageSender {
 	 *
 	 * @param message the message to be sent
 	 */
+	@Override
 	public void send(Message message) throws MessageException {
 		try {
 			MimeMessage mimeMessage = createMimeMessage(message);
