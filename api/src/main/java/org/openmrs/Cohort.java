@@ -97,7 +97,6 @@ public class Cohort extends BaseOpenmrsData  {
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
 	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
-	@SuppressWarnings("unchecked")
 	public Cohort(Collection patientsOrIds) {
 		this(null, null, patientsOrIds);
 	}
@@ -111,7 +110,6 @@ public class Cohort extends BaseOpenmrsData  {
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
 	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
-	@SuppressWarnings("unchecked")
 	public Cohort(String name, String description, Collection patientsOrIds) {
 		this(name, description, (Integer[]) null);
 		if (patientsOrIds != null) {

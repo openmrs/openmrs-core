@@ -53,7 +53,6 @@ import java.util.Set;
  * 
  * @see org.openmrs.annotation.Authorized
  */
-@SuppressWarnings("unchecked")
 public class AuthorizedAnnotationAttributes {
 	
 	/**

@@ -931,7 +931,6 @@ public class Context {
 	 * @param cls
 	 * @param advisor
 	 */
-	@SuppressWarnings("unchecked")
 	public static void addAdvisor(Class cls, Advisor advisor) {
 		getServiceContext().addAdvisor(cls, advisor);
 	}
@@ -944,7 +943,6 @@ public class Context {
 	 * @param cls
 	 * @param advice
 	 */
-	@SuppressWarnings("unchecked")
 	public static void addAdvice(Class cls, Advice advice) {
 		getServiceContext().addAdvice(cls, advice);
 	}
@@ -955,7 +953,6 @@ public class Context {
 	 * @param cls
 	 * @param advisor
 	 */
-	@SuppressWarnings("unchecked")
 	public static void removeAdvisor(Class cls, Advisor advisor) {
 		getServiceContext().removeAdvisor(cls, advisor);
 	}
@@ -966,7 +963,6 @@ public class Context {
 	 * @param cls
 	 * @param advice
 	 */
-	@SuppressWarnings("unchecked")
 	public static void removeAdvice(Class cls, Advice advice) {
 		getServiceContext().removeAdvice(cls, advice);
 	}

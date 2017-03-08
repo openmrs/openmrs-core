@@ -28,7 +28,6 @@ import org.openmrs.util.OpenmrsUtil;
  * assert* in them. This would help prevent people from making tests that just print results to the
  * screen
  */
-@SuppressWarnings("unchecked")
 public class OpenmrsTestsTest {
 	
 	private ClassLoader classLoader = this.getClass().getClassLoader();

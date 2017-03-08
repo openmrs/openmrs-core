@@ -178,7 +178,6 @@ public class ORUR01Handler implements Application {
 	 * @throws HL7Exception
 	 * @should process multiple NK1 segments
 	 */
-	@SuppressWarnings("deprecation")
 	private Message processORU_R01(ORU_R01 oru) throws HL7Exception {
 		
 		// TODO: ideally, we would branch or alter our behavior based on the

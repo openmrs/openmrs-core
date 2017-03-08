@@ -119,7 +119,6 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @param otherAddress PersonAddress with which to compare
 	 * @return boolean true/false whether or not they are the same addresses
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean equalsContent(PersonAddress otherAddress) {
 		return new EqualsBuilder().append(defaultString(otherAddress.getAddress1()), defaultString(address1)).append(
 		    defaultString(otherAddress.getAddress2()), defaultString(address2)).append(

@@ -102,7 +102,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public Order getOrder(Integer orderId) throws DAOException {
 		if (log.isDebugEnabled()) {
 			log.debug("getting order #" + orderId);

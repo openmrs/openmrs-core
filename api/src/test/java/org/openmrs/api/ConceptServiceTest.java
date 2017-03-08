@@ -2545,7 +2545,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptService#saveConcept(Concept)
 	 */
-	@SuppressWarnings("deprecation")
 	@Test
 	@Verifies(value = "should create a reference term for a concept mapping on the fly when creating a concept", method = "saveConcept(Concept)")
 	public void saveConcept_shouldCreateAReferenceTermForAConceptMappingOnTheFlyWhenCreatingAConcept() throws Exception {
@@ -2568,7 +2567,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptService#saveConcept(Concept)
 	 */
-	@SuppressWarnings("deprecation")
 	@Test
 	@Verifies(value = "should create a reference term for a concept mapping on the fly when editing a concept", method = "saveConcept(Concept)")
 	public void saveConcept_shouldCreateAReferenceTermForAConceptMappingOnTheFlyWhenEditingAConcept() throws Exception {

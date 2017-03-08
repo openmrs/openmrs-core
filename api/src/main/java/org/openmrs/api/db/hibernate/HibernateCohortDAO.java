@@ -80,7 +80,6 @@ public class HibernateCohortDAO implements CohortDAO {
 	 * @see org.openmrs.api.db.CohortDAO#getCohortsContainingPatientId(java.lang.Integer)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException {
 		return getCohortsContainingPatientId(patientId, false);
 	}
