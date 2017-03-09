@@ -17,13 +17,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.CharArrayReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.Reader;
-import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,6 +35,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -86,7 +83,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Obs.error.cannot.be.null"));
 		ObsService os = Context.getObsService();
-		Obs o = os.saveObs(null,"Null Obs");
+		os.saveObs(null,"Null Obs");
 	}
 	
 	/**
@@ -673,17 +670,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
 		File previouslyCreatedFile = new File(complexObsDir, "nameOfFile.txt");
-		Reader input = new CharArrayReader("a string to save to a file".toCharArray());
-		Reader buffReader = new BufferedReader(input);
-		Writer buffWriter = new BufferedWriter(new FileWriter(previouslyCreatedFile));
-		while (true) {
-			int character = buffReader.read();
-			if (character == -1) {
-				break;
-			}
-			buffWriter.write(character);
-		}
-		input.close();
+		
+		FileUtils.writeByteArrayToFile(previouslyCreatedFile, "a string to save to a file".getBytes());
 		
 		// the file we'll be creating...defining it here so we can delete it in a finally block
 		File newComplexFile = null;
@@ -1739,7 +1727,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		// change something on the obs and save it again
 		obs.setComment("Comment to make sure obs changes");
 		
-		Obs obsCreated = obsService.saveObs(obs, changeMessage);
+		obsService.saveObs(obs, changeMessage);
 		obs = obsService.getObs(obsId); //refetch original (now voided) obs
 		
 		// check
