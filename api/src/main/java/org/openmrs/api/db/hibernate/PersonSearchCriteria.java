@@ -10,10 +10,10 @@
 package org.openmrs.api.db.hibernate;
 
 import org.hibernate.Criteria;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -59,8 +59,8 @@ public class PersonSearchCriteria {
 	}
 	
 	void addAliasForAttribute(Criteria criteria) {
-		criteria.createAlias("attributes", "attribute", CriteriaSpecification.LEFT_JOIN);
-		criteria.createAlias("attribute.attributeType", "attributeType", CriteriaSpecification.LEFT_JOIN);
+		criteria.createAlias("attributes", "attribute", JoinType.LEFT_OUTER_JOIN);
+		criteria.createAlias("attribute.attributeType", "attributeType", JoinType.LEFT_OUTER_JOIN);
 	}
 	
 	MatchMode getAttributeMatchMode() {
