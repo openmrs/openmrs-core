@@ -816,7 +816,6 @@
 						<exclude>**/license-header.txt</exclude>
 						<exclude>.git/**</exclude>
 						<exclude>**/NaturalStrings.java</exclude>
-						<exclude>puppet/**</exclude>
 						<exclude>src/main/java/org/springframework/**</exclude>
 						<exclude>src/main/webapp/WEB-INF/view/scripts/dojo/**</exclude>
 						<exclude>src/main/webapp/WEB-INF/view/scripts/jquery/**</exclude>
