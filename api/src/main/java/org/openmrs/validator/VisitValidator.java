@@ -116,23 +116,39 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		Date birthDate;
 		if(patient!=null) {
 			birthDate = patient.getBirthdate();
-			if(startDate!=null && birthDate!=null) {
-  			if(OpenmrsUtil.compare(startDate,birthDate) < 0) {
-					errors.rejectValue("startDatetime","Visit.error.startDateBeforeBirthDate");
-				}
-				else {
-					// Get the difference between the dates to check if the patient is at least 1 year old
-					double diffInDays = ((startDate.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 ));
-					Calendar inst = Calendar.getInstance();
-					inst.setTime(startDate);
-					//Check if the patient is less than one year and also making sure that leap year condition is checked
-					if((diffInDays<=365 || (diffInDays<=366 && inst.get(Calendar.YEAR)%4==0)) && diffInDays !=0) {
-						errors.rejectValue("startDatetime","Visit.error.birthDateTooLess");
-					}
-				}
+			Boolean estimatedDateOfBirth = patient.getBirthdateEstimated();
+			if((startDate!=null && birthDate!=null) && !estimatedDateOfBirth) {
+				checkIfStartDateIsBeforeBirthDate(errors,startDate,birthDate);
+			}
+			else if(estimatedDateOfBirth && startDate!=null) {
+				long gracePeriod = (birthDate.getTime()/2);
+			    if(gracePeriod < 365) {
+			    	gracePeriod = 365;
+			    }
+			    Date graceDate = new Date();
+			    graceDate.setTime(gracePeriod);
+			    startDate = graceDate;
+			    checkIfStartDateIsBeforeBirthDate(errors,startDate,birthDate);
 			}
 		}
 	}
+
+	private void checkIfStartDateIsBeforeBirthDate(Errors errors,Date startDate,Date birthDate) {
+		if(OpenmrsUtil.compare(startDate,birthDate) < 0) {
+	  		errors.rejectValue("startDatetime","Visit.error.startDateBeforeBirthDate");
+		}
+		else {
+	  		// Get the difference between the dates
+	  		double diffInDays = ((startDate.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 ));
+	  		Calendar inst = Calendar.getInstance();
+	  		inst.setTime(startDate);
+	  		//Check if the patient is less than one year and also making sure that leap year condition is checked
+	  		if((diffInDays<=365 || (diffInDays<=366 && inst.get(Calendar.YEAR)%4==0)) && diffInDays !=0) {
+					errors.rejectValue("startDatetime","Visit.error.birthDateTooLess");
+			}
+		}
+	}
+
 
 	/*
 	 * Convenience method to make the code more readable.
