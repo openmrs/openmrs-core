@@ -392,7 +392,7 @@ public class Person extends BaseOpenmrsData {
 	public List<PersonAttribute> getActiveAttributes() {
 		List<PersonAttribute> attrs = new Vector<PersonAttribute>();
 		for (PersonAttribute attr : getAttributes()) {
-			if (!attr.isVoided()) {
+			if (!attr.getVoided()) {
 				attrs.add(attr);
 			}
 		}
@@ -443,7 +443,7 @@ public class Person extends BaseOpenmrsData {
 				
 				// if the to-be-added attribute isn't already voided itself
 				// and if we have the same type, different value
-				if (!newAttribute.isVoided() || newIsNull) {
+				if (!newAttribute.getVoided() || newIsNull) {
 					if (currentAttribute.getCreator() != null) {
 						currentAttribute.voidAttribute("New value: " + newAttribute.getValue());
 					} else {
@@ -495,7 +495,7 @@ public class Person extends BaseOpenmrsData {
 	public PersonAttribute getAttribute(PersonAttributeType pat) {
 		if (pat != null) {
 			for (PersonAttribute attribute : getAttributes()) {
-				if (pat.equals(attribute.getAttributeType()) && !attribute.isVoided()) {
+				if (pat.equals(attribute.getAttributeType()) && !attribute.getVoided()) {
 					return attribute;
 				}
 			}
@@ -520,7 +520,7 @@ public class Person extends BaseOpenmrsData {
 		if (attributeName != null) {
 			for (PersonAttribute attribute : getAttributes()) {
 				PersonAttributeType type = attribute.getAttributeType();
-				if (type != null && attributeName.equals(type.getName()) && !attribute.isVoided()) {
+				if (type != null && attributeName.equals(type.getName()) && !attribute.getVoided()) {
 					return attribute;
 				}
 			}
@@ -601,7 +601,7 @@ public class Person extends BaseOpenmrsData {
 	public List<PersonAttribute> getAttributes(PersonAttributeType personAttributeType) {
 		List<PersonAttribute> ret = new Vector<PersonAttribute>();
 		for (PersonAttribute attribute : getAttributes()) {
-			if (personAttributeType.equals(attribute.getAttributeType()) && !attribute.isVoided()) {
+			if (personAttributeType.equals(attribute.getAttributeType()) && !attribute.getVoided()) {
 				ret.add(attribute);
 			}
 		}
@@ -663,7 +663,7 @@ public class Person extends BaseOpenmrsData {
 		
 		for (PersonAttribute attribute : getAttributes()) {
 			s.append(attribute.getAttributeType()).append(" : ").append(attribute.getValue()).append(" : voided? ").append(
-			    attribute.isVoided()).append("\n");
+			    attribute.getVoided()).append("\n");
 		}
 		
 		return s.toString();
@@ -753,17 +753,17 @@ public class Person extends BaseOpenmrsData {
 		// has fetched a Person, changed their names around, and then calls this method, so we have to be careful.
 		if (getNames() != null && !getNames().isEmpty()) {
 			for (PersonName name : getNames()) {
-				if (name.getPreferred() && !name.isVoided()) {
+				if (name.getPreferred() && !name.getVoided()) {
 					return name;
 				}
 			}
 			for (PersonName name : getNames()) {
-				if (!name.isVoided()) {
+				if (!name.getVoided()) {
 					return name;
 				}
 			}
 			
-			if (isVoided()) {
+			if (getVoided()) {
 				return getNames().iterator().next();
 			}
 		}
@@ -836,17 +836,17 @@ public class Person extends BaseOpenmrsData {
 		// has fetched a Person, changed their addresses around, and then calls this method, so we have to be careful.
 		if (getAddresses() != null && !getAddresses().isEmpty()) {
 			for (PersonAddress addr : getAddresses()) {
-				if (addr.getPreferred() && !addr.isVoided()) {
+				if (addr.getPreferred() && !addr.getVoided()) {
 					return addr;
 				}
 			}
 			for (PersonAddress addr : getAddresses()) {
-				if (!addr.isVoided()) {
+				if (!addr.getVoided()) {
 					return addr;
 				}
 			}
 			
-			if (isVoided()) {
+			if (getVoided()) {
 				return getAddresses().iterator().next();
 			}
 		}

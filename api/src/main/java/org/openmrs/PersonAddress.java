@@ -384,7 +384,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	public int compareTo(PersonAddress other) {
 		int retValue = 0;
 		if (other != null) {
-			retValue = isVoided().compareTo(other.isVoided());
+			retValue = getVoided().compareTo(other.getVoided());
 			if (retValue == 0) {
 				retValue = other.isPreferred().compareTo(isPreferred());
 			}

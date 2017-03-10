@@ -274,37 +274,37 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		//unvoid:
 		obsThatWasVoided.setVoided(false);
-		assertFalse(obsThatWasVoided.isVoided());
+		assertFalse(obsThatWasVoided.getVoided());
 		
 		//Now test voiding cascade:
 		// i.e. by voiding the grandparent, we void the n-th generation leaf obs
 		os.voidObs(oGGGPThatWasUpdated, "testing void cascade");
-		assertTrue(oGGGPThatWasUpdated.isVoided());
+		assertTrue(oGGGPThatWasUpdated.getVoided());
 		
 		Obs childLeafObs = os.getObs(childOneId);
-		assertTrue(childLeafObs.isVoided());
+		assertTrue(childLeafObs.getVoided());
 		
 		//now test the un-void:
 		os.unvoidObs(oGGGPThatWasUpdated);
-		assertFalse(oGGGPThatWasUpdated.isVoided());
-		assertFalse(childLeafObs.isVoided());
+		assertFalse(oGGGPThatWasUpdated.getVoided());
+		assertFalse(childLeafObs.getVoided());
 		
 		//test this again using just the os.updateObs method on the great great grandparent:
 		
 		os.voidObs(oGGGPThatWasUpdated, "testing void cascade");
 		childLeafObs = os.getObs(childOneId);
-		assertTrue(childLeafObs.isVoided());
+		assertTrue(childLeafObs.getVoided());
 		
 		os.unvoidObs(oGGGPThatWasUpdated);
 		childLeafObs = os.getObs(childOneId);
-		assertFalse(childLeafObs.isVoided());
+		assertFalse(childLeafObs.getVoided());
 		
 		//now, test the feature that unvoid doesn't happen unless child obs has the same dateVoided as
 		// the Obj argument that gets passed into unvoid:
 		
 		os.voidObs(oGGGPThatWasUpdated, "testing void cascade");
 		childLeafObs = os.getObs(childOneId);
-		assertTrue(childLeafObs.isVoided());
+		assertTrue(childLeafObs.getVoided());
 		
 		childLeafObs.setDateVoided(new Date(childLeafObs.getDateVoided().getTime() - 5000));
 		//os.saveObs(childLeafObs, "saving child leaf obs");
@@ -785,7 +785,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		// fetch the obs from the database again
 		obs = Context.getObsService().getObs(7);
-		Assert.assertTrue(obs.isVoided());
+		Assert.assertTrue(obs.getVoided());
 	}
 	
 	/**
@@ -1475,8 +1475,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		obsService.voidObs(parentObs, "testing void cascade to child obs groups");
 		
-		Assert.assertTrue(obsService.getObs(9).isVoided());
-		Assert.assertTrue(obsService.getObs(10).isVoided());
+		Assert.assertTrue(obsService.getObs(9).getVoided());
+		Assert.assertTrue(obsService.getObs(10).getVoided());
 	}
 	
 	/**
@@ -1491,7 +1491,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		obsService.unvoidObs(obs);
 		
-		assertFalse(obs.isVoided());
+		assertFalse(obs.getVoided());
 	}
 	
 	/**
@@ -1519,7 +1519,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		obsService.voidObs(obs, "testing void function");
 		
-		assertTrue(obs.isVoided());
+		assertTrue(obs.getVoided());
 	}
 	
 	/**

@@ -418,7 +418,7 @@ public class Obs extends BaseOpenmrsData {
 		Iterator<Obs> i = nonVoided.iterator();
 		while (i.hasNext()) {
 			Obs obs = i.next();
-			if (obs.isVoided()) {
+			if (obs.getVoided()) {
 				i.remove();
 			}
 		}

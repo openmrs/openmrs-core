@@ -296,12 +296,12 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public Person savePerson(Person person) throws APIException {
 		PersonName preferredName = null;
 		PersonName possiblePreferredName = person.getPersonName();
-		if (possiblePreferredName != null && possiblePreferredName.getPreferred() && !possiblePreferredName.isVoided()) {
+		if (possiblePreferredName != null && possiblePreferredName.getPreferred() && !possiblePreferredName.getVoided()) {
 			preferredName = possiblePreferredName;
 		}
 		
 		for (PersonName name : person.getNames()) {
-			if (preferredName == null && !name.isVoided()) {
+			if (preferredName == null && !name.getVoided()) {
 				name.setPreferred(true);
 				preferredName = name;
 				continue;
@@ -315,12 +315,12 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		PersonAddress preferredAddress = null;
 		PersonAddress possiblePreferredAddress = person.getPersonAddress();
 		if (possiblePreferredAddress != null && possiblePreferredAddress.getPreferred()
-		        && !possiblePreferredAddress.isVoided()) {
+		        && !possiblePreferredAddress.getVoided()) {
 			preferredAddress = possiblePreferredAddress;
 		}
 		
 		for (PersonAddress address : person.getAddresses()) {
-			if (preferredAddress == null && !address.isVoided()) {
+			if (preferredAddress == null && !address.getVoided()) {
 				address.setPreferred(true);
 				preferredAddress = address;
 				continue;
@@ -478,7 +478,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Override
 	public Relationship voidRelationship(Relationship relationship, String voidReason) throws APIException {
-		if (relationship.isVoided()) {
+		if (relationship.getVoided()) {
 			return relationship;
 		}
 		

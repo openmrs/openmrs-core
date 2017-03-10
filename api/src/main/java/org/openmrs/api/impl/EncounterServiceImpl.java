@@ -351,14 +351,14 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		ObsService os = Context.getObsService();
 		for (Obs o : encounter.getObsAtTopLevel(false)) {
-			if (!o.isVoided()) {
+			if (!o.getVoided()) {
 				os.voidObs(o, reason);
 			}
 		}
 		
 		OrderService orderService = Context.getOrderService();
 		for (Order o : encounter.getOrders()) {
-			if (!o.isVoided()) {
+			if (!o.getVoided()) {
 				orderService.voidOrder(o, reason);
 			}
 		}

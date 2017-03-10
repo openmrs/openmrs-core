@@ -509,7 +509,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 		
 		@Override
 		public int compare(PersonName pn1, PersonName pn2) {
-			int ret = pn1.isVoided().compareTo(pn2.isVoided());
+			int ret = pn1.getVoided().compareTo(pn2.getVoided());
 			if (ret == 0) {
 				ret = pn2.isPreferred().compareTo(pn1.isPreferred());
 			}

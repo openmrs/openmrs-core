@@ -35,7 +35,7 @@ public class VisitUnvoidHandler implements UnvoidHandler<Visit> {
 	public void handle(Visit visit, User voidingUser, Date origParentVoidedDate, String unused) {
 		List<Encounter> encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, true);
 		for (Encounter encounter : encountersByVisit) {
-			if (encounter.isVoided() && encounter.getDateVoided().equals(visit.getDateVoided())
+			if (encounter.getVoided() && encounter.getDateVoided().equals(visit.getDateVoided())
 			        && encounter.getVoidReason().equals(visit.getVoidReason())) {
 				Context.getEncounterService().unvoidEncounter(encounter);
 			}

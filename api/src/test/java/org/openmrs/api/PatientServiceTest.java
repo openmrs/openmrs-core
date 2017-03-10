@@ -720,7 +720,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
 		Context.getPatientService().mergePatients(patientService.getPatient(6), notPreferred);
-		Assert.assertTrue(Context.getPersonService().getPerson(2).isVoided());
+		Assert.assertTrue(Context.getPersonService().getPerson(2).getVoided());
 	}
 	
 	/**
@@ -886,7 +886,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			// XYZ
 			Patient p = patientService.getPatient(999);
 			Assert.assertNotNull(p);
-			Assert.assertTrue(p.isVoided());
+			Assert.assertTrue(p.getVoided());
 			boolean found = false;
 			for (PatientIdentifier id : p.getIdentifiers()) {
 				if (id.getIdentifier().equals("XYZ") && id.getIdentifierType().getId() == 2) {
@@ -1519,13 +1519,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2);
 		
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
-		Assert.assertTrue(voidedPatient.isVoided());
+		Assert.assertTrue(voidedPatient.getVoided());
 		Assert.assertNotNull(voidedPatient.getVoidedBy());
 		Assert.assertNotNull(voidedPatient.getVoidReason());
 		Assert.assertNotNull(voidedPatient.getDateVoided());
 		
 		Patient unvoidedPatient = Context.getPatientService().unvoidPatient(voidedPatient);
-		Assert.assertFalse(unvoidedPatient.isVoided());
+		Assert.assertFalse(unvoidedPatient.getVoided());
 		Assert.assertNull(unvoidedPatient.getVoidedBy());
 		Assert.assertNull(unvoidedPatient.getVoidReason());
 		Assert.assertNull(unvoidedPatient.getDateVoided());
@@ -1540,13 +1540,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2);
 		
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
-		Assert.assertTrue(voidedPatient.isVoided());
+		Assert.assertTrue(voidedPatient.getVoided());
 		Assert.assertNotNull(voidedPatient.getVoidedBy());
 		Assert.assertNotNull(voidedPatient.getVoidReason());
 		Assert.assertNotNull(voidedPatient.getDateVoided());
 		
 		Patient unvoidedPatient = Context.getPatientService().unvoidPatient(voidedPatient);
-		Assert.assertFalse(unvoidedPatient.isVoided());
+		Assert.assertFalse(unvoidedPatient.getVoided());
 		Assert.assertNull(unvoidedPatient.getVoidedBy());
 		Assert.assertNull(unvoidedPatient.getVoidReason());
 		Assert.assertNull(unvoidedPatient.getDateVoided());
@@ -1561,7 +1561,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2);
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
 		
-		Assert.assertTrue(voidedPatient.isVoided());
+		Assert.assertTrue(voidedPatient.getVoided());
 		Assert.assertEquals("Void for testing", voidedPatient.getVoidReason());
 	}
 	
@@ -1574,7 +1574,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2);
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
 		for (PatientIdentifier patientIdentifier : voidedPatient.getIdentifiers()) {
-			Assert.assertTrue(patientIdentifier.isVoided());
+			Assert.assertTrue(patientIdentifier.getVoided());
 			Assert.assertNotNull(patientIdentifier.getVoidedBy());
 			Assert.assertNotNull(patientIdentifier.getVoidReason());
 			Assert.assertNotNull(patientIdentifier.getDateVoided());
@@ -1591,7 +1591,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2);
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
 		
-		Assert.assertTrue(voidedPatient.isVoided());
+		Assert.assertTrue(voidedPatient.getVoided());
 		Assert.assertNotNull(voidedPatient.getVoidedBy());
 		Assert.assertNotNull(voidedPatient.getVoidReason());
 		Assert.assertNotNull(voidedPatient.getDateVoided());
@@ -1845,16 +1845,16 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void getPatientIdentifiers_shouldReturnOnlyNonVoidedPatientsAndPatientIdentifiers() throws Exception {
 		// sanity check. make sure there is at least one voided patient
 		Patient patient = patientService.getPatient(999);
-		Assert.assertTrue("This patient should be voided", patient.isVoided());
+		Assert.assertTrue("This patient should be voided", patient.getVoided());
 		Assert.assertFalse("This test expects the patient to be voided BUT the identifier to be NONvoided",
-		    ((PatientIdentifier) (patient.getIdentifiers().toArray()[0])).isVoided());
+		    ((PatientIdentifier) (patient.getIdentifiers().toArray()[0])).getVoided());
 		
 		// now fetch all identifiers
 		List<PatientIdentifier> patientIdentifiers = patientService.getPatientIdentifiers(null, null, null, null, null);
 		for (PatientIdentifier patientIdentifier : patientIdentifiers) {
-			Assert.assertFalse("No voided identifiers should be returned", patientIdentifier.isVoided());
+			Assert.assertFalse("No voided identifiers should be returned", patientIdentifier.getVoided());
 			Assert.assertFalse("No identifiers of voided patients should be returned", patientIdentifier.getPatient()
-			        .isVoided());
+			        .getVoided());
 		}
 	}
 	
@@ -2050,7 +2050,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		authenticate();
 		
 		// verify patient is voided
-		assertTrue(patientService.getPatient(3).isVoided());
+		assertTrue(patientService.getPatient(3).getVoided());
 		// ask for list of patients with this name, expect none back because
 		// patient is voided
 		List<Patient> patients = patientService.getPatients("I am voided", null, null, false);
@@ -2249,9 +2249,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		notPreferred.add(patientService.getPatient(8));
 		voidOrders(notPreferred);
 		patientService.mergePatients(preferred, notPreferred);
-		Assert.assertFalse(patientService.getPatient(6).isVoided());
-		Assert.assertTrue(patientService.getPatient(7).isVoided());
-		Assert.assertTrue(patientService.getPatient(8).isVoided());
+		Assert.assertFalse(patientService.getPatient(6).getVoided());
+		Assert.assertTrue(patientService.getPatient(7).getVoided());
+		Assert.assertTrue(patientService.getPatient(8).getVoided());
 	}
 	
 	private void assertEqualsInt(int expected, Integer actual) throws Exception {

@@ -49,7 +49,7 @@ public class PatientDataVoidHandler implements VoidHandler<Patient> {
 		List<Encounter> encounters = es.getEncountersByPatient(patient);
 		if (CollectionUtils.isNotEmpty(encounters)) {
 			for (Encounter encounter : encounters) {
-				if (!encounter.isVoided()) {
+				if (!encounter.getVoided()) {
 					// EncounterServiceImpl.voidEncounter and the requiredDataAdvice will set dateVoided to current date 
 					//if it is null, we need to set it now to match the patient's date voided so that the unvoid 
 					//handler's logic doesn't fail when comparing dates while unvoiding encounters that were voided 

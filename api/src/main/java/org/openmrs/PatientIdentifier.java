@@ -223,6 +223,7 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	 * @deprecated since 1.12. Use DefaultComparator instead.
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
+	@Deprecated
 	@Override
 	@SuppressWarnings("squid:S1210")
 	public int compareTo(PatientIdentifier other) {
@@ -274,7 +275,7 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 		public int compare(PatientIdentifier pi1, PatientIdentifier pi2) {
 			int retValue = 0;
 			if (pi2 != null) {
-				retValue = pi1.isVoided().compareTo(pi2.isVoided());
+				retValue = pi1.getVoided().compareTo(pi2.getVoided());
 				if (retValue == 0) {
 					retValue = pi1.isPreferred().compareTo(pi2.isPreferred());
 				}

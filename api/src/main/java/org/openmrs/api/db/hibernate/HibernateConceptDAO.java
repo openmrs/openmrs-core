@@ -1867,7 +1867,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public boolean isConceptNameDuplicate(ConceptName name) {
-		if (name.isVoided()) {
+		if (name.getVoided()) {
 			return false;
 		}
 		if (name.getConcept() != null) {

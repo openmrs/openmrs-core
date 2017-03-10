@@ -110,7 +110,7 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 					continue;
 				}
 				
-				if ("".equals(value) && !(openmrsObject instanceof Voidable && ((Voidable) openmrsObject).isVoided())) {
+				if ("".equals(value) && !(openmrsObject instanceof Voidable && ((Voidable) openmrsObject).getVoided())) {
 					//Set to null only if object is not already voided
 					PropertyUtils.setProperty(openmrsObject, property.getName(), null);
 				}
