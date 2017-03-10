@@ -106,16 +106,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @should leave preferred name preferred if set
 	 * @should set default preferred name to fully specified first
 	 * @should not set default preferred name to short or index terms
-         * @should force set flag if set members exist
+	 * @should force set flag if set members exist
 	 */
 	@Override
 	public Concept saveConcept(Concept concept) throws APIException {
-		ConceptMapType defaultConceptMapType = null;
+		ConceptMapType defaultConceptMapType = Context.getConceptService().getDefaultConceptMapType();
 		for (ConceptMap map : concept.getConceptMappings()) {
 			if (map.getConceptMapType() == null) {
-				if (defaultConceptMapType == null) {
-					defaultConceptMapType = Context.getConceptService().getDefaultConceptMapType();
-				}
 				map.setConceptMapType(defaultConceptMapType);
 			}
 		}

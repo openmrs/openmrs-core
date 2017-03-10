@@ -15,19 +15,36 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import org.junit.Rule;
+import org.junit.Before;
 
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+import java.util.Set;
 
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNameTag;
+import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptSearchResult;
+import org.openmrs.ConceptSet;
+import org.openmrs.ConceptSource;
+import org.openmrs.Drug;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.APIException;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
@@ -35,6 +52,21 @@ import org.openmrs.test.BaseContextSensitiveTest;
  * would span implementations should go on the {@link ConceptService}.
  */
 public class ConceptServiceImplTest extends BaseContextSensitiveTest {
+	protected ConceptService conceptService = null;
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
+	/**
+	 * Run this before each unit test in this class. The "@Before" method in
+	 * {@link BaseContextSensitiveTest} is run right before this method.
+	 * 
+	 * @throws Exception
+	 */
+	@Before
+	public void runBeforeAllTests() throws Exception {
+		conceptService = Context.getConceptService();
+	}
 	
 	/**
 	 * @see ConceptServiceImpl#saveConcept(Concept)
@@ -263,5 +295,302 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		Context.getConceptService().saveConcept(concept);
 		//Then
 		assertTrue(concept.getSet());
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#retireConcept(Concept,String)
+	 * @Verifies should fail to retire concept if no reason is given
+	 */
+	@Test
+	public void retireConcept_shouldFailToRetireConceptIfReasonIsNotGiven() throws Exception {
+		Concept concept = conceptService.getConcept(3);
+		expectedException.expect(IllegalArgumentException.class);
+		
+		conceptService.retireConcept(concept,"");	
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#retireConcept(Concept,String)
+	 * @Verifies should retire concept
+	 */
+	@Test
+	public void retireConcept_shouldRetireConcept() throws Exception {
+		Concept concept = conceptService.getConcept(3);
+		conceptService.retireConcept(concept, "dummy reason for retirement");
+			
+		assertTrue(concept.isRetired());
+		assertEquals("dummy reason for retirement", concept.getRetireReason());
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getAllDrugs()
+	 * @Verifies should return all the drugs 
+	 */
+	@Test
+	public void getAllDrugs_shouldReturnAListOfAllDrugs() throws Exception {
+		List<Drug> allDrugs = conceptService.getAllDrugs(true);
+		//4 Drugs in the sample dataset
+		
+		assertEquals(4, allDrugs.size());
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getDrugs(String, Concept, boolean, boolean, boolean, Integer, Integer)
+	 * @Verifies return list of drugs
+	 */
+	@Test
+	public void getDrugs_shouldReturnListOfDrugs() throws Exception {
+		Concept concept = conceptService.getConceptByUuid("05ec820a-d297-44e3-be6e-698531d9dd3f");
+		List<Drug> drugs = conceptService.getDrugs("ASPIRIN", concept, true, true, true, 0, 100 );
+		assertEquals("ASPIRIN",drugs.get(0).getName());
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getDrug(String)
+	 * @Verifies should return the given Drug taking drugNumber or ID as a param
+	 */
+	@Test
+	public void getDrug_shouldReturnTheDrug() throws Exception {
+		Drug drug = conceptService.getDrugByUuid("05ec820a-d297-44e3-be6e-698531d9dd3f");
+		assertEquals(drug, conceptService.getDrug("ASPIRIN"));
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getDrug(String)
+	 * @Verifies should return null if no drug is found 
+	 */
+	@Test
+	public void getDrug_shouldReturnNullIfNoDrugIsFound() throws Exception {
+		assertNull(conceptService.getDrug(123456));
+				
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getAllConceptClasses(boolean)
+	 * @Verifies should return a list of all concept classes 
+	 */
+	@Test
+	public void getAllConceptClasses_shouldReturnAllConceptClasses() throws Exception {
+		List<ConceptClass> conceptClasses = conceptService.getAllConceptClasses(true);
+		assertEquals(20, conceptClasses.size());
+		
+		//check for not retired classes
+		conceptClasses = conceptService.getAllConceptClasses(false);
+		assertEquals(20, conceptClasses.size());
+		assertEquals(conceptService.getConceptClass(20), conceptClasses.get(19));
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#purgeConceptClass(ConceptClass)
+	 * @Verifies should purge concept class
+	 */
+	@Test
+	public void purgeConceptClass_shouldPurgeTheGivenConceptClass() throws Exception {
+		ConceptClass cc = conceptService.getConceptClass(1);
+		assertNotNull(cc);
+		
+		conceptService.purgeConceptClass(cc);
+		assertNull(conceptService.getConceptClass(1));
+		
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getAllConceptDatatypes()
+	 * @Verifies should return all concept datatypes
+	 */
+	@Test
+	public void getAllConceptDatatypes_shouldReturnAllConceptDataypes() throws Exception {
+		List<ConceptDatatype> conceptDatatypes = conceptService.getAllConceptDatatypes(true);
+		assertEquals(12, conceptDatatypes.size());
+		assertEquals(conceptService.getConceptDatatypeByUuid("8d4a4488-c2cc-11de-8d13-0010c6dffd0f"), conceptDatatypes.get(0));
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getSetsContainingConcept(Concept)
+	 * @Verifies should return sets containing concept if given a valid concept
+	 */
+	@Test
+	public void getSetsContainingConcept_shouldReturnSetsIfGivenValidConcept() throws Exception {
+		Concept concept = conceptService.getConceptByUuid("0dde1358-7fcf-4341-a330-f119241a46e8");
+		List<ConceptSet> conceptSets = conceptService.getSetsContainingConcept(concept);
+		
+		assertNotNull(conceptSets);
+		assertEquals(conceptSets.get(0).getConcept(), concept);
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getSetsContainingConcept(Concept)
+	 * @Verifies should return empty list if no set contains the given concept
+	 */
+	@Test
+	public void getSetsContainingConcept_shouldReturnEmptyListIfGivenConceptWithNoSet() throws Exception {
+		Concept concept = conceptService.getConceptByUuid("0cbe2ed3-cd5f-4f46-9459-26127c9265ab");
+		List<ConceptSet> conceptSets = conceptService.getSetsContainingConcept(concept);
+		
+		assertEquals(conceptSets, java.util.Collections.emptyList());
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getConcepts(String, Locale, boolean)
+	 * @Verifies return concepts in given locale
+	 */
+	@Test
+	public void getConcepts_shouldReturnConceptsInGivenLocale() throws Exception {
+		Locale locale = new Locale("en","GB");
+		List<Locale> locales = new Vector<Locale>();
+		locales.add(locale);
+		List<ConceptSearchResult> res = conceptService.getConcepts("CD4 COUNT", locales, true, null, null, null, null, null, null, null);
+		
+		assertEquals("CD4 COUNT",res.get(0).getConceptName().getName());
+		
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getDrigByIngredients(Concept)
+	 * @Verifies should fail if no ingredient is given
+	 */
+	@Test
+	public void getDrugsByIngredient_shouldFailIfGivenNoIngredient() throws Exception {
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("ingredient is required");
+		Concept nullConcept = null;
+		
+		conceptService.getDrugsByIngredient(nullConcept);
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getAllConceptProposals(boolean)
+	 * @Verifies should return a list of all concept proposals
+	 */
+	@Test
+	public void getAllConceptProposals_shouldReturnAllConceptProposals() throws Exception {
+		List<ConceptProposal> conceptProposals = conceptService.getAllConceptProposals(true);
+		assertEquals(2, conceptProposals.size());
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#purgeConceptProposal(ConceptProposal)
+	 * @Verifies should purge concept proposal
+	 */
+	@Test
+	public void purgeConceptProposal_shouldPurgeTheGivenConceptProposal() throws Exception {
+		conceptService.purgeConceptProposal(conceptService.getConceptProposal(2));
+		assertNull(conceptService.getConceptProposal(2));
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getPrevConcept(Concept)
+	 * @Verifies should return the concept previous to the given concept
+	 */
+	@Test
+	public void getPrevConcept_shouldReturnThePrevConcept() throws Exception {
+		Concept returnedConcept = conceptService.getPrevConcept(conceptService.getConcept(4));
+		
+		assertEquals(returnedConcept, conceptService.getConcept(3));
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getNextConcept(Concept)
+	 * @Verifies should return the concept next to the given concept
+	 */
+	@Test
+	public void getNextConcept_shouldReturnTheNextConcept() throws Exception {
+		Concept returnedConcept = conceptService.getNextConcept(conceptService.getConcept(3));
+		
+		assertEquals(returnedConcept, conceptService.getConcept(4));
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getConceptsWithDrugsInFormulary()
+	 * @Verifies should return the concepts with drugs in formula
+	 */
+	@Test
+	public void getConceptsWithDrugsInFormulary_shouldReturnConcepts() throws Exception {
+		List<Concept> concepts = conceptService.getConceptsWithDrugsInFormulary();
+		//only 2 concepts in sample dataset which satisfy the concept
+		assertEquals(2, concepts.size());
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getMaxConceptId()
+	 * @Verifies should give the max number of conceptId
+	 */
+	@Test
+	public void getMaxConceptId_shouldGiveTheMaxConceptId() throws Exception {
+		int num = conceptService.getMaxConceptId();
+		assertEquals(5497, num);
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getLocalesOfConceptNames()
+	 * @Verifies should give locales of concept names
+	 */
+	@Test
+	public void getLocalesOfConceptNames_shouldReturnLocales() throws Exception {
+		Set<Locale> locales = conceptService.getLocalesOfConceptNames();
+		// all concept names in sample dataset have locale en-GB
+		assertTrue(locales.contains(new Locale("en","GB")));
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getAllConceptSources(bool) 
+	 * @Verifies should return all concept sources
+	 */
+	@Test
+	public void getAllConceptSources_shouldReturnConceptSources() throws Exception {
+		List<ConceptSource> conceptSources = conceptService.getAllConceptSources(true);
+		// 5 concept source in sample dataset
+		assertEquals(5, conceptSources.size());
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#getAllConceptNameTags
+	 * @Verifies should return a lits of all concept name tags
+	 */
+	@Test
+	public void getAllConceptNameTags_shouldReturnAllConceptNameTags() throws Exception {
+		List<ConceptNameTag> conceptNameTags = conceptService.getAllConceptNameTags();
+		// 15 concept name tags in sample dataset
+		assertEquals(15, conceptNameTags.size());
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#purgeConceptSource(ConceptSource)
+	 * @Verifies should purge the given concept source
+	 */
+	@Test
+	public void purgeConceptSource_shouldPurgetTheConceptSource() throws Exception {
+		ConceptSource conceptSource = conceptService.getConceptSource(1);
+		conceptService.purgeConceptSource(conceptSource);
+		
+		assertNull(conceptService.getConceptSource(1));
+	}
+	
+	/**
+	 *@see ConceptServiceImpl#purgeConceptMapType(ConceptMapType)
+	 *@Verifies should delete the conceptMapType
+	 */
+	@Test
+	public void purgeConceptMapType_shouldPurgeConceptMapTypeIfInNotUse() throws Exception {
+		ConceptMapType mapType = conceptService.getConceptMapType(8);
+		assertNotNull(mapType);
+		
+		conceptService.purgeConceptMapType(mapType);
+		assertNull(conceptService.getConceptMapType(8));
+	}
+	
+	/**
+	 * @see ConceptServiceImpl#purgeConceptReferenceTerm(ConceptReferenceTerm)
+	 * @Verifies should fail to purge concept reference term when given an in-use term
+	 */
+	@Test
+	public void purgeConceptReferenceTerm_shouldFailIfGivenTermInUse() throws Exception {
+		ConceptReferenceTerm refTerm = conceptService.getConceptReferenceTerm(1);
+		assertNotNull(refTerm);
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Reference term is in use");
+		
+		conceptService.purgeConceptReferenceTerm(refTerm);
+		
 	}
 }
