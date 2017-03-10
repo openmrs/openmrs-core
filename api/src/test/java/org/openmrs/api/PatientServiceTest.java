@@ -1716,7 +1716,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// make sure only the address from the preferred patient is marked as preferred
 		for (PersonAddress pa : preferred.getAddresses()) {
 			if (pa.getCityVillage().equals("Jabali")) {
-				Assert.assertFalse(pa.isPreferred());
+				Assert.assertFalse(pa.getPreferred());
 			}
 		}
 		
@@ -3120,9 +3120,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addAddress(address);
 		
 		Context.getPatientService().savePatient(patient);
-		Assert.assertTrue(identifier.isPreferred());
-		Assert.assertTrue(name.isPreferred());
-		Assert.assertTrue(address.isPreferred());
+		Assert.assertTrue(identifier.getPreferred());
+		Assert.assertTrue(name.getPreferred());
+		Assert.assertTrue(address.getPreferred());
 	}
 	
 	/**
@@ -3156,12 +3156,12 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addAddress(preferredAddress);
 		
 		patientService.savePatient(patient);
-		Assert.assertTrue(preferredIdentifier.isPreferred());
-		Assert.assertTrue(preferredName.isPreferred());
-		Assert.assertTrue(preferredAddress.isPreferred());
-		Assert.assertFalse(identifier.isPreferred());
-		Assert.assertFalse(name.isPreferred());
-		Assert.assertFalse(address.isPreferred());
+		Assert.assertTrue(preferredIdentifier.getPreferred());
+		Assert.assertTrue(preferredName.getPreferred());
+		Assert.assertTrue(preferredAddress.getPreferred());
+		Assert.assertFalse(identifier.getPreferred());
+		Assert.assertFalse(name.getPreferred());
+		Assert.assertFalse(address.getPreferred());
 	}
 	
 	/**
@@ -3198,12 +3198,12 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addAddress(preferredAddress);
 		
 		patientService.savePatient(patient);
-		Assert.assertFalse(preferredIdentifier.isPreferred());
-		Assert.assertFalse(preferredName.isPreferred());
-		Assert.assertFalse(preferredAddress.isPreferred());
-		Assert.assertTrue(identifier.isPreferred());
-		Assert.assertTrue(name.isPreferred());
-		Assert.assertTrue(address.isPreferred());
+		Assert.assertFalse(preferredIdentifier.getPreferred());
+		Assert.assertFalse(preferredName.getPreferred());
+		Assert.assertFalse(preferredAddress.getPreferred());
+		Assert.assertTrue(identifier.getPreferred());
+		Assert.assertTrue(name.getPreferred());
+		Assert.assertTrue(address.getPreferred());
 	}
 	
 	/**

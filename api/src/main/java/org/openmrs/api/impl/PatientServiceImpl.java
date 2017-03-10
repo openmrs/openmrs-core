@@ -136,7 +136,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		PatientIdentifier preferredIdentifier = null;
 		PatientIdentifier possiblePreferredId = patient.getPatientIdentifier();
-		if (possiblePreferredId != null && possiblePreferredId.isPreferred() && !possiblePreferredId.isVoided()) {
+		if (possiblePreferredId != null && possiblePreferredId.getPreferred() && !possiblePreferredId.isVoided()) {
 			preferredIdentifier = possiblePreferredId;
 		}
 		
@@ -154,7 +154,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		PersonName preferredName = null;
 		PersonName possiblePreferredName = patient.getPersonName();
-		if (possiblePreferredName != null && possiblePreferredName.isPreferred() && !possiblePreferredName.isVoided()) {
+		if (possiblePreferredName != null && possiblePreferredName.getPreferred() && !possiblePreferredName.isVoided()) {
 			preferredName = possiblePreferredName;
 		}
 		
@@ -172,7 +172,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		PersonAddress preferredAddress = null;
 		PersonAddress possiblePreferredAddress = patient.getPersonAddress();
-		if (possiblePreferredAddress != null && possiblePreferredAddress.isPreferred()
+		if (possiblePreferredAddress != null && possiblePreferredAddress.getPreferred()
 		        && !possiblePreferredAddress.isVoided()) {
 			preferredAddress = possiblePreferredAddress;
 		}

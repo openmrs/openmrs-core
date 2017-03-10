@@ -220,7 +220,7 @@ public class Patient extends Person {
 		// has fetched a Patient, changed their identifiers around, and then calls this method, so we have to be careful.
 		if (getIdentifiers() != null && !getIdentifiers().isEmpty()) {
 			for (PatientIdentifier id : getIdentifiers()) {
-				if (id.isPreferred() && !id.isVoided()) {
+				if (id.getPreferred() && !id.isVoided()) {
 					return id;
 				}
 			}
@@ -245,7 +245,7 @@ public class Patient extends Person {
 	public PatientIdentifier getPatientIdentifier(PatientIdentifierType pit) {
 		if (getIdentifiers() != null && !getIdentifiers().isEmpty()) {
 			for (PatientIdentifier id : getIdentifiers()) {
-				if (id.isPreferred() && !id.isVoided() && pit.equals(id.getIdentifierType())) {
+				if (id.getPreferred() && !id.isVoided() && pit.equals(id.getIdentifierType())) {
 					return id;
 				}
 			}
@@ -268,7 +268,7 @@ public class Patient extends Person {
 	public PatientIdentifier getPatientIdentifier(Integer identifierTypeId) {
 		if (getIdentifiers() != null && !getIdentifiers().isEmpty()) {
 			for (PatientIdentifier id : getIdentifiers()) {
-				if (id.isPreferred() && !id.isVoided()
+				if (id.getPreferred() && !id.isVoided()
 				        && identifierTypeId.equals(id.getIdentifierType().getPatientIdentifierTypeId())) {
 					return id;
 				}
@@ -293,7 +293,7 @@ public class Patient extends Person {
 	public PatientIdentifier getPatientIdentifier(String identifierTypeName) {
 		if (getIdentifiers() != null && !getIdentifiers().isEmpty()) {
 			for (PatientIdentifier id : getIdentifiers()) {
-				if (id.isPreferred() && !id.isVoided() && identifierTypeName.equals(id.getIdentifierType().getName())) {
+				if (id.getPreferred() && !id.isVoided() && identifierTypeName.equals(id.getIdentifierType().getName())) {
 					return id;
 				}
 			}
@@ -321,7 +321,7 @@ public class Patient extends Person {
 			List<PatientIdentifier> nonPreferred = new LinkedList<PatientIdentifier>();
 			for (PatientIdentifier pi : getIdentifiers()) {
 				if (!pi.isVoided()) {
-					if (pi.isPreferred()) {
+					if (pi.getPreferred()) {
 						ids.add(pi);
 					} else {
 						nonPreferred.add(pi);
