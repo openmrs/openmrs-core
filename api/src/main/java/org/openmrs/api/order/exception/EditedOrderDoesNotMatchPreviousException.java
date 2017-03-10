@@ -10,17 +10,16 @@
 package org.openmrs.api.order.exception;
 
 /**
- * Thrown when the new edited order contains modified properties that must be the same as previous order.
+ * Thrown when the new edited order contains modified properties that must be the same as previous
+ * order.
+ * 
+ * @since 2.1
  */
 public class EditedOrderDoesNotMatchPreviousException extends OrderEntryException {
 	
 	public static final long serialVersionUID = 22121218L;
 	
 	public EditedOrderDoesNotMatchPreviousException(String message) {
-		super(message);
-	}
-	
-	public EditedOrderDoesNotMatchPreviousException(String message, Object[] params) {
-		super(message, params);
+		super(message, (Object[]) null);
 	}
 }

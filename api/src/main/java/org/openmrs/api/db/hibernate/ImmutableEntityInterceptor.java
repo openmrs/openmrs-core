@@ -21,7 +21,7 @@ import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 import org.openmrs.Retireable;
 import org.openmrs.Voidable;
-import org.openmrs.api.APIException;
+import org.openmrs.api.UnchangeableObjectException;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -39,7 +39,7 @@ import org.openmrs.util.OpenmrsUtil;
 public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 	
 	private static final Log log = LogFactory.getLog(ImmutableEntityInterceptor.class);
-
+	
 	/**
 	 * Returns the class handled by the interceptor
 	 */
@@ -108,7 +108,8 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 				if (log.isDebugEnabled()) {
 					log.debug("The following fields cannot be changed for " + getSupportedType() + ":" + changedProperties);
 				}
-				throw new APIException("Editing some fields " + changedProperties + " on " + getSupportedType().getSimpleName() + " is not allowed");
+				throw new UnchangeableObjectException("Editing some fields " + changedProperties + " on "
+				        + getSupportedType().getSimpleName() + " is not allowed");
 			}
 		}
 		

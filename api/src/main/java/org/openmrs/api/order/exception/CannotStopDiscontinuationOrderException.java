@@ -10,13 +10,16 @@
 package org.openmrs.api.order.exception;
 
 /**
- * Thrown when a previous order is required.
+ * Thrown when attempt is made to discontinue a discontinuation order.
+ * 
+ * @since 2.1
  */
-public class PreviousOrderRequiredException extends OrderEntryException {
+public class CannotStopDiscontinuationOrderException extends OrderEntryException {
 	
-	public static final long serialVersionUID = 22121216L;
+	public static final long serialVersionUID = 22121215L;
 	
-	public PreviousOrderRequiredException() {
-		super("Order.previous.required");
+	public CannotStopDiscontinuationOrderException() {
+		
+		super("Order.action.cannot.discontinue", (Object[]) null);
 	}
 }
