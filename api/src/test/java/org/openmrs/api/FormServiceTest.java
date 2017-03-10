@@ -111,11 +111,11 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		//testing (un)retiration
 		
 		formService.retireForm(form2, "reason");
-		assertTrue(form2.isRetired());
+		assertTrue(form2.getRetired());
 		assertTrue(form2.getRetireReason().equals("reason"));
 		
 		formService.unretireForm(form2);
-		assertFalse(form2.isRetired());
+		assertFalse(form2.getRetired());
 		assertNull(form2.getRetireReason());
 		
 		//testing deletion

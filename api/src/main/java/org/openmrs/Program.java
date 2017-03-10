@@ -155,7 +155,7 @@ public class Program extends BaseOpenmrsMetadata {
 	public Set<ProgramWorkflow> getWorkflows() {
 		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
 		for (ProgramWorkflow workflow : getAllWorkflows()) {
-			if (!workflow.isRetired()) {
+			if (!workflow.getRetired()) {
 				ret.add(workflow);
 			}
 		}

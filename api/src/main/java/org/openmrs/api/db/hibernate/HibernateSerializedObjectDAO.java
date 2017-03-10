@@ -237,7 +237,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 			OpenmrsMetadata metaObj = (OpenmrsMetadata) object;
 			serializedObject.setName(metaObj.getName());
 			serializedObject.setDescription(metaObj.getDescription());
-			serializedObject.setRetired(metaObj.isRetired() == Boolean.TRUE);
+			serializedObject.setRetired(metaObj.getRetired());
 			serializedObject.setRetiredBy(metaObj.getRetiredBy());
 			serializedObject.setDateRetired(metaObj.getDateRetired());
 			serializedObject.setRetireReason(metaObj.getRetireReason());

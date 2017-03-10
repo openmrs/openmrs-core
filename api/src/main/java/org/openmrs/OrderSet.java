@@ -152,7 +152,7 @@ public class OrderSet extends BaseOpenmrsMetadata {
 	public List<OrderSetMember> getUnRetiredOrderSetMembers() {
 		List<OrderSetMember> osm = new ArrayList<OrderSetMember>();
 		for (OrderSetMember orderSetMember : getOrderSetMembers()) {
-			if (!orderSetMember.isRetired()) {
+			if (!orderSetMember.getRetired()) {
 				osm.add(orderSetMember);
 			}
 		}

@@ -543,7 +543,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		boolean foundRetired = false;
 		for (PersonAttributeType personAttributeType : attributeTypes) {
-			if (personAttributeType.isRetired()) {
+			if (personAttributeType.getRetired()) {
 				foundRetired = true;
 				break;
 			}
@@ -567,7 +567,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		boolean foundRetired = false;
 		for (PersonAttributeType personAttributeType : attributeTypes) {
-			if (personAttributeType.isRetired()) {
+			if (personAttributeType.getRetired()) {
 				foundRetired = true;
 				break;
 			}
@@ -592,7 +592,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		boolean foundRetired = false;
 		for (PersonAttributeType personAttributeType : attributeTypes) {
-			if (personAttributeType.isRetired()) {
+			if (personAttributeType.getRetired()) {
 				foundRetired = true;
 				break;
 			}

@@ -1871,7 +1871,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			return false;
 		}
 		if (name.getConcept() != null) {
-			if (name.getConcept().isRetired()) {
+			if (name.getConcept().getRetired()) {
 				return false;
 			}
 
@@ -1897,7 +1897,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		List<ConceptName> candidateNames = criteria.list();
 		
 		for (ConceptName candidateName : candidateNames) {
-			if (candidateName.getConcept().isRetired()) {
+			if (candidateName.getConcept().getRetired()) {
 				continue;
 			}
 			if (candidateName.getConcept().equals(name.getConcept())) {

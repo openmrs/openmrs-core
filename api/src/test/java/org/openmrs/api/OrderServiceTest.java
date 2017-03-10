@@ -1134,7 +1134,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getCareSettings_shouldReturnRetiredCareSettingsIfIncludeRetiredIsSetToTrue() throws Exception {
 		CareSetting retiredCareSetting = orderService.getCareSetting(3);
-		assertTrue(retiredCareSetting.isRetired());
+		assertTrue(retiredCareSetting.getRetired());
 		List<CareSetting> careSettings = orderService.getCareSettings(true);
 		assertEquals(3, careSettings.size());
 		assertTrue(containsId(careSettings, retiredCareSetting.getCareSettingId()));
@@ -1395,7 +1395,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void retireOrderFrequency_shouldRetireGivenOrderFrequency() throws Exception {
 		OrderFrequency orderFrequency = orderService.getOrderFrequency(1);
 		assertNotNull(orderFrequency);
-		Assert.assertFalse(orderFrequency.isRetired());
+		Assert.assertFalse(orderFrequency.getRetired());
 		Assert.assertNull(orderFrequency.getRetireReason());
 		Assert.assertNull(orderFrequency.getDateRetired());
 		
@@ -1403,7 +1403,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		orderFrequency = orderService.getOrderFrequency(1);
 		assertNotNull(orderFrequency);
-		assertTrue(orderFrequency.isRetired());
+		assertTrue(orderFrequency.getRetired());
 		assertEquals("retire reason", orderFrequency.getRetireReason());
 		assertNotNull(orderFrequency.getDateRetired());
 		
@@ -1416,7 +1416,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void unretireOrderFrequency_shouldUnretireGivenOrderFrequency() throws Exception {
 		OrderFrequency orderFrequency = orderService.getOrderFrequency(3);
 		assertNotNull(orderFrequency);
-		assertTrue(orderFrequency.isRetired());
+		assertTrue(orderFrequency.getRetired());
 		assertEquals("Some Retire Reason", orderFrequency.getRetireReason());
 		assertNotNull(orderFrequency.getDateRetired());
 		
@@ -1424,7 +1424,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		orderFrequency = orderService.getOrderFrequency(3);
 		assertNotNull(orderFrequency);
-		assertFalse(orderFrequency.isRetired());
+		assertFalse(orderFrequency.getRetired());
 		assertNull(orderFrequency.getRetireReason());
 		assertNull(orderFrequency.getDateRetired());
 		
@@ -2954,10 +2954,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void retireOrderType_shouldNotRetireIndependentField() throws Exception {
 		OrderType orderType = orderService.getOrderType(2);
 		ConceptClass conceptClass = conceptService.getConceptClass(1);
-		Assert.assertFalse(conceptClass.isRetired());
+		Assert.assertFalse(conceptClass.getRetired());
 		orderType.addConceptClass(conceptClass);
 		orderService.retireOrderType(orderType, "test retire reason");
-		Assert.assertFalse(conceptClass.isRetired());
+		Assert.assertFalse(conceptClass.getRetired());
 	}
 	
 	/**

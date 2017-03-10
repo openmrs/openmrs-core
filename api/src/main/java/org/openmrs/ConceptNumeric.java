@@ -86,7 +86,7 @@ public class ConceptNumeric extends Concept {
 		this.setDateChanged(c.getDateChanged());
 		this.setDateCreated(c.getDateCreated());
 		this.setSet(c.isSet());
-		this.setRetired(c.isRetired());
+		this.setRetired(c.getRetired());
 		this.setRetiredBy(c.getRetiredBy());
 		this.setRetireReason(c.getRetireReason());
 		this.setVersion(c.getVersion());

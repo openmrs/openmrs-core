@@ -40,8 +40,8 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.Drug;
 import org.openmrs.api.APIException;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptNameType;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
@@ -325,9 +325,9 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	public void retireConcept_shouldRetireTheGivenConcept() throws Exception {
 		String retireReason = "dummy reason";
 		Concept concept = conceptService.getConcept(3);
-		assertFalse(concept.isRetired());
+		assertFalse(concept.getRetired());
 		conceptService.retireConcept(concept, retireReason);
-		assertTrue(concept.isRetired());
+		assertTrue(concept.getRetired());
 		assertEquals(retireReason, concept.getRetireReason());
 	}
 	
@@ -420,7 +420,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		String uuidOfDrugToCheck = "05ec820a-d297-44e3-be6e-698531d9dd3f";
 		Drug drug = conceptService.getDrugByUuid(uuidOfDrugToCheck);
 		conceptService.retireDrug(drug, "some dummy reason");
-		assertTrue(drug.isRetired());
+		assertTrue(drug.getRetired());
 	}
 	
 	/**
@@ -432,7 +432,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		String uuidOfDrugToCheck = "7e2323fa-0fa0-461f-9b59-6765997d849e";
 		Drug drug = conceptService.getDrugByUuid(uuidOfDrugToCheck);
 		conceptService.unretireDrug(drug);
-		assertFalse(drug.isRetired());
+		assertFalse(drug.getRetired());
 	}
 	
 	/**
@@ -443,9 +443,9 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	public void unretireDrug_shouldNotChangeAttributesOfDrugThatIsAlreadyNotRetired() throws Exception {
 		String uuidOfDrugToCheck = "3cfcf118-931c-46f7-8ff6-7b876f0d4202";
 		Drug drug = conceptService.getDrugByUuid(uuidOfDrugToCheck);
-		assertFalse(drug.isRetired());
+		assertFalse(drug.getRetired());
 		conceptService.unretireDrug(drug);
-		assertFalse(drug.isRetired());
+		assertFalse(drug.getRetired());
 	}
 	
 	/**

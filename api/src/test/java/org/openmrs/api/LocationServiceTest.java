@@ -491,7 +491,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		List<Location> locationsNotRetiredAfter = ls.getAllLocations(false);
 		
 		// make sure that all the values were filled in
-		assertTrue(retiredLoc.isRetired());
+		assertTrue(retiredLoc.getRetired());
 		assertNotNull(retiredLoc.getDateRetired());
 		assertEquals(Context.getAuthenticatedUser(), retiredLoc.getRetiredBy());
 		assertEquals("Just Testing", retiredLoc.getRetireReason());
@@ -512,11 +512,11 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationService ls = Context.getLocationService();
 		
 		Location loc = ls.getLocation("Test Retired Location");
-		Assert.assertTrue(loc.isRetired());
+		Assert.assertTrue(loc.getRetired());
 		
 		Location newLoc = ls.unretireLocation(loc);
 		Assert.assertEquals(loc, newLoc);
-		Assert.assertFalse(loc.isRetired());
+		Assert.assertFalse(loc.getRetired());
 		Assert.assertNull(loc.getRetiredBy());
 		Assert.assertNull(loc.getRetireReason());
 	}
@@ -807,7 +807,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		List<LocationTag> tagsNotRetiredAfter = ls.getAllLocationTags(false);
 		
 		// Make sure that all the values were filled in
-		assertTrue(retiredTag.isRetired());
+		assertTrue(retiredTag.getRetired());
 		assertNotNull(retiredTag.getDateRetired());
 		assertEquals(Context.getAuthenticatedUser(), retiredTag.getRetiredBy());
 		assertEquals("Just Testing", retiredTag.getRetireReason());
@@ -828,13 +828,13 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationService ls = Context.getLocationService();
 		
 		LocationTag tag = ls.getLocationTag(1);
-		Assert.assertFalse(tag.isRetired());
+		Assert.assertFalse(tag.getRetired());
 		
 		String reason = "because i can";
 		LocationTag newTag = ls.retireLocationTag(tag, reason);
 		
 		Assert.assertEquals(tag, newTag);
-		Assert.assertTrue(tag.isRetired());
+		Assert.assertTrue(tag.getRetired());
 		Assert.assertEquals(reason, tag.getRetireReason());
 	}
 	
@@ -847,12 +847,12 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationService ls = Context.getLocationService();
 		LocationTag tag = ls.getLocationTagByName("Test Retired Tag");
 		
-		Assert.assertTrue(tag.isRetired());
+		Assert.assertTrue(tag.getRetired());
 		
 		LocationTag newTag = ls.unretireLocationTag(tag);
 		
 		Assert.assertEquals(tag, newTag);
-		Assert.assertFalse(tag.isRetired());
+		Assert.assertFalse(tag.getRetired());
 		Assert.assertNull(tag.getRetiredBy());
 		Assert.assertNull(tag.getRetireReason());
 	}
@@ -1006,9 +1006,9 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		List<Location> locations = ls.getAllLocations();
 		//The 2 retired locations should be always be at the end
 		Assert.assertTrue("Retired locations should be at the end of the list", locations.get(locations.size() - 1)
-		        .isRetired());
+		        .getRetired());
 		Assert.assertTrue("Retired locations should be at the end of the list", locations.get(locations.size() - 2)
-		        .isRetired());
+		        .getRetired());
 	}
 	
 	/**
@@ -1083,13 +1083,13 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void retireLocationAttributeType_shouldRetireALocationAttributeType() throws Exception {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
 		LocationAttributeType vat = Context.getLocationService().getLocationAttributeType(1);
-		Assert.assertFalse(vat.isRetired());
+		Assert.assertFalse(vat.getRetired());
 		Assert.assertNull(vat.getRetiredBy());
 		Assert.assertNull(vat.getDateRetired());
 		Assert.assertNull(vat.getRetireReason());
 		Context.getLocationService().retireLocationAttributeType(vat, "for testing");
 		vat = Context.getLocationService().getLocationAttributeType(1);
-		Assert.assertTrue(vat.isRetired());
+		Assert.assertTrue(vat.getRetired());
 		Assert.assertNotNull(vat.getRetiredBy());
 		Assert.assertNotNull(vat.getDateRetired());
 		Assert.assertEquals("for testing", vat.getRetireReason());
@@ -1136,12 +1136,12 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
 		LocationService service = Context.getLocationService();
 		LocationAttributeType lat = service.getLocationAttributeType(2);
-		Assert.assertTrue(lat.isRetired());
+		Assert.assertTrue(lat.getRetired());
 		Assert.assertNotNull(lat.getDateRetired());
 		Assert.assertNotNull(lat.getRetiredBy());
 		Assert.assertNotNull(lat.getRetireReason());
 		service.unretireLocationAttributeType(lat);
-		Assert.assertFalse(lat.isRetired());
+		Assert.assertFalse(lat.getRetired());
 		Assert.assertNull(lat.getDateRetired());
 		Assert.assertNull(lat.getRetiredBy());
 		Assert.assertNull(lat.getRetireReason());
@@ -1256,7 +1256,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationTag tag = new LocationTag(1);
 		location.addTag(tag);
 		locationService.retireLocation(location, "test retire reason");
-		Assert.assertFalse(tag.isRetired());
+		Assert.assertFalse(tag.getRetired());
 	}
 	
 }

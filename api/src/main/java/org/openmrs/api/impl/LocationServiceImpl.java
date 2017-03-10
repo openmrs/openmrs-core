@@ -317,7 +317,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	@Override
 	public LocationTag retireLocationTag(LocationTag tag, String reason) throws APIException {
-		if (tag.isRetired()) {
+		if (tag.getRetired()) {
 			return tag;
 		} else {
 			if (reason == null) {

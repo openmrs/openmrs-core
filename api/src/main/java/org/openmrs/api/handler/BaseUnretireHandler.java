@@ -20,8 +20,9 @@ import org.openmrs.aop.RequiredDataAdvice;
  * This is the super interface for all unretire* actions that take place on all services. The
  * {@link RequiredDataAdvice} class uses AOP around each method in every service to check to see if
  * its a unretire* method. If it is a unretire* method, this class is called to handle setting the
- * {@link Retireable#isRetired()}, {@link Retireable#setRetireReason(String)},
- * {@link Retireable#setRetiredBy(User)}, and {@link Retireable#setDateRetired(Date)} all to null. <br>
+ * {@link Retireable#getRetired()}, {@link Retireable#setRetireReason(String)},
+ * {@link Retireable#setRetiredBy(User)}, and {@link Retireable#setDateRetired(Date)} all to null.
+ * <br>
  * <br>
  * Child collections on this {@link Retireable} that are themselves a {@link Retireable} are looped
  * over and also unretired by the {@link RequiredDataAdvice} class. <br>
@@ -51,7 +52,7 @@ public class BaseUnretireHandler implements UnretireHandler<Retireable> {
 	public void handle(Retireable retireableObject, User retiringUser, Date origParentRetiredDate, String unused) {
 		
 		// only act on retired objects
-		if (retireableObject.isRetired()
+		if (retireableObject.getRetired()
 		        && (origParentRetiredDate == null || origParentRetiredDate.equals(retireableObject.getDateRetired()))) {
 			// only act on retired objects that match the same date retired as the parent
 			retireableObject.setRetired(false);
