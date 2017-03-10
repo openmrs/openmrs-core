@@ -23,6 +23,7 @@ import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
 import static org.openmrs.util.AddressMatcher.containsAddress;
 import static org.openmrs.util.NameMatcher.containsFullName;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -626,11 +627,12 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(USERS_WHO_ARE_PATIENTS_XML);
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
-		Context.getPatientService().mergePatients(patientService.getPatient(6), notPreferred);
+        	Patient patient = patientService.getPatient(7);
+        	Context.getPatientService().mergePatients(patient, notPreferred);
 		User user = Context.getUserService().getUser(2);
-		Assert.assertEquals(6, user.getPerson().getId().intValue());
+		assertEquals(7, user.getPerson().getId().intValue());
 	}
-	
+
 	/**
 	 * @see PatientService#mergePatients(Patient,Patient)
 	 * @verifies merge visits from non preferred to preferred patient
@@ -644,7 +646,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
 		Patient preferred = patientService.getPatient(6);
-		
+		preferred.setBirthdate(new SimpleDateFormat("dd-MM-YYYY").parse("24-04-1976"));
 		// patient 2 (not preferred) has 3 unvoided visits (id = 1, 2, 3) and 1 voided visit (id = 6)
 		Visit visit1 = visitService.getVisit(1);
 		Visit visit2 = visitService.getVisit(2);
@@ -719,7 +721,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void mergePatients_shouldVoidNonPreferredPersonObject() throws Exception {
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
-		Context.getPatientService().mergePatients(patientService.getPatient(6), notPreferred);
+		Context.getPatientService().mergePatients(patientService.getPatient(7), notPreferred);
 		Assert.assertTrue(Context.getPersonService().getPerson(2).isVoided());
 	}
 	
