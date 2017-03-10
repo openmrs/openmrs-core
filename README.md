@@ -136,7 +136,7 @@ If you haven't found what you were looking for refer to the [Module - wiki](http
 If you want to contribute please refer to these resources
 
 * [Getting Started as a Developer](https://wiki.openmrs.org/display/docs/Getting+Started+as+a+Developer)
-* [How To Configure Your IDE](https://wiki.openmrs.org/display/docs/Coding+Conventions#CodingConventions-IDE-configHowToConfigureYourIDE)
+* [How To Configure Your IDE](https://wiki.openmrs.org/display/docs/How-To+Setup+And+Use+Your+IDE)
 * [How To Make a Pull Request](https://wiki.openmrs.org/display/docs/Pull+Request+Tips)
 
 ### Wiki
