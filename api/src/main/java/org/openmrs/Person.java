@@ -742,7 +742,7 @@ public class Person extends BaseOpenmrsData {
 	 * 
 	 * @return the "preferred" person name.
 	 * @see #getNames()
-	 * @see PersonName#isPreferred()
+	 * @see PersonName#getPreferred()
 	 * @should get preferred and not-voided person name if exist
 	 * @should get not-voided person name if preferred address does not exist
 	 * @should get voided person address if person is voided and not-voided address does not exist
@@ -753,7 +753,7 @@ public class Person extends BaseOpenmrsData {
 		// has fetched a Person, changed their names around, and then calls this method, so we have to be careful.
 		if (getNames() != null && !getNames().isEmpty()) {
 			for (PersonName name : getNames()) {
-				if (name.isPreferred() && !name.isVoided()) {
+				if (name.getPreferred() && !name.isVoided()) {
 					return name;
 				}
 			}
@@ -813,7 +813,8 @@ public class Person extends BaseOpenmrsData {
 	}
 	
 	/**
-	 * Convenience method to get the {@link PersonAddress} object that is marked as "preferred". <br>
+	 * Convenience method to get the {@link PersonAddress} object that is marked as "preferred".
+	 * <br>
 	 * <br>
 	 * If two addresses are marked as preferred (or no addresses), the database ordering comes into
 	 * effect and the one that was created most recently will be returned. <br>
@@ -824,7 +825,7 @@ public class Person extends BaseOpenmrsData {
 	 * 
 	 * @return the "preferred" person address.
 	 * @see #getAddresses()
-	 * @see PersonAddress#isPreferred()
+	 * @see PersonAddress#getPreferred()
 	 * @should get preferred and not-voided person address if exist
 	 * @should get not-voided person address if preferred address does not exist
 	 * @should get voided person address if person is voided and not-voided address does not exist
@@ -835,7 +836,7 @@ public class Person extends BaseOpenmrsData {
 		// has fetched a Person, changed their addresses around, and then calls this method, so we have to be careful.
 		if (getAddresses() != null && !getAddresses().isEmpty()) {
 			for (PersonAddress addr : getAddresses()) {
-				if (addr.isPreferred() && !addr.isVoided()) {
+				if (addr.getPreferred() && !addr.isVoided()) {
 					return addr;
 				}
 			}

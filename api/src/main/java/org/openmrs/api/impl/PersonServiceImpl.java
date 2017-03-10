@@ -296,7 +296,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public Person savePerson(Person person) throws APIException {
 		PersonName preferredName = null;
 		PersonName possiblePreferredName = person.getPersonName();
-		if (possiblePreferredName != null && possiblePreferredName.isPreferred() && !possiblePreferredName.isVoided()) {
+		if (possiblePreferredName != null && possiblePreferredName.getPreferred() && !possiblePreferredName.isVoided()) {
 			preferredName = possiblePreferredName;
 		}
 		
@@ -314,7 +314,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		PersonAddress preferredAddress = null;
 		PersonAddress possiblePreferredAddress = person.getPersonAddress();
-		if (possiblePreferredAddress != null && possiblePreferredAddress.isPreferred()
+		if (possiblePreferredAddress != null && possiblePreferredAddress.getPreferred()
 		        && !possiblePreferredAddress.isVoided()) {
 			preferredAddress = possiblePreferredAddress;
 		}

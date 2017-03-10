@@ -1590,7 +1590,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		savedRelationshipType.setPreferred(true);
 		RelationshipType updatedRelationshipType = personService.saveRelationshipType(savedRelationshipType);
-		Assert.assertEquals(true, updatedRelationshipType.isPreferred());
+		Assert.assertEquals(true, updatedRelationshipType.getPreferred());
 	}
 	
 	/**
@@ -2057,8 +2057,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		person.addAddress(address);
 		
 		personService.savePerson(person);
-		Assert.assertTrue(name.isPreferred());
-		Assert.assertTrue(address.isPreferred());
+		Assert.assertTrue(name.getPreferred());
+		Assert.assertTrue(address.getPreferred());
 	}
 	
 	/**
@@ -2084,10 +2084,10 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		person.addAddress(preferredAddress);
 		
 		personService.savePerson(person);
-		Assert.assertTrue(preferredName.isPreferred());
-		Assert.assertTrue(preferredAddress.isPreferred());
-		Assert.assertFalse(name.isPreferred());
-		Assert.assertFalse(address.isPreferred());
+		Assert.assertTrue(preferredName.getPreferred());
+		Assert.assertTrue(preferredAddress.getPreferred());
+		Assert.assertFalse(name.getPreferred());
+		Assert.assertFalse(address.getPreferred());
 	}
 	
 	/**
@@ -2115,10 +2115,10 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		person.addAddress(preferredAddress);
 		
 		personService.savePerson(person);
-		Assert.assertFalse(preferredName.isPreferred());
-		Assert.assertFalse(preferredAddress.isPreferred());
-		Assert.assertTrue(name.isPreferred());
-		Assert.assertTrue(address.isPreferred());
+		Assert.assertFalse(preferredName.getPreferred());
+		Assert.assertFalse(preferredAddress.getPreferred());
+		Assert.assertTrue(name.getPreferred());
+		Assert.assertTrue(address.getPreferred());
 	}
 	
 	/**
