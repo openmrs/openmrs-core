@@ -20,7 +20,7 @@ import org.openmrs.aop.RequiredDataAdvice;
  * This is the super interface for all unvoid* actions that take place on all services. The
  * {@link RequiredDataAdvice} class uses AOP around each method in every service to check to see if
  * its a unvoid* method. If it is a unvoid* method, this class is called to handle setting the
- * {@link Voidable#isVoided()}, {@link Voidable#setVoidReason(String)},
+ * {@link Voidable#getVoided()}, {@link Voidable#setVoidReason(String)},
  * {@link Voidable#setVoidedBy(User)}, and {@link Voidable#setDateVoided(Date)} all to null. <br>
  * <br>
  * Child collections on this {@link Voidable} that are themselves a {@link Voidable} are looped over
@@ -51,7 +51,7 @@ public class BaseUnvoidHandler implements UnvoidHandler<Voidable> {
 	public void handle(Voidable voidableObject, User voidingUser, Date origParentVoidedDate, String unused) {
 		
 		// only operate on voided objects
-		if (voidableObject.isVoided()
+		if (voidableObject.getVoided()
 		        && (origParentVoidedDate == null || origParentVoidedDate.equals(voidableObject.getDateVoided()))) {
 			
 			// only unvoid objects that were voided at the same time as the parent object

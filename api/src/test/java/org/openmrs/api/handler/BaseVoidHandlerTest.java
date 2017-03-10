@@ -33,7 +33,7 @@ public class BaseVoidHandlerTest {
 		Voidable voidable = new Person();
 		voidable.setVoided(false); // make sure isVoided is false
 		handler.handle(voidable, null, null, " ");
-		Assert.assertTrue(voidable.isVoided());
+		Assert.assertTrue(voidable.getVoided());
 	}
 	
 	/**

@@ -65,14 +65,14 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		List<Cohort> allCohorts = service.getAllCohorts(true);
 		assertNotNull(allCohorts);
 		assertEquals(2, allCohorts.size());
-		assertTrue(allCohorts.get(0).isVoided());
-		assertFalse(allCohorts.get(1).isVoided());
+		assertTrue(allCohorts.get(0).getVoided());
+		assertFalse(allCohorts.get(1).getVoided());
 		
 		// now do the actual test: getCohort by name and expect a non voided cohort
 		Cohort exampleCohort = service.getCohort("Example Cohort");
 		assertNotNull(exampleCohort);
 		assertEquals(1, exampleCohort.size());
-		assertFalse(exampleCohort.isVoided());
+		assertFalse(exampleCohort.getVoided());
 	}
 	
 	/**
@@ -185,12 +185,12 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		// Get a non-voided, valid Cohort and try to void it with a null reason
 		Cohort exampleCohort = service.getCohort("Example Cohort");
 		assertNotNull(exampleCohort);
-		assertFalse(exampleCohort.isVoided());
+		assertFalse(exampleCohort.getVoided());
 		
 		// Now get the Cohort and try to void it with an empty reason
 		exampleCohort = service.getCohort("Example Cohort");
 		assertNotNull(exampleCohort);
-		assertFalse(exampleCohort.isVoided());
+		assertFalse(exampleCohort.getVoided());
 		
 		try {
 			service.voidCohort(exampleCohort, "");
@@ -211,7 +211,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		// Get a non-voided, valid Cohort and try to void it with a null reason
 		Cohort exampleCohort = service.getCohort("Example Cohort");
 		assertNotNull(exampleCohort);
-		assertFalse(exampleCohort.isVoided());
+		assertFalse(exampleCohort.getVoided());
 		
 		try {
 			service.voidCohort(exampleCohort, null);
@@ -222,7 +222,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		// Now get the Cohort and try to void it with an empty reason
 		exampleCohort = service.getCohort("Example Cohort");
 		assertNotNull(exampleCohort);
-		assertFalse(exampleCohort.isVoided());
+		assertFalse(exampleCohort.getVoided());
 		
 		try {
 			service.voidCohort(exampleCohort, "");
@@ -244,7 +244,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		List<Cohort> allCohorts = service.getAllCohorts(true);
 		assertNotNull(allCohorts);
 		assertEquals(2, allCohorts.size());
-		assertTrue(allCohorts.get(0).isVoided());
+		assertTrue(allCohorts.get(0).getVoided());
 		
 		// Make sure the void reason is different from the reason to be given in the test
 		assertNotNull(allCohorts.get(0).getVoidReason());
@@ -272,11 +272,11 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		List<Cohort> allCohorts = service.getAllCohorts(true);
 		assertNotNull(allCohorts);
 		assertEquals(2, allCohorts.size());
-		assertFalse(allCohorts.get(1).isVoided());
+		assertFalse(allCohorts.get(1).getVoided());
 		
 		// now void the cohort and see if it's voided
 		Cohort voidedCohort = service.voidCohort(allCohorts.get(1), "voided for Test");
-		assertTrue(allCohorts.get(1).isVoided());
+		assertTrue(allCohorts.get(1).getVoided());
 	}
 	
 	/**
@@ -319,8 +319,8 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		List<Cohort> allCohorts = service.getAllCohorts(true);
 		assertNotNull(allCohorts);
 		assertEquals(allCohorts.get(0).getName(), allCohorts.get(1).getName());
-		assertTrue(allCohorts.get(0).isVoided());
-		assertFalse(allCohorts.get(1).isVoided());
+		assertTrue(allCohorts.get(0).getVoided());
+		assertFalse(allCohorts.get(1).getVoided());
 		// the non-voided cohort should have an id of 2
 		assertTrue(allCohorts.get(1).getCohortId() == 2);
 		
@@ -344,7 +344,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(allCohorts);
 		// there is only one non-voided cohort in the data set
 		assertEquals(1, allCohorts.size());
-		assertFalse(allCohorts.get(0).isVoided());
+		assertFalse(allCohorts.get(0).getVoided());
 	}
 	
 	/**
@@ -360,15 +360,15 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		List<Cohort> allCohorts = service.getAllCohorts(true);
 		assertNotNull(allCohorts);
 		assertEquals(2, allCohorts.size());
-		assertTrue(allCohorts.get(0).isVoided());
-		assertFalse(allCohorts.get(1).isVoided());
+		assertTrue(allCohorts.get(0).getVoided());
+		assertFalse(allCohorts.get(1).getVoided());
 		
 		// now call the target method and see if the voided cohort shows up
 		allCohorts = service.getAllCohorts();
 		assertNotNull(allCohorts);
 		// only the non-voided cohort should be returned
 		assertEquals(1, allCohorts.size());
-		assertFalse(allCohorts.get(0).isVoided());
+		assertFalse(allCohorts.get(0).getVoided());
 	}
 	
 	/**
@@ -384,15 +384,15 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		List<Cohort> allCohorts = service.getAllCohorts(true);
 		assertNotNull(allCohorts);
 		assertEquals(2, allCohorts.size());
-		assertTrue(allCohorts.get(0).isVoided());
-		assertFalse(allCohorts.get(1).isVoided());
+		assertTrue(allCohorts.get(0).getVoided());
+		assertFalse(allCohorts.get(1).getVoided());
 		
 		// if called with false parameter, should not return the voided one
 		allCohorts = service.getAllCohorts(false);
 		assertNotNull(allCohorts);
 		// only the non-voided cohort should be returned
 		assertEquals(1, allCohorts.size());
-		assertFalse(allCohorts.get(0).isVoided());
+		assertFalse(allCohorts.get(0).getVoided());
 	}
 	
 	/**
@@ -420,8 +420,8 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(COHORT_XML);
 		
 		// make sure we have two cohorts, the first of which is voided
-		assertTrue(service.getCohort(1).isVoided());
-		assertFalse(service.getCohort(2).isVoided());
+		assertTrue(service.getCohort(1).getVoided());
+		assertFalse(service.getCohort(2).getVoided());
 		
 		// add a patient to both cohorts
 		Patient patientToAdd = new Patient(7);

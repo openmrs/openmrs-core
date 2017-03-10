@@ -20,7 +20,7 @@ import org.openmrs.aop.RequiredDataAdvice;
  * This is the super interface for all void* actions that take place on all services. The
  * {@link RequiredDataAdvice} class uses AOP around each method in every service to check to see if
  * its a void* method. If it is a void* method, this class is called to handle setting the
- * {@link Voidable#isVoided()}, {@link Voidable#setVoidReason(String)},
+ * {@link Voidable#getVoided()}, {@link Voidable#setVoidReason(String)},
  * {@link Voidable#setVoidedBy(User)}, and {@link Voidable#setDateVoided(Date)}. <br>
  * <br>
  * Child collections on this {@link Voidable} that are themselves a {@link Voidable} are looped over
@@ -56,7 +56,7 @@ public class BaseVoidHandler implements VoidHandler<Voidable> {
 	public void handle(Voidable voidableObject, User voidingUser, Date voidedDate, String voidReason) {
 		
 		// skip over all work if the object is already voided
-		if (!voidableObject.isVoided() || voidableObject.getVoidedBy() == null) {
+		if (!voidableObject.getVoided() || voidableObject.getVoidedBy() == null) {
 			
 			voidableObject.setVoided(true);
 			voidableObject.setVoidReason(voidReason);

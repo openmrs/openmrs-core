@@ -380,7 +380,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(8, patientIdentifiers.size());
 		
 		for (PatientIdentifier patientIdentifier : patientIdentifiers) {
-			Assert.assertFalse(patientIdentifier.isVoided());
+			Assert.assertFalse(patientIdentifier.getVoided());
 		}
 	}
 	

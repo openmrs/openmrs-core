@@ -109,7 +109,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 		target.setChangedBy(getChangedBy());
 		target.setDateChanged(getDateChanged());
 		target.setVoidedBy(getVoidedBy());
-		target.setVoided(isVoided());
+		target.setVoided(getVoided());
 		target.setDateVoided(getDateVoided());
 		target.setVoidReason(getVoidReason());
 		return target;
@@ -343,7 +343,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 				return retValue;
 			}
 			
-			if ((retValue = pa1.isVoided().compareTo(pa2.isVoided())) != 0) {
+			if ((retValue = pa1.getVoided().compareTo(pa2.getVoided())) != 0) {
 				return retValue;
 			}
 			

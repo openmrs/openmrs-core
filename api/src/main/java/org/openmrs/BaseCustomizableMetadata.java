@@ -51,7 +51,7 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 		List<A> ret = new ArrayList<A>();
 		if (getAttributes() != null) {
 			for (A attr : getAttributes()) {
-				if (!attr.isVoided()) {
+				if (!attr.getVoided()) {
 					ret.add(attr);
 				}
 			}
@@ -67,7 +67,7 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 		List<A> ret = new ArrayList<A>();
 		if (getAttributes() != null) {
 			for (A attr : getAttributes()) {
-				if (attr.getAttributeType().equals(ofType) && !attr.isVoided()) {
+				if (attr.getAttributeType().equals(ofType) && !attr.getVoided()) {
 					ret.add(attr);
 				}
 			}

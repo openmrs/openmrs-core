@@ -71,7 +71,7 @@ public class Relationship extends BaseOpenmrsData {
 		target.personB = getPersonB();
 		target.setCreator(getCreator());
 		target.setDateCreated(getDateCreated());
-		target.setVoided(isVoided());
+		target.setVoided(getVoided());
 		target.setVoidedBy(getVoidedBy());
 		target.setDateVoided(getDateVoided());
 		target.setVoidReason(getVoidReason());

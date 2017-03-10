@@ -122,26 +122,26 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		} else {
 			Context.requirePrivilege(PrivilegeConstants.EDIT_PATIENTS);
 		}
-		if (patient.isVoided()) {
+		if (patient.getVoided()) {
 			Context.requirePrivilege(PrivilegeConstants.DELETE_PATIENTS);
 		}
 		
-		if (!patient.isVoided() && patient.getIdentifiers().size() == 1) {
+		if (!patient.getVoided() && patient.getIdentifiers().size() == 1) {
 			patient.getPatientIdentifier().setPreferred(true);
 		}
 		
-		if (!patient.isVoided()) {
+		if (!patient.getVoided()) {
 			checkPatientIdentifiers(patient);
 		}
 		
 		PatientIdentifier preferredIdentifier = null;
 		PatientIdentifier possiblePreferredId = patient.getPatientIdentifier();
-		if (possiblePreferredId != null && possiblePreferredId.getPreferred() && !possiblePreferredId.isVoided()) {
+		if (possiblePreferredId != null && possiblePreferredId.getPreferred() && !possiblePreferredId.getVoided()) {
 			preferredIdentifier = possiblePreferredId;
 		}
 		
 		for (PatientIdentifier id : patient.getIdentifiers()) {
-			if (preferredIdentifier == null && !id.isVoided()) {
+			if (preferredIdentifier == null && !id.getVoided()) {
 				id.setPreferred(true);
 				preferredIdentifier = id;
 				continue;
@@ -154,12 +154,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		PersonName preferredName = null;
 		PersonName possiblePreferredName = patient.getPersonName();
-		if (possiblePreferredName != null && possiblePreferredName.getPreferred() && !possiblePreferredName.isVoided()) {
+		if (possiblePreferredName != null && possiblePreferredName.getPreferred() && !possiblePreferredName.getVoided()) {
 			preferredName = possiblePreferredName;
 		}
 		
 		for (PersonName name : patient.getNames()) {
-			if (preferredName == null && !name.isVoided()) {
+			if (preferredName == null && !name.getVoided()) {
 				name.setPreferred(true);
 				preferredName = name;
 				continue;
@@ -173,12 +173,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		PersonAddress preferredAddress = null;
 		PersonAddress possiblePreferredAddress = patient.getPersonAddress();
 		if (possiblePreferredAddress != null && possiblePreferredAddress.getPreferred()
-		        && !possiblePreferredAddress.isVoided()) {
+		        && !possiblePreferredAddress.getVoided()) {
 			preferredAddress = possiblePreferredAddress;
 		}
 		
 		for (PersonAddress address : patient.getAddresses()) {
-			if (preferredAddress == null && !address.isVoided()) {
+			if (preferredAddress == null && !address.getVoided()) {
 				address.setPreferred(true);
 				preferredAddress = address;
 				continue;
@@ -263,7 +263,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public void checkPatientIdentifiers(Patient patient) throws PatientIdentifierException {
 		// check patient has at least one identifier
-		if (!patient.isVoided() && patient.getActiveIdentifiers().isEmpty()) {
+		if (!patient.getVoided() && patient.getActiveIdentifiers().isEmpty()) {
 			throw new InsufficientIdentifiersException("At least one nonvoided Patient Identifier is required");
 		}
 		
@@ -278,7 +278,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		List<PatientIdentifierType> foundRequiredTypes = new ArrayList<PatientIdentifierType>();
 		
 		for (PatientIdentifier pi : identifiers) {
-			if (pi.isVoided()) {
+			if (pi.getVoided()) {
 				continue;
 			}
 			
@@ -679,7 +679,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 		// iterate over notPreferred's relationships and only copy them if they are needed
 		for (Relationship rel : personService.getRelationshipsByPerson(notPreferred)) {
-			if (!rel.isVoided()) {
+			if (!rel.getVoided()) {
 				boolean personAisPreferred = rel.getPersonA().equals(preferred);
 				boolean personAisNotPreferred = rel.getPersonA().equals(notPreferred);
 				boolean personBisPreferred = rel.getPersonB().equals(preferred);
@@ -723,7 +723,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// TODO: this should be a copy, not a move
 		ObsService obsService = Context.getObsService();
 		for (Obs obs : obsService.getObservationsByPerson(notPreferred)) {
-			if (obs.getEncounter() == null && !obs.isVoided()) {
+			if (obs.getEncounter() == null && !obs.getVoided()) {
 				obs.setPerson(preferred);
 				Obs persisted = obsService.saveObs(obs, "Merged from patient #" + notPreferred.getPatientId());
 				mergedData.addMovedIndependentObservation(persisted.getUuid());
@@ -792,7 +792,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	private void mergePersonAttributes(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy person attributes
 		for (PersonAttribute attr : notPreferred.getAttributes()) {
-			if (!attr.isVoided()) {
+			if (!attr.getVoided()) {
 				PersonAttribute tmpAttr = attr.copy();
 				tmpAttr.setPerson(null);
 				tmpAttr.setUuid(UUID.randomUUID().toString());
@@ -870,7 +870,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		// copy person attributes
 		for (PersonAttribute attr : notPreferred.getAttributes()) {
-			if (!attr.isVoided()) {
+			if (!attr.getVoided()) {
 				PersonAttribute tmpAttr = attr.copy();
 				tmpAttr.setPerson(null);
 				tmpAttr.setUuid(UUID.randomUUID().toString());

@@ -1652,7 +1652,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should void the conceptName if the text of the name has changed", method = "saveConcept(Concept)")
 	public void saveConcept_shouldVoidTheConceptNameIfTheTextOfTheNameHasChanged() throws Exception {
 		Concept concept = conceptService.getConceptByName("cd4 count");
-		Assert.assertEquals(false, conceptService.getConceptName(1847).isVoided().booleanValue());
+		Assert.assertEquals(false, conceptService.getConceptName(1847).getVoided().booleanValue());
 		for (ConceptName cn : concept.getNames()) {
 			if (cn.getConceptNameId().equals(1847))
 				cn.setName("new name");
@@ -1660,7 +1660,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//ensure that the conceptName has actually been found and replaced
 		Assert.assertEquals(true, concept.hasName("new name", new Locale("en", "GB")));
 		conceptService.saveConcept(concept);
-		Assert.assertEquals(true, conceptService.getConceptName(1847).isVoided().booleanValue());
+		Assert.assertEquals(true, conceptService.getConceptName(1847).getVoided().booleanValue());
 	}
 	
 	/**

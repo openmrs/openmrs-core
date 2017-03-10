@@ -33,7 +33,7 @@ public class BaseUnvoidHandlerTest {
 		Voidable voidable = new Person();
 		voidable.setVoided(true); // make sure isVoided is set
 		handler.handle(voidable, null, null, null);
-		Assert.assertFalse(voidable.isVoided());
+		Assert.assertFalse(voidable.getVoided());
 	}
 	
 	/**
@@ -105,6 +105,6 @@ public class BaseUnvoidHandlerTest {
 		voidable.setDateVoided(d);
 		
 		handler.handle(voidable, null, new Date(), "SOME REASON");
-		Assert.assertTrue(voidable.isVoided());
+		Assert.assertTrue(voidable.getVoided());
 	}
 }

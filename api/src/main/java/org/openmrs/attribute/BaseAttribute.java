@@ -136,7 +136,7 @@ public abstract class BaseAttribute<AT extends AttributeType, OwningType extends
 		if (other == null) {
 			return -1;
 		}
-		int retValue = isVoided().compareTo(other.isVoided());
+		int retValue = getVoided().compareTo(other.getVoided());
 		if (retValue == 0) {
 			retValue = OpenmrsUtil.compareWithNullAsGreatest(getAttributeType().getId(), other.getAttributeType().getId());
 		}

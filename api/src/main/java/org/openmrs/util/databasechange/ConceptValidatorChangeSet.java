@@ -686,11 +686,11 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				pStmt.setString(2, (conceptName.getConceptNameType() != null) ? conceptName.getConceptNameType().toString()
 				        : null);
 				pStmt.setBoolean(3, conceptName.isLocalePreferred());
-				pStmt.setBoolean(4, conceptName.isVoided());
-				pStmt.setDate(5, conceptName.isVoided() ? new Date(System.currentTimeMillis()) : null);
+				pStmt.setBoolean(4, conceptName.getVoided());
+				pStmt.setDate(5, conceptName.getVoided() ? new Date(System.currentTimeMillis()) : null);
 				pStmt.setString(6, conceptName.getVoidReason());
 				// "Not all databases allow for a non-typed Null to be sent to the backend", so we can't use setInt
-				pStmt.setObject(7, (conceptName.isVoided() && userId != null) ? userId : null, Types.INTEGER);
+				pStmt.setObject(7, (conceptName.getVoided() && userId != null) ? userId : null, Types.INTEGER);
 				pStmt.setInt(8, conceptName.getConceptNameId());
 				
 				pStmt.addBatch();

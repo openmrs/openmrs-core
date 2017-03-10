@@ -1057,7 +1057,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void discontinueOrder_shouldFailForAVoidedOrder() throws Exception {
 		Order orderToDiscontinue = orderService.getOrder(8);
 		Encounter encounter = encounterService.getEncounter(3);
-		assertTrue(orderToDiscontinue.isVoided());
+		assertTrue(orderToDiscontinue.getVoided());
 		expectedException.expect(CannotDiscontinueAlreadyDiscontinuedOrderException.class);
 		expectedException.expectMessage("Order.stopped.cannot.discontinued");
 		orderService.discontinueOrder(orderToDiscontinue, "testing", null, null, encounter);
@@ -1165,7 +1165,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrder_shouldNotAllowRevisingAVoidedOrder() throws Exception {
 		Order originalOrder = orderService.getOrder(8);
-		assertTrue(originalOrder.isVoided());
+		assertTrue(originalOrder.getVoided());
 		Order revisedOrder = originalOrder.cloneForRevision();
 		revisedOrder.setEncounter(encounterService.getEncounter(6));
 		revisedOrder.setInstructions("Take after a meal");

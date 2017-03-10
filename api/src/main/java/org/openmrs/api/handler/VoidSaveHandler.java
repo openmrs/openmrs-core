@@ -64,7 +64,7 @@ public class VoidSaveHandler implements SaveHandler<Voidable> {
 		// void reason is not set here, it should be set prior to this method
 		
 		// only set the values if the user saved this object and set the voided bit
-		if (voidableObject.isVoided()) {
+		if (voidableObject.getVoided()) {
 			
 			if (voidableObject.getVoidedBy() == null) {
 				voidableObject.setVoidedBy(currentUser);
