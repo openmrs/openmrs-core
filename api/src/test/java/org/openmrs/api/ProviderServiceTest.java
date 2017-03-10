@@ -253,10 +253,10 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void retireProvider_shouldRetireAProvider() throws Exception {
 		Provider provider = service.getProvider(1);
-		assertFalse(provider.isRetired());
+		assertFalse(provider.getRetired());
 		assertNull(provider.getRetireReason());
 		service.retireProvider(provider, "retire reason");
-		assertTrue(provider.isRetired());
+		assertTrue(provider.getRetired());
 		assertEquals("retire reason", provider.getRetireReason());
 		assertEquals(6, service.getAllProviders(false).size());
 	}
@@ -268,11 +268,11 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void retireProviderAttributeType_shouldRetireProviderTypeAttribute() throws Exception {
 		ProviderAttributeType providerAttributeType = service.getProviderAttributeType(1);
-		assertFalse(providerAttributeType.isRetired());
+		assertFalse(providerAttributeType.getRetired());
 		assertNull(providerAttributeType.getRetireReason());
 		assertEquals(2, service.getAllProviderAttributeTypes(false).size());
 		service.retireProviderAttributeType(providerAttributeType, "retire reason");
-		assertTrue(providerAttributeType.isRetired());
+		assertTrue(providerAttributeType.getRetired());
 		assertEquals("retire reason", providerAttributeType.getRetireReason());
 		assertEquals(1, service.getAllProviderAttributeTypes(false).size());
 	}
@@ -319,7 +319,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	public void unretireProvider_shouldUnretireAProvider() throws Exception {
 		Provider provider = service.getProvider(1);
 		service.unretireProvider(provider);
-		assertFalse(provider.isRetired());
+		assertFalse(provider.getRetired());
 		assertNull(provider.getRetireReason());
 	}
 	
@@ -330,9 +330,9 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void unretireProviderAttributeType_shouldUnretireAProviderAttributeType() throws Exception {
 		ProviderAttributeType providerAttributeType = service.getProviderAttributeType(2);
-		assertTrue(providerAttributeType.isRetired());
+		assertTrue(providerAttributeType.getRetired());
 		service.unretireProviderAttributeType(providerAttributeType);
-		assertFalse(providerAttributeType.isRetired());
+		assertFalse(providerAttributeType.getRetired());
 		assertNull(providerAttributeType.getRetireReason());
 	}
 	
@@ -505,7 +505,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		Person person = Context.getPersonService().getPerson(502);
 		Set<PersonName> names = person.getNames();
 		for (Iterator<PersonName> iterator = names.iterator(); iterator.hasNext();) {
-			PersonName name = (PersonName) iterator.next();
+			PersonName name = iterator.next();
 			name.setVoided(true);
 			
 		}

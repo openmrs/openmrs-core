@@ -34,7 +34,7 @@ public class MetadataComparator implements Comparator<OpenmrsMetadata> {
 	 */
 	@Override
 	public int compare(OpenmrsMetadata left, OpenmrsMetadata right) {
-		int temp = OpenmrsUtil.compareWithNullAsLowest(left.isRetired(), right.isRetired());
+		int temp = OpenmrsUtil.compareWithNullAsLowest(left.getRetired(), right.getRetired());
 		if (temp == 0) {
 			temp = OpenmrsUtil.compareWithNullAsLowest(left.getName(), right.getName());
 		}

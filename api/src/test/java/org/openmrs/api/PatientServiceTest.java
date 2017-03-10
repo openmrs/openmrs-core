@@ -1476,14 +1476,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should unretire patient identifier type", method = "unretirePatientIdentifierType(PatientIdentifierType)")
 	public void unretirePatientIdentifierType_shouldUnretirePatientIdentifierType() throws Exception {
 		PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierType(4);
-		Assert.assertTrue(identifierType.isRetired());
+		Assert.assertTrue(identifierType.getRetired());
 		Assert.assertNotNull(identifierType.getRetiredBy());
 		Assert.assertNotNull(identifierType.getRetireReason());
 		Assert.assertNotNull(identifierType.getDateRetired());
 		
 		PatientIdentifierType unretiredIdentifierType = Context.getPatientService().unretirePatientIdentifierType(
 		    identifierType);
-		Assert.assertFalse(unretiredIdentifierType.isRetired());
+		Assert.assertFalse(unretiredIdentifierType.getRetired());
 		Assert.assertNull(unretiredIdentifierType.getRetiredBy());
 		Assert.assertNull(unretiredIdentifierType.getRetireReason());
 		Assert.assertNull(unretiredIdentifierType.getDateRetired());
@@ -1496,14 +1496,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return unretired patient identifier type", method = "unretirePatientIdentifierType(PatientIdentifierType)")
 	public void unretirePatientIdentifierType_shouldReturnUnretiredPatientIdentifierType() throws Exception {
 		PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierType(4);
-		Assert.assertTrue(identifierType.isRetired());
+		Assert.assertTrue(identifierType.getRetired());
 		Assert.assertNotNull(identifierType.getRetiredBy());
 		Assert.assertNotNull(identifierType.getRetireReason());
 		Assert.assertNotNull(identifierType.getDateRetired());
 		
 		PatientIdentifierType unretiredIdentifierType = Context.getPatientService().unretirePatientIdentifierType(
 		    identifierType);
-		Assert.assertFalse(unretiredIdentifierType.isRetired());
+		Assert.assertFalse(unretiredIdentifierType.getRetired());
 		Assert.assertNull(unretiredIdentifierType.getRetiredBy());
 		Assert.assertNull(unretiredIdentifierType.getRetireReason());
 		Assert.assertNull(unretiredIdentifierType.getDateRetired());

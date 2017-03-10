@@ -365,7 +365,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 			ret = getChildLocations();
 		} else if (getChildLocations() != null) {
 			for (Location l : getChildLocations()) {
-				if (!l.isRetired()) {
+				if (!l.getRetired()) {
 					ret.add(l);
 				}
 			}
@@ -384,7 +384,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 		Set<Location> result = new HashSet<Location>();
 		
 		for (Location childLocation : getChildLocations()) {
-			if (!childLocation.isRetired() || includeRetired) {
+			if (!childLocation.getRetired() || includeRetired) {
 				result.add(childLocation);
 				result.addAll(childLocation.getDescendantLocations(includeRetired));
 			}

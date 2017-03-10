@@ -20,7 +20,7 @@ import org.openmrs.aop.RequiredDataAdvice;
  * This is the default class for all retire* actions that take place on all services. The
  * {@link RequiredDataAdvice} class uses AOP around each method in every service to check to see if
  * its a retire* method. If it is a retire* method, this class is called to handle setting the
- * {@link Retireable#isRetired()}, {@link Retireable#setRetireReason(String)},
+ * {@link Retireable#getRetired()}, {@link Retireable#setRetireReason(String)},
  * {@link Retireable#setRetiredBy(User)}, and {@link Retireable#setDateRetired(Date)}. <br>
  * <br>
  * Child collections on this {@link Retireable} that are themselves a {@link Retireable} are looped
@@ -56,7 +56,7 @@ public class BaseRetireHandler implements RetireHandler<Retireable> {
 	public void handle(Retireable retireableObject, User retiringUser, Date retireDate, String retireReason) {
 		
 		// skip over doing retire stuff if already retired
-		if (!retireableObject.isRetired() || retireableObject.getRetiredBy() == null) {
+		if (!retireableObject.getRetired() || retireableObject.getRetiredBy() == null) {
 			
 			retireableObject.setRetired(true);
 			retireableObject.setRetireReason(retireReason);

@@ -77,7 +77,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 			}
 		}
 		for (OrderSetMember orderSetMember : orderSet.getOrderSetMembers()) {
-			if (orderSetMember.isRetired()) {
+			if (orderSetMember.getRetired()) {
 				orderSetMember.setRetiredBy(Context.getAuthenticatedUser());
 				orderSetMember.setDateRetired(new Date());
 			}

@@ -33,7 +33,7 @@ public class BaseRetireHandlerTest {
 		Retireable retireable = new Location();
 		retireable.setRetired(false); // make sure isRetired is false
 		handler.handle(retireable, null, null, " ");
-		Assert.assertTrue(retireable.isRetired());
+		Assert.assertTrue(retireable.getRetired());
 	}
 	
 	/**

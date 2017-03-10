@@ -65,7 +65,7 @@ public class RetireSaveHandler implements SaveHandler<Retireable> {
 		// retire reason is not set here, it should be set prior to this method
 		
 		// only set the values if the user saved this object and set the retired bit
-		if (retireableObject.isRetired()) {
+		if (retireableObject.getRetired()) {
 			
 			if (retireableObject.getRetiredBy() == null) {
 				retireableObject.setRetiredBy(currentUser);

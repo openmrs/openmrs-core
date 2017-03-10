@@ -164,7 +164,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata {
 	public Set<ProgramWorkflowState> getStates(boolean includeRetired) {
 		Set<ProgramWorkflowState> ret = new HashSet<ProgramWorkflowState>();
 		for (ProgramWorkflowState s : getStates()) {
-			if (includeRetired || !s.isRetired()) {
+			if (includeRetired || !s.getRetired()) {
 				ret.add(s);
 			}
 		}

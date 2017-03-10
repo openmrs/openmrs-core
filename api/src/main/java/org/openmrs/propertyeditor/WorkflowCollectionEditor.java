@@ -85,7 +85,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 			for (ProgramWorkflow pw : oldSet) {
 				if (!newConceptIds.contains(pw.getConcept().getConceptId())) {
 					pw.setRetired(true);
-				} else if (newConceptIds.contains(pw.getConcept().getConceptId()) && pw.isRetired()) {
+				} else if (newConceptIds.contains(pw.getConcept().getConceptId()) && pw.getRetired()) {
 					pw.setRetired(false);
 				}
 				alreadyDone.add(pw.getConcept().getConceptId());

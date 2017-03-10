@@ -1080,7 +1080,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		UserService userService = Context.getUserService();
 		User user = userService.getUser(502);
 		userService.retireUser(user, "because");
-		Assert.assertTrue(user.isRetired());
+		Assert.assertTrue(user.getRetired());
 		Assert.assertNotNull(user.getDateRetired());
 		Assert.assertNotNull(user.getRetiredBy());
 		Assert.assertEquals("because", user.getRetireReason());
@@ -1095,7 +1095,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		UserService userService = Context.getUserService();
 		User user = userService.getUser(501);
 		userService.unretireUser(user);
-		Assert.assertFalse(user.isRetired());
+		Assert.assertFalse(user.getRetired());
 		Assert.assertNull(user.getDateRetired());
 		Assert.assertNull(user.getRetiredBy());
 		Assert.assertNull(user.getRetireReason());

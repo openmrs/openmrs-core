@@ -1012,7 +1012,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return drugs that are not retired", method = "getDrugs(String)")
 	public void getDrugs_shouldReturnDrugsThatAreNotRetired() throws Exception {
 		List<Drug> drugs = Context.getConceptService().getDrugs("ASPIRIN" /* is not retired */);
-		Assert.assertFalse(drugs.get(0).isRetired());
+		Assert.assertFalse(drugs.get(0).getRetired());
 	}
 	
 	/**
@@ -1131,7 +1131,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptService.retireConceptSource(cs, "dummy reason for retirement");
 		
 		cs = conceptService.getConceptSource(3);
-		Assert.assertTrue(cs.isRetired());
+		Assert.assertTrue(cs.getRetired());
 		Assert.assertEquals("dummy reason for retirement", cs.getRetireReason());
 	}
 	
@@ -1330,7 +1330,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void saveConceptSource_shouldNotSaveAConceptSourceIfVoidedIsNull() throws Exception {
 		ConceptSource source = new ConceptSource();
 		source.setRetired(null);
-		assertNull(source.isRetired());
+		assertNull(source.getRetired());
 		
 		conceptService.saveConceptSource(source);
 		
@@ -2164,12 +2164,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should retire the specified conceptMapType with the given retire reason", method = "retireConceptMapType(ConceptMapType,String)")
 	public void retireConceptMapType_shouldRetireTheSpecifiedConceptMapTypeWithTheGivenRetireReason() throws Exception {
 		ConceptMapType mapType = Context.getConceptService().getConceptMapType(1);
-		Assert.assertFalse(mapType.isRetired());
+		Assert.assertFalse(mapType.getRetired());
 		Assert.assertNull(mapType.getRetiredBy());
 		Assert.assertNull(mapType.getDateRetired());
 		Assert.assertNull(mapType.getRetireReason());
 		ConceptMapType retiredMapType = Context.getConceptService().retireConceptMapType(mapType, "test retire reason");
-		Assert.assertTrue(retiredMapType.isRetired());
+		Assert.assertTrue(retiredMapType.getRetired());
 		Assert.assertEquals(retiredMapType.getRetireReason(), "test retire reason");
 		Assert.assertNotNull(retiredMapType.getRetiredBy());
 		Assert.assertNotNull(retiredMapType.getDateRetired());
@@ -2237,13 +2237,13 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void retireConceptReferenceTerm_shouldRetireTheSpecifiedConceptReferenceTermWithTheGivenRetireReason()
 	        throws Exception {
 		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTerm(1);
-		Assert.assertFalse(term.isRetired());
+		Assert.assertFalse(term.getRetired());
 		Assert.assertNull(term.getRetireReason());
 		Assert.assertNull(term.getRetiredBy());
 		Assert.assertNull(term.getDateRetired());
 		ConceptReferenceTerm retiredTerm = Context.getConceptService()
 		        .retireConceptReferenceTerm(term, "test retire reason");
-		Assert.assertTrue(retiredTerm.isRetired());
+		Assert.assertTrue(retiredTerm.getRetired());
 		Assert.assertEquals("test retire reason", retiredTerm.getRetireReason());
 		Assert.assertNotNull(retiredTerm.getRetiredBy());
 		Assert.assertNotNull(retiredTerm.getDateRetired());
@@ -2312,12 +2312,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void unretireConceptMapType_shouldUnretireTheSpecifiedConceptMapTypeAndDropAllRetireRelatedFields()
 	        throws Exception {
 		ConceptMapType mapType = Context.getConceptService().getConceptMapType(6);
-		Assert.assertTrue(mapType.isRetired());
+		Assert.assertTrue(mapType.getRetired());
 		Assert.assertNotNull(mapType.getRetiredBy());
 		Assert.assertNotNull(mapType.getDateRetired());
 		Assert.assertNotNull(mapType.getRetireReason());
 		ConceptMapType unRetiredMapType = Context.getConceptService().unretireConceptMapType(mapType);
-		Assert.assertFalse(unRetiredMapType.isRetired());
+		Assert.assertFalse(unRetiredMapType.getRetired());
 		Assert.assertNull(unRetiredMapType.getRetireReason());
 		Assert.assertNull(unRetiredMapType.getRetiredBy());
 		Assert.assertNull(unRetiredMapType.getDateRetired());
@@ -2331,12 +2331,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void unretireConceptReferenceTerm_shouldUnretireTheSpecifiedConceptReferenceTermAndDropAllRetireRelatedFields()
 	        throws Exception {
 		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTerm(11);
-		Assert.assertTrue(term.isRetired());
+		Assert.assertTrue(term.getRetired());
 		Assert.assertNotNull(term.getRetireReason());
 		Assert.assertNotNull(term.getRetiredBy());
 		Assert.assertNotNull(term.getDateRetired());
 		ConceptReferenceTerm retiredTerm = Context.getConceptService().unretireConceptReferenceTerm(term);
-		Assert.assertFalse(retiredTerm.isRetired());
+		Assert.assertFalse(retiredTerm.getRetired());
 		Assert.assertNull(retiredTerm.getRetireReason());
 		Assert.assertNull(retiredTerm.getRetiredBy());
 		Assert.assertNull(retiredTerm.getDateRetired());
@@ -3681,13 +3681,13 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void retireConceptAttributeType_shouldRetireAConceptAttributeType() throws Exception {
 		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
 		ConceptAttributeType vat = Context.getConceptService().getConceptAttributeType(1);
-		Assert.assertFalse(vat.isRetired());
+		Assert.assertFalse(vat.getRetired());
 		Assert.assertNull(vat.getRetiredBy());
 		Assert.assertNull(vat.getDateRetired());
 		Assert.assertNull(vat.getRetireReason());
 		Context.getConceptService().retireConceptAttributeType(vat, "for testing");
 		vat = Context.getConceptService().getConceptAttributeType(1);
-		Assert.assertTrue(vat.isRetired());
+		Assert.assertTrue(vat.getRetired());
 		Assert.assertNotNull(vat.getRetiredBy());
 		Assert.assertNotNull(vat.getDateRetired());
 		Assert.assertEquals("for testing", vat.getRetireReason());
@@ -3702,12 +3702,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
 		ConceptService service = Context.getConceptService();
 		ConceptAttributeType conceptAttributeType = service.getConceptAttributeType(2);
-		Assert.assertTrue(conceptAttributeType.isRetired());
+		Assert.assertTrue(conceptAttributeType.getRetired());
 		Assert.assertNotNull(conceptAttributeType.getDateRetired());
 		Assert.assertNotNull(conceptAttributeType.getRetiredBy());
 		Assert.assertNotNull(conceptAttributeType.getRetireReason());
 		service.unretireConceptAttributeType(conceptAttributeType);
-		Assert.assertFalse(conceptAttributeType.isRetired());
+		Assert.assertFalse(conceptAttributeType.getRetired());
 		Assert.assertNull(conceptAttributeType.getDateRetired());
 		Assert.assertNull(conceptAttributeType.getRetiredBy());
 		Assert.assertNull(conceptAttributeType.getRetireReason());
