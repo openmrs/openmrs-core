@@ -120,6 +120,9 @@ public class ModuleClassLoader extends URLClassLoader {
 				if (!file.isDirectory()) {
 					continue;
 				}
+				if(file.list().length == 0) {
+					continue;
+				}
 				File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
 				if (dir.exists()) {
 					Collection<File> files = FileUtils.listFiles(dir, new String[] { "class" }, true);
@@ -213,6 +216,9 @@ public class ModuleClassLoader extends URLClassLoader {
 				File[] fileList = devDir.listFiles();
 				for (File file : fileList) {
 					if (!file.isDirectory()) {
+						continue;
+					}
+					if (file.list().length == 0) {
 						continue;
 					}
 					File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);

@@ -317,7 +317,9 @@ public class OpenmrsUtil {
 		if (!folder.isDirectory()) {
 			return false;
 		}
-		
+		if (folder.list().length == 0) {
+			return false;
+		}
 		for (File f : folder.listFiles()) {
 			if (f.getName().equals(filename)) {
 				return true;

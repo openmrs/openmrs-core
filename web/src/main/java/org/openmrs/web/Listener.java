@@ -437,17 +437,20 @@ public final class Listener extends ContextLoader implements ServletContextListe
 					log.debug("Overriding file: " + absolutePath);
 					log.debug("Overriding file with: " + userOverridePath);
 					if (file.isDirectory()) {
-						for (File f : file.listFiles()) {
-							userOverridePath = f.getAbsolutePath();
-							if (!f.getName().startsWith(".")) {
-								String tmpAbsolutePath = absolutePath + "/" + f.getName();
-								if (!copyFile(userOverridePath, tmpAbsolutePath)) {
-									log.warn("Unable to copy file in folder defined by runtime property: " + prop);
-									log.warn("Your source directory (or a file in it) '" + userOverridePath
-									        + " cannot be loaded or destination '" + tmpAbsolutePath + "' cannot be found");
+						if (file.list().length > 0) {
+							for (File f : file.listFiles()) {
+								userOverridePath = f.getAbsolutePath();
+								if (!f.getName().startsWith(".")) {
+									String tmpAbsolutePath = absolutePath + "/" + f.getName();
+									if (!copyFile(userOverridePath, tmpAbsolutePath)) {
+										log.warn("Unable to copy file in folder defined by runtime property: " + prop);
+										log.warn("Your source directory (or a file in it) '" + userOverridePath
+										        + " cannot be loaded or destination '" + tmpAbsolutePath + "' cannot be found");
+									}
 								}
 							}
 						}
+						
 					} else {
 						// file is not a directory
 						if (!copyFile(userOverridePath, absolutePath)) {
@@ -528,6 +531,10 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 
 		// loop over the modules and load the modules that we can
+		if (folder.list().length == 0) {
+			log.warn("Bundled module folder is empty: " + folder.getAbsolutePath());
+			return;
+		}
 		for (File f : folder.listFiles()) {
 			if (!f.getName().startsWith(".")) { // ignore .svn folder and the like
 				try {
