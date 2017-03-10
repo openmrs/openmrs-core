@@ -10,11 +10,12 @@
 package org.openmrs.api;
 
 /**
- * This exception is thrown on attempt to do some action with order, and there 
- * are multiple active orders for the given concept so the action is ambiguous
+ * This exception is thrown on attempt to do some action with order, and there are multiple active
+ * orders for the given concept so the action is ambiguous
+ * 
  * @since 1.12
  */
-public class AmbiguousOrderException extends APIException {
+public class AmbiguousOrderException extends OrderEntryException {
 	
 	private static final long serialVersionUID = -2946935560419378572L;
 	

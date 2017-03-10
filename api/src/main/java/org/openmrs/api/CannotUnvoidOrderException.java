@@ -7,23 +7,18 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
+package org.openmrs.api;
 
-package org.openmrs.api.order.exception;
-
-import org.openmrs.api.APIException;
-
-public class OrderEntryException extends APIException {
+/**
+ * Thrown when an attempt to unvoid an order fails.
+ * 
+ * @since 2.1
+ */
+public class CannotUnvoidOrderException extends OrderEntryException {
 	
-	public OrderEntryException(String message) {
-		super(message);
+	public static final long serialVersionUID = 22121315L;
+	
+	public CannotUnvoidOrderException(String action) {
+		super("Order.action.cannot.unvoid", new Object[] { action });
 	}
-	
-	public OrderEntryException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
-	public OrderEntryException(String messageKey, Object[] parameters) {
-		super(messageKey, parameters);
-	}
-	
 }

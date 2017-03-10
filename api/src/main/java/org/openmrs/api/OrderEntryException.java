@@ -7,20 +7,27 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.api.order.exception;
+
+package org.openmrs.api;
 
 /**
- * Thrown when trying to change unchangeable order properties.
+ * Superclass of all order entry related exceptions and should typically be thrown whenever there is
+ * no more specific type can be thrown.
+ * 
+ * @since 2.1
  */
-public class UnchangeableOrderPropertyException extends OrderEntryException {
+public class OrderEntryException extends APIException {
 	
-	public static final long serialVersionUID = 22121217L;
-	
-	private UnchangeableOrderPropertyException(String message) {
+	public OrderEntryException(String message) {
 		super(message);
 	}
 	
-	public static UnchangeableOrderPropertyException withProperty(String property) {
-		return new UnchangeableOrderPropertyException(String.format("Order.cannot.change.%s", property));
+	public OrderEntryException(String message, Throwable cause) {
+		super(message, cause);
 	}
+	
+	public OrderEntryException(String messageKey, Object[] parameters) {
+		super(messageKey, parameters);
+	}
+	
 }
