@@ -70,5 +70,11 @@ public interface ObsDAO {
 	 * @return obs or null
 	 */
 	public Obs getObsByUuid(String uuid);
-	
+
+	/**
+	 * @see org.openmrs.api.ObsService#getRevisionObs(org.openmrs.Obs)
+	 * @param initialObs
+	 * @return Obs or null
+	 */
+	public Obs getRevisionObs(Obs initialObs);
 }
