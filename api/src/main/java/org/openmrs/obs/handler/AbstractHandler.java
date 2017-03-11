@@ -142,7 +142,7 @@ public class AbstractHandler {
 	 */
 	public boolean purgeComplexData(Obs obs) {
 		File file = getComplexDataFile(obs);
-		if (file.exists()) {
+		if (!file.exists()) {
 			return true;
 		} else if (file.delete()) {
 			obs.setComplexData(null);
