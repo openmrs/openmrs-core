@@ -261,5 +261,14 @@ public class HibernateObsDAO implements ObsDAO {
 		return (Obs) sessionFactory.getCurrentSession().createQuery("from Obs o where o.uuid = :uuid").setString("uuid",
 		    uuid).uniqueResult();
 	}
-	
+
+	/**
+	 * @see org.openmrs.api.db.ObsDAO#getRevisionObs(org.openmrs.Obs)
+	 */
+	public Obs getRevisionObs(Obs initialObs) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class, "obs");
+		criteria.add(Restrictions.eq("previousVersion", initialObs));
+		return (Obs) criteria.uniqueResult();
+	}
+
 }

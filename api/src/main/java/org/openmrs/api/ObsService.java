@@ -73,7 +73,19 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_OBS)
 	public Obs getObsByUuid(String uuid) throws APIException;
-	
+
+	/**
+	 * Get Revision Obs for initial Obs
+	 *
+	 * @param obs
+	 * @return obs or null
+	 * @since 2.1
+	 * @should find revision obs for given valid obs
+	 * @should return null if no revision obs found for given obs
+	 */
+	@Authorized(PrivilegeConstants.GET_OBS)
+	public Obs getRevisionObs(Obs initialObs);
+
 	/**
 	 * Save the given obs to the database. This will move the contents of the given <code>obs</code>
 	 * to the database. This acts as both the initial save and an update kind of save. The returned

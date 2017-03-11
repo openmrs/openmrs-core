@@ -74,8 +74,28 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String COMPLEX_OBS_XML = "org/openmrs/api/include/ObsServiceTest-complex.xml";
 
+	protected static final String REVISION_OBS_XML = "org/openmrs/api/include/ObsServiceTest-RevisionObs.xml";
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
+
+
+	/**
+	 * This method gets the revision obs for voided obs
+	 *
+	 * @see ObsService#getRevisionObs(Obs)
+	 */
+	@Test
+	public void shouldGetRevisedObs() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		executeDataSet(REVISION_OBS_XML);
+
+		ObsService os = Context.getObsService();
+		Obs initialObs = os.getObsByUuid("uuid14");
+		Obs revisedObs = os.getRevisionObs(initialObs);
+		assertEquals(17, revisedObs.getId().intValue());
+		assertEquals(2, revisedObs.getGroupMembers(true).size());
+	}
 
 	@Test
 	@Verifies(value = "should throw APIException when obs is null", method = "saveObs(Obs,String)")
