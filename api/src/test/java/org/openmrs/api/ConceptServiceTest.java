@@ -1165,7 +1165,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		
 		// using isSet() as a value to check and change
-		assertFalse(conceptService.getConcept(2).isSet());
+		assertFalse(conceptService.getConcept(2).getSet());
 		Concept concept = conceptService.getConcept(2);
 		// change a value
 		concept.setSet(true);
@@ -1173,7 +1173,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		// save the concept
 		conceptService.saveConcept(concept);
 		// see if the value was updated in the database
-		assertTrue(conceptService.getConcept(2).isSet());
+		assertTrue(conceptService.getConcept(2).getSet());
 	}
 	
 	/**
@@ -3100,7 +3100,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		ConceptNameTag cnt = new ConceptNameTag();
 		ConceptService cs = Context.getConceptService();
 		
-		ConceptNameTag faultyNameTag = cs.saveConceptNameTag(cnt);
+		cs.saveConceptNameTag(cnt);
 	}
 	
 	/**

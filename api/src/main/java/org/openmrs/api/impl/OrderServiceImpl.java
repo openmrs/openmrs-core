@@ -271,7 +271,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				int hours = cal.get(Calendar.HOUR_OF_DAY);
 				int minutes = cal.get(Calendar.MINUTE);
 				int seconds = cal.get(Calendar.SECOND);
-				int milliseconds = cal.get(Calendar.MILLISECOND);
+				cal.get(Calendar.MILLISECOND);
 				//roll autoExpireDate to end of day (23:59:59) if no time portion is specified
 				if (hours == 0 && minutes == 0 && seconds == 0) {
 					cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -1005,7 +1005,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	private List<Concept> getSetMembersOfConceptSetFromGP(String globalProperty) {
 		String conceptUuid = Context.getAdministrationService().getGlobalProperty(globalProperty);
 		Concept concept = Context.getConceptService().getConceptByUuid(conceptUuid);
-		if (concept != null && concept.isSet()) {
+		if (concept != null && concept.getSet()) {
 			return concept.getSetMembers();
 		}
 		return Collections.emptyList();

@@ -228,8 +228,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		concept.setChangedBy(Context.getAuthenticatedUser());
 		
 		// force isSet when concept has members
-		if (!concept.isSet() && (!concept.getSetMembers().isEmpty())) {
-                    concept.setSet(true);
+		if (!concept.getSet() && (!concept.getSetMembers().isEmpty())) {
+			concept.setSet(true);
 		}
 
 		Concept conceptToReturn = dao.saveConcept(concept);
@@ -899,7 +899,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		List<ConceptSet> cs = getConceptSetsByConcept(concept);
 		for (ConceptSet set : cs) {
 			Concept c = set.getConcept();
-			if (c.isSet()) {
+			if (c.getSet()) {
 				ret.add(c);
 				explodeConceptSetHelper(c, ret, alreadySeen);
 			} else {
@@ -1889,8 +1889,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			locales = new ArrayList<Locale>();
 			locales.add(Context.getLocale());
 		}
-		return dao.getConcepts(phrase, locales, false, mappedClasses, (List) Collections.emptyList(), (List) Collections
-		        .emptyList(), (List) Collections.emptyList(), null, start, length);
+		return dao.getConcepts(phrase, locales, false, mappedClasses, Collections.emptyList(), Collections.emptyList(),
+		    Collections.emptyList(), null, start, length);
 	}
 
 	/**

@@ -385,7 +385,7 @@ public class Obs extends BaseOpenmrsData {
 	 * only returns non-voided group members. To get all group members, use
 	 * {@link #getGroupMembers(boolean)} with value true.
 	 * <p>
-	 * If it's not a group (i.e. {@link #getConcept()}.{@link org.openmrs.Concept#isSet()} is not
+	 * If it's not a group (i.e. {@link #getConcept()}.{@link org.openmrs.Concept#getSet()} is not
 	 * true, then this returns null.
 	 * 
 	 * @return a Set&lt;Obs&gt; of the members of this group.
@@ -428,7 +428,7 @@ public class Obs extends BaseOpenmrsData {
 	/**
 	 * Set the members of the obs group, if this obs is a group.
 	 * <p>
-	 * If it's not a group (i.e. {@link #getConcept()}.{@link org.openmrs.Concept#isSet()} is not
+	 * If it's not a group (i.e. {@link #getConcept()}.{@link org.openmrs.Concept#getSet()} is not
 	 * true, then this returns null.
 	 * 
 	 * @param groupMembers the groupedObs to set
