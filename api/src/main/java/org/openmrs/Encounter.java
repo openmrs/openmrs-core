@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -532,7 +533,14 @@ public class Encounter extends BaseOpenmrsData {
 		
 		return encounterProviders.stream()
 				.filter(ep -> includeVoided || !ep.getVoided())
-				.collect(Collectors.groupingBy(EncounterProvider::getEncounterRole, Collectors.mapping(EncounterProvider::getProvider, Collectors.toSet())));
+				.collect(Collectors.toMap((ep) -> (ep).getEncounterRole(),
+                                          (ep) -> {
+                                                    Set s = new HashSet<Provider>();
+                                                    s.add((ep).getProvider());
+                                                    return s; },
+                                          (ep1,ep2) -> {
+                                                         ep1.addAll(ep2);
+                                                         return  ep1; }));
 		
 	}
 	
