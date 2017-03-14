@@ -44,7 +44,7 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 	}
 	
 	public boolean isMemberActive() {
-		return this.getStartDate() != null && this.getStartDate().before(new Date()) && this.getEndDate() == null;
+		return this.getStartDate() != null && !getStartDate().after(new Date()) && this.getEndDate() == null;
 	}
 
 	@Override
