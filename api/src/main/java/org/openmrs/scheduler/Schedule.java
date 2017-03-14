@@ -49,11 +49,6 @@ public class Schedule {
 	private boolean startOnStartup;
 	
 	/**
-	 * The date format pattern used to set the start date when start date is passed in as a string
-	 */
-	private String dateFormat;
-	
-	/**
 	 * Default TODO Move to constants or properties
 	 */
 	public static final String DEFAULT_DATE_FORMAT = "MM-dd-yyyy hh:mm:ss";
@@ -228,21 +223,6 @@ public class Schedule {
 	 */
 	public void setRepeatInterval(long repeatInterval) {
 		this.repeatInterval = repeatInterval;
-	}
-	
-	/**
-	 * Get the date format used to set the start time.
-	 */
-	public String getDateFormat() {
-		return this.dateFormat;
-	}
-	
-	/**
-	 * Sets the date format used to set the start time.
-	 */
-	public void setDateFormat(String dateFormat) {
-		this.dateFormat = dateFormat;
-		this.dateFormatter = new SimpleDateFormat(dateFormat);
 	}
 	
 	/**
