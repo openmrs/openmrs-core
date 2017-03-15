@@ -9,13 +9,7 @@
  */
 package org.openmrs.obs.handler;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,6 +18,15 @@ import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
 
 /**
  * Abstract handler for some convenience methods Files are stored in the location specified by the
@@ -61,14 +64,11 @@ public class AbstractHandler {
 	public File getOutputFileToWrite(Obs obs) throws IOException {
 		// Get the title and remove the extension.
 		String t = obs.getComplexData().getTitle();
-		
 		String extension = getExtension(t);
 		String title = obs.getComplexData().getTitle();
-		
 		File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
 		File outputfile = null;
-		
 		// Get the output stream
 		if (null == title) {
 			String now = longfmt.format(new Date());
@@ -78,10 +78,14 @@ public class AbstractHandler {
 			outputfile = new File(dir, title + "." + extension);
 			// outputfile = new File(dir, title);
 		}
-		
+		// Get MIME type
+		String mimetype = "";
+		if (StringUtils.isNotBlank(obs.getComplexData().getMimeType())) {
+			mimetype = "_" + obs.getComplexData().getMimeType().replace("/", "-slash-");
+			outputfile = new File(dir, title + mimetype + "." + extension);
+		}
 		int i = 0;
 		String tmp = null;
-		
 		// If the Obs does not exist, but the File does, append a two-digit
 		// count number to the filename and save it.
 		while (obs.getObsId() == null && outputfile.exists() && i < 100) {
@@ -95,9 +99,7 @@ public class AbstractHandler {
 			// Append the extension to the filename.
 			outputfile = new File(filename + "." + extension);
 		}
-		
 		return outputfile;
-		
 	}
 	
 	/**
@@ -117,6 +119,35 @@ public class AbstractHandler {
 		extension = StringUtils.isNotEmpty(extension) ? extension : "raw";
 		
 		return extension;
+	}
+	
+	public String getMimeTypeFromFile(File file) {
+		if (file == null) {
+			return null;
+		}
+
+		String filenameWithoutExtension = FilenameUtils.removeExtension(file.getName());
+
+		String mimeType = null;
+		// Try to parse MIME type from filename
+		if (filenameWithoutExtension.contains("-slash-")) {
+			HashSet<String> fileParams = new HashSet<>(Arrays.asList(filenameWithoutExtension.split("_")));
+			for (String param : fileParams) {
+				if (param.contains("-slash-")) {
+					return param.replace("-slash-","/");
+				}
+			}
+		}
+		else {
+			// Try to guess MIME type
+			try {
+				mimeType = Files.probeContentType(file.toPath());
+			} catch (IOException e) {
+				log.error("Trying to probe content type: " + file.getAbsolutePath(), e);
+			}
+		}
+		//Default MIME type value
+		return mimeType != null ? mimeType : "application/octet-stream";
 	}
 	
 	/**

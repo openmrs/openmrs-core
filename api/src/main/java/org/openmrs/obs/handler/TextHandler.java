@@ -9,14 +9,6 @@
  */
 package org.openmrs.obs.handler;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,6 +18,14 @@ import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.Assert;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 
 /**
  * Handler for storing files for complex obs to the file system. Files are stored in the location
@@ -84,7 +84,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 		}
 		
 		Assert.notNull(complexData, "Complex data must not be null");
-		complexData.setMimeType("text/plain");
+		complexData.setMimeType(getMimeTypeFromFile(file));
 		obs.setComplexData(complexData);
 		
 		return obs;

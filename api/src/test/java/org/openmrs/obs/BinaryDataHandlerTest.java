@@ -9,15 +9,33 @@
  */
 package org.openmrs.obs;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.openmrs.Obs;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.obs.handler.AbstractHandler;
 import org.openmrs.obs.handler.BinaryDataHandler;
+import org.openmrs.util.OpenmrsUtil;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.io.File;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({AbstractHandler.class, OpenmrsUtil.class, Context.class})
 public class BinaryDataHandlerTest {
+
+    @Mock
+    private AdministrationService administrationService;
 
     @Test
     public void shouldReturnSupportedViews() {
@@ -45,6 +63,68 @@ public class BinaryDataHandlerTest {
         assertFalse(handler.supportsView(ComplexObsHandler.TITLE_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.URI_VIEW));
         assertFalse(handler.supportsView(""));
-        assertFalse(handler.supportsView((String) null));
+        assertFalse(handler.supportsView(null));
     }
+
+    @Test
+    public void shouldSaveMimeTypeInFilenameAndBeAbleToReadIt() throws Exception {
+        final String filename = "TestingComplexObsSaving.xml";
+        final String mimetype = "text/plain";
+
+        BinaryDataHandler handler = new BinaryDataHandler();
+        File dataFile = new File(getClass().getClassLoader().getResource("TestingApplicationContext.xml").toURI());
+
+        ComplexData complexData = new ComplexData(filename, dataFile);
+        complexData.setMimeType(mimetype);
+
+        Obs obs = new Obs();
+        obs.setValueComplex(filename);
+        obs.setComplexData(complexData);
+
+        // Mocked methods
+        mockStatic(Context.class);
+        when(Context.getAdministrationService()).thenReturn(administrationService);
+        when(administrationService.getGlobalProperty(anyString())).thenReturn(dataFile.getParent());
+        mockStatic(OpenmrsUtil.class);
+        when(OpenmrsUtil.getDirectoryInApplicationDataDirectory(any())).thenReturn(dataFile.getParentFile());
+
+        // Execute save
+        handler.saveObs(obs);
+
+        // Get observation
+        Obs complexObs = handler.getObs(obs, "RAW_VIEW");
+        assertThat(complexObs.getComplexData().getMimeType(), is(mimetype));
+    }
+
+    @Test
+    public void shouldGuessMimeTypeIfNotSpecified() throws Exception {
+        final String filename = "TestingComplexObsSaving.xml";
+        final String mimetype = "application/xml";
+
+        BinaryDataHandler handler = new BinaryDataHandler();
+        File dataFile = new File(getClass().getClassLoader().getResource("TestingApplicationContext.xml").toURI());
+
+        ComplexData complexData = new ComplexData(filename, dataFile);
+        // MIME type not specified
+        complexData.setMimeType(null);
+
+        Obs obs = new Obs();
+        obs.setValueComplex(filename);
+        obs.setComplexData(complexData);
+
+        // Mocked methods
+        mockStatic(Context.class);
+        when(Context.getAdministrationService()).thenReturn(administrationService);
+        when(administrationService.getGlobalProperty(anyString())).thenReturn(dataFile.getParent());
+        mockStatic(OpenmrsUtil.class);
+        when(OpenmrsUtil.getDirectoryInApplicationDataDirectory(any())).thenReturn(dataFile.getParentFile());
+
+        // Execute save
+        handler.saveObs(obs);
+
+        // Get observation
+        Obs complexObs = handler.getObs(obs, "RAW_VIEW");
+        assertThat(complexObs.getComplexData().getMimeType(), is(mimetype));
+    }
+
 }

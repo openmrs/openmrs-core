@@ -9,6 +9,16 @@
  */
 package org.openmrs.obs.handler;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.Obs;
+import org.openmrs.api.APIException;
+import org.openmrs.obs.ComplexData;
+import org.openmrs.obs.ComplexObsHandler;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.FileImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,17 +27,6 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.FileImageInputStream;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.Obs;
-import org.openmrs.api.APIException;
-import org.openmrs.obs.ComplexData;
-import org.openmrs.obs.ComplexObsHandler;
 
 /**
  * Handler for storing basic images for complex obs to the file system. The image mime type used is
@@ -88,7 +87,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 				Iterator<ImageReader> imgReader = ImageIO.getImageReaders(imgStream);
 				imgStream.close();
 				if (imgReader.hasNext()) {
-					complexData.setMimeType("image/" + imgReader.next().getFormatName().toLowerCase());
+					complexData.setMimeType(getMimeTypeFromFile(file));
 				} else {
 					log.warn("MIME type of " + file.getAbsolutePath() + " is not known");
 				}

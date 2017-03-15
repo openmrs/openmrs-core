@@ -9,13 +9,6 @@
  */
 package org.openmrs.obs.handler;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
@@ -24,9 +17,16 @@ import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 /**
- * Handler for storing audio and video for complex obs to the file system. The mime type used is
- * taken from the file name. Media are stored in the location specified by the global property: "obs.complex_obs_dir"
+ * Handler for storing audio and video for complex obs to the file system.
+ * Media are stored in the location specified by the global property: "obs.complex_obs_dir"
  *
  * @see org.openmrs.util.OpenmrsConstants#GLOBAL_PROPERTY_COMPLEX_OBS_DIR
  * @since 1.12
@@ -61,7 +61,7 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 				FileInputStream mediaStream = new FileInputStream(file);
 				ComplexData complexData = new ComplexData(originalFilename, mediaStream);
 				
-				complexData.setMimeType(OpenmrsUtil.getFileMimeType(file));
+				complexData.setMimeType(getMimeTypeFromFile(file));
 				
 				complexData.setLength(file.length());
 				
