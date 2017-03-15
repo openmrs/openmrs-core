@@ -558,6 +558,21 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		return dao.saveRelationshipType(relationshipType);
 	}
 	
+	// Method to be called later for assigning different types of Attributes
+		private void User_Patient_Attributes(String u, String p, String attr, PERSON_TYPE pt) throws APIException {
+			final String fatalString = "Should not be here.";
+			
+			if (personType == null || pt == PERSON_TYPE.PERSON) {
+				attrString = p + "," + u;
+			} else if (pt == PERSON_TYPE.PATIENT) {
+				attrString = p;
+			} else if (pt == PERSON_TYPE.USER) {
+				attrString = u;
+			} else {
+				log.fatal(fatalString);
+			}
+		}
+	
 	/**
 	 * @see org.openmrs.api.PersonService#getPersonAttributeTypes(org.openmrs.util.OpenmrsConstants.PERSON_TYPE,
 	 *      org.openmrs.api.PersonService.ATTR_VIEW_TYPE)
@@ -567,10 +582,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public List<PersonAttributeType> getPersonAttributeTypes(PERSON_TYPE personType, ATTR_VIEW_TYPE viewType)
 	        throws APIException {
 		AdministrationService as = Context.getAdministrationService();
-		
 		String attrString = "";
-
-		final String fatalString = "Should not be here.";
 
 		// TODO cache the global properties to speed this up??
 		// Is hibernate taking care of caching and not hitting the db every time? (hopefully it is)
@@ -579,42 +591,17 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		} else if (viewType == ATTR_VIEW_TYPE.LISTING) {
 			String patientListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "");
 			String userListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "");
-			if (personType == null || personType == PERSON_TYPE.PERSON) {
-				attrString = patientListing + "," + userListing;
-			} else if (personType == PERSON_TYPE.PATIENT) {
-				attrString = patientListing;
-			} else if (personType == PERSON_TYPE.USER) {
-				attrString = userListing;
-			} else {
-				log.fatal(fatalString);
-			}
+			User_Patient_Attributes(userListing, patientListing, attrString, personType); // Above method called with suitable parameters
 		} else if (viewType == ATTR_VIEW_TYPE.VIEWING) {
 			String patientViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "");
 			String userViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "");
-			if (personType == null || personType == PERSON_TYPE.PERSON) {
-				attrString = patientViewing + "," + userViewing;
-			} else if (personType == PERSON_TYPE.PATIENT) {
-				attrString = patientViewing;
-			} else if (personType == PERSON_TYPE.USER) {
-				attrString = userViewing;
-			} else {
-				log.fatal(fatalString);
-			}
+			User_Patient_Attributes(userViewing, patientViewing, attrString, personType);
 		} else if (viewType == ATTR_VIEW_TYPE.HEADER) {
 			String patientHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, "");
 			String userHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "");
-			if (personType == null || personType == PERSON_TYPE.PERSON) {
-				attrString = patientHeader + "," + userHeader;
-			} else if (personType == PERSON_TYPE.PATIENT) {
-				attrString = patientHeader;
-			} else if (personType == PERSON_TYPE.USER) {
-				attrString = userHeader;
-			} else {
-				log.fatal(fatalString);
-			}
-			
+			User_Patient_Attributes(userHeader, patientHeader, attrString, personType);
 		} else {
-			log.fatal(fatalString);
+			log.fatal("Should not be here");
 		}
 		
 		// the java list object to hold the values from the global properties
