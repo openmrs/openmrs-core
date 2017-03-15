@@ -88,12 +88,12 @@ public class WebModuleUtil {
 	// caches all of the module loaded filters and filter-mappings
 	private static Map<Module, Collection<Filter>> moduleFilters = Collections
 	        .synchronizedMap(new HashMap<Module, Collection<Filter>>());
-	
+			
 	private static Map<String, Filter> moduleFiltersByName = Collections.synchronizedMap(new HashMap<String, Filter>());
 	
 	private static List<ModuleFilterMapping> moduleFilterMappings = Collections
 	        .synchronizedList(new Vector<ModuleFilterMapping>());
-	
+			
 	/**
 	 * Performs the webapp specific startup needs for modules Normal startup is done in
 	 * {@link ModuleFactory#startModule(Module)} If delayContextRefresh is true, the spring context
@@ -193,7 +193,8 @@ public class WebModuleUtil {
 							inStream = jarFile.getInputStream(entry);
 							OpenmrsUtil.copyFile(inStream, outStream);
 						}
-					} else if ("moduleApplicationContext.xml".equals(name) || "webModuleApplicationContext.xml".equals(name)) {
+					} else
+					    if ("moduleApplicationContext.xml".equals(name) || "webModuleApplicationContext.xml".equals(name)) {
 						moduleNeedsContextRefresh = true;
 					} else if (name.equals(mod.getModuleId() + "Context.xml")) {
 						String msg = "DEPRECATED: '" + name
@@ -362,7 +363,9 @@ public class WebModuleUtil {
 		return false;
 	}
 	
-	/** Stops all tasks started by given module
+	/**
+	 * Stops all tasks started by given module
+	 * 
 	 * @param mod
 	 */
 	private static void stopTasks(Module mod) {
@@ -386,6 +389,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * Checks if module package name is in task class name
+	 * 
 	 * @param modulePackageName the package name of module
 	 * @param taskClass the class of given task
 	 * @return true if task and module are in the same package
@@ -536,8 +540,8 @@ public class WebModuleUtil {
 		try {
 			for (ModuleFilterDefinition def : ModuleFilterDefinition.retrieveFilterDefinitions(module)) {
 				if (moduleFiltersByName.containsKey(def.getFilterName())) {
-					throw new ModuleException("A filter with name <" + def.getFilterName()
-					        + "> has already been registered.");
+					throw new ModuleException(
+					        "A filter with name <" + def.getFilterName() + "> has already been registered.");
 				}
 				ModuleFilterConfig config = ModuleFilterConfig.getInstance(def, servletContext);
 				Filter f = (Filter) ModuleFactory.getModuleClassLoader(module).loadClass(def.getFilterClass()).newInstance();
@@ -696,7 +700,7 @@ public class WebModuleUtil {
 		String messagesPath = realPath + "/WEB-INF/";
 		File folder = new File(messagesPath.replace("/", File.separator));
 		
-		if (folder.exists()) {
+		if ((folder.exists()) && (folder.list().length > 0)) {
 			Properties emptyProperties = new Properties();
 			for (File f : folder.listFiles()) {
 				if (f.getName().startsWith("module_messages")) {
@@ -865,7 +869,7 @@ public class WebModuleUtil {
 		
 		XmlWebApplicationContext newAppContext = (XmlWebApplicationContext) ModuleUtil.refreshApplicationContext(wac,
 		    isOpenmrsStartup, startedModule);
-		
+			
 		try {
 			// must "refresh" the spring dispatcherservlet as well to add in
 			//the new handlerMappings
@@ -961,9 +965,9 @@ public class WebModuleUtil {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(realPath
-			        + "/WEB-INF/dwr-modules.xml".replace("/", File.separator)));
-			
+			StreamResult result = new StreamResult(
+			        new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator)));
+					
 			// Output to console for testing
 			// StreamResult result = new StreamResult(System.out);
 			
