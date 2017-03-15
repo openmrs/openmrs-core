@@ -112,7 +112,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	private static final String PATIENT_MERGE_XML = "org/openmrs/api/include/PatientServiceTest-mergePatients.xml";
 
-	private static final String PATIENT_MERGE_OBS_GROUP_PROBLEM_XML = "org/openmrs/api/include/PatientServicePatientMergeObsProblem.xml";
+	private static final String PATIENT_MERGE_OBS_GROUP_PROBLEM_XML = "org/openmrs/api/include/PatientServiceTest-mergePatientWithExistingObs.xml";
 
 	// Services
 	protected static PatientService patientService = null;

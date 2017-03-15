@@ -9,7 +9,15 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -224,10 +232,12 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 
 	private void removeAllWithGroupMembers(Encounter encounter, List<Obs> toRemove, Set<Obs> seenIt) {
 		for (Obs o : toRemove) {
-			//** tried to keep same as Encounter.java addObs() => prevent infinite recursion if an obs is its own group member
-				if (seenIt.contains(o)) continue;
-				seenIt.add(o);
-			//
+			//** tried to keep same as Encounter.java addObs()
+			if (seenIt.contains(o)) {
+				continue;
+			}
+			seenIt.add(o);
+			//prevent infinite recursion if an obs is its own group member
 			encounter.removeObs(o);
 			if (CollectionUtils.isNotEmpty(o.getGroupMembers(true))) {
 				removeAllWithGroupMembers(encounter, new ArrayList<>(o.getGroupMembers(true)), seenIt);
@@ -237,10 +247,12 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 
     private void addAllWithGroupMembers(Encounter encounter, List<Obs> toAdd, Set<Obs> seenIt) {
         for (Obs o : toAdd) {
-			//** tried to keep same as Encounter.java addObs() => prevent infinite recursion if an obs is its own group member
-				if (seenIt.contains(o)) continue;
-				seenIt.add(o);
-			//
+			//** tried to keep same as Encounter.java addObs()
+			if (seenIt.contains(o)) {
+				continue;
+			}
+			seenIt.add(o);
+			//prevent infinite recursion if an obs is its own group member
             encounter.addObs(o);
             if (CollectionUtils.isNotEmpty(o.getGroupMembers(true))) {
                 addAllWithGroupMembers(encounter, new ArrayList<>(o.getGroupMembers(true)), seenIt);
