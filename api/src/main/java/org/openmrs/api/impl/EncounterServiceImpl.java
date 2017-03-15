@@ -9,15 +9,9 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
@@ -217,17 +211,43 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 				toAdd.add(newObs);
 			}
 		}
-		
+		// remove all obs in toRemove recursively from encounter
+		Set<Obs> seenIt = new LinkedHashSet<>();
+		removeAllWithGroupMembers(encounter, toRemove, seenIt);
+
+		// add all obs in toAdd recursively to encounter
+		seenIt = new LinkedHashSet<>();
+        addAllWithGroupMembers(encounter, toAdd, seenIt);
+
+        return encounter;
+    }
+
+	private void removeAllWithGroupMembers(Encounter encounter, List<Obs> toRemove, Set<Obs> seenIt) {
 		for (Obs o : toRemove) {
+			//** tried to keep same as Encounter.java addObs() => prevent infinite recursion if an obs is its own group member
+				if (seenIt.contains(o)) continue;
+				seenIt.add(o);
+			//
 			encounter.removeObs(o);
+			if (CollectionUtils.isNotEmpty(o.getGroupMembers(true))) {
+				removeAllWithGroupMembers(encounter, new ArrayList<>(o.getGroupMembers(true)), seenIt);
+			}
 		}
-		for (Obs o : toAdd) {
-			encounter.addObs(o);
-		}
-		
-		return encounter;
 	}
-	
+
+    private void addAllWithGroupMembers(Encounter encounter, List<Obs> toAdd, Set<Obs> seenIt) {
+        for (Obs o : toAdd) {
+			//** tried to keep same as Encounter.java addObs() => prevent infinite recursion if an obs is its own group member
+				if (seenIt.contains(o)) continue;
+				seenIt.add(o);
+			//
+            encounter.addObs(o);
+            if (CollectionUtils.isNotEmpty(o.getGroupMembers(true))) {
+                addAllWithGroupMembers(encounter, new ArrayList<>(o.getGroupMembers(true)), seenIt);
+            }
+        }
+    }
+
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounter(java.lang.Integer)
 	 */

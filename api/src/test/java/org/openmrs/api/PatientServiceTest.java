@@ -3422,11 +3422,15 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(57, encounterService.getEncountersByPatient(notPreffered).get(0).getId().intValue());
 		assertEquals(3, encounterService.getEncounter(57).getAllObs(false).size());
 		assertEquals(4, encounterService.getEncounter(57).getAllObs(true).size());
+		assertEquals(1, encounterService.getEncounter(57).getObsAtTopLevel(false).size());
+		assertEquals(1, encounterService.getEncounter(57).getObsAtTopLevel(true).size());
 
 		patientService.mergePatients(preffered, notPreffered);
 
 		assertEquals(3, encounterService.getEncounter(57).getAllObs(false).size());
 		assertEquals(8, encounterService.getEncounter(57).getAllObs(true).size());
+		assertEquals(1, encounterService.getEncounter(57).getObsAtTopLevel(false).size());
+		assertEquals(2, encounterService.getEncounter(57).getObsAtTopLevel(true).size());
 	}
 
 }
