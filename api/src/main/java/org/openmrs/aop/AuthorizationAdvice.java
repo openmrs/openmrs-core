@@ -13,12 +13,12 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.annotation.AuthorizedAnnotationAttributes;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.MethodBeforeAdvice;
 
 /**
@@ -30,7 +30,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	/**
 	 * Logger for this class and subclasses
 	 */
-	protected final Log log = LogFactory.getLog(AuthorizationAdvice.class);
+	protected final Logger log = LoggerFactory.getLogger(AuthorizationAdvice.class);
 	
 	/**
 	 * Allows us to check whether a user is authorized to access a particular method.

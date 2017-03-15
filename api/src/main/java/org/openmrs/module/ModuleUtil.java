@@ -42,8 +42,6 @@ import java.util.zip.ZipEntry;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
@@ -52,6 +50,8 @@ import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 
 /**
@@ -59,7 +59,7 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  */
 public class ModuleUtil {
 	
-	private static Log log = LogFactory.getLog(ModuleUtil.class);
+	private static Logger log = LoggerFactory.getLogger(ModuleUtil.class);
 	
 	/**
 	 * Start up the module system with the given properties.

@@ -12,8 +12,6 @@ package org.openmrs.api.db.hibernate;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,10 +21,12 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	
-	private final static Log log = LogFactory.getLog(HibernatePersonDAOTest.class);
+	private final static Logger log = LoggerFactory.getLogger(HibernatePersonDAOTest.class);
 	
 	private final static String PEOPLE_FROM_THE_SHIRE_XML = "org/openmrs/api/db/hibernate/include/HibernatePersonDAOTest-people.xml";
 	

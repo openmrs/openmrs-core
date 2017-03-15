@@ -16,17 +16,17 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessageSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 public class MailMessageSender implements MessageSender {
 	
-	protected static final Log log = LogFactory.getLog(MailMessageSender.class);
+	protected static final Logger log = LoggerFactory.getLogger(MailMessageSender.class);
 	
 	/**
 	 * JavaMail session
