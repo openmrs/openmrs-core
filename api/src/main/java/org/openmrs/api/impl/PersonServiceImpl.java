@@ -558,8 +558,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		return dao.saveRelationshipType(relationshipType);
 	}
 	
-		private void userPatientAttributes(String u, String p, String attr, PERSON_TYPE pt) throws APIException {
+		private String userPatientAttributes(String u, String p, PERSON_TYPE pt) throws APIException {
 			final String fatalString = "Should not be here.";
+			String attr;
 			
 			if (personType == null || pt == PERSON_TYPE.PERSON) {
 				attr = p + "," + u;
@@ -570,6 +571,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			} else {
 				log.fatal(fatalString);
 			}
+			return attr;
 		}
 	
 	/**
@@ -590,15 +592,15 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		} else if (viewType == ATTR_VIEW_TYPE.LISTING) {
 			String patientListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "");
 			String userListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "");
-			userPatientAttributes(userListing, patientListing, attrString, personType);
+			attrString = userPatientAttributes(userListing, patientListing, personType);
 		} else if (viewType == ATTR_VIEW_TYPE.VIEWING) {
 			String patientViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "");
 			String userViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "");
-			userPatientAttributes(userViewing, patientViewing, attrString, personType);
+			attrString = userPatientAttributes(userViewing, patientViewing, personType);
 		} else if (viewType == ATTR_VIEW_TYPE.HEADER) {
 			String patientHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, "");
 			String userHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "");
-			userPatientAttributes(userHeader, patientHeader, attrString, personType);
+			attrString = userPatientAttributes(userHeader, patientHeader, personType);
 		} else {
 			log.fatal("Should not be here");
 		}
