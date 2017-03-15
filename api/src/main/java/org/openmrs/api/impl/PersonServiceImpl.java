@@ -558,16 +558,15 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		return dao.saveRelationshipType(relationshipType);
 	}
 	
-	// Method to be called later for assigning different types of Attributes
-		private void User_Patient_Attributes(String u, String p, String attr, PERSON_TYPE pt) throws APIException {
+		private void userPatientAttributes(String u, String p, String attr, PERSON_TYPE pt) throws APIException {
 			final String fatalString = "Should not be here.";
 			
 			if (personType == null || pt == PERSON_TYPE.PERSON) {
-				attrString = p + "," + u;
+				attr = p + "," + u;
 			} else if (pt == PERSON_TYPE.PATIENT) {
-				attrString = p;
+				attr = p;
 			} else if (pt == PERSON_TYPE.USER) {
-				attrString = u;
+				attr = u;
 			} else {
 				log.fatal(fatalString);
 			}
@@ -591,15 +590,15 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		} else if (viewType == ATTR_VIEW_TYPE.LISTING) {
 			String patientListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "");
 			String userListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "");
-			User_Patient_Attributes(userListing, patientListing, attrString, personType); // Above method called with suitable parameters
+			userPatientAttributes(userListing, patientListing, attrString, personType);
 		} else if (viewType == ATTR_VIEW_TYPE.VIEWING) {
 			String patientViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "");
 			String userViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "");
-			User_Patient_Attributes(userViewing, patientViewing, attrString, personType);
+			userPatientAttributes(userViewing, patientViewing, attrString, personType);
 		} else if (viewType == ATTR_VIEW_TYPE.HEADER) {
 			String patientHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, "");
 			String userHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "");
-			User_Patient_Attributes(userHeader, patientHeader, attrString, personType);
+			userPatientAttributes(userHeader, patientHeader, attrString, personType);
 		} else {
 			log.fatal("Should not be here");
 		}
