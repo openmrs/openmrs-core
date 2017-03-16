@@ -141,7 +141,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Override
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException {
 		checkIfPersonAttributeTypesAreLocked();
-
+		
 		if (type.getSortWeight() == null) {
 			List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
 			if (!allTypes.isEmpty()) {
@@ -150,12 +150,12 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 				type.setSortWeight(1.0);
 			}
 		}
-
+		
 		boolean updateExisting = false;
-
+		
 		if (type.getId() != null) {
 			updateExisting = true;
-
+			
 			String oldTypeName = dao.getSavedPersonAttributeTypeName(type);
 			String newTypeName = type.getName();
 			
@@ -179,14 +179,14 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 				}
 			}
 		}
-
+		
 		PersonAttributeType attributeType = dao.savePersonAttributeType(type);
-
+		
 		if (updateExisting) {
 			//we need to update index in case searchable property has changed
 			Context.updateSearchIndexForType(PersonAttribute.class);
 		}
-
+		
 		return attributeType;
 	}
 	
@@ -194,7 +194,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#retirePersonAttributeType(PersonAttributeType, String)
 	 */
 	@Override
-	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException {
+	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason)
+	        throws APIException {
 		checkIfPersonAttributeTypesAreLocked();
 		if (retiredReason == null || retiredReason.length() < 1) {
 			throw new APIException("Person.retiring.reason.required", (Object[]) null);
@@ -333,7 +334,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		return dao.savePerson(person);
 	}
-		
+	
 	/**
 	 * @see org.openmrs.api.PersonService#voidPerson(org.openmrs.Person, java.lang.String)
 	 */
@@ -506,7 +507,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		return Context.getPersonService().saveRelationship(relationship);
 	}
-		
+	
 	/**
 	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes()
 	 */
@@ -551,8 +552,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Override
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException {
 		if (StringUtils.isBlank(relationshipType.getDescription())) {
-			throw new APIException("error.required", new Object[] { Context.getMessageSourceService().getMessage(
-			    "general.description") });
+			throw new APIException("error.required",
+			        new Object[] { Context.getMessageSourceService().getMessage("general.description") });
 		}
 		
 		return dao.saveRelationshipType(relationshipType);
@@ -562,6 +563,23 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#getPersonAttributeTypes(org.openmrs.util.OpenmrsConstants.PERSON_TYPE,
 	 *      org.openmrs.api.PersonService.ATTR_VIEW_TYPE)
 	 */
+	
+	private String userPatientAttributes(String patientAttributeProperty, String userAttributeProperty,
+	        PERSON_TYPE personType) {
+		StringBuilder property = new StringBuilder();
+		
+		if (personType == null || personType == PERSON_TYPE.PERSON) {
+			property.append(patientAttributeProperty).append(",").append(userAttributeProperty);
+		} else if (personType == PERSON_TYPE.PATIENT) {
+			property.append(patientAttributeProperty);
+		} else if (personType == PERSON_TYPE.USER) {
+			property.append(userAttributeProperty);
+		} else {
+			log.fatal("Should not be here.");
+		}
+		return property.toString();
+	}
+	
 	@Override
 	@Transactional(readOnly = true)
 	public List<PersonAttributeType> getPersonAttributeTypes(PERSON_TYPE personType, ATTR_VIEW_TYPE viewType)
@@ -569,9 +587,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		AdministrationService as = Context.getAdministrationService();
 		
 		String attrString = "";
-
-		final String fatalString = "Should not be here.";
-
+		
 		// TODO cache the global properties to speed this up??
 		// Is hibernate taking care of caching and not hitting the db every time? (hopefully it is)
 		if (viewType == null) {
@@ -579,55 +595,25 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		} else if (viewType == ATTR_VIEW_TYPE.LISTING) {
 			String patientListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "");
 			String userListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "");
-			if (personType == null || personType == PERSON_TYPE.PERSON) {
-				attrString = patientListing + "," + userListing;
-			} else if (personType == PERSON_TYPE.PATIENT) {
-				attrString = patientListing;
-			} else if (personType == PERSON_TYPE.USER) {
-				attrString = userListing;
-			} else {
-				log.fatal(fatalString);
-			}
+			attrString = userPatientAttributes(userListing, patientListing, personType);
 		} else if (viewType == ATTR_VIEW_TYPE.VIEWING) {
 			String patientViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "");
 			String userViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "");
-			if (personType == null || personType == PERSON_TYPE.PERSON) {
-				attrString = patientViewing + "," + userViewing;
-			} else if (personType == PERSON_TYPE.PATIENT) {
-				attrString = patientViewing;
-			} else if (personType == PERSON_TYPE.USER) {
-				attrString = userViewing;
-			} else {
-				log.fatal(fatalString);
-			}
+			attrString = userPatientAttributes(userViewing, patientViewing, personType);
 		} else if (viewType == ATTR_VIEW_TYPE.HEADER) {
 			String patientHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, "");
 			String userHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "");
-			if (personType == null || personType == PERSON_TYPE.PERSON) {
-				attrString = patientHeader + "," + userHeader;
-			} else if (personType == PERSON_TYPE.PATIENT) {
-				attrString = patientHeader;
-			} else if (personType == PERSON_TYPE.USER) {
-				attrString = userHeader;
-			} else {
-				log.fatal(fatalString);
-			}
-			
+			attrString = userPatientAttributes(userHeader, patientHeader, personType);
 		} else {
-			log.fatal(fatalString);
+			log.fatal("Should not be here");
 		}
 		
 		// the java list object to hold the values from the global properties
-		List<String> attrNames = new Vector<String>();
-		
-		// split the comma delimited string into a java list object
-		if (attrString != null) {
-			for (String s : attrString.split(",")) {
-				if (s != null) {
-					s = s.trim();
-					if (s.length() > 0) {
-						attrNames.add(s);
-					}
+		List<String> attrNames = new ArrayList<>();
+		if (StringUtils.isNotBlank(attrString)) {
+			for (String s : StringUtils.split(attrString, ",")) {
+				if (StringUtils.isNotBlank(s) && s.length() > 0) {
+					attrNames.add(s.trim());
 				}
 			}
 		}
@@ -648,7 +634,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		return attrObjects;
 	}
-		
 	/**
 	 * @see org.openmrs.api.PersonService#parsePersonName(java.lang.String)
 	 */
@@ -830,8 +815,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		log.debug("Auditing merging of non-preferred person " + personMergeLog.getLoser().getUuid()
 		        + " with preferred person " + personMergeLog.getWinner().getId());
 		//populate the mergedData XML from the PersonMergeLogData object
-		String serialized = Context.getSerializationService().getDefaultSerializer().serialize(
-		    personMergeLog.getPersonMergeLogData());
+		String serialized = Context.getSerializationService().getDefaultSerializer()
+		        .serialize(personMergeLog.getPersonMergeLogData());
 		personMergeLog.setSerializedMergedData(serialized);
 		log.debug(serialized);
 		//save the bean to the database
@@ -843,8 +828,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public PersonMergeLog getPersonMergeLogByUuid(String uuid, boolean deserialize) throws SerializationException,
-	        APIException {
+	public PersonMergeLog getPersonMergeLogByUuid(String uuid, boolean deserialize)
+	        throws SerializationException, APIException {
 		if (uuid == null) {
 			throw new APIException("uuid.cannot.null", (Object[]) null);
 		}
@@ -875,8 +860,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @throws SerializationException
 	 */
 	private void deserialize(PersonMergeLog personMergeLog) throws SerializationException {
-		PersonMergeLogData data = Context.getSerializationService().getDefaultSerializer().deserialize(
-		    personMergeLog.getSerializedMergedData(), PersonMergeLogData.class);
+		PersonMergeLogData data = Context.getSerializationService().getDefaultSerializer()
+		        .deserialize(personMergeLog.getSerializedMergedData(), PersonMergeLogData.class);
 		personMergeLog.setPersonMergeLogData(data);
 	}
 	
@@ -1002,8 +987,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	@Override
 	public void checkIfPersonAttributeTypesAreLocked() {
-		String locked = Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED, "false");
+		String locked = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED, "false");
 		if (Boolean.valueOf(locked)) {
 			throw new PersonAttributeTypeLockedException();
 		}
