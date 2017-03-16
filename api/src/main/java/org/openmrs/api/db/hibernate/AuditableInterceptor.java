@@ -15,14 +15,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 import org.openmrs.Auditable;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.context.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class looks for {@link OpenmrsObject} and {@link Auditable} that are being inserted into the
@@ -39,7 +39,7 @@ import org.openmrs.api.context.Context;
 
 public class AuditableInterceptor extends EmptyInterceptor {
 	
-	private static final Log log = LogFactory.getLog(AuditableInterceptor.class);
+	private static final Logger log = LoggerFactory.getLogger(AuditableInterceptor.class);
 	
 	private static final long serialVersionUID = 1L;
 	

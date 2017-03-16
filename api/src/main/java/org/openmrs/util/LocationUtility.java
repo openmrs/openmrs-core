@@ -9,12 +9,12 @@
  */
 package org.openmrs.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A utility class for working with locations
@@ -23,7 +23,7 @@ import org.openmrs.api.context.Context;
  */
 public class LocationUtility implements GlobalPropertyListener {
 	
-	private static Log log = LogFactory.getLog(LocationUtility.class);
+	private static Logger log = LoggerFactory.getLogger(LocationUtility.class);
 	
 	/**
 	 * Cached version of the system default location. This is cached so that we don't have to look

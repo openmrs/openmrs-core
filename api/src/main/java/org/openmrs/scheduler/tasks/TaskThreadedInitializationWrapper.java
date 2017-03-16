@@ -13,10 +13,10 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class executes the Task.initialize method in a new thread. Extend this class if you want
@@ -26,7 +26,7 @@ import org.openmrs.scheduler.TaskDefinition;
 public class TaskThreadedInitializationWrapper implements Task {
 	
 	// Logger 
-	private Log log = LogFactory.getLog(TaskThreadedInitializationWrapper.class);
+	private Logger log = LoggerFactory.getLogger(TaskThreadedInitializationWrapper.class);
 	
 	private Task task;
 	

@@ -17,8 +17,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.LockOptions;
@@ -45,6 +43,8 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderDAO that
@@ -59,7 +59,7 @@ import org.openmrs.util.OpenmrsConstants;
  */
 public class HibernateOrderDAO implements OrderDAO {
 	
-	protected static final Log log = LogFactory.getLog(HibernateOrderDAO.class);
+	protected static final Logger log = LoggerFactory.getLogger(HibernateOrderDAO.class);
 	
 	/**
 	 * Hibernate session factory

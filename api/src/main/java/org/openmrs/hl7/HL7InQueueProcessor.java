@@ -9,9 +9,9 @@
  */
 package org.openmrs.hl7;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ca.uhn.hl7v2.HL7Exception;
@@ -27,7 +27,7 @@ import ca.uhn.hl7v2.HL7Exception;
 @Transactional
 public class HL7InQueueProcessor /* implements Runnable */{
 	
-	private final Log log = LogFactory.getLog(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	private static Boolean isRunning = false; // allow only one running
 	

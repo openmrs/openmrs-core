@@ -11,10 +11,10 @@ package org.openmrs.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  */
 public class CohortEditor extends PropertyEditorSupport {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	public CohortEditor() {
 	}

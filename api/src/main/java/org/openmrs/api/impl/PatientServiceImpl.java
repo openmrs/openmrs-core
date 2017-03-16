@@ -22,8 +22,6 @@ import java.util.UUID;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Allergen;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
@@ -70,6 +68,8 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -84,7 +84,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PatientServiceImpl extends BaseOpenmrsService implements PatientService {
 	
-	private final Log log = LogFactory.getLog(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	private PatientDAO dao;
 	

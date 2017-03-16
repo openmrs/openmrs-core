@@ -15,13 +15,13 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Format {
 	
-	private static Log log = LogFactory.getLog(Format.class);
+	private static Logger log = LoggerFactory.getLogger(Format.class);
 	
 	public enum FORMAT_TYPE {
 		DATE,

@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -39,6 +37,8 @@ import org.openmrs.api.db.hibernate.search.LuceneQuery;
 import org.openmrs.collection.ListPart;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.util.OpenmrsConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Hibernate specific Person database methods. <br>
@@ -56,7 +56,7 @@ import org.openmrs.util.OpenmrsConstants;
  */
 public class HibernatePersonDAO implements PersonDAO {
 	
-	protected final static Log log = LogFactory.getLog(HibernatePersonDAO.class);
+	protected final static Logger log = LoggerFactory.getLogger(HibernatePersonDAO.class);
 	
 	/**
 	 * Hibernate session factory

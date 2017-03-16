@@ -27,8 +27,6 @@ import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DocumentId;
@@ -46,6 +44,8 @@ import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -75,7 +75,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	public static final long serialVersionUID = 57332L;
 	
-	private static final Log log = LogFactory.getLog(Concept.class);
+	private static final Logger log = LoggerFactory.getLogger(Concept.class);
 	
 	// Fields
 	@DocumentId

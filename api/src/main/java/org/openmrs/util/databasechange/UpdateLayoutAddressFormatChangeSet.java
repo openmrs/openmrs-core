@@ -14,8 +14,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -31,7 +31,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class UpdateLayoutAddressFormatChangeSet implements CustomTaskChange {
 	
-	private final static Log log = LogFactory.getLog(UpdateLayoutAddressFormatChangeSet.class);
+	private final static Logger log = LoggerFactory.getLogger(UpdateLayoutAddressFormatChangeSet.class);
 	
 	/**
 	 * @see CustomTaskChange#execute(Database)

@@ -15,11 +15,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptSet;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  */
 public class ConceptSetsEditor extends PropertyEditorSupport {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	private Collection<ConceptSet> originalConceptSets = null;
 	

@@ -13,14 +13,14 @@ import java.lang.reflect.Field;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.EventType;
 import org.hibernate.event.spi.PostLoadEvent;
 import org.hibernate.event.spi.PostLoadEventListener;
 import org.hibernate.internal.SessionFactoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ObsPostLoadEventListener implements PostLoadEventListener {
 	
-	private static final Log log = LogFactory.getLog(ObsPostLoadEventListener.class);
+	private static final Logger log = LoggerFactory.getLogger(ObsPostLoadEventListener.class);
 	
 	@Autowired
 	private SessionFactory sessionFactory;

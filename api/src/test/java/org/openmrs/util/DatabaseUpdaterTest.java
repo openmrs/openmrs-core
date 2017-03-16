@@ -9,11 +9,11 @@
  */
 package org.openmrs.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests methods on the {@link DatabaseUpdater} class. This class expects /metadata/model to be on
@@ -21,7 +21,7 @@ import org.openmrs.test.Verifies;
  */
 public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 	
-	private static Log log = LogFactory.getLog(DatabaseUpdaterTest.class);
+	private static Logger log = LoggerFactory.getLogger(DatabaseUpdaterTest.class);
 	
 	/**
 	 * @see DatabaseUpdater#updatesRequired()

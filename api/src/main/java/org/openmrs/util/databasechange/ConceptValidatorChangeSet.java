@@ -29,14 +29,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.set.ListOrderedSet;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptName;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -54,7 +54,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class ConceptValidatorChangeSet implements CustomTaskChange {
 	
-	private final static Log log = LogFactory.getLog(ConceptValidatorChangeSet.class);
+	private final static Logger log = LoggerFactory.getLogger(ConceptValidatorChangeSet.class);
 	
 	//List to store warnings
 	private List<String> updateWarnings = new LinkedList<String>();
