@@ -141,7 +141,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Override
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException {
 		checkIfPersonAttributeTypesAreLocked();
-		
 		if (type.getSortWeight() == null) {
 			List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
 			if (!allTypes.isEmpty()) {
@@ -150,7 +149,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 				type.setSortWeight(1.0);
 			}
 		}
-		
 		boolean updateExisting = false;
 		
 		if (type.getId() != null) {
@@ -179,14 +177,12 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 				}
 			}
 		}
-		
 		PersonAttributeType attributeType = dao.savePersonAttributeType(type);
 		
 		if (updateExisting) {
 			//we need to update index in case searchable property has changed
 			Context.updateSearchIndexForType(PersonAttribute.class);
 		}
-		
 		return attributeType;
 	}
 	
@@ -194,8 +190,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#retirePersonAttributeType(PersonAttributeType, String)
 	 */
 	@Override
-	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason)
-	        throws APIException {
+	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException {
 		checkIfPersonAttributeTypesAreLocked();
 		if (retiredReason == null || retiredReason.length() < 1) {
 			throw new APIException("Person.retiring.reason.required", (Object[]) null);
