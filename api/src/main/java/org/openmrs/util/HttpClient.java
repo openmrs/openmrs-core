@@ -17,8 +17,8 @@ import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class supports doing an HTTP post to a URL. (It replaces the OpenmrsUtil.postToUrl method, allowing us to
@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class HttpClient {
 	
-	private static Log log = LogFactory.getLog(HttpClient.class);
+	private static Logger log = LoggerFactory.getLogger(HttpClient.class);
 	
 	private HttpUrl url;
 	

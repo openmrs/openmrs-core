@@ -190,10 +190,7 @@ public class Patient extends Person {
 			}
 		}
 		
-		if (identifiers == null) {
-			identifiers = new TreeSet<PatientIdentifier>();
-		}
-		identifiers.add(patientIdentifier);
+		getIdentifiers().add(patientIdentifier);
 	}
 	
 	/**
@@ -204,8 +201,8 @@ public class Patient extends Person {
 	 * @should remove identifier if exists
 	 */
 	public void removeIdentifier(PatientIdentifier patientIdentifier) {
-		if (getIdentifiers() != null && patientIdentifier != null) {
-			identifiers.remove(patientIdentifier);
+		if (patientIdentifier != null) {
+			getIdentifiers().remove(patientIdentifier);
 		}
 	}
 	
@@ -218,7 +215,7 @@ public class Patient extends Person {
 	public PatientIdentifier getPatientIdentifier() {
 		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
 		// has fetched a Patient, changed their identifiers around, and then calls this method, so we have to be careful.
-		if (getIdentifiers() != null && !getIdentifiers().isEmpty()) {
+		if (!getIdentifiers().isEmpty()) {
 			for (PatientIdentifier id : getIdentifiers()) {
 				if (id.getPreferred() && !id.getVoided()) {
 					return id;
@@ -243,7 +240,7 @@ public class Patient extends Person {
 	 * @return Returns a PatientIdentifier of the specified type.
 	 */
 	public PatientIdentifier getPatientIdentifier(PatientIdentifierType pit) {
-		if (getIdentifiers() != null && !getIdentifiers().isEmpty()) {
+		if (!getIdentifiers().isEmpty()) {
 			for (PatientIdentifier id : getIdentifiers()) {
 				if (id.getPreferred() && !id.getVoided() && pit.equals(id.getIdentifierType())) {
 					return id;
@@ -266,7 +263,7 @@ public class Patient extends Person {
 	 * @return preferred patient identifier
 	 */
 	public PatientIdentifier getPatientIdentifier(Integer identifierTypeId) {
-		if (getIdentifiers() != null && !getIdentifiers().isEmpty()) {
+		if (!getIdentifiers().isEmpty()) {
 			for (PatientIdentifier id : getIdentifiers()) {
 				if (id.getPreferred() && !id.getVoided()
 				        && identifierTypeId.equals(id.getIdentifierType().getPatientIdentifierTypeId())) {
@@ -291,7 +288,7 @@ public class Patient extends Person {
 	 * @return preferred patient identifier
 	 */
 	public PatientIdentifier getPatientIdentifier(String identifierTypeName) {
-		if (getIdentifiers() != null && !getIdentifiers().isEmpty()) {
+		if (!getIdentifiers().isEmpty()) {
 			for (PatientIdentifier id : getIdentifiers()) {
 				if (id.getPreferred() && !id.getVoided() && identifierTypeName.equals(id.getIdentifierType().getName())) {
 					return id;
@@ -317,20 +314,18 @@ public class Patient extends Person {
 	 */
 	public List<PatientIdentifier> getActiveIdentifiers() {
 		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();
-		if (getIdentifiers() != null) {
-			List<PatientIdentifier> nonPreferred = new LinkedList<PatientIdentifier>();
-			for (PatientIdentifier pi : getIdentifiers()) {
-				if (!pi.getVoided()) {
-					if (pi.getPreferred()) {
-						ids.add(pi);
-					} else {
-						nonPreferred.add(pi);
-					}
+		List<PatientIdentifier> nonPreferred = new LinkedList<PatientIdentifier>();
+		for (PatientIdentifier pi : getIdentifiers()) {
+			if (!pi.getVoided()) {
+				if (pi.getPreferred()) {
+					ids.add(pi);
+				} else {
+					nonPreferred.add(pi);
 				}
 			}
-			for (PatientIdentifier pi : nonPreferred) {
-				ids.add(pi);
-			}
+		}
+		for (PatientIdentifier pi : nonPreferred) {
+			ids.add(pi);
 		}
 		return ids;
 	}
@@ -345,11 +340,9 @@ public class Patient extends Person {
 	 */
 	public List<PatientIdentifier> getPatientIdentifiers(PatientIdentifierType pit) {
 		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();
-		if (getIdentifiers() != null) {
-			for (PatientIdentifier pi : getIdentifiers()) {
-				if (!pi.getVoided() && pit.equals(pi.getIdentifierType())) {
-					ids.add(pi);
-				}
+		for (PatientIdentifier pi : getIdentifiers()) {
+			if (!pi.getVoided() && pit.equals(pi.getIdentifierType())) {
+				ids.add(pi);
 			}
 		}
 		return ids;

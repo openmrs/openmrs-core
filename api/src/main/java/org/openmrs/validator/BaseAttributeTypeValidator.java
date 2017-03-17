@@ -10,13 +10,13 @@
 package org.openmrs.validator;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -28,8 +28,8 @@ import org.springframework.validation.Validator;
  */
 public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> implements Validator {
 	
-	/** Log for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+	/** Logger for this class and subclasses */
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)

@@ -11,8 +11,6 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -21,6 +19,8 @@ import org.openmrs.OrderSet;
 import org.openmrs.OrderSetMember;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderSetDAO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderSetDAO that
@@ -36,7 +36,7 @@ import org.openmrs.api.db.OrderSetDAO;
  */
 public class HibernateOrderSetDAO implements OrderSetDAO {
 	
-	protected static final Log log = LogFactory.getLog(HibernateOrderSetDAO.class);
+	protected static final Logger log = LoggerFactory.getLogger(HibernateOrderSetDAO.class);
 	
 	/**
 	 * Hibernate session factory

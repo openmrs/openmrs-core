@@ -18,9 +18,9 @@ import java.sql.Statement;
 import java.util.Calendar;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.DatabaseUpdater;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -36,7 +36,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	
-	private static final Log log = LogFactory.getLog(AddConceptMapTypesChangeset.class);
+	private static final Logger log = LoggerFactory.getLogger(AddConceptMapTypesChangeset.class);
 	
 	/**
 	 * The "visibleConceptMapTypes" parameter defined in the liquibase xml changeSet element that is

@@ -12,8 +12,6 @@ package org.openmrs.api.db.hibernate;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.CriteriaSpecification;
@@ -25,6 +23,8 @@ import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.api.db.DAOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Hibernate implementation of the CohortDAO
@@ -35,7 +35,7 @@ import org.openmrs.api.db.DAOException;
  */
 public class HibernateCohortDAO implements CohortDAO {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private SessionFactory sessionFactory;
 	

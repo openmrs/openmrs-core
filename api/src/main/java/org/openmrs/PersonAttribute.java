@@ -15,8 +15,6 @@ import java.util.Comparator;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DocumentId;
@@ -28,6 +26,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A PersonAttribute is meant as way for implementations to add arbitrary information about a
@@ -45,7 +45,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	
 	public static final long serialVersionUID = 11231211232111L;
 	
-	private static final Log log = LogFactory.getLog(PersonAttribute.class);
+	private static final Logger log = LoggerFactory.getLogger(PersonAttribute.class);
 	
 	// Fields
 	@DocumentId

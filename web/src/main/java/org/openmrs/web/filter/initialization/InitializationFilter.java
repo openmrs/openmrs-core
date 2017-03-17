@@ -40,8 +40,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.xerces.impl.dv.util.Base64;
@@ -71,6 +69,7 @@ import org.openmrs.web.filter.update.UpdateFilter;
 import org.openmrs.web.filter.util.CustomResourceLoader;
 import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 
@@ -83,7 +82,7 @@ import liquibase.changelog.ChangeSet;
  */
 public class InitializationFilter extends StartupFilter {
 	
-	private static final Log log = LogFactory.getLog(InitializationFilter.class);
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger(InitializationFilter.class);
 	
 	private static final String LIQUIBASE_SCHEMA_DATA = "liquibase-schema-only.xml";
 	

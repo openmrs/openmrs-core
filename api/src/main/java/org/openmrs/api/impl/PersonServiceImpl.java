@@ -18,8 +18,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
@@ -40,6 +38,9 @@ import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.validator.ValidateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -55,7 +56,7 @@ import org.springframework.util.Assert;
 @Transactional
 public class PersonServiceImpl extends BaseOpenmrsService implements PersonService {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	private PersonDAO dao;
 	
@@ -190,7 +191,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#retirePersonAttributeType(PersonAttributeType, String)
 	 */
 	@Override
-	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException {
+	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason)
+	        throws APIException {
 		checkIfPersonAttributeTypesAreLocked();
 		if (retiredReason == null || retiredReason.length() < 1) {
 			throw new APIException("Person.retiring.reason.required", (Object[]) null);
@@ -570,7 +572,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		} else if (personType == PERSON_TYPE.USER) {
 			property.append(userAttributeProperty);
 		} else {
-			log.fatal("Should not be here.");
+			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
 		}
 		return property.toString();
 	}
@@ -582,7 +584,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		AdministrationService as = Context.getAdministrationService();
 		
 		String attrString = "";
-		
+    
+    final String fatalString = "Should not be here.";		
+
 		// TODO cache the global properties to speed this up??
 		// Is hibernate taking care of caching and not hitting the db every time? (hopefully it is)
 		if (viewType == null) {
@@ -590,7 +594,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		} else if (viewType == ATTR_VIEW_TYPE.LISTING) {
 			String patientListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "");
 			String userListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "");
-			attrString = userPatientAttributes(userListing, patientListing, personType);
+      attrString = userPatientAttributes(userListing, patientListing, personType);
 		} else if (viewType == ATTR_VIEW_TYPE.VIEWING) {
 			String patientViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "");
 			String userViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "");
@@ -600,7 +604,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			String userHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "");
 			attrString = userPatientAttributes(userHeader, patientHeader, personType);
 		} else {
-			log.fatal("Should not be here");
+			log.error(MarkerFactory.getMarker("FATAL"), fatalString);
 		}
 		
 		// the java list object to hold the values from the global properties

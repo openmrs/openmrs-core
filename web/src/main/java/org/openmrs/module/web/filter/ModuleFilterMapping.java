@@ -14,11 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.web.WebModuleUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -30,7 +30,7 @@ public class ModuleFilterMapping implements Serializable {
 	
 	public static final long serialVersionUID = 1;
 	
-	private static Log log = LogFactory.getLog(WebModuleUtil.class);
+	private static Logger log = LoggerFactory.getLogger(WebModuleUtil.class);
 	
 	// Properties
 	private Module module;

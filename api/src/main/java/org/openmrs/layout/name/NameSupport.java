@@ -9,10 +9,10 @@
  */
 package org.openmrs.layout.name;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.LayoutSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 1.12
@@ -21,7 +21,7 @@ public class NameSupport extends LayoutSupport<NameTemplate> {
 	
 	private static NameSupport singleton;
 	
-	static Log log = LogFactory.getLog(NameSupport.class);
+	static Logger log = LoggerFactory.getLogger(NameSupport.class);
 	
 	public NameSupport() {
 		if (singleton == null) {
