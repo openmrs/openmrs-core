@@ -962,7 +962,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public Collection<ConceptName> getIndexTermsForLocale(Locale locale) {
 		return getIndexTerms().stream()
 				.filter(n -> n.getLocale().equals(locale))
-				.collect(Collectors.toSet());		
+		        .collect(Collectors.toList());
 	}
 	
 	/**
