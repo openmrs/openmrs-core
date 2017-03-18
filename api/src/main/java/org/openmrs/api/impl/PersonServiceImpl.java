@@ -572,8 +572,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		String attrString = "";
 		
-		final String fatalString = "Should not be here.";
-		
 		// TODO cache the global properties to speed this up??
 		// Is hibernate taking care of caching and not hitting the db every time? (hopefully it is)
 		if (viewType == null) {
@@ -581,55 +579,25 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		} else if (viewType == ATTR_VIEW_TYPE.LISTING) {
 			String patientListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "");
 			String userListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "");
-			if (personType == null || personType == PERSON_TYPE.PERSON) {
-				attrString = patientListing + "," + userListing;
-			} else if (personType == PERSON_TYPE.PATIENT) {
-				attrString = patientListing;
-			} else if (personType == PERSON_TYPE.USER) {
-				attrString = userListing;
-			} else {
-				log.error(MarkerFactory.getMarker("FATAL"), fatalString);
-			}
+			attrString = combineAttributes(userListing, patientListing, personType);
 		} else if (viewType == ATTR_VIEW_TYPE.VIEWING) {
 			String patientViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "");
 			String userViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "");
-			if (personType == null || personType == PERSON_TYPE.PERSON) {
-				attrString = patientViewing + "," + userViewing;
-			} else if (personType == PERSON_TYPE.PATIENT) {
-				attrString = patientViewing;
-			} else if (personType == PERSON_TYPE.USER) {
-				attrString = userViewing;
-			} else {
-				log.error(MarkerFactory.getMarker("FATAL"), fatalString);
-			}
+			attrString = combineAttributes(userViewing, patientViewing, personType);
 		} else if (viewType == ATTR_VIEW_TYPE.HEADER) {
 			String patientHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, "");
 			String userHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "");
-			if (personType == null || personType == PERSON_TYPE.PERSON) {
-				attrString = patientHeader + "," + userHeader;
-			} else if (personType == PERSON_TYPE.PATIENT) {
-				attrString = patientHeader;
-			} else if (personType == PERSON_TYPE.USER) {
-				attrString = userHeader;
-			} else {
-				log.error(MarkerFactory.getMarker("FATAL"), fatalString);
-			}
-			
+			attrString = combineAttributes(userHeader, patientHeader, personType);
 		} else {
-			log.error(MarkerFactory.getMarker("FATAL"), fatalString);
+			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
 		}
 		
 		// the java list object to hold the values from the global properties
-		List<String> attrNames = new Vector<String>();
-		
-		// split the comma delimited string into a java list object
-		if (attrString != null) {
-			for (String s : attrString.split(",")) {
-				if (s != null) {
-					s = s.trim();
-					if (s.length() > 0) {
-						attrNames.add(s);
-					}
+		List<String> attrNames = new ArrayList<>();
+		if (StringUtils.isNotBlank(attrString)) {
+			for (String s : StringUtils.split(attrString, ",")) {
+				if (StringUtils.isNotBlank(s)) {
+					attrNames.add(s.trim());
 				}
 			}
 		}
@@ -649,6 +617,21 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		}
 		
 		return attrObjects;
+	}
+	
+	private String combineAttributes(String patientAttributeProperty, String userAttributeProperty, PERSON_TYPE personType) {
+		StringBuilder result = new StringBuilder();
+		
+		if (personType == null || personType == PERSON_TYPE.PERSON) {
+			result.append(patientAttributeProperty).append(",").append(userAttributeProperty);
+		} else if (personType == PERSON_TYPE.PATIENT) {
+			result.append(patientAttributeProperty);
+		} else if (personType == PERSON_TYPE.USER) {
+			result.append(userAttributeProperty);
+		} else {
+			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
+		}
+		return result.toString();
 	}
 	
 	/**
