@@ -579,15 +579,15 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		} else if (viewType == ATTR_VIEW_TYPE.LISTING) {
 			String patientListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "");
 			String userListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "");
-			attrString = combineAttributes(userListing, patientListing, personType);
+			attrString = combineAttributes(patientListing, userListing, personType);
 		} else if (viewType == ATTR_VIEW_TYPE.VIEWING) {
 			String patientViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "");
 			String userViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "");
-			attrString = combineAttributes(userViewing, patientViewing, personType);
+			attrString = combineAttributes(patientViewing, userViewing, personType);
 		} else if (viewType == ATTR_VIEW_TYPE.HEADER) {
 			String patientHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, "");
 			String userHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "");
-			attrString = combineAttributes(userHeader, patientHeader, personType);
+			attrString = combineAttributes(patientHeader, userHeader, personType);
 		} else {
 			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
 		}
@@ -620,7 +620,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	private String combineAttributes(String patientAttributeProperty, String userAttributeProperty, PERSON_TYPE personType) {
-		StringBuilder result = new StringBuilder();
+		final StringBuilder result = new StringBuilder();
 		
 		if (personType == null || personType == PERSON_TYPE.PERSON) {
 			result.append(patientAttributeProperty).append(",").append(userAttributeProperty);
