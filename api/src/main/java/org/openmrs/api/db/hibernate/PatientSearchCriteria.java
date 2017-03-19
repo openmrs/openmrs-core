@@ -264,6 +264,7 @@ public class PatientSearchCriteria {
 	 * @param identifierTypes
 	 * @param matchIdentifierExactly
 	 * @param includeVoided true/false whether or not to included voided patients
+	 * @should return criterion of given identifierTypes
 	 */
 	private Criterion prepareCriterionForIdentifier(String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, boolean includeVoided) {
@@ -309,9 +310,7 @@ public class PatientSearchCriteria {
 					conjunction.add(Restrictions.sqlRestriction("identifier regexp ?", regex, StringType.INSTANCE));
 				}
 			}
-		}
-		
-		// TODO add a junit test for patientIdentifierType restrictions	
+		}	
 		
 		// do the type restriction
 		if (!CollectionUtils.isEmpty(identifierTypes)) {
