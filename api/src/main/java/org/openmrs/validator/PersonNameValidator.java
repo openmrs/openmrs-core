@@ -135,16 +135,16 @@ public class PersonNameValidator implements Validator {
 		String namePattern = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
 		if (StringUtils.isNotBlank(namePattern)) {
-			if (StringUtils.isNotBlank(personName.getGivenName()) && !personName.getGivenName().matches(namePattern)) {
+			if (StringUtils.isNotBlank(personName.getGivenName()) && (!personName.getGivenName().matches(namePattern) || personName.getGivenName().contains(" "))) {
 				errors.rejectValue(getFieldKey("givenName", arrayInd, testInd), "GivenName.invalid");
 			}
-			if (StringUtils.isNotBlank(personName.getMiddleName()) && !personName.getMiddleName().matches(namePattern)) {
+			if (StringUtils.isNotBlank(personName.getMiddleName()) && (!personName.getMiddleName().matches(namePattern) || personName.getMiddleName().contains(" "))) {
 				errors.rejectValue(getFieldKey("middleName", arrayInd, testInd), "MiddleName.invalid");
 			}
-			if (StringUtils.isNotBlank(personName.getFamilyName()) && !personName.getFamilyName().matches(namePattern)) {
+			if (StringUtils.isNotBlank(personName.getFamilyName()) && (!personName.getFamilyName().matches(namePattern) || personName.getFamilyName().contains(" "))) {
 				errors.rejectValue(getFieldKey("familyName", arrayInd, testInd), "FamilyName.invalid");
 			}
-			if (StringUtils.isNotBlank(personName.getFamilyName2()) && !personName.getFamilyName2().matches(namePattern)) {
+			if (StringUtils.isNotBlank(personName.getFamilyName2()) && (!personName.getFamilyName2().matches(namePattern) ||personName.getFamilyName2().contains(" "))) {
 				errors.rejectValue(getFieldKey("familyName2", arrayInd, testInd), "FamilyName2.invalid");
 			}
 		}
