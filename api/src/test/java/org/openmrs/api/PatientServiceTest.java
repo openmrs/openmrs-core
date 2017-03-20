@@ -2881,7 +2881,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.voidPatient(patient, "reason");
 		
 		//then
-		Assert.assertTrue(patient.isPersonVoided());
+		Assert.assertTrue(patient.getPersonVoided());
 	}
 	
 	/**
@@ -2912,13 +2912,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//given
 		Patient patient = patientService.getPatient(2);
 		patientService.voidPatient(patient, "reason");
-		Assert.assertTrue(patient.isPersonVoided());
+		Assert.assertTrue(patient.getPersonVoided());
 		
 		//when
 		patientService.unvoidPatient(patient);
 		
 		//then
-		Assert.assertFalse(patient.isPersonVoided());
+		Assert.assertFalse(patient.getPersonVoided());
 	}
 	
 	/**
