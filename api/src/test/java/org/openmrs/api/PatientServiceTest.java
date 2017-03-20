@@ -2254,10 +2254,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(patientService.getPatient(8).getVoided());
 	}
 	
-	private void assertEqualsInt(int expected, Integer actual) throws Exception {
-		Assert.assertEquals(Integer.valueOf(expected), actual);
-	}
-	
 	/**
 	 * @see PatientService#mergePatients(Patient,Patient)
 	 */
