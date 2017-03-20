@@ -144,7 +144,7 @@ public class Person extends BaseOpenmrsData {
 		setPersonDateCreated(person.getPersonDateCreated());
 		setPersonChangedBy(person.getPersonChangedBy());
 		setPersonDateChanged(person.getPersonDateChanged());
-		setPersonVoided(person.isPersonVoided());
+		setPersonVoided(person.getPersonVoided());
 		setPersonVoidedBy(person.getPersonVoidedBy());
 		setPersonDateVoided(person.getPersonDateVoided());
 		setPersonVoidReason(person.getPersonVoidReason());

@@ -71,7 +71,7 @@ public class PersonSaveHandler implements SaveHandler<Person> {
 		}
 		
 		// do the checks for voided attributes (also in PersonVoidHandler)
-		if (person.isPersonVoided()) {
+		if (person.getPersonVoided()) {
 			
 			if (!StringUtils.hasLength(person.getPersonVoidReason())) {
 				throw new APIException("Person.voided.bit", new Object[] { person });
