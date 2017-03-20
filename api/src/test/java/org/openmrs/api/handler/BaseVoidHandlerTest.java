@@ -31,7 +31,7 @@ public class BaseVoidHandlerTest {
 	public void handle_shouldSetTheVoidedBit() throws Exception {
 		VoidHandler<Voidable> handler = new BaseVoidHandler();
 		Voidable voidable = new Person();
-		voidable.setVoided(false); // make sure isVoided is false
+		voidable.setVoided(false);
 		handler.handle(voidable, null, null, " ");
 		Assert.assertTrue(voidable.getVoided());
 	}
