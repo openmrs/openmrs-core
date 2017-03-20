@@ -12,12 +12,13 @@ package org.openmrs.validator;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -31,7 +32,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { Person.class }, order = 50)
 public class PersonValidator implements Validator {
 	
-	private Logger log = Logger.getLogger(PersonValidator.class);
+	private Logger log = LoggerFactory.getLogger(PersonValidator.class);
 	
 	@Autowired
 	private PersonNameValidator personNameValidator;
@@ -59,9 +60,7 @@ public class PersonValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
-		if (log.isDebugEnabled()) {
-			log.debug(this.getClass().getName() + ".validate...");
-		}
+		log.debug("{}.validate...", this.getClass().getName());
 		
 		if (target == null) {
 			return;
@@ -169,7 +168,7 @@ public class PersonValidator implements Validator {
 			errors.rejectValue(dateField, "error.date.nonsensical");
 		}
 	}
-
+	
 	/**
 	 * Rejects a death date if it is before birth date
 	 * 
@@ -182,7 +181,5 @@ public class PersonValidator implements Validator {
 			errors.rejectValue("deathDate", "error.deathdate.before.birthdate");
 		}
 	}
-
-
 	
 }
