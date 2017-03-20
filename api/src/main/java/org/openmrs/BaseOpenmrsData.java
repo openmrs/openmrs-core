@@ -146,11 +146,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	}
 	
 	/**
-	 * This method delegates to {@link #isVoided()}. This is only needed for jstl syntax like
-	 * ${person.voided} because the return type is a Boolean object instead of a boolean primitive
-	 * type.
-	 * 
-	 * @see org.openmrs.Voidable#isVoided()
+	 * @see org.openmrs.Voidable#getVoided()
 	 */
 	@Override
 	public Boolean getVoided() {
