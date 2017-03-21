@@ -113,6 +113,7 @@
 			<property name="severity" value="error"/>
 		</module>
 		<module name="IllegalImport">
+			<property name="illegalPkgs" value="sun, org.apache.commons.logging" />
 			<property name="severity" value="error"/>
 		</module>
 		<module name="OneTopLevelClass">

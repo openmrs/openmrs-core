@@ -24,10 +24,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -46,7 +46,7 @@ import liquibase.resource.ResourceAccessor;
 
 public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskChange {
 	
-	private static final Log log = LogFactory.getLog(DuplicateLocationAttributeTypeNameChangeSet.class);
+	private static final Logger log = LoggerFactory.getLogger(DuplicateLocationAttributeTypeNameChangeSet.class);
 	
 	@Override
 	public String getConfirmationMessage() {

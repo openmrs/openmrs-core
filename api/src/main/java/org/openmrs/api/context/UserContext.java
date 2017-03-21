@@ -17,8 +17,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -27,6 +25,8 @@ import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents an OpenMRS <code>User Context</code> which stores the current user information. Only
@@ -44,7 +44,7 @@ public class UserContext implements Serializable {
 	/**
 	 * Logger - shared by entire class
 	 */
-	private static final Log log = LogFactory.getLog(UserContext.class);
+	private static final Logger log = LoggerFactory.getLogger(UserContext.class);
 	
 	/**
 	 * User object containing details about the authenticated user

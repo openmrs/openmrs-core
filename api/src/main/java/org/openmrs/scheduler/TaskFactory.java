@@ -9,10 +9,10 @@
  */
 package org.openmrs.scheduler;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.scheduler.tasks.TaskThreadedInitializationWrapper;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  */
@@ -22,7 +22,7 @@ public class TaskFactory {
 	private static final TaskFactory factory = new TaskFactory();
 	
 	/** Logger */
-	private static Log log = LogFactory.getLog(TaskFactory.class);
+	private static Logger log = LoggerFactory.getLogger(TaskFactory.class);
 	
 	/** Private constructor */
 	private TaskFactory() {

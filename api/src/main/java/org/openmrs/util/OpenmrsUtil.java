@@ -68,8 +68,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -108,6 +106,8 @@ import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PersonAttributeTypeEditor;
 import org.openmrs.propertyeditor.ProgramEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.NoSuchMessageException;
@@ -120,12 +120,12 @@ import org.w3c.dom.DocumentType;
  */
 public class OpenmrsUtil {
 	
-	private static Log log = LogFactory.getLog(OpenmrsUtil.class);
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsUtil.class);
 	
 	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<Locale, SimpleDateFormat>();
 	
 	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<Locale, SimpleDateFormat>();
-
+	
 	/**
 	 * Compares origList to newList returning map of differences
 	 * 
@@ -276,20 +276,21 @@ public class OpenmrsUtil {
 	 * @should copy inputstream to outputstream and close the outputstream
 	 */
 	public static void copyFile(InputStream inputStream, OutputStream outputStream) throws IOException {
-
+		
 		if (inputStream == null || outputStream == null) {
 			if (outputStream != null) {
 				IOUtils.closeQuietly(outputStream);
 			}
 			return;
 		}
-
+		
 		try {
 			IOUtils.copy(inputStream, outputStream);
-		} finally {
+		}
+		finally {
 			IOUtils.closeQuietly(outputStream);
 		}
-
+		
 	}
 	
 	/**
@@ -454,8 +455,9 @@ public class OpenmrsUtil {
 					OpenmrsConstants.DATABASE_NAME = val;
 				}
 				catch (Exception e) {
-					log.fatal("Database name cannot be configured from 'connection.url' ."
-					        + "Either supply 'connection.database_name' or correct the url", e);
+					log.error(MarkerFactory.getMarker("FATAL"), "Database name cannot be configured from 'connection.url' ."
+					        + "Either supply 'connection.database_name' or correct the url",
+					    e);
 				}
 			}
 		}
@@ -573,8 +575,8 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Takes a String like "size=compact|order=date" and returns a Map&lt;String,String&gt; from the keys
-	 * to the values.
+	 * Takes a String like "size=compact|order=date" and returns a Map&lt;String,String&gt; from the
+	 * keys to the values.
 	 * 
 	 * @param paramList <code>String</code> with a list of parameters
 	 * @return Map&lt;String, String&gt; of the parameters passed
@@ -586,8 +588,8 @@ public class OpenmrsUtil {
 			for (String s : args) {
 				int ind = s.indexOf('=');
 				if (ind <= 0) {
-					throw new IllegalArgumentException("Misformed argument in dynamic page specification string: '" + s
-					        + "' is not 'key=value'.");
+					throw new IllegalArgumentException(
+					        "Misformed argument in dynamic page specification string: '" + s + "' is not 'key=value'.");
 				}
 				String name = s.substring(0, ind);
 				String value = s.substring(ind + 1);
@@ -596,7 +598,7 @@ public class OpenmrsUtil {
 		}
 		return ret;
 	}
-
+	
 	public static <Arg1, Arg2 extends Arg1> boolean nullSafeEquals(Arg1 d1, Arg2 d2) {
 		if (d1 == null) {
 			return d2 == null;
@@ -1023,8 +1025,8 @@ public class OpenmrsUtil {
 		if (StringUtils.isNotBlank(systemProperty)) {
 			filepath = systemProperty;
 		} else {
-			String runtimeProperty = Context.getRuntimeProperties().getProperty(
-			    OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
+			String runtimeProperty = Context.getRuntimeProperties()
+			        .getProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
 			if (StringUtils.isNotBlank(runtimeProperty)) {
 				filepath = runtimeProperty;
 			}
@@ -1040,10 +1042,10 @@ public class OpenmrsUtil {
 				}
 			} else {
 				filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
-						+ "OpenMRS";
+				        + "OpenMRS";
 				if (!canWrite(new File(filepath))) {
 					log.warn("Unable to write to users home dir, fallback to: "
-							+ OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN);
+					        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN);
 					filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN + File.separator + openmrsDir;
 				}
 			}
@@ -1070,8 +1072,7 @@ public class OpenmrsUtil {
 	public static void setApplicationDataDirectory(String path) {
 		if (StringUtils.isBlank(path)) {
 			System.clearProperty(OpenmrsConstants.KEY_OPENMRS_APPLICATION_DATA_DIRECTORY);
-		}
-		else {
+		} else {
 			System.setProperty(OpenmrsConstants.KEY_OPENMRS_APPLICATION_DATA_DIRECTORY, path);
 		}
 	}
@@ -1336,8 +1337,8 @@ public class OpenmrsUtil {
 		}
 		
 		// note that we are using the custom OpenmrsDateFormat class here which prevents erroneous parsing of 2-digit years
-		SimpleDateFormat sdf = new OpenmrsDateFormat(
-		        (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, locale), locale);
+		SimpleDateFormat sdf = new OpenmrsDateFormat((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, locale),
+		        locale);
 		String pattern = sdf.toPattern();
 		
 		if (!pattern.contains("yyyy")) {
@@ -1608,7 +1609,7 @@ public class OpenmrsUtil {
 	public static String generateUid() {
 		return generateUid(20);
 	}
-		
+	
 	/**
 	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant <br>
 	 * NOTE: In Java 6, you will be able to pass the load() and store() methods a UTF-8
@@ -1754,8 +1755,7 @@ public class OpenmrsUtil {
 	 * </tr>
 	 * <tr>
 	 * <th>Require that it not match the {@link User}'s username or system id
-	 * <th>
-	 * {@link OpenmrsConstants#GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID}</th>
+	 * <th>{@link OpenmrsConstants#GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID}</th>
 	 * <th>true</th>
 	 * </tr>
 	 * <tr>
@@ -1861,9 +1861,8 @@ public class OpenmrsUtil {
 				}
 			}
 			catch (NumberFormatException nfe) {
-				log
-				        .warn("Error in global property <" + OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH
-				                + "> must be an Integer");
+				log.warn(
+				    "Error in global property <" + OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH + "> must be an Integer");
 			}
 		}
 		
@@ -2042,8 +2041,8 @@ public class OpenmrsUtil {
 		}
 		catch (Exception ex) {
 			log.info("Got an error while attempting to load the runtime properties", ex);
-			log
-			        .warn("Unable to find a runtime properties file. Initial setup is needed. View the webapp to run the setup wizard.");
+			log.warn(
+			    "Unable to find a runtime properties file. Initial setup is needed. View the webapp to run the setup wizard.");
 			return null;
 		}
 	}
@@ -2187,12 +2186,13 @@ public class OpenmrsUtil {
 		Calendar c2 = Calendar.getInstance();
 		c2.setTime(date);
 		
-		return (c1.get(Calendar.ERA) == c2.get(Calendar.ERA) && c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) && c1
-		        .get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR));
+		return (c1.get(Calendar.ERA) == c2.get(Calendar.ERA) && c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
+		        && c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR));
 	}
-
+	
 	/**
 	 * Get declared field names of a class
+	 * 
 	 * @param clazz
 	 * @return
 	 */

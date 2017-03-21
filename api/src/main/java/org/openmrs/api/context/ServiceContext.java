@@ -19,8 +19,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.aopalliance.aop.Advice;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
@@ -47,6 +45,8 @@ import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.framework.ProxyFactory;
@@ -70,7 +70,7 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class ServiceContext implements ApplicationContextAware {
 	
-	private static final Log log = LogFactory.getLog(ServiceContext.class);
+	private static final Logger log = LoggerFactory.getLogger(ServiceContext.class);
 
 	private ApplicationContext applicationContext;
 	

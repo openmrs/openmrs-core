@@ -34,8 +34,6 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleClassLoader;
@@ -43,6 +41,8 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.sf.ehcache.CacheManager;
 
@@ -52,7 +52,7 @@ import net.sf.ehcache.CacheManager;
  */
 public class OpenmrsClassLoader extends URLClassLoader {
 	
-	private static Log log = LogFactory.getLog(OpenmrsClassLoader.class);
+	private static Logger log = LoggerFactory.getLogger(OpenmrsClassLoader.class);
 	
 	private static File libCacheFolder;
 	

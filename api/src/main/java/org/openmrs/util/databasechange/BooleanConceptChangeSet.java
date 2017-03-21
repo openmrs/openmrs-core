@@ -17,9 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -35,7 +35,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class BooleanConceptChangeSet implements CustomTaskChange {
 	
-	private static Log log = LogFactory.getLog(BooleanConceptChangeSet.class);
+	private static Logger log = LoggerFactory.getLogger(BooleanConceptChangeSet.class);
 	
 	private Integer trueConceptId;
 	

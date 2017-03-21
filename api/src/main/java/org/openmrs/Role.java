@@ -13,9 +13,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.RoleConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Role is just an aggregater of {@link Privilege}s. {@link User}s contain a number of roles
@@ -29,7 +29,7 @@ public class Role extends BaseOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 1234233L;
 	
-	private static final Log log = LogFactory.getLog(Role.class);
+	private static final Logger log = LoggerFactory.getLogger(Role.class);
 	
 	// Fields
 	

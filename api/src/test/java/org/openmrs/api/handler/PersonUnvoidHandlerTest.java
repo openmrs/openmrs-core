@@ -30,9 +30,9 @@ public class PersonUnvoidHandlerTest {
 	public void handle_shouldUnsetThePersonVoidedBit() throws Exception {
 		UnvoidHandler<Person> handler = new PersonUnvoidHandler();
 		Person person = new Person();
-		person.setPersonVoided(true); // make sure isPersonVoided is set
+		person.setPersonVoided(true); // make sure personVoided is set
 		handler.handle(person, null, null, null);
-		Assert.assertFalse(person.isPersonVoided());
+		Assert.assertFalse(person.getPersonVoided());
 	}
 	
 	/**
@@ -104,6 +104,6 @@ public class PersonUnvoidHandlerTest {
 		person.setPersonDateVoided(d);
 		
 		handler.handle(person, null, new Date(), "SOME REASON");
-		Assert.assertTrue(person.isPersonVoided());
+		Assert.assertTrue(person.getPersonVoided());
 	}
 }

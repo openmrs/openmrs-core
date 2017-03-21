@@ -154,9 +154,6 @@ public class Encounter extends BaseOpenmrsData {
 			for (Obs o : this.obs) {
 				ret.addAll(getObsLeaves(o));
 			}
-			// this should be all that is needed unless the encounter has been built by hand
-			//if (o.isVoided() == false && o.isObsGrouping() == false)
-			//	ret.add(o);
 		}
 		
 		return ret;

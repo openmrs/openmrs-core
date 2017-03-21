@@ -63,8 +63,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EncounterServiceImpl extends BaseOpenmrsService implements EncounterService {
 	
-	// private Log log = LogFactory.getLog(this.getClass());
-	
 	private EncounterDAO dao;
 	
 	/**
