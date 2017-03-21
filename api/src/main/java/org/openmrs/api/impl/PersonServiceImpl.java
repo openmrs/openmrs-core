@@ -138,7 +138,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	/**
 	 * @see org.openmrs.api.PersonService#savePersonAttributeType(org.openmrs.PersonAttributeType)
-	 * @should set sort weight to one when all person attribute types are empty
 	 */
 	@Override
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException {
@@ -194,9 +193,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	/**
 	 * @see org.openmrs.api.PersonService#retirePersonAttributeType(PersonAttributeType, String)
-	 * @should person attribute type when retire reason is not null nor empty
-	 * @should  throw an error when retire reason is null
-	 * @should throw an error when retire reason string length is less than one
+
 	 */
 	@Override
 	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason)
@@ -342,7 +339,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	/**
 	 * @see org.openmrs.api.PersonService#voidPerson(org.openmrs.Person, java.lang.String)
-	 * @should Return Null When Person Is Null
 	 */
 	@Override
 	public Person voidPerson(Person person, String reason) throws APIException {
@@ -355,7 +351,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	/**
 	 * @see org.openmrs.api.PersonService#unvoidPerson(org.openmrs.Person)
-	 * @should  Return Null When Person Is Null
 	 */
 	@Override
 	public Person unvoidPerson(Person person) throws APIException {
@@ -368,7 +363,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	/**
 	 * @see org.openmrs.api.PersonService#getPerson(java.lang.Integer)
-	 * @should return null when personId is null
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -471,7 +465,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	/**
 	 * @see org.openmrs.api.PersonService#saveRelationship(org.openmrs.Relationship)
-	 * @should not allow someone to be in a relationship with themselves
 	 */
 	@Override
 	public Relationship saveRelationship(Relationship relationship) throws APIException {
@@ -485,7 +478,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#voidRelationship(org.openmrs.Relationship,
 	 *      java.lang.String)
-	 *      @should void a relationship
+	 *
 	 */
 	@Override
 	public Relationship voidRelationship(Relationship relationship, String voidReason) throws APIException {
@@ -557,8 +550,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#saveRelationshipType(org.openmrs.RelationshipType)
-	 * @should save a relationship type
+	 * @see org.openmrs.api.PersonService#saveRelationshipType(org.openmrs.RelationshipType
 	 */
 	@Override
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException {
@@ -573,7 +565,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getPersonAttributeTypes(org.openmrs.util.OpenmrsConstants.PERSON_TYPE,
 	 *      org.openmrs.api.PersonService.ATTR_VIEW_TYPE)
-	 *      @should return a list of all person attribute types if viewtype is null
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -960,8 +951,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		return Context.getPersonService().saveRelationshipType(type);
 	}
 	
-	/**
+	/**.
 	 * @see org.openmrs.api.PersonService#unretireRelationshipType(org.openmrs.RelationshipType)
+	 *
 	 */
 	@Override
 	public RelationshipType unretireRelationshipType(RelationshipType relationshipType) {

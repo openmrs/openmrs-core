@@ -124,6 +124,8 @@ public interface PersonService extends OpenmrsService {
 	 * @should set the date changed and changed by on update
 	 * @should update any global property which reference this type
 	 * @should throw an error when trying to save person attribute type while person attribute types are locked
+	 * @should set sort weight to one when all person attribute types are empty
+
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException;
@@ -134,6 +136,9 @@ public interface PersonService extends OpenmrsService {
 	 * @param type
 	 * @param retiredReason
 	 * @should throw an error when trying to retire person attribute type while person attribute types are locked
+	 * @should person attribute type when retire reason is not null nor empty
+	 * @should  throw an error when retire reason is null
+	 * @should throw an error when retire reason string length is less than one
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException;
@@ -200,6 +205,7 @@ public interface PersonService extends OpenmrsService {
 	 * @should unvoid the given person
 	 * @should unvoid patient
 	 * @should not unretire users
+	 * @should return null when person is null
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public Person unvoidPerson(Person person) throws APIException;
@@ -239,6 +245,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return person attribute types matching given parameters
 	 * @should return empty list when no person attribute types match given parameters
+	 * @should return a list of all person attribute types if viewtype is null
+
 	 */
 	@Authorized( { PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
 	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
@@ -515,6 +523,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws APIException
 	 * @should create new object when relationship id is null
 	 * @should update existing object when relationship id is not null
+	 * @should not allow someone to be in a relationship with themselves
 	 */
 	@Authorized( { PrivilegeConstants.ADD_RELATIONSHIPS, PrivilegeConstants.EDIT_RELATIONSHIPS })
 	public Relationship saveRelationship(Relationship relationship) throws APIException;
@@ -537,6 +546,7 @@ public interface PersonService extends OpenmrsService {
 	 * @return the newly saved relationship
 	 * @throws APIException
 	 * @should void relationship with the given reason
+	 * @should void relationship without reason
 	 */
 	@Authorized( { PrivilegeConstants.DELETE_RELATIONSHIPS })
 	public Relationship voidRelationship(Relationship relationship, String voidReason) throws APIException;
@@ -639,6 +649,7 @@ public interface PersonService extends OpenmrsService {
 	 * @return Person person with given internal identifier
 	 * @throws APIException
 	 * @should return null when no person has the given id
+	 *  @should return null when personId is null
 	 */
 	@Authorized( { PrivilegeConstants.GET_PERSONS })
 	public Person getPerson(Integer personId) throws APIException;
@@ -649,6 +660,7 @@ public interface PersonService extends OpenmrsService {
 	 * @param relationshipType type to be created or updated
 	 * @return relationship type that was created or updated
 	 * @throws APIException
+	 * @should save a relationship type
 	 * @should create new object when relationship type id is null
 	 * @should update existing object when relationship type id is not null
 	 * @should fail if the description is not specified
