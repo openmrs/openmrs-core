@@ -6,23 +6,23 @@ OpenMRS is a patient-based medical record system focusing on giving providers a 
 
 The mission of OpenMRS is to improve health care delivery in resource-constrained environments by coordinating a global community that creates a robust, scalable, user-driven, open source medical record system platform.
 
-####Table of Contents
+#### Table of Contents
 
 1. [Build](#build)
-  * [Prerequisites](#prerequisites)
-  * [Build Command](#build-command)
-  * [Deploy](#deploy)
+  1.1. [Prerequisites](#prerequisites)
+  1.2. [Build Command](#build-command)
+  1.3. [Deploy](#deploy)
 2. [Navigating the repository](#navigating-the-repository)
 3. [Software Development Kit](#software-development-kit)
 4. [Extending OpenMRS with Modules](#extending-openmrs-with-modules)
 5. [Documentation](#documentation)
-  * [Developer guides](#developer-guides)
-  * [Wiki](#wiki)
-  * [Website](#website)
+  5.1. [Developer guides](#developer-guides)
+  5.2. [Wiki](#wiki)
+  5.3. [Website](#website)
 6. [Contributing](#contributing)
-  * [Code](#code)
-  * [Code Reviews](#code-reviews)
-  * [Translation](#translation)
+  6.1. [Code](#code)
+  6.2. [Code Reviews](#code-reviews)
+  6.3. [Translation](#translation)
 7. [Issues](#issues)
 8. [Community](#community)
 9. [Support](#support)

@@ -31,7 +31,7 @@ public class BaseUnvoidHandlerTest {
 	public void handle_shouldUnsetTheVoidedBit() throws Exception {
 		UnvoidHandler<Voidable> handler = new BaseUnvoidHandler();
 		Voidable voidable = new Person();
-		voidable.setVoided(true); // make sure isVoided is set
+		voidable.setVoided(true);
 		handler.handle(voidable, null, null, null);
 		Assert.assertFalse(voidable.getVoided());
 	}

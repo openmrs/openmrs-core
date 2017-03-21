@@ -12,14 +12,14 @@ package org.openmrs.scheduler.timer;
 import java.util.Date;
 import java.util.TimerTask;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TimerSchedulerTask extends TimerTask {
 	
@@ -27,7 +27,7 @@ public class TimerSchedulerTask extends TimerTask {
 	private Task task;
 	
 	/** Logger */
-	private static Log log = LogFactory.getLog(TimerSchedulerTask.class);
+	private static Logger log = LoggerFactory.getLogger(TimerSchedulerTask.class);
 	
 	/** * Public constructor */
 	public TimerSchedulerTask(Task task) {

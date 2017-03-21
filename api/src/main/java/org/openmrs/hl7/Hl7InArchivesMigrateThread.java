@@ -12,11 +12,11 @@ package org.openmrs.hl7;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Separate thread to move the hl7 in archives from the database tables to the filesystem. It is
@@ -25,7 +25,7 @@ import org.openmrs.api.context.UserContext;
  */
 public class Hl7InArchivesMigrateThread extends Thread {
 	
-	private static final Log log = LogFactory.getLog(Hl7InArchivesMigrateThread.class);
+	private static final Logger log = LoggerFactory.getLogger(Hl7InArchivesMigrateThread.class);
 	
 	/**
 	 * Map holds data about the progress of the transfer process, that is numberTransferred and

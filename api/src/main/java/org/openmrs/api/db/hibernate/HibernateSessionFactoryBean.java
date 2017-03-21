@@ -22,20 +22,21 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 
 public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	
-	private static Log log = LogFactory.getLog(HibernateSessionFactoryBean.class);
+	private static Logger log = LoggerFactory.getLogger(HibernateSessionFactoryBean.class);
 	
 	protected Set<String> mappingResources = new HashSet<String>();
 	
@@ -155,7 +156,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			
 		}
 		catch (IOException e) {
-			log.fatal("Unable to load default hibernate properties", e);
+			log.error(MarkerFactory.getMarker("FATAL"), "Unable to load default hibernate properties", e);
 		}
 		
 		log.debug("Replacing variables in hibernate properties");

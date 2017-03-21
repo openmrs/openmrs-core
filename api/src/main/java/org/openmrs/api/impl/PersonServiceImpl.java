@@ -40,6 +40,9 @@ import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.validator.ValidateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -55,7 +58,7 @@ import org.springframework.util.Assert;
 @Transactional
 public class PersonServiceImpl extends BaseOpenmrsService implements PersonService {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	private PersonDAO dao;
 	
@@ -137,6 +140,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	/**
 	 * @see org.openmrs.api.PersonService#savePersonAttributeType(org.openmrs.PersonAttributeType)
+	 * @should set sort weight to one when all person attribute types are empty
 	 */
 	@Override
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException {
@@ -192,9 +196,13 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	/**
 	 * @see org.openmrs.api.PersonService#retirePersonAttributeType(PersonAttributeType, String)
+	 * @should person attribute type when retire reason is not null nor empty
+	 * @should  throw an error when retire reason is null
+	 * @should throw an error when retire reason string length is less than one
 	 */
 	@Override
-	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException {
+	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason)
+	        throws APIException {
 		checkIfPersonAttributeTypesAreLocked();
 		if (retiredReason == null || retiredReason.length() < 1) {
 			throw new APIException("Person.retiring.reason.required", (Object[]) null);
@@ -336,6 +344,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 	/**
 	 * @see org.openmrs.api.PersonService#voidPerson(org.openmrs.Person, java.lang.String)
+	 * @should Return Null When Person Is Null
 	 */
 	@Override
 	public Person voidPerson(Person person, String reason) throws APIException {
@@ -348,6 +357,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	/**
 	 * @see org.openmrs.api.PersonService#unvoidPerson(org.openmrs.Person)
+	 * @should  Return Null When Person Is Null
 	 */
 	@Override
 	public Person unvoidPerson(Person person) throws APIException {
@@ -360,6 +370,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	/**
 	 * @see org.openmrs.api.PersonService#getPerson(java.lang.Integer)
+	 * @should return null when personId is null
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -462,6 +473,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	/**
 	 * @see org.openmrs.api.PersonService#saveRelationship(org.openmrs.Relationship)
+	 * @should not allow someone to be in a relationship with themselves
 	 */
 	@Override
 	public Relationship saveRelationship(Relationship relationship) throws APIException {
@@ -475,6 +487,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#voidRelationship(org.openmrs.Relationship,
 	 *      java.lang.String)
+	 *      @should void a relationship
 	 */
 	@Override
 	public Relationship voidRelationship(Relationship relationship, String voidReason) throws APIException {
@@ -506,7 +519,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		return Context.getPersonService().saveRelationship(relationship);
 	}
-		
+	
 	/**
 	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes()
 	 */
@@ -547,12 +560,13 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	/**
 	 * @see org.openmrs.api.PersonService#saveRelationshipType(org.openmrs.RelationshipType)
+	 * @should save a relationship type
 	 */
 	@Override
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException {
 		if (StringUtils.isBlank(relationshipType.getDescription())) {
-			throw new APIException("error.required", new Object[] { Context.getMessageSourceService().getMessage(
-			    "general.description") });
+			throw new APIException("error.required",
+			        new Object[] { Context.getMessageSourceService().getMessage("general.description") });
 		}
 		
 		return dao.saveRelationshipType(relationshipType);
@@ -561,6 +575,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	/**
 	 * @see org.openmrs.api.PersonService#getPersonAttributeTypes(org.openmrs.util.OpenmrsConstants.PERSON_TYPE,
 	 *      org.openmrs.api.PersonService.ATTR_VIEW_TYPE)
+	 *      @should return a list of all person attribute types if viewtype is null
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -569,9 +584,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		AdministrationService as = Context.getAdministrationService();
 		
 		String attrString = "";
-
-		final String fatalString = "Should not be here.";
-
+		
 		// TODO cache the global properties to speed this up??
 		// Is hibernate taking care of caching and not hitting the db every time? (hopefully it is)
 		if (viewType == null) {
@@ -579,55 +592,25 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		} else if (viewType == ATTR_VIEW_TYPE.LISTING) {
 			String patientListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "");
 			String userListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "");
-			if (personType == null || personType == PERSON_TYPE.PERSON) {
-				attrString = patientListing + "," + userListing;
-			} else if (personType == PERSON_TYPE.PATIENT) {
-				attrString = patientListing;
-			} else if (personType == PERSON_TYPE.USER) {
-				attrString = userListing;
-			} else {
-				log.fatal(fatalString);
-			}
+			attrString = combineAttributes(patientListing, userListing, personType);
 		} else if (viewType == ATTR_VIEW_TYPE.VIEWING) {
 			String patientViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "");
 			String userViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "");
-			if (personType == null || personType == PERSON_TYPE.PERSON) {
-				attrString = patientViewing + "," + userViewing;
-			} else if (personType == PERSON_TYPE.PATIENT) {
-				attrString = patientViewing;
-			} else if (personType == PERSON_TYPE.USER) {
-				attrString = userViewing;
-			} else {
-				log.fatal(fatalString);
-			}
+			attrString = combineAttributes(patientViewing, userViewing, personType);
 		} else if (viewType == ATTR_VIEW_TYPE.HEADER) {
 			String patientHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, "");
 			String userHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "");
-			if (personType == null || personType == PERSON_TYPE.PERSON) {
-				attrString = patientHeader + "," + userHeader;
-			} else if (personType == PERSON_TYPE.PATIENT) {
-				attrString = patientHeader;
-			} else if (personType == PERSON_TYPE.USER) {
-				attrString = userHeader;
-			} else {
-				log.fatal(fatalString);
-			}
-			
+			attrString = combineAttributes(patientHeader, userHeader, personType);
 		} else {
-			log.fatal(fatalString);
+			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
 		}
 		
 		// the java list object to hold the values from the global properties
-		List<String> attrNames = new Vector<String>();
-		
-		// split the comma delimited string into a java list object
-		if (attrString != null) {
-			for (String s : attrString.split(",")) {
-				if (s != null) {
-					s = s.trim();
-					if (s.length() > 0) {
-						attrNames.add(s);
-					}
+		List<String> attrNames = new ArrayList<>();
+		if (StringUtils.isNotBlank(attrString)) {
+			for (String s : StringUtils.split(attrString, ",")) {
+				if (StringUtils.isNotBlank(s)) {
+					attrNames.add(s.trim());
 				}
 			}
 		}

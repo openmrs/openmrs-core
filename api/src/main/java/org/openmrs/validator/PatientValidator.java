@@ -11,11 +11,11 @@ package org.openmrs.validator;
 
 import java.util.Collection;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.annotation.Handler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -26,7 +26,7 @@ import org.springframework.validation.ValidationUtils;
 @Handler(supports = { Patient.class }, order = 25)
 public class PatientValidator extends PersonValidator {
 	
-	private static Log log = LogFactory.getLog(PersonNameValidator.class);
+	private static Logger log = LoggerFactory.getLogger(PersonNameValidator.class);
 	
 	@Autowired
 	private PatientIdentifierValidator patientIdentifierValidator;

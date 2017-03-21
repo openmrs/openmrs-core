@@ -11,14 +11,14 @@ package org.openmrs.web.filter.update;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUpdater.OpenMRSChangeSet;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link UpdateFilter} uses this model object to hold all properties that are edited by the
@@ -66,7 +66,7 @@ public class UpdateFilterModel {
 	 * that still need to be run.
 	 */
 	public void updateChanges() {
-		Log log = LogFactory.getLog(getClass());
+		Logger log = LoggerFactory.getLogger(getClass());
 		
 		try {
 			changes = DatabaseUpdater.getUnrunDatabaseChanges();
