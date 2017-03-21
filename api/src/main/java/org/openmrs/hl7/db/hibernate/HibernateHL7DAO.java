@@ -12,8 +12,6 @@ package org.openmrs.hl7.db.hibernate;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
@@ -31,6 +29,8 @@ import org.openmrs.hl7.HL7InQueue;
 import org.openmrs.hl7.HL7Source;
 import org.openmrs.hl7.Hl7InArchivesMigrateThread;
 import org.openmrs.hl7.db.HL7DAO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * OpenMRS HL7 API database default hibernate implementation This class shouldn't be instantiated by
@@ -41,7 +41,7 @@ import org.openmrs.hl7.db.HL7DAO;
  */
 public class HibernateHL7DAO implements HL7DAO {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * Hibernate session factory

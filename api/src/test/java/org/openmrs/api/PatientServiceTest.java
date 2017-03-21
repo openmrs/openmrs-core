@@ -39,8 +39,6 @@ import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -83,6 +81,8 @@ import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -91,7 +91,7 @@ import org.openmrs.util.OpenmrsUtil;
 public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	// Logger
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	// Datasets
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatient.xml";
@@ -1085,7 +1085,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
 		
-		log.info(patientIdentifierType.getRequired());
+		log.info(patientIdentifierType.getRequired().toString());
 		
 		// TODO Finish
 		
@@ -2254,10 +2254,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(patientService.getPatient(8).getVoided());
 	}
 	
-	private void assertEqualsInt(int expected, Integer actual) throws Exception {
-		Assert.assertEquals(Integer.valueOf(expected), actual);
-	}
-	
 	/**
 	 * @see PatientService#mergePatients(Patient,Patient)
 	 */
@@ -2885,7 +2881,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.voidPatient(patient, "reason");
 		
 		//then
-		Assert.assertTrue(patient.isPersonVoided());
+		Assert.assertTrue(patient.getPersonVoided());
 	}
 	
 	/**
@@ -2916,13 +2912,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//given
 		Patient patient = patientService.getPatient(2);
 		patientService.voidPatient(patient, "reason");
-		Assert.assertTrue(patient.isPersonVoided());
+		Assert.assertTrue(patient.getPersonVoided());
 		
 		//when
 		patientService.unvoidPatient(patient);
 		
 		//then
-		Assert.assertFalse(patient.isPersonVoided());
+		Assert.assertFalse(patient.getPersonVoided());
 	}
 	
 	/**

@@ -33,8 +33,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.openmrs.util.DatabaseUpdateException;
@@ -53,6 +51,7 @@ import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.util.CustomResourceLoader;
 import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoader;
 
 import liquibase.changelog.ChangeSet;
@@ -65,7 +64,7 @@ import liquibase.exception.LockException;
  */
 public class UpdateFilter extends StartupFilter {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup

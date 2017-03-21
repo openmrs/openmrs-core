@@ -23,8 +23,6 @@ import java.util.Locale;
 import java.util.Vector;
 
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -60,6 +58,8 @@ import org.openmrs.api.order.exception.OrderEntryException;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -75,7 +75,7 @@ import org.springframework.util.StringUtils;
 @Transactional
 public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator, GlobalPropertyListener {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private static final String ORDER_NUMBER_PREFIX = "ORD-";
 	
@@ -271,7 +271,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				int hours = cal.get(Calendar.HOUR_OF_DAY);
 				int minutes = cal.get(Calendar.MINUTE);
 				int seconds = cal.get(Calendar.SECOND);
-				int milliseconds = cal.get(Calendar.MILLISECOND);
+				cal.get(Calendar.MILLISECOND);
 				//roll autoExpireDate to end of day (23:59:59) if no time portion is specified
 				if (hours == 0 && minutes == 0 && seconds == 0) {
 					cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -1005,7 +1005,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	private List<Concept> getSetMembersOfConceptSetFromGP(String globalProperty) {
 		String conceptUuid = Context.getAdministrationService().getGlobalProperty(globalProperty);
 		Concept concept = Context.getConceptService().getConceptByUuid(conceptUuid);
-		if (concept != null && concept.isSet()) {
+		if (concept != null && concept.getSet()) {
 			return concept.getSetMembers();
 		}
 		return Collections.emptyList();

@@ -29,8 +29,6 @@ import java.util.Vector;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptAttribute;
@@ -68,6 +66,8 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ValidateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -79,7 +79,7 @@ import org.springframework.util.StringUtils;
 @Transactional
 public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptService {
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private ConceptDAO dao;
 	
@@ -228,8 +228,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		concept.setChangedBy(Context.getAuthenticatedUser());
 		
 		// force isSet when concept has members
-		if (!concept.isSet() && (!concept.getSetMembers().isEmpty())) {
-                    concept.setSet(true);
+		if (!concept.getSet() && (!concept.getSetMembers().isEmpty())) {
+			concept.setSet(true);
 		}
 
 		Concept conceptToReturn = dao.saveConcept(concept);
@@ -899,7 +899,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		List<ConceptSet> cs = getConceptSetsByConcept(concept);
 		for (ConceptSet set : cs) {
 			Concept c = set.getConcept();
-			if (c.isSet()) {
+			if (c.getSet()) {
 				ret.add(c);
 				explodeConceptSetHelper(c, ret, alreadySeen);
 			} else {
@@ -1889,8 +1889,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			locales = new ArrayList<Locale>();
 			locales.add(Context.getLocale());
 		}
-		return dao.getConcepts(phrase, locales, false, mappedClasses, (List) Collections.emptyList(), (List) Collections
-		        .emptyList(), (List) Collections.emptyList(), null, start, length);
+		return dao.getConcepts(phrase, locales, false, mappedClasses, Collections.emptyList(), Collections.emptyList(),
+		    Collections.emptyList(), null, start, length);
 	}
 
 	/**

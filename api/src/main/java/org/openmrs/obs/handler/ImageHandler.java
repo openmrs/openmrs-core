@@ -22,12 +22,12 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handler for storing basic images for complex obs to the file system. The image mime type used is
@@ -43,7 +43,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW };
 	
-	public static final Log log = LogFactory.getLog(ImageHandler.class);
+	public static final Logger log = LoggerFactory.getLogger(ImageHandler.class);
 	
 	private Set<String> extensions;
 	

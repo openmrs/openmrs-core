@@ -34,9 +34,9 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	public void handle_shouldSetThePersonVoidedBit() throws Exception {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = new Person();
-		person.setPersonVoided(false); // make sure isPersonVoided is false
+		person.setPersonVoided(false); // make sure personVoided is false
 		handler.handle(person, null, null, " ");
-		Assert.assertTrue(person.isPersonVoided());
+		Assert.assertTrue(person.getPersonVoided());
 	}
 	
 	/**

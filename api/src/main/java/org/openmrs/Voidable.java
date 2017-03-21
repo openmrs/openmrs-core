@@ -37,6 +37,9 @@ public interface Voidable extends OpenmrsObject {
 	@JsonIgnore
 	public Boolean isVoided();
 	
+	/**
+	 * @return true if this object is voided and otherwise false
+	 */
 	public Boolean getVoided();
 	
 	/**

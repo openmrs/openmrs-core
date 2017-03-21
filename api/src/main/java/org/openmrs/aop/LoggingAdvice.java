@@ -15,12 +15,12 @@ import java.util.List;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class provides the log4j aop around advice for our service layer. This advice is placed on
@@ -33,7 +33,7 @@ public class LoggingAdvice implements MethodInterceptor {
 	 * Logger for this class. Uses the name "org.openmrs.api" so that it seems to fit into the
 	 * log4j.xml configuration
 	 */
-	protected static final Log log = LogFactory.getLog("org.openmrs.api");
+	protected static final Logger log = LoggerFactory.getLogger("org.openmrs.api");
 	
 	/**
 	 * List of all method name prefixes that result in INFO-level log messages

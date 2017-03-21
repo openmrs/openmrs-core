@@ -22,8 +22,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -32,6 +30,8 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.Format;
 import org.openmrs.util.Format.FORMAT_TYPE;
 import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An observation is a single unit of clinical information. <br>
@@ -72,7 +72,7 @@ public class Obs extends BaseOpenmrsData {
 	
 	public static final long serialVersionUID = 112342333L;
 	
-	private static final Log log = LogFactory.getLog(Obs.class);
+	private static final Logger log = LoggerFactory.getLogger(Obs.class);
 	
 	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
 	
@@ -385,7 +385,7 @@ public class Obs extends BaseOpenmrsData {
 	 * only returns non-voided group members. To get all group members, use
 	 * {@link #getGroupMembers(boolean)} with value true.
 	 * <p>
-	 * If it's not a group (i.e. {@link #getConcept()}.{@link org.openmrs.Concept#isSet()} is not
+	 * If it's not a group (i.e. {@link #getConcept()}.{@link org.openmrs.Concept#getSet()} is not
 	 * true, then this returns null.
 	 * 
 	 * @return a Set&lt;Obs&gt; of the members of this group.
@@ -428,7 +428,7 @@ public class Obs extends BaseOpenmrsData {
 	/**
 	 * Set the members of the obs group, if this obs is a group.
 	 * <p>
-	 * If it's not a group (i.e. {@link #getConcept()}.{@link org.openmrs.Concept#isSet()} is not
+	 * If it's not a group (i.e. {@link #getConcept()}.{@link org.openmrs.Concept#getSet()} is not
 	 * true, then this returns null.
 	 * 
 	 * @param groupMembers the groupedObs to set

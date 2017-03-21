@@ -9,16 +9,15 @@
  */
 package org.openmrs;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class represents a list of patientIds.
@@ -26,8 +25,6 @@ import org.apache.commons.logging.LogFactory;
 public class Cohort extends BaseOpenmrsData  {
 	
 	public static final long serialVersionUID = 0L;
-	
-	private static final Log log = LogFactory.getLog(Cohort.class);
 	
 	private Integer cohortId;
 	
@@ -67,9 +64,7 @@ public class Cohort extends BaseOpenmrsData  {
 		this.name = name;
 		this.description = description;
 		if (ids != null) {
-			for (int id : ids) {
-				addMember(id);
-			}
+			Arrays.stream(ids).forEach(id -> addMember(id));
 		}
 	}
 	
@@ -84,9 +79,7 @@ public class Cohort extends BaseOpenmrsData  {
 	public Cohort(String name, String description, Patient[] patients) {
 		this(name, description, (Integer[]) null);
 		if (patients != null) {
-			for (Patient p : patients) {
-				addMembership(new CohortMembership(p));
-			}
+			Arrays.stream(patients).forEach(p -> addMembership(new CohortMembership(p)));
 		}
 	}
 	
@@ -97,7 +90,7 @@ public class Cohort extends BaseOpenmrsData  {
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
 	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
-	public Cohort(Collection patientsOrIds) {
+	public Cohort(Collection<?> patientsOrIds) {
 		this(null, null, patientsOrIds);
 	}
 	
@@ -110,7 +103,7 @@ public class Cohort extends BaseOpenmrsData  {
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
 	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
-	public Cohort(String name, String description, Collection patientsOrIds) {
+	public Cohort(String name, String description, Collection<?> patientsOrIds) {
 		this(name, description, (Integer[]) null);
 		if (patientsOrIds != null) {
 			for (Object o : patientsOrIds) {
@@ -131,23 +124,15 @@ public class Cohort extends BaseOpenmrsData  {
 	 */
 	public Cohort(String commaSeparatedIds) {
 		this();
-		for (StringTokenizer st = new StringTokenizer(commaSeparatedIds, ","); st.hasMoreTokens();) {
-			String id = st.nextToken();
-			Patient pid = new Patient(Integer.valueOf(id.trim()));
-			addMembership(new CohortMembership(pid));
-		}
+		String[] ids = StringUtils.split(commaSeparatedIds, ',');
+		Arrays.stream(ids).forEach(id -> addMembership(Integer.valueOf(id.trim())));
 	}
 	
 	/**
 	 * @return Returns a comma-separated list of patient ids in the cohort.
 	 */
 	public String getCommaSeparatedPatientIds() {
-		StringBuilder sb = new StringBuilder();
-		for (CohortMembership member : getMembers()) {
-			sb.append(member.getPatient().getPatientId());
-			sb.append(",");
-		}
-		return sb.toString();
+		return StringUtils.join(getMemberIds(), ',');
 	}
 
 	public boolean contains(Integer patientId) {
@@ -190,6 +175,10 @@ public class Cohort extends BaseOpenmrsData  {
 			cohortMembership.setCohort(this);
 			getMembers().add(cohortMembership);
 		}
+	}
+	
+	public void addMembership(Integer patientId) {
+		addMembership(new CohortMembership(new Patient(patientId)));
 	}
 
 	public void removeMembership(CohortMembership cohortMembership) {
