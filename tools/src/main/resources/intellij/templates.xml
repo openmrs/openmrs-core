@@ -1,0 +1,92 @@
+<templateSet group="OpenMRS">
+  <template name="test" value="@Test&#10;public void $METHOD_NAME$_$SHOULD_SENTENCE$() throws Exception {&#10;    $END$&#10;}" description="OpenMRS Style JUnit 4 Test" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="METHOD_NAME" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="SHOULD_SENTENCE" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_DECLARATION" value="true" />
+    </context>
+  </template>
+  <template name="beforeTest" value="@Before&#10;public void setUp() {&#10;    $BODY$&#10;}" description="OpenMRS Style JUnit 4 Test Before" toReformat="true" toShortenFQNames="true">
+    <variable name="BODY" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_DECLARATION" value="true" />
+    </context>
+  </template>
+  <template name="logger" value="$ACCESS$ static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger($CLASS$.class);" description="declare static Logger field using slf4j" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="ACCESS" expression="" defaultValue="&quot;private&quot;" alwaysStopAt="true" />
+    <variable name="CLASS" expression="className()" defaultValue="" alwaysStopAt="false" />
+    <context>
+      <option name="JAVA_DECLARATION" value="true" />
+    </context>
+  </template>
+  <template name="logi" value="$LOGGER$.info(&quot;$MESSAGE$&quot;);" description="log an INFO message using slf4j logger declared in this class" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="LOGGER" expression="variableOfType(&quot;org.slf4j.Logger&quot;)" defaultValue="" alwaysStopAt="true" />
+    <variable name="MESSAGE" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_STATEMENT" value="true" />
+    </context>
+  </template>
+  <template name="logw" value="$LOGGER$.warn(&quot;$MESSAGE$&quot;);" description="log a WARN message using slf4j logger declared in this class" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="LOGGER" expression="variableOfType(&quot;org.slf4j.Logger&quot;)" defaultValue="" alwaysStopAt="true" />
+    <variable name="MESSAGE" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_STATEMENT" value="true" />
+    </context>
+  </template>
+  <template name="logd" value="$LOGGER$.debug(&quot;$MESSAGE$&quot;);" description="log a DEBUG message using slf4j logger declared in this class" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="LOGGER" expression="variableOfType(&quot;org.slf4j.Logger&quot;)" defaultValue="" alwaysStopAt="true" />
+    <variable name="MESSAGE" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_STATEMENT" value="true" />
+    </context>
+  </template>
+  <template name="loge" value="$LOGGER$.error(&quot;$MESSAGE$&quot;);" description="log an ERROR message using slf4j logger declared in this class" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="LOGGER" expression="variableOfType(&quot;org.slf4j.Logger&quot;)" defaultValue="" alwaysStopAt="true" />
+    <variable name="MESSAGE" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_STATEMENT" value="true" />
+    </context>
+  </template>
+  <template name="logpe" value="$LOGGER$.error(&quot;$MESSAGE$&quot;, $ERROR$);" description="log a parametrized ERROR message using slf4j logger declared in this class" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="LOGGER" expression="variableOfType(&quot;org.slf4j.Logger&quot;)" defaultValue="" alwaysStopAt="true" />
+    <variable name="MESSAGE" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="ERROR" expression="variableOfType(&quot;java.lang.Throwable&quot;)" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_STATEMENT" value="true" />
+    </context>
+  </template>
+  <template name="logpi" value="$LOGGER$.info(&quot;$MESSAGE$&quot;, $PARAM$);" description="log a parametrized INFO message using slf4j logger declared in this class" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="LOGGER" expression="variableOfType(&quot;org.slf4j.Logger&quot;)" defaultValue="" alwaysStopAt="true" />
+    <variable name="MESSAGE" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="PARAM" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_STATEMENT" value="true" />
+    </context>
+  </template>
+  <template name="logpd" value="$LOGGER$.debug(&quot;$MESSAGE$&quot;, $PARAM$);" description="log a parametrized DEBUG message using slf4j logger declared in this class" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="LOGGER" expression="variableOfType(&quot;org.slf4j.Logger&quot;)" defaultValue="" alwaysStopAt="true" />
+    <variable name="MESSAGE" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="PARAM" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_STATEMENT" value="true" />
+    </context>
+  </template>
+  <template name="logpw" value="$LOGGER$.warn(&quot;$MESSAGE$&quot;, $PARAM$);" description="log a parametrized WARN message using slf4j logger declared in this class" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="LOGGER" expression="variableOfType(&quot;org.slf4j.Logger&quot;)" defaultValue="" alwaysStopAt="true" />
+    <variable name="MESSAGE" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="PARAM" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_STATEMENT" value="true" />
+    </context>
+  </template>
+  <template name="testException" value="@Test&#10;public void $METHOD_NAME$_$SHOULD_FAIL_SENTENCE$() throws Exception {&#10;&#9;$EXPECT$.expect($EXCEPTION$);&#10;&#9;$EXPECT$.expectMessage(&quot;$EXCEPTION_MESSAGE$&quot;);&#10;    $END$&#10;}" description="OpenMRS Style JUnit 4 Test for exception" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+    <variable name="METHOD_NAME" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="SHOULD_FAIL_SENTENCE" expression="" defaultValue="&quot;shouldFailGiven&quot;" alwaysStopAt="true" />
+    <variable name="EXPECT" expression="variableOfType(&quot;org.junit.rules.ExpectedException&quot;)" defaultValue="" alwaysStopAt="true" />
+    <variable name="EXCEPTION" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="EXCEPTION_MESSAGE" expression="" defaultValue="&quot;Fail Due To&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_DECLARATION" value="true" />
+    </context>
+  </template>
+</templateSet>
