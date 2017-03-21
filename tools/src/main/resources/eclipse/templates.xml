@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><templates><template autoinsert="true" context="java-members" deleted="false" description="OpenMRS Style JUnit 4 Test Before" enabled="true" name="beforeTest">@${testType:newType(org.junit.Before)}
+public void setUp() {
+	${cursor}
+}</template><template autoinsert="true" context="java-statements" deleted="false" description="log a DEBUG message using slf4jlogger declared in this class" enabled="true" id="org.springframework.ide.eclipse.boot.templates.slf4j.logdebug" name="logd">${log:field(org.slf4j.Logger)}.debug("${message}");
+</template><template autoinsert="true" context="java-statements" deleted="false" description="log an ERROR message using slf4jlogger declared in this class" enabled="true" id="org.springframework.ide.eclipse.boot.templates.slf4j.logerror" name="loge">${log:field(org.slf4j.Logger)}.error("${message}");
+</template><template autoinsert="true" context="java-members" deleted="false" description="static Logger field using slf4j" enabled="true" id="org.springframework.ide.eclipse.boot.templates.slf4j.logger" name="logger">
+${:import(org.slf4j.Logger,org.slf4j.LoggerFactory)}
+private static final Logger log = LoggerFactory.getLogger(${enclosing_type}.class);
+</template><template autoinsert="true" context="java-statements" deleted="false" description="log an INFO message using slf4jlogger declared in this class" enabled="true" id="org.springframework.ide.eclipse.boot.templates.slf4j.loginfo" name="logi">${log:field(org.slf4j.Logger)}.info("${message}");
+</template><template autoinsert="true" context="java-statements" deleted="false" description="log a parametrized DEBUG message using slf4j logger declared in this class" enabled="true" name="logpd">${log:field(org.slf4j.Logger)}.debug("${message}", ${param});
+</template><template autoinsert="true" context="java-statements" deleted="false" description="log a parametrized ERROR message using slf4jlogger declared in this class" enabled="true" name="logpe">${log:field(org.slf4j.Logger)}.error("${message}", ${exception:var(java.lang.Throwable)});
+</template><template autoinsert="true" context="java-statements" deleted="false" description="log a parametrized INFO message using slf4j logger declared in this class" enabled="true" name="logpi">${log:field(org.slf4j.Logger)}.info("${message}", ${param});
+</template><template autoinsert="true" context="java-statements" deleted="false" description="log a parametrized WARN message using slf4j logger declared in this class" enabled="true" name="logpw">${log:field(org.slf4j.Logger)}.warn("${message}", ${param});
+</template><template autoinsert="true" context="java-statements" deleted="false" description="log a WARNING using slf4jlogger declared in this class" enabled="true" id="org.springframework.ide.eclipse.boot.templates.slf4j.logwarn" name="logw">${log:field(org.slf4j.Logger)}.warn("${message}");
+</template><template autoinsert="true" context="java-members" deleted="false" description="OpenMRS Style JUnit 4 Test" enabled="true" name="test">@${testType:newType(org.junit.Test)}
+public void ${methodName}_${shouldSentence}() throws Exception {
+	${cursor}
+}</template><template autoinsert="true" context="java-members" deleted="false" description="OpenMRS Style JUnit 4 Test of exception" enabled="true" name="testException">@${testType:newType(org.junit.Test)}
+public void ${methodName}_${shouldFailGiven}() throws Exception {
+	${expectedException:var(org.junit.rules.ExpectedException)}.expect(${exception});
+	${expectedException:var(org.junit.rules.ExpectedException)}.expectMessage("${message}");
+	${methodThrowingException}
+}</template></templates>
