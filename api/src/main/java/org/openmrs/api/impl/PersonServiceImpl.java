@@ -18,8 +18,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
@@ -145,7 +143,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Override
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException {
 		checkIfPersonAttributeTypesAreLocked();
-
+		
 		if (type.getSortWeight() == null) {
 			List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
 			if (!allTypes.isEmpty()) {
@@ -154,12 +152,12 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 				type.setSortWeight(1.0);
 			}
 		}
-
+		
 		boolean updateExisting = false;
-
+		
 		if (type.getId() != null) {
 			updateExisting = true;
-
+			
 			String oldTypeName = dao.getSavedPersonAttributeTypeName(type);
 			String newTypeName = type.getName();
 			
@@ -183,14 +181,14 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 				}
 			}
 		}
-
+		
 		PersonAttributeType attributeType = dao.savePersonAttributeType(type);
-
+		
 		if (updateExisting) {
 			//we need to update index in case searchable property has changed
 			Context.updateSearchIndexForType(PersonAttribute.class);
 		}
-
+		
 		return attributeType;
 	}
 	
@@ -341,7 +339,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		return dao.savePerson(person);
 	}
-		
+	
 	/**
 	 * @see org.openmrs.api.PersonService#voidPerson(org.openmrs.Person, java.lang.String)
 	 * @should Return Null When Person Is Null
@@ -631,7 +629,22 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		return attrObjects;
 	}
+	
+	private String combineAttributes(String patientAttributeProperty, String userAttributeProperty, PERSON_TYPE personType) {
+		final StringBuilder result = new StringBuilder();
 		
+		if (personType == null || personType == PERSON_TYPE.PERSON) {
+			result.append(patientAttributeProperty).append(",").append(userAttributeProperty);
+		} else if (personType == PERSON_TYPE.PATIENT) {
+			result.append(patientAttributeProperty);
+		} else if (personType == PERSON_TYPE.USER) {
+			result.append(userAttributeProperty);
+		} else {
+			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
+		}
+		return result.toString();
+	}
+	
 	/**
 	 * @see org.openmrs.api.PersonService#parsePersonName(java.lang.String)
 	 */
@@ -813,8 +826,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		log.debug("Auditing merging of non-preferred person " + personMergeLog.getLoser().getUuid()
 		        + " with preferred person " + personMergeLog.getWinner().getId());
 		//populate the mergedData XML from the PersonMergeLogData object
-		String serialized = Context.getSerializationService().getDefaultSerializer().serialize(
-		    personMergeLog.getPersonMergeLogData());
+		String serialized = Context.getSerializationService().getDefaultSerializer()
+		        .serialize(personMergeLog.getPersonMergeLogData());
 		personMergeLog.setSerializedMergedData(serialized);
 		log.debug(serialized);
 		//save the bean to the database
@@ -826,8 +839,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public PersonMergeLog getPersonMergeLogByUuid(String uuid, boolean deserialize) throws SerializationException,
-	        APIException {
+	public PersonMergeLog getPersonMergeLogByUuid(String uuid, boolean deserialize)
+	        throws SerializationException, APIException {
 		if (uuid == null) {
 			throw new APIException("uuid.cannot.null", (Object[]) null);
 		}
@@ -858,8 +871,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @throws SerializationException
 	 */
 	private void deserialize(PersonMergeLog personMergeLog) throws SerializationException {
-		PersonMergeLogData data = Context.getSerializationService().getDefaultSerializer().deserialize(
-		    personMergeLog.getSerializedMergedData(), PersonMergeLogData.class);
+		PersonMergeLogData data = Context.getSerializationService().getDefaultSerializer()
+		        .deserialize(personMergeLog.getSerializedMergedData(), PersonMergeLogData.class);
 		personMergeLog.setPersonMergeLogData(data);
 	}
 	
@@ -985,8 +998,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	
 	@Override
 	public void checkIfPersonAttributeTypesAreLocked() {
-		String locked = Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED, "false");
+		String locked = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED, "false");
 		if (Boolean.valueOf(locked)) {
 			throw new PersonAttributeTypeLockedException();
 		}
