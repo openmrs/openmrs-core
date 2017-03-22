@@ -321,7 +321,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	}
 	
 	/**
-	 * Getter to be used by spring, developers should use {@link #isLocalePreferred()}
 	 *
 	 * @return true if it is the localePreferred name otherwise false
 	 */
@@ -479,7 +478,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @see #isPreferredForLocale(Locale)
 	 */
 	public Boolean isPreferred() {
-		return isLocalePreferred();
+		return getLocalePreferred();
 	}
 	
 	/**
@@ -489,7 +488,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @return true if the name is marked as preferred for the given locale otherwise false.
 	 */
 	public Boolean isPreferredForLocale(Locale locale) {
-		return isLocalePreferred() && this.locale.equals(locale);
+		return getLocalePreferred() && this.locale.equals(locale);
 	}
 	
 	/**

@@ -176,7 +176,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				if (!nameInDB.isSynonym()) {
 					nameInDB.setConceptNameType(null);
 				}
-				if (nameInDB.isLocalePreferred()) {
+				if (nameInDB.getLocalePreferred()) {
 					nameInDB.setLocalePreferred(false);
 				}
 				

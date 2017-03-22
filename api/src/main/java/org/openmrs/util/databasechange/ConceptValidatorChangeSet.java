@@ -161,8 +161,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 						        + ") that isn't listed among the allowed ones by the system admin");
 					}
 					
-					if (nameInLocale.isLocalePreferred() != null) {
-						if (nameInLocale.isLocalePreferred() && !preferredNameForLocaleFound) {
+					if (nameInLocale.getLocalePreferred() != null) {
+						if (nameInLocale.getLocalePreferred() && !preferredNameForLocaleFound) {
 							if (nameInLocale.isIndexTerm()) {
 								nameInLocale.setLocalePreferred(false);
 								reportUpdatedName(nameInLocale, "Preferred name '" + nameInLocale.getName()
@@ -178,7 +178,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 							}
 						}
 						//should have one preferred name per locale
-						else if (nameInLocale.isLocalePreferred() && preferredNameForLocaleFound) {
+						else if (nameInLocale.getLocalePreferred() && preferredNameForLocaleFound) {
 							//drop this name as locale preferred so that we have only one
 							nameInLocale.setLocalePreferred(false);
 							reportUpdatedName(
@@ -685,7 +685,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				pStmt.setString(1, conceptName.getLocale().toString());
 				pStmt.setString(2, (conceptName.getConceptNameType() != null) ? conceptName.getConceptNameType().toString()
 				        : null);
-				pStmt.setBoolean(3, conceptName.isLocalePreferred());
+				pStmt.setBoolean(3, conceptName.getLocalePreferred());
 				pStmt.setBoolean(4, conceptName.getVoided());
 				pStmt.setDate(5, conceptName.getVoided() ? new Date(System.currentTimeMillis()) : null);
 				pStmt.setString(6, conceptName.getVoidReason());
