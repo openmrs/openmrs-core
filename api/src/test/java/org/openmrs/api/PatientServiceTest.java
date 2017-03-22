@@ -111,7 +111,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	private static final String ENCOUNTERS_FOR_VISITS_XML = "org/openmrs/api/include/PersonServiceTest-encountersForVisits.xml";
 	
 	private static final String PATIENT_MERGE_XML = "org/openmrs/api/include/PatientServiceTest-mergePatients.xml";
-	
+
+	private static final String PATIENT_MERGE_OBS_GROUP_PROBLEM_XML = "org/openmrs/api/include/PatientServiceTest-mergePatientWithExistingObs.xml";
+
 	// Services
 	protected static PatientService patientService = null;
 	
@@ -3402,4 +3404,29 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void processDeath_shouldThrowAPIExceptionIfPatientIsNull() throws Exception{
 		patientService.processDeath(null, new Date(), new Concept(), "unknown");
 	}
+
+	@Test
+	@Verifies(value = "This is to reproduce openmrs problem after patient merge", method = "mergePatient(Patient)")
+	public void shouldMoveAllObsWithSameHierarchy() throws Exception {
+		executeDataSet(PATIENT_MERGE_OBS_GROUP_PROBLEM_XML);
+
+		Patient notPreffered = patientService.getPatient(11);
+		Patient preffered = patientService.getPatient(21);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		assertEquals(57, encounterService.getEncountersByPatient(notPreffered).get(0).getId().intValue());
+		assertEquals(3, encounterService.getEncounter(57).getAllObs(false).size());
+		assertEquals(4, encounterService.getEncounter(57).getAllObs(true).size());
+		assertEquals(1, encounterService.getEncounter(57).getObsAtTopLevel(false).size());
+		assertEquals(1, encounterService.getEncounter(57).getObsAtTopLevel(true).size());
+
+		patientService.mergePatients(preffered, notPreffered);
+
+		assertEquals(3, encounterService.getEncounter(57).getAllObs(false).size());
+		assertEquals(8, encounterService.getEncounter(57).getAllObs(true).size());
+		assertEquals(1, encounterService.getEncounter(57).getObsAtTopLevel(false).size());
+		assertEquals(2, encounterService.getEncounter(57).getObsAtTopLevel(true).size());
+	}
+
 }

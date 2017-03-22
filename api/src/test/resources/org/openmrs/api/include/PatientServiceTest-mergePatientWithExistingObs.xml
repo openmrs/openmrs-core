@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+
+<dataset>
+    <provider provider_id="22" person_id="2" name="shrclientsystem" creator="1" date_created="2005-01-01 00:00:00.0"
+              retired="false" uuid="331c6bf8-7846-11e3-a96a-0900271c1b75"/>
+    <person person_id="11" gender="M" dead="false" creator="1" birthdate_estimated="0"
+            date_created="2008-08-15 15:57:09.0" voided="false" void_reason=""
+            uuid="75e04d42-3ca8-11e3-bf2b-0800271c1b75"/>
+
+    <patient patient_id="11" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1"
+             date_changed="2008-08-18 12:29:59.0" voided="false" void_reason=""/>
+    <patient_identifier date_created="2005-09-22 00:00:00" patient_identifier_id="1" patient_id="11"
+                        identifier="GAN200000" identifier_type="2" creator="1"
+                        uuid="7cb74fd1-128d-4584-842f-81d3535da3a6" preferred="1" voided="0"/>
+
+    <person person_id="21" gender="M" dead="false" creator="1" birthdate_estimated="0"
+            date_created="2008-08-15 15:57:09.0" voided="false" void_reason=""
+            uuid="75e04d42-3ca8-11e3-bccc-0800271c1b75"/>
+
+    <patient patient_id="21" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1"
+             date_changed="2008-08-18 12:29:59.0" voided="false" void_reason=""/>
+    <patient_identifier date_created="2005-09-22 00:00:00" patient_identifier_id="2" patient_id="21"
+                        identifier="GAN200001" identifier_type="2" creator="1"
+                        uuid="7cb74fd1-128d-4584-8444-81d3335da3a6" preferred="1" voided="0"/>
+
+    <location location_id="2" name="OPD" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"
+              uuid="be69741b-29e9-49a1-adc9-2a726e6610e4"/>
+
+    <encounter_type encounter_type_id="2" name="OPD" description="Some desc 2" creator="1"
+                    date_created="2005-01-01 00:00:00.0" retired="false" uuid="4ee21921-01cc-4720-a6bf-a61a17c4d05b"/>
+
+    <visit visit_id="1" date_started="2014-07-10 00:00:00" date_created="2015-07-10 00:00:00" patient_id="11"
+           visit_type_id="1" date_stopped="2015-07-15 23:59:59" location_id="2" creator="1" changed_by="1"
+           voided_by="1" uuid="ad41fb41-a41a-4ad6-8835-2f59099acf5a" voided="0"/>
+
+    <visit visit_id="2" date_started="2014-07-11 00:00:00" date_created="2015-07-11 00:00:00" patient_id="21"
+           visit_type_id="1" location_id="2" creator="1" changed_by="1"
+           voided_by="1" uuid="ad41fb41-a41a-4567-8835-2f59099acf5a" voided="0"/>
+
+    <encounter encounter_id="57" encounter_type="1" patient_id="11" visit_id="1" location_id="2"
+               encounter_datetime="2015-07-10 12:00:00.0" creator="1" date_created="2015-07-10 12:00:00.0"
+               voided="false" uuid="6d0af6767-707a-4629-9850-ttc2c6e63ab0"/>
+
+    <encounter_provider encounter_provider_id="2" encounter_id="57" provider_id="22" creator="1"
+                        date_created="2015-07-10 12:00:00.0"
+                        voided="false" uuid="6g0bf6767-707a-4329-9850-f15206e63ab0"/>
+
+    <encounter encounter_id="77" encounter_type="1" patient_id="21" visit_id="2" location_id="2"
+               encounter_datetime="2015-07-10 12:00:00.0" creator="1" date_created="2015-07-10 12:00:00.0"
+               voided="false" uuid="6d0af6767-707a-4629-9850-ttc2c6e33abc"/>
+
+    <encounter_provider encounter_provider_id="2" encounter_id="57" provider_id="22" creator="1"
+                        date_created="2015-07-10 12:00:00.0"
+                        voided="false" uuid="6g0bf6767-707a-4329-9850-f15206e63ab0"/>
+
+
+    <concept concept_id="601" retired="false" datatype_id="4" class_id="11" is_set="true" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="baef67ac-b24e-4b04-ac83-c3b994132b85"/>
+    <concept_name concept_id="601" concept_name_id="6011" name="Vitals" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="baef67ac-b24e-4b04-ac83-c3b994132b85"/>
+
+    <concept concept_id="602" retired="false" datatype_id="4" class_id="11" is_set="true" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="juydg80f-1yz9-4da3-bb88-8122ctrXdef"/>
+    <concept_name concept_id="602" concept_name_id="6012" name="Blood Pressure" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="lkiuy80f-1yz9-4da3-bb88-8122ce88687h"/>
+
+    <concept concept_id="603" retired="false" datatype_id="1" class_id="11" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="juydg80f-1yz9-4da3-bb88-8122ctpulse"/>
+    <concept_name concept_id="603" concept_name_id="6013" name="Pulse" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="juydg80f-1yz9-4da3-bb88-8122ctuiopl"/>
+    <concept_numeric concept_id="603" precise="0"/>
+
+    <concept concept_id="605" retired="false" datatype_id="1" class_id="11" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="juydg80f-1yz9-4da3-bb88-8122ctdiast"/>
+    <concept_name concept_id="605" concept_name_id="6015" name="Diastolic" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="juydg80f-1yz9-4da3-bb88-812rrtdiast"/>
+    <concept_numeric concept_id="605" precise="0"/>
+
+
+    <obs obs_id="111" encounter_id="57" person_id="11" location_id="2" obs_datetime="2008-08-18 15:09:05.0" date_created="2008-08-18 15:09:05.0"
+         uuid="ef4554cb-22gg-471a-lld7-1434552c337c1" creator="1" concept_id="601" voided="0" />
+    <obs obs_id="112" encounter_id="57" person_id="11" location_id="2" obs_datetime="2008-08-18 15:09:05.0" date_created="2008-08-18 15:09:05.0"
+         uuid="eee554cb-2afa-471a-9cd7-1434552c337c2"  creator="1" obs_group_id="111" concept_id="602" voided="0" />
+    <obs obs_id="113" encounter_id="57" person_id="11" location_id="2" obs_datetime="2008-08-18 15:09:05.0" date_created="2008-08-18 15:09:05.0"
+         uuid="eee554cb-22ff-471a-9cd7-1434552c337c2" creator="1" obs_group_id="112" value_numeric="120" concept_id="605" voided="0" />
+    <obs obs_id="114" encounter_id="57" person_id="11" location_id="2" obs_datetime="2008-08-18 15:09:05.0" date_created="2008-08-18 15:09:05.0"
+         uuid="eeea54cb-2aee-471a-9cd7-1434a5aa337a4" creator="1" obs_group_id="111" value_numeric="133" concept_id="603" voided="1" />
+</dataset>
