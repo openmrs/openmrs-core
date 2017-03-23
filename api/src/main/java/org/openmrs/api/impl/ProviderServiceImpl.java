@@ -79,7 +79,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	 */
 	@Override
 	public Provider unretireProvider(Provider provider) {
-		return dao.saveProvider(provider);
+		return Context.getProviderService().saveProvider(provider);
 	}
 	
 	/**

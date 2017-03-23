@@ -812,7 +812,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderFrequency unretireOrderFrequency(OrderFrequency orderFrequency) {
-		return dao.saveOrderFrequency(orderFrequency);
+		return Context.getOrderService().saveOrderFrequency(orderFrequency);
 	}
 	
 	/**

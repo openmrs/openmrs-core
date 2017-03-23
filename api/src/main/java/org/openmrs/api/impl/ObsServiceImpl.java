@@ -283,7 +283,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Override
 	public Obs unvoidObs(Obs obs) throws APIException {
-		return dao.saveObs(obs);
+		return Context.getObsService().saveObs(obs,"unvoid obs");
 	}
 	
 	/**

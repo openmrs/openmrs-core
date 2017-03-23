@@ -302,7 +302,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public Drug unretireDrug(Drug drug) throws APIException {
-		return dao.saveDrug(drug);
+		return Context.getConceptService().saveDrug(drug);
 	}
 	
 	/**
@@ -1649,7 +1649,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public ConceptMapType unretireConceptMapType(ConceptMapType conceptMapType) throws APIException {
-		return dao.saveConceptMapType(conceptMapType);
+		return Context.getConceptService().saveConceptMapType(conceptMapType);
 	}
 	
 	/**
@@ -1751,7 +1751,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public ConceptReferenceTerm unretireConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) throws APIException {
-		return dao.saveConceptReferenceTerm(conceptReferenceTerm);
+		return Context.getConceptService().saveConceptReferenceTerm(conceptReferenceTerm);
 	}
 	
 	/**
@@ -1968,7 +1968,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public ConceptAttributeType unretireConceptAttributeType(ConceptAttributeType conceptAttributeType) {
-		return dao.saveConceptAttributeType(conceptAttributeType);
+		return Context.getConceptService().saveConceptAttributeType(conceptAttributeType);
 	}
 
 	/**
