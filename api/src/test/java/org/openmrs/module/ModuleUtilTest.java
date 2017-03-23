@@ -91,9 +91,9 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#isOpenmrsVersionInVersions(String[])
 	 */
 	@Test public void isOpenmrsVersionInVersions_shouldReturnFalseWhenVersionsIsNull() throws Exception {
-
-		Assert.assertFalse(ModuleUtil.isOpenmrsVersionInVersions(null));
+		Assert.assertFalse(ModuleUtil.isOpenmrsVersionInVersions((String[]) null));
 	}
+	
 	/**
 	 * @verifies return false when versions is empty
 	 * @see ModuleUtil#isOpenmrsVersionInVersions(String[])
