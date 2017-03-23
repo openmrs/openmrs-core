@@ -29,14 +29,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.set.ListOrderedSet;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptName;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -54,7 +54,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class ConceptValidatorChangeSet implements CustomTaskChange {
 	
-	private final static Log log = LogFactory.getLog(ConceptValidatorChangeSet.class);
+	private final static Logger log = LoggerFactory.getLogger(ConceptValidatorChangeSet.class);
 	
 	//List to store warnings
 	private List<String> updateWarnings = new LinkedList<String>();
@@ -161,8 +161,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 						        + ") that isn't listed among the allowed ones by the system admin");
 					}
 					
-					if (nameInLocale.isLocalePreferred() != null) {
-						if (nameInLocale.isLocalePreferred() && !preferredNameForLocaleFound) {
+					if (nameInLocale.getLocalePreferred() != null) {
+						if (nameInLocale.getLocalePreferred() && !preferredNameForLocaleFound) {
 							if (nameInLocale.isIndexTerm()) {
 								nameInLocale.setLocalePreferred(false);
 								reportUpdatedName(nameInLocale, "Preferred name '" + nameInLocale.getName()
@@ -178,7 +178,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 							}
 						}
 						//should have one preferred name per locale
-						else if (nameInLocale.isLocalePreferred() && preferredNameForLocaleFound) {
+						else if (nameInLocale.getLocalePreferred() && preferredNameForLocaleFound) {
 							//drop this name as locale preferred so that we have only one
 							nameInLocale.setLocalePreferred(false);
 							reportUpdatedName(
@@ -685,7 +685,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				pStmt.setString(1, conceptName.getLocale().toString());
 				pStmt.setString(2, (conceptName.getConceptNameType() != null) ? conceptName.getConceptNameType().toString()
 				        : null);
-				pStmt.setBoolean(3, conceptName.isLocalePreferred());
+				pStmt.setBoolean(3, conceptName.getLocalePreferred());
 				pStmt.setBoolean(4, conceptName.getVoided());
 				pStmt.setDate(5, conceptName.getVoided() ? new Date(System.currentTimeMillis()) : null);
 				pStmt.setString(6, conceptName.getVoidReason());

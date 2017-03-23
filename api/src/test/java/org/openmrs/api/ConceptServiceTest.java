@@ -1857,7 +1857,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 				if (!CollectionUtils.isEmpty(concept.getNames(locale))) {
 					Assert.assertNotNull("Concept with Id: " + concept.getConceptId() + " has no preferred name in locale:"
 					        + locale, concept.getPreferredName(locale));
-					Assert.assertEquals(true, concept.getPreferredName(locale).isLocalePreferred().booleanValue());
+					Assert.assertEquals(true, concept.getPreferredName(locale).getLocalePreferred().booleanValue());
 				}
 			}
 		}
@@ -1879,7 +1879,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 				if (!CollectionUtils.isEmpty(namesInLocale)) {
 					int preferredNamesFound = 0;
 					for (ConceptName conceptName : namesInLocale) {
-						if (conceptName.isLocalePreferred()) {
+						if (conceptName.getLocalePreferred()) {
 							preferredNamesFound++;
 							Assert.assertTrue("Found multiple preferred names for conceptId: " + concept.getConceptId()
 							        + " in the locale '" + locale + "'", preferredNamesFound < 2);

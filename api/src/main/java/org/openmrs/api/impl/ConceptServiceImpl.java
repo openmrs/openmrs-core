@@ -29,8 +29,6 @@ import java.util.Vector;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptAttribute;
@@ -68,6 +66,8 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ValidateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -79,7 +79,7 @@ import org.springframework.util.StringUtils;
 @Transactional
 public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptService {
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private ConceptDAO dao;
 	
@@ -176,7 +176,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				if (!nameInDB.isSynonym()) {
 					nameInDB.setConceptNameType(null);
 				}
-				if (nameInDB.isLocalePreferred()) {
+				if (nameInDB.getLocalePreferred()) {
 					nameInDB.setLocalePreferred(false);
 				}
 				

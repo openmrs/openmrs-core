@@ -18,8 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,6 +35,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
@@ -54,7 +54,7 @@ import ca.uhn.hl7v2.model.v25.segment.PV1;
  */
 public class HL7ServiceTest extends BaseContextSensitiveTest {
 	
-	private Log log = LogFactory.getLog(HL7ServiceTest.class);
+	private Logger log = LoggerFactory.getLogger(HL7ServiceTest.class);
 	
 	/**
 	 * @see HL7Service#saveHL7InQueue(HL7InQueue)

@@ -23,8 +23,6 @@ import java.util.Locale;
 import java.util.Vector;
 
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -60,6 +58,8 @@ import org.openmrs.api.order.exception.OrderEntryException;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -75,14 +75,14 @@ import org.springframework.util.StringUtils;
 @Transactional
 public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator, GlobalPropertyListener {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private static final String ORDER_NUMBER_PREFIX = "ORD-";
 	
 	protected OrderDAO dao;
 	
 	private static OrderNumberGenerator orderNumberGenerator = null;
-	
+
 	public OrderServiceImpl() {
 	}
 	
@@ -126,75 +126,18 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public synchronized Order saveRetrospectiveOrder(Order order, OrderContext orderContext) {
 		return saveOrder(order, orderContext, true);
 	}
-	
+
 	private Order saveOrder(Order order, OrderContext orderContext, boolean isRetrospective) {
-		if (order.getOrderId() != null) {
-			throw new UnchangeableObjectException("Order.cannot.edit.existing");
-		}
-		if (order.getDateActivated() == null) {
-			order.setDateActivated(new Date());
-		}
-		boolean isDrugOrder = DrugOrder.class.isAssignableFrom(getActualType(order));
-		Concept concept = order.getConcept();
-		if (concept == null && isDrugOrder) {
-			DrugOrder drugOrder = (DrugOrder) order;
-			if (drugOrder.getDrug() != null) {
-				concept = drugOrder.getDrug().getConcept();
-				drugOrder.setConcept(concept);
-			}
-		}
-		if (isDrugOrder) {
-			((DrugOrder) order).setAutoExpireDateBasedOnDuration();
-		}
-		
-		if (concept == null) {
-			throw new MissingRequiredPropertyException("Order.concept.required");
-		}
+
+		failOnExistingOrder(order);
+		ensureDateActivatedIsSet(order);
+		ensureConceptIsSet(order);
+		ensureDrugOrderAutoExpirationDateIsSet(order);
+		ensureOrderTypeIsSet(order,orderContext);
+		ensureCareSettingIsSet(order,orderContext);
+		failOnOrderTypeMismatch(order);
 		
 		Order previousOrder = order.getPreviousOrder();
-		if (order.getOrderType() == null) {
-			OrderType orderType = null;
-			if (orderContext != null) {
-				orderType = orderContext.getOrderType();
-			}
-			if (orderType == null) {
-				orderType = getOrderTypeByConcept(concept);
-			}
-			//Check if it is instance of DrugOrder
-			if (orderType == null && order instanceof DrugOrder) {
-				orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
-			}
-			//Check if it is an instance of TestOrder
-			if (orderType == null && order instanceof TestOrder) {
-				orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID);
-			}
-			
-			//this order's order type should match that of the previous
-			if (orderType == null) {
-				throw new OrderEntryException("Order.type.cannot.determine");
-			}
-			if (previousOrder != null && !orderType.equals(previousOrder.getOrderType())) {
-				throw new OrderEntryException("Order.type.does.not.match");
-			}
-			
-			order.setOrderType(orderType);
-		}
-		if (order.getCareSetting() == null) {
-			CareSetting careSetting = null;
-			if (orderContext != null) {
-				careSetting = orderContext.getCareSetting();
-			}
-			if (careSetting == null || (previousOrder != null && !careSetting.equals(previousOrder.getCareSetting()))) {
-				throw new OrderEntryException("Order.care.cannot.determine");
-			}
-			order.setCareSetting(careSetting);
-		}
-		
-		if (!order.getOrderType().getJavaClass().isAssignableFrom(order.getClass())) {
-			throw new OrderEntryException("Order.type.class.does.not.match", new Object[] {
-			        order.getOrderType().getJavaClass(), order.getClass().getName() });
-		}
-		
 		if (REVISE == order.getAction()) {
 			if (previousOrder == null) {
 				throw new MissingRequiredPropertyException("Order.previous.required", (Object[]) null);
@@ -237,7 +180,88 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		return saveOrderInternal(order, orderContext);
 	}
-	
+
+	private void failOnExistingOrder(Order order) {
+		if (order.getOrderId() != null) {
+			throw new UnchangeableObjectException("Order.cannot.edit.existing");
+		}
+	}
+
+	private void ensureDateActivatedIsSet(Order order) {
+		if (order.getDateActivated() == null) {
+			order.setDateActivated(new Date());
+		}
+	}
+
+	private void ensureConceptIsSet(Order order) {
+		Concept concept = order.getConcept();
+		if (concept == null && isDrugOrder(order)) {
+			DrugOrder drugOrder = (DrugOrder) order;
+			if (drugOrder.getDrug() != null) {
+				concept = drugOrder.getDrug().getConcept();
+				drugOrder.setConcept(concept);
+			}
+		}
+		if (concept == null) {
+			throw new MissingRequiredPropertyException("Order.concept.required");
+		}
+	}
+
+	private void ensureDrugOrderAutoExpirationDateIsSet(Order order) {
+		if (isDrugOrder(order)) {
+			((DrugOrder) order).setAutoExpireDateBasedOnDuration();
+		}
+	}
+
+	private void ensureOrderTypeIsSet(Order order, OrderContext orderContext) {
+		if (order.getOrderType() != null) {
+			return;
+		}
+		OrderType orderType = null;
+		if (orderContext != null) {
+			orderType = orderContext.getOrderType();
+		}
+		if (orderType == null) {
+			orderType = getOrderTypeByConcept(order.getConcept());
+		}
+		if (orderType == null && order instanceof DrugOrder) {
+			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
+		}
+		if (orderType == null && order instanceof TestOrder) {
+			orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID);
+		}
+		if (orderType == null) {
+			throw new OrderEntryException("Order.type.cannot.determine");
+		}
+		Order previousOrder = order.getPreviousOrder();
+		if (previousOrder != null && !orderType.equals(previousOrder.getOrderType())) {
+			throw new OrderEntryException("Order.type.does.not.match");
+		}
+		order.setOrderType(orderType);
+	}
+
+	private void ensureCareSettingIsSet(Order order, OrderContext orderContext) {
+		if (order.getCareSetting() != null) {
+			return;
+		}
+		CareSetting careSetting = null;
+		if (orderContext != null) {
+			careSetting = orderContext.getCareSetting();
+		}
+		Order previousOrder = order.getPreviousOrder();
+		if (careSetting == null || (previousOrder != null && !careSetting.equals(previousOrder.getCareSetting()))) {
+			throw new OrderEntryException("Order.care.cannot.determine");
+		}
+		order.setCareSetting(careSetting);
+	}
+
+	private void failOnOrderTypeMismatch(Order order) {
+		if (!order.getOrderType().getJavaClass().isAssignableFrom(order.getClass())) {
+			throw new OrderEntryException("Order.type.class.does.not.match", new Object[] {
+					order.getOrderType().getJavaClass(), order.getClass().getName() });
+		}
+	}
+
 	private boolean areDrugOrdersOfSameOrderableAndOverlappingSchedule(Order firstOrder, Order secondOrder) {
 		return firstOrder.hasSameOrderableAs(secondOrder)
 		        && !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
@@ -245,6 +269,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		        && firstOrder.getOrderType().equals(
 		            Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID));
 	}
+
+	private boolean isDrugOrder(Order order) {
+		return DrugOrder.class.isAssignableFrom(getActualType(order));
+	}
+
 	
 	/**
 	 * To support MySQL datetime values (which are only precise to the second) we subtract one
@@ -356,7 +385,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		List<? extends Order> orders = getActiveOrders(order.getPatient(), order.getOrderType(), order.getCareSetting(),
 		    asOfDate);
-		boolean isDrugOrderAndHasADrug = DrugOrder.class.isAssignableFrom(getActualType(order))
+		boolean isDrugOrderAndHasADrug = isDrugOrder(order)
 		        && (((DrugOrder) order).getDrug() != null || ((DrugOrder) order).isNonCodedDrug());
 		Order orderToBeDiscontinued = null;
 		for (Order activeOrder : orders) {

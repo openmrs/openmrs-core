@@ -30,10 +30,10 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.context.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import liquibase.Liquibase;
 import liquibase.changelog.ChangeLogIterator;
@@ -66,7 +66,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class DatabaseUpdater {
 	
-	private static final Log log = LogFactory.getLog(DatabaseUpdater.class);
+	private static final Logger log = LoggerFactory.getLogger(DatabaseUpdater.class);
 	
 	private static final String CHANGE_LOG_FILE = "liquibase-update-to-latest.xml";
 	

@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -25,6 +23,8 @@ import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper methods for dealing with custom datatypes and their handlers
@@ -32,7 +32,7 @@ import org.openmrs.util.OpenmrsConstants;
  */
 public class CustomDatatypeUtil {
 	
-	private static Log log = LogFactory.getLog(CustomDatatypeUtil.class);
+	private static Logger log = LoggerFactory.getLogger(CustomDatatypeUtil.class);
 	
 	/**
 	 * @param descriptor

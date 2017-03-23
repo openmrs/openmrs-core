@@ -10,13 +10,13 @@
 package org.openmrs.validator;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Provider;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -28,7 +28,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { Provider.class }, order = 50)
 public class ProviderValidator extends BaseCustomizableValidator implements Validator {
 	
-	private static final Log log = LogFactory.getLog(ProviderValidator.class);
+	private static final Logger log = LoggerFactory.getLogger(ProviderValidator.class);
 	
 	/**
 	 * Returns whether or not this validator supports validating a given class.

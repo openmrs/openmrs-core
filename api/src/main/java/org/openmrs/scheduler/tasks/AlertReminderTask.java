@@ -12,14 +12,14 @@ package org.openmrs.scheduler.tasks;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sample implementation of task that shows how to send emails to users/roles via message service.
@@ -27,7 +27,7 @@ import org.openmrs.notification.MessageException;
 public class AlertReminderTask extends AbstractTask {
 	
 	// Logger 
-	private Log log = LogFactory.getLog(AlertReminderTask.class);
+	private Logger log = LoggerFactory.getLogger(AlertReminderTask.class);
 	
 	/**
 	 * Send alert reminder email to user(s) associated with the alert.
@@ -44,7 +44,7 @@ public class AlertReminderTask extends AbstractTask {
 			
 		}
 		catch (Exception e) {
-			log.error(e);
+			log.error("Failed to send alert notifications", e);
 		}
 	}
 	
@@ -69,7 +69,7 @@ public class AlertReminderTask extends AbstractTask {
 			
 		}
 		catch (MessageException e) {
-			log.error(e);
+			log.error("Failed to send message", e);
 		}
 	}
 	

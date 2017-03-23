@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
@@ -62,8 +63,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 public class EncounterServiceImpl extends BaseOpenmrsService implements EncounterService {
-	
-	// private Log log = LogFactory.getLog(this.getClass());
 	
 	private EncounterDAO dao;
 	
@@ -184,10 +183,10 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 				o.setPatient(p);
 			}
 		}
-		
+
 		// do the actual saving to the database
 		dao.saveEncounter(encounter);
-		
+
 		// save the new orderGroups
 		for (OrderGroup orderGroup : encounter.getOrderGroups()) {
 			Context.getOrderService().saveOrderGroup(orderGroup);
@@ -202,8 +201,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		// save the Obs
 		String changeMessage = Context.getMessageSourceService().getMessage("Obs.void.reason.default");
 		ObsService os = Context.getObsService();
-		List<Obs> toRemove = new ArrayList<>();
-		List<Obs> toAdd = new ArrayList<>();
+		List<Obs> obsToRemove = new ArrayList<>();
+		List<Obs> obsToAdd = new ArrayList<>();
 		for (Obs o : encounter.getObsAtTopLevel(true)) {
 			if (o.getId() == null) {
 				os.saveObs(o, null);
@@ -212,22 +211,49 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 				//The logic in saveObs evicts the old obs instance, so we need to update the collection
 				//with the newly loaded and voided instance, apparently reloading the encounter
 				//didn't do the tick
-				toRemove.add(o);
-				toAdd.add(os.getObs(o.getId()));
-				toAdd.add(newObs);
+				obsToRemove.add(o);
+				obsToAdd.add(os.getObs(o.getId()));
+				obsToAdd.add(newObs);
 			}
 		}
-		
-		for (Obs o : toRemove) {
-			encounter.removeObs(o);
-		}
-		for (Obs o : toAdd) {
-			encounter.addObs(o);
-		}
-		
+
+		removeGivenObsAndTheirGroupMembersFromEncounter(obsToRemove, encounter);
+		addGivenObsAndTheirGroupMembersToEncounter(obsToAdd, encounter);
 		return encounter;
 	}
-	
+
+	/**
+	 * This method will remove given Collection of obs and their group members from encounter
+	 *
+	 * @param obsToRemove Collection of obs that need to be removed recursively
+	 * @param encounter the encounter from which the obs will be removed
+	 */
+	private void removeGivenObsAndTheirGroupMembersFromEncounter(Collection<Obs> obsToRemove, Encounter encounter) {
+		for (Obs o : obsToRemove) {
+			encounter.removeObs(o);
+			Set<Obs> groupMembers = o.getGroupMembers(true);
+			if (CollectionUtils.isNotEmpty(groupMembers)) {
+				removeGivenObsAndTheirGroupMembersFromEncounter(groupMembers, encounter);
+			}
+		}
+	}
+
+	/**
+	 * This method will add given Collection of obs and their group members to encounter
+	 *
+	 * @param obsToAdd Collection of obs that need to be added recursively
+	 * @param encounter the encounter to which the obs will be added
+	 */
+	private void addGivenObsAndTheirGroupMembersToEncounter(Collection<Obs> obsToAdd, Encounter encounter) {
+		for (Obs o : obsToAdd) {
+			encounter.addObs(o);
+			Set<Obs> groupMembers = o.getGroupMembers(true);
+			if (CollectionUtils.isNotEmpty(groupMembers)) {
+				addGivenObsAndTheirGroupMembersToEncounter(groupMembers, encounter);
+			}
+		}
+	}
+
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounter(java.lang.Integer)
 	 */

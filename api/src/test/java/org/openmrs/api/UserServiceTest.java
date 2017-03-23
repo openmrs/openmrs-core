@@ -569,7 +569,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		UserService userService = Context.getUserService();
 		User voidedUser = userService.getUser(501);
-		// assertTrue(voidedUser.isVoided());
+		// assertTrue(voidedUser.getVoided());
 		// this generates an error:
 		// org.hibernate.QueryException: illegal attempt to dereference 
 		// collection [user0_.user_id.names] with element property reference [givenName]
@@ -588,7 +588,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		UserService userService = Context.getUserService();
 		User voidedUser = userService.getUser(501);
-		// assertTrue(voidedUser.isVoided());
+		// assertTrue(voidedUser.getVoided());
 		// this generates an error:
 		// org.hibernate.QueryException: illegal attempt to dereference 
 		// collection [user0_.user_id.names] with element property reference [givenName]

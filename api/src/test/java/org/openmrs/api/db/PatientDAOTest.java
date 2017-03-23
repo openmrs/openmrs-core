@@ -25,8 +25,6 @@ import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.hibernate.SessionFactory;
@@ -54,11 +52,13 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PatientDAOTest extends BaseContextSensitiveTest {
 	
-	private final static Log log = LogFactory.getLog(PatientDAOTest.class);
+	private final static Logger log = LoggerFactory.getLogger(PatientDAOTest.class);
 	
 	private final static String PEOPLE_FROM_THE_SHIRE_XML = "org/openmrs/api/db/hibernate/include/HibernatePersonDAOTest-people.xml";
 	

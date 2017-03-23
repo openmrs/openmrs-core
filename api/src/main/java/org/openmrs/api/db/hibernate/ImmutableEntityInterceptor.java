@@ -15,14 +15,14 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 import org.openmrs.Retireable;
 import org.openmrs.Voidable;
 import org.openmrs.api.UnchangeableObjectException;
 import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Superclass for all Interceptors that would like to ensure that changes to immutable entities of
@@ -38,7 +38,7 @@ import org.openmrs.util.OpenmrsUtil;
  */
 public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 	
-	private static final Log log = LogFactory.getLog(ImmutableEntityInterceptor.class);
+	private static final Logger log = LoggerFactory.getLogger(ImmutableEntityInterceptor.class);
 	
 	/**
 	 * Returns the class handled by the interceptor
