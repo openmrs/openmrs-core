@@ -782,7 +782,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	private void mergeDateOfBirth(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		mergedData.setPriorDateOfBirth(preferred.getBirthdate());
-		mergedData.setPriorDateOfBirthEstimated(preferred.isBirthdateEstimated());
+		mergedData.setPriorDateOfBirthEstimated(preferred.getBirthdateEstimated());
 		if (preferred.getBirthdate() == null || (preferred.getBirthdateEstimated() && !notPreferred.getBirthdateEstimated())) {
 			preferred.setBirthdate(notPreferred.getBirthdate());
 			preferred.setBirthdateEstimated(notPreferred.getBirthdateEstimated());
@@ -890,7 +890,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		 */
 
 		mergedData.setPriorDateOfBirth(preferred.getBirthdate());
-		mergedData.setPriorDateOfBirthEstimated(preferred.isBirthdateEstimated());
+		mergedData.setPriorDateOfBirthEstimated(preferred.getBirthdateEstimated());
 		if (preferred.getBirthdate() == null || (preferred.getBirthdateEstimated() && !notPreferred.getBirthdateEstimated())) {
 			preferred.setBirthdate(notPreferred.getBirthdate());
 			preferred.setBirthdateEstimated(notPreferred.getBirthdateEstimated());
