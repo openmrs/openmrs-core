@@ -47,6 +47,6 @@ public class ConceptMapTypeComparator implements Comparator<ConceptMapType> {
 	 * </ol>
 	 */
 	public static int getConceptMapTypeSortWeight(ConceptMapType conceptMapType) {
-		return ((conceptMapType.getRetired() ? 1 : 0) + (conceptMapType.isHidden() ? 2 : 0));
+		return ((conceptMapType.getRetired() ? 1 : 0) + (conceptMapType.getIsHidden() ? 2 : 0));
 	}
 }
