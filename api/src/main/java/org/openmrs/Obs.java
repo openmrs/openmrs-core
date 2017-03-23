@@ -970,7 +970,7 @@ public class Obs extends BaseOpenmrsData {
 				} else {
 					if (getConcept() instanceof ConceptNumeric) {
 						ConceptNumeric cn = (ConceptNumeric) getConcept();
-						if (!cn.isAllowDecimal()) {
+						if (!cn.getAllowDecimal()) {
 							double d = getValueNumeric();
 							int i = (int) d;
 							return Integer.toString(i);
