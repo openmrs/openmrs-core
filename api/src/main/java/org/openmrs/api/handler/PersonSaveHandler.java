@@ -66,7 +66,7 @@ public class PersonSaveHandler implements SaveHandler<Person> {
 		}
 		
 		//if the patient was marked as dead and reversed, drop the cause of death
-		if (!person.isDead() && person.getCauseOfDeath() != null) {
+		if (!person.getDead() && person.getCauseOfDeath() != null) {
 			person.setCauseOfDeath(null);
 		}
 		
