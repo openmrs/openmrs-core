@@ -214,9 +214,6 @@ public class Person extends BaseOpenmrsData {
 	@Deprecated
 	@JsonIgnore
 	public Boolean isBirthdateEstimated() {
-		// if (this.birthdateEstimated == null) {
-		// return new Boolean(false);
-		// }
 		return getBirthdateEstimated();
 	}
 	
