@@ -570,7 +570,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	@Transactional(readOnly = true)
 	public Integer resolvePatientId(PID pid) throws HL7Exception {
 		Person p = resolvePersonFromIdentifiers(pid.getPatientIdentifierList());
-		if (p != null && p.isPatient()) {
+		if (p != null && p.getIsPatient()) {
 			return p.getPersonId();
 		}
 		return null;
