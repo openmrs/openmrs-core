@@ -70,12 +70,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	private Set<String> providedPackages = new LinkedHashSet<String>();
 	
 	private boolean disposed = false;
-	
-	/**
-	 * Holds a list of all classes for this classloader so that they can be cleaned up.
-	 * This is also used to fix: https://tickets.openmrs.org/browse/TRUNK-4053
-	 */
-	private Map<String, Class<?>> loadedClasses = new HashMap<String, Class<?>>();
+
 	
 	/**
 	 * @param module Module
