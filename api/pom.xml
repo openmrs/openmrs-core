@@ -323,16 +323,6 @@
 				</plugins>
 			</build>
 		</profile>
-		<profile>
-			<id>performance-test</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.openmrs.contrib</groupId>
-					<artifactId>mvpconceptdictionary</artifactId>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
-		</profile>
 	</profiles>
 	
 	<properties>
