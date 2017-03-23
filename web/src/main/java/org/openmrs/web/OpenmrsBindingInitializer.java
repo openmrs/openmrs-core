@@ -134,7 +134,6 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 		wdb.registerCustomEditor(Visit.class, new VisitEditor());
 		
 		// can't really do this because PropertyEditors are not told what type of class they are changing :-(
-		//wdb.registerCustomEditor(OpenmrsObject.class, new OpenmrsObjectByUuidEditor());
 	}
 	
 }

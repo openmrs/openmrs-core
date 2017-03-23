@@ -885,7 +885,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			preferred.setGender(notPreferred.getGender());
 		}
 		/*
-		 * if (preferred.getRace() == null || preferred.getRace().equals(""))
 		 * preferred.setRace(notPreferred.getRace());
 		 */
 

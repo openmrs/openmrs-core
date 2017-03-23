@@ -103,7 +103,6 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 				throw new APIException("unable.parse.string.as.date", new Object[] { s });
 				
 				// returning null causes the field to be blanked out
-				//return null;
 			}
 		}
 	}

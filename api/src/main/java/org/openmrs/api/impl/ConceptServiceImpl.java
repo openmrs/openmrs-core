@@ -1132,7 +1132,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		if (concepts.isEmpty()) {
 			return null;
 		}
-		// we want to throw an exception if there is more than one non-retired concept; 
 		// since the getConceptByMapping DAO method returns a list with all non-retired concept
 		// sorted to the front of the list, we can test if there is more than one retired concept
 		// by testing if the second concept in the list is retired or not

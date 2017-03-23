@@ -698,7 +698,6 @@ public class ModuleFactory {
 				// module because that other module's service won't have been loaded
 				// into spring yet.  All advice for all modules must be reloaded
 				// a spring context refresh anyway, so skip the advice loading here
-				// loadAdvice(module);
 				
 				// map extension point to a list of extensions for this module only
 				Map<String, List<Extension>> moduleExtensionMap = new HashMap<String, List<Extension>>();

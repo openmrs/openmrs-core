@@ -71,8 +71,7 @@ public class LongFreeTextDatatype implements CustomDatatype<String> {
 	public CustomDatatype.Summary getTextSummary(String referenceString) {
 		/*
 		 * Use this code snippet instead if we think that fetching the clob is fast enough
-		 * 
-		ClobDatatypeStorage storage = Context.getDatatypeService().getClobDatatypeStorageByUuid(referenceString);
+		 *
 		if (storage == null)
 			return Context.getMessageSourceService().getMessage("CustomDatatype.error.missingValue");
 		

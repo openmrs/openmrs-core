@@ -342,12 +342,6 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	@Override
 	public List<T> list() {
 		//debug
-		/*FullTextQuery fullTextQuery = buildQuery();
-		fullTextQuery.setProjection(
-				FullTextQuery.DOCUMENT_ID,
-				FullTextQuery.EXPLANATION,
-				FullTextQuery.THIS );
-		@SuppressWarnings("unchecked") List<Object[]> results = fullTextQuery.list();*/
 
 		if (noUniqueTerms) {
 			return Collections.emptyList();

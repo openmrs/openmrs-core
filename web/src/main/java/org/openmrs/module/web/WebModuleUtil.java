@@ -184,8 +184,7 @@ public class WebModuleUtil {
 							if (!parentDir.exists()) {
 								parentDir.mkdirs();
 							}
-							
-							//if (outFile.getName().endsWith(".jsp") == false)
+
 							//	outFile = new File(absPath.replace("/", File.separator) + MODULE_NON_JSP_EXTENSION);
 							
 							// copy the contents over to the webapp for non directories
@@ -481,7 +480,6 @@ public class WebModuleUtil {
 			// don't allow modules to overwrite servlets of other modules.
 			HttpServlet otherServletUsingSameName = moduleServlets.get(name);
 			if (otherServletUsingSameName != null) {
-				//log.debug("A servlet mapping with name " + name + " already exists. " + mod.getModuleId() + "'s servlet is overwriting it");
 				String otherServletName = otherServletUsingSameName.getClass().getPackage() + "."
 				        + otherServletUsingSameName.getClass().getName();
 				throw new ModuleException("A servlet mapping with name " + name + " is already in use and pointing at: "
@@ -826,7 +824,6 @@ public class WebModuleUtil {
 		}
 		
 		if (!skipRefresh) {
-			//try {
 			//	if (dispatcherServlet != null)
 			//		dispatcherServlet.reInitFrameworkServlet();
 			//}
@@ -965,7 +962,6 @@ public class WebModuleUtil {
 			        + "/WEB-INF/dwr-modules.xml".replace("/", File.separator)));
 			
 			// Output to console for testing
-			// StreamResult result = new StreamResult(System.out);
 			
 			transformer.transform(source, result);
 			

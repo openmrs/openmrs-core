@@ -358,17 +358,14 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		}
 		
 		log.info("this classloader hashcode: " + OpenmrsClassLoaderHolder.INSTANCE.hashCode());
-		
-		//		List<Thread> threads = listThreads(rootGroup, "");
+
 		//		for (Thread thread : threads) {
 		//			if (thread.getContextClassLoader() != null) {
 		//				log.debug("context classloader on thread: " + thread.getName() + " is: "
 		//				        + thread.getContextClassLoader().getClass().getName() + ":"
-		//				        + thread.getContextClassLoader().hashCode());
 		//				if (thread.getContextClassLoader() == OpenmrsClassLoaderHolder.INSTANCE) {
 		//					thread.setContextClassLoader(OpenmrsClassLoaderHolder.INSTANCE.getParent());
 		//					log.error("Cleared context classloader to save the world from memory leaks. thread: " + thread.getName()
-		//					        + " ");
 		//				}
 		//			}
 		//		}

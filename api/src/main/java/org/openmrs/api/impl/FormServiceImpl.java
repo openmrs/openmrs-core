@@ -103,17 +103,14 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Override
 	public Form duplicateForm(Form form) throws APIException {
 		// Map of /Old FormFieldId/ to /New FormField Object/
-		//TreeMap<Integer, FormField> formFieldMap = new TreeMap<Integer, FormField>();
 		//formFieldMap.put(null, null); //for parentless formFields
 		checkIfFormsAreLocked();
 		// get original form id for reference later
 		Integer originalFormId = form.getFormId();
 		
 		for (FormField formField : form.getFormFields()) {
-			//formFieldMap.put(formField.getFormFieldId(), formField);
 			formField.setUuid(null);
 			formField.setFormFieldId(null);
-			//formField.setParent(formFieldMap.get(formField.getParent().getFormFieldId()));
 		}
 		// this is required because Hibernate would recognize the original collection
 		form.setFormFields(new HashSet<FormField>(form.getFormFields()));

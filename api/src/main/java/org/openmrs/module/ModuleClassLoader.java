@@ -734,7 +734,6 @@ public class ModuleClassLoader extends URLClassLoader {
 		String libname = System.mapLibraryName(name);
 		String result = null;
 		//TODO
-		//PathResolver pathResolver = ModuleFactory.getPathResolver();
 		//		for (Library lib : getModule().getLibraries()) {
 		//			if (lib.isCodeLibrary()) {
 		//				continue;
@@ -747,7 +746,6 @@ public class ModuleClassLoader extends URLClassLoader {
 		//			if (libFile != null) {
 		//				if (log.isDebugEnabled()) {
 		//					log.debug("findLibrary(String): URL " + libUrl
-		//							+ " resolved as local file " + libFile);
 		//				}
 		//				if (libFile.isFile()) {
 		//					result = libFile.getAbsolutePath();
@@ -757,7 +755,6 @@ public class ModuleClassLoader extends URLClassLoader {
 		//			}
 		//			// we have some kind of non-local URL
 		//			// try to copy it to local temporary file
-		//			libFile = (File) libraryCache.get(libUrl);
 		//			if (libFile != null) {
 		//				if (libFile.isFile()) {
 		//					result = libFile.getAbsolutePath();
@@ -767,7 +764,6 @@ public class ModuleClassLoader extends URLClassLoader {
 		//			}
 		//			if (libraryCache.containsKey(libUrl)) {
 		//				// already tried to cache this library
-		//				break;
 		//			}
 		//			libFile = cacheLibrary(libUrl, libname);
 		//			if (libFile != null) {
@@ -995,7 +991,6 @@ public class ModuleClassLoader extends URLClassLoader {
 				result.add(url);
 			}
 		}
-		//		if (resourceLoader != null) {
 		//			for (Enumeration enm = resourceLoader.findResources(name);
 		//					enm.hasMoreElements();) {
 		//				URL url = (URL) enm.nextElement();

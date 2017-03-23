@@ -292,7 +292,6 @@ public class MigrationHelper {
 		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		PatientService ps = Context.getPatientService();
 		List<PatientProgram> patientPrograms = new ArrayList<PatientProgram>();
-		//List<PatientState> patientStates = new ArrayList<PatientState>();
 		Map<String, PatientProgram> knownPatientPrograms = new HashMap<String, PatientProgram>();
 		Map<String, Program> programsByName = new HashMap<String, Program>();
 		for (Program program : pws.getAllPrograms()) {
@@ -331,7 +330,6 @@ public class MigrationHelper {
 				s = s.substring(s.indexOf(":") + 1);
 				String[] temp = s.split(",");
 				/* We're using a cache of 'knownPatientPrograms' instead of the following commented code
-				PatientIdentifierType pit = ps.getPatientIdentifierType(temp[0]);
 				String identifier = temp[1];
 				List<PatientIdentifier> pis = ps.getPatientIdentifiers(identifier, pit);
 				if (pis.size() != 1)
@@ -342,13 +340,11 @@ public class MigrationHelper {
 				if (program == null) {
 					throw new RuntimeException("Couldn't find program \"" + temp[2] + "\" in " + programsByName);
 				}
-				//ProgramWorkflow wf = pws.getWorkflow(program, temp[3]);
 				ProgramWorkflow wf = program.getWorkflowByName(temp[3]);
 				if (wf == null) {
 					throw new RuntimeException("Couldn't find workflow \"" + temp[3] + "\" for program " + program + " (in "
 					        + program.getAllWorkflows() + ")");
 				}
-				//ProgramWorkflowState st = pws.getState(wf, temp[4]);
 				ProgramWorkflowState st = wf.getStateByName(temp[4]);
 				if (st == null) {
 					throw new RuntimeException("Couldn't find state \"" + temp[4] + "\" for workflow " + wf + " (in "

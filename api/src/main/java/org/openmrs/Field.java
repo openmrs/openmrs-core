@@ -121,7 +121,6 @@ public class Field extends BaseOpenmrsMetadata {
 	 * @param attributeName The attributeName to set.
 	 */
 	public void setAttributeName(String attributeName) {
-		// this.dirty = true;
 		this.attributeName = attributeName;
 	}
 	

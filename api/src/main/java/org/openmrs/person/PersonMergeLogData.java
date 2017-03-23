@@ -288,8 +288,7 @@ public class PersonMergeLogData {
 	public Boolean getPriorDateOfDeathEstimated() {
 		return priorDateOfDeathEstimated;
 	}
-	
-	//public void setPriorDateOfDeathEstimated(boolean priorDateOfDeathEstimated) {
+
 	public void setPriorDateOfDeathEstimated(Boolean priorDateOfDeathEstimated) {
 		this.priorDateOfDeathEstimated = priorDateOfDeathEstimated;
 	}

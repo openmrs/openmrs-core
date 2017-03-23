@@ -76,7 +76,6 @@ public class AbstractHandler {
 		} else {
 			title = title.replace("." + extension, "");
 			outputfile = new File(dir, title + "." + extension);
-			// outputfile = new File(dir, title);
 		}
 		
 		int i = 0;
@@ -148,7 +147,6 @@ public class AbstractHandler {
 			return true;
 		} else if (file.delete()) {
 			obs.setComplexData(null);
-			// obs.setValueComplex(null);
 			return true;
 		}
 		

@@ -35,7 +35,6 @@ public class AlertReminderTask extends AbstractTask {
 	@Override
 	public void execute() {
 		try {
-			// Get all unread alerts
 			// TODO Change to getAllAlerts(Boolean includeRead, Boolean includeExpired);
 			Collection<Alert> alerts = Context.getAlertService().getAllAlerts(false);
 			

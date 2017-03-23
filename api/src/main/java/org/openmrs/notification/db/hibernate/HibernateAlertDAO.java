@@ -105,7 +105,6 @@ public class HibernateAlertDAO implements AlertDAO {
 		} else {
 			// getting here means we passed in no user or a blank user.
 			// a null recipient column means get stuff for the anonymous user
-			//crit.add(Expression.isNull("recipient.recipient"));
 			
 			// returning an empty list for now because the above throws an error.
 			// we may need to remodel how recipients are handled to get anonymous users alerts
