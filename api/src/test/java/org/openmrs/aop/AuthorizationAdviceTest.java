@@ -26,9 +26,11 @@ import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.PrivilegeListener;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.stereotype.Component;
 
 /**
@@ -45,6 +47,7 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "notify listeners about checked privileges", method = "before(Method, Object[], Object)")
 	public void before_shouldNotifyListenersAboutCheckedPrivileges() {
+		
 		listener1.hasPrivileges.clear();
 		listener1.lacksPrivileges.clear();
 		
@@ -53,8 +56,8 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 		
 		Concept concept = Context.getConceptService().getConcept(3);
 		
-		assertThat("listener1", listener1.hasPrivileges, containsInAnyOrder("Get Concepts"));
-		assertThat("listener2", listener2.hasPrivileges, containsInAnyOrder("Get Concepts"));
+		assertThat("listener1", listener1.hasPrivileges, containsInAnyOrder(PrivilegeConstants.GET_CONCEPTS));
+		assertThat("listener2", listener2.hasPrivileges, containsInAnyOrder(PrivilegeConstants.GET_CONCEPTS));
 		assertThat(listener1.lacksPrivileges, empty());
 		assertThat(listener2.lacksPrivileges, empty());
 		
@@ -63,8 +66,10 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 		
 		Context.getConceptService().saveConcept(concept);
 		
-		assertThat("listener1", listener1.hasPrivileges, containsInAnyOrder("Manage Concepts", "Get Observations", "Get Concept Attribute Types"));
-		assertThat("listener2", listener2.hasPrivileges, containsInAnyOrder("Manage Concepts", "Get Observations", "Get Concept Attribute Types"));
+		String[] privileges = { PrivilegeConstants.MANAGE_CONCEPTS, PrivilegeConstants.GET_OBS,
+		        PrivilegeConstants.GET_CONCEPT_ATTRIBUTE_TYPES };
+		assertThat("listener1", listener1.hasPrivileges, containsInAnyOrder(privileges));
+		assertThat("listener2", listener2.hasPrivileges, containsInAnyOrder(privileges));
 		assertThat(listener1.lacksPrivileges, empty());
 		assertThat(listener2.lacksPrivileges, empty());
 	}
@@ -72,10 +77,9 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 	@Component("listener1")
 	public static class Listener1 implements PrivilegeListener {
 		
-		//We need to preserve order due to the semantics of Assert.assertArrayEquals
-		public Set<String> hasPrivileges = new LinkedHashSet<String>();
+		public Set<String> hasPrivileges = new LinkedHashSet<>();
 		
-		public Set<String> lacksPrivileges = new LinkedHashSet<String>();
+		public Set<String> lacksPrivileges = new LinkedHashSet<>();
 		
 		@Override
 		public void privilegeChecked(User user, String privilege, boolean hasPrivilege) {
@@ -89,4 +93,11 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 	
 	@Component("listener2")
 	public static class Listener2 extends Listener1 {}
+	
+	@Test(expected = APIAuthenticationException.class)
+	public void before_shouldThrowAPIAuthenticationException() {
+		Context.getUserContext().logout();
+		Context.getConceptService().getConcept(3);
+	}
+	
 }
