@@ -34,7 +34,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies return false if given obj has null uuid
 	 */
 	@Test
 	public void equals_shouldReturnFalseIfGivenObjHasNullUuid() throws Exception {
@@ -51,7 +50,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies return false if given obj is not instance of BaseOpenmrsObject
 	 */
 	@Test
 	public void equals_shouldReturnFalseIfGivenObjIsNotInstanceOfBaseOpenmrsObject() throws Exception {
@@ -67,7 +65,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies return false if given obj is null
 	 */
 	@Test
 	public void equals_shouldReturnFalseIfGivenObjIsNull() throws Exception {
@@ -83,7 +80,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies return false if uuid is null
 	 */
 	@Test
 	public void equals_shouldReturnFalseIfUuidIsNull() throws Exception {
@@ -100,7 +96,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies return true if objects are the same
 	 */
 	@Test
 	public void equals_shouldReturnTrueIfObjectsAreTheSame() throws Exception {
@@ -116,7 +111,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies return true if uuids are equal
 	 */
 	@Test
 	public void equals_shouldReturnTrueIfUuidsAreEqual() throws Exception {
@@ -133,7 +127,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseOpenmrsObject#hashCode()
-	 * @verifies not fail if uuid is null
 	 */
 	@Test
 	public void hashCode_shouldNotFailIfUuidIsNull() throws Exception {
@@ -163,7 +156,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseOpenmrsObject#toString()
-	 * @verifies include uuid if not null
 	 */
 	@Test
 	public void toString_shouldIncludeUuidIfNotNull() throws Exception {
@@ -175,7 +167,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseOpenmrsObject#toString()
-	 * @verifies include hashcode if uuid is null
 	 */
 	@Test
 	public void toString_shouldIncludeHashCodeIfUuidIsNull() throws Exception {
@@ -191,7 +182,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies return true if given object is instance of super or extending class
 	 */
 	@Test
 	public void equals_shouldReturnTrueIfGivenObjectIsInstanceOfSuperOrExtendingClass() throws Exception {
@@ -204,7 +194,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies return false if given object is not instance of super or extending class
 	 */
 	@Test
 	public void equals_shouldReturnFalseIfGivenObjIsNotInstanceOfSuperOrExtendingClass() throws Exception {
@@ -217,7 +206,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies return true if given object is subclass of super or extending class
 	 */
 	@Test
 	public void equals_shouldReturnTrueIfGivenObjectIsSubclassOfSuperOrExtendingClass() throws Exception {
@@ -230,7 +218,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies return false if given object is not subclass of super or extending class
 	 */
 	@Test
 	public void equals_shouldReturnFalseIfGivenObjectIsNotSubclassOfSuperOrExtendingClass() throws Exception {
@@ -243,7 +230,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies return false if HibernateProxy of one thing is compared to HibernateProxy of something
 	 */
 	@Test
 	public void equals_shouldReturnfalseIfHibernateProxyOfOneThingIsComparedtoHibernateProxyofSomething() throws Exception {
@@ -254,7 +240,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies return false if HibernateProxy of one thing is compared to Non-HibernateProxy of something
 	 */
 	@Test
 	public void equals_shouldReturnFalseIfHibernateProxyOfOneThingIsComparedtoNonHibernateProxyofSomething() throws Exception {
@@ -315,7 +300,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies should work on NonHibernate managed classes
 	 */
 	@Test
 	public void equals_shouldWorkOnNonHibernateManagedClasses() throws Exception {
@@ -415,7 +399,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies should return true if the HibernateProxy of one object is compared to NonHibernateProxy of the same object
 	 */
 	@Test
 	public void equals_shouldReturnTrueIfHibernateProxyOfOneObjectComparedToNonHibernateProxyOfTheSameObject(){
@@ -430,7 +413,6 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see BaseOpenmrsObject#equals(Object)
-	 * @verifies should return true if HibernateProxy of some object compared to AnotherHibernateProxy of The same object
 	 */
 	@Test
 	public void equals_shouldReturnTrueIfHibernateProxyOfSomeObjectComparedToAnotherHibernateProxyOfTheSameObject(){

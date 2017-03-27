@@ -20,7 +20,6 @@ public class DrugsByNameComparatorTest {
 	
 	/**
 	 * @see DrugsByNameComparator#compareDrugNamesIgnoringNumericals(Drug,Drug)
-	 * @verifies return negative if name for drug1 comes before that of drug2
 	 */
 	@Test
 	public void compareDrugNamesIgnoringNumericals_shouldReturnNegativeIfNameForDrug1ComesBeforeThatOfDrug2()
@@ -36,7 +35,6 @@ public class DrugsByNameComparatorTest {
 	
 	/**
 	 * @see DrugsByNameComparator#compareDrugNamesIgnoringNumericals(Drug,Drug)
-	 * @verifies return zero if name for drug1 comes before that of drug2
 	 */
 	@Test
 	public void compareDrugNamesIgnoringNumericals_shouldReturnZeroIfNameForDrug1ComesBeforeThatOfDrug2() throws Exception {
@@ -51,7 +49,6 @@ public class DrugsByNameComparatorTest {
 	
 	/**
 	 * @see DrugsByNameComparator#compareDrugNamesIgnoringNumericals(Drug,Drug)
-	 * @verifies return positive if name for drug1 comes before that of drug2 ignoring dashes
 	 */
 	@Test
 	public void compareDrugNamesIgnoringNumericals_shouldReturnPositiveIfNameForDrug1ComesBeforeThatOfDrug2IgnoringDashes()
@@ -67,7 +64,6 @@ public class DrugsByNameComparatorTest {
 	
 	/**
 	 * @see DrugsByNameComparator#compareDrugNamesIgnoringNumericals(Drug,Drug)
-	 * @verifies return positive if name for drug1 comes before that of drug2 ignoring numerics
 	 */
 	@Test
 	public void compareDrugNamesIgnoringNumericals_shouldReturnPositiveIfNameForDrug1ComesBeforeThatOfDrug2IgnoringNumerics()

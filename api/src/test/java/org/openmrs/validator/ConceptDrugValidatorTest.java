@@ -22,7 +22,6 @@ public class ConceptDrugValidatorTest {
 	
 	/**
 	 * @see ConceptDrugValidator#validate(Object,Errors)
-	 * @verifies fail if a concept is not specified
 	 */
 	@Test
 	public void validate_shouldFailIfAConceptIsNotSpecified() throws Exception {
@@ -34,7 +33,6 @@ public class ConceptDrugValidatorTest {
 	
 	/**
 	 * @see ConceptDrugValidator#supports(Class)
-	 * @verifies reject classes not extending Drug
 	 */
 	@Test
 	public void supports_shouldRejectClassesNotExtendingDrug() throws Exception {
@@ -43,7 +41,6 @@ public class ConceptDrugValidatorTest {
 	
 	/**
 	 * @see ConceptDrugValidator#supports(Class)
-	 * @verifies support Drug class
 	 */
 	@Test
 	public void supports_shouldSupportDrug() throws Exception {

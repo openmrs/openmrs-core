@@ -44,7 +44,6 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderDAO#getProvidersByPerson(Person,boolean)
-	 * @verifies not return retired providers if includeRetired false
 	 */
 	@Test
 	public void getProvidersByPerson_shouldNotReturnRetiredProvidersIfIncludeRetiredFalse() throws Exception {
@@ -55,7 +54,6 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderDAO#getProvidersByPerson(Person,boolean)
-	 * @verifies list retired providers at the end
 	 */
 	@Test
 	public void getProvidersByPerson_shouldListRetiredProvidersAtTheEnd() throws Exception {
@@ -65,7 +63,6 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderDAO#getProvidersByPerson(Person,boolean)
-	 * @verifies return all providers if includeRetired true
 	 */
 	@Test
 	public void getProvidersByPerson_shouldReturnAllProvidersIfIncludeRetiredTrue() throws Exception {

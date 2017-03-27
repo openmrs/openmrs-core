@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.Voidable;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests the {@link BaseUnvoidHandler} class.
@@ -27,7 +26,6 @@ public class BaseUnvoidHandlerTest {
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should unset the voided bit", method = "handle(Voidable,User,Date,String)")
 	public void handle_shouldUnsetTheVoidedBit() throws Exception {
 		UnvoidHandler<Voidable> handler = new BaseUnvoidHandler();
 		Voidable voidable = new Person();
@@ -40,7 +38,6 @@ public class BaseUnvoidHandlerTest {
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should unset the voider", method = "handle(Voidable,User,Date,String)")
 	public void handle_shouldUnsetTheVoider() throws Exception {
 		UnvoidHandler<Voidable> handler = new BaseUnvoidHandler();
 		Voidable voidable = new Person();
@@ -54,7 +51,6 @@ public class BaseUnvoidHandlerTest {
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should unset the dateVoided", method = "handle(Voidable,User,Date,String)")
 	public void handle_shouldUnsetTheDateVoided() throws Exception {
 		UnvoidHandler<Voidable> handler = new BaseUnvoidHandler();
 		Voidable voidable = new Person();
@@ -68,7 +64,6 @@ public class BaseUnvoidHandlerTest {
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should unset the VoidReason", method = "handle(Voidable,User,Date,String)")
 	public void handle_shouldUnsetTheVoidReason() throws Exception {
 		UnvoidHandler<Voidable> handler = new BaseUnvoidHandler();
 		Voidable voidable = new Person();
@@ -82,7 +77,6 @@ public class BaseUnvoidHandlerTest {
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should only act on already voided objects", method = "handle(Voidable,User,Date,String)")
 	public void handle_shouldOnlyActOnAlreadyVoidedObjects() throws Exception {
 		UnvoidHandler<Voidable> handler = new BaseUnvoidHandler();
 		Voidable voidable = new Person();
@@ -95,7 +89,6 @@ public class BaseUnvoidHandlerTest {
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should not act on objects with a different dateVoided", method = "handle(Voidable,User,Date,String)")
 	public void handle_shouldNotActOnObjectsWithADifferentDateVoided() throws Exception {
 		Date d = new Date(new Date().getTime() - 1000); // a time that isn't right now
 		

@@ -45,7 +45,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7Constants;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 
 import ca.uhn.hl7v2.HL7Exception;
@@ -90,7 +89,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should create encounter and obs from hl7 message", method = "processMessage(Message)")
 	public void processMessage_shouldCreateEncounterAndObsFromHl7Message() throws Exception {
 		ObsService obsService = Context.getObsService();
 		
@@ -138,7 +136,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should create obs group for OBRs", method = "processMessage(Message)")
 	public void processMessage_shouldCreateObsGroupForOBRs() throws Exception {
 		ObsService obsService = Context.getObsService();
 		
@@ -223,7 +220,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should append to an existing encounter", method = "processMessage(Message)")
 	public void processMessage_shouldAppendToAnExistingEncounter() throws Exception {
 		
 		// there should be an encounter with encounter_id == 3 for this test
@@ -257,7 +253,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should create basic concept proposal", method = "processMessage(Message)")
 	public void processMessage_shouldCreateBasicConceptProposal() throws Exception {
 		
 		// remember initial occurrence of proposal's text in the model
@@ -286,7 +281,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should create concept proposal and with obs alongside", method = "processMessage(Message)")
 	public void processMessage_shouldCreateConceptProposalAndWithObsAlongside() throws Exception {
 		
 		// remember initial occurrence of proposal's text in the model
@@ -315,7 +309,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should not create problem list observation with concept proposals", method = "processMessage(Message)")
 	public void processMessage_shouldNotCreateProblemListObservationWithConceptProposals() throws Exception {
 		ObsService obsService = Context.getObsService();
 		ConceptService conceptService = Context.getConceptService();
@@ -349,7 +342,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should create obs valueCodedName", method = "processMessage(Message)")
 	public void processMessage_shouldCreateObsValueCodedName() throws Exception {
 		ObsService obsService = Context.getObsService();
 		Patient patient = new Patient(3); // the patient that is the focus of
@@ -382,7 +374,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#getConcept(String,String)
 	 */
 	@Test
-	@Verifies(value = "should return a Concept if given local coding system", method = "getConcept(String,String)")
 	public void getConcept_shouldReturnAConceptIfGivenLocalCodingSystem() throws Exception {
 		Assert.assertEquals(5089, new ORUR01Handler().getConcept("5089", "99DCT", "xj39bnj4k34nmf").getId().intValue());
 	}
@@ -391,7 +382,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#getConcept(String,String)
 	 */
 	@Test
-	@Verifies(value = "should return a mapped Concept if given a valid mapping", method = "getConcept(String,String)")
 	public void getConcept_shouldReturnAMappedConceptIfGivenAValidMapping() throws Exception {
 		Assert.assertEquals(5089, new ORUR01Handler().getConcept("WGT234", "SSTRM", "23498343sdnm3").getId().intValue());
 	}
@@ -400,7 +390,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#getConcept(String,String)
 	 */
 	@Test
-	@Verifies(value = "should return null if codingSystem not found", method = "getConcept(String,String)")
 	public void getConcept_shouldReturnNullIfCodingSystemNotFound() throws Exception {
 		Assert.assertNull(new ORUR01Handler().getConcept("123", "a nonexistent coding system", "n3jn2345g89n4"));
 		Assert.assertNull(new ORUR01Handler().getConcept("93939434834", "SSTRM", "xcjk23h89gn34k234"));
@@ -410,7 +399,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test(expected = ApplicationException.class)
-	@Verifies(value = "should fail on empty concept answers", method = "processMessage(Message)")
 	public void processMessage_shouldFailOnEmptyConceptAnswers() throws Exception {
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080630094800||ORU^R01|kgWdFt0SVwwClOfJm3pe|P|2.5|1||||||||15^AMRS.ELD.FORMID\r"
 		        + "PID|||3^^^^~d3811480^^^^||John3^Doe^||\r"
@@ -426,7 +414,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test(expected = ApplicationException.class)
-	@Verifies(value = "should fail on empty concept proposals", method = "processMessage(Message)")
 	public void processMessage_shouldFailOnEmptyConceptProposals() throws Exception {
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080630094800||ORU^R01|kgWdFt0SVwwClOfJm3pe|P|2.5|1||||||||15^AMRS.ELD.FORMID\r"
 		        + "PID|||3^^^^~d3811480^^^^||John3^Doe^||\r"
@@ -443,7 +430,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
 	@Test
-	@Verifies(value = "should create a relationship from a NK1 segment", method = "processNK1(Patient,NK1)")
 	public void processNK1_shouldCreateARelationshipFromANK1Segment() throws Exception {
 		PersonService personService = Context.getPersonService();
 		Patient patient = new Patient(3); // the patient that is the focus of
@@ -479,7 +465,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
 	@Test(expected = HL7Exception.class)
-	@Verifies(value = "should fail if the coding system is not 99REL", method = "processNK1(Patient,NK1)")
 	public void processNK1_shouldFailIfTheCodingSystemIsNot99REL() throws Exception {
 		// process a message with an invalid coding system
 		Patient patient = new Patient(3); // the patient that is the focus of
@@ -505,7 +490,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
 	@Test(expected = HL7Exception.class)
-	@Verifies(value = "should fail if the relationship identifier is formatted improperly", method = "processNK1(Patient,NK1)")
 	public void processNK1_shouldFailIfTheRelationshipIdentifierIsFormattedImproperly() throws Exception {
 		// process a message with an invalid relationship identifier format
 		Patient patient = new Patient(3); // the patient that is the focus of
@@ -531,7 +515,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
 	@Test(expected = HL7Exception.class)
-	@Verifies(value = "should fail if the relationship type is not found", method = "processNK1(Patient,NK1)")
 	public void processNK1_shouldFailIfTheRelationshipTypeIsNotFound() throws Exception {
 		// process a message with a non-existent relationship type
 		Patient patient = new Patient(3); // the patient that is the focus of
@@ -557,7 +540,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
 	@Test
-	@Verifies(value = "should not create a relationship if one exists", method = "processNK1(Patient,NK1)")
 	public void processNK1_shouldNotCreateARelationshipIfOneExists() throws Exception {
 		PersonService personService = Context.getPersonService();
 		Patient patient = new Patient(3); // the patient that is the focus of
@@ -603,7 +585,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processORU_R01(ORU_R01)
 	 */
 	@Test
-	@Verifies(value = "should process multiple NK1 segments", method = "processORU_R01(ORU_R01)")
 	public void processORU_R01_shouldProcessMultipleNK1Segments() throws Exception {
 		PersonService personService = Context.getPersonService();
 		Patient patient = new Patient(3); // the patient that is the focus of
@@ -654,7 +635,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processNK1(Patient,NK1)
 	 */
 	@Test
-	@Verifies(value = "should create a person if the relative is not found", method = "processNK1(Patient,NK1)")
 	public void processNK1_shouldCreateAPersonIfTheRelativeIsNotFound() throws Exception {
 		// process a message with an invalid relative identifier
 		PersonService personService = Context.getPersonService();
@@ -690,7 +670,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test(expected = ApplicationException.class)
-	@Verifies(value = "should fail if question datatype is coded and a boolean is not a valid answer", method = "processMessage(Message)")
 	public void processMessage_shouldFailIfQuestionDatatypeIsCodedAndABooleanIsNotAValidAnswer() throws Exception {
 		GlobalProperty trueConceptGlobalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT, "7",
 		        "Concept id of the concept defining the TRUE boolean concept");
@@ -713,7 +692,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test(expected = ApplicationException.class)
-	@Verifies(value = "should fail if question datatype is neither Boolean nor numeric nor coded", method = "processMessage(Message)")
 	public void processMessage_shouldFailIfQuestionDatatypeIsNeitherBooleanNorNumericNorCoded() throws Exception {
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
 		        + "PID|||7^^^^||Collet^Test^Chebaskwony||\r"
@@ -730,7 +708,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should set value as boolean for obs if the answer is 0 or 1 and Question datatype is Boolean", method = "processMessage(Message)")
 	public void processMessage_shouldSetValueAsBooleanForObsIfTheAnswerIs0Or1AndQuestionDatatypeIsBoolean() throws Exception {
 		GlobalProperty trueConceptGlobalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT, "7",
 		        "Concept id of the concept defining the TRUE boolean concept");
@@ -766,7 +743,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should set value_Coded matching a boolean concept for obs if the answer is 0 or 1 and Question datatype is coded", method = "processMessage(Message)")
 	public void processMessage_shouldSetValue_CodedMatchingABooleanConceptForObsIfTheAnswerIs0Or1AndQuestionDatatypeIsCoded()
 	        throws Exception {
 		ObsService os = Context.getObsService();
@@ -796,7 +772,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should set value_Numeric for obs if Question datatype is Numeric", method = "processMessage(Message)")
 	public void processMessage_shouldSetValue_NumericForObsIfQuestionDatatypeIsNumeric() throws Exception {
 		ObsService os = Context.getObsService();
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -825,7 +800,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should set value_Numeric for obs if Question datatype is Numeric and the answer is either 0 or 1", method = "processMessage(Message)")
 	public void processMessage_shouldSetValue_NumericForObsIfQuestionDatatypeIsNumericAndTheAnswerIsEither0Or1()
 	        throws Exception {
 		ObsService os = Context.getObsService();
@@ -855,7 +829,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#parseObs(Encounter,OBX,OBR,String)
 	 */
 	@Test
-	@Verifies(value = "should add comments to an observation from NTE segments", method = "parseObs(Encounter,OBX,OBR,String)")
 	public void parseObs_shouldAddCommentsToAnObservationFromNTESegments() throws Exception {
 		ObsService os = Context.getObsService();
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -884,7 +857,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#parseObs(Encounter,OBX,OBR,String)
 	 */
 	@Test
-	@Verifies(value = "should add multiple comments for an observation as one comment", method = "parseObs(Encounter,OBX,OBR,String)")
 	public void parseObs_shouldAddMultipleCommentsForAnObservationAsOneComment() throws Exception {
 		ObsService os = Context.getObsService();
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -919,7 +891,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#parseObs(Encounter,OBX,OBR,String)
 	 */
 	@Test
-	@Verifies(value = "should add comments to an observation group", method = "parseObs(Encounter,OBX,OBR,String)")
 	public void parseObs_shouldAddCommentsToAnObservationGroup() throws Exception {
 		ObsService os = Context.getObsService();
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -947,7 +918,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should create an encounter and find the provider by identifier", method = "processMessage(Message)")
 	public void processMessage_shouldCreateAnEncounterAndFindTheProviderByIdentifier() throws Exception {
 		executeDataSet("org/openmrs/api/include/ProviderServiceTest-initial.xml");
 		int patientId = 2;
@@ -980,7 +950,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should create an encounter and find the provider by personId", method = "processMessage(Message)")
 	public void processMessage_shouldCreateAnEncounterAndFindTheProviderByPersonId() throws Exception {
 		int patientId = 2;
 		Patient patient = new Patient(patientId);
@@ -1011,7 +980,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should create an encounter and find the provider by providerId", method = "processMessage(Message)")
 	public void processMessage_shouldCreateAnEncounterAndFindTheProviderByProviderId() throws Exception {
 		executeDataSet("org/openmrs/api/include/ProviderServiceTest-initial.xml");
 		int patientId = 2;
@@ -1044,7 +1012,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should create an encounter and find the provider by uuid", method = "processMessage(Message)")
 	public void processMessage_shouldCreateAnEncounterAndFindTheProviderByUuid() throws Exception {
 		executeDataSet("org/openmrs/api/include/ProviderServiceTest-initial.xml");
 		int patientId = 2;
@@ -1079,7 +1046,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test(expected = ApplicationException.class)
-	@Verifies(value = "should fail if the provider name type code is not specified and is not a personId", method = "processMessage(Message)")
 	public void processMessage_shouldFailIfTheProviderNameTypeCodeIsNotSpecifiedAndIsNotAPersonId() throws Exception {
 		int patientId = 2;
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -1098,7 +1064,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should understand form uuid if present", method = "processMessage(Message)")
 	public void processMessage_shouldUnderstandFormUuidIfPresent() throws Exception {
 		
 		// save original encounter count
@@ -1132,7 +1097,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should prefer form uuid over id if both are present", method = "processMessage(Message)")
 	public void processMessage_shouldPreferFormUuidOverIdIfBothArePresent() throws Exception {
 		
 		// save original encounter count
@@ -1166,7 +1130,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see ORUR01Handler#processMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should prefer form id if uuid is not found", method = "processMessage(Message)")
 	public void processMessage_shouldPreferFormIdIfUuidIsNotFound() throws Exception {
 		
 		// save original encounter count
@@ -1201,7 +1164,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * 
 	 */
 	@Test
-	@Verifies(value = "should set complex data for obs with complex concepts", method = "processMessage(Message)")
 	public void processMessage_shouldSetComplexDataForObsWithComplexConcepts() throws Exception {
 		ObsHandler handler = new ObsHandler();
 		final String handlerName = "NeigborHandler";
@@ -1271,7 +1233,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ORUR01Handler#getForm(MSH)
-	 * @verifies pass if return value is null when uuid and id is null
 	 */
 	@Test
 	public void getForm_shouldPassIfReturnValueIsNullWhenUuidAndIdIsNull() throws Exception {
@@ -1295,7 +1256,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ORUR01Handler#getForm(MSH)
-	 * @verifies pass if return value is not null when uuid or id is not null
 	 */
 	@Test
 	public void getForm_shouldPassIfReturnValueIsNotNullWhenUuidOrIdIsNotNull() throws Exception {

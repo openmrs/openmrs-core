@@ -50,7 +50,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies true if orderType2 is the same or is a subtype of orderType1
 	 * @see OrderUtil#isType(org.openmrs.OrderType, org.openmrs.OrderType)
 	 */
 	@Test
@@ -66,7 +65,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return false if they are both null
 	 * @see OrderUtil#isType(org.openmrs.OrderType, org.openmrs.OrderType)
 	 */
 	@Test
@@ -75,7 +73,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return false if any is null and the other is not
 	 * @see OrderUtil#isType(org.openmrs.OrderType, org.openmrs.OrderType)
 	 */
 	@Test
@@ -85,7 +82,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies false if orderType2 is neither the same nor a subtype of orderType1
 	 * @see OrderUtil#isType(org.openmrs.OrderType, org.openmrs.OrderType)
 	 */
 	@Test
@@ -94,7 +90,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return true if order1 and order2 do not have end date
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
 	@Test
@@ -114,7 +109,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return true if order1 and order2 have same start dates
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
 	@Test
@@ -136,7 +130,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return false if order1 ends before order2 starts Checks vice versa
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
 	@Test
@@ -155,7 +148,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return false if order1 starts after order2 Checks vice versa
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
 	@Test
@@ -174,7 +166,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return true if order1 stops after the order2 has already been activated Checks vice
 	 *           versa
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
@@ -195,7 +186,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return true if order1 starts when the order2 is active
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
 	@Test
@@ -214,7 +204,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return true if order1 starts before order2 and ends after order2
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
 	@Test
@@ -236,7 +225,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return true if order2 starts before order1 and ends after order1
 	 * @see OrderUtil#checkScheduleOverlap(org.openmrs.Order, org.openmrs.Order)
 	 */
 	@Test
@@ -253,7 +241,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return true if order1 starts on the stop date of order2
 	 * @see OrderUtil#checkScheduleOverlap(org.openmrs.Order, org.openmrs.Order)
 	 */
 	@Test
@@ -274,7 +261,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return true if order1 ends on the start date of order2
 	 * @see OrderUtil#checkScheduleOverlap(org.openmrs.Order, org.openmrs.Order)
 	 */
 	@Test
@@ -295,7 +281,6 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return true if both orders start and end on same dates
 	 * @see OrderUtil#checkScheduleOverlap(org.openmrs.Order, org.openmrs.Order)
 	 */
 	@Test

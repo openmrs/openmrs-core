@@ -49,7 +49,6 @@ import org.openmrs.api.db.hibernate.HibernatePatientDAO;
 import org.openmrs.api.db.hibernate.HibernatePersonDAO;
 import org.openmrs.api.db.hibernate.PersonAttributeHelper;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
@@ -128,7 +127,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 * @see PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)
 	 */
 	@Test
-	@Verifies(value = "should escape an asterix character in identifier phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
 	public void getPatients_shouldEscapeAnAsterixCharacterInIdentifierPhrase() throws Exception {
 		//Note that all tests for wildcard should be pass in 2s due to the behaviour of wildcards,
 		//that is we test for the size and actual patient object returned
@@ -162,7 +160,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 * @see PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)
 	 */
 	@Test
-	@Verifies(value = "should escape percentage character in identifier phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
 	public void getPatients_shouldEscapePercentageCharacterInIdentifierPhrase() throws Exception {
 		
 		Patient patient2 = patientService.getPatient(2);
@@ -195,7 +192,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 * @see PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)
 	 */
 	@Test
-	@Verifies(value = "should escape underscore character in identifier phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
 	public void getPatients_shouldEscapeUnderscoreCharacterInIdentifierPhrase() throws Exception {
 		deleteAllData();
 		baseSetupWithStandardDataAndAuthentication();
@@ -229,7 +225,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 * @see PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)
 	 */
 	@Test
-	@Verifies(value = "should escape percentage character in name phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
 	public void getPatients_shouldEscapePercentageCharacterInNamePhrase() throws Exception {
 		
 		Patient patient2 = patientService.getPatient(2);
@@ -259,7 +254,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 * @see PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)
 	 */
 	@Test
-	@Verifies(value = "should escape underscore character in name phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
 	public void getPatients_shouldEscapeUnderscoreCharacterInNamePhrase() throws Exception {
 		
 		Patient patient2 = patientService.getPatient(2);
@@ -290,7 +284,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 * @see PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)
 	 */
 	@Test
-	@Verifies(value = "should escape an asterix character in name phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
 	public void getPatients_shouldEscapeAnAsterixCharacterInNamePhrase() throws Exception {
 		
 		Patient patient2 = patientService.getPatient(2);
@@ -318,7 +311,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
-	 * @verifies not return null excluding retired
 	 */
 	@Test
 	public void getAllPatientIdentifierTypes_shouldNotReturnNullExcludingRetired() throws Exception {
@@ -327,7 +319,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
-	 * @verifies not return retired
 	 */
 	@Test
 	public void getAllPatientIdentifierTypes_shouldNotReturnRetired() throws Exception {
@@ -337,7 +328,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
-	 * @verifies not return null including retired
 	 */
 	@Test
 	public void getAllPatientIdentifierTypes_shouldNotReturnNullIncludingRetired() throws Exception {
@@ -346,7 +336,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
-	 * @verifies return all
 	 */
 	@Test
 	public void getAllPatientIdentifierTypes_shouldReturnAll() throws Exception {
@@ -365,7 +354,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
-	 * @verifies not get voided patient identifiers
 	 */
 	@Test
 	public void getPatientIdentifiers_shouldNotGetVoidedPatientIdentifiers() throws Exception {
@@ -386,7 +374,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
-	 * @verifies not fetch patient identifiers that partially matches given identifier
 	 */
 	@Test
 	public void getPatientIdentifiers_shouldNotFetchPatientIdentifiersThatPartiallyMatchesGivenIdentifier() throws Exception {
@@ -401,7 +388,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
-	 * @verifies fetch patient identifiers that equals given identifier
 	 */
 	@Test
 	public void getPatientIdentifiers_shouldFetchPatientIdentifiersThatEqualsGivenIdentifier() throws Exception {
@@ -417,7 +403,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
-	 * @verifies return all matching non voided patient identifiers if is preferred is set to false
 	 */
 	@Test
 	public void getPatientIdentifiers_shouldReturnAllMatchingNonVoidedPatientIdentifiersIfIsPreferredIsSetToFalse()
@@ -431,7 +416,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
-	 * @verifies return all matching non voided patient identifiers if is preferred is set to null
 	 */
 	@Test
 	public void getPatientIdentifiers_shouldReturnAllMatchingNonVoidedPatientIdentifiersIfIsPreferredIsSetToNull()
@@ -445,7 +429,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
-	 * @verifies return all matching non voided patient identifiers if is preferred is set to true
 	 */
 	@Test
 	public void getPatientIdentifiers_shouldReturnAllMatchingNonVoidedPatientIdentifiersIfIsPreferredIsSetToTrue()
@@ -459,7 +442,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
-	 * @verifies fetch all patient identifiers belong to given patient
 	 */
 	@Test
 	public void getPatientIdentifiers_shouldFetchAllPatientIdentifiersBelongToGivenPatient() throws Exception {
@@ -475,7 +457,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifiers(String,List,List,List,Boolean)
-	 * @verifies fetch all patient identifiers belong to given patients
 	 */
 	@Test
 	public void getPatientIdentifiers_shouldFetchAllPatientIdentifiersBelongToGivenPatients() throws Exception {
@@ -515,7 +496,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getAllPatientIdentifierTypes(boolean)
-	 * @verifies return ordered
 	 */
 	@Test
 	public void getAllPatientIdentifierTypes_shouldReturnOrdered() throws Exception {
@@ -540,7 +520,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
-	 * @verifies return non retired patient identifier types with given name
 	 */
 	@Test
 	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypesWithGivenName() {
@@ -555,7 +534,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
-	 * @verifies return non retired patient identifier types with given format
 	 */
 	@Test
 	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypesWithGivenFormat() {
@@ -571,7 +549,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
-	 * @verifies return non retired patient identifie types that are not required
 	 */
 	@Test
 	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypesThatAreNotRequired() {
@@ -589,7 +566,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
-	 * @verifies return non retired patient identifier types that are required
 	 */
 	@Test
 	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypesThatAreRequired() {
@@ -606,7 +582,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
-	 * @verifies return only non retired patient identifier types
 	 */
 	@Test
 	public void getPatientIdentifierTypes_shouldReturnOnlyNonRetiredPatientIdentifierTypes() {
@@ -632,7 +607,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
-	 * @verifies return non retired patient identifier types ordered by required first
 	 */
 	@Test
 	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypes_OrderedByRequiredFirst() {
@@ -650,7 +624,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
-	 * @verifies return non retired patient identifier types ordered by required and name
 	 */
 	@Test
 	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypes_OrderedByRequiredAndName() {
@@ -678,7 +651,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientDAO#getPatientIdentifierTypes(String, String, Boolean, Boolean)
-	 * @verifies return non retired patient identifier types ordered by required name and type id
 	 */
 	@Test
 	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypes_OrderedByRequiredNameAndTypeId() {
@@ -711,7 +683,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientDAO#getPatients(String, String, java.util.List, boolean, Integer,
 	 *      Integer, boolean)
-	 * @verifies return non when searching on voided patients
 	 */
 	@Test
 	public void getPatients_shouldNotMatchVoidedPatients() {
@@ -731,7 +702,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientDAO#getPatients(String, String, java.util.List, boolean, Integer,
 	 *      Integer, boolean)
-	 * @verifies return none when searching on voided patient name
 	 */
 	@Test
 	public void getPatients_shouldNotMatchVoidedPatientNames() {
@@ -754,7 +724,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not match voided patients _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -773,7 +742,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not match voided patient names _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -798,7 +766,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by given name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -810,7 +777,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by middle name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -822,7 +788,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by family name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -836,7 +801,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by family2 name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -848,7 +812,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by whole name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -860,7 +823,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by non-existing single name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -871,7 +833,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by non-existing name parts _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -882,7 +843,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by mix of existing and non-existing name parts _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -893,7 +853,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by voided name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -904,7 +863,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patients by empty name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -915,7 +873,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patients by null name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -926,7 +883,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by short given name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -940,7 +896,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by short middle name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -952,7 +907,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by short family name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -966,7 +920,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by short family2 name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -978,7 +931,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by whole name made up of short names _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -990,7 +942,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patients by multiple short name parts _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1002,7 +953,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by non-existing single short name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1013,7 +963,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by non-existing short name parts _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1024,7 +973,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by mix of existing and non-existing short name parts _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1035,7 +983,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by voided short name _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1046,7 +993,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patients with match mode start _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1071,7 +1017,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patients with match mode anywhere _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1096,7 +1041,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patients with match mode start _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1116,7 +1060,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patients with match mode anywhere _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1138,7 +1081,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by identifier _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1150,7 +1092,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by non-existing identifier _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1161,7 +1102,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by voided identifier _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1172,7 +1112,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by empty identifier _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1183,7 +1122,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by null identifier _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1193,7 +1131,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by searching on names or identifiers and using name value as identifier parameter _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1206,7 +1143,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by searching on names or identifiers and using identifier value as name parameter _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1219,7 +1155,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one patient by multiple name parts _ signature no 1
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
 	@Test
@@ -1231,7 +1166,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patients by empty query _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1241,7 +1175,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patients by null query _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1251,7 +1184,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by given name _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1263,7 +1195,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by middle name _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1275,7 +1206,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by family name _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1289,7 +1219,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by family2 name _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1301,7 +1230,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by whole name _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1313,7 +1241,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by non-existing single name _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1323,7 +1250,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by non-existing name parts _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1333,7 +1259,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by mix of existing and non-existing name parts _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1343,7 +1268,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by voided name _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1353,7 +1277,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by short given name _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1367,7 +1290,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by short middle name _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1379,7 +1301,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by short family name _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1393,7 +1314,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by short family2 name _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1405,7 +1325,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by whole name made up of short names _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1417,7 +1336,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patients by multiple short name parts _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1429,7 +1347,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by non-existing single short name _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1440,7 +1357,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by non-existing short name parts _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1451,7 +1367,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by mix of existing and non-existing short name parts _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1462,7 +1377,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by voided short name _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1472,7 +1386,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patient by identifier _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1483,7 +1396,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by non-existing identifier _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1493,7 +1405,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patient by voided identifier _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1503,7 +1414,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no patient by non-existing attribute _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1515,7 +1425,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no patient by non-searchable attribute _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1526,7 +1435,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no patient by voided attribute _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1537,7 +1445,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one patient by attribute _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1550,7 +1457,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one patient by random case attribute _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1563,7 +1469,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patients by searching for non-voided and voided attribute _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1576,7 +1481,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple patients by single attribute _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1593,7 +1497,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patients by multiple attributes _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1609,7 +1512,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies find eleven out of eleven patients _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1619,7 +1521,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies find the first four out of eleven patients _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1629,7 +1530,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies find the next four out of eleven patients _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1646,7 +1546,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies find the remaining three out of eleven patients _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1667,7 +1566,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies find patients with null as start _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1677,7 +1575,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies find patients with negative start _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1687,7 +1584,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies find patients with null as length _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1697,7 +1593,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patients by zero length _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1707,7 +1602,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patients by negative length _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1717,7 +1611,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies find patients with excessive length _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1727,7 +1620,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return distinct patient list _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1742,7 +1634,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not match voided patients _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1752,7 +1643,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patients with match mode start _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1777,7 +1667,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get patients with match mode anywhere _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1802,7 +1691,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patients with match mode start _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1822,7 +1710,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get patients with match mode anywhere _ signature no 2
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -1844,7 +1731,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count zero patients when name and identifier and list of identifier types are empty _ signature no 1
 	 * @see HibernatePatientDAO#getCountOfPatients(String, String, java.util.List, boolean, boolean)
 	 */
 	@Test
@@ -1855,7 +1741,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count zero patients when name and identifier and list of identifier types are null _ signature no 1
 	 * @see HibernatePatientDAO#getCountOfPatients(String, String, java.util.List, boolean, boolean)
 	 */
 	@Test
@@ -1866,7 +1751,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count zero patients for non-matching query _ signature no 1
 	 * @see HibernatePatientDAO#getCountOfPatients(String, String, java.util.List, boolean, boolean)
 	 */
 	@Test
@@ -1876,7 +1760,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not count voided patients _ signature no 1
 	 * @see HibernatePatientDAO#getCountOfPatients(String, String, java.util.List, boolean, boolean)
 	 */
 	@Test
@@ -1886,7 +1769,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count single patient _ signature no 1
 	 * @see HibernatePatientDAO#getCountOfPatients(String, String, java.util.List, boolean, boolean)
 	 */
 	@Test
@@ -1896,7 +1778,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count multiple patients _ signature no 1
 	 * @see HibernatePatientDAO#getCountOfPatients(String, String, java.util.List, boolean, boolean)
 	 */
 	@Test
@@ -1906,7 +1787,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count patients by name _ signature no 1
 	 * @see HibernatePatientDAO#getCountOfPatients(String, String, java.util.List, boolean, boolean)
 	 */
 	@Test
@@ -1916,7 +1796,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count patients by identifier _ signature no 1
 	 * @see HibernatePatientDAO#getCountOfPatients(String, String, java.util.List, boolean, boolean)
 	 */
 	@Test
@@ -1926,7 +1805,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count zero patients when query is empty _ signature no 2
 	 * @see HibernatePatientDAO#getCountOfPatients(String)
 	 */
 	@Test
@@ -1936,7 +1814,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count zero patients when query is null _ signature no 2
 	 * @see HibernatePatientDAO#getCountOfPatients(String)
 	 */
 	@Test
@@ -1946,7 +1823,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count zero patients for non-matching query _ signature no 2
 	 * @see HibernatePatientDAO#getCountOfPatients(String)
 	 */
 	@Test
@@ -1956,7 +1832,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not count voided patients _ signature no 2
 	 * @see HibernatePatientDAO#getCountOfPatients(String)
 	 */
 	@Test
@@ -1966,7 +1841,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count single patient _ signature no 2
 	 * @see HibernatePatientDAO#getCountOfPatients(String)
 	 */
 	@Test
@@ -1976,7 +1850,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count multiple patients _ signature no 2
 	 * @see HibernatePatientDAO#getCountOfPatients(String)
 	 */
 	@Test
@@ -1986,7 +1859,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count patients by name _ signature no 2
 	 * @see HibernatePatientDAO#getCountOfPatients(String)
 	 */
 	@Test
@@ -1996,7 +1868,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count patients by identifier _ signature no 2
 	 * @see HibernatePatientDAO#getCountOfPatients(String)
 	 */
 	@Test
@@ -2006,7 +1877,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies count patients by searchable attribute _ signature no 2
 	 * @see HibernatePatientDAO#getCountOfPatients(String)
 	 */
 	@Test
@@ -2018,7 +1888,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return exact match first
 	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
 	 */
 	@Test
@@ -2041,7 +1910,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies obey attribute match mode
 	 * @see HibernatePatientDAO#getCountOfPatients(String)
 	 */
 	@Test
@@ -2061,7 +1929,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get voided person when voided=true is passed
 	 * @see PatientDAO#getPatients(String, boolean, Integer, Integer)
 	 */
 	@Test
@@ -2071,7 +1938,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no voided person when voided=false is passed
 	 * @see PatientDAO#getPatients(String, boolean, Integer, Integer)
 	 */
 	@Test
@@ -2080,7 +1946,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(0, patients.size());
 	}
 	/**
-	 * @verifies get duplicate patients when birthDate match
 	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
 	 */
 	@Test
@@ -2091,7 +1956,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(31, patients.size());
 	}
 	/**
-	 * @verifies get duplicate patients when gender, birthDate match
 	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
 	 */
 	@Test
@@ -2103,7 +1967,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(31, patients.size());
 	}
 	/**
-	 * @verifies get duplicate patients when gender, birthDate and giveName match
 	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
 	 */
 	@Test
@@ -2117,7 +1980,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @verifies get duplicate patients when gender, birthdate, givenName and familyName match
 	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
 	 */
 	@Test
@@ -2131,7 +1993,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(10, patients.size());
 	}
 	/**
-	 * @verifies get duplicate patients when gender, birthdate, givenName, familyName and identifier match
 	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
 	 */
 	@Test
@@ -2146,7 +2007,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(2, patients.size());
 	}
 	/**
-	 * @verifies get duplicate patients returns 0 duplicates with invalid/unsupported attribute
 	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
 	 */
 	@Test
@@ -2157,7 +2017,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(0, patients.size());
 	}
 	/**
-	 * @verifies get duplicate patients returns duplicates with birthdate when one invalid/unsupported attribute
 	 * is passed along with birthdate
 	 * @see HibernatePatientDAO#getDuplicatePatientsByAttributes(List)
 	 */

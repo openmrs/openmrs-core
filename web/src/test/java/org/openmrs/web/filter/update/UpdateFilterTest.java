@@ -14,7 +14,6 @@ import java.sql.Connection;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 
 /**
@@ -26,7 +25,6 @@ public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	 * @see UpdateFilter#authenticateAsSuperUser(String,String)
 	 */
 	@Test
-	@Verifies(value = "should return false if given invalid credentials", method = "authenticateAsSuperUser(String,String)")
 	public void authenticateAsSuperUser_shouldReturnFalseIfGivenInvalidCredentials() throws Exception {
 		Assert.assertFalse(new UpdateFilter().authenticateAsSuperUser("a-bad-username", "a-bad-password"));
 	}
@@ -35,7 +33,6 @@ public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	 * @see UpdateFilter#authenticateAsSuperUser(String,String)
 	 */
 	@Test
-	@Verifies(value = "should return false if given user is not superuser", method = "authenticateAsSuperUser(String,String)")
 	public void authenticateAsSuperUser_shouldReturnFalseIfGivenUserIsNotSuperuser() throws Exception {
 		// can switch to using "butch" in standardDataSet once we know bruno's password
 		executeDataSet("org/openmrs/api/include/UserServiceTest.xml");
@@ -49,7 +46,6 @@ public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	 * @see UpdateFilter#authenticateAsSuperUser(String,String)
 	 */
 	@Test
-	@Verifies(value = "should return true if given user is superuser", method = "authenticateAsSuperUser(String,String)")
 	public void authenticateAsSuperUser_shouldReturnTrueIfGivenUserIsSuperuser() throws Exception {
 		Assert.assertTrue(new UpdateFilter().authenticateAsSuperUser("admin", "test"));
 	}
@@ -58,7 +54,6 @@ public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	 * @see UpdateFilter#isSuperUser(Connection,Integer)
 	 */
 	@Test
-	@Verifies(value = "should return true if given user has superuser role", method = "isSuperUser(Connection,Integer)")
 	public void isSuperUser_shouldReturnTrueIfGivenUserHasSuperuserRole() throws Exception {
 		Assert.assertTrue(new UpdateFilter().isSuperUser(getConnection(), 1));
 	}
@@ -67,7 +62,6 @@ public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	 * @see UpdateFilter#isSuperUser(Connection,Integer)
 	 */
 	@Test
-	@Verifies(value = "should return false if given user does not have the super user role", method = "isSuperUser(Connection,Integer)")
 	public void isSuperUser_shouldReturnFalseIfGivenUserDoesNotHaveTheSuperUserRole() throws Exception {
 		Assert.assertFalse(new UpdateFilter().isSuperUser(getConnection(), 502));
 	}

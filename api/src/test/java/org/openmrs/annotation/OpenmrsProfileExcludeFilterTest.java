@@ -21,7 +21,6 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @verifies not include bean for openmrs from 1_6 to 1_7
 	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -30,7 +29,6 @@ public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies include bean for openmrs 1_10 and later
 	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
 	@Test
@@ -41,7 +39,6 @@ public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies include bean for openmrs 1_8 and later
 	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
 	@Test
@@ -52,7 +49,6 @@ public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not include bean for openmrs 1_8 and later if module missing
 	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
 	@Test(expected = NoSuchBeanDefinitionException.class)

@@ -11,7 +11,6 @@ package org.openmrs;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.test.Verifies;
 
 /**
  * This class tests the all of the {@link EncounterType} non-trivial object methods.
@@ -26,7 +25,6 @@ public class EncounterTypeTest {
 	 * @see EncounterType#EncounterType(Integer)
 	 */
 	@Test
-	@Verifies(value = "should set encounter type id with given parameter", method = "EncounterType(Integer)")
 	public void EncounterType_shouldSetEncounterTypeIdWithGivenParameter() throws Exception {
 		EncounterType encounterType = new EncounterType(123);
 		Assert.assertEquals(123, encounterType.getEncounterTypeId().intValue());

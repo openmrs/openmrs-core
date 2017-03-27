@@ -25,7 +25,6 @@ public class CohortEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CohortEditor#setAsText(String)
-	 * @verifies set using id
 	 */
 	@Test
 	public void setAsText_shouldSetUsingId() throws Exception {
@@ -36,7 +35,6 @@ public class CohortEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CohortEditor#setAsText(String)
-	 * @verifies set using uuid
 	 */
 	@Test
 	public void setAsText_shouldSetUsingUuid() throws Exception {

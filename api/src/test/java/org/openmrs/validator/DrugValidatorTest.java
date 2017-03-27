@@ -45,7 +45,6 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if the drug object is null
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -56,7 +55,6 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if drug on drugReferenceMap is null
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -69,7 +67,6 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if conceptReferenceTerm on drugReferenceMap is null
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -82,7 +79,6 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies invoke ConceptReferenceTermValidator if term on drugReferenceMap is new
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -96,7 +92,6 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies invoke ConceptMapTypeValidator if conceptMapType on drugReferenceMap is new
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -110,7 +105,6 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies reject drug multiple mappings to the same term
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -129,7 +123,6 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies pass if all fields are correct
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -143,7 +136,6 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies pass validation if field lengths are correct
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -160,7 +152,6 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if field lengths are not correct
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test

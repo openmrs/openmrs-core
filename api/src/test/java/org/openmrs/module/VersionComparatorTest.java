@@ -25,7 +25,6 @@ public class VersionComparatorTest {
 	 * <br>
 	 * 
 	 * @see VersionComparator#compare(String,String)
-	 * @verifies compare via numeric value not string value
 	 */
 	@Test
 	public void compare_shouldCompareViaNumericValueNotStringValue() throws Exception {

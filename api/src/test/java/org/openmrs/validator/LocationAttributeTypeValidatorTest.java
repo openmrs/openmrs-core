@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -42,7 +41,6 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see LocationAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
 		LocationAttributeType type = new LocationAttributeType();
 		type.setName(null);
@@ -67,7 +65,6 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see LocationAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
 		LocationAttributeType type = new LocationAttributeType();
 		type.setName("name");
@@ -83,7 +80,6 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see LocationAttributeTypeValidator#validate(Object, Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if location attribute type name is duplicate", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfLocationAttributeTypeNameIsDuplicate() throws Exception {
 		
 		Assert.assertNotNull(Context.getLocationService().getLocationAttributeTypeByName("Audit Date"));
@@ -101,7 +97,6 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see LocationAttributeTypeValidator#validate(Object, Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass editing location attribute type name", method = "validate(Object,Errors)")
 	public void validate_shouldPassEditingLocationAttributeTypeName() throws Exception {
 		
 		LocationAttributeType et = Context.getLocationService().getLocationAttributeTypeByName("Audit Date");
@@ -116,7 +111,6 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see LocationAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		LocationAttributeType type = new LocationAttributeType();
 		type.setName("name");
@@ -134,7 +128,6 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see LocationAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		LocationAttributeType type = new LocationAttributeType();
 		type

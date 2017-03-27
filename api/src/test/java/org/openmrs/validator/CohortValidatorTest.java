@@ -15,7 +15,6 @@ import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Patient;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -28,7 +27,6 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 	 * @see CohortValidator#validate(Object, Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the patient is voided", method = "validate(Object, Errors)")
 	public void validate_shouldFailIfPatientIsVoided() throws Exception {
 		Cohort cohort = new Cohort(2);
 		Patient patient = new Patient(7);
@@ -42,7 +40,6 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	@Verifies(value = "should pass if patient is not voided", method = "validate(Object, Errors)")
 	public void validate_shouldPassIfPatientIsNonVoided() throws Exception {
 		Cohort cohort = new Cohort(2);
 		cohort.addMembership(new CohortMembership(new Patient(7)));
@@ -53,7 +50,6 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	@Verifies(value = "should pass if membership is voided", method = "validate(Object, Errors)")
 	public void validate_shouldPassIfMembershipisVoided() throws Exception {
 		Cohort cohort = new Cohort(2);
 		CohortMembership cohortMembership = new CohortMembership(new Patient(7));
@@ -66,7 +62,6 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	@Verifies(value = "should pass if patient and membership are voided", method = "validate(Object, Errors)")
 	public void validate_shouldPassIfPatientAndMembershipAreVoided() throws Exception {
 		Cohort cohort = new Cohort(2);
 		Patient patient = new Patient(7);

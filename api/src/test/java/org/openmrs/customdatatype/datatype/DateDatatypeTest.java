@@ -27,7 +27,6 @@ public class DateDatatypeTest {
 	
 	/**
 	 * @see Date#deserialize(String)
-	 * @verifies reconstruct a date serialized by this handler
 	 */
 	@Test
 	public void deserialize_shouldReconstructADateSerializedByThisHandler() throws Exception {
@@ -37,7 +36,6 @@ public class DateDatatypeTest {
 	
 	/**
 	 * @see Date#serialize(java.util.Date)
-	 * @verifies convert a date into a ymd string representation
 	 */
 	@Test
 	public void serialize_shouldConvertADateIntoAYmdStringRepresentation() throws Exception {

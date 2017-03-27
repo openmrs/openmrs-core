@@ -33,7 +33,6 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return true if file matches and openmrs version matches
 	 * @see ModuleClassLoader#shouldResourceBeIncluded(Module, java.net.URL, String, java.util.Map)
 	 */
 	@Test
@@ -51,7 +50,6 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return false if file matches but openmrs version does not
 	 * @see ModuleClassLoader#shouldResourceBeIncluded(Module, java.net.URL, String, java.util.Map)
 	 */
 	@Test
@@ -69,7 +67,6 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return true if file does not match and openmrs version does not match
 	 * @see ModuleClassLoader#shouldResourceBeIncluded(Module, java.net.URL, String, java.util.Map)
 	 */
 	@Test
@@ -87,7 +84,6 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return true if file matches and module version matches
 	 * @see ModuleClassLoader#shouldResourceBeIncluded(Module, java.net.URL, String, java.util.Map)
 	 */
 	@Test
@@ -111,7 +107,6 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return false if file matches and module version does not match
 	 * @see ModuleClassLoader#shouldResourceBeIncluded(Module, java.net.URL, String, java.util.Map)
 	 */
 	@Test
@@ -135,7 +130,6 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return false if file matches and openmrs version matches but module version does not match
 	 * @see ModuleClassLoader#shouldResourceBeIncluded(Module, java.net.URL, String, java.util.Map)
 	 */
 	@Test
@@ -161,7 +155,6 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return false if file matches and module not found
 	 * @see ModuleClassLoader#shouldResourceBeIncluded(Module, java.net.URL, String, java.util.Map)
 	 */
 	@Test
@@ -185,7 +178,6 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return true if file does not match and module version does not match
 	 * @see ModuleClassLoader#shouldResourceBeIncluded(Module, java.net.URL, String, java.util.Map)
 	 */
 	@Test

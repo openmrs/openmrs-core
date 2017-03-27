@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.test.Verifies;
 
 public class LocationTest {
 	
@@ -28,7 +27,6 @@ public class LocationTest {
 	 * @see Location#isInHierarchy(Location,Location)
 	 */
 	@Test
-	@Verifies(value = "should should find location in hierarchy", method = "isInHierarchy(Location,Location)")
 	public void isInHierarchy_shouldShouldFindLocationInHierarchy() throws Exception {
 		Location locationGrandParent = new Location();
 		Location locationParent = new Location();

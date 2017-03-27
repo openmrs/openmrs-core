@@ -36,7 +36,6 @@ import org.springframework.validation.Errors;
 public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @verifies fail validation if the specimen source is invalid
 	 * @see TestOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -66,7 +65,6 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies pass validation if the specimen source is valid
 	 * @see TestOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test

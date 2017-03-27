@@ -23,7 +23,6 @@ import org.openmrs.order.OrderUtilTest;
 public class TestOrderTest {
 	
 	/**
-	 * @verifies copy all test order fields
 	 * @see TestOrder#copy()
 	 */
 	@Test
@@ -32,7 +31,6 @@ public class TestOrderTest {
 	}
 	
 	/**
-	 * @verifies set all the relevant fields
 	 * @see TestOrder#cloneForRevision()
 	 */
 	@Test
@@ -50,7 +48,6 @@ public class TestOrderTest {
 	}
 	
 	/**
-	 * @verifies set all the relevant fields
 	 * @see TestOrder#cloneForDiscontinuing()
 	 */
 	@Test
@@ -78,7 +75,6 @@ public class TestOrderTest {
 	}
 	
 	/**
-	 * @verifies set the relevant fields for a DC order
 	 * @see TestOrder#cloneForRevision()
 	 */
 	@Test

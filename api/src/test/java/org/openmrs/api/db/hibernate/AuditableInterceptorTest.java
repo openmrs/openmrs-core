@@ -32,7 +32,6 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see AuditableInterceptor#onFlushDirty(Object,Serializable,Object[],Object[],String[],Type[])
-	 * @verifies return false for non Auditable objects
 	 */
 	@Test
 	public void onFlushDirty_shouldReturnFalseForNonAuditableObjects() throws Exception {
@@ -48,7 +47,6 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see AuditableInterceptor#onFlushDirty(Object,Serializable,Object[],Object[],String[],Type[])
-	 * @verifies set the changedBy field
 	 */
 	@Test
 	public void onFlushDirty_shouldSetTheChangedByField() throws Exception {
@@ -70,7 +68,6 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see AuditableInterceptor#onFlushDirty(Object,Serializable,Object[],Object[],String[],Type[])
-	 * @verifies set the dateChanged field
 	 */
 	@Test
 	public void onFlushDirty_shouldSetTheDateChangedField() throws Exception {
@@ -119,7 +116,6 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see AuditableInterceptor#onFlushDirty(Object,Serializable,Object[],Object[],String[],Type[])
-	 * @verifies set the dateChanged field
 	 */
 	@Test
 	public void onFlushDirty_shouldNotFailWithNullPreviousState() throws Exception {
@@ -140,7 +136,6 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	 * This test makes sure that the AuditableInterceptor is registered on the session
 	 * 
 	 * @see AuditableInterceptor#onFlushDirty(Object,Serializable,Object[],Object[],String[],Type[])
-	 * @verifies be called when saving an Auditable
 	 */
 	@Test
 	public void onFlushDirty_shouldBeCalledWhenSavingAnAuditable() throws Exception {
@@ -159,7 +154,6 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see AuditableInterceptor#onFlushDirty(Object,Serializable,null,null,null,null)
-	 * @verifies should not fail when the daemon user modifies something
 	 */
 	@Test
 	public void onFlushDirty_shouldNotFailWhenTheDaemonUserModifiesSomething() throws Throwable {
@@ -193,7 +187,6 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see AuditableInterceptor#onSave(Object,Serializable,Object[],String[],Type[])
-	 * @verifies return true if dateCreated was null
 	 */
 	@Test
 	public void onSave_shouldReturnTrueIfDateCreatedWasNull() throws Exception {
@@ -210,7 +203,6 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see AuditableInterceptor#onSave(Object,Serializable,Object[],String[],Type[])
-	 * @verifies return true if creator was null
 	 */
 	@Test
 	public void onSave_shouldReturnTrueIfCreatorWasNull() throws Exception {
@@ -227,7 +219,6 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see AuditableInterceptor#onSave(Object,Serializable,Object[],String[],Type[])
-	 * @verifies return false if dateCreated and creator was not null
 	 */
 	@Test
 	public void onSave_shouldReturnFalseIfDateCreatedAndCreatorWasNotNull() throws Exception {
@@ -244,7 +235,6 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see AuditableInterceptor#onSave(Object,Serializable,Object[],String[],Type[])
-	 * @verifies be called when saving OpenmrsObject
 	 */
 	@Test
 	public void onSave_shouldBeCalledWhenSavingOpenmrsObject() throws Exception {

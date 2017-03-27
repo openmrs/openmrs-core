@@ -11,7 +11,6 @@ package org.openmrs.util;
 
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,6 @@ public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 	 * @see DatabaseUpdater#updatesRequired()
 	 */
 	@Test
-	@Verifies(value = "should always have a valid update to latest file", method = "updatesRequired()")
 	public void updatesRequired_shouldAlwaysHaveAValidUpdateToLatestFile() throws Exception {
 		// expects /metadata/model to be on the classpath so that
 		// the liquibase-update-to-latest.xml can be found.

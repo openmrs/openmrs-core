@@ -15,7 +15,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.openmrs.test.Verifies;
 
 /**
  * Contains methods to test behavior of DoubleRange methods
@@ -26,7 +25,6 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#equals(Object)
 	 */
 	@Test
-	@Verifies(value = "should return true for the same object type and false for different objects", method = "equals(Object o)")
 	public void equals_shouldReturnTrueForTheSameObjectTypeAndFalseForDifferentTypeObjects() {
 		Double value1 = 0.0;
 		Double value2 = 5.0;
@@ -42,7 +40,6 @@ public class DoubleRangeTest {
 	}
 	
 	@Test
-	@Verifies(value = "return null low and high if accessors are not called", method = "DoubleRange ()")
 	public void DoubleRange_shouldReturnNullLowAndHighIfAccessorsAreNotCalled() {
 		DoubleRange dr = new DoubleRange();
 		assertNull(dr.getHigh());
@@ -50,7 +47,6 @@ public class DoubleRangeTest {
 	}
 	
 	@Test
-	@Verifies(value = "return infinite low and high if called with null parameters", method = "DoubleRange(Double low, Double high)")
 	public void DoubleRange_shouldReturnInfiniteLowAndHighIfCalledWithNullParameters() {
 		DoubleRange dr = new DoubleRange(null, null);
 		assertEquals(Double.POSITIVE_INFINITY, dr.getHigh().doubleValue(), 0);
@@ -58,21 +54,18 @@ public class DoubleRangeTest {
 	}
 	
 	@Test
-	@Verifies(value = "return correct value of high if high was set previously", method = "getHigh()")
 	public void getHigh_shouldReturnCorrectValueOfHighIfHighWasSetPreviously() {
 		DoubleRange dr = new DoubleRange(0.0, 4.0);
 		assertEquals(4.0, dr.getHigh().doubleValue(), 0);
 	}
 	
 	@Test
-	@Verifies(value = "return positive infinity if high was not set previously", method = "getHigh()")
 	public void getHigh_shouldReturnPositiveInfinityIfHighWasNotSetPreviously() {
 		DoubleRange dr = new DoubleRange(0.0, null);
 		assertEquals(Double.POSITIVE_INFINITY, dr.getHigh().doubleValue(), 0);
 	}
 	
 	@Test
-	@Verifies(value = "set high to positive infinity on null parameter", method = "setHigh(Double high)")
 	public void setHigh_shouldSetHighToPositiveInfinityOnNullParameter() {
 		DoubleRange dr = new DoubleRange(0.0, 4.0);
 		dr.setHigh(null);
@@ -80,7 +73,6 @@ public class DoubleRangeTest {
 	}
 	
 	@Test
-	@Verifies(value = "cause high to have the set value", method = "setHigh(Double high)")
 	public void setHigh_shouldCauseHighToHaveTheSetValue() {
 		DoubleRange dr = new DoubleRange(null, null);
 		dr.setHigh(8.0);
@@ -88,21 +80,18 @@ public class DoubleRangeTest {
 	}
 	
 	@Test
-	@Verifies(value = "return correct value of low if low was set previously", method = "getLow()")
 	public void getLow_shouldReturnCorrectValueOfLowIfLowWasSetPreviously() {
 		DoubleRange dr = new DoubleRange(0.0, 4.0);
 		assertEquals(0.0, dr.getLow().doubleValue(), 0);
 	}
 	
 	@Test
-	@Verifies(value = "return negative infinity if low was not set previously", method = "getLow()")
 	public void getLow_shouldReturnNegativeInfinityIfLowWasNotSetPreviously() {
 		DoubleRange dr = new DoubleRange(null, 0.0);
 		assertEquals(Double.NEGATIVE_INFINITY, dr.getLow().doubleValue(), 0);
 	}
 	
 	@Test
-	@Verifies(value = "set low to negative infinity on null parameter", method = "setLow(Double low)")
 	public void setLow_shouldSetLowToNegativeInfinityOnNullParameter() {
 		DoubleRange dr = new DoubleRange(0.0, 4.0);
 		dr.setLow(null);
@@ -110,7 +99,6 @@ public class DoubleRangeTest {
 	}
 	
 	@Test
-	@Verifies(value = "cause low to have the set value", method = "setLow(Double low)")
 	public void setLow_shouldCauseLowToHaveTheSetValue() {
 		DoubleRange dr = new DoubleRange(null, null);
 		dr.setLow(8.0);
@@ -118,7 +106,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies return plus 1 if this low is greater than other low
 	 * @see DoubleRange#compareTo(DoubleRange)
 	 */
 	@Test
@@ -129,7 +116,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies return minus one if this low is lower than other low
 	 * @see DoubleRange#compareTo(DoubleRange)
 	 */
 	@Test
@@ -140,7 +126,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies return zero if both lows and both highs are equal
 	 * @see DoubleRange#compareTo(DoubleRange)
 	 */
 	@Test
@@ -151,7 +136,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies return plus one if both lows are equal but other high is greater than this high
 	 * @see DoubleRange#compareTo(DoubleRange)
 	 */
 	@Test
@@ -162,7 +146,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies return minus one if both lows are equal but other high is less than this high
 	 * @see DoubleRange#compareTo(DoubleRange)
 	 */
 	@Test
@@ -173,7 +156,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies return 1 if this range is wider than other range
 	 * @see DoubleRange#compareTo(DoubleRange)
 	 */
 	@Test
@@ -184,7 +166,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies return true if parameter is in range
 	 * @see DoubleRange#contains(double)
 	 */
 	@Test
@@ -195,7 +176,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies return false if parameter is not in range
 	 * @see DoubleRange#contains(double)
 	 */
 	@Test
@@ -206,7 +186,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies return false if parameter is equal to high
 	 * @see DoubleRange#contains(double)
 	 */
 	@Test
@@ -217,7 +196,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies return true if parameter is equal to low
 	 * @see DoubleRange#contains(double)
 	 */
 	@Test
@@ -228,7 +206,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies return false if parameter is lower than low
 	 * @see DoubleRange#contains(double)
 	 */
 	@Test
@@ -239,7 +216,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies print the range if high and low are not null and not infinite
 	 * @see DoubleRange#toString()
 	 */
 	@Test
@@ -249,7 +225,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies print empty low if low is infinite
 	 * @see DoubleRange#toString()
 	 */
 	@Test
@@ -259,7 +234,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies print empty string if low and high are infinite
 	 * @see DoubleRange#toString()
 	 */
 	@Test
@@ -269,7 +243,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies return the same hashCode for objects representing the same interval
 	 * @see DoubleRange#hashCode()
 	 */
 	@Test
@@ -280,7 +253,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies print empty string if low and high are null
 	 * @see DoubleRange#toString()
 	 */
 	@Test
@@ -290,7 +262,6 @@ public class DoubleRangeTest {
 	}
 	
 	/**
-	 * @verifies print empty low if low is null
 	 * @see DoubleRange#toString()
 	 */
 	@Test

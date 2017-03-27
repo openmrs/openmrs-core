@@ -35,7 +35,6 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
-	 * @verifies not allow maxOccurs less than 1
 	 */
 	@Test
 	public void validate_shouldNotAllowMaxOccursLessThan1() throws Exception {
@@ -46,7 +45,6 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
-	 * @verifies not allow maxOccurs less than minOccurs
 	 */
 	@Test
 	public void validate_shouldNotAllowMaxOccursLessThanMinOccurs() throws Exception {
@@ -58,7 +56,6 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
-	 * @verifies require datatypeClassname
 	 */
 	@Test
 	public void validate_shouldRequireDatatypeClassname() throws Exception {
@@ -68,7 +65,6 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
-	 * @verifies require minOccurs
 	 */
 	@Test
 	public void validate_shouldRequireMinOccurs() throws Exception {
@@ -79,7 +75,6 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
-	 * @verifies require name
 	 */
 	@Test
 	public void validate_shouldRequireName() throws Exception {
@@ -89,7 +84,6 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
-	 * @verifies require DatatypeConfiguration if Datatype equals Regex-Validated Text
 	 */
 	@Test
 	public void validate_shouldRequireDatatypeConfigurationIfDatatypeEqualsRegexValidatedText() throws Exception {
@@ -100,7 +94,6 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
-	 * @verifies pass validation if all required values are set
 	 */
 	@Test
 	public void validate_shouldPassValidationIfAllRequiredValuesAreSet() throws Exception {
@@ -114,7 +107,6 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
-	 * @verifies pass validation if field lengths are correct
 	 */
 	@Test
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
@@ -129,7 +121,6 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
-	 * @verifies fail validation if field lengths are not correct
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {

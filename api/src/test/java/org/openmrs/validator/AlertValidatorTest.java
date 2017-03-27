@@ -24,7 +24,6 @@ public class AlertValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see AlertValidator#validate(Object,Errors)
-	 * @verifies fail validation if Alert Text is null or empty or whitespace
 	 */
 	@Test
 	public void validate_shouldFailValidationIfAlertTextIsNullOrEmptyOrWhitespace() throws Exception {
@@ -49,7 +48,6 @@ public class AlertValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * Test for all the values being set
 	 * @see AlertValidator#validate(Object,Errors)
-	 * @verifies pass validation if all required values are set
 	 */
 	@Test
 	public void validate_shouldPassValidationIfAllRequiredValuesAreSet() throws Exception {
@@ -64,7 +62,6 @@ public class AlertValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * Test for all the values being set
 	 * @see AlertValidator#validate(Object,Errors)
-	 * @verifies pass validation if field lengths are correct
 	 */
 	@Test
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
@@ -79,7 +76,6 @@ public class AlertValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * Test for all the values being set
 	 * @see AlertValidator#validate(Object,Errors)
-	 * @verifies fail validation if field lengths are not correct
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {

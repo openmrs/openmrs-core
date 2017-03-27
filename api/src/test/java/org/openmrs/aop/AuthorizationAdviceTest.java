@@ -29,7 +29,6 @@ import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.stereotype.Component;
 
@@ -45,7 +44,6 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 	Listener2 listener2;
 	
 	@Test
-	@Verifies(value = "notify listeners about checked privileges", method = "before(Method, Object[], Object)")
 	public void before_shouldNotifyListenersAboutCheckedPrivileges() {
 		
 		listener1.hasPrivileges.clear();

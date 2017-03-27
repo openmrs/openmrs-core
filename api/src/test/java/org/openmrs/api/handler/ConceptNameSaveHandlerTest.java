@@ -17,7 +17,6 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.User;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests the {@link ConceptNameSaveHandler} class.
@@ -28,7 +27,6 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameSaveHandler#handle(ConceptName,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should not fail if tags is null", method = "handle(ConceptName,User,Date,String)")
 	public void handle_shouldNotFailIfTagsIsNull() throws Exception {
 		ConceptNameSaveHandler handler = new ConceptNameSaveHandler();
 		ConceptName name = new ConceptName();
@@ -40,7 +38,6 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameSaveHandler#handle(ConceptName,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should replace tags without ids with database fetched tag", method = "handle(ConceptName,User,Date,String)")
 	public void handle_shouldReplaceTagsWithoutIdsWithDatabaseFetchedTag() throws Exception {
 		ConceptNameSaveHandler handler = new ConceptNameSaveHandler();
 		ConceptName name = new ConceptName();
@@ -60,7 +57,6 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameSaveHandler#handle(ConceptName,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should not replace tags without ids that are not in the database", method = "handle(ConceptName,User,Date,String)")
 	public void handle_shouldNotReplaceTagsWithoutIdsThatAreNotInTheDatabase() throws Exception {
 		ConceptNameSaveHandler handler = new ConceptNameSaveHandler();
 		ConceptName name = new ConceptName();
@@ -74,7 +70,6 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameSaveHandler#handle(ConceptName,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should not replace tags that have ids", method = "handle(ConceptName,User,Date,String)")
 	public void handle_shouldNotReplaceTagsThatHaveIds() throws Exception {
 		ConceptNameSaveHandler handler = new ConceptNameSaveHandler();
 		ConceptName name = new ConceptName();

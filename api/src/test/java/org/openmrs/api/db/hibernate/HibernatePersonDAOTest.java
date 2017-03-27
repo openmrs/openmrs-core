@@ -68,7 +68,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by null
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -80,7 +79,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get every one except Voided by empty string
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -102,7 +100,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get every one by empty string
 	 * @see HibernatePersonDAO#getPeople(String, Boolean, Boolean)
 	 */
 	@Test
@@ -120,7 +117,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies no voided people should be returned
 	 * @see HibernatePersonDAO#getPeople(String, Boolean, Boolean)
 	 */
 	@Test
@@ -141,7 +137,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by non-existing attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -155,7 +150,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by non-searchable attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -169,7 +163,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by voided attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -183,7 +176,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -200,7 +192,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by random case attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -217,7 +208,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by searching for a mix of attribute and voided attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -236,7 +226,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by single attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -255,7 +244,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by multiple attributes
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -275,7 +263,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by non-existing name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -287,7 +274,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -300,7 +286,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by random case name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -313,7 +298,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by single name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -329,7 +313,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by multiple names
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -345,7 +328,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 
     /**
-	 * @verifies get no one by non-existing name and non-existing attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -359,7 +341,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by non-existing name and non-searchable attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -372,7 +353,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by non-existing name and voided attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -385,7 +365,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by name and attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -399,7 +378,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by name and voided attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -413,7 +391,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by name and attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -431,7 +408,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by given name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -444,7 +420,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by given name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -459,7 +434,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by middle name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -472,7 +446,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by middle name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -487,7 +460,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by family name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -500,7 +472,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by family name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -515,7 +486,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by family name2
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -528,7 +498,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by family name2
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -543,7 +512,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by multiple name parts
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -556,7 +524,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by multiple name parts
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -568,7 +535,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by voided name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -580,7 +546,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get voided person when voided=true is passed
 	 * @see HibernatePersonDAO#getPeople(String, Boolean, Boolean)
 	 */
 	@Test
@@ -592,7 +557,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get voided person
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -604,7 +568,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get dead person
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -616,7 +579,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get single dead person
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -629,7 +591,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple dead people
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
@@ -644,7 +605,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies obey attribute match mode
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test

@@ -59,7 +59,6 @@ public class ImmutableEntityInterceptorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if an entity has a changed property
 	 * @see ImmutableEntityInterceptor#onFlushDirty(Object, java.io.Serializable, Object[],
 	 *      Object[], String[], org.hibernate.type.Type[])
 	 */
@@ -76,7 +75,6 @@ public class ImmutableEntityInterceptorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies pass if an entity has changes for an allowed mutable property
 	 * @see ImmutableEntityInterceptor#onFlushDirty(Object, java.io.Serializable, Object[],
 	 *      Object[], String[], org.hibernate.type.Type[])
 	 */
@@ -90,7 +88,6 @@ public class ImmutableEntityInterceptorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if the edited object is voided or retired and ignore is set to false
 	 * @see ImmutableEntityInterceptor#onFlushDirty(Object, java.io.Serializable, Object[],
 	 *      Object[], String[], org.hibernate.type.Type[])
 	 */
@@ -109,7 +106,6 @@ public class ImmutableEntityInterceptorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies pass if the edited object is voided or retired and ignore is set to true
 	 * @see ImmutableEntityInterceptor#onFlushDirty(Object, java.io.Serializable, Object[],
 	 *      Object[], String[], org.hibernate.type.Type[])
 	 */

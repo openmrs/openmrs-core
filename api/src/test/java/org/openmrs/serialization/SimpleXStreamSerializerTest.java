@@ -22,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.test.Verifies;
 
 import com.thoughtworks.xstream.XStreamException;
 
@@ -36,7 +35,6 @@ public class SimpleXStreamSerializerTest {
 	 * @see org.openmrs.serialization.SimpleXStreamSerializer#serialize(Object)
 	 */
 	@Test
-	@Verifies(value = "should get serialized", method = "serialize(Object)")
 	public void serialize_shouldSerializeObject() throws SerializationException {
 		
 		OpenmrsSerializer serializer = new SimpleXStreamSerializer();
@@ -70,7 +68,6 @@ public class SimpleXStreamSerializerTest {
 	 * @see org.openmrs.serialization.SimpleXStreamSerializer#serialize(Object)
 	 */
 	@Test
-	@Verifies(value = "should get deserialized", method = "deserialize(String, Class)")
 	public void deserialize_shouldDeserializeStringToClassInstance() throws SerializationException {
 		String serializedFoo = "<org.openmrs.serialization.Foo>\n" + "  <attributeString>Testing</attributeString>\n"
 		        + "  <attributeInt>4</attributeInt>\n" + "  <attributeList>\n" + "    <string>fooBar</string>\n"
@@ -102,7 +99,6 @@ public class SimpleXStreamSerializerTest {
 	
 	/**
 	 * @see SimpleXStreamSerializer#deserialize(String,Class)
-	 * @verifies not deserialize proxies
 	 */
 	@Test
 	public void deserialize_shouldNotDeserializeProxies() throws Exception {
@@ -117,7 +113,6 @@ public class SimpleXStreamSerializerTest {
 	
 	/**
 	 * @see SimpleXStreamSerializer#deserialize(String,Class)
-	 * @verifies ignore entities
 	 */
 	@Test
 	public void deserialize_shouldIgnoreEntities() throws Exception {
@@ -130,7 +125,6 @@ public class SimpleXStreamSerializerTest {
 	
 	/**
 	 * @see SimpleXStreamSerializer#serialize(Object)
-	 * @verifies ignore entities
 	 */
 	@Test
 	public void serialize_shouldNotSerializeProxies() throws Exception {

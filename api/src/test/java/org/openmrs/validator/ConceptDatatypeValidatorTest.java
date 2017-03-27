@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -26,7 +25,6 @@ public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd.setName(null);
@@ -51,7 +49,6 @@ public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd.setName("name");
@@ -76,7 +73,6 @@ public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd.setName("name");
@@ -92,7 +88,6 @@ public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd.setName("name");
@@ -110,7 +105,6 @@ public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd

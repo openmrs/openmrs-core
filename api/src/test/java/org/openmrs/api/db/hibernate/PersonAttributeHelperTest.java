@@ -35,7 +35,6 @@ public class PersonAttributeHelperTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return true if a person attribute exists
 	 * @see PersonAttributeHelper#personAttributeExists(String)
 	 */
 	@Test
@@ -50,7 +49,6 @@ public class PersonAttributeHelperTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return true if a voided person attribute exists
 	 * @see PersonAttributeHelper#voidedPersonAttributeExists(String)
 	 */
 	@Test
@@ -62,7 +60,6 @@ public class PersonAttributeHelperTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return true if a non-voided person attribute exists
 	 * @see PersonAttributeHelper#nonVoidedPersonAttributeExists(String)
 	 */
 	@Test
@@ -74,7 +71,6 @@ public class PersonAttributeHelperTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return true if a non-searchable person attribute exists
 	 * @see PersonAttributeHelper#nonSearchablePersonAttributeExists(String)
 	 */
 	@Test
@@ -90,7 +86,6 @@ public class PersonAttributeHelperTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return true if a searchable person attribute exists
 	 * @see PersonAttributeHelper#searchablePersonAttributeExists(String)
 	 */
 	@Test

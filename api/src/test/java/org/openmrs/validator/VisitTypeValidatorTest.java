@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.VisitType;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -23,7 +22,6 @@ public class VisitTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		VisitType visitType = new VisitType();
 		visitType.setName("name");
@@ -40,7 +38,6 @@ public class VisitTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		VisitType visitType = new VisitType();
 		visitType

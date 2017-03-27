@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests the {@link ConceptNumeric} object
@@ -26,7 +25,6 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	 * @see ConceptNumeric#equals(Object)
 	 */
 	@Test
-	@Verifies(value = "should not return true if obj is concept", method = "equals(Object)")
 	public void equals_shouldNotReturnTrueIfObjIsConcept() throws Exception {
 		ConceptNumeric cn = new ConceptNumeric(123);
 		Concept c = new Concept(123);
@@ -36,7 +34,6 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should make deep copie of collections", method = "ConceptNumeric(Concept)")
 	public void equals_shouldNotBeTheSameReference() throws Exception {
 		Concept c = new Concept(123);
 		ConceptNumeric cn = new ConceptNumeric(c);
@@ -50,7 +47,6 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should change reference to the parent object for objects in answers collection", method = "ConceptNumeric(Concept)")
 	public void shouldChangeConceptAnswerReferenceToParentConcept() throws Exception {
 		Concept c = new Concept(123);
 		c.addAnswer(new ConceptAnswer(1));
@@ -63,7 +59,6 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should change reference to the parent object for objects in conceptSets collection", method = "ConceptNumeric(Concept)")
 	public void shouldChangeConceptSetReferenceToParentConcept() throws Exception {
 		Concept c = new Concept(123);
 		c.addSetMember(new Concept(1));
@@ -76,7 +71,6 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should change reference to the parent object  for objects in names collection", method = "ConceptNumeric(Concept)")
 	public void shouldChangeConceptNameReferenceToParentConcept() throws Exception {
 		Concept c = new Concept(123);
 		c.addName(new ConceptName(1));
@@ -89,7 +83,6 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should change reference to the parent object for objects in descriptions collection", method = "ConceptNumeric(Concept)")
 	public void shouldChangeConceptDescriptionReferenceToParentConcept() throws Exception {
 		Concept c = new Concept(123);
 		c.addDescription(new ConceptDescription(1));
@@ -102,7 +95,6 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should change reference to the parent object for objects in conceptMappings collection", method = "ConceptNumeric(Concept)")
 	public void shouldChangeConceptMapReferenceToParentConcept() throws Exception {
 		Concept c = new Concept(123);
 		c.getConceptMappings().add(new ConceptMap(1));
@@ -118,7 +110,6 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	 * Tests if {@link org.openmrs.api.ConceptService#saveConcept(Concept)} saves a ConceptNumeric with allowDecimal value
 	 */
 	@Test
-	@Verifies(method = "saveConcept(Concept)", value = "should save a conceptNumeric with allowDecimal value")
 	public void shouldSaveAConceptNumericWithAllowDecimalValue() throws Exception {
 		Concept c = Context.getConceptService().getConcept(22);
 		ConceptNumeric cn = new ConceptNumeric(c);

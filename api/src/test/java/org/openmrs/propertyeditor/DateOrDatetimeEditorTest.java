@@ -29,7 +29,6 @@ public class DateOrDatetimeEditorTest {
 	
 	/**
 	 * @see DateOrDatetimeEditor#getAsText()
-	 * @verifies print date without time
 	 */
 	@Test
 	public void getAsText_shouldPrintDateWithoutTime() throws Exception {
@@ -39,7 +38,6 @@ public class DateOrDatetimeEditorTest {
 	
 	/**
 	 * @see DateOrDatetimeEditor#getAsText()
-	 * @verifies print date and time with time
 	 */
 	@Test
 	public void getAsText_shouldPrintDateAndTimeWithTime() throws Exception {
@@ -49,7 +47,6 @@ public class DateOrDatetimeEditorTest {
 	
 	/**
 	 * @see DateOrDatetimeEditor#setAsText(String)
-	 * @verifies handle date
 	 */
 	@Test
 	public void setAsText_shouldHandleDate() throws Exception {
@@ -59,7 +56,6 @@ public class DateOrDatetimeEditorTest {
 	
 	/**
 	 * @see DateOrDatetimeEditor#setAsText(String)
-	 * @verifies handle date and time
 	 */
 	@Test
 	public void setAsText_shouldHandleDateAndTime() throws Exception {
@@ -69,7 +65,6 @@ public class DateOrDatetimeEditorTest {
 	
 	/**
 	 * @see DateOrDatetimeEditor#setAsText(String)
-	 * @verifies fail on partial date
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void setAsText_shouldFailOnPartialDate() throws Exception {
@@ -78,7 +73,6 @@ public class DateOrDatetimeEditorTest {
 	
 	/**
 	 * @see DateOrDatetimeEditor#setAsText(String)
-	 * @verifies fail on partial date and time
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void setAsText_shouldFailOnPartialDateAndTime() throws Exception {
