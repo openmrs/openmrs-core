@@ -9,6 +9,7 @@
  */
 package org.openmrs.attribute;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.junit.Assert;
@@ -20,6 +21,7 @@ import org.openmrs.VisitAttributeType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
@@ -36,7 +38,7 @@ public class AttributeIntegrationTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldTestAddingAnAttributeToSomethingAndSavingIt() throws Exception {
+	public void shouldTestAddingAnAttributeToSomethingAndSavingIt() throws InvalidCustomValueException, ParseException {
 		Visit visit = service.getVisit(1);
 		VisitAttributeType auditDate = service.getVisitAttributeType(1);
 		

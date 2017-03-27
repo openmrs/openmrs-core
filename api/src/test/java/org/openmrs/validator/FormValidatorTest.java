@@ -25,7 +25,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfNameIsNull() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNull() {
 		Form form = new Form();
 		form.setVersion("1.0");
 		
@@ -40,7 +40,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfVersionIsNull() throws Exception {
+	public void validate_shouldFailValidationIfVersionIsNull() {
 		Form form = new Form();
 		form.setName("test");
 		
@@ -55,7 +55,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfVersionDoesNotMatchRegex() throws Exception {
+	public void validate_shouldFailValidationIfVersionDoesNotMatchRegex() {
 		Form form = new Form();
 		form.setName("test");
 		form.setVersion("first");
@@ -71,7 +71,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfRetiredReasonIsNull() throws Exception {
+	public void validate_shouldFailValidationIfRetiredReasonIsNull() {
 		Form form = new Form();
 		form.setName("test");
 		form.setVersion("1.0");
@@ -89,7 +89,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllFieldsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfAllFieldsAreCorrect() {
 		Form form = new Form();
 		form.setName("test");
 		form.setVersion("1.0");
@@ -104,7 +104,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfRetiredReasonIsEmpty() throws Exception {
+	public void validate_shouldFailValidationIfRetiredReasonIsEmpty() {
 		Form form = new Form();
 		form.setName("test");
 		form.setVersion("1.0");
@@ -121,7 +121,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Form form = new Form();
 		form.setName("name");
 		form.setVersion("1.0");
@@ -138,7 +138,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Form form = new Form();
 		form
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

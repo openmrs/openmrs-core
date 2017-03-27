@@ -22,9 +22,8 @@ public class CustomDatatypeUtilTest extends BaseContextSensitiveTest {
 	 * @see CustomDatatypeUtil#deserializeSimpleConfiguration(String)
 	 */
 	@Test
-	public void deserializeSimpleConfiguration_shouldDeserializeAConfigurationSerializedByTheCorrespondingSerializeMethod()
-	        throws Exception {
-		Map<String, String> config = new HashMap<String, String>();
+	public void deserializeSimpleConfiguration_shouldDeserializeAConfigurationSerializedByTheCorrespondingSerializeMethod() {
+		Map<String, String> config = new HashMap<>();
 		config.put("one property", "one value");
 		config.put("another property", "another value < with > strange&nbsp;characters");
 		

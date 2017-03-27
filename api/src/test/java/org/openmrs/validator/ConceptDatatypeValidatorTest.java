@@ -25,7 +25,7 @@ public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd.setName(null);
 		cd.setDescription("some text");
@@ -49,7 +49,7 @@ public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd.setName("name");
 		cd.setDescription(null);
@@ -73,7 +73,7 @@ public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd.setName("name");
 		cd.setDescription("some text");
@@ -88,7 +88,7 @@ public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd.setName("name");
 		cd.setDescription("some text");
@@ -105,7 +105,7 @@ public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

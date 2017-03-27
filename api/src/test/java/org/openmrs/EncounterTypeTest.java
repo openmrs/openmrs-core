@@ -25,7 +25,7 @@ public class EncounterTypeTest {
 	 * @see EncounterType#EncounterType(Integer)
 	 */
 	@Test
-	public void EncounterType_shouldSetEncounterTypeIdWithGivenParameter() throws Exception {
+	public void EncounterType_shouldSetEncounterTypeIdWithGivenParameter() {
 		EncounterType encounterType = new EncounterType(123);
 		Assert.assertEquals(123, encounterType.getEncounterTypeId().intValue());
 	}

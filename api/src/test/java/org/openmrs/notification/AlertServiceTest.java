@@ -44,7 +44,7 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 */
 	@Test
-	public void notifySuperUsers_shouldAddAnAlertToTheDatabase() throws Exception {
+	public void notifySuperUsers_shouldAddAnAlertToTheDatabase() {
 		// Check there are no alerts before the method is called
 		Assert.assertEquals(0, Context.getAlertService().getAlertsByUser(null).size());
 		

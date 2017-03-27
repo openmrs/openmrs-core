@@ -33,7 +33,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheCodeIsAWhiteSpaceCharacter() throws Exception {
+	public void validate_shouldFailIfTheCodeIsAWhiteSpaceCharacter() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setName("name");
 		term.setCode(" ");
@@ -47,7 +47,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheCodeIsAnEmptyString() throws Exception {
+	public void validate_shouldFailIfTheCodeIsAnEmptyString() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setName("name");
 		term.setCode("");
@@ -61,7 +61,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheCodeIsNull() throws Exception {
+	public void validate_shouldFailIfTheCodeIsNull() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setName("name");
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
@@ -74,7 +74,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheConceptReferenceTermCodeIsADuplicateInItsConceptSource() throws Exception {
+	public void validate_shouldFailIfTheConceptReferenceTermCodeIsADuplicateInItsConceptSource() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setName("name");
 		term.setCode("WGT234");
@@ -88,7 +88,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void validate_shouldFailIfTheConceptReferenceTermObjectIsNull() throws Exception {
+	public void validate_shouldFailIfTheConceptReferenceTermObjectIsNull() {
 		Errors errors = new BindException(new ConceptReferenceTerm(), "term");
 		new ConceptReferenceTermValidator().validate(null, errors);
 	}
@@ -97,7 +97,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheConceptSourceIsNull() throws Exception {
+	public void validate_shouldFailIfTheConceptSourceIsNull() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setName("name");
 		term.setCode("code");
@@ -112,7 +112,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	@Test
 	@Ignore
 	//we might need these back when the constraint is put back
-	public void validate_shouldFailIfTheNameIsAWhiteSpaceCharacter() throws Exception {
+	public void validate_shouldFailIfTheNameIsAWhiteSpaceCharacter() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setName(" ");
 		term.setCode("code");
@@ -127,7 +127,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 */
 	@Test
 	@Ignore
-	public void validate_shouldFailIfTheNameIsAnEmptyString() throws Exception {
+	public void validate_shouldFailIfTheNameIsAnEmptyString() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setName("");
 		term.setCode("code");
@@ -142,7 +142,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 */
 	@Test
 	@Ignore
-	public void validate_shouldFailIfTheNameIsNull() throws Exception {
+	public void validate_shouldFailIfTheNameIsNull() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setCode("code");
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
@@ -155,7 +155,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassIfAllTheRequiredFieldsAreSetAndValid() throws Exception {
+	public void validate_shouldPassIfAllTheRequiredFieldsAreSetAndValid() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setName("name");
 		term.setCode("code");
@@ -169,7 +169,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassIfTheDuplicateCodeIsForATermFromAnotherConceptSource() throws Exception {
+	public void validate_shouldPassIfTheDuplicateCodeIsForATermFromAnotherConceptSource() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setName("unique name");
 		//set to a duplicate code for a term from another source
@@ -184,7 +184,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassIfTheDuplicateNameIsForATermFromAnotherConceptSource() throws Exception {
+	public void validate_shouldPassIfTheDuplicateNameIsForATermFromAnotherConceptSource() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		//set to a duplicate name for a term from another source
 		term.setName("weight term2");
@@ -199,7 +199,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfAConceptReferenceTermMapHasNoConceptMapType() throws Exception {
+	public void validate_shouldFailIfAConceptReferenceTermMapHasNoConceptMapType() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setName("name");
 		term.setCode("code");
@@ -214,12 +214,12 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTermBOfAConceptReferenceTermMapIsNotSet() throws Exception {
+	public void validate_shouldFailIfTermBOfAConceptReferenceTermMapIsNotSet() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setName("name");
 		term.setCode("code");
 		term.setConceptSource(Context.getConceptService().getConceptSource(1));
-		Set<ConceptReferenceTermMap> maps = new LinkedHashSet<ConceptReferenceTermMap>();
+		Set<ConceptReferenceTermMap> maps = new LinkedHashSet<>();
 		maps.add(new ConceptReferenceTermMap(null, new ConceptMapType(1)));
 		term.setConceptReferenceTermMaps(maps);
 		Errors errors = new BindException(term, "term");
@@ -231,7 +231,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfATermIsMappedToItself() throws Exception {
+	public void validate_shouldFailIfATermIsMappedToItself() {
 		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTerm(1);
 		Set<ConceptReferenceTermMap> maps = term.getConceptReferenceTermMaps();
 		ConceptReferenceTermMap invalidMap = maps.iterator().next();
@@ -246,7 +246,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfATermIsMappedMultipleTimesToTheSameTerm() throws Exception {
+	public void validate_shouldFailIfATermIsMappedMultipleTimesToTheSameTerm() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		ConceptService cs = Context.getConceptService();
 		term.setCode("unique code");
@@ -269,7 +269,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setName("name");
 		term.setCode("code");
@@ -286,7 +286,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

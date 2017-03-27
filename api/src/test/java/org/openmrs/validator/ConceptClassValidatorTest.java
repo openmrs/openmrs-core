@@ -25,7 +25,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfUserIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfUserIsNullOrEmptyOrWhitespace() {
 		ConceptClass cc = new ConceptClass();
 		cc.setName(null);
 		cc.setDescription("some text");
@@ -46,7 +46,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() {
 		ConceptClass cc = new ConceptClass();
 		cc.setName("name");
 		cc.setDescription(null);
@@ -71,7 +71,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		ConceptClass cc = new ConceptClass();
 		cc.setName("name");
 		cc.setDescription("some text");
@@ -86,7 +86,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfConceptClassNameAlreadyExist() throws Exception {
+	public void validate_shouldFailValidationIfConceptClassNameAlreadyExist() {
 		ConceptClass cc = new ConceptClass();
 		cc.setName("Test");
 		cc.setDescription("some text");
@@ -101,7 +101,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		ConceptClass cc = new ConceptClass();
 		cc.setName("name");
 		cc.setDescription("some text");
@@ -117,7 +117,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ConceptClass cc = new ConceptClass();
 		cc
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

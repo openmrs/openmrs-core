@@ -27,7 +27,7 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameSaveHandler#handle(ConceptName,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotFailIfTagsIsNull() throws Exception {
+	public void handle_shouldNotFailIfTagsIsNull() {
 		ConceptNameSaveHandler handler = new ConceptNameSaveHandler();
 		ConceptName name = new ConceptName();
 		name.setTags(null);
@@ -38,7 +38,7 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameSaveHandler#handle(ConceptName,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldReplaceTagsWithoutIdsWithDatabaseFetchedTag() throws Exception {
+	public void handle_shouldReplaceTagsWithoutIdsWithDatabaseFetchedTag() {
 		ConceptNameSaveHandler handler = new ConceptNameSaveHandler();
 		ConceptName name = new ConceptName();
 		name.addTag("preferred"); // this tag has a null id
@@ -57,7 +57,7 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameSaveHandler#handle(ConceptName,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotReplaceTagsWithoutIdsThatAreNotInTheDatabase() throws Exception {
+	public void handle_shouldNotReplaceTagsWithoutIdsThatAreNotInTheDatabase() {
 		ConceptNameSaveHandler handler = new ConceptNameSaveHandler();
 		ConceptName name = new ConceptName();
 		name.addTag(new ConceptNameTag("Some randome tag name", "")); // this tag has a null id
@@ -70,7 +70,7 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameSaveHandler#handle(ConceptName,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotReplaceTagsThatHaveIds() throws Exception {
+	public void handle_shouldNotReplaceTagsThatHaveIds() {
 		ConceptNameSaveHandler handler = new ConceptNameSaveHandler();
 		ConceptName name = new ConceptName();
 		ConceptNameTag tag = new ConceptNameTag("some randome tag name with an id", "");

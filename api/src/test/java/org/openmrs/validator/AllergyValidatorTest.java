@@ -66,7 +66,7 @@ public class AllergyValidatorTest {
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailForANullValue() throws Exception {
+	public void validate_shouldFailForANullValue() {
 		expectedException.expect(IllegalArgumentException.class);
 		expectedException.expectMessage("Allergy should not be null");
 		Allergy allergy = new Allergy();
@@ -79,7 +79,7 @@ public class AllergyValidatorTest {
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfPatientIsNull() throws Exception {
+	public void validate_shouldFailIfPatientIsNull() {
 		Allergy allergy = new Allergy();
 		Errors errors = new BindException(allergy, "allergy");
 		validator.validate(allergy, errors);
@@ -90,7 +90,7 @@ public class AllergyValidatorTest {
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIdAllergenTypeIsNull() throws Exception {
+	public void validate_shouldFailIdAllergenTypeIsNull() {
 		Allergy allergy = new Allergy();
 		Errors errors = new BindException(allergy, "allergy");
 		validator.validate(allergy, errors);
@@ -101,7 +101,7 @@ public class AllergyValidatorTest {
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfAllergenIsNull() throws Exception {
+	public void validate_shouldFailIfAllergenIsNull() {
 		Allergy allergy = new Allergy();
 		Errors errors = new BindException(allergy, "allergy");
 		validator.validate(allergy, errors);
@@ -112,7 +112,7 @@ public class AllergyValidatorTest {
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfCodedAllergenIsNull() throws Exception {
+	public void validate_shouldFailIfCodedAllergenIsNull() {
 		Allergy allergy = new Allergy();
 		allergy.setAllergen(new Allergen(null, createMockConcept(null), null));
 		Errors errors = new BindException(allergy, "allergy");
@@ -124,7 +124,7 @@ public class AllergyValidatorTest {
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfNonCodedAllergenIsNullAndAllergenIsSetToOtherNonCoded() throws Exception {
+	public void validate_shouldFailIfNonCodedAllergenIsNullAndAllergenIsSetToOtherNonCoded() {
 		Allergy allergy = new Allergy();
 		allergy.setAllergen(new Allergen(null, createMockConcept(getOtherNonCodedConceptUuid()), null));
 		Errors errors = new BindException(allergy, "allergy");
@@ -136,7 +136,7 @@ public class AllergyValidatorTest {
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldRejectADuplicateAllergen() throws Exception {
+	public void validate_shouldRejectADuplicateAllergen() {
 		PowerMockito.mockStatic(Context.class);
 		MessageSourceService ms = mock(MessageSourceService.class);
 		when(Context.getMessageSourceService()).thenReturn(ms);
@@ -159,7 +159,7 @@ public class AllergyValidatorTest {
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldRejectADuplicateNonCodedAllergen() throws Exception {
+	public void validate_shouldRejectADuplicateNonCodedAllergen() {
 		PowerMockito.mockStatic(Context.class);
 		MessageSourceService ms = mock(MessageSourceService.class);
 		when(Context.getMessageSourceService()).thenReturn(ms);
@@ -183,7 +183,7 @@ public class AllergyValidatorTest {
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassForAValidAllergy() throws Exception {
+	public void validate_shouldPassForAValidAllergy() {
 		Allergies allergies = new Allergies();
 		Concept aspirin = new Concept();
 		Allergen allergen1 = new Allergen(AllergenType.DRUG, aspirin, null);

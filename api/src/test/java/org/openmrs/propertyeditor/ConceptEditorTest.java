@@ -19,7 +19,7 @@ public class ConceptEditorTest extends BaseContextSensitiveTest {
 	 * @see ConceptEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingId() throws Exception {
+	public void setAsText_shouldSetUsingId() {
 		ConceptEditor editor = new ConceptEditor();
 		editor.setAsText("3");
 		Assert.assertNotNull(editor.getValue());
@@ -29,7 +29,7 @@ public class ConceptEditorTest extends BaseContextSensitiveTest {
 	 * @see ConceptEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingUuid() throws Exception {
+	public void setAsText_shouldSetUsingUuid() {
 		ConceptEditor editor = new ConceptEditor();
 		editor.setAsText("0cbe2ed3-cd5f-4f46-9459-26127c9265ab");
 		Assert.assertNotNull(editor.getValue());

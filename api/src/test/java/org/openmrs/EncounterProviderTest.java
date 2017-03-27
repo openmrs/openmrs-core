@@ -25,7 +25,7 @@ public class EncounterProviderTest {
 	 * @see EncounterProvider#copy()
 	 */
 	@Test
-	public void copy_shouldCopyAllEncounterProviderData() throws Exception {
+	public void copy_shouldCopyAllEncounterProviderData() {
 		EncounterProvider encounterProvider = new EncounterProvider();
 		
 		encounterProvider.setCreator(new User());

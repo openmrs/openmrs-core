@@ -26,7 +26,7 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetTheRetiredBit() throws Exception {
+	public void handle_shouldSetTheRetiredBit() {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();
 		retireable.setRetired(false); // make sure isRetired is false
@@ -38,7 +38,7 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetTheRetireReason() throws Exception {
+	public void handle_shouldSetTheRetireReason() {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();
 		handler.handle(retireable, null, null, "THE REASON");
@@ -49,7 +49,7 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetRetiredBy() throws Exception {
+	public void handle_shouldSetRetiredBy() {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();
 		handler.handle(retireable, new User(2), null, " ");
@@ -60,7 +60,7 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotSetRetiredByIfNonNull() throws Exception {
+	public void handle_shouldNotSetRetiredByIfNonNull() {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();
 		retireable.setRetiredBy(new User(3));
@@ -72,7 +72,7 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetDateRetired() throws Exception {
+	public void handle_shouldSetDateRetired() {
 		Date d = new Date();
 		
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
@@ -85,7 +85,7 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotSetDateRetiredIfNonNull() throws Exception {
+	public void handle_shouldNotSetDateRetiredIfNonNull() {
 		Date d = new Date(new Date().getTime() - 1000); // a time that is not "now"
 		
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
@@ -100,7 +100,7 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotSetTheRetireReasonIfAlreadyVoided() throws Exception {
+	public void handle_shouldNotSetTheRetireReasonIfAlreadyVoided() {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();
 		retireable.setRetired(true);
@@ -113,7 +113,7 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetRetiredByEvenIfRetiredBitIsSetButRetiredByIsNull() throws Exception {
+	public void handle_shouldSetRetiredByEvenIfRetiredBitIsSetButRetiredByIsNull() {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();
 		retireable.setRetired(true);

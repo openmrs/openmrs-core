@@ -19,7 +19,7 @@ public class FormEditorTest extends BaseContextSensitiveTest {
 	 * @see FormEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingId() throws Exception {
+	public void setAsText_shouldSetUsingId() {
 		FormEditor editor = new FormEditor();
 		editor.setAsText("1");
 		Assert.assertNotNull(editor.getValue());
@@ -29,7 +29,7 @@ public class FormEditorTest extends BaseContextSensitiveTest {
 	 * @see FormEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingUuid() throws Exception {
+	public void setAsText_shouldSetUsingUuid() {
 		FormEditor editor = new FormEditor();
 		editor.setAsText("d9218f76-6c39-45f4-8efa-4c5c6c199f50");
 		Assert.assertNotNull(editor.getValue());

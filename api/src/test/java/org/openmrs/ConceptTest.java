@@ -54,7 +54,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getCompatibleNames(Locale)
 	 */
 	@Test
-	public void getCompatibleNames_shouldExcludeIncompatibleCountryLocales() throws Exception {
+	public void getCompatibleNames_shouldExcludeIncompatibleCountryLocales() {
 		Locale primaryLocale = Locale.US;
 		Concept testConcept = createMockConcept(1, primaryLocale);
 		
@@ -77,7 +77,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getCompatibleNames(Locale)
 	 */
 	@Test
-	public void getCompatibleNames_shouldExcludeIncompatibleLanguageLocales() throws Exception {
+	public void getCompatibleNames_shouldExcludeIncompatibleLanguageLocales() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name", new Locale("fr")));
 		
@@ -91,7 +91,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#setPreferredName(ConceptName)
 	 */
 	@Test
-	public void setPreferredName_shouldOnlyAllowOnePreferredName() throws Exception {
+	public void setPreferredName_shouldOnlyAllowOnePreferredName() {
 		Locale primaryLocale = Locale.US;
 		Concept testConcept = createMockConcept(1, primaryLocale);
 		
@@ -109,7 +109,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getDescription(Locale,null)
 	 */
 	@Test
-	public void getDescription_shouldNotReturnLanguageOnlyMatchForExactMatches() throws Exception {
+	public void getDescription_shouldNotReturnLanguageOnlyMatchForExactMatches() {
 		Concept mockConcept = new Concept();
 		mockConcept.addDescription(new ConceptDescription("en desc", new Locale("en")));
 		
@@ -120,7 +120,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getDescription(Locale,null)
 	 */
 	@Test
-	public void getDescription_shouldNotReturnMatchOnLanguageOnlyIfExactMatchExists() throws Exception {
+	public void getDescription_shouldNotReturnMatchOnLanguageOnlyIfExactMatchExists() {
 		Concept mockConcept = new Concept();
 		mockConcept.addDescription(new ConceptDescription("en desc", new Locale("en")));
 		mockConcept.addDescription(new ConceptDescription("en_US desc", new Locale("en", "US")));
@@ -137,7 +137,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getDescription(Locale,null)
 	 */
 	@Test
-	public void getDescription_shouldReturnMatchOnLanguageOnly() throws Exception {
+	public void getDescription_shouldReturnMatchOnLanguageOnly() {
 		Concept mockConcept = new Concept();
 		mockConcept.addDescription(new ConceptDescription("en desc", new Locale("en")));
 		
@@ -148,7 +148,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getDescription(Locale,null)
 	 */
 	@Test
-	public void getDescription_shouldReturnMatchOnLocaleExactly() throws Exception {
+	public void getDescription_shouldReturnMatchOnLocaleExactly() {
 		Concept mockConcept = new Concept();
 		mockConcept.addDescription(new ConceptDescription("en_US desc", new Locale("en", "US")));
 		
@@ -159,7 +159,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getName(Locale,null)
 	 */
 	@Test
-	public void getName_shouldNotFailIfNoNamesAreDefined() throws Exception {
+	public void getName_shouldNotFailIfNoNamesAreDefined() {
 		Concept concept = new Concept();
 		Assert.assertNull(concept.getName(new Locale("en"), false));
 		Assert.assertNull(concept.getName(new Locale("en"), true));
@@ -169,7 +169,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getName(Locale,null)
 	 */
 	@Test
-	public void getName_shouldReturnExactNameLocaleMatchGivenExactEqualsTrue() throws Exception {
+	public void getName_shouldReturnExactNameLocaleMatchGivenExactEqualsTrue() {
 		Locale definedNameLocale = new Locale("en", "US");
 		Locale localeToSearch = new Locale("en", "US");
 		
@@ -187,7 +187,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getName(Locale,null)
 	 */
 	@Test
-	public void getName_shouldReturnNullIfNoNamesAreFoundInLocaleGivenExactEqualsTrue() throws Exception {
+	public void getName_shouldReturnNullIfNoNamesAreFoundInLocaleGivenExactEqualsTrue() {
 		Locale nonMatchingNameLocale = new Locale("en", "US");
 		Locale localeToSearch = new Locale("en");
 		
@@ -200,7 +200,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getName(Locale,false)
 	 */
 	@Test
-	public void getName_shouldReturnNameWithinSameLanguageIfExactEqualsFalse() throws Exception {
+	public void getName_shouldReturnNameWithinSameLanguageIfExactEqualsFalse() {
 		Locale localeToSearch = new Locale("en");
 		
 		Concept concept = new Concept();
@@ -212,7 +212,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getNames(Boolean)
 	 */
 	@Test
-	public void getNamesBoolean_shouldNotReturnVoidedConceptName() throws Exception {
+	public void getNamesBoolean_shouldNotReturnVoidedConceptName() {
 		Locale localeToSearch = new Locale("en");
 		
 		Concept concept = new Concept();
@@ -230,7 +230,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getNames()
 	 */
 	@Test
-	public void getNames_shouldNotReturnVoidedConceptName() throws Exception {
+	public void getNames_shouldNotReturnVoidedConceptName() {
 		Locale localeToSearch = new Locale("en");
 		
 		Concept concept = new Concept();
@@ -246,7 +246,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getNames(Locale)
 	 */
 	@Test
-	public void getNamesLocale_shouldReturnNonVoidedConceptName() throws Exception {
+	public void getNamesLocale_shouldReturnNonVoidedConceptName() {
 		Locale localeToSearch = new Locale("en");
 		Concept concept = new Concept();
 		
@@ -262,7 +262,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getNames(Locale)
 	 */
 	@Test
-	public void getNamesLocale_shouldReturnEmptyCollection() throws Exception {
+	public void getNamesLocale_shouldReturnEmptyCollection() {
 		Locale localeToSearch = new Locale("en");
 		Concept concept = new Concept();
 		
@@ -274,7 +274,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getBestName(Locale)
 	 */
 	@Test
-	public void getBestNameLocale_shouldReturnNull() throws Exception {
+	public void getBestNameLocale_shouldReturnNull() {
 		Locale localeToSearch = new Locale("en");
 		Concept concept = new Concept();
 		ConceptName conceptName = concept.getName(localeToSearch);
@@ -285,7 +285,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getAnswers()
 	 */
 	@Test
-	public void getAnswers_shouldNotReturnNullIfAnswersListIsNull() throws Exception {
+	public void getAnswers_shouldNotReturnNullIfAnswersListIsNull() {
 		Concept c = new Concept();
 		c.setAnswers(null);
 		Assert.assertNotNull(c.getAnswers());
@@ -297,7 +297,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getAnswers()
 	 */
 	@Test
-	public void getAnswers_shouldInitAnswersObject() throws Exception {
+	public void getAnswers_shouldInitAnswersObject() {
 		Concept c = new Concept();
 		c.setAnswers(null); //make sure the list is null
 		Assert.assertEquals(c.getAnswers(), c.getAnswers());
@@ -307,7 +307,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addAnswer(ConceptAnswer)
 	 */
 	@Test
-	public void addAnswer_shouldNotFailIfAnswersListIsNull() throws Exception {
+	public void addAnswer_shouldNotFailIfAnswersListIsNull() {
 		ConceptAnswer ca = new ConceptAnswer(123);
 		Concept c = new Concept();
 		c.setAnswers(null); // make sure the list is null
@@ -318,7 +318,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getAnswers()
 	 */
 	@Test
-	public void getAnswers_shouldReturnRetiredByDefault() throws Exception {
+	public void getAnswers_shouldReturnRetiredByDefault() {
 		ConceptAnswer ca = new ConceptAnswer(new Concept(123));
 		Concept c = new Concept();
 		Assert.assertEquals(0, c.getAnswers().size());
@@ -336,7 +336,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getAnswers()
 	 */
 	@Test
-	public void getAnswers_shouldNotReturnRetiredIfFalse() throws Exception {
+	public void getAnswers_shouldNotReturnRetiredIfFalse() {
 		ConceptAnswer ca = new ConceptAnswer(new Concept(123));
 		Concept c = new Concept();
 		Assert.assertEquals(0, c.getAnswers(false).size());
@@ -354,7 +354,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getAnswers()
 	 */
 	@Test
-	public void getAnswers_shouldReturnRetiredIfTrue() throws Exception {
+	public void getAnswers_shouldReturnRetiredIfTrue() {
 		ConceptAnswer ca = new ConceptAnswer(new Concept(123));
 		Concept c = new Concept();
 		Assert.assertEquals(0, c.getAnswers(true).size());
@@ -372,7 +372,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addAnswer(ConceptAnswer)
 	 */
 	@Test
-	public void addAnswer_shouldSetTheSortWeightToTheMaxPlusOneIfNotProvided() throws Exception {
+	public void addAnswer_shouldSetTheSortWeightToTheMaxPlusOneIfNotProvided() {
 		ConceptAnswer ca = new ConceptAnswer(123);
 		Concept c = new Concept();
 		c.setAnswers(null);//make sure null list
@@ -388,7 +388,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#setPreferredName(ConceptName)
 	 */
 	@Test
-	public void setPreferredName_shouldAddTheNameToTheListOfNamesIfItNotAmongThemBefore() throws Exception {
+	public void setPreferredName_shouldAddTheNameToTheListOfNamesIfItNotAmongThemBefore() {
 		Locale primaryLocale = Locale.US;
 		Concept testConcept = createMockConcept(1, primaryLocale);
 		ConceptName newPreferredName = createMockConceptName(3, primaryLocale, null, false);
@@ -401,7 +401,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getFullySpecifiedName(Locale)
 	 */
 	@Test
-	public void getFullySpecifiedName_shouldReturnTheNameMarkedAsFullySpecifiedForTheGivenLocale() throws Exception {
+	public void getFullySpecifiedName_shouldReturnTheNameMarkedAsFullySpecifiedForTheGivenLocale() {
 		Locale primaryLocale = Locale.US;
 		Concept testConcept = createMockConcept(1, primaryLocale);
 		ConceptName fullySpecifiedName_FR = createMockConceptName(3, new Locale("fr"), ConceptNameType.FULLY_SPECIFIED, true);
@@ -415,7 +415,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addSetMember(Concept,int)
 	 */
 	@Test
-	public void addSetMember_shouldAddTheConceptToTheCurrentListOfConceptSet() throws Exception {
+	public void addSetMember_shouldAddTheConceptToTheCurrentListOfConceptSet() {
 		Concept concept = new Concept();
 		Concept setMember = new Concept(1);
 		
@@ -431,7 +431,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addSetMember(Concept)
 	 */
 	@Test
-	public void addSetMember_shouldAddConceptAsAConceptSet() throws Exception {
+	public void addSetMember_shouldAddConceptAsAConceptSet() {
 		Concept concept = new Concept();
 		Concept setMember = new Concept(1);
 		concept.addSetMember(setMember);
@@ -445,7 +445,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addSetMember(Concept,int)
 	 */
 	@Test
-	public void addSetMember_shouldAssignTheCallingComponentAsParentToTheConceptSet() throws Exception {
+	public void addSetMember_shouldAssignTheCallingComponentAsParentToTheConceptSet() {
 		Concept concept = new Concept();
 		Concept setMember = new Concept(11);
 		concept.addSetMember(setMember);
@@ -459,7 +459,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addSetMember(Concept)
 	 */
 	@Test
-	public void addSetMember_shouldAppendConceptToExistingConceptSet() throws Exception {
+	public void addSetMember_shouldAppendConceptToExistingConceptSet() {
 		Concept concept = new Concept();
 		Concept setMember1 = new Concept(1);
 		concept.addSetMember(setMember1);
@@ -473,7 +473,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addSetMember(Concept)
 	 */
 	@Test
-	public void addSetMember_shouldPlaceTheNewConceptLastInTheList() throws Exception {
+	public void addSetMember_shouldPlaceTheNewConceptLastInTheList() {
 		Concept concept = new Concept();
 		Concept setMember1 = new Concept(1);
 		concept.addSetMember(setMember1, 3);
@@ -487,7 +487,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getSetMembers()
 	 */
 	@Test
-	public void getSetMembers_shouldReturnConceptSetMembersSortedAccordingToTheSortWeight() throws Exception {
+	public void getSetMembers_shouldReturnConceptSetMembersSortedAccordingToTheSortWeight() {
 		Concept c = new Concept();
 		ConceptSet set0 = new ConceptSet(new Concept(0), 3.0);
 		ConceptSet set1 = new ConceptSet(new Concept(1), 2.0);
@@ -514,7 +514,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getSetMembers()
 	 */
 	@Test
-	public void getSetMembers_shouldReturnConceptSetMembersSortedWithRetiredLast() throws Exception {
+	public void getSetMembers_shouldReturnConceptSetMembersSortedWithRetiredLast() {
 		Concept c = new Concept();
 		Concept retiredConcept = new Concept(3);
 		retiredConcept.setRetired(true);
@@ -554,7 +554,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getSetMembers()
 	 */
 	@Test
-	public void getSetMembers_shouldReturnAllTheConceptMembersOfCurrentConcept() throws Exception {
+	public void getSetMembers_shouldReturnAllTheConceptMembersOfCurrentConcept() {
 		Concept c = new Concept();
 		
 		Concept setMember1 = new Concept(12345);
@@ -574,7 +574,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getSetMembers()
 	 */
 	@Test(expected = UnsupportedOperationException.class)
-	public void getSetMembers_shouldReturnUnmodifiableListOfConceptMemberList() throws Exception {
+	public void getSetMembers_shouldReturnUnmodifiableListOfConceptMemberList() {
 		Concept c = new Concept();
 		c.addSetMember(new Concept(12345));
 		List<Concept> setMembers = c.getSetMembers();
@@ -587,7 +587,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addSetMember(Concept)
 	 */
 	@Test
-	public void addSetMember_shouldAppendConceptToTheExistingListOfConceptSet() throws Exception {
+	public void addSetMember_shouldAppendConceptToTheExistingListOfConceptSet() {
 		Concept concept = new Concept();
 		Concept firstSetMember = new Concept(2);
 		concept.addSetMember(firstSetMember);
@@ -605,7 +605,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addSetMember(Concept,int)
 	 */
 	@Test
-	public void addSetMember_shouldAssignTheGivenConceptAsAConceptSet() throws Exception {
+	public void addSetMember_shouldAssignTheGivenConceptAsAConceptSet() {
 		Concept concept = new Concept();
 		Concept setMember = new Concept(2);
 		concept.addSetMember(setMember, 0);
@@ -618,7 +618,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addSetMember(Concept,int)
 	 */
 	@Test
-	public void addSetMember_shouldInsertTheConceptBeforeTheFirstWithZeroIndex() throws Exception {
+	public void addSetMember_shouldInsertTheConceptBeforeTheFirstWithZeroIndex() {
 		Concept concept = new Concept();
 		Concept firstSetMember = new Concept(2);
 		concept.addSetMember(firstSetMember);
@@ -635,7 +635,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addSetMember(Concept,int)
 	 */
 	@Test
-	public void addSetMember_shouldInsertTheConceptAtTheEndWithNegativeOneIndex() throws Exception {
+	public void addSetMember_shouldInsertTheConceptAtTheEndWithNegativeOneIndex() {
 		Concept concept = new Concept();
 		Concept firstSetMember = new Concept(2);
 		concept.addSetMember(firstSetMember);
@@ -651,7 +651,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addSetMember(Concept,int)
 	 */
 	@Test
-	public void addSetMember_shouldInsertTheConceptInTheThirdSlot() throws Exception {
+	public void addSetMember_shouldInsertTheConceptInTheThirdSlot() {
 		Concept concept = new Concept();
 		Concept firstSetMember = new Concept(2);
 		concept.addSetMember(firstSetMember);
@@ -674,7 +674,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getAllConceptNameLocales_shouldReturnAllLocalesForConceptNamesForThisConceptWithoutDuplicates()
-	        throws Exception {
+	{
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("name1", new Locale("en")));
 		concept.addName(new ConceptName("name2", new Locale("en", "US")));
@@ -693,7 +693,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPreferredName_shouldReturnTheFullySpecifiedNameIfNoNameIsExplicitlyMarkedAsLocalePreferred()
-	        throws Exception {
+	{
 		Concept testConcept = createMockConcept(1, Locale.US);
 		//preferred name in en_US
 		ConceptName preferredNameEN_US = createMockConceptName(3, Locale.US, null, false);
@@ -709,7 +709,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getPreferredName(Locale)
 	 */
 	@Test
-	public void getPreferredName_shouldReturnTheConceptNameExplicitlyMarkedAsLocalePreferred() throws Exception {
+	public void getPreferredName_shouldReturnTheConceptNameExplicitlyMarkedAsLocalePreferred() {
 		Concept testConcept = createMockConcept(1, Locale.US);
 		//preferred name in en_US
 		ConceptName preferredNameEN_US = createMockConceptName(3, Locale.US, null, true);
@@ -725,7 +725,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getShortestName(Locale,Boolean)
 	 */
 	@Test
-	public void getShortestName_shouldReturnTheShortestNameForTheConceptFromAnyLocaleIfExactIsFalse() throws Exception {
+	public void getShortestName_shouldReturnTheShortestNameForTheConceptFromAnyLocaleIfExactIsFalse() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("shortName123", Context.getLocale()));
 		concept.addName(new ConceptName("shortName12", Context.getLocale()));
@@ -738,7 +738,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getShortestName(Locale,Boolean)
 	 */
 	@Test
-	public void getShortestName_shouldReturnTheShortestNameInAGivenLocaleForAConceptIfExactIsTrue() throws Exception {
+	public void getShortestName_shouldReturnTheShortestNameInAGivenLocaleForAConceptIfExactIsTrue() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("shortName123", Context.getLocale()));
 		concept.addName(new ConceptName("shortName12", Context.getLocale()));
@@ -751,7 +751,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#setFullySpecifiedName(ConceptName)
 	 */
 	@Test
-	public void setFullySpecifiedName_shouldAddTheNameToTheListOfNamesIfItNotAmongThemBefore() throws Exception {
+	public void setFullySpecifiedName_shouldAddTheNameToTheListOfNamesIfItNotAmongThemBefore() {
 		Concept concept = createMockConcept(1, Context.getLocale());
 		int expectedNumberOfNames = concept.getNames().size() + 1;
 		concept.setFullySpecifiedName(new ConceptName("some name", Context.getLocale()));
@@ -762,7 +762,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#setFullySpecifiedName(ConceptName)
 	 */
 	@Test
-	public void setFullySpecifiedName_shouldConvertThePreviousFullySpecifiedNameIfAnyToASynonym() throws Exception {
+	public void setFullySpecifiedName_shouldConvertThePreviousFullySpecifiedNameIfAnyToASynonym() {
 		Concept concept = createMockConcept(1, Context.getLocale());
 		ConceptName oldFullySpecifiedName = concept.getFullySpecifiedName(Context.getLocale());
 		//sanity check
@@ -776,7 +776,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#setFullySpecifiedName(ConceptName)
 	 */
 	@Test
-	public void setFullySpecifiedName_shouldSetTheConceptNameTypeOfTheSpecifiedNameToFullySpecified() throws Exception {
+	public void setFullySpecifiedName_shouldSetTheConceptNameTypeOfTheSpecifiedNameToFullySpecified() {
 		Concept concept = new Concept();
 		ConceptName cn = new ConceptName("some name", Context.getLocale());
 		concept.setFullySpecifiedName(cn);
@@ -787,7 +787,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#setShortName(ConceptName)
 	 */
 	@Test
-	public void setShortName_shouldAddTheNameToTheListOfNamesIfItNotAmongThemBefore() throws Exception {
+	public void setShortName_shouldAddTheNameToTheListOfNamesIfItNotAmongThemBefore() {
 		Concept concept = createMockConcept(1, Context.getLocale());
 		int expectedNumberOfNames = concept.getNames().size() + 1;
 		concept.setShortName(new ConceptName("some name", Context.getLocale()));
@@ -798,7 +798,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#setShortName(ConceptName)
 	 */
 	@Test
-	public void setShortName_shouldConvertThePreviousShortNameIfAnyToASynonym() throws Exception {
+	public void setShortName_shouldConvertThePreviousShortNameIfAnyToASynonym() {
 		Concept concept = createMockConcept(1, Context.getLocale());
 		ConceptName oldShortName = concept.getShortNameInLocale(Context.getLocale());
 		//sanity check
@@ -812,7 +812,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#setShortName(ConceptName)
 	 */
 	@Test
-	public void setShortName_shouldSetTheConceptNameTypeOfTheSpecifiedNameToShort() throws Exception {
+	public void setShortName_shouldSetTheConceptNameTypeOfTheSpecifiedNameToShort() {
 		Concept concept = new Concept();
 		ConceptName cn = new ConceptName("some name", Context.getLocale());
 		ConceptName FullySpecName = new ConceptName("fully spec name", Context.getLocale());
@@ -836,7 +836,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getShortestName(Locale,Boolean)
 	 */
 	@Test
-	public void getShortestName_shouldReturnTheNameMarkedAsTheShortNameForTheLocaleIfItIsPresent() throws Exception {
+	public void getShortestName_shouldReturnTheNameMarkedAsTheShortNameForTheLocaleIfItIsPresent() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("shortName123", Context.getLocale()));
 		concept.setShortName(new ConceptName("shortName12", Context.getLocale()));
@@ -848,7 +848,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getShortestName(Locale,Boolean)
 	 */
 	@Test
-	public void getShortestName_shouldReturnNullIfTheirAreNoNamesInTheSpecifiedLocaleAndExactIsTrue() throws Exception {
+	public void getShortestName_shouldReturnNullIfTheirAreNoNamesInTheSpecifiedLocaleAndExactIsTrue() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("shortName123", Context.getLocale()));
 		concept.addName(new ConceptName("shortName12", Context.getLocale()));
@@ -860,7 +860,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#setPreferredName(ConceptName)
 	 */
 	@Test(expected = APIException.class)
-	public void setPreferredName_shouldFailIfThePreferredNameToSetToIsAnIndexTerm() throws Exception {
+	public void setPreferredName_shouldFailIfThePreferredNameToSetToIsAnIndexTerm() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name", Context.getLocale()));
 		ConceptName preferredName = new ConceptName("some pref name", Context.getLocale());
@@ -873,7 +873,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addName(ConceptName)
 	 */
 	@Test
-	public void addName_shouldMarkTheFirstNameAddedAsFullySpecified() throws Exception {
+	public void addName_shouldMarkTheFirstNameAddedAsFullySpecified() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name", Context.getLocale()));
 		Assert.assertEquals("some name", concept.getFullySpecifiedName(Context.getLocale()).getName());
@@ -883,7 +883,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addName(ConceptName)
 	 */
 	@Test
-	public void addName_shouldReplaceTheOldFullySpecifiedNameWithACurrentOne() throws Exception {
+	public void addName_shouldReplaceTheOldFullySpecifiedNameWithACurrentOne() {
 		Concept concept = new Concept();
 		ConceptName oldFullySpecName = new ConceptName("some name", Context.getLocale());
 		concept.addName(oldFullySpecName);
@@ -899,7 +899,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addName(ConceptName)
 	 */
 	@Test
-	public void addName_shouldReplaceTheOldPreferredNameWithACurrentOne() throws Exception {
+	public void addName_shouldReplaceTheOldPreferredNameWithACurrentOne() {
 		Concept concept = new Concept();
 		ConceptName oldPreferredName = new ConceptName("some name", Context.getLocale());
 		oldPreferredName.setLocalePreferred(true);
@@ -915,7 +915,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addName(ConceptName)
 	 */
 	@Test
-	public void addName_shouldReplaceTheOldShortNameWithACurrentOne() throws Exception {
+	public void addName_shouldReplaceTheOldShortNameWithACurrentOne() {
 		Concept concept = new Concept();
 		ConceptName oldShortName = new ConceptName("some name", Context.getLocale());
 		oldShortName.setConceptNameType(ConceptNameType.SHORT);
@@ -928,7 +928,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getSynonyms_shouldSortPreferredFirst() throws Exception {
+	public void getSynonyms_shouldSortPreferredFirst() {
 		Concept concept = new Concept();
 		ConceptName conceptNameNotPreferred = new ConceptName("Non Preferred", Locale.ENGLISH);
 		ConceptName conceptNameNotPreferred2 = new ConceptName("Non Preferred2", Locale.ENGLISH);
@@ -947,7 +947,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getShortNameInLocale_shouldReturnTheBestShortNameForAConcept() throws Exception {
+	public void getShortNameInLocale_shouldReturnTheBestShortNameForAConcept() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("Giant cat", new Locale("en")));
 		concept.addName(new ConceptName("Gato gigante", new Locale("es", "MX")));
@@ -964,7 +964,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getPreferredName_shouldReturnTheBesLocalePreferred() throws Exception {
+	public void getPreferredName_shouldReturnTheBesLocalePreferred() {
 		Concept testConcept = createMockConcept(1, Locale.US);
 		// preferred name in en
 		ConceptName preferredNameEN = createMockConceptName(4, new Locale("en"), null, true);
@@ -1024,7 +1024,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getName()
 	 */
 	@Test
-	public void getName_shouldReturnNameInBroaderLocaleIncaseNoneIsFoundInSpecificOne() throws Exception {
+	public void getName_shouldReturnNameInBroaderLocaleIncaseNoneIsFoundInSpecificOne() {
 		Locale locale = new Locale("en");
 		Locale localeToSearch = new Locale("en", "UK");
 		Concept concept = new Concept();
@@ -1036,7 +1036,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getName()
 	 */
 	@Test
-	public void getName_shouldReturnNameAnyNameIfNoLocaleMatchGivenExactEqualsFalse() throws Exception {
+	public void getName_shouldReturnNameAnyNameIfNoLocaleMatchGivenExactEqualsFalse() {
 		Locale locale = new Locale("en");
 		Locale localeToSearch = new Locale("fr");
 		Concept concept = new Concept();
@@ -1047,7 +1047,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getDescriptions()
 	 */
 	@Test
-	public void getDescriptions_shouldNotReturnNullIfDescriptionsListIsNull() throws Exception {
+	public void getDescriptions_shouldNotReturnNullIfDescriptionsListIsNull() {
 		Concept c = new Concept();
 		c.setDescriptions(null);
 		Assert.assertTrue(c.getDescriptions().isEmpty());
@@ -1092,7 +1092,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#removeDescription(ConceptDescription)
 	 */
 	@Test
-	public void removeDescription_shouldRemoveDescriptionPassedFromListOfDescriptions() throws Exception {
+	public void removeDescription_shouldRemoveDescriptionPassedFromListOfDescriptions() {
 		Concept c = new Concept();
 		ConceptDescription c1 = new ConceptDescription(new Integer(1));
 		c1.setDescription("Description 1");
@@ -1112,7 +1112,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#removeConceptMapping(ContentMap)
 	 */
 	@Test
-	public void removeConceptMapping_shouldRemoveConceptMapPassedFromListOfMappings() throws Exception {
+	public void removeConceptMapping_shouldRemoveConceptMapPassedFromListOfMappings() {
 		Concept c = new Concept();
 		ConceptMap c1 = new ConceptMap(new Integer(1));
 		c1.setConceptMapType(new ConceptMapType(new Integer(1)));
@@ -1168,7 +1168,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#addSetMember(Concept)
 	 */
 	@Test
-	public void addSetMember_shouldAppendConceptToExistingConceptSetHavingRetiredConcept() throws Exception {
+	public void addSetMember_shouldAppendConceptToExistingConceptSetHavingRetiredConcept() {
 		Concept concept = new Concept();
 		Concept setMember1 = new Concept(1);
 		setMember1.setRetired(true);

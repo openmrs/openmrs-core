@@ -23,7 +23,7 @@ public class DrugsByNameComparatorTest {
 	 */
 	@Test
 	public void compareDrugNamesIgnoringNumericals_shouldReturnNegativeIfNameForDrug1ComesBeforeThatOfDrug2()
-	        throws Exception {
+	{
 		Drug drug1 = new Drug();
 		drug1.setName("ABCD");
 		Drug drug2 = new Drug();
@@ -37,7 +37,7 @@ public class DrugsByNameComparatorTest {
 	 * @see DrugsByNameComparator#compareDrugNamesIgnoringNumericals(Drug,Drug)
 	 */
 	@Test
-	public void compareDrugNamesIgnoringNumericals_shouldReturnZeroIfNameForDrug1ComesBeforeThatOfDrug2() throws Exception {
+	public void compareDrugNamesIgnoringNumericals_shouldReturnZeroIfNameForDrug1ComesBeforeThatOfDrug2() {
 		Drug drug1 = new Drug();
 		drug1.setName("ABCD");
 		Drug drug2 = new Drug();
@@ -52,7 +52,7 @@ public class DrugsByNameComparatorTest {
 	 */
 	@Test
 	public void compareDrugNamesIgnoringNumericals_shouldReturnPositiveIfNameForDrug1ComesBeforeThatOfDrug2IgnoringDashes()
-	        throws Exception {
+	{
 		Drug drug1 = new Drug();
 		drug1.setName("AB-AB");
 		Drug drug2 = new Drug();
@@ -67,7 +67,7 @@ public class DrugsByNameComparatorTest {
 	 */
 	@Test
 	public void compareDrugNamesIgnoringNumericals_shouldReturnPositiveIfNameForDrug1ComesBeforeThatOfDrug2IgnoringNumerics()
-	        throws Exception {
+	{
 		Drug drug1 = new Drug();
 		drug1.setName("AB1AB");
 		Drug drug2 = new Drug();

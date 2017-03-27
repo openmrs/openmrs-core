@@ -9,6 +9,7 @@
  */
 package org.openmrs.customdatatype.datatype;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -26,19 +27,21 @@ public class DateDatatypeTest {
 	}
 	
 	/**
+	 * @throws ParseException
 	 * @see Date#deserialize(String)
 	 */
 	@Test
-	public void deserialize_shouldReconstructADateSerializedByThisHandler() throws Exception {
+	public void deserialize_shouldReconstructADateSerializedByThisHandler() throws ParseException {
 		Date date = new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-25");
 		Assert.assertEquals(date, datatype.deserialize(datatype.serialize(date)));
 	}
 	
 	/**
+	 * @throws ParseException
 	 * @see Date#serialize(java.util.Date)
 	 */
 	@Test
-	public void serialize_shouldConvertADateIntoAYmdStringRepresentation() throws Exception {
+	public void serialize_shouldConvertADateIntoAYmdStringRepresentation() throws ParseException {
 		Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2011-04-25 01:02:03");
 		Assert.assertEquals("2011-04-25", datatype.serialize(date));
 	}

@@ -26,7 +26,7 @@ public class BaseUnvoidHandlerTest {
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldUnsetTheVoidedBit() throws Exception {
+	public void handle_shouldUnsetTheVoidedBit() {
 		UnvoidHandler<Voidable> handler = new BaseUnvoidHandler();
 		Voidable voidable = new Person();
 		voidable.setVoided(true);
@@ -38,7 +38,7 @@ public class BaseUnvoidHandlerTest {
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldUnsetTheVoider() throws Exception {
+	public void handle_shouldUnsetTheVoider() {
 		UnvoidHandler<Voidable> handler = new BaseUnvoidHandler();
 		Voidable voidable = new Person();
 		voidable.setVoided(true);
@@ -51,7 +51,7 @@ public class BaseUnvoidHandlerTest {
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldUnsetTheDateVoided() throws Exception {
+	public void handle_shouldUnsetTheDateVoided() {
 		UnvoidHandler<Voidable> handler = new BaseUnvoidHandler();
 		Voidable voidable = new Person();
 		voidable.setVoided(true);
@@ -64,7 +64,7 @@ public class BaseUnvoidHandlerTest {
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldUnsetTheVoidReason() throws Exception {
+	public void handle_shouldUnsetTheVoidReason() {
 		UnvoidHandler<Voidable> handler = new BaseUnvoidHandler();
 		Voidable voidable = new Person();
 		voidable.setVoided(true);
@@ -77,7 +77,7 @@ public class BaseUnvoidHandlerTest {
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldOnlyActOnAlreadyVoidedObjects() throws Exception {
+	public void handle_shouldOnlyActOnAlreadyVoidedObjects() {
 		UnvoidHandler<Voidable> handler = new BaseUnvoidHandler();
 		Voidable voidable = new Person();
 		voidable.setVoided(false);
@@ -89,7 +89,7 @@ public class BaseUnvoidHandlerTest {
 	 * @see BaseUnvoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotActOnObjectsWithADifferentDateVoided() throws Exception {
+	public void handle_shouldNotActOnObjectsWithADifferentDateVoided() {
 		Date d = new Date(new Date().getTime() - 1000); // a time that isn't right now
 		
 		UnvoidHandler<Voidable> handler = new BaseUnvoidHandler();

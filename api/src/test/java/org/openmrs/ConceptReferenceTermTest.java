@@ -21,7 +21,7 @@ public class ConceptReferenceTermTest {
 	 * @see ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)
 	 */
 	@Test
-	public void addConceptReferenceTermMap_shouldSetTermAAsTheTermToWhichAMappingIsBeingAdded() throws Exception {
+	public void addConceptReferenceTermMap_shouldSetTermAAsTheTermToWhichAMappingIsBeingAdded() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm(2);
 		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(1), new ConceptMapType(1)));
 		Assert.assertEquals(true, term.equals(term.getConceptReferenceTermMaps().iterator().next().getTermA()));
@@ -31,7 +31,7 @@ public class ConceptReferenceTermTest {
 	 * @see ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)
 	 */
 	@Test
-	public void addConceptReferenceTermMap_shouldNotAddAMapWhereTermBIsItself() throws Exception {
+	public void addConceptReferenceTermMap_shouldNotAddAMapWhereTermBIsItself() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm(2);
 		term.setUuid("test uuid");
 		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(1), new ConceptMapType(1)));
@@ -44,7 +44,7 @@ public class ConceptReferenceTermTest {
 	 * @see ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)
 	 */
 	@Test
-	public void addConceptReferenceTermMap_shouldNotAddDuplicateConceptReferenceTermMaps() throws Exception {
+	public void addConceptReferenceTermMap_shouldNotAddDuplicateConceptReferenceTermMaps() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm(5);
 		ConceptReferenceTermMap map1 = new ConceptReferenceTermMap(1);
 		map1.setTermB(new ConceptReferenceTerm(1));

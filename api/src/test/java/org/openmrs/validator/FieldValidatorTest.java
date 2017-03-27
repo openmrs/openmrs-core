@@ -26,7 +26,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfNameIsNull() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNull() {
 		Field ff = new Field();
 		ff.setName(null);
 		FieldType ft = new FieldType();
@@ -47,7 +47,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfNameIsEmpty() throws Exception {
+	public void validate_shouldFailValidationIfNameIsEmpty() {
 		Field ff = new Field();
 		ff.setName("");
 		FieldType ft = new FieldType();
@@ -68,7 +68,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfNameIsAllWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfNameIsAllWhitespace() {
 		Field ff = new Field();
 		ff.setName("    ");
 		FieldType ft = new FieldType();
@@ -89,7 +89,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfSelectMultipleIsNull() throws Exception {
+	public void validate_shouldFailValidationIfSelectMultipleIsNull() {
 		Field ff = new Field();
 		ff.setName("good");
 		FieldType ft = new FieldType();
@@ -111,7 +111,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfRetiredIsNull() throws Exception {
+	public void validate_shouldFailValidationIfRetiredIsNull() {
 		Field ff = new Field();
 		ff.setName("good");
 		FieldType ft = new FieldType();
@@ -133,7 +133,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllFieldsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfAllFieldsAreCorrect() {
 		Field ff = new Field();
 		FieldType ft = new FieldType();
 		Boolean retired = new Boolean(false);
@@ -154,7 +154,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Field ff = new Field();
 		FieldType ft = new FieldType();
 		Boolean retired = new Boolean(false);
@@ -178,7 +178,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Field ff = new Field();
 		FieldType ft = new FieldType();
 		Boolean retired = new Boolean(false);

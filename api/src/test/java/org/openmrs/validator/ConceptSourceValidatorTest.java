@@ -23,7 +23,7 @@ import org.springframework.validation.Errors;
 public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 	
 	@Test
-	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() {
 		ConceptSource conceptSource = new ConceptSource();
 		conceptSource.setName(null);
 		conceptSource.setDescription("Some description");
@@ -47,7 +47,7 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptSourceValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() {
 
 		ConceptSource conceptSource = new ConceptSource();
 		conceptSource.setName("New name");
@@ -69,7 +69,7 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void validate_shouldPassValidationIfHl7CodeIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldPassValidationIfHl7CodeIsNullOrEmptyOrWhitespace() {
 		ConceptSource conceptSource = new ConceptSource();
 		conceptSource.setName("New name");
 		conceptSource.setDescription("Some description");
@@ -91,7 +91,7 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		ConceptSource conceptSource = new ConceptSource();
 		conceptSource.setName("New name");
 		conceptSource.setDescription("Some description");
@@ -102,7 +102,7 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		ConceptSource conceptSource = new ConceptSource();
 		conceptSource.setName("New name");
 		conceptSource.setDescription("Some description");
@@ -115,7 +115,7 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ConceptSource conceptSource = new ConceptSource();
 		conceptSource.setName(StringUtils.repeat("a", 51));
 		conceptSource.setDescription(StringUtils.repeat("a", 1025));

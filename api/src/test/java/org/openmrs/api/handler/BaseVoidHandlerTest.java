@@ -26,7 +26,7 @@ public class BaseVoidHandlerTest {
 	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetTheVoidedBit() throws Exception {
+	public void handle_shouldSetTheVoidedBit() {
 		VoidHandler<Voidable> handler = new BaseVoidHandler();
 		Voidable voidable = new Person();
 		voidable.setVoided(false);
@@ -38,7 +38,7 @@ public class BaseVoidHandlerTest {
 	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetTheVoidReason() throws Exception {
+	public void handle_shouldSetTheVoidReason() {
 		VoidHandler<Voidable> handler = new BaseVoidHandler();
 		Voidable voidable = new Person();
 		handler.handle(voidable, null, null, "THE REASON");
@@ -49,7 +49,7 @@ public class BaseVoidHandlerTest {
 	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetVoidedBy() throws Exception {
+	public void handle_shouldSetVoidedBy() {
 		VoidHandler<Voidable> handler = new BaseVoidHandler();
 		Voidable voidable = new Person();
 		handler.handle(voidable, new User(2), null, " ");
@@ -60,7 +60,7 @@ public class BaseVoidHandlerTest {
 	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotSetVoidedByIfNonNull() throws Exception {
+	public void handle_shouldNotSetVoidedByIfNonNull() {
 		VoidHandler<Voidable> handler = new BaseVoidHandler();
 		Voidable voidable = new Person();
 		voidable.setVoidedBy(new User(3));
@@ -72,7 +72,7 @@ public class BaseVoidHandlerTest {
 	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetDateVoided() throws Exception {
+	public void handle_shouldSetDateVoided() {
 		Date d = new Date();
 		
 		VoidHandler<Voidable> handler = new BaseVoidHandler();
@@ -85,7 +85,7 @@ public class BaseVoidHandlerTest {
 	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotSetDateVoidedIfNonNull() throws Exception {
+	public void handle_shouldNotSetDateVoidedIfNonNull() {
 		Date d = new Date(new Date().getTime() - 1000); // a time that is not "now"
 		
 		VoidHandler<Voidable> handler = new BaseVoidHandler();
@@ -100,7 +100,7 @@ public class BaseVoidHandlerTest {
 	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotSetTheVoidReasonIfAlreadyVoided() throws Exception {
+	public void handle_shouldNotSetTheVoidReasonIfAlreadyVoided() {
 		VoidHandler<Voidable> handler = new BaseVoidHandler();
 		Voidable voidable = new Person();
 		voidable.setVoided(true);
@@ -113,7 +113,7 @@ public class BaseVoidHandlerTest {
 	 * @see BaseVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetVoidedByEvenIfVoidedBitIsSetButVoidedByIsNull() throws Exception {
+	public void handle_shouldSetVoidedByEvenIfVoidedBitIsSetButVoidedByIsNull() {
 		VoidHandler<Voidable> handler = new BaseVoidHandler();
 		Voidable voidable = new Person();
 		voidable.setVoided(true);

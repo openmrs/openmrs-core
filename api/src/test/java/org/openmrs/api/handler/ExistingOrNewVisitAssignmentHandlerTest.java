@@ -37,7 +37,7 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		executeDataSet(ENC_INITIAL_DATA_XML);
 	}
 	
@@ -45,7 +45,7 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	public void beforeCreateEncounter_shouldAssignExistingVisitIfMatchFound() throws Exception {
+	public void beforeCreateEncounter_shouldAssignExistingVisitIfMatchFound() {
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
 		Assert.assertNull(encounter.getVisit());
 		
@@ -58,7 +58,7 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	public void beforeCreateEncounter_shouldAssignNewVisitIfNoMatchFound() throws Exception {
+	public void beforeCreateEncounter_shouldAssignNewVisitIfNoMatchFound() {
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
 		Assert.assertNull(encounter.getVisit());
 		
@@ -77,7 +77,7 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	public void beforeCreateEncounter_shouldAssignFirstVisitTypeIfMappingGlobalPropertyIsNotSet() throws Exception {
+	public void beforeCreateEncounter_shouldAssignFirstVisitTypeIfMappingGlobalPropertyIsNotSet() {
 		VisitType visitType = Context.getVisitService().getAllVisitTypes().get(0);
 		
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
@@ -99,7 +99,7 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	public void beforeCreateEncounter_shouldAssignMappingGlobalPropertyVisitType() throws Exception {
+	public void beforeCreateEncounter_shouldAssignMappingGlobalPropertyVisitType() {
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
 		Assert.assertNull(encounter.getVisit());
 		
@@ -126,7 +126,7 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	 * @see ExistingOrNewVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	public void beforeCreateEncounter_shouldResolveEncounterAndVisitTypeUuidsAsGlobalPropertyValues() throws Exception {
+	public void beforeCreateEncounter_shouldResolveEncounterAndVisitTypeUuidsAsGlobalPropertyValues() {
 		final String encounterTypeUuid = "759799ab-c9a5-435e-b671-77773ada74e4";
 		final String visitTypeUuid = "c0c579b0-8e59-401d-8a4a-976a0b183519";
 		Encounter encounter = Context.getEncounterService().getEncounter(1);

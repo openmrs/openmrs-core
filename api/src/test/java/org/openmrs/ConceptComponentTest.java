@@ -25,7 +25,7 @@ public class ConceptComponentTest extends BaseContextSensitiveTest {
 	 * @see Concept#getName(java.util.Locale, boolean)
 	 */
 	@Test
-	public void getName_shouldReturnANameInTheMatchingLocaleIfExactIsSetToFalse() throws Exception {
+	public void getName_shouldReturnANameInTheMatchingLocaleIfExactIsSetToFalse() {
 		Concept concept = new Concept();
 		ConceptName frenchConceptName = new ConceptName("frenchName", Locale.FRENCH);
 		ConceptName englishConceptName = new ConceptName("enqlishName", Locale.ENGLISH);

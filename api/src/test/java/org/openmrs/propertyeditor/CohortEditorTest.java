@@ -19,7 +19,7 @@ public class CohortEditorTest extends BaseContextSensitiveTest {
 	protected static final String COHORT_XML = "org/openmrs/api/include/CohortServiceTest-cohort.xml";
 	
 	@Before
-	public void prepareData() throws Exception {
+	public void prepareData() {
 		executeDataSet(COHORT_XML);
 	}
 	
@@ -27,7 +27,7 @@ public class CohortEditorTest extends BaseContextSensitiveTest {
 	 * @see CohortEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingId() throws Exception {
+	public void setAsText_shouldSetUsingId() {
 		CohortEditor editor = new CohortEditor();
 		editor.setAsText("1");
 		Assert.assertNotNull(editor.getValue());
@@ -37,7 +37,7 @@ public class CohortEditorTest extends BaseContextSensitiveTest {
 	 * @see CohortEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingUuid() throws Exception {
+	public void setAsText_shouldSetUsingUuid() {
 		CohortEditor editor = new CohortEditor();
 		editor.setAsText("h9a9m0i6-15e6-467c-9d4b-mbi7teu9lf0f");
 		Assert.assertNotNull(editor.getValue());

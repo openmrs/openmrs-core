@@ -26,7 +26,7 @@ public class ConceptAnswersEditorTest extends BaseContextSensitiveTest {
 	 * @see ConceptAnswersEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetTheSortWeightsWithTheLeastPossibleChanges() throws Exception {
+	public void setAsText_shouldSetTheSortWeightsWithTheLeastPossibleChanges() {
 		ConceptService service = Context.getConceptService();
 		Concept c = service.getConcept(21);
 		

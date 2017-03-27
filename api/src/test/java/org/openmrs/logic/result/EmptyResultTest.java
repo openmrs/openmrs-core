@@ -18,12 +18,12 @@ import org.junit.Test;
 public class EmptyResultTest {
 	
 	@Test
-	public void isEmpty_shouldReturnTrue() throws Exception {
+	public void isEmpty_shouldReturnTrue() {
 		Assert.assertTrue(new EmptyResult().isEmpty());
 	}
 	
 	@Test
-	public void isNull_shouldReturnTrue() throws Exception {
+	public void isNull_shouldReturnTrue() {
 		Assert.assertTrue(new EmptyResult().isNull());
 	}
 }

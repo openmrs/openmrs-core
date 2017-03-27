@@ -26,7 +26,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	 * 
 	 */
 	@Test
-	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() {
 		FieldType type = new FieldType();
 		type.setName(null);
 		type.setDescription("Humba humba humba ...");
@@ -51,7 +51,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	 * 
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		FieldType type = new FieldType();
 		type.setName("soccer");
 		
@@ -65,7 +65,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.validator.FieldTypeValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfFieldTypeNameIsDuplicate() throws Exception {
+	public void validate_shouldFailIfFieldTypeNameIsDuplicate() {
 		FieldType type = new FieldType();
 		type.setName("some field type");
 		
@@ -80,7 +80,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	 *
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		FieldType type = new FieldType();
 		type.setName("soccer");
 		
@@ -95,7 +95,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	 *
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		FieldType type = new FieldType();
 		type.setName("too long text too long text too long text too long text");
 		

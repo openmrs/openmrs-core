@@ -25,7 +25,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	 * @see ConceptNumeric#equals(Object)
 	 */
 	@Test
-	public void equals_shouldNotReturnTrueIfObjIsConcept() throws Exception {
+	public void equals_shouldNotReturnTrueIfObjIsConcept() {
 		ConceptNumeric cn = new ConceptNumeric(123);
 		Concept c = new Concept(123);
 		
@@ -34,7 +34,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void equals_shouldNotBeTheSameReference() throws Exception {
+	public void equals_shouldNotBeTheSameReference() {
 		Concept c = new Concept(123);
 		ConceptNumeric cn = new ConceptNumeric(c);
 		
@@ -47,7 +47,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldChangeConceptAnswerReferenceToParentConcept() throws Exception {
+	public void shouldChangeConceptAnswerReferenceToParentConcept() {
 		Concept c = new Concept(123);
 		c.addAnswer(new ConceptAnswer(1));
 		c.addAnswer(new ConceptAnswer(2));
@@ -59,7 +59,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldChangeConceptSetReferenceToParentConcept() throws Exception {
+	public void shouldChangeConceptSetReferenceToParentConcept() {
 		Concept c = new Concept(123);
 		c.addSetMember(new Concept(1));
 		c.addSetMember(new Concept(2));
@@ -71,7 +71,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldChangeConceptNameReferenceToParentConcept() throws Exception {
+	public void shouldChangeConceptNameReferenceToParentConcept() {
 		Concept c = new Concept(123);
 		c.addName(new ConceptName(1));
 		c.addName(new ConceptName(2));
@@ -83,7 +83,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldChangeConceptDescriptionReferenceToParentConcept() throws Exception {
+	public void shouldChangeConceptDescriptionReferenceToParentConcept() {
 		Concept c = new Concept(123);
 		c.addDescription(new ConceptDescription(1));
 		c.addDescription(new ConceptDescription(2));
@@ -95,7 +95,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldChangeConceptMapReferenceToParentConcept() throws Exception {
+	public void shouldChangeConceptMapReferenceToParentConcept() {
 		Concept c = new Concept(123);
 		c.getConceptMappings().add(new ConceptMap(1));
 		c.getConceptMappings().add(new ConceptMap(2));
@@ -110,7 +110,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	 * Tests if {@link org.openmrs.api.ConceptService#saveConcept(Concept)} saves a ConceptNumeric with allowDecimal value
 	 */
 	@Test
-	public void shouldSaveAConceptNumericWithAllowDecimalValue() throws Exception {
+	public void shouldSaveAConceptNumericWithAllowDecimalValue() {
 		Concept c = Context.getConceptService().getConcept(22);
 		ConceptNumeric cn = new ConceptNumeric(c);
 		cn.addDescription(new ConceptDescription("some description", null));

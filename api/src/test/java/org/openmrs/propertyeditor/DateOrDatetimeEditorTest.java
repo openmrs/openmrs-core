@@ -10,6 +10,7 @@
 package org.openmrs.propertyeditor;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.junit.Assert;
@@ -28,37 +29,41 @@ public class DateOrDatetimeEditorTest {
 	}
 	
 	/**
+	 * @throws ParseException
 	 * @see DateOrDatetimeEditor#getAsText()
 	 */
 	@Test
-	public void getAsText_shouldPrintDateWithoutTime() throws Exception {
+	public void getAsText_shouldPrintDateWithoutTime() throws ParseException {
 		ed.setValue(ymdhm.parse("2011-10-27 00:00"));
 		Assert.assertEquals("27/10/2011", ed.getAsText());
 	}
 	
 	/**
+	 * @throws ParseException
 	 * @see DateOrDatetimeEditor#getAsText()
 	 */
 	@Test
-	public void getAsText_shouldPrintDateAndTimeWithTime() throws Exception {
+	public void getAsText_shouldPrintDateAndTimeWithTime() throws ParseException {
 		ed.setValue(ymdhm.parse("2011-10-27 17:59"));
 		Assert.assertEquals("27/10/2011 17:59", ed.getAsText());
 	}
 	
 	/**
+	 * @throws ParseException
 	 * @see DateOrDatetimeEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldHandleDate() throws Exception {
+	public void setAsText_shouldHandleDate() throws ParseException {
 		ed.setAsText("27/10/2011");
 		Assert.assertEquals(ymdhm.parse("2011-10-27 00:00"), ed.getValue());
 	}
 	
 	/**
+	 * @throws ParseException
 	 * @see DateOrDatetimeEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldHandleDateAndTime() throws Exception {
+	public void setAsText_shouldHandleDateAndTime() throws ParseException {
 		ed.setAsText("27/10/2011 17:59");
 		Assert.assertEquals(ymdhm.parse("2011-10-27 17:59"), ed.getValue());
 	}
@@ -67,7 +72,7 @@ public class DateOrDatetimeEditorTest {
 	 * @see DateOrDatetimeEditor#setAsText(String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void setAsText_shouldFailOnPartialDate() throws Exception {
+	public void setAsText_shouldFailOnPartialDate() {
 		ed.setAsText("27/10");
 	}
 	
@@ -75,7 +80,7 @@ public class DateOrDatetimeEditorTest {
 	 * @see DateOrDatetimeEditor#setAsText(String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void setAsText_shouldFailOnPartialDateAndTime() throws Exception {
+	public void setAsText_shouldFailOnPartialDateAndTime() {
 		ed.setAsText("27/10/2011 17");
 	}
 }

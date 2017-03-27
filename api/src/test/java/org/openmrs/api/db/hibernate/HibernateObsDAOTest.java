@@ -31,7 +31,7 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 	private SessionFactory sessionFactory = null;
 	
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		if (dao == null)
 			// fetch the dao from the spring application context
 			dao = (HibernateObsDAO) applicationContext.getBean("obsDAO");
@@ -43,7 +43,7 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.api.db.hibernate.HibernateObsDAO#getObservations(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, Integer, Integer, java.util.Date, java.util.Date, boolean)
 	 */
 	@Test
-	public void getObservations_shouldBeOrderedCorrectly() throws Exception {
+	public void getObservations_shouldBeOrderedCorrectly() {
 		Session session = sessionFactory.getCurrentSession();
 		
 		List<Obs> obsListActual;

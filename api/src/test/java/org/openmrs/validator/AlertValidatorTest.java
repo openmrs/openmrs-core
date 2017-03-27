@@ -26,7 +26,7 @@ public class AlertValidatorTest extends BaseContextSensitiveTest {
 	 * @see AlertValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfAlertTextIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfAlertTextIsNullOrEmptyOrWhitespace() {
 		Alert alert = new Alert();
 		Assert.assertNull(alert.getText());
 		
@@ -50,7 +50,7 @@ public class AlertValidatorTest extends BaseContextSensitiveTest {
 	 * @see AlertValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredValuesAreSet() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredValuesAreSet() {
 		Alert alert = new Alert();
 		alert.setText("Alert Text");
 		
@@ -64,7 +64,7 @@ public class AlertValidatorTest extends BaseContextSensitiveTest {
 	 * @see AlertValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Alert alert = new Alert();
 		alert.setText("text");
 		
@@ -78,7 +78,7 @@ public class AlertValidatorTest extends BaseContextSensitiveTest {
 	 * @see AlertValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Alert alert = new Alert();
 		alert
 		        .setText("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

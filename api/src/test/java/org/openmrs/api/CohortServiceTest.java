@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -48,7 +49,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeAllTests() throws Exception {
+	public void runBeforeAllTests() {
 		service = Context.getCohortService();
 	}
 	
@@ -56,7 +57,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getCohort(String)
 	 */
 	@Test
-	public void getCohort_shouldOnlyGetNonVoidedCohortsByName() throws Exception {
+	public void getCohort_shouldOnlyGetNonVoidedCohortsByName() {
 		executeDataSet(COHORT_XML);
 		
 		// make sure we have two cohorts with the same name and the first is voided
@@ -77,7 +78,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getCohortByUuid(String)
 	 */
 	@Test
-	public void getCohortByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getCohortByUuid_shouldFindObjectGivenValidUuid() {
 		executeDataSet(COHORT_XML);
 		String uuid = "h9a9m0i6-15e6-467c-9d4b-mbi7teu9lf0f";
 		Cohort cohort = Context.getCohortService().getCohortByUuid(uuid);
@@ -88,7 +89,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getCohortByUuid(String)
 	 */
 	@Test
-	public void getCohortByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getCohortByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		assertNull(Context.getCohortService().getCohortByUuid("some invalid uuid"));
 	}
 	
@@ -96,7 +97,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#purgeCohort(Cohort)
 	 */
 	@Test
-	public void purgeCohort_shouldDeleteCohortFromDatabase() throws Exception {
+	public void purgeCohort_shouldDeleteCohortFromDatabase() {
 		executeDataSet(COHORT_XML);
 		List<Cohort> allCohorts = service.getAllCohorts(true);
 		assertEquals(2, allCohorts.size());
@@ -109,7 +110,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getCohorts(String)
 	 */
 	@Test
-	public void getCohorts_shouldMatchCohortsByPartialName() throws Exception {
+	public void getCohorts_shouldMatchCohortsByPartialName() {
 		executeDataSet(COHORT_XML);
 		List<Cohort> matchedCohorts = service.getCohorts("Example");
 		assertEquals(2, matchedCohorts.size());
@@ -125,7 +126,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#saveCohort(Cohort)
 	 */
 	@Test
-	public void saveCohort_shouldCreateNewCohorts() throws Exception {
+	public void saveCohort_shouldCreateNewCohorts() {
 		executeDataSet(COHORT_XML);
 		
 		// make sure we have two cohorts
@@ -148,7 +149,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#saveCohort(Cohort)
 	 */
 	@Test
-	public void saveCohort_shouldUpdateAnExistingCohort() throws Exception {
+	public void saveCohort_shouldUpdateAnExistingCohort() {
 		executeDataSet(COHORT_XML);
 		
 		// get and modify a cohort in the  data set
@@ -165,7 +166,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#voidCohort(Cohort,String)
 	 */
 	@Test
-	public void voidCohort_shouldFailIfReasonIsEmpty() throws Exception {
+	public void voidCohort_shouldFailIfReasonIsEmpty() {
 		executeDataSet(COHORT_XML);
 		
 		// Get a non-voided, valid Cohort and try to void it with a null reason
@@ -189,7 +190,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#voidCohort(Cohort,String)
 	 */
 	@Test
-	public void voidCohort_shouldFailIfReasonIsNull() throws Exception {
+	public void voidCohort_shouldFailIfReasonIsNull() {
 		executeDataSet(COHORT_XML);
 		
 		// Get a non-voided, valid Cohort and try to void it with a null reason
@@ -219,7 +220,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#voidCohort(Cohort,String)
 	 */
 	@Test
-	public void voidCohort_shouldNotChangeAnAlreadyVoidedCohort() throws Exception {
+	public void voidCohort_shouldNotChangeAnAlreadyVoidedCohort() {
 		executeDataSet(COHORT_XML);
 		
 		// make sure we have an already voided cohort
@@ -245,7 +246,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#voidCohort(Cohort,String)
 	 */
 	@Test
-	public void voidCohort_shouldVoidCohort() throws Exception {
+	public void voidCohort_shouldVoidCohort() {
 		executeDataSet(COHORT_XML);
 		
 		// make sure we have a cohort that is not voided
@@ -254,8 +255,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, allCohorts.size());
 		assertFalse(allCohorts.get(1).getVoided());
 		
-		// now void the cohort and see if it's voided
-		Cohort voidedCohort = service.voidCohort(allCohorts.get(1), "voided for Test");
+		service.voidCohort(allCohorts.get(1), "voided for Test");
 		assertTrue(allCohorts.get(1).getVoided());
 	}
 	
@@ -263,7 +263,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getCohort(Integer)
 	 */
 	@Test
-	public void getCohort_shouldGetCohortById() throws Exception {
+	public void getCohort_shouldGetCohortById() {
 		executeDataSet(COHORT_XML);
 		
 		Cohort cohortToGet = service.getCohort(2);
@@ -275,7 +275,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getCohort(String)
 	 */
 	@Test
-	public void getCohort_shouldGetCohortGivenAName() throws Exception {
+	public void getCohort_shouldGetCohortGivenAName() {
 		executeDataSet(COHORT_XML);
 		
 		Cohort cohortToGet = service.getCohort("Example Cohort");
@@ -286,7 +286,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getCohort(String)
 	 */
 	@Test
-	public void getCohort_shouldGetTheNonvoidedCohortIfTwoExistWithSameName() throws Exception {
+	public void getCohort_shouldGetTheNonvoidedCohortIfTwoExistWithSameName() {
 		executeDataSet(COHORT_XML);
 		
 		// check to see if both cohorts have the same name and if one is voided
@@ -305,7 +305,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getAllCohorts_shouldGetAllNonvoidedCohortsInDatabase() throws Exception {
+	public void getAllCohorts_shouldGetAllNonvoidedCohortsInDatabase() {
 		executeDataSet(COHORT_XML);
 		
 		// call the method
@@ -320,7 +320,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getAllCohorts()
 	 */
 	@Test
-	public void getAllCohorts_shouldNotReturnAnyVoidedCohorts() throws Exception {
+	public void getAllCohorts_shouldNotReturnAnyVoidedCohorts() {
 		executeDataSet(COHORT_XML);
 		
 		// make sure we have two cohorts, the first of which is voided
@@ -342,7 +342,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getAllCohorts(null)
 	 */
 	@Test
-	public void getAllCohorts_shouldReturnAllCohortsAndVoided() throws Exception {
+	public void getAllCohorts_shouldReturnAllCohortsAndVoided() {
 		executeDataSet(COHORT_XML);
 		
 		//data set should have two cohorts, one of which is voided
@@ -364,7 +364,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getCohorts(String)
 	 */
 	@Test
-	public void getCohorts_shouldNeverReturnNull() throws Exception {
+	public void getCohorts_shouldNeverReturnNull() {
 		executeDataSet(COHORT_XML);
 		
 		String invalidFragment = "Not Present";
@@ -377,7 +377,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getCohortsContainingPatient(Patient)
 	 */
 	@Test
-	public void getCohortsContainingPatient_shouldNotReturnVoidedCohorts() throws Exception {
+	public void getCohortsContainingPatient_shouldNotReturnVoidedCohorts() {
 		executeDataSet(COHORT_XML);
 		
 		// make sure we have two cohorts, the first of which is voided
@@ -402,7 +402,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#getCohortsContainingPatient(Patient)
 	 */
 	@Test
-	public void getCohortsContainingPatient_shouldReturnCohortsThatHaveGivenPatient() throws Exception {
+	public void getCohortsContainingPatient_shouldReturnCohortsThatHaveGivenPatient() {
 		executeDataSet(COHORT_XML);
 		
 		Patient patientToAdd = new Patient(7);
@@ -417,7 +417,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#addPatientToCohort(Cohort,Patient)
 	 */
 	@Test
-	public void addPatientToCohort_shouldAddAPatientAndSaveTheCohort() throws Exception {
+	public void addPatientToCohort_shouldAddAPatientAndSaveTheCohort() {
 		executeDataSet(COHORT_XML);
 		
 		// make a patient, add it using the method
@@ -431,7 +431,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see CohortService#addPatientToCohort(Cohort,Patient)
 	 */
 	@Test
-	public void addPatientToCohort_shouldNotFailIfCohortAlreadyContainsPatient() throws Exception {
+	public void addPatientToCohort_shouldNotFailIfCohortAlreadyContainsPatient() {
 		executeDataSet(COHORT_XML);
 		
 		// make a patient, add it using the method
@@ -449,7 +449,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void removePatientFromCohort_shouldNotFailIfCohortDoesNotContainPatient() throws Exception {
+	public void removePatientFromCohort_shouldNotFailIfCohortDoesNotContainPatient() {
 		executeDataSet(COHORT_XML);
 		
 		// make a patient
@@ -466,7 +466,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void removePatientFromCohort_shouldSaveCohortAfterRemovingPatient() throws Exception {
+	public void removePatientFromCohort_shouldSaveCohortAfterRemovingPatient() {
 		executeDataSet(COHORT_XML);
 		
 		// make a patient, add it using the method
@@ -483,7 +483,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void addMembershipToCohort_shouldAddMembershipToCohort() throws Exception {
+	public void addMembershipToCohort_shouldAddMembershipToCohort() {
 		executeDataSet(COHORT_XML);
 		
 		Patient p = new Patient(4);
@@ -493,7 +493,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void removeMembershipFromCohort_shouldRemoveMembershipFromCohort() throws Exception {
+	public void removeMembershipFromCohort_shouldRemoveMembershipFromCohort() {
 		executeDataSet(COHORT_XML);
 
 		CohortMembership memberToAddThenRemove = new CohortMembership(new Patient(4));
@@ -506,7 +506,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void patientVoided_shouldVoidMemberships() throws Exception {
+	public void patientVoided_shouldVoidMemberships() {
 		executeDataSet(COHORT_XML);
 
 		Cohort cohort = Context.getCohortService().getCohort(2);
@@ -528,7 +528,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void patientUnvoided_shouldUnvoidMemberships() throws Exception {
+	public void patientUnvoided_shouldUnvoidMemberships() {
 		executeDataSet(COHORT_XML);
 		
 		Cohort cohort = Context.getCohortService().getCohort(2);
@@ -553,7 +553,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getMemberships_shouldGetMembershipsAsOfADate() throws Exception {
+	public void getMemberships_shouldGetMembershipsAsOfADate() throws ParseException {
 		executeDataSet(COHORT_XML);
 
 		Cohort cohort = Context.getCohortService().getCohort(1);

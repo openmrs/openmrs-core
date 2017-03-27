@@ -28,7 +28,7 @@ public class CachedMessageSourceTest {
 	 * @see CachedMessageSource#getLocales()
 	 */
 	@Test
-	public void getLocales_shouldShouldBeAbleToContainMultipleLocales() throws Exception {
+	public void getLocales_shouldShouldBeAbleToContainMultipleLocales() {
 		CachedMessageSource testPmc = new CachedMessageSource();
 		testPmc.addPresentation(MockPresentationMessage.createMockPresentationMessage("en"));
 		testPmc.addPresentation(MockPresentationMessage.createMockPresentationMessage("fr"));
@@ -44,7 +44,7 @@ public class CachedMessageSourceTest {
 	 * @see CachedMessageSource#getPresentation(String,Locale)
 	 */
 	@Test
-	public void getPresentation_shouldMatchGetMessageWithPresentationMessage() throws Exception {
+	public void getPresentation_shouldMatchGetMessageWithPresentationMessage() {
 		CachedMessageSource testPmc = new CachedMessageSource();
 		
 		MockPresentationMessage mockPM = MockPresentationMessage.createMockPresentationMessage();

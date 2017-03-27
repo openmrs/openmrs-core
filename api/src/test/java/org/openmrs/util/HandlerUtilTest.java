@@ -44,7 +44,7 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 	 * @see HandlerUtil#getHandlerForType(Class, Class)
 	 */
 	@Test
-	public void getHandlersForType_shouldReturnAListOfAllClassesThatCanHandleThePassedType() throws Exception {
+	public void getHandlersForType_shouldReturnAListOfAllClassesThatCanHandleThePassedType() {
 		List<Validator> l = HandlerUtil.getHandlersForType(Validator.class, Order.class);
 		Assert.assertEquals(1, l.size());
 		Assert.assertEquals(OrderValidator.class, l.iterator().next().getClass());
@@ -56,7 +56,7 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 	 * @see HandlerUtil#getHandlerForType(Class, Class)
 	 */
 	@Test
-	public void getHandlersForType_shouldReturnAnEmptyListIfNoClassesCanHandleThePassedType() throws Exception {
+	public void getHandlersForType_shouldReturnAnEmptyListIfNoClassesCanHandleThePassedType() {
 		List<Validator> l = HandlerUtil.getHandlersForType(Validator.class, PatientValidator.class);
 		Assert.assertNotNull(l);
 		Assert.assertEquals(0, l.size());
@@ -66,7 +66,7 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 	 * @see HandlerUtil#getPreferredHandler(Class, Class)
 	 */
 	@Test
-	public void getPreferredHandler_shouldReturnThePreferredHandlerForThePassedHandlerAndType() throws Exception {
+	public void getPreferredHandler_shouldReturnThePreferredHandlerForThePassedHandlerAndType() {
 		Validator v = HandlerUtil.getPreferredHandler(Validator.class, DrugOrder.class);
 		Assert.assertEquals(DrugOrderValidator.class, v.getClass());
 	}
@@ -75,7 +75,7 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 	 * @see HandlerUtil#getPreferredHandler(Class, Class)
 	 */
 	@Test
-	public void getPreferredHandler_shouldThrowAAPIExceptionExceptionIfNoHandlerIsFound() throws Exception {
+	public void getPreferredHandler_shouldThrowAAPIExceptionExceptionIfNoHandlerIsFound() {
 		thrown.expect(APIException.class);
 		thrown.expectMessage(Context.getMessageSourceService().getMessage("handler.type.not.found", new Object[] { Validator.class.toString(), Integer.class }, null));
 		
@@ -83,14 +83,14 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getPreferredHandler_shouldReturnPatientValidatorForPatient() throws Exception {
+	public void getPreferredHandler_shouldReturnPatientValidatorForPatient() {
 		Validator handler = HandlerUtil.getPreferredHandler(Validator.class, Patient.class);
 		
 		assertThat(handler, is(instanceOf(PatientValidator.class)));
 	}
 	
 	@Test
-	public void getPreferredHandler_shouldReturnPersonValidatorForPerson() throws Exception {
+	public void getPreferredHandler_shouldReturnPersonValidatorForPerson() {
 		Validator handler = HandlerUtil.getPreferredHandler(Validator.class, Person.class);
 		
 		assertThat(handler, is(instanceOf(PersonValidator.class)));

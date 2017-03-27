@@ -27,7 +27,7 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 	 * @see CohortValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfPatientIsVoided() throws Exception {
+	public void validate_shouldFailIfPatientIsVoided() {
 		Cohort cohort = new Cohort(2);
 		Patient patient = new Patient(7);
 		patient.setVoided(true);
@@ -40,7 +40,7 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void validate_shouldPassIfPatientIsNonVoided() throws Exception {
+	public void validate_shouldPassIfPatientIsNonVoided() {
 		Cohort cohort = new Cohort(2);
 		cohort.addMembership(new CohortMembership(new Patient(7)));
 		Errors errors = new BindException(cohort, "cohort");
@@ -50,7 +50,7 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void validate_shouldPassIfMembershipisVoided() throws Exception {
+	public void validate_shouldPassIfMembershipisVoided() {
 		Cohort cohort = new Cohort(2);
 		CohortMembership cohortMembership = new CohortMembership(new Patient(7));
 		cohortMembership.setVoided(true);
@@ -62,7 +62,7 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void validate_shouldPassIfPatientAndMembershipAreVoided() throws Exception {
+	public void validate_shouldPassIfPatientAndMembershipAreVoided() {
 		Cohort cohort = new Cohort(2);
 		Patient patient = new Patient(7);
 		patient.setVoided(true);

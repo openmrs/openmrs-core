@@ -26,7 +26,7 @@ public class DrugTest extends BaseContextSensitiveTest {
 	 * @see Drug#addDrugReferenceMap(DrugReferenceMap)
 	 */
 	@Test
-	public void addDrugReferenceMap_shouldSetDrugAsTheDrugToWhichAMappingIsBeingAdded() throws Exception {
+	public void addDrugReferenceMap_shouldSetDrugAsTheDrugToWhichAMappingIsBeingAdded() {
 		Drug drug1 = new Drug();
 		drug1.setUuid(UUID_1);
 		Drug drug2 = new Drug();
@@ -42,7 +42,7 @@ public class DrugTest extends BaseContextSensitiveTest {
 	 * @see Drug#addDrugReferenceMap(DrugReferenceMap)
 	 */
 	@Test
-	public void addDrugReferenceMap_shouldShouldNotAddDuplicateDrugReferenceMaps() throws Exception {
+	public void addDrugReferenceMap_shouldShouldNotAddDuplicateDrugReferenceMaps() {
 		Drug drug = new Drug();
 		
 		DrugReferenceMap map1 = new DrugReferenceMap();

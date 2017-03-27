@@ -31,12 +31,12 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class ContextWithModuleTest extends BaseContextSensitiveTest {
 	
 	@Before
-	public void startupBeforeEachTest() throws Exception {
+	public void startupBeforeEachTest() {
 		ModuleUtil.startup(getRuntimeProperties());
 	}
 	
 	@After
-	public void cleanupAfterEachTest() throws Exception {
+	public void cleanupAfterEachTest() {
 		ModuleUtil.shutdown();
 	}
 	

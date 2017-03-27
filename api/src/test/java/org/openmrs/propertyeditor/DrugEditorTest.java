@@ -23,7 +23,7 @@ public class DrugEditorTest extends BaseContextSensitiveTest {
 	 * @see DrugEditor#setAsText(String)
 	 */
 	@Test
-	public void xsetAsText_shouldSetValueToTheDrugWithTheSpecifiedIdentifier() throws Exception {
+	public void xsetAsText_shouldSetValueToTheDrugWithTheSpecifiedIdentifier() {
 		DrugEditor drugEditor = new DrugEditor();
 		drugEditor.setAsText("2");
 		Drug drug = (Drug) drugEditor.getValue();
@@ -36,7 +36,7 @@ public class DrugEditorTest extends BaseContextSensitiveTest {
 	 * @see DrugEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingUuid() throws Exception {
+	public void setAsText_shouldSetUsingUuid() {
 		DrugEditor drugEditor = new DrugEditor();
 		drugEditor.setAsText("3cfcf118-931c-46f7-8ff6-7b876f0d4202");
 		Assert.assertNotNull(drugEditor.getValue());

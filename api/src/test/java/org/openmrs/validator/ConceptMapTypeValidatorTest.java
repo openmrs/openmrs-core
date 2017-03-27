@@ -25,7 +25,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheConceptMapTypeNameIsADuplicate() throws Exception {
+	public void validate_shouldFailIfTheConceptMapTypeNameIsADuplicate() {
 		ConceptMapType mapType = new ConceptMapType();
 		mapType.setName("is a");
 		Errors errors = new BindException(mapType, "mapType");
@@ -37,7 +37,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void validate_shouldFailIfTheConceptMapTypeObjectIsNull() throws Exception {
+	public void validate_shouldFailIfTheConceptMapTypeObjectIsNull() {
 		Errors errors = new BindException(new ConceptMapType(), "mapType");
 		new ConceptMapTypeValidator().validate(null, errors);
 	}
@@ -46,7 +46,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheNameIsAWhiteSpaceCharacter() throws Exception {
+	public void validate_shouldFailIfTheNameIsAWhiteSpaceCharacter() {
 		ConceptMapType mapType = new ConceptMapType();
 		mapType.setName(" ");
 		Errors errors = new BindException(mapType, "mapType");
@@ -58,7 +58,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheNameIsAnEmptyString() throws Exception {
+	public void validate_shouldFailIfTheNameIsAnEmptyString() {
 		ConceptMapType mapType = new ConceptMapType();
 		mapType.setName("");
 		Errors errors = new BindException(mapType, "mapType");
@@ -70,7 +70,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheNameIsNull() throws Exception {
+	public void validate_shouldFailIfTheNameIsNull() {
 		ConceptMapType mapType = new ConceptMapType();
 		Errors errors = new BindException(mapType, "mapType");
 		new ConceptMapTypeValidator().validate(mapType, errors);
@@ -81,7 +81,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassIfTheNameIsUniqueAmongstAllConceptMapTypeNames() throws Exception {
+	public void validate_shouldPassIfTheNameIsUniqueAmongstAllConceptMapTypeNames() {
 		ConceptMapType mapType = new ConceptMapType();
 		mapType.setName("unique-name");
 		Errors errors = new BindException(mapType, "mapType");
@@ -93,7 +93,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		ConceptMapType mapType = new ConceptMapType();
 		mapType.setName("unique-name");
 		mapType.setDescription("Description");
@@ -107,7 +107,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ConceptMapType mapType = new ConceptMapType();
 		mapType.setName("unique-name");
 		mapType

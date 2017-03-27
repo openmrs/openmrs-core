@@ -33,7 +33,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfThePatientsForTheVisitAndTheEncounterDontMatch() throws Exception {
+	public void validate_shouldFailIfThePatientsForTheVisitAndTheEncounterDontMatch() {
 		Encounter encounter = new Encounter();
 		encounter.setPatient(new Patient(2));
 		Visit visit = new Visit();
@@ -62,7 +62,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfPatientIsNotSet() throws Exception {
+	public void validate_shouldFailIfPatientIsNotSet() {
 		Encounter encounter = new Encounter();
 		Errors errors = new BindException(encounter, "encounter");
 		new EncounterValidator().validate(encounter, errors);
@@ -73,7 +73,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfEncounterDateTimeIsBeforeVisitStartDateTime() throws Exception {
+	public void validate_shouldFailIfEncounterDateTimeIsBeforeVisitStartDateTime() {
 		Visit visit = Context.getVisitService().getVisit(1);
 		
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
@@ -93,7 +93,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfEncounterDateTimeIsAfterVisitStopDateTime() throws Exception {
+	public void validate_shouldFailIfEncounterDateTimeIsAfterVisitStopDateTime() {
 		Visit visit = Context.getVisitService().getVisit(1);
 		
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
@@ -114,7 +114,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfEncounterDateTimeIsAfterCurrentDateTime() throws Exception {
+	public void validate_shouldFailIfEncounterDateTimeIsAfterCurrentDateTime() {
 		
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
 		
@@ -133,7 +133,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfEncounterDateTimeIsNotSet() throws Exception {
+	public void validate_shouldFailIfEncounterDateTimeIsNotSet() {
 		
 		Encounter encounter = new Encounter();
 		
@@ -146,7 +146,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfEncounterTypeIsNotSet() throws Exception {
+	public void validate_shouldFailIfEncounterTypeIsNotSet() {
 		Encounter encounter = new Encounter();
 		Errors errors = new BindException(encounter, "encounter");
 		new EncounterValidator().validate(encounter, errors);
@@ -157,7 +157,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Encounter encounter = new Encounter();
 		encounter.setEncounterType(new EncounterType());
 		encounter.setPatient(new Patient());
@@ -172,7 +172,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Encounter encounter = new Encounter();
 		encounter.setEncounterType(new EncounterType());
 		encounter.setPatient(new Patient());

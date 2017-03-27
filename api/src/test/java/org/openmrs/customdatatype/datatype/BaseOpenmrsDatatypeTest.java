@@ -20,7 +20,7 @@ public class BaseOpenmrsDatatypeTest {
 	 * @see BaseOpenmrsDatatype#serialize(org.openmrs.OpenmrsObject)
 	 */
 	@Test
-	public void serialize_shouldReturnTheUuidOfTheObject() throws Exception {
+	public void serialize_shouldReturnTheUuidOfTheObject() {
 		OpenmrsObject location = new Location();
 		String expectedUuid = "some uuid";
 		location.setUuid(expectedUuid);

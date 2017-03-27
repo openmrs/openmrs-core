@@ -35,7 +35,7 @@ public class ExistingVisitAssignmentHandlerTest extends BaseContextSensitiveTest
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		executeDataSet(ENC_INITIAL_DATA_XML);
 	}
 	
@@ -43,7 +43,7 @@ public class ExistingVisitAssignmentHandlerTest extends BaseContextSensitiveTest
 	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	public void beforeCreateEncounter_shouldAssignExistingVisitIfMatchFound() throws Exception {
+	public void beforeCreateEncounter_shouldAssignExistingVisitIfMatchFound() {
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
 		Assert.assertNull(encounter.getVisit());
 		
@@ -57,7 +57,7 @@ public class ExistingVisitAssignmentHandlerTest extends BaseContextSensitiveTest
 	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	public void beforeCreateEncounter_shouldNotAssignVisitIfNoMatchFound() throws Exception {
+	public void beforeCreateEncounter_shouldNotAssignVisitIfNoMatchFound() {
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
 		Assert.assertNull(encounter.getVisit());
 		
@@ -76,7 +76,7 @@ public class ExistingVisitAssignmentHandlerTest extends BaseContextSensitiveTest
 	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	public void beforeCreateEncounter_shouldNotAssignVisitWhichStoppedBeforeEncounterDate() throws Exception {
+	public void beforeCreateEncounter_shouldNotAssignVisitWhichStoppedBeforeEncounterDate() {
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
 		Assert.assertNull(encounter.getVisit());
 		

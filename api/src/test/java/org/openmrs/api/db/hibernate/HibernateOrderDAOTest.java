@@ -34,7 +34,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	private static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		executeDataSet(ORDER_SET);
 	}
 	
@@ -43,7 +43,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void saveOrderGroup_shouldSaveOrderGroup() throws Exception {
+	public void saveOrderGroup_shouldSaveOrderGroup() {
 		OrderGroup newOrderGroup = new OrderGroup();
 		
 		final Order order = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)

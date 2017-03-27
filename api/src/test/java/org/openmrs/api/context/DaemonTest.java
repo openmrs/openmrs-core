@@ -177,7 +177,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	 * 
 	 */
 	@Test
-	public void isDaemonUser_shouldReturnTrueForADaemonUser() throws Exception {
+	public void isDaemonUser_shouldReturnTrueForADaemonUser() {
 		User user = new User();
 		user.setUuid(Daemon.DAEMON_USER_UUID);
 		Assert.assertTrue(Daemon.isDaemonUser(user));
@@ -188,7 +188,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	 * 
 	 */
 	@Test
-	public void isDaemonUser_shouldReturnFalseIFTheUserIsNotADaemon() throws Exception {
+	public void isDaemonUser_shouldReturnFalseIFTheUserIsNotADaemon() {
 		User user = new User();
 		user.setUuid("any other value");
 		Assert.assertFalse(Daemon.isDaemonUser(user));

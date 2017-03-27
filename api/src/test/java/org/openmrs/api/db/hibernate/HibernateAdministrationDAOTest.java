@@ -29,7 +29,7 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	private SessionFactory sessionFactory;
 	
 	@Before
-	public void getSessionFactory() throws Exception {
+	public void getSessionFactory() {
 		sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 	}
 	
@@ -37,7 +37,7 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	 * @see HibernateAdministrationDAO#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationForLocationClassIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationForLocationClassIfFieldLengthsAreNotCorrect() {
 		Location location = new Location();
 		String longString = "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text";
 		
@@ -88,7 +88,7 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	 * @see HibernateAdministrationDAO#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		String errorCode = "error.exceededMaxLengthOfField";
 		String[] RoleFeilds = new String[] { "role", "description" };
 		Role role = new Role();
@@ -108,7 +108,7 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	 * @see HibernateAdministrationDAO#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationForLocationClassIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationForLocationClassIfFieldLengthsAreCorrect() {
 		Location location = new Location();
 		location.setName("name");
 		location.setDescription("description");
@@ -138,7 +138,7 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	 * @see HibernateAdministrationDAO#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Role role = new Role();
 		role.setRole("Bowling race car driver");
 		role.setDescription("description");

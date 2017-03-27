@@ -242,9 +242,10 @@ public class DatabaseUpdater {
 	 * Ask Liquibase if it needs to do any updates. Only looks at the {@link #CHANGE_LOG_FILE}
 	 *
 	 * @return true/false whether database updates are required
+	 * @throws LockException
 	 * @should always have a valid update to latest file
 	 */
-	public static boolean updatesRequired() throws Exception {
+	public static boolean updatesRequired() throws LockException {
 		log.debug("checking for updates");
 		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges();
 		
@@ -302,7 +303,7 @@ public class DatabaseUpdater {
 		
 		// loop over runtime properties and precede each with "hibernate" if
 		// it isn't already
-		Set<Object> runtimePropertyKeys = new HashSet<Object>();
+		Set<Object> runtimePropertyKeys = new HashSet<>();
 		runtimePropertyKeys.addAll(runtimeProperties.keySet()); // must do it this way to prevent concurrent mod errors
 		for (Object key : runtimePropertyKeys) {
 			String prop = (String) key;
@@ -556,7 +557,7 @@ public class DatabaseUpdater {
 			    liquibase.getFileOpener());
 			List<ChangeSet> changeSets = changeLog.getChangeSets();
 			
-			List<OpenMRSChangeSet> results = new ArrayList<OpenMRSChangeSet>();
+			List<OpenMRSChangeSet> results = new ArrayList<>();
 			for (ChangeSet changeSet : changeSets) {
 				OpenMRSChangeSet omrschangeset = new OpenMRSChangeSet(changeSet, database);
 				results.add(omrschangeset);
@@ -580,7 +581,7 @@ public class DatabaseUpdater {
 	 * @see DatabaseUpdater#getUnrunDatabaseChanges(String...)
 	 */
 	@Authorized(PrivilegeConstants.GET_DATABASE_CHANGES)
-	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges() throws Exception {
+	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges() {
 		return getUnrunDatabaseChanges(CHANGE_LOG_FILE);
 	}
 	
@@ -591,10 +592,9 @@ public class DatabaseUpdater {
 	 *
 	 * @param changeLogFilenames the filenames of all files to search for unrun changesets
 	 * @return list of change sets
-	 * @throws Exception
 	 */
 	@Authorized(PrivilegeConstants.GET_DATABASE_CHANGES)
-	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges(String... changeLogFilenames) throws Exception {
+	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges(String... changeLogFilenames) {
 		log.debug("Getting unrun changesets");
 		
 		Database database = null;
@@ -608,7 +608,7 @@ public class DatabaseUpdater {
 				changeLogFilenames = new String[] { CHANGE_LOG_FILE };
 			}
 			
-			List<OpenMRSChangeSet> results = new ArrayList<OpenMRSChangeSet>();
+			List<OpenMRSChangeSet> results = new ArrayList<>();
 			for (String changelogFile : changeLogFilenames) {
 				Liquibase liquibase = getLiquibase(changelogFile, null);
 				database = liquibase.getDatabase();
@@ -658,7 +658,7 @@ public class DatabaseUpdater {
 	 */
 	public static void reportUpdateWarnings(List<String> warnings) {
 		if (updateWarnings == null) {
-			updateWarnings = new LinkedList<String>();
+			updateWarnings = new LinkedList<>();
 		}
 		updateWarnings.addAll(warnings);
 	}

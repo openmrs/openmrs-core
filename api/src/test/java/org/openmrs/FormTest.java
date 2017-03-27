@@ -25,7 +25,7 @@ public class FormTest {
 	 * @see Form#Form(Integer)
 	 */
 	@Test
-	public void Form_shouldSetFormIdWithGivenParameter() throws Exception {
+	public void Form_shouldSetFormIdWithGivenParameter() {
 		Form form = new Form(123);
 		Assert.assertEquals(123, form.getFormId().intValue());
 	}

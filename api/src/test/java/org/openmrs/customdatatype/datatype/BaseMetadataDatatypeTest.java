@@ -21,7 +21,7 @@ public class BaseMetadataDatatypeTest {
 	 * @see BaseMetadataDatatype#doGetTextSummary(org.openmrs.OpenmrsMetadata)
 	 */
 	@Test
-	public void doGetTextSummary_shouldUseTheNameInSummaryInstance() throws Exception {
+	public void doGetTextSummary_shouldUseTheNameInSummaryInstance() {
 		OpenmrsMetadata location = new Location();
 		String expectedSummary = "some summary";
 		location.setName(expectedSummary);

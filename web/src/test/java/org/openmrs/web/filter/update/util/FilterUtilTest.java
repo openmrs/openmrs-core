@@ -25,7 +25,7 @@ public class FilterUtilTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	@Ignore
-	public void storeLocale_shouldStoreLocale() throws Exception {
+	public void storeLocale_shouldStoreLocale() {
 		FilterUtil.storeLocale("it");
 	}
 	
@@ -34,7 +34,7 @@ public class FilterUtilTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	@Ignore
-	public void storeLocale_shouldRestoreLocale() throws Exception {
+	public void storeLocale_shouldRestoreLocale() {
 		FilterUtil.storeLocale("it");
 		Assert.assertEquals("it", FilterUtil.restoreLocale(FilterUtil.ADMIN_USERNAME));
 	}

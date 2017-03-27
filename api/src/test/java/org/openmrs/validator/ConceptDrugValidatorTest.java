@@ -24,7 +24,7 @@ public class ConceptDrugValidatorTest {
 	 * @see ConceptDrugValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfAConceptIsNotSpecified() throws Exception {
+	public void validate_shouldFailIfAConceptIsNotSpecified() {
 		Drug drug = new Drug();
 		Errors errors = new BindException(drug, "drug");
 		new ConceptDrugValidator().validate(drug, errors);
@@ -35,7 +35,7 @@ public class ConceptDrugValidatorTest {
 	 * @see ConceptDrugValidator#supports(Class)
 	 */
 	@Test
-	public void supports_shouldRejectClassesNotExtendingDrug() throws Exception {
+	public void supports_shouldRejectClassesNotExtendingDrug() {
 		Assert.assertFalse(new ConceptDrugValidator().supports(String.class));
 	}
 	
@@ -43,7 +43,7 @@ public class ConceptDrugValidatorTest {
 	 * @see ConceptDrugValidator#supports(Class)
 	 */
 	@Test
-	public void supports_shouldSupportDrug() throws Exception {
+	public void supports_shouldSupportDrug() {
 		Assert.assertTrue(new ConceptDrugValidator().supports(Drug.class));
 	}
 	

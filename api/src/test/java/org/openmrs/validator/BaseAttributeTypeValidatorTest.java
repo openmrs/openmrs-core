@@ -37,7 +37,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldNotAllowMaxOccursLessThan1() throws Exception {
+	public void validate_shouldNotAllowMaxOccursLessThan1() {
 		attributeType.setMaxOccurs(0);
 		validator.validate(attributeType, errors);
 		Assert.assertTrue(errors.getFieldErrors("maxOccurs").size() > 0);
@@ -47,7 +47,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldNotAllowMaxOccursLessThanMinOccurs() throws Exception {
+	public void validate_shouldNotAllowMaxOccursLessThanMinOccurs() {
 		attributeType.setMinOccurs(3);
 		attributeType.setMaxOccurs(2);
 		validator.validate(attributeType, errors);
@@ -58,7 +58,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldRequireDatatypeClassname() throws Exception {
+	public void validate_shouldRequireDatatypeClassname() {
 		validator.validate(attributeType, errors);
 		Assert.assertTrue(errors.getFieldErrors("datatypeClassname").size() > 0);
 	}
@@ -67,7 +67,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldRequireMinOccurs() throws Exception {
+	public void validate_shouldRequireMinOccurs() {
 		attributeType.setMinOccurs(null);
 		validator.validate(attributeType, errors);
 		Assert.assertTrue(errors.getFieldErrors("minOccurs").size() > 0);
@@ -77,7 +77,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldRequireName() throws Exception {
+	public void validate_shouldRequireName() {
 		validator.validate(attributeType, errors);
 		Assert.assertTrue(errors.getFieldErrors("name").size() > 0);
 	}
@@ -86,7 +86,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldRequireDatatypeConfigurationIfDatatypeEqualsRegexValidatedText() throws Exception {
+	public void validate_shouldRequireDatatypeConfigurationIfDatatypeEqualsRegexValidatedText() {
 		attributeType.setDatatypeClassname(RegexValidatedTextDatatype.class.getName());
 		validator.validate(attributeType, errors);
 		Assert.assertTrue(errors.getFieldErrors("datatypeConfig").size() > 0);
@@ -96,7 +96,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredValuesAreSet() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredValuesAreSet() {
 		attributeType.setName("name");
 		attributeType.setMinOccurs(1);
 		attributeType.setDatatypeClassname(RegexValidatedTextDatatype.class.getName());
@@ -109,7 +109,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		attributeType.setName("name");
 		attributeType.setMinOccurs(1);
 		attributeType.setDatatypeClassname(RegexValidatedTextDatatype.class.getName());
@@ -123,7 +123,7 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		attributeType.setName("name");
 		attributeType.setMinOccurs(1);
 		attributeType.setDatatypeClassname(RegexValidatedTextDatatype.class.getName());

@@ -109,7 +109,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#compareTo(DoubleRange)
 	 */
 	@Test
-	public void compareTo_shouldReturnPlus1IfThisLowIsGreaterThanOtherLow() throws Exception {
+	public void compareTo_shouldReturnPlus1IfThisLowIsGreaterThanOtherLow() {
 		DoubleRange r1 = new DoubleRange(1.0, 2.0);
 		DoubleRange r2 = new DoubleRange(0.0, 2.0);
 		assertEquals(1, r1.compareTo(r2));
@@ -119,7 +119,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#compareTo(DoubleRange)
 	 */
 	@Test
-	public void compareTo_shouldReturnMinusOneIfThisLowIsLowerThanOtherLow() throws Exception {
+	public void compareTo_shouldReturnMinusOneIfThisLowIsLowerThanOtherLow() {
 		DoubleRange r1 = new DoubleRange(1.0, 2.0);
 		DoubleRange r2 = new DoubleRange(0.0, 2.0);
 		assertEquals(-1, r2.compareTo(r1));
@@ -129,7 +129,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#compareTo(DoubleRange)
 	 */
 	@Test
-	public void compareTo_shouldReturnZeroIfBothLowsAndBothHighsAreEqual() throws Exception {
+	public void compareTo_shouldReturnZeroIfBothLowsAndBothHighsAreEqual() {
 		DoubleRange r1 = new DoubleRange(1.0, 2.0);
 		DoubleRange r2 = new DoubleRange(1.0, 2.0);
 		assertEquals(0, r1.compareTo(r2));
@@ -139,7 +139,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#compareTo(DoubleRange)
 	 */
 	@Test
-	public void compareTo_shouldReturnPlusOneIfBothLowsAreEqualButOtherHighIsGreaterThanThisHigh() throws Exception {
+	public void compareTo_shouldReturnPlusOneIfBothLowsAreEqualButOtherHighIsGreaterThanThisHigh() {
 		DoubleRange r1 = new DoubleRange(1.0, 1.0);
 		DoubleRange r2 = new DoubleRange(1.0, 2.0);
 		assertEquals(1, r1.compareTo(r2));
@@ -149,7 +149,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#compareTo(DoubleRange)
 	 */
 	@Test
-	public void compareTo_shouldReturnMinusOneIfBothLowsAreEqualButOtherHighIsLessThanThisHigh() throws Exception {
+	public void compareTo_shouldReturnMinusOneIfBothLowsAreEqualButOtherHighIsLessThanThisHigh() {
 		DoubleRange r1 = new DoubleRange(1.0, 2.0);
 		DoubleRange r2 = new DoubleRange(1.0, 1.0);
 		assertEquals(-1, r1.compareTo(r2));
@@ -159,7 +159,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#compareTo(DoubleRange)
 	 */
 	@Test
-	public void compareTo_shouldReturn1IfThisRangeIsWiderThanOtherRange() throws Exception {
+	public void compareTo_shouldReturn1IfThisRangeIsWiderThanOtherRange() {
 		DoubleRange r1 = new DoubleRange(0.0, 1.0);
 		DoubleRange r2 = new DoubleRange(1.0, 3.0);
 		assertEquals(1, r2.compareTo(r1));
@@ -169,7 +169,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#contains(double)
 	 */
 	@Test
-	public void contains_shouldReturnTrueIfParameterIsInRange() throws Exception {
+	public void contains_shouldReturnTrueIfParameterIsInRange() {
 		DoubleRange r1 = new DoubleRange(0.0, 1.0);
 		Double d = 0.5;
 		assertTrue(r1.contains(d));
@@ -179,7 +179,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#contains(double)
 	 */
 	@Test
-	public void contains_shouldReturnFalseIfParameterIsNotInRange() throws Exception {
+	public void contains_shouldReturnFalseIfParameterIsNotInRange() {
 		DoubleRange r1 = new DoubleRange(0.0, 1.0);
 		Double d = 1.1;
 		assertFalse(r1.contains(d));
@@ -189,7 +189,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#contains(double)
 	 */
 	@Test
-	public void contains_shouldReturnFalseIfParameterIsEqualToHigh() throws Exception {
+	public void contains_shouldReturnFalseIfParameterIsEqualToHigh() {
 		DoubleRange r1 = new DoubleRange(0.0, 1.0);
 		Double d = 1.0;
 		assertFalse(r1.contains(d));
@@ -199,7 +199,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#contains(double)
 	 */
 	@Test
-	public void contains_shouldReturnTrueIfParameterIsEqualToLow() throws Exception {
+	public void contains_shouldReturnTrueIfParameterIsEqualToLow() {
 		DoubleRange r1 = new DoubleRange(0.0, 1.0);
 		Double d = 0.0;
 		assertTrue(r1.contains(d));
@@ -209,7 +209,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#contains(double)
 	 */
 	@Test
-	public void contains_shouldReturnFalseIfParameterIsLowerThanLow() throws Exception {
+	public void contains_shouldReturnFalseIfParameterIsLowerThanLow() {
 		DoubleRange r1 = new DoubleRange(1.0, 1.0);
 		Double d = 0.0;
 		assertFalse(r1.contains(d));
@@ -219,7 +219,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#toString()
 	 */
 	@Test
-	public void toString_shouldPrintTheRangeIfHighAndLowAreNotNullAndNotInfinite() throws Exception {
+	public void toString_shouldPrintTheRangeIfHighAndLowAreNotNullAndNotInfinite() {
 		DoubleRange r1 = new DoubleRange(1.0, 1.0);
 		assertEquals(">= 1.0 and < 1.0", r1.toString());
 	}
@@ -228,7 +228,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#toString()
 	 */
 	@Test
-	public void toString_shouldPrintEmptyLowIfLowIsInfinite() throws Exception {
+	public void toString_shouldPrintEmptyLowIfLowIsInfinite() {
 		DoubleRange r1 = new DoubleRange(Double.NEGATIVE_INFINITY, 1.0);
 		assertEquals("< 1.0", r1.toString());
 	}
@@ -237,7 +237,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#toString()
 	 */
 	@Test
-	public void toString_shouldPrintEmptyStringIfLowAndHighAreInfinite() throws Exception {
+	public void toString_shouldPrintEmptyStringIfLowAndHighAreInfinite() {
 		DoubleRange r1 = new DoubleRange(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 		assertEquals("", r1.toString());
 	}
@@ -246,7 +246,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#hashCode()
 	 */
 	@Test
-	public void hashCode_shouldReturnTheSameHashCodeForObjectsRepresentingTheSameInterval() throws Exception {
+	public void hashCode_shouldReturnTheSameHashCodeForObjectsRepresentingTheSameInterval() {
 		DoubleRange r1 = new DoubleRange(0.0, 1.0);
 		DoubleRange r2 = new DoubleRange(0.0, 1.0);
 		assertEquals(r1.hashCode(), r2.hashCode());
@@ -256,7 +256,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#toString()
 	 */
 	@Test
-	public void toString_shouldPrintEmptyStringIfLowAndHighAreNull() throws Exception {
+	public void toString_shouldPrintEmptyStringIfLowAndHighAreNull() {
 		DoubleRange r = new DoubleRange(null, null);
 		assertEquals("", r.toString());
 	}
@@ -265,7 +265,7 @@ public class DoubleRangeTest {
 	 * @see DoubleRange#toString()
 	 */
 	@Test
-	public void toString_shouldPrintEmptyLowIfLowIsNull() throws Exception {
+	public void toString_shouldPrintEmptyLowIfLowIsNull() {
 		DoubleRange r = new DoubleRange(null, 1.0);
 		assertEquals("< 1.0", r.toString());
 	}

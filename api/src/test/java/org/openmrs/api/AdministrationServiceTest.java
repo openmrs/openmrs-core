@@ -65,10 +65,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * class to private variables The "@Before" method in {@link BaseContextSensitiveTest} is run
 	 * right before this method and sets up the initial data set and authenticates to the Context
 	 * 
-	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		if (adminService == null) {
 			adminService = Context.getAdministrationService();
 			implementationHttpClient = mock(HttpClient.class);
@@ -85,7 +84,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#executeSQL(String,null)
 	 */
 	@Test
-	public void executeSQL_shouldExecuteSqlContainingGroupBy() throws Exception {
+	public void executeSQL_shouldExecuteSqlContainingGroupBy() {
 		
 		String sql = "select encounter1_.location_id, encounter1_.creator, encounter1_.encounter_type, encounter1_.form_id, location2_.location_id, count(obs0_.obs_id) from obs obs0_ right outer join encounter encounter1_ on obs0_.encounter_id=encounter1_.encounter_id inner join location location2_ on encounter1_.location_id=location2_.location_id inner join users user3_ on encounter1_.creator=user3_.user_id inner join person user3_1_ on user3_.user_id=user3_1_.person_id inner join encounter_type encountert4_ on encounter1_.encounter_type=encountert4_.encounter_type_id inner join form form5_ on encounter1_.form_id=form5_.form_id where encounter1_.date_created>='2007-05-05' and encounter1_.date_created<= '2008-05-05' group by encounter1_.location_id, encounter1_.creator , encounter1_.encounter_type , encounter1_.form_id";
 		adminService.executeSQL(sql, true);
@@ -98,7 +97,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#setImplementationId(ImplementationId)
 	 */
 	@Test
-	public void setImplementationId_shouldNotFailIfGivenImplementationIdIsNull() throws Exception {
+	public void setImplementationId_shouldNotFailIfGivenImplementationIdIsNull() {
 		// save a null impl id. no exception thrown
 		adminService.setImplementationId(null);
 		ImplementationId afterNull = adminService.getImplementationId();
@@ -111,7 +110,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#setImplementationId(ImplementationId)
 	 */
 	@Test()
-	public void setImplementationId_shouldThrowAPIExceptionIfGivenEmptyImplementationIdObject() throws Exception {
+	public void setImplementationId_shouldThrowAPIExceptionIfGivenEmptyImplementationIdObject() {
 		// save a blank impl id. exception thrown
 		try {
 			adminService.setImplementationId(new ImplementationId());
@@ -130,7 +129,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#setImplementationId(ImplementationId)
 	 */
 	@Test
-	public void setImplementationId_shouldThrowAPIExceptionIfGivenACaretInTheImplementationIdCode() throws Exception {
+	public void setImplementationId_shouldThrowAPIExceptionIfGivenACaretInTheImplementationIdCode() {
 		// save an impl id with an invalid hl7 code
 		ImplementationId invalidId = new ImplementationId();
 		invalidId.setImplementationId("caret^caret");
@@ -152,7 +151,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#setImplementationId(ImplementationId)
 	 */
 	@Test
-	public void setImplementationId_shouldThrowAPIExceptionIfGivenAPipeInTheImplementationIdCode() throws Exception {
+	public void setImplementationId_shouldThrowAPIExceptionIfGivenAPipeInTheImplementationIdCode() {
 		// save an impl id with an invalid hl7 code
 		ImplementationId invalidId2 = new ImplementationId();
 		invalidId2.setImplementationId("pipe|pipe");
@@ -175,7 +174,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Ignore
-	public void setImplementationId_shouldCreateImplementationIdInDatabase() throws Exception {
+	public void setImplementationId_shouldCreateImplementationIdInDatabase() {
 		// save a valid impl id
 		ImplementationId validId = new ImplementationId();
 		validId.setImplementationId("JUNIT-TEST");
@@ -192,7 +191,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Ignore
-	public void setImplementationId_shouldOverwriteImplementationIdInDatabaseIfExists() throws Exception {
+	public void setImplementationId_shouldOverwriteImplementationIdInDatabaseIfExists() {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-general.xml");
 		
 		// sanity check to make sure we have an implementation id
@@ -214,7 +213,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Ignore
-	public void setImplementationId_shouldSetUuidOnImplementationIdGlobalProperty() throws Exception {
+	public void setImplementationId_shouldSetUuidOnImplementationIdGlobalProperty() {
 		ImplementationId validId = new ImplementationId();
 		validId.setImplementationId("JUNIT-TEST");
 		validId.setName("JUNIT-TEST implementation id");
@@ -230,7 +229,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getGlobalProperty(String)
 	 */
 	@Test
-	public void getGlobalProperty_shouldNotFailWithNullPropertyName() throws Exception {
+	public void getGlobalProperty_shouldNotFailWithNullPropertyName() {
 		adminService.getGlobalProperty(null);
 	}
 	
@@ -238,7 +237,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getGlobalProperty(String)
 	 */
 	@Test
-	public void getGlobalProperty_shouldGetPropertyValueGivenValidPropertyName() throws Exception {
+	public void getGlobalProperty_shouldGetPropertyValueGivenValidPropertyName() {
 		// put the global property into the database
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
@@ -251,7 +250,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getGlobalProperty(String,String)
 	 */
 	@Test
-	public void getGlobalProperty_shouldNotFailWithNullDefaultValue() throws Exception {
+	public void getGlobalProperty_shouldNotFailWithNullDefaultValue() {
 		adminService.getGlobalProperty("asdfsadfsafd", null);
 	}
 	
@@ -259,7 +258,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#updateGlobalProperty(String,String)
 	 */
 	@Test
-	public void updateGlobalProperty_shouldUpdateGlobalPropertyInDatabase() throws Exception {
+	public void updateGlobalProperty_shouldUpdateGlobalPropertyInDatabase() {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
 		String propertyValue = adminService.getGlobalProperty("a_valid_gp_key");
@@ -275,7 +274,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#updateGlobalProperty(String,String)
 	 */
 	@Test(expected = IllegalStateException.class)
-	public void updateGlobalProperty_shouldFailIfGlobalPropertyBeingUpdatedDoesNotAlreadyExist() throws Exception {
+	public void updateGlobalProperty_shouldFailIfGlobalPropertyBeingUpdatedDoesNotAlreadyExist() {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		adminService.updateGlobalProperty("a_invalid_gp_key", "asdfsadfsafd");
 	}
@@ -284,7 +283,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#updateGlobalProperty(String,String)
 	 */
 	@Test
-	public void updateGlobalProperty_shouldUpdateAGlobalPropertyWhoseTypedvalueIsHandledByACustomDatatype() throws Exception {
+	public void updateGlobalProperty_shouldUpdateAGlobalPropertyWhoseTypedvalueIsHandledByACustomDatatype() {
 		GlobalProperty gp = new GlobalProperty();
 		gp.setProperty("Flag");
 		gp.setDatatypeClassname(BooleanDatatype.class.getName());
@@ -300,7 +299,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#setGlobalProperty(String,String)
 	 */
 	@Test
-	public void setGlobalProperty_shouldCreateGlobalPropertyInDatabase() throws Exception {
+	public void setGlobalProperty_shouldCreateGlobalPropertyInDatabase() {
 		String newKey = "new_gp_key";
 		
 		String initialValue = adminService.getGlobalProperty(newKey);
@@ -315,7 +314,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#setGlobalProperty(String,String)
 	 */
 	@Test
-	public void setGlobalProperty_shouldOverwriteGlobalPropertyIfExists() throws Exception {
+	public void setGlobalProperty_shouldOverwriteGlobalPropertyIfExists() {
 		
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
@@ -333,7 +332,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#setGlobalProperty(String,String)
 	 */
 	@Test
-	public void setGlobalProperty_shouldSaveAGlobalPropertyWhoseTypedValueIsHandledByACustomDatatype() throws Exception {
+	public void setGlobalProperty_shouldSaveAGlobalPropertyWhoseTypedValueIsHandledByACustomDatatype() {
 		
 		String newKey = "Flag";
 		String initialValue = adminService.getGlobalProperty(newKey);
@@ -348,7 +347,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getGlobalProperty(String,String)
 	 */
 	@Test
-	public void getGlobalProperty_shouldReturnDefaultValueIfPropertyNameDoesNotExist() throws Exception {
+	public void getGlobalProperty_shouldReturnDefaultValueIfPropertyNameDoesNotExist() {
 		String invalidKey = "asdfasdf";
 		String propertyValue = adminService.getGlobalProperty(invalidKey);
 		Assert.assertNull(propertyValue); // make sure there isn't a gp
@@ -361,7 +360,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getGlobalPropertiesByPrefix(String)
 	 */
 	@Test
-	public void getGlobalPropertiesByPrefix_shouldReturnAllRelevantGlobalPropertiesInTheDatabase() throws Exception {
+	public void getGlobalPropertiesByPrefix_shouldReturnAllRelevantGlobalPropertiesInTheDatabase() {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
 		List<GlobalProperty> properties = adminService.getGlobalPropertiesByPrefix("fake.module.");
@@ -376,7 +375,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getAllowedLocales()
 	 */
 	@Test
-	public void getAllowedLocales_shouldNotFailIfNotGlobalPropertyForLocalesAllowedDefinedYet() throws Exception {
+	public void getAllowedLocales_shouldNotFailIfNotGlobalPropertyForLocalesAllowedDefinedYet() {
 		Context.getAdministrationService().purgeGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST));
 		Context.getAdministrationService().getAllowedLocales();
@@ -386,7 +385,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getGlobalPropertyByUuid(String)
 	 */
 	@Test
-	public void getGlobalPropertyByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getGlobalPropertyByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "4f55827e-26fe-102b-80cb-0017a47871b3";
 		GlobalProperty prop = Context.getAdministrationService().getGlobalPropertyByUuid(uuid);
 		Assert.assertEquals("locale.allowed.list", prop.getProperty());
@@ -396,7 +395,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getGlobalPropertyByUuid(String)
 	 */
 	@Test
-	public void getGlobalPropertyByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getGlobalPropertyByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getAdministrationService().getGlobalPropertyByUuid("some invalid uuid"));
 	}
 	
@@ -404,7 +403,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#saveGlobalProperties(List)
 	 */
 	@Test
-	public void saveGlobalProperties_shouldNotFailWithEmptyList() throws Exception {
+	public void saveGlobalProperties_shouldNotFailWithEmptyList() {
 		Context.getAdministrationService().saveGlobalProperties(new ArrayList<GlobalProperty>());
 	}
 	
@@ -412,7 +411,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#saveGlobalProperties(List)
 	 */
 	@Test
-	public void saveGlobalProperties_shouldSaveAllGlobalPropertiesToTheDatabase() throws Exception {
+	public void saveGlobalProperties_shouldSaveAllGlobalPropertiesToTheDatabase() {
 		// get the current global properties
 		List<GlobalProperty> globalProperties = Context.getAdministrationService().getAllGlobalProperties();
 		
@@ -430,7 +429,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#saveGlobalProperties(List)
 	 */
 	@Test
-	public void saveGlobalProperties_shouldAssignUuidToAllNewProperties() throws Exception {
+	public void saveGlobalProperties_shouldAssignUuidToAllNewProperties() {
 		// get the current global properties
 		List<GlobalProperty> globalProperties = Context.getAdministrationService().getAllGlobalProperties();
 		
@@ -445,7 +444,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getAllGlobalProperties()
 	 */
 	@Test
-	public void getAllGlobalProperties_shouldReturnAllGlobalPropertiesInTheDatabase() throws Exception {
+	public void getAllGlobalProperties_shouldReturnAllGlobalPropertiesInTheDatabase() {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		Assert.assertEquals(21, Context.getAdministrationService().getAllGlobalProperties().size());
 	}
@@ -454,7 +453,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getAllowedLocales()
 	 */
 	@Test
-	public void getAllowedLocales_shouldReturnAtLeastOneLocaleIfNoLocalesDefinedInDatabaseYet() throws Exception {
+	public void getAllowedLocales_shouldReturnAtLeastOneLocaleIfNoLocalesDefinedInDatabaseYet() {
 		Assert.assertTrue(Context.getAdministrationService().getAllowedLocales().size() > 0);
 	}
 	
@@ -462,7 +461,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getGlobalPropertyObject(String)
 	 */
 	@Test
-	public void getGlobalPropertyObject_shouldReturnNullWhenNoGlobalPropertyMatchGivenPropertyName() throws Exception {
+	public void getGlobalPropertyObject_shouldReturnNullWhenNoGlobalPropertyMatchGivenPropertyName() {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		Assert.assertNull(Context.getAdministrationService().getGlobalPropertyObject("magicResistSkill"));
 	}
@@ -471,7 +470,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getImplementationId()
 	 */
 	@Test
-	public void getImplementationId_shouldReturnNullIfNoImplementationIdIsDefinedYet() throws Exception {
+	public void getImplementationId_shouldReturnNullIfNoImplementationIdIsDefinedYet() {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		Assert.assertNull(Context.getAdministrationService().getImplementationId());
 	}
@@ -482,7 +481,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Ignore
 	//TODO: This test fails for some reason
-	public void getPresentationLocales_shouldReturnAtLeastOneLocaleIfNoLocalesDefinedInDatabaseYet() throws Exception {
+	public void getPresentationLocales_shouldReturnAtLeastOneLocaleIfNoLocalesDefinedInDatabaseYet() {
 		Assert.assertTrue(Context.getAdministrationService().getPresentationLocales().size() > 0);
 	}
 	
@@ -490,7 +489,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getPresentationLocales()
 	 */
 	@Test
-	public void getPresentationLocales_shouldNotReturnMoreLocalesThanMessageSourceServiceLocales() throws Exception {
+	public void getPresentationLocales_shouldNotReturnMoreLocalesThanMessageSourceServiceLocales() {
 		Assert.assertFalse(Context.getAdministrationService().getPresentationLocales().size() > Context
 		        .getMessageSourceService().getLocales().size());
 	}
@@ -499,7 +498,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getSystemVariables()
 	 */
 	@Test
-	public void getSystemVariables_shouldReturnAllRegisteredSystemVariables() throws Exception {
+	public void getSystemVariables_shouldReturnAllRegisteredSystemVariables() {
 		// The method implementation adds 11 system variables
 		Assert.assertEquals(11, Context.getAdministrationService().getSystemVariables().size());
 	}
@@ -508,7 +507,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#purgeGlobalProperty(GlobalProperty)
 	 */
 	@Test
-	public void purgeGlobalProperty_shouldDeleteGlobalPropertyFromDatabase() throws Exception {
+	public void purgeGlobalProperty_shouldDeleteGlobalPropertyFromDatabase() {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		AdministrationService as = Context.getAdministrationService();
 		
@@ -521,7 +520,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#saveGlobalProperty(GlobalProperty)
 	 */
 	@Test
-	public void saveGlobalProperty_shouldCreateGlobalPropertyInDatabase() throws Exception {
+	public void saveGlobalProperty_shouldCreateGlobalPropertyInDatabase() {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		AdministrationService as = Context.getAdministrationService();
 		
@@ -533,7 +532,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#saveGlobalProperty(GlobalProperty)
 	 */
 	@Test
-	public void saveGlobalProperty_shouldOverwriteGlobalPropertyIfExists() throws Exception {
+	public void saveGlobalProperty_shouldOverwriteGlobalPropertyIfExists() {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		AdministrationService as = Context.getAdministrationService();
 		
@@ -548,7 +547,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getAllowedLocales()
 	 */
 	@Test
-	public void getAllowedLocales_shouldNotReturnDuplicatesEvenIfTheGlobalPropertyHasThem() throws Exception {
+	public void getAllowedLocales_shouldNotReturnDuplicatesEvenIfTheGlobalPropertyHasThem() {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB,fr,es,en_GB"));
 		Assert.assertEquals(3, Context.getAdministrationService().getAllowedLocales().size());
@@ -558,7 +557,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getGlobalPropertyValue()
 	 */
 	@Test
-	public void getGlobalPropertyValue_shouldReturnValueInTheSpecifiedIntegerType() throws Exception {
+	public void getGlobalPropertyValue_shouldReturnValueInTheSpecifiedIntegerType() {
 		// put the global property into the database
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
@@ -572,7 +571,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getGlobalPropertyValue()
 	 */
 	@Test
-	public void getGlobalPropertyValue_shouldReturnDefaultValueForMissingProperty() throws Exception {
+	public void getGlobalPropertyValue_shouldReturnDefaultValueForMissingProperty() {
 		// put the global property into the database
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
@@ -585,7 +584,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getGlobalPropertyValue()
 	 */
 	@Test
-	public void getGlobalPropertyValue_shouldReturnValueInTheSpecifiedDoubleType() throws Exception {
+	public void getGlobalPropertyValue_shouldReturnValueInTheSpecifiedDoubleType() {
 		// put the global property into the database
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
@@ -599,7 +598,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getGlobalProperty(String)
 	 */
 	@Test
-	public void getGlobalProperty_shouldGetPropertyInCaseInsensitiveWay() throws Exception {
+	public void getGlobalProperty_shouldGetPropertyInCaseInsensitiveWay() {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
 		// sanity check
@@ -615,7 +614,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#saveGlobalProperty(GlobalProperty)
 	 */
 	@Test
-	public void saveGlobalProperty_shouldNotAllowDifferentPropertiesToHaveTheSameStringWithDifferentCase() throws Exception {
+	public void saveGlobalProperty_shouldNotAllowDifferentPropertiesToHaveTheSameStringWithDifferentCase() {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
 		// sanity check
@@ -636,7 +635,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#saveGlobalProperties(List<QGlobalProperty;>)
 	 */
 	@Test
-	public void saveGlobalProperties_shouldSavePropertiesWithCaseDifferenceOnly() throws Exception {
+	public void saveGlobalProperties_shouldSavePropertiesWithCaseDifferenceOnly() {
 		int originalSize = adminService.getAllGlobalProperties().size();
 		
 		List<GlobalProperty> props = new ArrayList<GlobalProperty>();
@@ -655,7 +654,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#purgeGlobalProperties(List)
 	 */
 	@Test
-	public void purgeGlobalProperties_shouldDeleteGlobalPropertiesFromDatabase() throws Exception {
+	public void purgeGlobalProperties_shouldDeleteGlobalPropertiesFromDatabase() {
 		int originalSize = adminService.getAllGlobalProperties().size();
 		
 		List<GlobalProperty> props = new ArrayList<GlobalProperty>();
@@ -676,7 +675,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#saveGlobalProperty(GlobalProperty)
 	 */
 	@Test
-	public void saveGlobalProperty_shouldSaveAGlobalPropertyWhoseTypedValueIsHandledByACustomDatatype() throws Exception {
+	public void saveGlobalProperty_shouldSaveAGlobalPropertyWhoseTypedValueIsHandledByACustomDatatype() {
 		GlobalProperty gp = new GlobalProperty();
 		gp.setProperty("What time is it?");
 		gp.setDatatypeClassname(DateDatatype.class.getName());
@@ -689,7 +688,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getSearchLocales(User)
 	 */
 	@Test
-	public void getSearchLocales_shouldExcludeNotAllowedLocales() throws Exception {
+	public void getSearchLocales_shouldExcludeNotAllowedLocales() {
 		//given
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_US, en_GB, pl, es"));
@@ -712,7 +711,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getSearchLocales(User)
 	 */
 	@Test
-	public void getSearchLocales_shouldIncludeCurrentlySelectedFullLocaleAndLangugage() throws Exception {
+	public void getSearchLocales_shouldIncludeCurrentlySelectedFullLocaleAndLangugage() {
 		//given
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB"));
@@ -733,7 +732,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getSearchLocales(User)
 	 */
 	@Test
-	public void getSearchLocales_shouldIncludeUsersProficientLocales() throws Exception {
+	public void getSearchLocales_shouldIncludeUsersProficientLocales() {
 		//given
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, en_US, pl"));
@@ -756,7 +755,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	
 	@Test(expected = APIException.class)
-	public void validate_shouldThrowThrowAPIExceptionIfTheInputIsNull() throws Exception {
+	public void validate_shouldThrowThrowAPIExceptionIfTheInputIsNull() {
 		BindException errors = new BindException(new Object(), "");
 		Context.getAdministrationService().validate(null, errors);
 	}
@@ -766,7 +765,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPresentationLocales_shouldReturnOnlyCountryLocaleIfBothCountryLocaleAndLanguageLocaleAreSpecifiedInAllowedList()
-	        throws Exception {
+	        {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, es, es_CL"));
 		
@@ -797,7 +796,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPresentationLocales_shouldReturnAllCountryLocalesIfLanguageLocaleAndNoCountryLocalesAreSpecifiedInAllowedList()
-	        throws Exception {
+	        {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, es"));
 		
@@ -830,7 +829,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPresentationLocales_shouldReturnLanguageLocaleIfCountryLocaleIsSpecifiedInAllowedListButCountryLocaleMessageFileIsMissing()
-	        throws Exception {
+	        {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, es_CL"));
 		
@@ -860,7 +859,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPresentationLocales_shouldReturnLanguageLocaleIfItIsSpecifiedInAllowedListAndThereAreNoCountryLocaleMessageFilesAvailable()
-	        throws Exception {
+	        {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, es"));
 		
@@ -890,7 +889,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPresentationLocales_shouldPreserveInsertionOrderInSetReturnedByMethod()
-			throws Exception {
+			{
 		String globalPropertyLocaleListAllowedData = "en_GB, es, ja_JP, it_IT, pl_PL";
 		//The order of languages and locales is described above and should be followed bt `presentationLocales` Set
 		Context.getAdministrationService().saveGlobalProperty(
@@ -925,7 +924,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#getSearchLocales()
 	 */
 	@Test
-	public void getSearchLocales_shouldCacheResultsForAnUser() throws Exception {
+	public void getSearchLocales_shouldCacheResultsForAnUser() {
 		//given
 		Context.getAdministrationService().saveGlobalProperty(
 				new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, en_US, pl"));
@@ -949,7 +948,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#saveGlobalProperty(GlobalProperty)
 	 */
 	@Test
-	public void saveGlobalProperty_shouldEvictCachedResults() throws Exception {
+	public void saveGlobalProperty_shouldEvictCachedResults() {
 		//given
 		Context.getAdministrationService().saveGlobalProperty(
 				new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, en_US, pl"));

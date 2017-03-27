@@ -25,7 +25,7 @@ import org.springframework.validation.Errors;
 public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void validate_shouldFailValidationIfConceptNameTagIsNull() throws Exception {
+	public void validate_shouldFailValidationIfConceptNameTagIsNull() {
 		Errors errors = new BindException(new ConceptNameTag(), "cnt");
 		new ConceptNameTagValidator().validate(null, errors);
 	}
@@ -34,7 +34,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfTagIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfTagIsNullOrEmptyOrWhitespace() {
 		ConceptNameTag cnt = new ConceptNameTag();
 		
 		Errors errors = new BindException(cnt, "cnt");
@@ -56,7 +56,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		ConceptNameTag cnt = new ConceptNameTag();
 		
 		cnt.setTag("tag");
@@ -70,7 +70,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheConceptNameTagIsADuplicate() throws Exception {
+	public void validate_shouldFailIfTheConceptNameTagIsADuplicate() {
 		String objectName = "duplicate concept name tag";
 		
 		ConceptNameTag existing = Context.getConceptService().getConceptNameTag(1);
@@ -88,7 +88,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		ConceptNameTag cnt = new ConceptNameTag();
 		
 		cnt.setTag("tag");
@@ -103,7 +103,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ConceptNameTag cnt = new ConceptNameTag();
 		
 		cnt
@@ -118,7 +118,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void validate_shouldNotFailIfTheConceptNameTagIsTheSame() throws Exception {
+	public void validate_shouldNotFailIfTheConceptNameTagIsTheSame() {
 		String objectName = "duplicate concept name tag";
 		
 		ConceptNameTag existing = Context.getConceptService().getConceptNameTag(1);

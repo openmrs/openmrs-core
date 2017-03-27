@@ -33,7 +33,7 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
 	}
 	
@@ -41,7 +41,7 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() {
 		ConceptAttributeType type = new ConceptAttributeType();
 		type.setName(null);
 		type.setDescription("description");
@@ -65,7 +65,7 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		ConceptAttributeType type = new ConceptAttributeType();
 		type.setName("name");
 		type.setDatatypeClassname("org.openmrs.customdatatype.datatype.FreeTextDatatype");
@@ -80,7 +80,7 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptAttributeTypeValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfConceptAttributeTypeNameIsDuplicate() throws Exception {
+	public void validate_shouldFailIfConceptAttributeTypeNameIsDuplicate() {
 		
 		Assert.assertNotNull(Context.getConceptService().getConceptAttributeTypeByName("Audit Date"));
 		
@@ -97,7 +97,7 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptAttributeTypeValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldPassEditingConceptAttributeTypeName() throws Exception {
+	public void validate_shouldPassEditingConceptAttributeTypeName() {
 		
 		ConceptAttributeType et = Context.getConceptService().getConceptAttributeTypeByName("Audit Date");
 		Assert.assertNotNull(et);
@@ -111,7 +111,7 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		ConceptAttributeType type = new ConceptAttributeType();
 		type.setName("name");
 		type.setDatatypeClassname("org.openmrs.customdatatype.datatype.FreeTextDatatype");
@@ -128,7 +128,7 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 	 * @see ConceptAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ConceptAttributeType type = new ConceptAttributeType();
 		type
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

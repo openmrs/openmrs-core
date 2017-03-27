@@ -26,7 +26,7 @@ public class DatatypeServiceTest extends BaseContextSensitiveTest {
 	 * @see DatatypeService#getHandler(CustomDatatype,String)
 	 */
 	@Test
-	public void getHandler_shouldReturnAHandlerForTheSpecifiedDatatype() throws Exception {
+	public void getHandler_shouldReturnAHandlerForTheSpecifiedDatatype() {
 		DatatypeService service = Context.getDatatypeService();
 		CustomDatatype dateDatatype = CustomDatatypeUtil.getDatatype(DateDatatype.class.getName(), null);
 		Assert.assertEquals(DateDatatypeHandler.class, service.getHandler(dateDatatype, null).getClass());
@@ -36,7 +36,7 @@ public class DatatypeServiceTest extends BaseContextSensitiveTest {
 	 * @see DatatypeService#getHandler(CustomDatatype,String)
 	 */
 	@Test
-	public void getHandler_shouldReturnAHandlerForADatatypeThatExtendsAGenericSuperclass() throws Exception {
+	public void getHandler_shouldReturnAHandlerForADatatypeThatExtendsAGenericSuperclass() {
 		DatatypeService service = Context.getDatatypeService();
 		CustomDatatype locationDatatype = CustomDatatypeUtil.getDatatype(LocationDatatype.class.getName(), null);
 		Assert.assertEquals(LocationDatatypeHandler.class, service.getHandler(locationDatatype, null).getClass());

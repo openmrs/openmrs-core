@@ -19,7 +19,7 @@ import org.junit.Test;
 public class DateUtilTest {
 
 	@Test
-	public void truncateToSeconds_shouldDropMilliseconds() throws Exception {
+	public void truncateToSeconds_shouldDropMilliseconds() {
 		Date withMilliseconds = new Date(123l);
 		Date withoutMilliseconds = new Date(0l);
 		assertThat(DateUtil.truncateToSeconds(withMilliseconds), is(withoutMilliseconds));

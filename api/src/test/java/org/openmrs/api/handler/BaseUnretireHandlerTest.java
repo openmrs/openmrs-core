@@ -26,7 +26,7 @@ public class BaseUnretireHandlerTest {
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldUnsetTheRetiredBit() throws Exception {
+	public void handle_shouldUnsetTheRetiredBit() {
 		UnretireHandler<Retireable> handler = new BaseUnretireHandler();
 		Retireable retireable = new Location();
 		retireable.setRetired(true); // make sure isRetired is set
@@ -38,7 +38,7 @@ public class BaseUnretireHandlerTest {
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldUnsetTheRetirer() throws Exception {
+	public void handle_shouldUnsetTheRetirer() {
 		UnretireHandler<Retireable> handler = new BaseUnretireHandler();
 		Retireable retireable = new Location();
 		retireable.setRetired(true);
@@ -51,7 +51,7 @@ public class BaseUnretireHandlerTest {
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldUnsetTheDateRetired() throws Exception {
+	public void handle_shouldUnsetTheDateRetired() {
 		UnretireHandler<Retireable> handler = new BaseUnretireHandler();
 		Retireable retireable = new Location();
 		retireable.setRetired(true);
@@ -64,7 +64,7 @@ public class BaseUnretireHandlerTest {
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldUnsetTheRetireReason() throws Exception {
+	public void handle_shouldUnsetTheRetireReason() {
 		UnretireHandler<Retireable> handler = new BaseUnretireHandler();
 		Retireable retireable = new Location();
 		retireable.setRetired(true);
@@ -77,7 +77,7 @@ public class BaseUnretireHandlerTest {
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotActOnAlreadyUnretiredObjects() throws Exception {
+	public void handle_shouldNotActOnAlreadyUnretiredObjects() {
 		UnretireHandler<Retireable> handler = new BaseUnretireHandler();
 		Retireable retireable = new Location();
 		retireable.setRetired(false);
@@ -89,7 +89,7 @@ public class BaseUnretireHandlerTest {
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotActOnRetiredObjectsWithADifferentDateRetired() throws Exception {
+	public void handle_shouldNotActOnRetiredObjectsWithADifferentDateRetired() {
 		Date d = new Date(new Date().getTime() - 1000); // a time that isn't right now
 		
 		UnretireHandler<Retireable> handler = new BaseUnretireHandler();

@@ -14,6 +14,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import liquibase.exception.LockException;
+
 /**
  * Tests methods on the {@link DatabaseUpdater} class. This class expects /metadata/model to be on
  * the classpath so that the liquibase-update-to-latest.xml can be found.
@@ -23,10 +25,11 @@ public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 	private static Logger log = LoggerFactory.getLogger(DatabaseUpdaterTest.class);
 	
 	/**
+	 * @throws LockException
 	 * @see DatabaseUpdater#updatesRequired()
 	 */
 	@Test
-	public void updatesRequired_shouldAlwaysHaveAValidUpdateToLatestFile() throws Exception {
+	public void updatesRequired_shouldAlwaysHaveAValidUpdateToLatestFile() throws LockException {
 		// expects /metadata/model to be on the classpath so that
 		// the liquibase-update-to-latest.xml can be found.
 		try {

@@ -25,7 +25,7 @@ public class HL7SourceValidatorTest extends BaseContextSensitiveTest {
 	 * @see HL7SourceValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		HL7Source hl7Source = new HL7Source();
 		hl7Source.setName("name");
 		
@@ -38,7 +38,7 @@ public class HL7SourceValidatorTest extends BaseContextSensitiveTest {
 	 * @see HL7SourceValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		HL7Source hl7Source = new HL7Source();
 		hl7Source
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
