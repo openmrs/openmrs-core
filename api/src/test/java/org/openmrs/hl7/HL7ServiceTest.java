@@ -9,8 +9,9 @@
  */
 package org.openmrs.hl7;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.util.Calendar;
@@ -730,7 +731,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see HL7Service#resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)
+	 * @see HL7Service#resolveUserId(ca.uhn.hl7v2.model.v25.datatype.XCN)
 	 */
 	@Test
 	@Verifies(value = "should return null for ambiguous users using first and last name given user ID is null", method = "resolveUserId(null)")
@@ -755,7 +756,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see HL7Service#resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)
+	 * @see HL7Service#resolveUserId(ca.uhn.hl7v2.model.v25.datatype.XCN)
 	 */
 	@Test
 	@Verifies(value = "should return user using first and last name given user ID is null", method = "resolveUserId(null)")
@@ -774,6 +775,28 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		ORC orc = oru.getPATIENT_RESULT().getORDER_OBSERVATION().getORC();
 		XCN xcn = orc.getEnteredBy(0);
 		Integer userId = hl7service.resolveUserId(xcn);
-		assertNotNull(userId);
+		assertThat(userId, is(501));
+	}
+	
+	/**
+	 * @see HL7Service#resolveUserId(ca.uhn.hl7v2.model.v25.datatype.XCN)
+	 */
+	@Test
+	public void resolveUserId_shouldReturnUserUsingUsername() throws Exception {
+		HL7Service hl7service = Context.getHL7Service();
+		//construct a message such that id Number at ORC is null
+		Message message = hl7service
+				.parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r" +
+						"PID|||3^^^^||John3^Doe^||\r" +
+						"NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||1000^^^L^PN||||\r" +
+						"ORC|RE||||||||20080226102537|^butch\r" +
+						"OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r" +
+						"OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r" +
+						"OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		ORC orc = oru.getPATIENT_RESULT().getORDER_OBSERVATION().getORC();
+		XCN xcn = orc.getEnteredBy(0);
+		Integer userId = hl7service.resolveUserId(xcn);
+		assertThat(userId, is(502));
 	}
 }
