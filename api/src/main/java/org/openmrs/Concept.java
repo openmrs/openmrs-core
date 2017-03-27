@@ -40,7 +40,6 @@ import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.TermsFilterFactory;
-import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
@@ -128,7 +127,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	private Map<Locale, List<ConceptName>> compatibleCache;
 
-	private Set<ConceptAttribute> attributes = new LinkedHashSet<>();
+	private Collection<ConceptAttribute> attributes = new LinkedHashSet<>();
 
 	/** default constructor */
 	public Concept() {
@@ -1625,47 +1624,25 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
 	 */
 	@Override
-	public Set<ConceptAttribute> getAttributes() {
-		if (attributes == null) {
-			attributes = new LinkedHashSet<ConceptAttribute>();
-		}
+	public Collection<ConceptAttribute> getAttributes() {
 		return attributes;
 	}
-
+	
+	/**
+	 * @see org.openmrs.customdatatype.Customizable#setAttributes()
+	 */
+	@Override
+	public void setAttributes(Collection<ConceptAttribute> attributes) {
+		this.attributes = attributes;
+	}
+	
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes()
+	 * @hint has do be passed through, otherwise BeanWrapper.getPropertyValue() throws
+	 *       NotReadablePropertyException
 	 */
 	@Override
 	public Collection<ConceptAttribute> getActiveAttributes() {
-		return getAttributes().stream()
-				.filter(attr -> !attr.getVoided())
-				.collect(Collectors.toList());
+		return Customizable.super.getActiveAttributes();
 	}
-
-	/**
-	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes(org.openmrs.customdatatype.CustomValueDescriptor)
-	 */
-	@Override
-	public List<ConceptAttribute> getActiveAttributes(CustomValueDescriptor ofType) {
-		return getAttributes().stream()
-				.filter(attr -> attr.getAttributeType().equals(ofType) && !attr.getVoided())
-				.collect(Collectors.toList());
-	}
-
-	/**
-	 * @param attributes the attributes to set
-	 */
-	public void setAttributes(Set<ConceptAttribute> attributes) {
-		this.attributes = attributes;
-	}
-
-	/**
-	 * @see org.openmrs.customdatatype.Customizable#addAttribute(Attribute)
-	 */
-	@Override
-	public void addAttribute(ConceptAttribute attribute) {
-		getAttributes().add(attribute);
-		attribute.setOwner(this);
-	}
-
 }
