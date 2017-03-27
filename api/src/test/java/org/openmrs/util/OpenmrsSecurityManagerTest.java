@@ -20,7 +20,6 @@ public class OpenmrsSecurityManagerTest {
 	
 	/**
 	 * @see OpenmrsSecurityManager#getCallerClass(int)
-	 * @verifies get the most recently called method
 	 */
 	@Test
 	public void getCallerClass_shouldGetTheMostRecentlyCalledMethod() throws Exception {
@@ -32,7 +31,6 @@ public class OpenmrsSecurityManagerTest {
 	
 	/**
 	 * @see OpenmrsSecurityManager#getCallerClass(int)
-	 * @verifies throw an error if given a subzero call stack level
 	 */
 	@Test(expected = APIException.class)
 	public void getCallerClass_shouldThrowAnErrorIfGivenASubzeroCallStackLevel() throws Exception {

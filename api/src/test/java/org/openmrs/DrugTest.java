@@ -23,7 +23,6 @@ public class DrugTest extends BaseContextSensitiveTest {
 	private final static String UUID_2 = "4eef1530-7d3d-11e3-ac6d-e388e198a21e";
 	
 	/**
-	 * @verifies set drug as the drug to which a mapping is being added
 	 * @see Drug#addDrugReferenceMap(DrugReferenceMap)
 	 */
 	@Test
@@ -40,7 +39,6 @@ public class DrugTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies should not add duplicate drug reference maps
 	 * @see Drug#addDrugReferenceMap(DrugReferenceMap)
 	 */
 	@Test

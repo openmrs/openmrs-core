@@ -20,7 +20,6 @@ import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleInteroperabilityTest;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * This test class is meant just for testing the {@link Context#loadClass(String)} method. This
@@ -64,7 +63,6 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 	 * @see Context#loadClass(String)
 	 */
 	@Test
-	@Verifies(value = "should load class with the OpenmrsClassLoader", method = "loadClass(String)")
 	public void loadClass_shouldLoadClassWithOpenmrsClassLoader() throws Exception {
 		Class<?> c = Context.loadClass("org.openmrs.module.test1.api.Test1Service");
 		Assert.assertTrue("Should be loaded by OpenmrsClassLoader", c.getClassLoader() instanceof ModuleClassLoader);

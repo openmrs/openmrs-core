@@ -21,7 +21,6 @@ import org.openmrs.Patient;
 import org.openmrs.Visit;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -34,7 +33,6 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the patients for the visit and the encounter dont match", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfThePatientsForTheVisitAndTheEncounterDontMatch() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.setPatient(new Patient(2));
@@ -50,7 +48,6 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the visit has no patient", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfTheVisitHasNoPatient() {
 		Encounter encounter = new Encounter();
 		encounter.setPatient(new Patient(2));
@@ -65,7 +62,6 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if patient is not set", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfPatientIsNotSet() throws Exception {
 		Encounter encounter = new Encounter();
 		Errors errors = new BindException(encounter, "encounter");
@@ -77,7 +73,6 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if encounter dateTime is before visit startDateTime", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfEncounterDateTimeIsBeforeVisitStartDateTime() throws Exception {
 		Visit visit = Context.getVisitService().getVisit(1);
 		
@@ -98,7 +93,6 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if encounter dateTime is after visit stopDateTime", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfEncounterDateTimeIsAfterVisitStopDateTime() throws Exception {
 		Visit visit = Context.getVisitService().getVisit(1);
 		
@@ -120,7 +114,6 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "fail if encounter dateTime is after current dateTime", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfEncounterDateTimeIsAfterCurrentDateTime() throws Exception {
 		
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
@@ -137,7 +130,6 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if encounter dateTime is not set
 	 * @see EncounterValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -151,11 +143,9 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if encounter encounterType is not set
 	 * @see EncounterValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if encounterType is not set", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfEncounterTypeIsNotSet() throws Exception {
 		Encounter encounter = new Encounter();
 		Errors errors = new BindException(encounter, "encounter");
@@ -167,7 +157,6 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.setEncounterType(new EncounterType());
@@ -183,7 +172,6 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.setEncounterType(new EncounterType());

@@ -32,7 +32,6 @@ public class LocationTagEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see LocationTagEditor#setAsText(String)
-	 * @verifies set using id
 	 */
 	@Test
 	public void setAsText_shouldSetUsingId() throws Exception {
@@ -43,7 +42,6 @@ public class LocationTagEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see LocationTagEditor#setAsText(String)
-	 * @verifies set using uuid
 	 */
 	@Test
 	public void setAsText_shouldSetUsingUuid() throws Exception {

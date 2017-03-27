@@ -18,7 +18,6 @@ import org.openmrs.customdatatype.CustomDatatype;
 public class BaseMetadataDatatypeTest {
 	
 	/**
-	 * @verifies use the name in summary instance
 	 * @see BaseMetadataDatatype#doGetTextSummary(org.openmrs.OpenmrsMetadata)
 	 */
 	@Test

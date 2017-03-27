@@ -38,7 +38,6 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -58,7 +57,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if asNeeded is null", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfAsNeededIsNull() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setAsNeeded(null);
@@ -74,7 +72,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if dosingType is null", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfDosingTypeIsNull() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(null);
@@ -90,7 +87,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should not fail validation if drug is null", method = "validate(Object,Errors)")
 	public void validate_shouldNotFailValidationIfDrugIsNull() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setDrug(null);
@@ -105,7 +101,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if all fields are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfAllFieldsAreCorrect() throws Exception {
 		DrugOrder order = new DrugOrder();
 		Encounter encounter = new Encounter();
@@ -135,7 +130,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if quantity is null for outpatient careSetting
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -156,7 +150,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if numberOfRefills is null for outpatient careSetting
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -177,7 +170,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if dose is null for SimpleDosingInstructions dosingType
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -191,7 +183,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if doseUnits is null for SimpleDosingInstructions dosingType
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -205,7 +196,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if route is null for SimpleDosingInstructions dosingType
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -219,7 +209,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if frequency is null for SimpleDosingInstructions dosingType
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -233,8 +222,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if dosingInstructions is null for FreeTextDosingInstructions
-	 *           dosingType
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -249,7 +236,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if doseUnits is null when dose is present
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -264,7 +250,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if quantityUnits is null when quantity is present
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -279,7 +264,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if durationUnits is null when duration is present
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -297,7 +281,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if drug concept is different from order concept", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfDrugConceptIsDifferentFromOrderConcept() throws Exception {
 		DrugOrder order = new DrugOrder();
 		Drug drug = Context.getConceptService().getDrug(3);
@@ -314,7 +297,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not require all fields for a discontinuation order
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -340,7 +322,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see DrugOrderValidator#validate(Object,Errors)
-	 * @verifies fail validation if doseUnits is not a dose unit concept
 	 */
 	@Test
 	public void validate_shouldFailValidationIfDoseUnitsIsNotADoseUnitConcept() throws Exception {
@@ -363,7 +344,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see DrugOrderValidator#validate(Object,Errors)
-	 * @verifies fail validation if quantityUnits it not a quantity unit concept
 	 */
 	@Test
 	public void validate_shouldFailValidationIfQuantityUnitsItNotAQuantityUnitConcept() throws Exception {
@@ -386,7 +366,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see DrugOrderValidator#validate(Object,Errors)
-	 * @verifies fail validation if durationUnits is not a duration unit concept
 	 */
 	@Test
 	public void validate_shouldFailValidationIfDurationUnitsIsNotADurationUnitConcept() throws Exception {
@@ -408,7 +387,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if route is not a valid concept
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -433,7 +411,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if concept is null and drug is not specified
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -447,7 +424,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if concept is null and cannot infer it from drug
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -463,7 +439,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies pass if concept is null and drug is set
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -487,7 +462,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies apply validation for a custom dosing type
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -519,7 +493,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not validate a custom dosing type against any other dosing type validation
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -533,7 +506,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG is true
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
 	 */
 	@Test
@@ -564,8 +536,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies pass validation of Drug Order if formulation(Drug) not specified i.e
-	 *           GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG is false
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
 	 */
 	@Test
@@ -595,8 +565,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies default case pass saving Drug Order without a Drug if formulation(drug) not
-	 *           specified i.e GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG is not set
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
 	 */
 	@Test
@@ -627,7 +595,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if durationUnits has no mapping to SNOMEDCT source
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -662,7 +629,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		DrugOrder order = new DrugOrder();
 		Encounter encounter = new Encounter();
@@ -698,7 +664,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
         DrugOrder order = new DrugOrder();
         Encounter encounter = new Encounter();
@@ -734,7 +699,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
     }
 
 	@Test
-	@Verifies(value = "should fail validation if drug non coded is not set for non coded drug order", method = "validate(Object,Errors)")
 	public void saveOrder_shouldFailDrugOrderWithoutADrugNonCodedWhenDrugOrderIsNonCoded() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
 		Patient patient = Context.getPatientService().getPatient(7);
@@ -763,7 +727,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	@Verifies(value = "should pass validation if drug non coded is set for non coded drug order", method = "validate(Object,Errors)")
 	public void saveOrder_shouldPassDrugOrderWithADrugNonCodedWhenDrugOrderIsNonCoded() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");
 		Patient patient = Context.getPatientService().getPatient(7);
@@ -792,7 +755,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	@Verifies(value = "should fail validation if both drug non coded and drug are set for a drug order", method = "validate(Object,Errors)")
 	public void saveOrder_shouldFailDrugOrderWithBothDrugNonCodedAndDrugAreSetForDrugOrder() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
@@ -820,7 +782,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	@Verifies(value = "should fail validation if neither drug non coded nor drug are not set for a drug order when drug is required", method = "validate(Object,Errors)")
 	public void saveOrder_shouldFailDrugOrderWithNeitherDrugNonCodedNorDrugAreSetForDrugOrderWhenDrugRequiredSet() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
@@ -847,7 +808,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	@Verifies(value = "should pass validation if neither drug non coded nor drug are not set for a drug order when drug is not required", method = "validate(Object,Errors)")
 	public void saveOrder_shouldPassDrugOrderWithNeitherDrugNonCodedNorDrugAreSetForDrugOrderWhenDrugRequiredISNotSet() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-nonCodedDrugs.xml");Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);

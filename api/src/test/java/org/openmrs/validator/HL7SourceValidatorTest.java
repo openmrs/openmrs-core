@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.hl7.HL7Source;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -24,10 +23,8 @@ public class HL7SourceValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HL7SourceValidator#validate(Object,Errors)
-	 * @verifies pass validation if field lengths are correct
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		HL7Source hl7Source = new HL7Source();
 		hl7Source.setName("name");
@@ -39,10 +36,8 @@ public class HL7SourceValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HL7SourceValidator#validate(Object,Errors)
-	 * @verifies pass validation if field lengths are correct
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		HL7Source hl7Source = new HL7Source();
 		hl7Source

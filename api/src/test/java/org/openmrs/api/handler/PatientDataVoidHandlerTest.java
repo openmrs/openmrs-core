@@ -22,7 +22,6 @@ import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * Contains the tests for the {@link PatientDataVoidHandler}
@@ -33,7 +32,6 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PatientDataVoidHandler#handle(Patient,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should void the orders encounters and observations associated with the patient", method = "handle(Patient,User,Date,String)")
 	public void handle_shouldVoidTheOrdersEncountersAndObservationsAssociatedWithThePatient() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(7);
 		Assert.assertFalse(patient.getVoided());

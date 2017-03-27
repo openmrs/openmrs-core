@@ -17,7 +17,6 @@ import org.openmrs.OpenmrsObject;
 public class BaseOpenmrsDatatypeTest {
 	
 	/**
-	 * @verifies return the uuid of the object
 	 * @see BaseOpenmrsDatatype#serialize(org.openmrs.OpenmrsObject)
 	 */
 	@Test

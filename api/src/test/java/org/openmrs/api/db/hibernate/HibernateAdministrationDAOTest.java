@@ -35,7 +35,6 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateAdministrationDAO#validate(Object,Errors)
-	 * @verifies Fail validation for location class if field lengths are not correct
 	 */
 	@Test
 	public void validate_shouldFailValidationForLocationClassIfFieldLengthsAreNotCorrect() throws Exception {
@@ -87,7 +86,6 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateAdministrationDAO#validate(Object,Errors)
-	 * @verifies Fail validation if field lengths are not correct
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
@@ -108,7 +106,6 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateAdministrationDAO#validate(Object,Errors)
-	 * @verifies Pass validation for location class if field lengths are correct
 	 */
 	@Test
 	public void validate_shouldPassValidationForLocationClassIfFieldLengthsAreCorrect() throws Exception {
@@ -139,7 +136,6 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateAdministrationDAO#validate(Object,Errors)
-	 * @verifies Pass validation if field lengths are correct
 	 */
 	@Test
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {

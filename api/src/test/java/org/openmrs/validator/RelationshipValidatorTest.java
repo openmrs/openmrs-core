@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.openmrs.Relationship;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.MapBindingResult;
@@ -33,7 +32,6 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "Should fail if start date is after end date", method = "validate(Relationship)")
 	public void validate_shouldFailIfEndDateIsBeforeStartDate() throws Exception {
 		Relationship relationship = new Relationship(1);
 		relationship.setStartDate(Context.getDateFormat().parse("18/02/2012"));
@@ -48,7 +46,6 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "Should pass if end date is after the start date", method = "validate(Relationship)")
 	public void validate_shouldPassIfEndDateIsAfterStartDate() throws Exception {
 		Relationship relationship = new Relationship(1);
 		relationship.setStartDate(Context.getDateFormat().parse("18/02/2012"));
@@ -63,7 +60,6 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Relationship)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		Relationship relationship = new Relationship(1);
 		relationship.setVoidReason("voidReason");
@@ -78,7 +74,6 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Relationship)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		Relationship relationship = new Relationship(1);
 		relationship
@@ -93,7 +88,6 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "Should fail if start date is in future", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfStartDateIsInFuture() throws Exception {
 		Relationship relationship = new Relationship(1);
 		Map<String, String> map = new HashMap<String, String>();
@@ -110,7 +104,6 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "Should pass if start date is not in future", method = "validate(Object,Errors)")
 	public void validate_shouldPassIfStartDateIsNotInFuture() throws Exception {
 		Relationship relationship = new Relationship(1);
 		Map<String, String> map = new HashMap<String, String>();
@@ -127,7 +120,6 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "Should pass if start date is null since start date is optional while creating a relationship", method = "validate(Object,Errors)")
 	public void validate_shouldPassIfStartDateIsEmpty() throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
 		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());

@@ -14,7 +14,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.ConceptSource;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -24,7 +23,6 @@ import org.springframework.validation.Errors;
 public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 	
 	@Test
-	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
 		ConceptSource conceptSource = new ConceptSource();
 		conceptSource.setName(null);
@@ -46,7 +44,6 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @verifies fail validation if description is null or empty or whitespace
 	 * @see ConceptSourceValidator#validate(Object, Errors)
 	 */
 	@Test
@@ -72,7 +69,6 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should pass validation if HL7 Code is null or empty or whitespace", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfHl7CodeIsNullOrEmptyOrWhitespace() throws Exception {
 		ConceptSource conceptSource = new ConceptSource();
 		conceptSource.setName("New name");
@@ -95,7 +91,6 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
 		ConceptSource conceptSource = new ConceptSource();
 		conceptSource.setName("New name");
@@ -107,7 +102,6 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		ConceptSource conceptSource = new ConceptSource();
 		conceptSource.setName("New name");
@@ -121,7 +115,6 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		ConceptSource conceptSource = new ConceptSource();
 		conceptSource.setName(StringUtils.repeat("a", 51));

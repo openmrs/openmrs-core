@@ -23,7 +23,6 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateEncounterDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * This class tests the {@link EncounterDAO} linked to from the Context. Currently that file is the
@@ -55,7 +54,6 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 	 * @see EncounterDAO#getSavedEncounterDatetime(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should get saved encounter datetime from database", method = "getSavedEncounterDatetime(Encounter)")
 	public void getSavedEncounterDatetime_shouldGetSavedEncounterDatetimeFromDatabase() throws Exception {
 		
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
@@ -81,7 +79,6 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 	 * @see EncounterDAO#getEncounters(query, patientId, start, length, includeVoided)
 	 */
 	@Test
-	@Verifies(value = "should return encounter when query by name", method = "getEncounters(Name, null, null, null, true)")
 	public void getEncounters_shouldWork_WithNameQuery() throws Exception {
 		List<Encounter> expectedEncountersForPatientOne = initializeExpectedEncounters();
 		List<Encounter> encounters = dao.getEncounters("John Doe", null, null, null, true);
@@ -92,7 +89,6 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 	 * @see EncounterDAO#getEncounters(query, patientId, start, length, includeVoided)
 	 */
 	@Test
-	@Verifies(value = "should return encounter when querying by numeric and string identifiers", method = "getEncounters(Identifier, null, null, null, true)")
 	public void getEncounters_shouldWork_WithIdentifierQuery() throws Exception {
 		List<Encounter> expectedEncountersForPatientOne = initializeExpectedEncounters();
 		
@@ -116,7 +112,6 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 	 * @see EncounterDAO#getEncounters(query, patientId, start, length, includeVoided)
 	 */
 	@Test
-	@Verifies(value = "should not return encounter on a partial match of an identifier", method = "getEncounters(Identifier, null, null, null, true)")
 	public void getEncounters_shouldNotWork_WithPartialIdentifier() throws Exception {	
 		List<Encounter> encountersByPartialIdentifier = dao.getEncounters("123", null, null, null, true);
 		assertEquals(0, encountersByPartialIdentifier.size());

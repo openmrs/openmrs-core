@@ -25,7 +25,6 @@ public class PrivilegeEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PrivilegeEditor#setAsText(String)
-	 * @verifies set using name
 	 */
 	@Test
 	public void setAsText_shouldSetUsingName() throws Exception {
@@ -36,7 +35,6 @@ public class PrivilegeEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PrivilegeEditor#setAsText(String)
-	 * @verifies set using uuid
 	 */
 	@Test
 	public void setAsText_shouldSetUsingUuid() throws Exception {

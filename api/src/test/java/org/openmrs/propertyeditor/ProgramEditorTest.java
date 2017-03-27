@@ -17,7 +17,6 @@ public class ProgramEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProgramEditor#setAsText(String)
-	 * @verifies set using concept id
 	 */
 	@Test
 	public void setAsText_shouldSetUsingConceptId() throws Exception {
@@ -28,7 +27,6 @@ public class ProgramEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProgramEditor#setAsText(String)
-	 * @verifies set using concept uuid
 	 */
 	@Test
 	public void setAsText_shouldSetUsingConceptUuid() throws Exception {
@@ -39,7 +37,6 @@ public class ProgramEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProgramEditor#setAsText(String)
-	 * @verifies set using program id
 	 */
 	@Test
 	public void setAsText_shouldSetUsingProgramId() throws Exception {
@@ -50,7 +47,6 @@ public class ProgramEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProgramEditor#setAsText(String)
-	 * @verifies set using program uuid
 	 */
 	@Test
 	public void setAsText_shouldSetUsingProgramUuid() throws Exception {

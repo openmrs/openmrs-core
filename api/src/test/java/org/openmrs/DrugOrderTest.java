@@ -28,7 +28,6 @@ import org.openmrs.order.OrderUtilTest;
 public class DrugOrderTest {
 	
 	/**
-	 * @verifies set all the relevant fields
 	 * @see DrugOrder#cloneForDiscontinuing()
 	 */
 	@Test
@@ -59,7 +58,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies copy all drug order fields
 	 * @see DrugOrder#copy()
 	 */
 	@Test
@@ -74,7 +72,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies set all the relevant fields
 	 * @see DrugOrder#cloneForRevision()
 	 */
 	@Test
@@ -89,7 +86,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies set the relevant fields for a DC order
 	 * @see DrugOrder#cloneForRevision()
 	 */
 	@Test
@@ -113,7 +109,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return false if the other order is null
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
@@ -125,7 +120,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return false if the other order is not a drug order
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
@@ -143,7 +137,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return false if both drugs are null and the concepts are different
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
@@ -158,7 +151,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return false if the concepts match and only this has a drug
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
@@ -177,7 +169,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return false if the concepts match and only the other has a drug
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
@@ -196,7 +187,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return false if the concepts match and drugs are different and not null
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
@@ -218,7 +208,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return true if both drugs are null and the concepts match
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
@@ -234,7 +223,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return true if the drugs match
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
@@ -269,7 +257,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies delegate calculation to dosingInstructions
 	 * @see DrugOrder#setAutoExpireDateBasedOnDuration()
 	 */
 	@Test
@@ -287,7 +274,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies not calculate for discontinue action
 	 * @see DrugOrder#setAutoExpireDateBasedOnDuration()
 	 */
 	@Test
@@ -303,7 +289,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies not calculate if autoExpireDate already set
 	 * @see DrugOrder#setAutoExpireDateBasedOnDuration()
 	 */
 	@Test
@@ -318,7 +303,6 @@ public class DrugOrderTest {
 	}
 
 	/**
-	 * @verifies return true if the drugs match and drug non coded match
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
@@ -336,7 +320,6 @@ public class DrugOrderTest {
 	}
 
 	/**
-	 * @verifies return false if the concepts match and drug non coded do not match
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
@@ -354,7 +337,6 @@ public class DrugOrderTest {
 	}
 
 	/**
-	 * @verifies return true if the concepts match and drug non coded match trimming spaces
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
@@ -372,7 +354,6 @@ public class DrugOrderTest {
 	}
 
 	/**
-	 * @verifies return false if the concepts match and either of drug non coded is null
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
@@ -389,7 +370,6 @@ public class DrugOrderTest {
 	}
 
 	/**
-	 * @verifies return True if the concepts match and both of the drug non coded is null
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test

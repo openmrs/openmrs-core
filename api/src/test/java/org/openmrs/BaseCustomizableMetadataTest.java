@@ -38,8 +38,6 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies void the attribute if an attribute with same attribute type already exists and the
-	 *           maxOccurs is set to 1
 	 * @see org.openmrs.BaseCustomizableMetadata#setAttribute(org.openmrs.attribute.Attribute)
 	 */
 	@Test
@@ -66,7 +64,6 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies work for attributes with datatypes whose values are stored in other tables
 	 * @see org.openmrs.BaseCustomizableMetadata#setAttribute(org.openmrs.attribute.Attribute)
 	 */
 	@Test

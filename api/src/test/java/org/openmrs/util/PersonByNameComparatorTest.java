@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
-import org.openmrs.test.Verifies;
 
 /**
  * This test class (should) contain tests for all of the {@link PersonByNameComparator} methods.
@@ -24,7 +23,6 @@ public class PersonByNameComparatorTest {
 	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
 	@Test
-	@Verifies(value = "should return negative if personName for person1 comes before that of person2", method = "comparePersonsByName(Person,Person)")
 	public void comparePersonsByName_shouldReturnNegativeIfPersonNameForPerson1ComesBeforeThatOfPerson2() throws Exception {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));
@@ -38,7 +36,6 @@ public class PersonByNameComparatorTest {
 	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
 	@Test
-	@Verifies(value = "should return positive if personName for person1 comes after that of person2", method = "comparePersonsByName(Person,Person)")
 	public void comparePersonsByName_shouldReturnPositiveIfPersonNameForPerson1ComesAfterThatOfPerson2() throws Exception {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleNamf", "familyName"));
@@ -52,7 +49,6 @@ public class PersonByNameComparatorTest {
 	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
 	@Test
-	@Verifies(value = "should return zero if the givenName middleName and familyName match", method = "comparePersonsByName(Person,Person)")
 	public void comparePersonsByName_shouldReturnZeroIfTheGivenNameMiddleNameAndFamilyNameMatch() throws Exception {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));
@@ -63,7 +59,6 @@ public class PersonByNameComparatorTest {
 	}
 	
 	@Test
-	@Verifies(value = "should not be case-sensitive", method = "comparePersonsByName(Person,Person)")
 	public void comparePersonsByName_shouldNotBeCaseSensitive() throws Exception {
 		Person person1 = new Person();
 		person1.addName(new PersonName("GIVENNAME", "MIDDLENAME", "FAMILYNAME"));

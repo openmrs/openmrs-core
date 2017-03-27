@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.Retireable;
 import org.openmrs.User;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests the {@link BaseUnretireHandler} class.
@@ -27,7 +26,6 @@ public class BaseUnretireHandlerTest {
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should unset the retired bit", method = "handle(Retireable,User,Date,String)")
 	public void handle_shouldUnsetTheRetiredBit() throws Exception {
 		UnretireHandler<Retireable> handler = new BaseUnretireHandler();
 		Retireable retireable = new Location();
@@ -40,7 +38,6 @@ public class BaseUnretireHandlerTest {
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should unset the retirer", method = "handle(Retireable,User,Date,String)")
 	public void handle_shouldUnsetTheRetirer() throws Exception {
 		UnretireHandler<Retireable> handler = new BaseUnretireHandler();
 		Retireable retireable = new Location();
@@ -54,7 +51,6 @@ public class BaseUnretireHandlerTest {
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should unset the date retired", method = "handle(Retireable,User,Date,String)")
 	public void handle_shouldUnsetTheDateRetired() throws Exception {
 		UnretireHandler<Retireable> handler = new BaseUnretireHandler();
 		Retireable retireable = new Location();
@@ -68,7 +64,6 @@ public class BaseUnretireHandlerTest {
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should unset the retire reason", method = "handle(Retireable,User,Date,String)")
 	public void handle_shouldUnsetTheRetireReason() throws Exception {
 		UnretireHandler<Retireable> handler = new BaseUnretireHandler();
 		Retireable retireable = new Location();
@@ -82,7 +77,6 @@ public class BaseUnretireHandlerTest {
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should not act on already unretired objects", method = "handle(Retireable,User,Date,String)")
 	public void handle_shouldNotActOnAlreadyUnretiredObjects() throws Exception {
 		UnretireHandler<Retireable> handler = new BaseUnretireHandler();
 		Retireable retireable = new Location();
@@ -95,7 +89,6 @@ public class BaseUnretireHandlerTest {
 	 * @see BaseUnretireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should not act on retired objects with a different dateRetired", method = "handle(Retireable,User,Date,String)")
 	public void handle_shouldNotActOnRetiredObjectsWithADifferentDateRetired() throws Exception {
 		Date d = new Date(new Date().getTime() - 1000); // a time that isn't right now
 		

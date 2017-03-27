@@ -24,7 +24,6 @@ public class DatatypeServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see DatatypeService#getHandler(CustomDatatype,String)
-	 * @verifies return a handler for the specified datatype
 	 */
 	@Test
 	public void getHandler_shouldReturnAHandlerForTheSpecifiedDatatype() throws Exception {
@@ -35,7 +34,6 @@ public class DatatypeServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see DatatypeService#getHandler(CustomDatatype,String)
-	 * @verifies return a handler for a datatype that extends a generic superclass
 	 */
 	@Test
 	public void getHandler_shouldReturnAHandlerForADatatypeThatExtendsAGenericSuperclass() throws Exception {

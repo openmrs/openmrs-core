@@ -20,7 +20,6 @@ public class UpdateFileParserTest {
 
 	
 	/**
-	 * @verifies set properties from xml file
 	 * @see UpdateFileParser#parse()
 	 */
 	@Test
@@ -42,7 +41,6 @@ public class UpdateFileParserTest {
 	}
 
 	/**
-	 * @verifies set properties using the newest update
 	 * @see UpdateFileParser#parse()
 	 */
 	@Test
@@ -77,7 +75,6 @@ public class UpdateFileParserTest {
 	}
 
 	/**
-	 * @verifies not set properties using updates ahead of current openmrs version
 	 * @see UpdateFileParser#parse()
 	 */
 	@Test

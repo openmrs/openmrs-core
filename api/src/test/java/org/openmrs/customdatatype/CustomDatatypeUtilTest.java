@@ -20,7 +20,6 @@ public class CustomDatatypeUtilTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see CustomDatatypeUtil#deserializeSimpleConfiguration(String)
-	 * @verifies deserialize a configuration serialized by the corresponding serialize method
 	 */
 	@Test
 	public void deserializeSimpleConfiguration_shouldDeserializeAConfigurationSerializedByTheCorrespondingSerializeMethod()

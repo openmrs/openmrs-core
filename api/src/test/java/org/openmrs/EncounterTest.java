@@ -30,7 +30,6 @@ import org.mockito.Mock;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * This class tests the all of the {@link Encounter} non-trivial object methods.
@@ -49,7 +48,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#toString()
 	 */
 	@Test
-	@Verifies(value = "should not fail with empty object", method = "toString()")
 	public void toString_shouldNotFailWithEmptyObject() throws Exception {
 		Encounter encounter = new Encounter();
 		@SuppressWarnings("unused")
@@ -60,7 +58,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#removeObs(Obs)
 	 */
 	@Test
-	@Verifies(value = "should remove obs successfully", method = "removeObs(Obs)")
 	public void removeObs_shouldRemoveObsSuccessfully() throws Exception {
 		Obs obsToRemove = new Obs();
 		
@@ -82,7 +79,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#removeObs(Obs)
 	 */
 	@Test
-	@Verifies(value = "should not throw error when removing null obs from empty set", method = "removeObs(Obs)")
 	public void removeObs_shouldNotThrowErrorWhenRemovingNullObsFromEmptySet() throws Exception {
 		Encounter encounterWithoutObsSet = new Encounter();
 		encounterWithoutObsSet.removeObs(null);
@@ -92,7 +88,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#removeObs(Obs)
 	 */
 	@Test
-	@Verifies(value = "should not throw error when removing null obs from non empty set", method = "removeObs(Obs)")
 	public void removeObs_shouldNotThrowErrorWhenRemovingNullObsFromNonEmptySet() throws Exception {
 		Encounter encounterWithObsSet = new Encounter();
 		Set<Obs> obsSet = new HashSet<Obs>();
@@ -108,7 +103,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObs()
 	 */
 	@Test
-	@Verifies(value = "should not return null with null obs set", method = "getObs()")
 	public void getObs_shouldNotReturnNullWithNullObsSet() throws Exception {
 		Encounter encounter = new Encounter();
 		
@@ -120,7 +114,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getAllObs(null)
 	 */
 	@Test
-	@Verifies(value = "should not return null with null obs set", method = "getAllObs(null)")
 	public void getAllObs_shouldNotReturnNullWithNullObsSet() throws Exception {
 		Encounter encounter = new Encounter();
 		assertNotNull(encounter.getAllObs(true));
@@ -134,7 +127,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getAllObs(null)
 	 */
 	@Test
-	@Verifies(value = "should get obs in the same order it is added to the encounter", method = "getAllObs(null)")
 	public void getAllObs_shouldGetObsInTheSameOrderObsIsAddedToTheEncounter() throws Exception {
 		Encounter encounter = new Encounter();
 		Obs obs1= new Obs();
@@ -161,7 +153,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObsAtTopLevel(null)
 	 */
 	@Test
-	@Verifies(value = "should not return null with null obs set", method = "getObsAtTopLevel(null)")
 	public void getObsAtTopLevel_shouldNotReturnNullWithNullObsSet() throws Exception {
 		Encounter encounter = new Encounter();
 		assertNotNull(encounter.getObsAtTopLevel(true));
@@ -174,7 +165,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObsAtTopLevel(boolean)
 	 */
 	@Test
-	@Verifies(value = "should get obs at top level in the same order it is added to the encounter", method = "getObsAtTopLevel(boolean)")
 	public void getObsAtTopLevel_shouldGetObsInTheSameOrderObsIsAddedToTheEncounter() throws Exception {
 		Encounter encounter = new Encounter();
 		Obs obs1= new Obs();
@@ -200,7 +190,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObs()
 	 */
 	@Test
-	@Verifies(value = "should get obs in the same order it is added to the encounter", method = "getObs()")
 	public void getObs_shouldGetObsInTheSameOrderObsIsAddedToTheEncounter() throws Exception {
 		Encounter encounter = new Encounter();
 		Obs obs1= new Obs();
@@ -226,7 +215,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObs()
 	 */
 	@Test
-	@Verifies(value = "should get obs", method = "getObs()")
 	public void getObs_shouldGetObs() throws Exception {
 		Encounter encounter = new Encounter();
 		
@@ -242,7 +230,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObsAtTopLevel(null)
 	 */
 	@Test
-	@Verifies(value = "should get obs", method = "getObsAtTopLevel(null)")
 	public void getObsAtTopLevel_shouldGetObs() throws Exception {
 		Encounter encounter = new Encounter();
 		
@@ -260,7 +247,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getAllObs(null)
 	 */
 	@Test
-	@Verifies(value = "should get obs", method = "getAllObs(null)")
 	public void getAllObs_shouldGetObs() throws Exception {
 		Encounter encounter = new Encounter();
 		
@@ -278,7 +264,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObs()
 	 */
 	@Test
-	@Verifies(value = "should not get voided obs", method = "getObs()")
 	public void getObs_shouldNotGetVoidedObs() throws Exception {
 		Encounter enc = new Encounter();
 		
@@ -294,7 +279,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObsAtTopLevel(null)
 	 */
 	@Test
-	@Verifies(value = "should not get voided obs", method = "getObsAtTopLevel(null)")
 	public void getObsAtTopLevel_shouldNotGetVoidedObs() throws Exception {
 		Encounter enc = new Encounter();
 		
@@ -313,7 +297,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getAllObs(null)
 	 */
 	@Test
-	@Verifies(value = "should not get voided obs", method = "getAllObs(null)")
 	public void getAllObs_shouldNotGetVoidedObs() throws Exception {
 		Encounter enc = new Encounter();
 		
@@ -332,7 +315,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObs()
 	 */
 	@Test
-	@Verifies(value = "should only get child obs", method = "getObs()")
 	public void getObs_shouldOnlyGetChildObs() throws Exception {
 		Encounter encounter = new Encounter();
 		
@@ -356,7 +338,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObsAtTopLevel(null)
 	 */
 	@Test
-	@Verifies(value = "should only get parents obs", method = "getObsAtTopLevel(null)")
 	public void getObsAtTopLevel_shouldOnlyGetParentsObs() throws Exception {
 		Encounter encounter = new Encounter();
 		
@@ -383,7 +364,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getAllObs(null)
 	 */
 	@Test
-	@Verifies(value = "should get both parent and child obs", method = "getAllObs(null)")
 	public void getAllObs_shouldGetBothParentAndChildObs() throws Exception {
 		Encounter encounter = new Encounter();
 		
@@ -408,7 +388,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObs()
 	 */
 	@Test
-	@Verifies(value = "should not get child obs if child also on encounter", method = "getObs()")
 	public void getObs_shouldNotGetChildObsIfChildAlsoOnEncounter() throws Exception {
 		Encounter encounter = new Encounter();
 		
@@ -434,7 +413,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObsAtTopLevel(null)
 	 */
 	@Test
-	@Verifies(value = "should only return the grouped top level obs", method = "getObsAtTopLevel(null)")
 	public void getObsAtTopLevel_shouldOnlyReturnTheGroupedTopLevelObs() throws Exception {
 		Encounter encounter = new Encounter();
 		
@@ -460,7 +438,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getAllObs(null)
 	 */
 	@Test
-	@Verifies(value = "should get both parent and child with child directly on encounter", method = "getAllObs(null)")
 	public void getAllObs_shouldGetBothParentAndChildWithChildDirectlyOnEncounter() throws Exception {
 		Encounter enc = new Encounter();
 		
@@ -496,7 +473,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getAllObs(null)
 	 */
 	@Test
-	@Verifies(value = "should get both child and parent obs after removing child from parent grouping", method = "getAllObs(null)")
 	public void getAllObs_shouldGetBothChildAndParentObsAfterRemovingChildFromParentGrouping() throws Exception {
 		Encounter enc = new Encounter();
 		
@@ -522,7 +498,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObs()
 	 */
 	@Test
-	@Verifies(value = "should get both child and parent obs after removing child from parent grouping", method = "getObs()")
 	public void getObs_shouldGetBothChildAndParentObsAfterRemovingChildFromParentGrouping() throws Exception {
 		Encounter enc = new Encounter();
 		
@@ -549,7 +524,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObsAtTopLevel(null)
 	 */
 	@Test
-	@Verifies(value = "should get both child and parent obs after removing child from parent grouping", method = "getObsAtTopLevel(null)")
 	public void getObsAtTopLevel_shouldGetBothChildAndParentObsAfterRemovingChildFromParentGrouping() throws Exception {
 		Encounter enc = new Encounter();
 		
@@ -575,7 +549,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObs()
 	 */
 	@Test
-	@Verifies(value = "should get obs with two levels of hierarchy", method = "getObs()")
 	public void getObs_shouldGetObsWithTwoLevelsOfHierarchy() throws Exception {
 		Encounter enc = new Encounter();
 		
@@ -629,7 +602,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObs()
 	 */
 	@Test
-	@Verifies(value = "should get obs with three levels of hierarchy", method = "getObs()")
 	public void getObs_shouldGetObsWithThreeLevelsOfHierarchy() throws Exception {
 		Encounter enc = new Encounter();
 		
@@ -672,7 +644,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getObs()
 	 */
 	@Test
-	@Verifies(value = "should not get voided obs with three layers of hierarchy", method = "getObs()")
 	public void getObs_shouldNotGetVoidedObsWithThreeLayersOfHierarchy() throws Exception {
 		Encounter enc = new Encounter();
 		
@@ -719,7 +690,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#Encounter(Integer)
 	 */
 	@Test
-	@Verifies(value = "should set encounter id", method = "Encounter(Integer)")
 	public void Encounter_shouldSetEncounterId() throws Exception {
 		Encounter encounter = new Encounter(123);
 		Assert.assertEquals(123, encounter.getEncounterId().intValue());
@@ -729,7 +699,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#addObs(Obs)
 	 */
 	@Test
-	@Verifies(value = "should add obs with null values", method = "addObs(Obs)")
 	public void addObs_shouldAddObsWithNullValues() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.addObs(new Obs());
@@ -740,7 +709,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#addObs(Obs)
 	 */
 	@Test
-	@Verifies(value = "should not fail with null obs", method = "addObs(Obs)")
 	public void addObs_shouldNotFailWithNullObs() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.addObs(null);
@@ -751,7 +719,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#addObs(Obs)
 	 */
 	@Test
-	@Verifies(value = "should set encounter attribute on obs", method = "addObs(Obs)")
 	public void addObs_shouldSetEncounterAttributeOnObs() throws Exception {
 		Encounter encounter = new Encounter();
 		Obs obs = new Obs();
@@ -763,7 +730,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#addObs(Obs)
 	 */
 	@Test
-	@Verifies(value = "should add obs to non null initial obs set", method = "addObs(Obs)")
 	public void addObs_shouldAddObsToNonNullInitialObsSet() throws Exception {
 		Encounter encounter = new Encounter();
 		Set<Obs> obsSet = new HashSet<Obs>();
@@ -779,7 +745,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#addObs(Obs)
 	 */
 	@Test
-	@Verifies(value = "should add encounter attrs to obs if attributes are null", method = "addObs(Obs)")
 	public void addObs_shouldAddEncounterAttrsToObsIfAttributesAreNull() throws Exception {
 		/// an encounter that will hav the date/location/patient on it
 		Encounter encounter = new Encounter();
@@ -810,7 +775,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#addObs(Obs)
 	 */
 	@Test
-	@Verifies(value = "should add encounter attrs to obs if attributes are null", method = "addObs(Obs)")
 	public void addObs_shouldAddEncounterAttrsToObsGroupMembersIfAttributesAreNull() throws Exception {
 		/// an encounter that will hav the date/location/patient on it
 		Encounter encounter = new Encounter();
@@ -852,7 +816,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#addOrder(Order)
 	 */
 	@Test
-	@Verifies(value = "should add order with null values", method = "addOrder(Order)")
 	public void addOrder_shouldAddOrderWithNullValues() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.addOrder(new Order());
@@ -863,7 +826,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#addOrder(Order)
 	 */
 	@Test
-	@Verifies(value = "should not fail with null obs passed to add order", method = "addOrder(Order)")
 	public void addOrder_shouldNotFailWithNullObsPassedToAddOrder() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.addOrder(null);
@@ -874,7 +836,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#addOrder(Order)
 	 */
 	@Test
-	@Verifies(value = "should set encounter attribute", method = "addOrder(Order)")
 	public void addOrder_shouldSetEncounterAttribute() throws Exception {
 		Encounter encounter = new Encounter();
 		Order order = new Order();
@@ -886,7 +847,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#addOrder(Order)
 	 */
 	@Test
-	@Verifies(value = "should add order to non null initial order set", method = "addOrder(Order)")
 	public void addOrder_shouldAddOrderToNonNullInitialOrderSet() throws Exception {
 		Encounter encounter = new Encounter();
 		Set<Order> orderSet = new HashSet<Order>();
@@ -902,7 +862,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#getOrders()
 	 */
 	@Test
-	@Verifies(value = "should add order to encounter when adding order to set returned from getOrders", method = "getOrders()")
 	public void addOrders_shouldAddOrderToEncounterWhenAddingOrderToSetReturnedFromGetOrders() throws Exception {
 		Encounter encounter = new Encounter();
 		Order order = new Order();
@@ -915,7 +874,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#removeOrder(Order)
 	 */
 	@Test
-	@Verifies(value = "should remove order from encounter", method = "removeOrder(Order)")
 	public void removeOrder_shouldRemoveOrderFromEncounter() throws Exception {
 		Encounter encounter = new Encounter();
 		Order order = new Order(1);
@@ -930,7 +888,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#removeOrder(Order)
 	 */
 	@Test
-	@Verifies(value = "should not fail when removing null order", method = "removeOrder(Order)")
 	public void removeOrder_shouldNotFailWhenRemovingNullOrder() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.removeOrder(null);
@@ -940,7 +897,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#removeOrder(Order)
 	 */
 	@Test
-	@Verifies(value = "should not fail when removing non existent order", method = "removeOrder(Order)")
 	public void removeOrder_shouldNotFailWhenRemovingNonExistentOrder() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.removeOrder(new Order(123));
@@ -948,7 +904,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Encounter#addProvider(EncounterRole,Provider)
-	 * @verifies add provider for new role
 	 */
 	@Test
 	public void addProvider_shouldAddProviderForNewRole() throws Exception {
@@ -966,7 +921,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Encounter#addProvider(EncounterRole,Provider)
-	 * @verifies add second provider for role
 	 */
 	@Test
 	public void addProvider_shouldAddSecondProviderForRole() throws Exception {
@@ -987,7 +941,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Encounter#addProvider(EncounterRole,Provider)
-	 * @verifies not add same provider twice for role
 	 */
 	@Test
 	public void addProvider_shouldNotAddSameProviderTwiceForRole() throws Exception {
@@ -1010,7 +963,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Encounter#getProvidersByRole(EncounterRole)
-	 * @verifies return empty set for no role
 	 */
 	@Test
 	public void getProvidersByRole_shouldReturnEmptySetForNoRole() throws Exception {
@@ -1031,7 +983,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Encounter#getProvidersByRole(EncounterRole)
-	 * @verifies return empty set for null role
 	 */
 	@Test
 	public void getProvidersByRole_shouldReturnEmptySetForNullRole() throws Exception {
@@ -1050,7 +1001,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Encounter#getProvidersByRole(EncounterRole)
-	 * @verifies return providers for role
 	 */
 	@Test
 	public void getProvidersByRole_shouldReturnProvidersForRole() throws Exception {
@@ -1078,7 +1028,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Encounter#getProvidersByRoles()
-	 * @verifies return all roles and providers
 	 */
 	@Test
 	public void getProvidersByRoles_shouldReturnAllRolesAndProviders() throws Exception {
@@ -1112,7 +1061,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Encounter#getProvidersByRoles()
-	 * @verifies return empty map if no providers
 	 */
 	@Test
 	public void getProvidersByRoles_shouldReturnEmptyMapIfNoProviders() throws Exception {
@@ -1128,7 +1076,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Encounter#setProvider(EncounterRole,Provider)
-	 * @verifies clear providers and set provider for role
 	 */
 	@Test
 	public void setProvider_shouldClearProvidersAndSetProviderForRole() throws Exception {
@@ -1154,7 +1101,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Encounter#setProvider(EncounterRole,Provider)
-	 * @verifies set provider for new role
 	 */
 	@Test
 	public void setProvider_shouldSetProviderForNewRole() throws Exception {
@@ -1173,7 +1119,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Encounter#setProvider(EncounterRole,Provider)
-	 * @verifies void existing EncounterProvider
 	 */
 	@Test
 	public void setProvider_shouldVoidExistingEncounterProvider() throws Exception {
@@ -1200,7 +1145,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Encounter#removeProvider(EncounterRole,Provider)
-	 * @verifies void existing EncounterProvider
 	 */
 	@Test
 	public void removeProvider_shouldVoidExistingEncounterProvider() throws Exception {
@@ -1229,7 +1173,6 @@ public class EncounterTest extends BaseContextSensitiveTest {
 	 * @see Encounter#copyAndAssignToAnotherPatient(org.openmrs.Patient)
 	 */
 	@Test
-	@Verifies(value = "should copy all Encounter data except visit and assign copied Encounter to given Patient", method = "copy()")
 	public void copy_shouldCopyAllEncounterDataExceptVisitAndAssignCopiedEncounterToGivenPatient() throws Exception {
 		Encounter encounter = new Encounter();
 		
@@ -1292,10 +1235,8 @@ public class EncounterTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see Encounter#removeProvider(EncounterRole,Provider)
-	 * @verifies multiple adding and removing of same provider not failing
 	 */
 	@Test
-	@Verifies(value = "multiple adding and removing of same provider should not fail", method = "removeProvider(EncounterRole,Provider)")
 	public void multipleAddingAndRemovingOfSameProvider_shouldNotFail() throws Exception {
 
 		Encounter encounter = new Encounter();

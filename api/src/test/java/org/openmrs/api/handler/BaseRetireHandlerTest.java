@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.Retireable;
 import org.openmrs.User;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests for the {@link BaseRetireHandler} class.
@@ -27,7 +26,6 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should set the retired bit", method = "handle(Retireable,User,Date,String)")
 	public void handle_shouldSetTheRetiredBit() throws Exception {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();
@@ -40,7 +38,6 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should set the retireReason", method = "handle(Retireable,User,Date,String)")
 	public void handle_shouldSetTheRetireReason() throws Exception {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();
@@ -52,7 +49,6 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should set retired by", method = "handle(Retireable,User,Date,String)")
 	public void handle_shouldSetRetiredBy() throws Exception {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();
@@ -64,7 +60,6 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should not set retired by if non null", method = "handle(Retireable,User,Date,String)")
 	public void handle_shouldNotSetRetiredByIfNonNull() throws Exception {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();
@@ -77,7 +72,6 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should set dateRetired", method = "handle(Retireable,User,Date,String)")
 	public void handle_shouldSetDateRetired() throws Exception {
 		Date d = new Date();
 		
@@ -91,7 +85,6 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should not set dateRetired if non null", method = "handle(Retireable,User,Date,String)")
 	public void handle_shouldNotSetDateRetiredIfNonNull() throws Exception {
 		Date d = new Date(new Date().getTime() - 1000); // a time that is not "now"
 		
@@ -107,7 +100,6 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should not set the retireReason if already voided", method = "handle(Retireable,User,Date,String)")
 	public void handle_shouldNotSetTheRetireReasonIfAlreadyVoided() throws Exception {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();
@@ -121,7 +113,6 @@ public class BaseRetireHandlerTest {
 	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should set retiredBy even if retired bit is set but retiredBy is null", method = "handle(Retireable,User,Date,String)")
 	public void handle_shouldSetRetiredByEvenIfRetiredBitIsSetButRetiredByIsNull() throws Exception {
 		RetireHandler<Retireable> handler = new BaseRetireHandler();
 		Retireable retireable = new Location();

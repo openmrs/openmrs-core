@@ -21,7 +21,6 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindException;
@@ -44,7 +43,6 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if a preferred patient identifier is not chosen", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosen() throws Exception {
 		Patient pa = Context.getPatientService().getPatient(2);
 		Assert.assertNotNull(pa.getPatientIdentifier());
@@ -61,7 +59,6 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if a preferred patient identifier is not chosen for voided patients", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosenForVoidedPatients() throws Exception {
 		Patient pa = Context.getPatientService().getPatient(432);
 		
@@ -76,7 +73,6 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 	
 	@Test
-	@Verifies(value = "should not fail validation if patient that is not preferred only has one identifier", method = "validate(Object,Errors)")
 	public void validate_shouldNotFailWhenPatientHasOnlyOneIdentifierAndItsNotPreferred() throws Exception {
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
 		Patient patient = new Patient();
@@ -110,10 +106,8 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	
 	/**
 	 * @see org.openmrs.validator.PatientValidator#validate(Object,Errors)
-	 * @verifies fail validation if gender is blank
 	 */
 	@Test
-	@Verifies(value = "should fail validation if gender is blank", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfGenderIsBlank() throws Exception {
 		Patient pa = new Patient(1);
 		Errors errors = new BindException(pa, "patient");
@@ -127,7 +121,6 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	 */
 	@Override
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
 		Patient patient = new Patient();
@@ -166,7 +159,6 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	 */
 	@Override
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
 		Patient patient = new Patient();

@@ -16,7 +16,6 @@ import java.util.Locale;
 import org.junit.Test;
 import org.openmrs.messagesource.MockPresentationMessage;
 import org.openmrs.messagesource.PresentationMessage;
-import org.openmrs.test.Verifies;
 
 /**
  *
@@ -29,7 +28,6 @@ public class CachedMessageSourceTest {
 	 * @see CachedMessageSource#getLocales()
 	 */
 	@Test
-	@Verifies(value = "should should be able to contain multiple locales", method = "getLocales()")
 	public void getLocales_shouldShouldBeAbleToContainMultipleLocales() throws Exception {
 		CachedMessageSource testPmc = new CachedMessageSource();
 		testPmc.addPresentation(MockPresentationMessage.createMockPresentationMessage("en"));
@@ -46,7 +44,6 @@ public class CachedMessageSourceTest {
 	 * @see CachedMessageSource#getPresentation(String,Locale)
 	 */
 	@Test
-	@Verifies(value = "should match get message with presentation message", method = "getPresentation(String,Locale)")
 	public void getPresentation_shouldMatchGetMessageWithPresentationMessage() throws Exception {
 		CachedMessageSource testPmc = new CachedMessageSource();
 		

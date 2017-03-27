@@ -18,7 +18,6 @@ import org.openmrs.Encounter;
 import org.openmrs.Visit;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests methods in the {@link ExistingVisitAssignmentHandler}
@@ -44,7 +43,6 @@ public class ExistingVisitAssignmentHandlerTest extends BaseContextSensitiveTest
 	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should assign existing visit if match found", method = "beforeCreateEncounter(Encounter)")
 	public void beforeCreateEncounter_shouldAssignExistingVisitIfMatchFound() throws Exception {
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
 		Assert.assertNull(encounter.getVisit());
@@ -59,7 +57,6 @@ public class ExistingVisitAssignmentHandlerTest extends BaseContextSensitiveTest
 	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should not assign visit if no match found", method = "beforeCreateEncounter(Encounter)")
 	public void beforeCreateEncounter_shouldNotAssignVisitIfNoMatchFound() throws Exception {
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
 		Assert.assertNull(encounter.getVisit());
@@ -79,7 +76,6 @@ public class ExistingVisitAssignmentHandlerTest extends BaseContextSensitiveTest
 	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should not assign visit which stopped before encounter date", method = "beforeCreateEncounter(Encounter)")
 	public void beforeCreateEncounter_shouldNotAssignVisitWhichStoppedBeforeEncounterDate() throws Exception {
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
 		Assert.assertNull(encounter.getVisit());

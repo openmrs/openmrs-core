@@ -15,7 +15,6 @@ import org.openmrs.ImplementationId;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -29,7 +28,6 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should throw APIException if ImplementationId is null", method = "validate(Object,Errors)")
 	public void validate_shouldThrowAPIExceptionIfImplementationIdIsNUll() {
 		try {
 			new ImplementationIdValidator().validate(null, null);
@@ -44,7 +42,6 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if implementation id is null", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfImplementationIdIsNull() {
 		ImplementationId implementationId = new ImplementationId();
 		implementationId.setPassphrase("PASSPHRASE");
@@ -62,7 +59,6 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if description is null", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfDescriptionIsNull() {
 		ImplementationId implementationId = new ImplementationId();
 		implementationId.setImplementationId("IMPL_ID");
@@ -80,7 +76,6 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if pass phrase is null", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfPassPhraseIsNull() {
 		ImplementationId implementationId = new ImplementationId();
 		implementationId.setImplementationId("IMPL_ID");
@@ -98,7 +93,6 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if given empty implementationId object", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfGivenEmptyImplementationIdObject() throws Exception {
 		// save a blank impl id. exception thrown
 		ImplementationId implementationId = new ImplementationId();
@@ -114,7 +108,6 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if given a caret in the implementationId code", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfGivenACaretInTheImplementationIdCode() throws Exception {
 		ImplementationId invalidId = new ImplementationId();
 		invalidId.setImplementationId("caret^caret");
@@ -133,7 +126,6 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if given a pipe in the implementationId code", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfGivenAPipeInTheImplementationIdCode() throws Exception {
 		// save an impl id with an invalid hl7 code
 		ImplementationId invalidId2 = new ImplementationId();
@@ -153,7 +145,6 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if name is null", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfNameIsNull() {
 		ImplementationId implementationId = new ImplementationId();
 		implementationId.setImplementationId("IMPL_ID");

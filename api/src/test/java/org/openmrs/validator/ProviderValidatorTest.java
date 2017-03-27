@@ -23,7 +23,6 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -51,7 +50,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderValidator#validate(Object, Errors)
-	 * @verifies be valid if identifier is not set
 	 */
 	@Test
 	public void validate_shouldBeValidIfIdentifierIsNotSet() throws Exception {
@@ -75,7 +73,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderValidator#validate(Object, Errors)
-	 * @verifies be valid if identifier is set
 	 */
 	@Test
 	public void validate_shouldBeValidIfIdentifierIsSet() throws Exception {
@@ -91,7 +88,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderValidator#validate(Object, Errors)
-	 * @verifies be invalid if provider is retired and the retired reason is not mentioned
 	 */
 	@Test
 	public void validate_shouldBeInvalidIfProviderIsRetiredAndTheRetiredReasonIsNotMentioned() throws Exception {
@@ -115,7 +111,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderValidator#validate(Object, Errors)
-	 * @verifies be invalid if person is not set
 	 */
 	@Test
 	public void validate_shouldBeInvalidIfPersonIsNotSet() throws Exception {
@@ -136,7 +131,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderValidator#validate(Object, Errors)
-	 * @verifies be valid if only person is set
 	 */
 	@Test
 	public void validate_shouldBeValidIfOnlyPersonIsSet() throws Exception {
@@ -153,7 +147,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderValidator#validate(Object, Errors)
-	 * @verifies reject a provider if it has fewer than min occurs of an attribute
 	 */
 	@Test
 	public void validate_shouldRejectAProviderIfItHasFewerThanMinOccursOfAnAttribute() throws Exception {
@@ -173,7 +166,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderValidator#validate(Object, Errors)
-	 * @verifies reject a Provider if it has more than max occurs of an attribute
 	 */
 	@Test
 	public void validate_shouldRejectAProviderIfItHasMoreThanMaxOccursOfAnAttribute() throws Exception {
@@ -199,7 +191,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	@Verifies(value = "should accept duplicate identifier if the existing provider is not retired", method = "validate(Object,Errors)")
 	public void validate_shouldAcceptDuplicateIdentifierIfTheExistingProviderIsNotRetired() throws Exception {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateProvider = providerService.getProvider(200);
@@ -215,7 +206,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	@Verifies(value = "should accept duplicate identifier if the existing provider is retired", method = "validate(Object,Errors)")
 	public void validate_shouldAcceptDuplicateIdentifierIfTheExistingProviderIsRetired() throws Exception {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateRetiredProvider = providerService.getProvider(201);
@@ -232,7 +222,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	@Verifies(value = "should accept a duplicate identifier for a new provider which is not retired", method = "validate(Object,Errors)")
 	public void validate_shouldAcceptADuplicateIdentifierForANewProviderWhichIsNotRetired() throws Exception {
 		Provider duplicateProvider = providerService.getProvider(1);
 		Assert.assertFalse(duplicateProvider.getRetired());
@@ -248,7 +237,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	@Verifies(value = "should accept a duplicate identifier for a new provider which is retired", method = "validate(Object,Errors)")
 	public void validate_shouldAcceptADuplicateIdentifierForANewProviderWhichIsRetired() throws Exception {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateProvider = providerService.getProvider(1);
@@ -266,7 +254,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		Provider provider = new Provider();
 		provider.setIdentifier("identifier");
@@ -288,7 +275,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		Provider provider = new Provider();
 		provider

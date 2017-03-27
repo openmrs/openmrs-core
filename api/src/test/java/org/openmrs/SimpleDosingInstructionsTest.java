@@ -190,7 +190,6 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies reject a duration unit with a mapping of an invalid type
 	 * @see SimpleDosingInstructions#validate(DrugOrder, org.springframework.validation.Errors)
 	 */
 	@Test

@@ -21,7 +21,6 @@ import org.openmrs.Order;
 import org.openmrs.OrderGroup;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -44,7 +43,6 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	@Verifies(value = "saves the order group ", method = "saveOrderGroup(OrderGroup)")
 	public void saveOrderGroup_shouldSaveOrderGroup() throws Exception {
 		OrderGroup newOrderGroup = new OrderGroup();
 		

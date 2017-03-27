@@ -19,7 +19,6 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -46,7 +45,6 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should assign existing visit if match found", method = "beforeCreateEncounter(Encounter)")
 	public void beforeCreateEncounter_shouldAssignExistingVisitIfMatchFound() throws Exception {
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
 		Assert.assertNull(encounter.getVisit());
@@ -60,7 +58,6 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should assign new visit if no match found", method = "beforeCreateEncounter(Encounter)")
 	public void beforeCreateEncounter_shouldAssignNewVisitIfNoMatchFound() throws Exception {
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
 		Assert.assertNull(encounter.getVisit());
@@ -80,7 +77,6 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should assign first visit type if mapping global property is not set", method = "beforeCreateEncounter(Encounter)")
 	public void beforeCreateEncounter_shouldAssignFirstVisitTypeIfMappingGlobalPropertyIsNotSet() throws Exception {
 		VisitType visitType = Context.getVisitService().getAllVisitTypes().get(0);
 		
@@ -103,7 +99,6 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should assign mapping global property visit type", method = "beforeCreateEncounter(Encounter)")
 	public void beforeCreateEncounter_shouldAssignMappingGlobalPropertyVisitType() throws Exception {
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
 		Assert.assertNull(encounter.getVisit());
@@ -131,7 +126,6 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	 * @see ExistingOrNewVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should resolve encounter and visit type uuids as global property values", method = "beforeCreateEncounter(Encounter)")
 	public void beforeCreateEncounter_shouldResolveEncounterAndVisitTypeUuidsAsGlobalPropertyValues() throws Exception {
 		final String encounterTypeUuid = "759799ab-c9a5-435e-b671-77773ada74e4";
 		final String visitTypeUuid = "c0c579b0-8e59-401d-8a4a-976a0b183519";

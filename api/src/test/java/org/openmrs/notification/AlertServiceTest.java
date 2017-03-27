@@ -14,12 +14,10 @@ import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.impl.AlertServiceImpl;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 public class AlertServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
-	@Verifies(value = "should add an alert with message of length equals Text Max Length", method = "notifySuperUsers(String,Exception,null)")
 	public void notifySuperUsers_shouldAddAnAlertWithMessageOfLengthEqualsTextMaxLength() {
 		Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", new Exception(), "test");
 		
@@ -29,7 +27,6 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should add an alert with message text if cause is null", method = "notifySuperUsers(String,Exception,null)")
 	public void notifySuperUsers_shouldAddAnAlertWithMessageTextIfCauseIsNull() {
 		
 		Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", null, "test");
@@ -47,7 +44,6 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 */
 	@Test
-	@Verifies(value = "should add an alert to the database", method = "notifySuperUsers(String,Exception,null)")
 	public void notifySuperUsers_shouldAddAnAlertToTheDatabase() throws Exception {
 		// Check there are no alerts before the method is called
 		Assert.assertEquals(0, Context.getAlertService().getAlertsByUser(null).size());

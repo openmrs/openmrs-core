@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Drug;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * 
@@ -24,7 +23,6 @@ public class DrugEditorTest extends BaseContextSensitiveTest {
 	 * @see DrugEditor#setAsText(String)
 	 */
 	@Test
-	@Verifies(value = "should set value to the drug with the specified identifier", method = "setAsText(String)")
 	public void xsetAsText_shouldSetValueToTheDrugWithTheSpecifiedIdentifier() throws Exception {
 		DrugEditor drugEditor = new DrugEditor();
 		drugEditor.setAsText("2");
@@ -36,7 +34,6 @@ public class DrugEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see DrugEditor#setAsText(String)
-	 * @verifies set using uuid
 	 */
 	@Test
 	public void setAsText_shouldSetUsingUuid() throws Exception {

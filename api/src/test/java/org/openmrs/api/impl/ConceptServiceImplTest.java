@@ -69,7 +69,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#saveConcept(Concept)
-	 * @verifies return the concept with new conceptID if creating new concept
 	 */
 	@Test
 	public void saveConcept_shouldReturnTheConceptWithNewConceptIDIfCreatingNewConcept() throws Exception {
@@ -86,7 +85,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#saveConcept(Concept)
-	 * @verifies return the concept with same conceptID if updating existing concept
 	 */
 	
 	@Test
@@ -106,7 +104,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#saveConcept(Concept)
-	 * @verifies leave preferred name preferred if set
 	 */
 	@Test
 	public void saveConcept_shouldLeavePreferredNamePreferredIfSet() throws Exception {
@@ -143,7 +140,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#saveConcept(Concept)
-	 * @verifies not set default preferred name to short or index terms
 	 */
 	@Test
 	public void saveConcept_shouldNotSetDefaultPreferredNameToShortOrIndexTerms() throws Exception {
@@ -174,7 +170,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#saveConcept(Concept)
-	 * @verifies set default preferred name to fully specified first If
 	 *           Concept.getPreferredName(locale) returns null, saveConcept chooses one. The default
 	 *           first choice is the fully specified name in the locale. The default second choice
 	 *           is a synonym in the locale.
@@ -212,7 +207,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#saveConcept(Concept)
-	 * @verifies set default preferred name to a synonym second If Concept.getPreferredName(locale)
 	 *           returns null, saveConcept chooses one. The default first choice is the fully
 	 *           specified name in the locale. The default second choice is a synonym in the locale.
 	 */
@@ -271,7 +265,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#saveConcept(Concept)
-	 * @verifies force set flag if set members exist
 	 */
 	@Test
 	public void saveConcept_shouldForceSetFlagIfSetMembersExist() throws Exception {
@@ -297,7 +290,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#purgeConcept(Concept)
-	 * @verifies should purge the concept if not being used by an obs
 	 */
 	@Test
 	public void purgeConcept_shouldPurgeTheConceptIfNotBeingUsedByAnObs() throws Exception {
@@ -308,7 +300,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#retireConcept(Concept,String)
-	 * @verifies should fail if no reason is given
 	 */
 	@Test
 	public void retireConcept_shouldFailIfNoReasonIsGiven() throws Exception {
@@ -319,7 +310,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#retireConcept(Concept,String)
-	 * @verifies should retire the given concept
 	 */
 	@Test
 	public void retireConcept_shouldRetireTheGivenConcept() throws Exception {
@@ -333,7 +323,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#purgeDrug(Drug)
-	 * @verifies should purge the given Drug
 	 */
 	@Test
 	public void purgeDrug_shouldPurgeTheGivenDrug() throws Exception {
@@ -344,7 +333,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getAllDrugs()
-	 * @verifies should return a list of all drugs
 	 */
 	@Test
 	public void getAllDrugs_shouldReturnAListOfAllDrugs() throws Exception {
@@ -355,7 +343,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getAllDrugs(boolean)
-	 * @verifies should return all drugs including retired ones if given true
 	 */
 	@Test
 	public void getAllDrugs_shouldReturnAllDrugsIncludingRetiredOnesIfGivenTrue() throws Exception {
@@ -366,7 +353,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getAllDrugs(boolean)
-	 * @verifies should return all drugs excluding retired ones if given false
 	 */
 	@Test
 	public void getAllDrugs_shouldReturnAllDrugsExcludingRetiredOnesIfGivenFalse() throws Exception {
@@ -378,7 +364,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ConceptServiceImpl#getDrugs(String, Concept, boolean, boolean, boolean, Integer,
 	 *      Integer)
-	 * @verifies return list of drugs
 	 */
 	@Test
 	public void getDrugs_shouldReturnListOfMatchingDrugs() throws Exception {
@@ -391,7 +376,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getDrug(String)
-	 * @verifies should return the matching drug object
 	 */
 	@Test
 	public void getDrug_shouldReturnTheMatchingDrugObject() throws Exception {
@@ -403,7 +387,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getDrug(String)
-	 * @verifies should return null if no matching drug is found
 	 */
 	@Test
 	public void getDrug_shouldReturnNullIfNoMatchingDrugIsFound() throws Exception {
@@ -413,7 +396,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConcepTServiceImpl#retireDrug(Drug, String)
-	 * @verifies should retire the given Drug
 	 */
 	@Test
 	public void retireDrug_shouldRetireTheGivenDrug() throws Exception {
@@ -425,7 +407,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConcepTServiceImpl#unretireDrug(Drug)
-	 * @verifies should mark Drug as not retired
 	 */
 	@Test
 	public void unretireDrug_shouldMarkDrugAsNotRetired() throws Exception {
@@ -437,7 +418,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConcepTServiceImpl#unretireDrug(Drug)
-	 * @verifies should not change attributes of Drug that is already not retired
 	 */
 	@Test
 	public void unretireDrug_shouldNotChangeAttributesOfDrugThatIsAlreadyNotRetired() throws Exception {
@@ -450,7 +430,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getAllConceptClasses()
-	 * @verifies should return a list of all concept classes
 	 */
 	@Test
 	public void getAllConceptClasses_shouldReturnAListOfAllConceptClasses() throws Exception {
@@ -461,7 +440,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getAllConceptClasses(boolean)
-	 * @verifies should return all concept classes including retired ones when given true
 	 */
 	@Test
 	public void getAllConceptClasses_shouldReturnAllConceptClassesIncludingRetiredOnesWhenGivenTrue() throws Exception {
@@ -472,7 +450,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getAllConceptClasses(boolean)
-	 * @verifies should return all concept classes excluding retired ones when given false
 	 */
 	@Test
 	public void getAllConceptClasses_shouldReturnAllConceptClassesExcludingRetiredOnesWhenGivenFalse() throws Exception {
@@ -483,7 +460,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#saveConceptClass(ConceptClass)
-	 * @verifies should save the given ConceptClass
 	 */
 	@Test
 	public void saveConceptClass_shouldSaveTheGivenConceptClass() throws Exception {
@@ -497,7 +473,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#purgeConceptClass(ConceptClass)
-	 * @verifies should delete the given ConceptClass
 	 */
 	@Test
 	public void purgeConceptClass_shouldDeleteTheGivenConceptClass() throws Exception {
@@ -510,7 +485,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getAllConceptDatatypes()
-	 * @verifies should give a list of all concept datatypes
 	 */
 	@Test
 	public void getAllConceptDatatypes_shouldGiveAListOfAllConceptDataypes() throws Exception {
@@ -523,7 +497,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getAllConceptDatatypes(boolean)
-	 * @verifies should return all concept datatypes including retired ones when given true
 	 */
 	@Test
 	public void getAllConceptDatatypes_shouldReturnAllConceptDataypesIncludingRetiredOnesWhenGivenTrue() throws Exception {
@@ -536,7 +509,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getAllConceptDatatypes(boolean)
-	 * @verifies should return all concept datatypes excluding retired ones when given false
 	 */
 	@Test
 	public void getAllConceptDatatypes_shouldReturnAllConceptDataypesExcludingRetiredOnesWhenGivenFalse() throws Exception {
@@ -549,7 +521,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getSetsContainingConcept(Concept)
-	 * @verifies should give a list of ConceptSet containing the given Concept
 	 */
 	@Test
 	public void getSetsContainingConcept_shouldGiveAListOfConceptSetContainingTheGivenConcept() throws Exception {
@@ -561,7 +532,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getSetsContainingConcept(Concept)
-	 * @verifies should give an empty list if no matching ConceptSet is found
 	 */
 	@Test
 	public void getSetsContainingConcept_shouldGiveAnEmptyListIfNoMatchingConceptSetIsFound() throws Exception {
@@ -573,7 +543,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getSetsContainingConcept(Concept)
-	 * @verifies should give an empty list if concept id is null
 	 */
 	@Test
 	public void getSetsContainingConcept_shouldGiveAnEmptyListIfConceptIdIsNull() throws Exception {
@@ -583,7 +552,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getConcepts(String, Locale, boolean)
-	 * @verifies give a list of ConceptSearchResult for the matching Concepts
 	 */
 	@Test
 	public void getConcepts_shouldGiveAListOfConceptSearchResultForTheMatchingConcepts() throws Exception {
@@ -595,7 +563,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getDrugByIngredients(Concept)
-	 * @verifies should raise exception if no concept is given
 	 */
 	@Test
 	public void getDrugsByIngredient_shouldRaiseExceptionIfNoConceptIsGiven() throws Exception {
@@ -606,7 +573,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getAllConceptProposals(boolean)
-	 * @verifies should return all concept proposals including retired ones when given true
 	 */
 	@Test
 	public void getAllConceptProposals_shouldReturnAllConceptProposalsIncludingRetiredOnesWhenGivenTrue() throws Exception {
@@ -617,7 +583,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getAllConceptProposals(boolean)
-	 * @verifies should return all concept proposals excluding retired ones when given false
 	 */
 	@Test
 	public void getAllConceptProposals_shouldReturnAllConceptProposalsExcludingRetiredOnesWhenGivenFalse() throws Exception {
@@ -628,7 +593,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#purgeConceptProposal(ConceptProposal)
-	 * @verifies should purge the given concept proposal
 	 */
 	@Test
 	public void purgeConceptProposal_shouldPurgeTheGivenConceptProposal() throws Exception {
@@ -639,7 +603,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getPrevConcept(Concept)
-	 * @verifies should return the concept previous to the given concept
 	 */
 	@Test
 	public void getPrevConcept_shouldReturnTheConceptPreviousToTheGivenConcept() throws Exception {
@@ -651,7 +614,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getNextConcept(Concept)
-	 * @verifies should return the concept next to the given concept
 	 */
 	@Test
 	public void getNextConcept_shouldReturnTheConceptNextToTheGivenConcept() throws Exception {
@@ -663,7 +625,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getConceptsWithDrugsInFormulary()
-	 * @verifies should give a list of all matching concepts
 	 */
 	@Test
 	public void getConceptsWithDrugsInFormulary_shouldGiveAListOfAllMatchingConcepts() throws Exception {
@@ -674,7 +635,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptService#getConceptsByAnswer(Concept)
-	 * @verifies should return an empty list if concept id is null
 	 */
 	@Test
 	public void getConceptsByAnswer_shouldReturnAnEmptyListIfConceptIdIsNull() throws Exception {
@@ -684,7 +644,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getMaxConceptId()
-	 * @verifies should give the max number of conceptId
 	 */
 	@Test
 	public void getMaxConceptId_shouldGiveTheMaximumConceptId() throws Exception {
@@ -694,7 +653,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getLocalesOfConceptNames()
-	 * @verifies should return a list of matching locales
 	 */
 	@Test
 	public void getLocalesOfConceptNames_shouldReturnAListOfMatchingLocales() throws Exception {
@@ -705,7 +663,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getAllConceptSources(boolean)
-	 * @verifies should return all concept sources including retired ones when given true
 	 */
 	@Test
 	public void getAllConceptSources_shouldReturnAllConceptSourcesIncludingRetiredOnesWhenGivenTrue() throws Exception {
@@ -716,7 +673,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getAllConceptSources(boolean)
-	 * @verifies should return all concept sources excluding retired ones when given false
 	 */
 	@Test
 	public void getAllConceptSources_shouldReturnAllConceptSourcesExcludingRetiredOnesWhenGivenFalse() throws Exception {
@@ -727,7 +683,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getAllConceptNameTags()
-	 * @verifies should return a list of all concept name tags
 	 */
 	@Test
 	public void getAllConceptNameTags_shouldReturnAListOfAllConceptNameTags() throws Exception {
@@ -738,7 +693,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#purgeConceptSource(ConceptSource)
-	 * @verifies should purge the given concept source
 	 */
 	@Test
 	public void purgeConceptSource_shouldPurgetTheGivenConceptSource() throws Exception {
@@ -750,7 +704,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#purgeConceptMapType(ConceptMapType)
-	 * @verifies should delete the specified conceptMapType from the database
 	 */
 	@Test
 	public void purgeConceptMapType_shouldDeleteTheSpecifiedConceptMapTypeFromTheDatabase() throws Exception {
@@ -763,7 +716,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#purgeConceptReferenceTerm(ConceptReferenceTerm)
-	 * @verifies should purge the given concept reference term
 	 */
 	@Test
 	public void purgeConceptReferenceTerm_shouldPurgeTheGivenConceptReferenceTerm() throws Exception {
@@ -775,7 +727,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getConceptReferenceTermByName(String, ConceptSource)
-	 * @verifies return null if no concept reference term is found
 	 */
 	@Test
 	public void getConceptReferenceTermByName_shouldReturnNullIfNoConceptReferenceTermIsFound() throws Exception {
@@ -784,7 +735,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#purgeConceptReferenceTerm(ConceptReferenceTerm)
-	 * @verifies should fail if given concept reference term is in use
 	 */
 	@Test
 	public void purgeConceptReferenceTerm_shouldFailIfGivenConceptReferenceTermIsInUse() throws Exception {
@@ -797,7 +747,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#findConceptAnswers(String, Locale, Concept)
-	 * @verifies should return a list of all matching concept search results
 	 */
 	@Test
 	public void findConceptAnswers_shouldReturnAListOfAllMatchingConceptSearchResults() throws Exception {
@@ -811,7 +760,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getOrderableConcepts(String, List, boolean, Integer, Integer)
-	 * @verifies should return an empty list if no concept search result is found
 	 */
 	@Test
 	public void getOrderableConcepts_shouldReturnAnEmptyListIfNoConceptSearchResultIsFound() throws Exception {
@@ -824,7 +772,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#mapConceptProposalToConcept(ConceptProposal, Concept, Locale)
-	 * @verifies should throw APIException when mapping to null concept
 	 */
 	@Test
 	public void mapConceptProposalToConcept_shouldThrowAPIExceptionWhenMappingToNullConcept() throws Exception {
@@ -836,7 +783,6 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
-	 * @verifies should return the total number of matching drugs
 	 */
 	@Test
 	public void getCountOfDrugs_shouldReturnTheTotalNumberOfMatchingNumbers() throws Exception {

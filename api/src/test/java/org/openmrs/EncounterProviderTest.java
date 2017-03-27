@@ -13,7 +13,6 @@ import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.test.Verifies;
 
 /**
  * This class tests the all of the {@link EncounterProvider} non-trivial object methods.
@@ -26,7 +25,6 @@ public class EncounterProviderTest {
 	 * @see EncounterProvider#copy()
 	 */
 	@Test
-	@Verifies(value = "should copy all EncounterProvider data", method = "copy()")
 	public void copy_shouldCopyAllEncounterProviderData() throws Exception {
 		EncounterProvider encounterProvider = new EncounterProvider();
 		

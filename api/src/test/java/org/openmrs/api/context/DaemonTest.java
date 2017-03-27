@@ -19,7 +19,6 @@ import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.scheduler.tasks.HelloWorldTask;
 import org.openmrs.scheduler.timer.TimerSchedulerTask;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests the methods on the {@link Daemon} class
@@ -28,7 +27,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Daemon#executeScheduledTask(Task)
-	 * @verifies not be called from other methods other than TimerSchedulerTask
 	 */
 	@Test
 	public void executeScheduledTask_shouldNotBeCalledFromOtherMethodsOtherThanTimerSchedulerTask() throws Throwable {
@@ -47,7 +45,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	 * step
 	 * 
 	 * @see Daemon#executeScheduledTask(Task)
-	 * @verifies not throw error if called from a TimerSchedulerTask class
 	 */
 	@Test
 	public void executeScheduledTask_shouldNotThrowErrorIfCalledFromATimerSchedulerTaskClass() throws Throwable {
@@ -57,7 +54,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Daemon#runInNewDaemonThread(Runnable)
-	 * @verifies throw error if called from a non daemon thread
 	 */
 	@Test
 	public void runInNewDaemonThread_shouldThrowErrorIfCalledFromANonDaemonThread() {
@@ -78,7 +74,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Daemon#runInNewDaemonThread(Runnable)
-	 * @verifies not throw error if called from a daemon thread
 	 */
 	@Test
 	public void runInNewDaemonThread_shouldNotThrowErrorIfCalledFromADaemonThread() throws Throwable {
@@ -88,7 +83,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Daemon#executeScheduledTask(Task)
-	 * @verifies daemon user should have an associated person.
 	 */
 	@Test
 	public void daemonUser_shouldHaveAssociatedPerson() throws Throwable {
@@ -183,7 +177,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	 * 
 	 */
 	@Test
-	@Verifies(value = "should return true for a daemon user", method = "isDaemonUser(User user)")
 	public void isDaemonUser_shouldReturnTrueForADaemonUser() throws Exception {
 		User user = new User();
 		user.setUuid(Daemon.DAEMON_USER_UUID);
@@ -195,7 +188,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	 * 
 	 */
 	@Test
-	@Verifies(value = "should return false if the user is not a daemon", method = "isDaemonUser(User user)")
 	public void isDaemonUser_shouldReturnFalseIFTheUserIsNotADaemon() throws Exception {
 		User user = new User();
 		user.setUuid("any other value");

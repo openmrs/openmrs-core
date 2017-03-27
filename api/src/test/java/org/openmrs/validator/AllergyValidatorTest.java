@@ -63,7 +63,6 @@ public class AllergyValidatorTest {
 	}
 	
 	/**
-	 * @verifies fail for a null value
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -77,7 +76,6 @@ public class AllergyValidatorTest {
 	}
 	
 	/**
-	 * @verifies fail if patient is null
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -89,7 +87,6 @@ public class AllergyValidatorTest {
 	}
 	
 	/**
-	 * @verifies fail id allergenType is null
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -101,7 +98,6 @@ public class AllergyValidatorTest {
 	}
 	
 	/**
-	 * @verifies fail if allergen is null
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -113,7 +109,6 @@ public class AllergyValidatorTest {
 	}
 	
 	/**
-	 * @verifies fail if codedAllergen is null
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -126,7 +121,6 @@ public class AllergyValidatorTest {
 	}
 	
 	/**
-	 * @verifies fail if nonCodedAllergen is null and allergen is set to other non coded
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -139,7 +133,6 @@ public class AllergyValidatorTest {
 	}
 	
 	/**
-	 * @verifies reject a duplicate allergen
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -163,7 +156,6 @@ public class AllergyValidatorTest {
 	}
 	
 	/**
-	 * @verifies reject a duplicate non coded allergen
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -188,7 +180,6 @@ public class AllergyValidatorTest {
 	}
 	
 	/**
-	 * @verifies pass for a valid allergy
 	 * @see AllergyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test

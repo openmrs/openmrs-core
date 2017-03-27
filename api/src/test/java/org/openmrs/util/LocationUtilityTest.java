@@ -17,7 +17,6 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * Consists of the tests for the methods in the location utility class
@@ -28,7 +27,6 @@ public class LocationUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocationUtility#getDefaultLocation()
 	 */
 	@Test
-	@Verifies(value = "should return the updated defaultLocation when the value of the global property is changed", method = "getDefaultLocation()")
 	public void getDefaultLocation_shouldReturnTheUpdatedDefaultLocationWhenTheValueOfTheGlobalPropertyIsChanged()
 	        throws Exception {
 		//sanity check
@@ -42,7 +40,6 @@ public class LocationUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocationUtility#getUserDefaultLocation()
 	 */
 	@Test
-	@Verifies(value = "should return the user specified location if any is set", method = "getUserDefaultLocation()")
 	public void getUserDefaultLocation_shouldReturnTheUserSpecifiedLocationIfAnyIsSet() throws Exception {
 		//sanity check
 		Assert.assertNull(LocationUtility.getUserDefaultLocation());

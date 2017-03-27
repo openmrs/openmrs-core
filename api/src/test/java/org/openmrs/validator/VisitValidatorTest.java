@@ -30,7 +30,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
@@ -75,7 +74,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see VisitValidator#validate(Object,Errors)
-	 * @verifies accept a visit that has the right number of attribute occurrences
 	 */
 	@Test
 	public void validate_shouldAcceptAVisitThatHasTheRightNumberOfAttributeOccurrences() throws Exception {
@@ -87,7 +85,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see VisitValidator#validate(Object,Errors)
-	 * @verifies reject a visit if it has fewer than min occurs of an attribute
 	 */
 	@Test(expected = APIException.class)
 	public void validate_shouldRejectAVisitIfItHasFewerThanMinOccursOfAnAttribute() throws Exception {
@@ -98,7 +95,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see VisitValidator#validate(Object,Errors)
-	 * @verifies reject a visit if it has more than max occurs of an attribute
 	 */
 	@Test(expected = APIException.class)
 	public void validate_shouldRejectAVisitIfItHasMoreThanMaxOccursOfAnAttribute() throws Exception {
@@ -133,7 +129,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if patient is not set", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfPatientIsNotSet() throws Exception {
 		VisitService vs = Context.getVisitService();
 		Visit visit = new Visit();
@@ -148,7 +143,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if startDatetime is not set", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfStartDatetimeIsNotSet() throws Exception {
 		VisitService vs = Context.getVisitService();
 		Visit visit = new Visit();
@@ -163,7 +157,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if visit type is not set", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfVisitTypeIsNotSet() throws Exception {
 		Visit visit = new Visit();
 		visit.setPatient(Context.getPatientService().getPatient(2));
@@ -177,7 +170,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the endDatetime is before the startDatetime", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfTheEndDatetimeIsBeforeTheStartDatetime() throws Exception {
 		Visit visit = new Visit();
 		Calendar c = Calendar.getInstance();
@@ -193,7 +185,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the startDatetime is after any encounter", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfTheStartDatetimeIsAfterAnyEncounter() throws Exception {
 		Visit visit = Context.getVisitService().getVisit(1);
 		
@@ -216,7 +207,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the stopDatetime is before any encounter", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfTheStopDatetimeIsBeforeAnyEncounter() throws Exception {
 		Visit visit = Context.getVisitService().getVisit(1);
 		
@@ -237,7 +227,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see VisitValidator#validate(Object,Errors)
-	 * @verifies fail if an attribute is bad
 	 */
 	@Test
 	// This test will throw org.hibernate.PropertyValueException: not-null property references a null or transient value: org.openmrs.VisitAttribute.valueReference
@@ -255,7 +244,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies reject a visit if startDateTime is equal to startDateTime of another visit of the same patient
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -274,7 +262,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies reject a visit if startDateTime falls into another visit of the same patient
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -292,7 +279,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies reject a visit if stopDateTime falls into another visit of the same patient
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -313,7 +299,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies reject a visit if it contains another visit of the same patient
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -334,7 +319,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies accept a visit if startDateTime is equal to startDateTime of another voided visit of the same patient
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -356,7 +340,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies accept a visit if startDateTime falls into another voided visit of the same patient
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -377,7 +360,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies accept a visit if stopDateTime falls into another voided visit of the same patient
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -401,7 +383,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies accept a visit if it contains another voided visit of the same patient
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -444,7 +425,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		Visit visit = makeVisit(42);
 		visit.setVoidReason("voidReason");
@@ -458,7 +438,6 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		Visit visit = makeVisit(42);
 		visit

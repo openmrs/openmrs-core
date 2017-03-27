@@ -11,7 +11,6 @@ package org.openmrs;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.test.Verifies;
 
 /**
  * Contains test methods for concept reference terms
@@ -22,7 +21,6 @@ public class ConceptReferenceTermTest {
 	 * @see ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)
 	 */
 	@Test
-	@Verifies(value = "should set termA as the term to which a mapping is being added", method = "addConceptReferenceTermMap(ConceptReferenceTermMap)")
 	public void addConceptReferenceTermMap_shouldSetTermAAsTheTermToWhichAMappingIsBeingAdded() throws Exception {
 		ConceptReferenceTerm term = new ConceptReferenceTerm(2);
 		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(1), new ConceptMapType(1)));
@@ -33,7 +31,6 @@ public class ConceptReferenceTermTest {
 	 * @see ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)
 	 */
 	@Test
-	@Verifies(value = "should not add a map where termB is itself", method = "addConceptReferenceTermMap(ConceptReferenceTermMap)")
 	public void addConceptReferenceTermMap_shouldNotAddAMapWhereTermBIsItself() throws Exception {
 		ConceptReferenceTerm term = new ConceptReferenceTerm(2);
 		term.setUuid("test uuid");
@@ -47,7 +44,6 @@ public class ConceptReferenceTermTest {
 	 * @see ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)
 	 */
 	@Test
-	@Verifies(value = "should not add duplicate concept reference term maps", method = "addConceptReferenceTermMap(ConceptReferenceTermMap)")
 	public void addConceptReferenceTermMap_shouldNotAddDuplicateConceptReferenceTermMaps() throws Exception {
 		ConceptReferenceTerm term = new ConceptReferenceTerm(5);
 		ConceptReferenceTermMap map1 = new ConceptReferenceTermMap(1);

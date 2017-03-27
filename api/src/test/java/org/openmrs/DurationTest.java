@@ -119,7 +119,6 @@ public class DurationTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return null if the concept has no mapping to the SNOMED CT source
 	 * @see Duration#getCode(Concept)
 	 */
 	@Test
@@ -129,7 +128,6 @@ public class DurationTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return the code for the term of the mapping to the SNOMED CT source
 	 * @see Duration#getCode(Concept)
 	 */
 	@Test
