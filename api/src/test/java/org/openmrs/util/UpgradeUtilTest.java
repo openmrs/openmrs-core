@@ -19,7 +19,6 @@ import org.openmrs.util.databasechange.Database1_9_7UpgradeIT;
 public class UpgradeUtilTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @verifies return concept_id for drug_order_quantity_units
 	 * @see org.openmrs.util.UpgradeUtil#getConceptIdForUnits(String)
 	 */
 	@Test
@@ -33,7 +32,6 @@ public class UpgradeUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if units is not specified
 	 * @see org.openmrs.util.UpgradeUtil#getConceptIdForUnits(String)
 	 */
 	@Test(expected = APIException.class)

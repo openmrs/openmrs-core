@@ -32,7 +32,6 @@ import org.xml.sax.SAXException;
 public class ModuleFileParserTest {
 	
 	/**
-	 * @verifies parse openmrsVersion and modules
 	 * @see ModuleFileParser#getConditionalResources(org.w3c.dom.Element)
 	 */
 	@Test
@@ -77,7 +76,6 @@ public class ModuleFileParserTest {
 	}
 	
 	/**
-	 * @verifies throw exception if multiple conditionalResources tags found
 	 * @see ModuleFileParser#getConditionalResources(org.w3c.dom.Element)
 	 */
 	@Test(expected = IllegalArgumentException.class)
@@ -90,7 +88,6 @@ public class ModuleFileParserTest {
 	}
 	
 	/**
-	 * @verifies throw exception if conditionalResources contains invalid tag
 	 * @see ModuleFileParser#getConditionalResources(org.w3c.dom.Element)
 	 */
 	@Test(expected = IllegalArgumentException.class)
@@ -103,7 +100,6 @@ public class ModuleFileParserTest {
 	}
 	
 	/**
-	 * @verifies throw exception if path is blank
 	 * @see ModuleFileParser#getConditionalResources(org.w3c.dom.Element)
 	 */
 	@Test(expected = IllegalArgumentException.class)
@@ -117,7 +113,6 @@ public class ModuleFileParserTest {
 	}
 	
 	/**
-	 * @verifies parse conditionalResource with whitespace
 	 * @see ModuleFileParser#getConditionalResources(org.w3c.dom.Element)
 	 */
 	@Test

@@ -28,7 +28,6 @@ import org.openmrs.OrderSetMember;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	
@@ -63,7 +62,6 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should save OrderSet", method = "saveOrderSet(OrderSet)")
 	public void shouldSaveOrderSet() throws Exception {
 		executeDataSet(ORDER_SET);
 		Integer initialNumberOfOrderSets = orderSetService.getOrderSets(false).size();
@@ -80,7 +78,6 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should update existing OrderSet", method = "saveOrderSet(OrderSet)")
 	public void shouldSaveAndUpdateOrderSet() throws Exception {
 		executeDataSet(ORDER_SET);
 		

@@ -18,7 +18,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	
@@ -50,7 +49,6 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should load module if it is currently not loaded", method = "loadModule")
 	public void loadModule_shouldLoadModuleIfItIsCurrentlyNotLoaded() {
 		Module test2 = loadModule(MODULE2_PATH, MODULE2, false);
 		
@@ -60,7 +58,6 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = ModuleException.class)
-	@Verifies(value = "should not load module if already loaded", method = "loadModule")
 	public void loadModule_shouldNotLoadModuleIfAlreadyLoaded() {
 		Module test1 = ModuleFactory.getModuleById(MODULE1);
 		
@@ -73,7 +70,6 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	@Verifies(value = "should always load module if replacement is wanted", method = "loadModule")
 	public void loadModule_shouldAlwaysLoadModuleIfReplacementIsWanted() {
 		Module test1 = ModuleFactory.getModuleById(MODULE1);
 		
@@ -87,7 +83,6 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	}
 		
 	@Test
-	@Verifies(value = "should load a newer version of the same module", method = "loadModule") 
 	public void loadModule_shouldLoadANewerVersionOfTheSameModule() {
 		Module test1 = ModuleFactory.getModuleById(MODULE1);
 
@@ -101,7 +96,6 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should not load an older version of the same module", method = "loadModule") 
 	public void loadModule_shouldNotLoadAnOlderVersionOfTheSameModule() {
 		Module test1 = ModuleFactory.getModuleById(MODULE1);
 		Module newModule = loadModule(MODULE1_UPDATE_PATH, MODULE1, true);
@@ -130,7 +124,6 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should not crash when file is not found or broken", method = "loadModules")
 	public void loadModules_shouldNotCrashWhenFileIsNotFoundOrBroken() {
 		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE1));
 		String moduleLocation = ModuleUtil.class.getClassLoader().getResource(MODULE1_PATH).getPath();
@@ -145,7 +138,6 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should setup requirement mappings for every module", method = "loadModules") 
 	public void loadModules_shouldSetupRequirementMappingsForEveryModule() {
 		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE1));
 		
@@ -164,7 +156,6 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should not start the loaded modules", method = "loadModules") 
 	public void loadModules_shouldNotStartTheLoadedModules() {
 		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE1));
 		

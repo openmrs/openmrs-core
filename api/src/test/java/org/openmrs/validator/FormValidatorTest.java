@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Form;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -26,8 +25,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if name is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfNameIsNull() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNull() {
 		Form form = new Form();
 		form.setVersion("1.0");
 		
@@ -42,8 +40,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if version is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfVersionIsNull() throws Exception {
+	public void validate_shouldFailValidationIfVersionIsNull() {
 		Form form = new Form();
 		form.setName("test");
 		
@@ -58,8 +55,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if version does not match regex", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfVersionDoesNotMatchRegex() throws Exception {
+	public void validate_shouldFailValidationIfVersionDoesNotMatchRegex() {
 		Form form = new Form();
 		form.setName("test");
 		form.setVersion("first");
@@ -75,8 +71,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if retiredReason is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfRetiredReasonIsNull() throws Exception {
+	public void validate_shouldFailValidationIfRetiredReasonIsNull() {
 		Form form = new Form();
 		form.setName("test");
 		form.setVersion("1.0");
@@ -94,8 +89,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if all fields are correct", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfAllFieldsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfAllFieldsAreCorrect() {
 		Form form = new Form();
 		form.setName("test");
 		form.setVersion("1.0");
@@ -110,8 +104,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if retiredReason is empty", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfRetiredReasonIsEmpty() throws Exception {
+	public void validate_shouldFailValidationIfRetiredReasonIsEmpty() {
 		Form form = new Form();
 		form.setName("test");
 		form.setVersion("1.0");
@@ -128,8 +121,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Form form = new Form();
 		form.setName("name");
 		form.setVersion("1.0");
@@ -146,8 +138,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Form form = new Form();
 		form
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

@@ -40,27 +40,25 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	protected static final String GET_DRUG_MAPPINGS = "org/openmrs/api/include/ConceptServiceTest-getDrugMappings.xml";
 	
 	@Before
-	public void executeDrugMappingsDataSet() throws Exception {
+	public void executeDrugMappingsDataSet() {
 		executeDataSet(GET_DRUG_MAPPINGS);
 	}
 	
 	/**
-	 * @verifies fail if the drug object is null
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheDrugObjectIsNull() throws Exception {
+	public void validate_shouldFailIfTheDrugObjectIsNull() {
 		expectedException.expect(IllegalArgumentException.class);
 		expectedException.expectMessage("The parameter obj should not be null and must be of type" + Drug.class);
 		new DrugValidator().validate(null, new BindException(new Drug(), "drug"));
 	}
 	
 	/**
-	 * @verifies fail if drug on drugReferenceMap is null
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfDrugOnDrugReferenceMapIsNull() throws Exception {
+	public void validate_shouldFailIfDrugOnDrugReferenceMapIsNull() {
 		Drug drug = new Drug();
 		drug.setDrugReferenceMaps(Collections.singleton(new DrugReferenceMap()));
 		Errors errors = new BindException(drug, "drug");
@@ -69,11 +67,10 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if conceptReferenceTerm on drugReferenceMap is null
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfConceptReferenceTermOnDrugReferenceMapIsNull() throws Exception {
+	public void validate_shouldFailIfConceptReferenceTermOnDrugReferenceMapIsNull() {
 		Drug drug = new Drug();
 		drug.addDrugReferenceMap(new DrugReferenceMap());
 		Errors errors = new BindException(drug, "drug");
@@ -82,11 +79,10 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies invoke ConceptReferenceTermValidator if term on drugReferenceMap is new
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldInvokeConceptReferenceTermValidatorIfTermOnDrugReferenceMapIsNew() throws Exception {
+	public void validate_shouldInvokeConceptReferenceTermValidatorIfTermOnDrugReferenceMapIsNew() {
 		Drug drug = new Drug();
 		drug.addDrugReferenceMap(new DrugReferenceMap(new ConceptReferenceTerm(), null));
 		Errors errors = new BindException(drug, "drug");
@@ -96,11 +92,10 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies invoke ConceptMapTypeValidator if conceptMapType on drugReferenceMap is new
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldInvokeConceptMapTypeValidatorIfConceptMapTypeOnDrugReferenceMapIsNew() throws Exception {
+	public void validate_shouldInvokeConceptMapTypeValidatorIfConceptMapTypeOnDrugReferenceMapIsNew() {
 		Drug drug = new Drug();
 		drug.addDrugReferenceMap(new DrugReferenceMap(conceptService.getConceptReferenceTerm(1), new ConceptMapType()));
 		Errors errors = new BindException(drug, "drug");
@@ -110,11 +105,10 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies reject drug multiple mappings to the same term
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldRejectDrugMultipleMappingsToTheSameTerm() throws Exception {
+	public void validate_shouldRejectDrugMultipleMappingsToTheSameTerm() {
 		Drug drug = new Drug();
 		DrugReferenceMap term1 = new DrugReferenceMap(conceptService.getConceptReferenceTerm(1), conceptService
 		        .getConceptMapType(1));
@@ -129,11 +123,10 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies pass if all fields are correct
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassIfAllFieldsAreCorrect() throws Exception {
+	public void validate_shouldPassIfAllFieldsAreCorrect() {
 		Drug drug = new Drug();
 		drug.addDrugReferenceMap(new DrugReferenceMap(conceptService.getConceptReferenceTerm(1), conceptService
 		        .getConceptMapType(1)));
@@ -143,11 +136,10 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies pass validation if field lengths are correct
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Drug drug = new Drug();
 		drug.addDrugReferenceMap(new DrugReferenceMap(conceptService.getConceptReferenceTerm(1), conceptService
 		        .getConceptMapType(1)));
@@ -160,11 +152,10 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if field lengths are not correct
 	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Drug drug = new Drug();
 		drug.addDrugReferenceMap(new DrugReferenceMap(conceptService.getConceptReferenceTerm(1), conceptService
 		        .getConceptMapType(1)));

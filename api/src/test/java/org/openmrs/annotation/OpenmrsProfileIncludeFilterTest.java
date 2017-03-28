@@ -23,7 +23,6 @@ public class OpenmrsProfileIncludeFilterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see OpenmrsProfileIncludeFilter#match(MetadataReader,MetadataReaderFactory)
-	 * @verifies create bean for openmrs 1_8 and later
 	 */
 	@Test
 	public void match_shouldCreateBeanForOpenmrs1_8AndLater() throws Exception {
@@ -34,7 +33,6 @@ public class OpenmrsProfileIncludeFilterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see OpenmrsProfileIncludeFilter#match(MetadataReader,MetadataReaderFactory)
-	 * @verifies not create bean for openmrs 1_6 to 1_7
 	 */
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void match_shouldNotCreateBeanForOpenmrs1_6To1_7() throws Exception {

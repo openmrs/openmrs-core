@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -27,8 +26,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if name is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfNameIsNull() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNull() {
 		Field ff = new Field();
 		ff.setName(null);
 		FieldType ft = new FieldType();
@@ -49,8 +47,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if name is empty", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfNameIsEmpty() throws Exception {
+	public void validate_shouldFailValidationIfNameIsEmpty() {
 		Field ff = new Field();
 		ff.setName("");
 		FieldType ft = new FieldType();
@@ -71,8 +68,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if name is all whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfNameIsAllWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfNameIsAllWhitespace() {
 		Field ff = new Field();
 		ff.setName("    ");
 		FieldType ft = new FieldType();
@@ -93,8 +89,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if selectMultiple is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfSelectMultipleIsNull() throws Exception {
+	public void validate_shouldFailValidationIfSelectMultipleIsNull() {
 		Field ff = new Field();
 		ff.setName("good");
 		FieldType ft = new FieldType();
@@ -116,8 +111,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if retired is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfRetiredIsNull() throws Exception {
+	public void validate_shouldFailValidationIfRetiredIsNull() {
 		Field ff = new Field();
 		ff.setName("good");
 		FieldType ft = new FieldType();
@@ -139,8 +133,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass if name is ok and fieldType, selectMultiple, and retired are non-null", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfAllFieldsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfAllFieldsAreCorrect() {
 		Field ff = new Field();
 		FieldType ft = new FieldType();
 		Boolean retired = new Boolean(false);
@@ -161,8 +154,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Field ff = new Field();
 		FieldType ft = new FieldType();
 		Boolean retired = new Boolean(false);
@@ -186,8 +178,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	 * @see FieldValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Field ff = new Field();
 		FieldType ft = new FieldType();
 		Boolean retired = new Boolean(false);

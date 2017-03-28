@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -26,7 +25,6 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if name is null or empty", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfNameIsNullOrEmpty() throws Exception {
 		Location location = new Location();
 		location.setDescription("desc");
@@ -42,7 +40,6 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if retired and retireReason is null or empty", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfRetiredAndRetireReasonIsNullOrEmpty() throws Exception {
 		Location location = new Location();
 		location.setName("County General");
@@ -58,7 +55,6 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should set retired to false if retireReason is null or empty", method = "validate(Object,Errors)")
 	public void validate_shouldSetRetiredToFalseIfRetireReasonIsNullOrEmpty() throws Exception {
 		Location location = new Location();
 		location.setName("County General");
@@ -74,7 +70,6 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if all fields are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfAllFieldsAreCorrect() throws Exception {
 		Location location = new Location();
 		location.setName("County General");
@@ -90,7 +85,6 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if retired location is given retired reason", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfRetiredLocationIsGivenRetiredReason() throws Exception {
 		Location location = new Location();
 		location.setName("County General");
@@ -108,7 +102,6 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if parent location creates a loop", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfParentLocationCreatesALoop() throws Exception {
 		Location location1 = new Location();
 		Location location2 = new Location();
@@ -130,7 +123,6 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.validator.LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if location name is already exist", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfLocationNameAlreadyExist() throws Exception {
 		Location location = new Location();
 		location.setName("Unknown Location");
@@ -146,7 +138,6 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		Location location = new Location();
 		location.setName("name");
@@ -176,7 +167,6 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		Location location = new Location();
 		String longString = "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text";

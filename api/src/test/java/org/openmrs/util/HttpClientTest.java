@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Map;
 import java.util.TreeMap;
@@ -32,7 +33,7 @@ public class HttpClientTest {
 	private HttpURLConnection connection;
 	
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws IOException {
 		HttpUrl url = mock(HttpUrl.class);
 		client = new HttpClient(url);
 		connection = mock(HttpURLConnection.class);
@@ -40,8 +41,8 @@ public class HttpClientTest {
 	}
 	
 	@Test
-	public void post_shouldPostUrlParametersAndGetResponse() throws Exception {
-		Map<String, String> parameters = new TreeMap<String, String>();
+	public void post_shouldPostUrlParametersAndGetResponse() throws IOException {
+		Map<String, String> parameters = new TreeMap<>();
 		parameters.put("one", "one");
 		parameters.put("two", "two");
 		

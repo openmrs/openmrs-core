@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +67,6 @@ import org.openmrs.api.handler.NoVisitAssignmentHandler;
 import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
@@ -96,13 +96,12 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		executeDataSet(ENC_INITIAL_DATA_XML);
 	}
 
 	@Test
-	@Verifies(value = "should update existing encounter correctly when a child obs is edited", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldUpdateExistingEncounterWhenAChildObsIsEdited() throws Exception {
+	public void saveEncounter_shouldUpdateExistingEncounterWhenAChildObsIsEdited() {
 		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
 		EncounterService es = Context.getEncounterService();
 		ObsService os = Context.getObsService();
@@ -138,8 +137,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	@Verifies(value = "should update leaf obs and not duplicate at encounter level", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldUpdateValueOfLeafObsAndNotDuplicateAtEncounterLevel() throws Exception {
+	public void saveEncounter_shouldUpdateValueOfLeafObsAndNotDuplicateAtEncounterLevel() {
 		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
 		Encounter encounter = Context.getEncounterService().getEncounter(100);
 		assertEquals(1, encounter.getObsAtTopLevel(true).size());
@@ -153,8 +151,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	@Verifies(value = "should update existing encounter correctly when a new obs is added to parent obs", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldUpdateExistingEncounterWhenNewObsIsAddedToParentObs() throws Exception {
+	public void saveEncounter_shouldUpdateExistingEncounterWhenNewObsIsAddedToParentObs() {
 		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
 		ConceptService cs = Context.getConceptService();
 		EncounterService es = Context.getEncounterService();
@@ -195,8 +192,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 
 
 	@Test
-	@Verifies(value = "should update existing encounter correctly when an existing obs is removed from parent obs", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldSaveEncounterWhenTopLevelObsIsUpdatedByRemovingChildObs() throws Exception {
+	public void saveEncounter_shouldSaveEncounterWhenTopLevelObsIsUpdatedByRemovingChildObs() {
 		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
 		EncounterService es = Context.getEncounterService();
 		ObsService os = Context.getObsService();
@@ -245,8 +241,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should save encounter with basic details", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldSaveEncounterWithBasicDetails() throws Exception {
+	public void saveEncounter_shouldSaveEncounterWithBasicDetails() {
 		Encounter encounter = buildEncounter();
 		
 		EncounterService es = Context.getEncounterService();
@@ -262,8 +257,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should update encounter successfully", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldUpdateEncounterSuccessfully() throws Exception {
+	public void saveEncounter_shouldUpdateEncounterSuccessfully() {
 		EncounterService es = Context.getEncounterService();
 		
 		// get the encounter from the database
@@ -311,8 +305,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should cascade save to contained obs", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldCascadeSaveToContainedObs() throws Exception {
+	public void saveEncounter_shouldCascadeSaveToContainedObs() {
 		EncounterService es = Context.getEncounterService();
 		// First, create a new Encounter
 		Encounter enc = buildEncounter();
@@ -350,8 +343,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should cascade location change in encounter to contained obs", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldCascadeChangeOfLocationInEncounterToContainedObs() throws Exception {
+	public void saveEncounter_shouldCascadeChangeOfLocationInEncounterToContainedObs() {
 		EncounterService es = Context.getEncounterService();
 		Encounter enc = buildEncounter();
 		
@@ -373,8 +365,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	@Verifies(value="should save encounter with complex obs", method="saveEncounter(Encounter)")
-	public void saveEncounter_shouldSaveEncounterWithComplexObs() throws Exception {
+	public void saveEncounter_shouldSaveEncounterWithComplexObs() {
 		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
 		EncounterService es = Context.getEncounterService();
 
@@ -411,8 +402,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should not cascade location change in encounter to contained obs if the initial location of the encounter and the obs are different", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldNotCascadeLocationChangeForDifferentInitialLocations() throws Exception {
+	public void saveEncounter_shouldNotCascadeLocationChangeForDifferentInitialLocations() {
 		EncounterService es = Context.getEncounterService();
 		
 		// First, create a new Encounter
@@ -442,8 +432,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#unvoidEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should set date stopped on the original after adding revise order", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldSetDateStoppedOnTheOriginalAfterAddingReviseOrder() throws Exception {
+	public void saveEncounter_shouldSetDateStoppedOnTheOriginalAfterAddingReviseOrder() {
 		EncounterService es = Context.getEncounterService();
 		
 		TestOrder order = (TestOrder) Context.getOrderService().getOrder(7);
@@ -467,8 +456,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#unvoidEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should not cascade to existing order", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldNotCascadeToExistingOrder() throws Exception {
+	public void saveEncounter_shouldNotCascadeToExistingOrder() {
 		EncounterService es = Context.getEncounterService();
 		
 		TestOrder order = (TestOrder) Context.getOrderService().getOrder(7);
@@ -488,8 +476,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#purgeEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should purgeEncounter", method = "purgeEncounter(Encounter)")
-	public void purgeEncounter_shouldPurgeEncounter() throws Exception {
+	public void purgeEncounter_shouldPurgeEncounter() {
 		
 		EncounterService es = Context.getEncounterService();
 		
@@ -509,8 +496,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#purgeEncounter(Encounter,null)
 	 */
 	@Test
-	@Verifies(value = "should cascade purge to obs and orders", method = "purgeEncounter(Encounter,null)")
-	public void purgeEncounter_shouldCascadePurgeToObsAndOrders() throws Exception {
+	public void purgeEncounter_shouldCascadePurgeToObsAndOrders() {
 		
 		EncounterService es = Context.getEncounterService();
 		
@@ -538,8 +524,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should cascade save to contained obs when encounter already exists", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldCascadeSaveToContainedObsWhenEncounterAlreadyExists() throws Exception {
+	public void saveEncounter_shouldCascadeSaveToContainedObsWhenEncounterAlreadyExists() {
 		EncounterService es = Context.getEncounterService();
 		
 		// get an encounter from the database
@@ -570,8 +555,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should cascade encounter datetime to obs", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldCascadeEncounterDatetimeToObs() throws Exception {
+	public void saveEncounter_shouldCascadeEncounterDatetimeToObs() {
 		EncounterService es = Context.getEncounterService();
 		
 		// get an encounter from the database
@@ -597,8 +581,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should only cascade the obsdatetimes to obs with different initial obsdatetimes", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldOnlyCascadeTheObsdatetimesToObsWithDifferentInitialObsdatetimes() throws Exception {
+	public void saveEncounter_shouldOnlyCascadeTheObsdatetimesToObsWithDifferentInitialObsdatetimes() {
 		EncounterService es = Context.getEncounterService();
 		Encounter enc = es.getEncounter(1);
 		assertEquals(3, enc.getAllObs(false).size());
@@ -640,8 +623,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should not overwrite creator if non null", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldNotOverwriteCreatorIfNonNull() throws Exception {
+	public void saveEncounter_shouldNotOverwriteCreatorIfNonNull() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// the encounter to save with a non null creator
@@ -668,8 +650,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should not overwrite dateCreated if non null", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldNotOverwriteDateCreatedIfNonNull() throws Exception {
+	public void saveEncounter_shouldNotOverwriteDateCreatedIfNonNull() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// the encounter to save without a dateCreated
@@ -701,12 +682,16 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure the obs and order creator and dateCreated is preserved when passed into
 	 * {@link EncounterService#saveEncounter(Encounter)}
-	 *
+	 * 
+	 * @throws SecurityException
+	 * @throws NoSuchFieldException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should not overwrite obs and orders creator or dateCreated", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldNotOverwriteObsAndOrdersCreatorOrDateCreated() throws Exception {
+	public void saveEncounter_shouldNotOverwriteObsAndOrdersCreatorOrDateCreated()
+	        throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// the encounter to save without a dateCreated
@@ -765,8 +750,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncountersByPatient(Patient)
 	 */
 	@Test
-	@Verifies(value = "should not get voided encounters", method = "getEncountersByPatient(Patient)")
-	public void getEncountersByPatient_shouldNotGetVoidedEncounters() throws Exception {
+	public void getEncountersByPatient_shouldNotGetVoidedEncounters() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatient(new Patient(3));
@@ -777,8 +761,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncountersByPatient(Patient)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw error when given null parameter", method = "getEncountersByPatient(Patient)")
-	public void getEncountersByPatient_shouldThrowErrorWhenGivenNullParameter() throws Exception {
+	public void getEncountersByPatient_shouldThrowErrorWhenGivenNullParameter() {
 		Context.getEncounterService().getEncountersByPatient((Patient) null);
 	}
 	
@@ -786,8 +769,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncountersByPatientId(Integer)
 	 */
 	@Test
-	@Verifies(value = "should not get voided encounters", method = "getEncountersByPatientId(Integer)")
-	public void getEncountersByPatientId_shouldNotGetVoidedEncounters() throws Exception {
+	public void getEncountersByPatientId_shouldNotGetVoidedEncounters() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatientId(3);
@@ -798,8 +780,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncountersByPatientId(Integer)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw error if given a null parameter", method = "getEncountersByPatientId(Integer)")
-	public void getEncountersByPatientId_shouldThrowErrorIfGivenANullParameter() throws Exception {
+	public void getEncountersByPatientId_shouldThrowErrorIfGivenANullParameter() {
 		Context.getEncounterService().getEncountersByPatientId(null);
 	}
 	
@@ -807,8 +788,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncountersByPatientIdentifier(String)
 	 */
 	@Test
-	@Verifies(value = "should not get voided encounters", method = "getEncountersByPatientIdentifier(String)")
-	public void getEncountersByPatientIdentifier_shouldNotGetVoidedEncounters() throws Exception {
+	public void getEncountersByPatientIdentifier_shouldNotGetVoidedEncounters() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatientIdentifier("12345");
@@ -819,8 +799,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncountersByPatientIdentifier(String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw error if given null parameter", method = "getEncountersByPatientIdentifier(String)")
-	public void getEncountersByPatientIdentifier_shouldThrowErrorIfGivenNullParameter() throws Exception {
+	public void getEncountersByPatientIdentifier_shouldThrowErrorIfGivenNullParameter() {
 		Context.getEncounterService().getEncountersByPatientIdentifier(null);
 	}
 	
@@ -831,8 +810,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#voidEncounter(Encounter,String)
 	 */
 	@Test
-	@Verifies(value = "should void encounter and set attributes", method = "voidEncounter(Encounter,String)")
-	public void voidEncounter_shouldVoidEncounterAndSetAttributes() throws Exception {
+	public void voidEncounter_shouldVoidEncounterAndSetAttributes() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// get a nonvoided encounter
@@ -858,8 +836,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#voidEncounter(Encounter,String)
 	 */
 	@Test
-	@Verifies(value = "should cascade to obs", method = "voidEncounter(Encounter,String)")
-	public void voidEncounter_shouldCascadeToObs() throws Exception {
+	public void voidEncounter_shouldCascadeToObs() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// get a nonvoided encounter that has some obs
@@ -875,8 +852,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#voidEncounter(Encounter,String)
 	 */
 	@Test
-	@Verifies(value = "should cascade to orders", method = "voidEncounter(Encounter,String)")
-	public void voidEncounter_shouldCascadeToOrders() throws Exception {
+	public void voidEncounter_shouldCascadeToOrders() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// get a nonvoided encounter that has some obs
@@ -892,8 +868,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#unvoidEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should cascade unvoid to obs", method = "unvoidEncounter(Encounter)")
-	public void unvoidEncounter_shouldCascadeUnvoidToObs() throws Exception {
+	public void unvoidEncounter_shouldCascadeUnvoidToObs() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// get a voided encounter that has some voided obs
@@ -909,8 +884,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#unvoidEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should cascade unvoid to orders", method = "unvoidEncounter(Encounter)")
-	public void unvoidEncounter_shouldCascadeUnvoidToOrders() throws Exception {
+	public void unvoidEncounter_shouldCascadeUnvoidToOrders() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// get a voided encounter that has some voided obs
@@ -926,8 +900,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#voidEncounter(Encounter,String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw error with null reason parameter", method = "voidEncounter(Encounter,String)")
-	public void voidEncounter_shouldThrowErrorWithNullReasonParameter() throws Exception {
+	public void voidEncounter_shouldThrowErrorWithNullReasonParameter() {
 		EncounterService encounterService = Context.getEncounterService();
 		Encounter type = encounterService.getEncounter(1);
 		encounterService.voidEncounter(type, null);
@@ -937,8 +910,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#unvoidEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should unvoid and unmark all attributes", method = "unvoidEncounter(Encounter)")
-	public void unvoidEncounter_shouldUnvoidAndUnmarkAllAttributes() throws Exception {
+	public void unvoidEncounter_shouldUnvoidAndUnmarkAllAttributes() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// get an already voided encounter
@@ -965,8 +937,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
-	@Verifies(value = "should get encounters by location", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
-	public void getEncounters_shouldGetEncountersByLocation() throws Exception {
+	public void getEncounters_shouldGetEncountersByLocation() {
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setLocation(new Location(1))
 		        .setIncludeVoided(true).createEncounterSearchCriteria();
 		
@@ -977,12 +948,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Get encounters that are after a certain date, and ensure the comparison is INCLUSIVE of the
 	 * given date
-	 *
-	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
+	 * 
+	 * @throws ParseException
+	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
-	@Verifies(value = "should get encounters on or after date", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
-	public void getEncounters_shouldGetEncountersOnOrAfterDate() throws Exception {
+	public void getEncounters_shouldGetEncountersOnOrAfterDate() throws ParseException {
 		// there is only one nonvoided encounter, on 2005-01-01
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 		
@@ -1010,12 +982,12 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws ParseException
 	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection,
 	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
-	@Verifies(value = "should get encounters on or up to a date", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
-	public void getEncounters_shouldGetEncountersOnOrUpToADate() throws Exception {
+	public void getEncounters_shouldGetEncountersOnOrUpToADate() throws ParseException {
 		Date toDate = new SimpleDateFormat("yyyy-dd-MM").parse("2006-01-01");
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setToDate(toDate)
 		        .setIncludeVoided(true).createEncounterSearchCriteria();
@@ -1030,8 +1002,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
-	@Verifies(value = "should get encounters by form", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
-	public void getEncounters_shouldGetEncountersByForm() throws Exception {
+	public void getEncounters_shouldGetEncountersByForm() {
 		List<Form> forms = new Vector<>();
 		forms.add(new Form(1));
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setEnteredViaForms(forms)
@@ -1045,8 +1016,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
-	@Verifies(value = "should get encounters by type", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
-	public void getEncounters_shouldGetEncountersByType() throws Exception {
+	public void getEncounters_shouldGetEncountersByType() {
 		List<EncounterType> types = new Vector<>();
 		types.add(new EncounterType(1));
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setEncounterTypes(types)
@@ -1060,19 +1030,18 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
-	@Verifies(value = "should exclude voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
-	public void getEncounters_shouldExcludeVoidedEncounters() throws Exception {
+	public void getEncounters_shouldExcludeVoidedEncounters() {
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setIncludeVoided(false)
 		        .createEncounterSearchCriteria();
 		assertEquals(6, Context.getEncounterService().getEncounters(encounterSearchCriteria).size());
 	}
 	
 	/**
+	 * @throws ParseException
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)
 	 */
 	@Test
-	@Verifies(value = "should get encounters modified after specified date", method = "getEncounters(EncounterSearchParameter)")
-	public void getEncounters_shouldGetEncountersModifiedAfterSpecifiedDate() throws Exception {
+	public void getEncounters_shouldGetEncountersModifiedAfterSpecifiedDate() throws ParseException {
 		EncounterService encounterService = Context.getEncounterService();
 		Assert.assertEquals(7, encounterService.getEncounters(encounterSearchForVoidedWithDateChanged("2006-01-01")).size());
 		Assert.assertEquals(5, encounterService.getEncounters(encounterSearchForVoidedWithDateChanged("2008-06-01")).size());
@@ -1084,8 +1053,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
-	@Verifies(value = "should include voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
-	public void getEncounters_shouldIncludeVoidedEncounters() throws Exception {
+	public void getEncounters_shouldIncludeVoidedEncounters() {
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setIncludeVoided(true)
 		        .createEncounterSearchCriteria();
 		assertEquals(8, Context.getEncounterService().getEncounters(encounterSearchCriteria).size());
@@ -1095,8 +1063,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounterType(EncounterType)
 	 */
 	@Test
-	@Verifies(value = "should save encounter type", method = "saveEncounterType(EncounterType)")
-	public void saveEncounterType_shouldSaveEncounterType() throws Exception {
+	public void saveEncounterType_shouldSaveEncounterType() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		EncounterType encounterType = new EncounterType("testing", "desc");
@@ -1115,8 +1082,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounterType(EncounterType)
 	 */
 	@Test
-	@Verifies(value = "should not overwrite creator", method = "saveEncounterType(EncounterType)")
-	public void saveEncounterType_shouldNotOverwriteCreator() throws Exception {
+	public void saveEncounterType_shouldNotOverwriteCreator() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// the encounter to save without a dateCreated
@@ -1144,8 +1110,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounterType(EncounterType)
 	 */
 	@Test
-	@Verifies(value = "should not overwrite creator or date created", method = "saveEncounterType(EncounterType)")
-	public void saveEncounterType_shouldNotOverwriteCreatorOrDateCreated() throws Exception {
+	public void saveEncounterType_shouldNotOverwriteCreatorOrDateCreated() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// the encounter to save without a dateCreated
@@ -1178,8 +1143,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounterType(EncounterType)
 	 */
 	@Test
-	@Verifies(value = "should not overwrite date created", method = "saveEncounterType(EncounterType)")
-	public void saveEncounterType_shouldNotOverwriteDateCreated() throws Exception {
+	public void saveEncounterType_shouldNotOverwriteDateCreated() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// the encounter to save without a dateCreated
@@ -1209,8 +1173,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounterType(EncounterType)
 	 */
 	@Test
-	@Verifies(value = "should set audit info if any item in EncounterType is Edited", method = "saveEncounterType(EncounterType)")
-	public void saveEncounterType_shouldSetAuditInfoIfAnyItemInEncounterTypeIsEdited() throws Exception {
+	public void saveEncounterType_shouldSetAuditInfoIfAnyItemInEncounterTypeIsEdited() {
 		EncounterService es = Context.getEncounterService();
 		
 		// Create encounter type, ensure creator/dateCreated are set, and changedBy and dateChanged are not setDateCreated.
@@ -1239,8 +1202,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounterType(String)
 	 */
 	@Test
-	@Verifies(value = "should not get retired types", method = "getEncounterType(String)")
-	public void getEncounterType_shouldNotGetRetiredTypes() throws Exception {
+	public void getEncounterType_shouldNotGetRetiredTypes() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// loop over all types to make sure
@@ -1263,8 +1225,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounterType(String)
 	 */
 	@Test
-	@Verifies(value = "should return null if only retired type found", method = "getEncounterType(String)")
-	public void getEncounterType_shouldReturnNullIfOnlyRetiredTypeFound() throws Exception {
+	public void getEncounterType_shouldReturnNullIfOnlyRetiredTypeFound() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// sanity check to make sure 'some retired type' is in the dataset
@@ -1282,8 +1243,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounterType(String)
 	 */
 	@Test
-	@Verifies(value = "should not get by inexact name", method = "getEncounterType(String)")
-	public void getEncounterType_shouldNotGetByInexactName() throws Exception {
+	public void getEncounterType_shouldNotGetByInexactName() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// we should not get two types here, the second one is retired
@@ -1303,8 +1263,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounterType(String)
 	 */
 	@Test
-	@Verifies(value = "should return null with null name parameter", method = "getEncounterType(String)")
-	public void getEncounterType_shouldReturnNullWithNullNameParameter() throws Exception {
+	public void getEncounterType_shouldReturnNullWithNullNameParameter() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// we should not get an error here...but silently return nothing
@@ -1316,8 +1275,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getAllEncounterTypes(boolean)
 	 */
 	@Test
-	@Verifies(value = "should not return retired types", method = "getAllEncounterTypes(boolean)")
-	public void getAllEncounterTypes_shouldNotReturnRetiredTypes() throws Exception {
+	public void getAllEncounterTypes_shouldNotReturnRetiredTypes() {
 		EncounterService encounterService = Context.getEncounterService();
 		List<EncounterType> encounterTypes = encounterService.getAllEncounterTypes(false);
 		
@@ -1333,8 +1291,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getAllEncounterTypes(null)
 	 */
 	@Test
-	@Verifies(value = "should include retired types with true includeRetired parameter", method = "getAllEncounterTypes(null)")
-	public void getAllEncounterTypes_shouldIncludeRetiredTypesWithTrueIncludeRetiredParameter() throws Exception {
+	public void getAllEncounterTypes_shouldIncludeRetiredTypesWithTrueIncludeRetiredParameter() {
 		EncounterService encounterService = Context.getEncounterService();
 		boolean foundRetired = false;
 		List<EncounterType> types = encounterService.getAllEncounterTypes(true);
@@ -1353,8 +1310,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#findEncounterTypes(String)
 	 */
 	@Test
-	@Verifies(value = "should return types by partial name match", method = "findEncounterTypes(String)")
-	public void findEncounterTypes_shouldReturnTypesByPartialNameMatch() throws Exception {
+	public void findEncounterTypes_shouldReturnTypesByPartialNameMatch() {
 		EncounterService encounterService = Context.getEncounterService();
 		List<EncounterType> types = encounterService.findEncounterTypes("Test Enc");
 		assertEquals(3, types.size());
@@ -1364,8 +1320,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#findEncounterTypes(String)
 	 */
 	@Test
-	@Verifies(value = "should return types by partial case insensitive match", method = "findEncounterTypes(String)")
-	public void findEncounterTypes_shouldReturnTypesByPartialCaseInsensitiveMatch() throws Exception {
+	public void findEncounterTypes_shouldReturnTypesByPartialCaseInsensitiveMatch() {
 		EncounterService encounterService = Context.getEncounterService();
 		List<EncounterType> types = encounterService.findEncounterTypes("Test ENC");
 		assertEquals(3, types.size());
@@ -1375,8 +1330,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#findEncounterTypes(String)
 	 */
 	@Test
-	@Verifies(value = "should include retired types in the results", method = "findEncounterTypes(String)")
-	public void findEncounterTypes_shouldIncludeRetiredTypesInTheResults() throws Exception {
+	public void findEncounterTypes_shouldIncludeRetiredTypesInTheResults() {
 		EncounterService encounterService = Context.getEncounterService();
 		List<EncounterType> types = encounterService.findEncounterTypes("Test Enc");
 		assertEquals(3, types.size());
@@ -1396,8 +1350,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#findEncounterTypes(String)
 	 */
 	@Test
-	@Verifies(value = "should not partial match name on internal substrings", method = "findEncounterTypes(String)")
-	public void findEncounterTypes_shouldNotPartialMatchNameOnInternalSubstrings() throws Exception {
+	public void findEncounterTypes_shouldNotPartialMatchNameOnInternalSubstrings() {
 		EncounterService encounterService = Context.getEncounterService();
 		List<EncounterType> types = encounterService.findEncounterTypes("Test Enc Type");
 		assertEquals(3, types.size());
@@ -1410,8 +1363,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#findEncounterTypes(String)
 	 */
 	@Test
-	@Verifies(value = "should return types ordered on name and nonretired first", method = "findEncounterTypes(String)")
-	public void findEncounterTypes_shouldReturnTypesOrderedOnNameAndNonretiredFirst() throws Exception {
+	public void findEncounterTypes_shouldReturnTypesOrderedOnNameAndNonretiredFirst() {
 		EncounterService encounterService = Context.getEncounterService();
 		List<EncounterType> types = encounterService.findEncounterTypes("Test Enc");
 		
@@ -1426,8 +1378,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#retireEncounterType(EncounterType,String)
 	 */
 	@Test
-	@Verifies(value = "should retire type and set attributes", method = "retireEncounterType(EncounterType,String)")
-	public void retireEncounterType_shouldRetireTypeAndSetAttributes() throws Exception {
+	public void retireEncounterType_shouldRetireTypeAndSetAttributes() {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterType type = encounterService.getEncounterType(1);
 		assertFalse(type.getRetired());
@@ -1451,8 +1402,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#retireEncounterType(EncounterType,String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw error if given null reason parameter", method = "retireEncounterType(EncounterType,String)")
-	public void retireEncounterType_shouldThrowErrorIfGivenNullReasonParameter() throws Exception {
+	public void retireEncounterType_shouldThrowErrorIfGivenNullReasonParameter() {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterType type = encounterService.getEncounterType(1);
 		encounterService.retireEncounterType(type, null);
@@ -1462,8 +1412,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#unretireEncounterType(EncounterType)
 	 */
 	@Test
-	@Verifies(value = "should unretire type and unmark attributes", method = "unretireEncounterType(EncounterType)")
-	public void unretireEncounterType_shouldUnretireTypeAndUnmarkAttributes() throws Exception {
+	public void unretireEncounterType_shouldUnretireTypeAndUnmarkAttributes() {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterType type = encounterService.getEncounterType(3);
 		assertTrue(type.getRetired());
@@ -1487,8 +1436,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounterType(EncounterType)
 	 */
 	@Test
-	@Verifies(value = "should update an existing encounter type name", method = "saveEncounterType(EncounterType)")
-	public void saveEncounterType_shouldUpdateAnExistingEncounterTypeName() throws Exception {
+	public void saveEncounterType_shouldUpdateAnExistingEncounterTypeName() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		EncounterType encounterTypeToChange = encounterService.getEncounterType(1);
@@ -1511,8 +1459,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#purgeEncounterType(EncounterType)
 	 */
 	@Test
-	@Verifies(value = "should purge type", method = "purgeEncounterType(EncounterType)")
-	public void purgeEncounterType_shouldPurgeType() throws Exception {
+	public void purgeEncounterType_shouldPurgeType() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		EncounterType encounterTypeToPurge = encounterService.getEncounterType(4);
@@ -1527,8 +1474,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounter(Integer)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw error if given null parameter", method = "getEncounter(Integer)")
-	public void getEncounter_shouldThrowErrorIfGivenNullParameter() throws Exception {
+	public void getEncounter_shouldThrowErrorIfGivenNullParameter() {
 		Context.getEncounterService().getEncounter(null);
 	}
 	
@@ -1536,8 +1482,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounterType(Integer)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw error if given null parameter", method = "getEncounterType(Integer)")
-	public void getEncounterType_shouldThrowErrorIfGivenNullParameter() throws Exception {
+	public void getEncounterType_shouldThrowErrorIfGivenNullParameter() {
 		Context.getEncounterService().getEncounterType((Integer) null);
 	}
 	
@@ -1545,8 +1490,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should cascade patient to orders in the encounter", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldCascadePatientToOrdersInTheEncounter() throws Exception {
+	public void saveEncounter_shouldCascadePatientToOrdersInTheEncounter() {
 		Encounter enc = Context.getEncounterService().getEncounter(15);
 		Order existing = enc.getOrders().iterator().next();
 		
@@ -1563,8 +1507,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounterByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getEncounterByUuid(String)")
-	public void getEncounterByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getEncounterByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "6519d653-393b-4118-9c83-a3715b82d4ac";
 		Encounter encounter = Context.getEncounterService().getEncounterByUuid(uuid);
 		Assert.assertEquals(3, (int) encounter.getEncounterId());
@@ -1574,8 +1517,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounterByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getEncounterByUuid(String)")
-	public void getEncounterByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getEncounterByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getEncounterService().getEncounterByUuid("some invalid uuid"));
 	}
 	
@@ -1583,8 +1525,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounterTypeByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getEncounterTypeByUuid(String)")
-	public void getEncounterTypeByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getEncounterTypeByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "02c533ab-b74b-4ee4-b6e5-ffb6d09a0ac8";
 		EncounterType encounterType = Context.getEncounterService().getEncounterTypeByUuid(uuid);
 		Assert.assertEquals(6, (int) encounterType.getEncounterTypeId());
@@ -1594,8 +1535,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounterTypeByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getEncounterTypeByUuid(String)")
-	public void getEncounterTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getEncounterTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getEncounterService().getEncounterTypeByUuid("some invalid uuid"));
 	}
 	
@@ -1604,8 +1544,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncountersByPatient(String)
 	 */
 	@Test
-	@Verifies(value = "should get all unvoided encounters for the given patient identifier", method = "getEncountersByPatient(String,boolean)")
-	public void getEncountersByPatient_shouldGetAllUnvoidedEncountersForTheGivenPatientIdentifier() throws Exception {
+	public void getEncountersByPatient_shouldGetAllUnvoidedEncountersForTheGivenPatientIdentifier() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatient("12345", false);
@@ -1616,8 +1555,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncountersByPatient(String,boolean)
 	 */
 	@Test
-	@Verifies(value = "should get all unvoided encounters for the given patient name", method = "getEncountersByPatient(String,boolean)")
-	public void getEncountersByPatient_shouldGetAllUnvoidedEncountersForTheGivenPatientName() throws Exception {
+	public void getEncountersByPatient_shouldGetAllUnvoidedEncountersForTheGivenPatientName() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatient("John", false);
@@ -1628,9 +1566,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncountersByPatient(String,boolean)
 	 */
 	@Test
-	@Verifies(value = "should include voided encounters in the returned list if includedVoided is true", method = "getEncountersByPatient(String,boolean)")
 	public void getEncountersByPatient_shouldIncludeVoidedEncountersInTheReturnedListIfIncludedVoidedIsTrue()
-	    throws Exception {
+	{
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatient("12345", true);
@@ -1641,8 +1578,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncountersByPatient(String,boolean)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw error if given null parameter", method = "getEncountersByPatient(String,boolean)")
-	public void getEncountersByPatient_shouldThrowErrorIfGivenNullParameter() throws Exception {
+	public void getEncountersByPatient_shouldThrowErrorIfGivenNullParameter() {
 		Context.getEncounterService().getEncountersByPatient(null, false);
 	}
 	
@@ -1652,8 +1588,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getAllEncounters(Cohort)
 	 */
 	@Test
-	@Verifies(value = "should get all encounters for a cohort of patients", method = "getAllEncounters(Cohort)")
-	public void getAllEncounters_shouldGetAllEncountersForACohortOfPatients() throws Exception {
+	public void getAllEncounters_shouldGetAllEncountersForACohortOfPatients() {
 		Cohort cohort = new Cohort();
 		cohort.addMember(7);
 		Map<Integer, List<Encounter>> allEncounters = Context.getEncounterService().getAllEncounters(cohort);
@@ -1667,8 +1602,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 *      boolean)
 	 */
 	@Test
-	@Verifies(value = "should get encounters by visit", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QVisitType;>,Collection<QVisit;>,Collection<QUser;>,null)")
-	public void getEncounters_shouldGetEncountersByVisit() throws Exception {
+	public void getEncounters_shouldGetEncountersByVisit() {
 		List<Visit> visits = new ArrayList<>();
 		visits.add(new Visit(1));
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setVisits(visits)
@@ -1683,8 +1617,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 *      boolean)
 	 */
 	@Test
-	@Verifies(value = "should get encounters by visit type", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QVisitType;>,Collection<QVisit;>,Collection<QUser;>,null)")
-	public void getEncounters_shouldGetEncountersByVisitType() throws Exception {
+	public void getEncounters_shouldGetEncountersByVisitType() {
 		List<VisitType> visitTypes = new Vector<>();
 		visitTypes.add(new VisitType(2));
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setVisitTypes(visitTypes)
@@ -1695,20 +1628,18 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see EncounterService#getEncountersByVisit(Visit, boolean)
-	 * @verifies get active encounters by visit
 	 */
 	@Test
-	public void getEncountersByVisit_shouldGetActiveEncountersByVisit() throws Exception {
+	public void getEncountersByVisit_shouldGetActiveEncountersByVisit() {
 		List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(new Visit(1), false);
 		assertEquals(1, encounters.size());
 	}
 	
 	/**
 	 * @see EncounterService#getEncountersByVisit(Visit, boolean)
-	 * @verifies include voided encounters when includeVoided is true
 	 */
 	@Test
-	public void getEncountersByVisit_shouldIncludeVoidedEncountersWhenIncludeVoidedIsTrue() throws Exception {
+	public void getEncountersByVisit_shouldIncludeVoidedEncountersWhenIncludeVoidedIsTrue() {
 		List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(new Visit(1), true);
 		assertEquals(2, encounters.size());
 	}
@@ -1717,8 +1648,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getCountOfEncounters(String,null)
 	 */
 	@Test
-	@Verifies(value = "should get the correct count of unique encounters", method = "getCountOfEncounters(String,null)")
-	public void getCountOfEncounters_shouldGetTheCorrectCountOfUniqueEncounters() throws Exception {
+	public void getCountOfEncounters_shouldGetTheCorrectCountOfUniqueEncounters() {
 		executeDataSet(UNIQUE_ENC_WITH_PAGING_XML);
 		Assert.assertEquals(4, Context.getEncounterService().getCountOfEncounters("qwerty", true).intValue());
 	}
@@ -1729,8 +1659,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Ignore
-	@Verifies(value = "should get all the unique encounters that match the specified parameter values", method = "getEncounters(String,Integer,Integer,null,null)")
-	public void getEncounters_shouldGetAllTheUniqueEncountersThatMatchTheSpecifiedParameterValues() throws Exception {
+	public void getEncounters_shouldGetAllTheUniqueEncountersThatMatchTheSpecifiedParameterValues() {
 		executeDataSet(UNIQUE_ENC_WITH_PAGING_XML);
 		List<Encounter> encs = Context.getEncounterService().getEncounters("qwerty", 0, 4, true);
 		Assert.assertEquals(4, encs.size());
@@ -1743,8 +1672,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Ignore
-	@Verifies(value = "should not return voided encounters if includeVoided is set to true", method = "getEncounters(String,Integer,Integer,null,null)")
-	public void getEncounters_shouldNotReturnVoidedEncountersIfIncludeVoidedIsSetToTrue() throws Exception {
+	public void getEncounters_shouldNotReturnVoidedEncountersIfIncludeVoidedIsSetToTrue() {
 		executeDataSet(UNIQUE_ENC_WITH_PAGING_XML);
 		List<Encounter> encs = Context.getEncounterService().getEncounters("qwerty", 0, 3, false);
 		Assert.assertEquals(3, encs.size());
@@ -1754,8 +1682,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.api.EncounterService#saveEncounterRole(org.openmrs.EncounterRole)
 	 */
 	@Test
-	@Verifies(value = "should save encounter role with basic details", method = "saveEncounterRole(EncounterRole)")
-	public void saveEncounterRole_shouldSaveEncounterRoleWithBasicDetails() throws Exception {
+	public void saveEncounterRole_shouldSaveEncounterRoleWithBasicDetails() {
 		EncounterRole encounterRole = new EncounterRole();
 		encounterRole.setName("Attending physician");
 		encounterRole.setDescription("The person in charge");
@@ -1777,8 +1704,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#purgeEncounterRole(org.openmrs.EncounterRole)
 	 */
 	@Test
-	@Verifies(value = "should purge Encounter Role", method = "purgeEncounterRole(EncounterRole)")
-	public void purgeEncounterRole_shouldPurgeEncounterRole() throws Exception {
+	public void purgeEncounterRole_shouldPurgeEncounterRole() {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterRole encounterRole = encounterService.getEncounterRole(1);
 		encounterService.purgeEncounterRole(encounterRole);
@@ -1790,8 +1716,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getAllEncounterRoles(boolean)
 	 */
 	@Test
-	@Verifies(value = "get all encounter roles based on include retired flag", method = "getAllEncounterRoles(boolean)")
-	public void getAllEncounterRoles_shouldGetAllEncounterRolesBasedOnIncludeRetiredFlag() throws Exception {
+	public void getAllEncounterRoles_shouldGetAllEncounterRolesBasedOnIncludeRetiredFlag() {
 		EncounterService encounterService = Context.getEncounterService();
 		List<EncounterRole> encounterRoles = encounterService.getAllEncounterRoles(true);
 		assertEquals("get all encounter roles including retired", 3, encounterRoles.size());
@@ -1803,8 +1728,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounterRoleByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "find encounter role based on uuid", method = "getEncounterRoleByUuid(String)")
-	public void getEncounterRoleByUuid_shouldFindEncounterRoleBasedOnUuid() throws Exception {
+	public void getEncounterRoleByUuid_shouldFindEncounterRoleBasedOnUuid() {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterRole encounterRole = encounterService.getEncounterRoleByUuid("430bbb70-6a9c-4e1e-badb-9d1054b1b5e9");
 		assertNotNull("valid uuid should be returned", encounterRole);
@@ -1816,8 +1740,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounterRoleByName(String)
 	 */
 	@Test
-	@Verifies(value = "find encounter role based on its name", method = "getEncounterRoleByName(String)")
-	public void getEncounterRoleByName_shouldFindEncounterRoleByName() throws Exception {
+	public void getEncounterRoleByName_shouldFindEncounterRoleByName() {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterRole encounterRole = new EncounterRole();
 		String name = "surgeon role";
@@ -1835,8 +1758,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#retireEncounterRole(org.openmrs.EncounterRole, String)
 	 */
 	@Test
-	@Verifies(value = "should retire type and set attributes", method = "retireEncounterRole(EncounterRole,String)")
-	public void retireEncounterRole_shouldRetireTypeAndSetAttributes() throws Exception {
+	public void retireEncounterRole_shouldRetireTypeAndSetAttributes() {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterRole encounterRole = encounterService.getEncounterRole(1);
 		assertFalse(encounterRole.getRetired());
@@ -1856,8 +1778,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#retireEncounterRole(org.openmrs.EncounterRole, String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw error if given null reason parameter", method = "retireEncounterRole(EncounterRole,String)")
-	public void retireEncounterRole_shouldThrowErrorIfGivenNullReasonParameter() throws Exception {
+	public void retireEncounterRole_shouldThrowErrorIfGivenNullReasonParameter() {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterRole encounterRole = encounterService.getEncounterRole(1);
 		encounterService.retireEncounterRole(encounterRole, null);
@@ -1867,8 +1788,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#unretireEncounterRole(org.openmrs.EncounterRole)
 	 */
 	@Test
-	@Verifies(value = "should unretire type and unmark attributes", method = "unretireEncounterRole(EncounterRole)")
-	public void unretireEncounterRole_shouldUnretireTypeAndUnmarkAttributes() throws Exception {
+	public void unretireEncounterRole_shouldUnretireTypeAndUnmarkAttributes() {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterRole encounterRole = encounterService.getEncounterRole(2);
 		assertTrue(encounterRole.getRetired());
@@ -1886,10 +1806,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see EncounterService#saveEncounter(Encounter)
-	 * @verifies cascade delete encounter providers
 	 */
 	@Test
-	public void saveEncounter_shouldCascadeDeleteEncounterProviders() throws Exception {
+	public void saveEncounter_shouldCascadeDeleteEncounterProviders() {
 		//given
 		Encounter encounter = new Encounter();
 		encounter.setLocation(new Location(1));
@@ -1934,10 +1853,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see EncounterService#saveEncounter(Encounter)
-	 * @verifies cascade save encounter providers
 	 */
 	@Test
-	public void saveEncounter_shouldCascadeSaveEncounterProviders() throws Exception {
+	public void saveEncounter_shouldCascadeSaveEncounterProviders() {
 		//given
 		Encounter encounter = new Encounter();
 		encounter.setLocation(new Location(1));
@@ -1984,10 +1902,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see EncounterService#getEncounters(String,Integer,Integer,boolean)
-	 * @verifies return empty list for empty query
 	 */
 	@Test
-	public void getEncounters_shouldReturnEmptyListForEmptyQuery() throws Exception {
+	public void getEncounters_shouldReturnEmptyListForEmptyQuery() {
 		//given
 		
 		//when
@@ -1999,10 +1916,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see EncounterService#getVisitAssignmentHandlers()
-	 * @verifies return the no assignment handler
 	 */
 	@Test
-	public void getVisitAssignmentHandlers_shouldReturnTheNoAssignmentHandler() throws Exception {
+	public void getVisitAssignmentHandlers_shouldReturnTheNoAssignmentHandler() {
 		
 		List<EncounterVisitHandler> handlers = Context.getEncounterService().getEncounterVisitHandlers();
 		
@@ -2017,10 +1933,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see EncounterService#getVisitAssignmentHandlers()
-	 * @verifies return the existing visit only assignment handler
 	 */
 	@Test
-	public void getVisitAssignmentHandlers_shouldReturnTheExistingVisitOnlyAssignmentHandler() throws Exception {
+	public void getVisitAssignmentHandlers_shouldReturnTheExistingVisitOnlyAssignmentHandler() {
 		
 		List<EncounterVisitHandler> handlers = Context.getEncounterService().getEncounterVisitHandlers();
 		
@@ -2037,10 +1952,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see EncounterService#getVisitAssignmentHandlers()
-	 * @verifies return the existing or new visit assignment handler
 	 */
 	@Test
-	public void getVisitAssignmentHandlers_shouldReturnTheExistingOrNewVisitAssignmentHandler() throws Exception {
+	public void getVisitAssignmentHandlers_shouldReturnTheExistingOrNewVisitAssignmentHandler() {
 		
 		List<EncounterVisitHandler> handlers = Context.getEncounterService().getEncounterVisitHandlers();
 		
@@ -2059,8 +1973,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should not assign encounter to visit if no handler is registered", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldNotAssignEncounterToVisitIfNoHandlerIsRegistered() throws Exception {
+	public void saveEncounter_shouldNotAssignEncounterToVisitIfNoHandlerIsRegistered() {
 		Encounter encounter = buildEncounter();
 		
 		//We should have no visit
@@ -2076,8 +1989,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should not assign encounter to visit if the no assign handler is registered", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldNotAssignEncounterToVisitIfTheNoAssignHandlerIsRegistered() throws Exception {
+	public void saveEncounter_shouldNotAssignEncounterToVisitIfTheNoAssignHandlerIsRegistered() {
 		Encounter encounter = buildEncounter();
 		
 		//We should have no visit
@@ -2098,8 +2010,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should assign encounter to visit if the assign to existing handler is registered", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldAssignEncounterToVisitIfTheAssignToExistingHandlerIsRegistered() throws Exception {
+	public void saveEncounter_shouldAssignEncounterToVisitIfTheAssignToExistingHandlerIsRegistered() {
 		Encounter encounter = buildEncounter();
 		
 		//We should have no visit
@@ -2121,8 +2032,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should assign encounter to visit if the assign to existing or new handler is registered", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldAssignEncounterToVisitIfTheAssignToExistingOrNewHandlerIsRegistered() throws Exception {
+	public void saveEncounter_shouldAssignEncounterToVisitIfTheAssignToExistingOrNewHandlerIsRegistered() {
 		Encounter encounter = new Encounter();
 		encounter.setLocation(new Location(2));
 		encounter.setEncounterType(new EncounterType(1));
@@ -2156,8 +2066,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncountersNotAssignedToAnyVisit(Patient)
 	 */
 	@Test
-	@Verifies(value = "should return the unvoided encounters not assigned to any visit", method = "getEncountersNotAssignedToAnyVisit(Patient)")
-	public void getEncountersNotAssignedToAnyVisit_shouldReturnTheUnvoidedEncountersNotAssignedToAnyVisit() throws Exception {
+	public void getEncountersNotAssignedToAnyVisit_shouldReturnTheUnvoidedEncountersNotAssignedToAnyVisit() {
 		executeDataSet(UNIQUE_ENC_WITH_PAGING_XML);
 		List<Encounter> encs = Context.getEncounterService().getEncountersNotAssignedToAnyVisit(
 		    Context.getPatientService().getPatient(10));
@@ -2170,8 +2079,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
-	@Verifies(value = "should void and create new obs when saving encounter", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldVoidAndCreateNewObsWhenSavingEncounter() throws Exception {
+	public void saveEncounter_shouldVoidAndCreateNewObsWhenSavingEncounter() {
 		// create an encounter
 		EncounterService es = Context.getEncounterService();
 		Encounter encounter = new Encounter();
@@ -2210,8 +2118,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#voidEncounter(Encounter, String)
 	 */
 	@Test
-	@Verifies(value = "should not void providers", method = "voidEncounter(Encounter, String)")
-	public void voidEncounter_shouldNotVoidProviders() throws Exception {
+	public void voidEncounter_shouldNotVoidProviders() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		Encounter encounter = new Encounter();
@@ -2244,9 +2151,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#filterEncountersByViewPermissions(List, User)
 	 */
 	@Test
-	@Verifies(value = "should filter encounters if user is not allowed to see some encounters", method = "filterEncountersByViewPermissions(List, User)")
 	public void filterEncountersByViewPermissions_shouldFilterEncountersIfUserIsNotAllowedToSeeSomeEncounters()
-	    throws Exception {
+	{
 		EncounterService encounterService = Context.getEncounterService();
 		
 		int expectedSize = encounterService.getEncountersByPatientId(3).size();
@@ -2295,9 +2201,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#filterEncountersByViewPermissions(List, User)
 	 */
 	@Test
-	@Verifies(value = "should not filter all encounters when the encounter type's view privilege column is null", method = "filterEncountersByViewPermissions(List, User)")
 	public void filterEncountersByViewPermissions_shouldNotFilterAllEncountersWhenTheEncounterTypesViewPrivilegeColumnIsNull()
-	    throws Exception {
+	{
 		EncounterService encounterService = Context.getEncounterService();
 		
 		int beforeSize = encounterService.getEncountersByPatientId(3).size();
@@ -2331,8 +2236,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#canViewAllEncounterTypes(User)
 	 */
 	@Test
-	@Verifies(value = "should return true if user is granted to view all encounters", method = "canViewAllEncounterTypes(User)")
-	public void canViewAllEncounterTypes_shouldReturnTrueIfUserIsGrantedToViewEncounters() throws Exception {
+	public void canViewAllEncounterTypes_shouldReturnTrueIfUserIsGrantedToViewEncounters() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		EncounterType encounterType = new EncounterType("testing", "desc");
@@ -2357,8 +2261,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#canViewAllEncounterTypes(User)
 	 */
 	@Test
-	@Verifies(value = "should return true when the encounter type's view privilege column is null", method = "canViewAllEncounterTypes(User)")
-	public void canViewAllEncounterTypes_shouldReturnTrueWhenTheEncounterTypesViewPrivilegeColumnIsNull() throws Exception {
+	public void canViewAllEncounterTypes_shouldReturnTrueWhenTheEncounterTypesViewPrivilegeColumnIsNull() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// set viewPrivilege on each encounter type to null
@@ -2377,8 +2280,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#canEditAllEncounterTypes(User)
 	 */
 	@Test
-	@Verifies(value = "should return true if user is granted to edit all encounters", method = "canEditAllEncounterTypes(User)")
-	public void canEditAllEncounterTypes_shouldReturnTrueIfUserIsGrantedToEditEncounters() throws Exception {
+	public void canEditAllEncounterTypes_shouldReturnTrueIfUserIsGrantedToEditEncounters() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		EncounterType encounterType = new EncounterType("testing", "desc");
@@ -2403,8 +2305,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#canEditAllEncounterTypes(User)
 	 */
 	@Test
-	@Verifies(value = "should return true when the encounter type's edit privilege column is null", method = "canViewAllEncounterTypes(User)")
-	public void canViewAllEncounterTypes_shouldReturnTrueWhenTheEncounterTypesEditPrivilegeColumnIsNull() throws Exception {
+	public void canViewAllEncounterTypes_shouldReturnTrueWhenTheEncounterTypesEditPrivilegeColumnIsNull() {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// set editPrivilege on each encounter type to null
@@ -2423,8 +2324,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#canEditEncounter(Encounter, User)
 	 */
 	@Test
-	@Verifies(value = "should return true if user can edit encounter", method = "canEditEncounter(Encounter, User)")
-	public void canEditEncounter_shouldReturnTrueIfUserCanEditEncounter() throws Exception {
+	public void canEditEncounter_shouldReturnTrueIfUserCanEditEncounter() {
 		// get encounter that has type with edit privilege set
 		Encounter encounter = getEncounterWithEditPrivilege();
 		
@@ -2443,8 +2343,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#canEditEncounter(Encounter, User)
 	 */
 	@Test
-	@Verifies(value = "should return false if user can not edit encounter", method = "canEditEncounter(Encounter, User)")
-	public void canEditEncounter_shouldReturnFalseIfUserCanNotEditEncounter() throws Exception {
+	public void canEditEncounter_shouldReturnFalseIfUserCanNotEditEncounter() {
 		// get encounter that has type with edit privilege set
 		Encounter encounter = getEncounterWithEditPrivilege();
 		
@@ -2460,8 +2359,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#canEditEncounter(Encounter, User)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should fail if encounter is null", method = "canEditEncounter(Encounter, User)")
-	public void canEditEncounter_shouldFailfIfEncounterIsNull() throws Exception {
+	public void canEditEncounter_shouldFailfIfEncounterIsNull() {
 		// invoke method using null encounter
 		Context.getEncounterService().canEditEncounter(null, null);
 	}
@@ -2470,8 +2368,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#canViewEncounter(Encounter, User)
 	 */
 	@Test
-	@Verifies(value = "should return true if user can view encounter", method = "canViewEncounter(Encounter, User)")
-	public void canViewEncounter_shouldReturnTrueIfUserCanViewEncounter() throws Exception {
+	public void canViewEncounter_shouldReturnTrueIfUserCanViewEncounter() {
 		// get encounter that has type with view privilege set
 		Encounter encounter = getEncounterWithViewPrivilege();
 		
@@ -2490,8 +2387,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#canViewEncounter(Encounter, User)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should fail if encounter is null", method = "canViewEncounter(Encounter, User)")
-	public void canViewEncounter_shouldFailfIfEncounterIsNull() throws Exception {
+	public void canViewEncounter_shouldFailfIfEncounterIsNull() {
 		// invoke method using null encounter
 		Context.getEncounterService().canViewEncounter(null, null);
 	}
@@ -2500,8 +2396,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#canViewEncounter(Encounter, User)
 	 */
 	@Test
-	@Verifies(value = "should return false if user can not view encounter", method = "canViewEncounter(Encounter, User)")
-	public void canViewEncounter_shouldReturnFalseIfUserCanNotViewEncounter() throws Exception {
+	public void canViewEncounter_shouldReturnFalseIfUserCanNotViewEncounter() {
 		// get encounter that has type with view privilege set
 		Encounter encounter = getEncounterWithViewPrivilege();
 		
@@ -2517,8 +2412,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounter(Integer)
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should fail if user is not allowed to view encounter by given id", method = "getEncounter(Integer)")
-	public void getEncounter_shouldFailIfUserIsNotAllowedToViewEncounterByGivenId() throws Exception {
+	public void getEncounter_shouldFailIfUserIsNotAllowedToViewEncounterByGivenId() {
 		// get encounter that has type with view privilege set
 		Encounter encounter = getEncounterWithViewPrivilege();
 		
@@ -2539,8 +2433,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounter(Integer)
 	 */
 	@Test
-	@Verifies(value = "should return encounter if user is allowed to view it", method = "getEncounter(Integer)")
-	public void getEncounter_shouldReturnEncounterIfUserIsAllowedToViewIt() throws Exception {
+	public void getEncounter_shouldReturnEncounterIfUserIsAllowedToViewIt() {
 		// get encounter that has type with view privilege set
 		Encounter encounter = getEncounterWithViewPrivilege();
 		
@@ -2565,8 +2458,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should fail if user is not supposed to edit encounters of type of given encounter", method = "saveEncounter(Encounter)")
-	public void saveEncounter_shouldFailfIfUserIsNotSupposedToEditEncountersOfTypeOfGivenEncounter() throws Exception {
+	public void saveEncounter_shouldFailfIfUserIsNotSupposedToEditEncountersOfTypeOfGivenEncounter() {
 		// get encounter that has type with edit privilege set
 		Encounter encounter = getEncounterWithEditPrivilege();
 		
@@ -2587,8 +2479,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#voidEncounter(Encounter, String)
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should fail if user is not supposed to edit encounters of type of given encounter", method = "voidEncounter(Encounter, String)")
-	public void voidEncounter_shouldFailfIfUserIsNotSupposedToEditEncountersOfTypeOfGivenEncounter() throws Exception {
+	public void voidEncounter_shouldFailfIfUserIsNotSupposedToEditEncountersOfTypeOfGivenEncounter() {
 		// get encounter that has type with edit privilege set
 		Encounter encounter = getEncounterWithEditPrivilege();
 		
@@ -2609,8 +2500,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#unvoidEncounter(Encounter)
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should fail if user is not supposed to edit encounters of type of given encounter", method = "voidEncounter(Encounter)")
-	public void unvoidEncounter_shouldFailfIfUserIsNotSupposedToEditEncountersOfTypeOfGivenEncounter() throws Exception {
+	public void unvoidEncounter_shouldFailfIfUserIsNotSupposedToEditEncountersOfTypeOfGivenEncounter() {
 		// get encounter that has type with edit privilege set
 		Encounter encounter = getEncounterWithEditPrivilege();
 		
@@ -2631,8 +2521,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#purgeEncounter(Encounter)
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should fail if user is not supposed to edit encounters of type of given encounter", method = "purgeEncounter(Encounter)")
-	public void purgeEncounter_shouldFailfIfUserIsNotSupposedToEditEncountersOfTypeOfGivenEncounter() throws Exception {
+	public void purgeEncounter_shouldFailfIfUserIsNotSupposedToEditEncountersOfTypeOfGivenEncounter() {
 		// get encounter that has type with edit privilege set
 		Encounter encounter = getEncounterWithEditPrivilege();
 		
@@ -2653,9 +2542,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#purgeEncounter(Encounter,Boolean)
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should fail if user is not supposed to edit encounters of type of given encounter", method = "purgeEncounter(Encounter,Boolean)")
 	public void purgeEncounterCascade_shouldFailfIfUserIsNotSupposedToEditEncountersOfTypeOfGivenEncounter()
-	    throws Exception {
+	{
 		// get encounter that has type with edit privilege set
 		Encounter encounter = getEncounterWithEditPrivilege();
 		
@@ -2754,8 +2642,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
-	@Verifies(value = "should fetch encounters by patient id", method = "getEncounters(String,Integer,Integer,Integer,null)")
-	public void getEncounters_shouldFetchEncountersByPatientId() throws Exception {
+	public void getEncounters_shouldFetchEncountersByPatientId() {
 		Assert.assertEquals(2, Context.getEncounterService().getEncounters(null, 3, null, null, false).size());
 		Assert.assertEquals(4, Context.getEncounterService().getEncounters(null, 3, null, null, true).size());
 	}
@@ -2764,8 +2651,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
-	@Verifies(value = "should match on the location name", method = "getEncounters(String,Integer,Integer,Integer,null)")
-	public void getEncounters_shouldMatchOnTheLocationName() throws Exception {
+	public void getEncounters_shouldMatchOnTheLocationName() {
 		Assert.assertEquals(2, Context.getEncounterService().getEncounters("Test Location", 3, null, null, false).size());
 		Assert.assertEquals(4, Context.getEncounterService().getEncounters("Test Location", 3, null, null, true).size());
 	}
@@ -2774,8 +2660,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
-	@Verifies(value = "should match on the provider name", method = "getEncounters(String,Integer,Integer,Integer,null)")
-	public void getEncounters_shouldMatchOnTheProviderName() throws Exception {
+	public void getEncounters_shouldMatchOnTheProviderName() {
 		Assert.assertEquals(1, Context.getEncounterService().getEncounters("phys", 3, null, null, false).size());
 	}
 	
@@ -2783,8 +2668,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
-	@Verifies(value = "should should match on provider identifier", method = "getEncounters(String,Integer,Integer,Integer,null)")
-	public void getEncounters_shouldShouldMatchOnProviderIdentifier() throws Exception {
+	public void getEncounters_shouldShouldMatchOnProviderIdentifier() {
 		Assert.assertEquals(1, Context.getEncounterService().getEncounters("2", 3, null, null, false).size());
 		Assert.assertEquals(2, Context.getEncounterService().getEncounters("2", 3, null, null, true).size());
 	}
@@ -2793,8 +2677,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
-	@Verifies(value = "should match on the provider person name", method = "getEncounters(String,Integer,Integer,Integer,null)")
-	public void getEncounters_shouldMatchOnTheProviderPersonName() throws Exception {
+	public void getEncounters_shouldMatchOnTheProviderPersonName() {
 		//Should match on Super User and John3 Doe
 		Assert.assertEquals(1, Context.getEncounterService().getEncounters("er jo", 3, null, null, false).size());
 		Assert.assertEquals(2, Context.getEncounterService().getEncounters("er jo", 3, null, null, true).size());
@@ -2805,8 +2688,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
-	@Verifies(value = "should include voided encounters if includeVoided is set to true", method = "getEncounters(String,Integer,Integer,Integer,null)")
-	public void getEncounters_shouldIncludeVoidedEncountersIfIncludeVoidedIsSetToTrue() throws Exception {
+	public void getEncounters_shouldIncludeVoidedEncountersIfIncludeVoidedIsSetToTrue() {
 		Assert.assertEquals(2, Context.getEncounterService().getEncounters("2", 3, null, null, true).size());
 	}
 	
@@ -2814,8 +2696,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
-	@Verifies(value = "should match on the encounter type name", method = "getEncounters(String,Integer,Integer,Integer,null)")
-	public void getEncounters_shouldMatchOnTheEncounterTypeName() throws Exception {
+	public void getEncounters_shouldMatchOnTheEncounterTypeName() {
 		Assert.assertEquals(2, Context.getEncounterService().getEncounters("Type B", 3, null, null, false).size());
 	}
 	
@@ -2823,8 +2704,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#getEncounters(String,Integer,Integer,Integer,null)
 	 */
 	@Test
-	@Verifies(value = "should match on the form name", method = "getEncounters(String,Integer,Integer,Integer,null)")
-	public void getEncounters_shouldMatchOnTheFormName() throws Exception {
+	public void getEncounters_shouldMatchOnTheFormName() {
 		Assert.assertEquals(2, Context.getEncounterService().getEncounters("Basic", 3, null, null, false).size());
 	}
 	
@@ -2833,9 +2713,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#checkIfEncounterTypesAreLocked()
 	 */
 	@Test(expected = EncounterTypeLockedException.class)
-	@Verifies(value = "should throw error when trying to save encounter type when encounter types are locked", method = "saveEncounterType(EncounterType)")
 	public void saveEncounterType_shouldThrowErrorWhenTryingToSaveEncounterTypeWhenEncounterTypesAreLocked()
-	    throws Exception {
+	{
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
 		gp.setPropertyValue("true");
 		Context.getAdministrationService().saveGlobalProperty(gp);
@@ -2852,9 +2731,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#retireEncounterType(EncounterType, String)
 	 */
 	@Test(expected = EncounterTypeLockedException.class)
-	@Verifies(value = "should throw error when trying to retire encounter type when encounter types are locked", method = "retireEncounterType(EncounterType, String)")
 	public void retireEncounterType_shouldThrowErrorWhenTryingToRetireEncounterTypeWhenEncounterTypesAreLocked()
-	    throws Exception {
+	{
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
 		gp.setPropertyValue("true");
 		Context.getAdministrationService().saveGlobalProperty(gp);
@@ -2870,9 +2748,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#unretireEncounterType(EncounterType)
 	 */
 	@Test(expected = EncounterTypeLockedException.class)
-	@Verifies(value = "should throw error when trying to unretire encounter type when encounter types are locked", method = "unretireEncounterType(EncounterType)")
 	public void unretireEncounterType_shouldThrowErrorWhenTryingToUnretireEncounterTypeWhenEncounterTypesAreLocked()
-	    throws Exception {
+	{
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterType encounterType = Context.getEncounterService().getEncounterType(2);
 		
@@ -2887,9 +2764,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#purgeEncounterType(EncounterType)
 	 */
 	@Test(expected = EncounterTypeLockedException.class)
-	@Verifies(value = "should throw error when trying to delete encounter type when encounter types are locked", method = "purgeEncounterType(EncounterType)")
 	public void purgeEncounterType_shouldThrowErrorWhenTryingToDeleteEncounterTypeWhenEncounterTypesAreLocked()
-	    throws Exception {
+	{
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterType encounterType = Context.getEncounterService().getEncounterType(1);
 		
@@ -2903,8 +2779,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "find encounter roles based on their name", method = "getEncounterRolesByName(String)")
-	public void getEncounterRolesByName_shouldFindEncounterRolesByName() throws Exception {
+	public void getEncounterRolesByName_shouldFindEncounterRolesByName() {
 		EncounterService encounterService = Context.getEncounterService();
 		String name = "surgeon";
 		
@@ -2919,8 +2794,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#transferEncounter(Encounter,Patient)
 	 */
 	@Test
-	@Verifies(value = "transfer an encounter with observations but not orders to given patient", method = "transferEncounter(Encounter,Patient)")
-	public void transferEncounter_shouldTransferAnEncounterWithObservationsButNotOrdersToGivenPatient() throws Exception {
+	public void transferEncounter_shouldTransferAnEncounterWithObservationsButNotOrdersToGivenPatient() {
 		executeDataSet(TRANSFER_ENC_DATA_XML);
 		Patient targetPatient = Context.getPatientService().getPatient(201);
 		// encounter has 2 obs which are connected with the same order
@@ -2957,8 +2831,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#transferEncounter(Encounter,Patient)
 	 */
 	@Test
-	@Verifies(value = "void given encounter", method = "transferEncounter(Encounter,Patient)")
-	public void transferEncounter_shouldVoidGivenEncounter() throws Exception {
+	public void transferEncounter_shouldVoidGivenEncounter() {
 		executeDataSet(TRANSFER_ENC_DATA_XML);
 		Patient anyPatient = new Patient(2);
 		Encounter sourceEncounter = Context.getEncounterService().getEncounter(200);
@@ -2972,8 +2845,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#transferEncounter(Encounter,Patient)
 	 */
 	@Test
-	@Verifies(value = "void given encounter visit if given encounter is the only encounter", method = "transferEncounter(Encounter,Patient)")
-	public void transferEncounter_shouldVoidGivenEncounterVisitIfGivenEncounterIsTheOnlyEncounter() throws Exception {
+	public void transferEncounter_shouldVoidGivenEncounterVisitIfGivenEncounterIsTheOnlyEncounter() {
 		executeDataSet(TRANSFER_ENC_DATA_XML);
 		Patient anyPatient = new Patient(2);
 		//belongs to visit with id 2 (has this encounter only)
@@ -2983,7 +2855,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(visit.getVoided());
 	}
 	
-	private EncounterSearchCriteria encounterSearchForVoidedWithDateChanged(String dateChanged) throws Exception {
+	private EncounterSearchCriteria encounterSearchForVoidedWithDateChanged(String dateChanged) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		return new EncounterSearchCriteriaBuilder().setIncludeVoided(true).setDateChanged(sdf.parse(dateChanged))
 		        .createEncounterSearchCriteria();
@@ -3000,7 +2872,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void shouldSaveOrderGroupAlongWithOrders() throws Exception {
+	public void shouldSaveOrderGroupAlongWithOrders() {
 		executeDataSet(ORDER_SET);
 		
 		//Created a new Encounter
@@ -3048,7 +2920,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldSaveMultipleOrderGroupsIfDifferentOrdersHaveDifferentOrderGroups() throws Exception {
+	public void shouldSaveMultipleOrderGroupsIfDifferentOrdersHaveDifferentOrderGroups() {
 		executeDataSet(ORDER_SET);
 		
 		Encounter encounter = new Encounter();

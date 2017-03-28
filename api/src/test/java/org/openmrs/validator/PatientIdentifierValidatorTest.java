@@ -36,7 +36,6 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -55,7 +54,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
 	 */
 	@Test(expected = BlankIdentifierException.class)
-	@Verifies(value = "should fail validation if PatientIdentifier is null", method = "validateIdentifier(PatientIdentifier)")
 	public void validateIdentifier_shouldFailValidationIfPatientIdentifierIsNull() throws Exception {
 		PatientIdentifierValidator.validateIdentifier(null);
 	}
@@ -64,7 +62,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if PatientIdentifier is voided", method = "validateIdentifier(PatientIdentifier)")
 	public void validateIdentifier_shouldPassValidationIfPatientIdentifierIsVoided() throws Exception {
 		PatientIdentifier pi = Context.getPatientService().getPatientIdentifiers("7TU-8", null, null, null, null).get(0);
 		pi.setIdentifier("7TU-4");
@@ -85,7 +82,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
 	 */
 	@Test(expected = IdentifierNotUniqueException.class)
-	@Verifies(value = "should fail validation if another patient has a matching identifier of the same type", method = "validateIdentifier(PatientIdentifier)")
 	public void validateIdentifier_shouldFailValidationIfAnotherPatientHasAMatchingIdentifierOfTheSameType()
 	        throws Exception {
 		PatientIdentifier pi = Context.getPatientService().getPatientIdentifiers("7TU-8", null, null, null, null).get(0);
@@ -97,7 +93,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#validateIdentifier(String,PatientIdentifierType)
 	 */
 	@Test(expected = BlankIdentifierException.class)
-	@Verifies(value = "should fail validation if PatientIdentifierType is null", method = "validateIdentifier(String,PatientIdentifierType)")
 	public void validateIdentifier_shouldFailValidationIfPatientIdentifierTypeIsNull() throws Exception {
 		PatientIdentifierValidator.validateIdentifier("ABC", null);
 	}
@@ -106,7 +101,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String)
 	 */
 	@Test(expected = BlankIdentifierException.class)
-	@Verifies(value = "should fail validation if identifier is blank", method = "checkIdentifierAgainstFormat(String,String)")
 	public void checkIdentifierAgainstFormat_shouldFailValidationIfIdentifierIsBlank() throws Exception {
 		PatientIdentifierValidator.validateIdentifier("", new PatientIdentifierType(1));
 	}
@@ -115,7 +109,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String)
 	 */
 	@Test(expected = InvalidIdentifierFormatException.class)
-	@Verifies(value = "should fail validation if identifier does not match the format", method = "checkIdentifierAgainstFormat(String,String)")
 	public void checkIdentifierAgainstFormat_shouldFailValidationIfIdentifierDoesNotMatchTheFormat() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstFormat("111-222-333", "[0-9]{3}\\-[0-9]{2}\\-[0-9]{4}", null);
 	}
@@ -124,7 +117,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if identifier matches the format", method = "checkIdentifierAgainstFormat(String,String)")
 	public void checkIdentifierAgainstFormat_shouldPassValidationIfIdentifierMatchesTheFormat() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstFormat("111-22-3333", "[0-9]{3}\\-[0-9]{2}\\-[0-9]{4}", null);
 	}
@@ -133,7 +125,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if the format is blank", method = "checkIdentifierAgainstFormat(String,String)")
 	public void checkIdentifierAgainstFormat_shouldPassValidationIfTheFormatIsBlank() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstFormat("abcdefg", "", null);
 	}
@@ -142,7 +133,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#checkIdentifierAgainstValidator(String,IdentifierValidator)
 	 */
 	@Test(expected = BlankIdentifierException.class)
-	@Verifies(value = "should fail validation if identifier is blank", method = "checkIdentifierAgainstValidator(String,IdentifierValidator)")
 	public void checkIdentifierAgainstValidator_shouldFailValidationIfIdentifierIsBlank() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstValidator("", new LuhnIdentifierValidator());
 	}
@@ -151,7 +141,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#checkIdentifierAgainstValidator(String,IdentifierValidator)
 	 */
 	@Test(expected = InvalidCheckDigitException.class)
-	@Verifies(value = "should fail validation if identifier is invalid", method = "checkIdentifierAgainstValidator(String,IdentifierValidator)")
 	public void checkIdentifierAgainstValidator_shouldFailValidationIfIdentifierIsInvalid() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstValidator("7TU-4", new LuhnIdentifierValidator());
 	}
@@ -160,7 +149,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#checkIdentifierAgainstValidator(String,IdentifierValidator)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if identifier is valid", method = "checkIdentifierAgainstValidator(String,IdentifierValidator)")
 	public void checkIdentifierAgainstValidator_shouldPassValidationIfIdentifierIsValid() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstValidator("7TU-8", new LuhnIdentifierValidator());
 	}
@@ -169,7 +157,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#checkIdentifierAgainstValidator(String,IdentifierValidator)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if validator is null", method = "checkIdentifierAgainstValidator(String,IdentifierValidator)")
 	public void checkIdentifierAgainstValidator_shouldPassValidationIfValidatorIsNull() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstValidator("7TU-4", null);
 	}
@@ -178,7 +165,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#validateIdentifier(String,PatientIdentifierType)
 	 */
 	@Test(expected = BlankIdentifierException.class)
-	@Verifies(value = "should fail validation if identifier is blank", method = "validateIdentifier(String,PatientIdentifierType)")
 	public void validateIdentifier_shouldFailValidationIfIdentifierIsBlank() throws Exception {
 		PatientIdentifier identifier = new PatientIdentifier("", new PatientIdentifierType(1), new Location(1));
 		PatientIdentifierValidator.validateIdentifier(identifier);
@@ -188,7 +174,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
 	 */
 	@Test
-	@Verifies(value = "should pass if in use and id type uniqueness is set to non unique", method = "validateIdentifier(PatientIdentifier)")
 	public void validateIdentifier_shouldPassIfInUseAndIdTypeUniquenessIsSetToNonUnique() throws Exception {
 		PatientService patientService = Context.getPatientService();
 		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
@@ -206,7 +191,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
 	 */
 	@Test
-	@Verifies(value = "should pass if locationBehavior is NOT_USED and location is null", method = "validateIdentifier(PatientIdentifier)")
 	public void validateIdentifier_shouldPassIfLocationBehaviorIsNotUsedAndLocationIsNull() throws Exception {
 		PatientIdentifier pi = new PatientIdentifier("1TU-8", new PatientIdentifierType(1), null);
 		PatientIdentifierType idType = pi.getIdentifierType();
@@ -218,7 +202,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
 	 */
 	@Test(expected = PatientIdentifierException.class)
-	@Verifies(value = "should fail validation if locationBehavior is REQUIRED and location is null", method = "validateIdentifier(PatientIdentifier)")
 	public void validateIdentifier_shouldPassIfLocationBehaviorIsRequiredAndLocationIsNull() throws Exception {
 		PatientIdentifier pi = new PatientIdentifier("1TU-8", new PatientIdentifierType(1), null);
 		PatientIdentifierType idType = pi.getIdentifierType();
@@ -230,7 +213,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validateIdentifier(PatientIdentifier)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		PatientIdentifier pi = new PatientIdentifier("1TU-8", new PatientIdentifierType(1), null);
 		PatientIdentifierType idType = pi.getIdentifierType();
@@ -247,7 +229,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 * @see PatientIdentifierValidator#validateIdentifier(PatientIdentifier)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validateIdentifier(PatientIdentifier)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		PatientIdentifier pi = new PatientIdentifier("too long text too long text too long text too long text",
 		        new PatientIdentifierType(1), null);
@@ -266,7 +247,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String,String)
 	 */
-	@Verifies(value = "include format in error message if no formatDescription is specified", method = "checkIdentifierAgainstFormat(String,String,String)")
 	@Test
 	public void checkIdentifierAgainstFormat_shouldIncludeFormatInErrorMessageIfNoFormatDescriptionIsSpecified()
 	        throws Exception {
@@ -289,7 +269,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String,String)
 	 */
-	@Verifies(value = "include formatDescription in error message if specified", method = "checkIdentifierAgainstFormat(String,String,String)")
 	@Test
 	public void checkIdentifierAgainstFormat_shouldIncludeFormatDescriptionInErrorMessageIfSpecified() throws Exception {
 		

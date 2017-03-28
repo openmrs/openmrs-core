@@ -31,7 +31,6 @@ import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests the concept word weighing logic, tests in this class assume that other factors remain
@@ -47,7 +46,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		
 		if (dao == null)
 			// fetch the dao from the spring application context
@@ -58,8 +57,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 * @see ConceptDAO#allConceptSources(boolean)
 	 */
 	@Test
-	@Verifies(value = "should return all concept sources", method = "getAllConceptSources(boolean)")
-	public void AllConceptSources_shouldReturnAllConceptSources() throws Exception {
+	public void AllConceptSources_shouldReturnAllConceptSources() {
 		Assert.assertEquals(dao.getAllConceptSources(true).size(), 5);
 	}
 	
@@ -67,8 +65,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 * @see ConceptDAO#allConceptSources(boolean)
 	 */
 	@Test
-	@Verifies(value = "should return all unretired concept sources", method = "getAllConceptSources(boolean)")
-	public void AllConceptSources_shouldReturnAllUnretiredConceptSources() throws Exception {
+	public void AllConceptSources_shouldReturnAllUnretiredConceptSources() {
 		Assert.assertEquals(dao.getAllConceptSources(false).size(), 3);
 	}
 	
@@ -76,8 +73,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 * @see ConceptDAO#isConceptMapTypeInUse(ConceptMapType)
 	 */
 	@Test
-	@Verifies(value = "should return true if a mapType has a conceptMap or more using it", method = "isConceptMapTypeInUse(ConceptMapType)")
-	public void isConceptMapTypeInUse_shouldReturnTrueIfAMapTypeHasAConceptMapOrMoreUsingIt() throws Exception {
+	public void isConceptMapTypeInUse_shouldReturnTrueIfAMapTypeHasAConceptMapOrMoreUsingIt() {
 		Assert.assertTrue(dao.isConceptMapTypeInUse(Context.getConceptService().getConceptMapType(6)));
 	}
 	
@@ -85,8 +81,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 * @see ConceptDAO#isConceptMapTypeInUse(ConceptMapType)
 	 */
 	@Test
-	@Verifies(value = "should return true if a mapType has a conceptReferenceTermMap or more using it", method = "isConceptMapTypeInUse(ConceptMapType)")
-	public void isConceptMapTypeInUse_shouldReturnTrueIfAMapTypeHasAConceptReferenceTermMapOrMoreUsingIt() throws Exception {
+	public void isConceptMapTypeInUse_shouldReturnTrueIfAMapTypeHasAConceptReferenceTermMapOrMoreUsingIt() {
 		Assert.assertTrue(dao.isConceptMapTypeInUse(Context.getConceptService().getConceptMapType(4)));
 	}
 	
@@ -94,8 +89,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 * @see ConceptDAO#isConceptReferenceTermInUse(ConceptReferenceTerm)
 	 */
 	@Test
-	@Verifies(value = "should return true if a term has a conceptMap or more using it", method = "isConceptReferenceTermInUse(ConceptReferenceTerm)")
-	public void isConceptReferenceTermInUse_shouldReturnTrueIfATermHasAConceptMapOrMoreUsingIt() throws Exception {
+	public void isConceptReferenceTermInUse_shouldReturnTrueIfATermHasAConceptMapOrMoreUsingIt() {
 		Assert.assertTrue(dao.isConceptReferenceTermInUse(Context.getConceptService().getConceptReferenceTerm(10)));
 	}
 	
@@ -103,9 +97,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 * @see ConceptDAO#isConceptReferenceTermInUse(ConceptReferenceTerm)
 	 */
 	@Test
-	@Verifies(value = "should return true if a term has a conceptReferenceTermMap or more using it", method = "isConceptReferenceTermInUse(ConceptReferenceTerm)")
 	public void isConceptReferenceTermInUse_shouldReturnTrueIfATermHasAConceptReferenceTermMapOrMoreUsingIt()
-	        throws Exception {
+	{
 		Assert.assertTrue(dao.isConceptReferenceTermInUse(Context.getConceptService().getConceptReferenceTerm(2)));
 	}
 	
@@ -113,8 +106,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 * @see ConceptDAO#isConceptMapTypeInUse(ConceptMapType)
 	 */
 	@Test
-	@Verifies(value = "should return false if a mapType has no maps using it", method = "isConceptMapTypeInUse(ConceptMapType)")
-	public void isConceptMapTypeInUse_shouldReturnFalseIfAMapTypeHasNoMapsUsingIt() throws Exception {
+	public void isConceptMapTypeInUse_shouldReturnFalseIfAMapTypeHasNoMapsUsingIt() {
 		Assert.assertFalse(dao.isConceptMapTypeInUse(Context.getConceptService().getConceptMapType(3)));
 	}
 	
@@ -122,14 +114,12 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 * @see ConceptDAO#isConceptReferenceTermInUse(ConceptReferenceTerm)
 	 */
 	@Test
-	@Verifies(value = "should return false if a term has no maps using it", method = "isConceptReferenceTermInUse(ConceptReferenceTerm)")
-	public void isConceptReferenceTermInUse_shouldReturnFalseIfATermHasNoMapsUsingIt() throws Exception {
+	public void isConceptReferenceTermInUse_shouldReturnFalseIfATermHasNoMapsUsingIt() {
 		Assert.assertFalse(dao.isConceptReferenceTermInUse(Context.getConceptService().getConceptReferenceTerm(11)));
 	}
 	
 	@Test
-	@Verifies(value = "should purge concept", method = "purgeConcept")
-	public void purgeConcept_shouldPurgeConcept() throws Exception {
+	public void purgeConcept_shouldPurgeConcept() {
 		Concept concept = dao.getConcept(11);
 		dao.purgeConcept(concept);
 		
@@ -141,8 +131,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	 *      ConceptDAO#getConcepts(String,Locale,null,List<QConceptClass;>,List<QConceptDatatype;>)}
 	 */
 	@Test
-	@Verifies(value = "should not return concepts with matching names that are voided", method = "getConcepts(String,Locale,null,List<QConceptClass;>,List<QConceptDatatype;>)")
-	public void getConcepts_shouldNotReturnConceptsWithMatchingNamesThatAreVoided() throws Exception {
+	public void getConcepts_shouldNotReturnConceptsWithMatchingNamesThatAreVoided() {
 		Concept concept = dao.getConcept(7);
 		updateSearchIndex();
 		List<Concept> concepts = dao.getConcepts("VOIDED", null, false, new ArrayList<ConceptClass>(),
@@ -152,10 +141,9 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptDAO#getConceptsByAnswer(Concept)
-	 * @verifies return concepts for the given answer concept
 	 */
 	@Test
-	public void getConceptsByAnswer_shouldReturnConceptsForTheGivenAnswerConcept() throws Exception {
+	public void getConceptsByAnswer_shouldReturnConceptsForTheGivenAnswerConcept() {
 		Concept concept = dao.getConcept(22);
 		List<Concept> conceptsByAnswer = dao.getConceptsByAnswer(concept);
 		Assert.assertNotNull(conceptsByAnswer);
@@ -172,8 +160,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	@Ignore
-	@Verifies(value = "should return correct results for concept with names that contains words with more weight", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
-	public void getConcepts_shouldReturnCorrectResultsForConceptWithNamesThatContainsWordsWithMoreWeight() throws Exception {
+	public void getConcepts_shouldReturnCorrectResultsForConceptWithNamesThatContainsWordsWithMoreWeight() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
 		Concept conceptWithMultipleMatchingNames = dao.getConcept(3000);
 		//recalculate the weights just in case the logic for calculating the weights is changed
@@ -199,8 +186,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	@Ignore
-	@Verifies(value = "should return correct results if a concept name contains same word more than once", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
-	public void getConcepts_shouldReturnCorrectResultsIfAConceptNameContainsSameWordMoreThanOnce() throws Exception {
+	public void getConcepts_shouldReturnCorrectResultsIfAConceptNameContainsSameWordMoreThanOnce() {
 		ConceptService cs = Context.getConceptService();
 		ConceptClass cc = cs.getConceptClass(1);
 		Locale locale = Locale.ENGLISH;

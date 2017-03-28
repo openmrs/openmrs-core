@@ -17,10 +17,9 @@ public class EncounterTypeEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see EncounterTypeEditor#setAsText(String)
-	 * @verifies set using id
 	 */
 	@Test
-	public void setAsText_shouldSetUsingId() throws Exception {
+	public void setAsText_shouldSetUsingId() {
 		EncounterTypeEditor editor = new EncounterTypeEditor();
 		editor.setAsText("1");
 		Assert.assertNotNull(editor.getValue());
@@ -28,10 +27,9 @@ public class EncounterTypeEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see EncounterTypeEditor#setAsText(String)
-	 * @verifies set using uuid
 	 */
 	@Test
-	public void setAsText_shouldSetUsingUuid() throws Exception {
+	public void setAsText_shouldSetUsingUuid() {
 		EncounterTypeEditor editor = new EncounterTypeEditor();
 		editor.setAsText("61ae96f4-6afe-4351-b6f8-cd4fc383cce1");
 		Assert.assertNotNull(editor.getValue());

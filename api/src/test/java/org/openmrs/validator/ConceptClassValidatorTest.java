@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.ConceptClass;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -26,8 +25,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if user is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfUserIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfUserIsNullOrEmptyOrWhitespace() {
 		ConceptClass cc = new ConceptClass();
 		cc.setName(null);
 		cc.setDescription("some text");
@@ -48,8 +46,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() {
 		ConceptClass cc = new ConceptClass();
 		cc.setName("name");
 		cc.setDescription(null);
@@ -74,8 +71,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		ConceptClass cc = new ConceptClass();
 		cc.setName("name");
 		cc.setDescription("some text");
@@ -90,8 +86,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if concept class name is already exist", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfConceptClassNameAlreadyExist() throws Exception {
+	public void validate_shouldFailValidationIfConceptClassNameAlreadyExist() {
 		ConceptClass cc = new ConceptClass();
 		cc.setName("Test");
 		cc.setDescription("some text");
@@ -106,8 +101,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		ConceptClass cc = new ConceptClass();
 		cc.setName("name");
 		cc.setDescription("some text");
@@ -123,8 +117,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ConceptClass cc = new ConceptClass();
 		cc
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

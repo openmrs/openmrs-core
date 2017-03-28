@@ -12,7 +12,6 @@ package org.openmrs.web.filter.update.util;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openmrs.test.Verifies;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 
@@ -26,8 +25,7 @@ public class FilterUtilTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	@Ignore
-	@Verifies(value = "should store locale", method = "storeLocale(String)")
-	public void storeLocale_shouldStoreLocale() throws Exception {
+	public void storeLocale_shouldStoreLocale() {
 		FilterUtil.storeLocale("it");
 	}
 	
@@ -36,8 +34,7 @@ public class FilterUtilTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	@Ignore
-	@Verifies(value = "should restore locale", method = "restoreLocale(String)")
-	public void storeLocale_shouldRestoreLocale() throws Exception {
+	public void storeLocale_shouldRestoreLocale() {
 		FilterUtil.storeLocale("it");
 		Assert.assertEquals("it", FilterUtil.restoreLocale(FilterUtil.ADMIN_USERNAME));
 	}

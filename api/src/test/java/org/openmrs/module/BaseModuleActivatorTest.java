@@ -30,7 +30,7 @@ public abstract class BaseModuleActivatorTest extends BaseContextSensitiveTest {
 	protected ModuleTestData moduleTestData;
 	
 	@Before
-	public void beforeEachTest() throws Exception {
+	public void beforeEachTest() {
 		moduleTestData = ModuleTestData.getInstance();
 		
 		ModuleUtil.shutdown();

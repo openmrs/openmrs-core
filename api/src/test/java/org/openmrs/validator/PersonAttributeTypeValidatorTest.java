@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -26,7 +25,6 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if name is null", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfNameIsNull() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
 		
@@ -40,7 +38,6 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if name already in use", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfNameAlreadyInUse() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setName("Birthplace");
@@ -55,7 +52,6 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if all fields are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfAllFieldsAreCorreect() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setName("Zodiac");
@@ -72,7 +68,6 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if format is empty", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFormatIsEmpty() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setName("Zodiac");
@@ -88,7 +83,6 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setName("name");
@@ -113,7 +107,6 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setName("name");
@@ -130,7 +123,6 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
 		type

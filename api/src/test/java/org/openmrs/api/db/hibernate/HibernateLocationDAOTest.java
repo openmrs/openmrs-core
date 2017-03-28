@@ -20,7 +20,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.LocationTag;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class HibernateLocationDAOTest extends BaseContextSensitiveTest {
@@ -31,28 +30,27 @@ public class HibernateLocationDAOTest extends BaseContextSensitiveTest {
 	private static final String LOC_INITIAL_DATA_XML = "org/openmrs/api/include/LocationServiceTest-initialData.xml";
 	
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		executeDataSet(LOC_INITIAL_DATA_XML);
 	}
 	
 	@Test
-	@Verifies(value = "get locations having all tags", method = "getLocationsHavingAllTags(List<LocationTag>)")
-	public void getLocationsHavingAllTags_shouldGetLocationsHavingAllTags() throws Exception {
-		List<LocationTag> list1 = new ArrayList<LocationTag>();
+	public void getLocationsHavingAllTags_shouldGetLocationsHavingAllTags() {
+		List<LocationTag> list1 = new ArrayList<>();
 		list1.add(dao.getLocationTag(1));
 		list1.add(dao.getLocationTag(2));
 		
-		List<LocationTag> list2 = new ArrayList<LocationTag>();
+		List<LocationTag> list2 = new ArrayList<>();
 		list2.add(dao.getLocationTag(3));
 		list2.add(dao.getLocationTag(4));
 		
-		List<LocationTag> list3 = new ArrayList<LocationTag>();
+		List<LocationTag> list3 = new ArrayList<>();
 		list3.add(dao.getLocationTag(1));
 		list3.add(dao.getLocationTag(2));
 		list3.add(dao.getLocationTag(3));
 		list3.add(dao.getLocationTag(4));
 		
-		List<LocationTag> list4 = new ArrayList<LocationTag>();
+		List<LocationTag> list4 = new ArrayList<>();
 		list4.add(dao.getLocationTag(4));
 		
 		assertEquals(1, dao.getLocationsHavingAllTags(list1).size());
@@ -62,16 +60,14 @@ public class HibernateLocationDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "return empty list when no location has the given tags", method = "getLocationsHavingAllTags(List<LocationTag>)")
-	public void getLocationsHavingAllTags_shouldReturnEmptyListWhenNoLocationHasTheGivenTags() throws Exception {
+	public void getLocationsHavingAllTags_shouldReturnEmptyListWhenNoLocationHasTheGivenTags() {
 		Assert.assertEquals(0, dao.getLocationsHavingAllTags(
 		    Collections.singletonList(dao.getLocationTagByName("Nobody got this tag"))).size());
 	}
 	
 	@Test
-	@Verifies(value = "ignore null values in location tag list", method = "getLocationsHavingAllTags(List<LocationTag>)")
-	public void getLocationsHavingAllTags_shouldIgnoreNullValuesInLocationTagList() throws Exception {
-		List<LocationTag> list1 = new ArrayList<LocationTag>();
+	public void getLocationsHavingAllTags_shouldIgnoreNullValuesInLocationTagList() {
+		List<LocationTag> list1 = new ArrayList<>();
 		list1.add(dao.getLocationTag(1));
 		list1.add(dao.getLocationTag(2));
 		list1.add(null);

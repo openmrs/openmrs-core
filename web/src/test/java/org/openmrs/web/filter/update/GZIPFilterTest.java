@@ -30,7 +30,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
 import org.openmrs.web.filter.GZIPFilter;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -45,7 +44,6 @@ public class GZIPFilterTest extends BaseWebContextSensitiveTest {
 	 * @see org.openmrs.web.filter.GZIPFilter#doFilterInternal(HttpServletRequest,HttpServletResponse, javax.servlet.FilterChain)
 	 */
 	@Test
-	@Verifies(value = "zip request and response", method = "performGZIPRequest(HttpServletRequest,HttpServletResponse,FilterChain)")
 	public void zipRequestWrapperTest_shouldReturnTrueIfUnzippedContentReadFromWrapperIsTheSameAsContentBeforeZipping()
 	        throws Exception {
 		GlobalProperty property = new GlobalProperty("gzip.acceptCompressedRequestsForPaths", ".*");

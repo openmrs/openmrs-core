@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
  	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
 
 	@Before
-	public void getPersonDAO() throws Exception {
+	public void getPersonDAO() {
 		executeDataSet(PEOPLE_FROM_THE_SHIRE_XML);
 
 		updateSearchIndex();
@@ -68,11 +69,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by null
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetNoOneByNull() throws Exception {
+	public void getPeople_shouldGetNoOneByNull() {
 		List<Person> people = hibernatePersonDAO.getPeople(null, false);
 		logPeople(people);
 		
@@ -80,11 +80,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get every one except Voided by empty string
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetEveryOneExceptVoidedByEmptyString() throws Exception {
+	public void getPeople_shouldGetEveryOneExceptVoidedByEmptyString() {
 		List<Person> people = hibernatePersonDAO.getPeople("", false);
 		logPeople(people);
 		
@@ -102,11 +101,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get every one by empty string
 	 * @see HibernatePersonDAO#getPeople(String, Boolean, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetEveryOneByEmptyStringIncludingVoided() throws Exception {
+	public void getPeople_shouldGetEveryOneByEmptyStringIncludingVoided() {
 		List<Person> people = hibernatePersonDAO.getPeople("", false, true);
 		logPeople(people);
 		assertPeopleContainPersonID(people, 42);
@@ -120,11 +118,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies no voided people should be returned
 	 * @see HibernatePersonDAO#getPeople(String, Boolean, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldNotGetVoided() throws Exception {
+	public void getPeople_shouldNotGetVoided() {
 		List<Person> people = hibernatePersonDAO.getPeople("", false, false);
 		logPeople(people);
 		for (Person p : people)
@@ -141,11 +138,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by non-existing attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetNoOneByNonexistingAttribute() throws Exception {
+	public void getPeople_shouldGetNoOneByNonexistingAttribute() {
 		Assert.assertFalse(personAttributeHelper.personAttributeExists("Wizard"));
 		
 		List<Person> people = hibernatePersonDAO.getPeople("Wizard", false);
@@ -155,11 +151,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by non-searchable attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetNoOneByNonsearchableAttribute() throws Exception {
+	public void getPeople_shouldGetNoOneByNonsearchableAttribute() {
 		Assert.assertTrue(personAttributeHelper.nonSearchablePersonAttributeExists("Porridge with honey"));
 		
 		List<Person> people = hibernatePersonDAO.getPeople("Porridge honey", false);
@@ -169,11 +164,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by voided attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetNoOneByVoidedAttribute() throws Exception {
+	public void getPeople_shouldGetNoOneByVoidedAttribute() {
 		Assert.assertTrue(personAttributeHelper.voidedPersonAttributeExists("Master thief"));
 		
 		List<Person> people = hibernatePersonDAO.getPeople("Master thief", false);
@@ -183,11 +177,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetOnePersonByAttribute() throws Exception {
+	public void getPeople_shouldGetOnePersonByAttribute() {
 		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
@@ -200,11 +193,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by random case attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetOnePersonByRandomCaseAttribute() throws Exception {
+	public void getPeople_shouldGetOnePersonByRandomCaseAttribute() {
 		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
@@ -217,11 +209,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by searching for a mix of attribute and voided attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetOnePersonBySearchingForAMixOfAttributeAndVoidedAttribute() throws Exception {
+	public void getPeople_shouldGetOnePersonBySearchingForAMixOfAttributeAndVoidedAttribute() {
 		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
@@ -236,11 +227,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by single attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetMultiplePeopleBySingleAttribute() throws Exception {
+	public void getPeople_shouldGetMultiplePeopleBySingleAttribute() {
 		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Senior ring bearer"));
@@ -255,11 +245,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by multiple attributes
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetMultiplePeopleByMultipleAttributes() throws Exception {
+	public void getPeople_shouldGetMultiplePeopleByMultipleAttributes() {
 		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Senior ring bearer"));
@@ -275,11 +264,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by non-existing name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetNoOneByNonexistingName() throws Exception {
+	public void getPeople_shouldGetNoOneByNonexistingName() {
 		List<Person> people = hibernatePersonDAO.getPeople("Gandalf", false);
 		logPeople(people);
 		
@@ -287,11 +275,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetOnePersonByName() throws Exception {
+	public void getPeople_shouldGetOnePersonByName() {
 		List<Person> people = hibernatePersonDAO.getPeople("Bilbo", false);
 		logPeople(people);
 		
@@ -300,11 +287,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by random case name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetOnePersonByRandomCaseName() throws Exception {
+	public void getPeople_shouldGetOnePersonByRandomCaseName() {
 		List<Person> people = hibernatePersonDAO.getPeople("fRoDo", false);
 		logPeople(people);
 		
@@ -313,11 +299,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by single name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetMultiplePeopleBySingleName() throws Exception {
+	public void getPeople_shouldGetMultiplePeopleBySingleName() {
 		List<Person> people = hibernatePersonDAO.getPeople("Baggins", false);
 		logPeople(people);
 		
@@ -329,11 +314,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by multiple names
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetMultiplePeopleByMultipleNames() throws Exception {
+	public void getPeople_shouldGetMultiplePeopleByMultipleNames() {
 		List<Person> people = hibernatePersonDAO.getPeople("Bilbo Frodo", false);
 		logPeople(people);
 		
@@ -345,11 +329,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 
     /**
-	 * @verifies get no one by non-existing name and non-existing attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetNoOneByNonexistingNameAndNonexistingAttribute() throws Exception {
+	public void getPeople_shouldGetNoOneByNonexistingNameAndNonexistingAttribute() {
 		Assert.assertFalse(personAttributeHelper.personAttributeExists("Wizard"));
 		
 		List<Person> people = hibernatePersonDAO.getPeople("Gandalf Wizard", false);
@@ -359,11 +342,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by non-existing name and non-searchable attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetNoOneByNonexistingNameAndNonsearchableAttribute() throws Exception {
+	public void getPeople_shouldGetNoOneByNonexistingNameAndNonsearchableAttribute() {
 		Assert.assertTrue(personAttributeHelper.nonSearchablePersonAttributeExists("Mushroom pie"));
 		List<Person> people = hibernatePersonDAO.getPeople("Gandalf Mushroom pie", false);
 		logPeople(people);
@@ -372,11 +354,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by non-existing name and voided attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetNoOneByNonexistingNameAndVoidedAttribute() throws Exception {
+	public void getPeople_shouldGetNoOneByNonexistingNameAndVoidedAttribute() {
 		Assert.assertTrue(personAttributeHelper.voidedPersonAttributeExists("Master Thief"));
 		List<Person> people = hibernatePersonDAO.getPeople("Gandalf Master Thief", false);
 		logPeople(people);
@@ -385,11 +366,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by name and attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetOnePersonByNameAndAttribute() throws Exception {
+	public void getPeople_shouldGetOnePersonByNameAndAttribute() {
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
 		List<Person> people = hibernatePersonDAO.getPeople("Bilbo Story Teller", false);
 		logPeople(people);
@@ -399,11 +379,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by name and voided attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetOnePersonByNameAndVoidedAttribute() throws Exception {
+	public void getPeople_shouldGetOnePersonByNameAndVoidedAttribute() {
 		Assert.assertTrue(personAttributeHelper.voidedPersonAttributeExists("Master Thief"));
 		List<Person> people = hibernatePersonDAO.getPeople("Frodo Master Thief", false);
 		logPeople(people);
@@ -413,11 +392,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by name and attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetMultiplePeopleByNameAndAttribute() throws Exception {
+	public void getPeople_shouldGetMultiplePeopleByNameAndAttribute() {
 		List<Person> people = hibernatePersonDAO
 		        .getPeople(
 		            "Bilbo Baggins Story Teller Master Thief Porridge Honey Frodo Baggins Ring Bearer Mushroom Pie Gandalf Wizard Beer",
@@ -431,11 +409,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by given name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetOnePersonByGivenName() throws Exception {
+	public void getPeople_shouldGetOnePersonByGivenName() {
 		List<Person> people = hibernatePersonDAO.getPeople("bravo", false);
 		logPeople(people);
 		
@@ -444,11 +421,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by given name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetMultiplePeopleByGivenName() throws Exception {
+	public void getPeople_shouldGetMultiplePeopleByGivenName() {
 		List<Person> people = hibernatePersonDAO.getPeople("alpha", false);
 		logPeople(people);
 		
@@ -459,11 +435,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by middle name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetOnePersonByMiddleName() throws Exception {
+	public void getPeople_shouldGetOnePersonByMiddleName() {
 		List<Person> people = hibernatePersonDAO.getPeople("echo", false);
 		logPeople(people);
 		
@@ -472,11 +447,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by middle name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetMultiplePeopleByMiddleName() throws Exception {
+	public void getPeople_shouldGetMultiplePeopleByMiddleName() {
 		List<Person> people = hibernatePersonDAO.getPeople("foxtrot", false);
 		logPeople(people);
 		
@@ -487,11 +461,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by family name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetOnePersonByFamilyName() throws Exception {
+	public void getPeople_shouldGetOnePersonByFamilyName() {
 		List<Person> people = hibernatePersonDAO.getPeople("lima", false);
 		logPeople(people);
 		
@@ -500,11 +473,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by family name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetMultiplePeopleByFamilyName() throws Exception {
+	public void getPeople_shouldGetMultiplePeopleByFamilyName() {
 		List<Person> people = hibernatePersonDAO.getPeople("kilo", false);
 		logPeople(people);
 		
@@ -515,11 +487,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by family name2
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetOnePersonByFamilyName2() throws Exception {
+	public void getPeople_shouldGetOnePersonByFamilyName2() {
 		List<Person> people = hibernatePersonDAO.getPeople("mike", false);
 		logPeople(people);
 		
@@ -528,11 +499,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by family name2
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetMultiplePeopleByFamilyName2() throws Exception {
+	public void getPeople_shouldGetMultiplePeopleByFamilyName2() {
 		List<Person> people = hibernatePersonDAO.getPeople("papa", false);
 		logPeople(people);
 		
@@ -543,11 +513,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get one person by multiple name parts
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetOnePersonByMultipleNameParts() throws Exception {
+	public void getPeople_shouldGetOnePersonByMultipleNameParts() {
 		List<Person> people = hibernatePersonDAO.getPeople("echo india mike", false);
 		logPeople(people);
 		
@@ -556,11 +525,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple people by multiple name parts
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetMultiplePeopleByMultipleNameParts() throws Exception {
+	public void getPeople_shouldGetMultiplePeopleByMultipleNameParts() {
 		List<Person> people = hibernatePersonDAO.getPeople("bravo delta golf juliet mike ", false);
 		logPeople(people);
 		
@@ -568,11 +536,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get no one by voided name
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetNoOneByVoidedName() throws Exception {
+	public void getPeople_shouldGetNoOneByVoidedName() {
 		List<Person> people = hibernatePersonDAO.getPeople("voided-delta", false);
 		logPeople(people);
 		
@@ -580,11 +547,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get voided person when voided=true is passed
 	 * @see HibernatePersonDAO#getPeople(String, Boolean, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetVoidedByVoidedNameWhenVoidedIsTrue() throws Exception {
+	public void getPeople_shouldGetVoidedByVoidedNameWhenVoidedIsTrue() {
 		List<Person> people = hibernatePersonDAO.getPeople("voided-bravo", false, true);
 		logPeople(people);
 		
@@ -592,11 +558,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get voided person
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldNotGetVoidedPerson() throws Exception {
+	public void getPeople_shouldNotGetVoidedPerson() {
 		List<Person> people = hibernatePersonDAO.getPeople("voided-bravo", false);
 		logPeople(people);
 		
@@ -604,11 +569,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not get dead person
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldNotGetDeadPerson() throws Exception {
+	public void getPeople_shouldNotGetDeadPerson() {
 		List<Person> people = hibernatePersonDAO.getPeople("dead-charlie", false);
 		logPeople(people);
 		
@@ -616,11 +580,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get single dead person
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetSingleDeadPerson() throws Exception {
+	public void getPeople_shouldGetSingleDeadPerson() {
 		List<Person> people = hibernatePersonDAO.getPeople("dead-charlie", true);
 		logPeople(people);
 		
@@ -629,11 +592,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get multiple dead people
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetMultipleDeadPeople() throws Exception {
+	public void getPeople_shouldGetMultipleDeadPeople() {
 		List<Person> people = hibernatePersonDAO.getPeople("dead-papa", true);
 		logPeople(people);
 		
@@ -644,11 +606,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies obey attribute match mode
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldObeyAttributeMatchMode() throws Exception {
+	public void getPeople_shouldObeyAttributeMatchMode() {
 		// exact match mode
 		long patientCount = hibernatePersonDAO.getPeople("337-4820", false).size();
 		Assert.assertEquals(1, patientCount);
@@ -664,7 +625,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void savePerson_shouldSavePersonWithBirthDateTime() throws Exception {
+	public void savePerson_shouldSavePersonWithBirthDateTime() throws ParseException {
 		Person person = new Person();
 		person.setBirthtime(new SimpleDateFormat("HH:mm:ss").parse("15:23:56"));
 		person.setBirthdate(new SimpleDateFormat("yyyy-MM-dd").parse("2012-05-29"));

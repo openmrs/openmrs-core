@@ -25,7 +25,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateSerializedObjectDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.StartModule;
-import org.openmrs.test.Verifies;
 
 /**
  * This class tests the {@link SerializedObjectDAO} linked to from the Context. Currently that file
@@ -57,7 +56,6 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return the saved object", method = "getObject(Class, Integer)")
 	public void getObject_shouldReturnTheSavedObject() throws Exception {
 		Program data = dao.getObject(Program.class, 1);
 		assertEquals(data.getId().intValue(), 1);
@@ -65,7 +63,6 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return the saved object", method = "getObjectByUuid(Class, String)")
 	public void getObjectByUuid_shouldReturnTheSavedObject() throws Exception {
 		Program data = dao.getObjectByUuid(Program.class, "83b452ca-a4c8-4bf2-9e0b-8bbddf2f9901");
 		assertEquals(data.getId().intValue(), 2);
@@ -73,7 +70,6 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should save the passed object if supported", method = "saveObject(OpenmrsObject)")
 	public void saveObject_shouldSaveThePassedObjectIfSupported() throws Exception {
 		Program data = new Program();
 		data.setName("NewProgram");
@@ -87,7 +83,6 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should set auditable fields before serializing", method = "saveObject(OpenmrsObject)")
 	public void saveObject_shouldSetAuditableFieldsBeforeSerializing() throws Exception {
 		Program data = new Program();
 		data.setName("NewProgram");
@@ -101,7 +96,6 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = DAOException.class)
-	@Verifies(value = "should throw an exception if object not supported", method = "saveObject(OpenmrsObject)")
 	public void saveObject_shouldThrowAnExceptionIfObjectNotSupported() throws Exception {
 		dao.unregisterSupportedType(Program.class);
 		Program data = new Program();
@@ -111,14 +105,12 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return all saved objects of the passed type", method = "getAllObjects(Class)")
 	public void getAllObjects_shouldReturnAllSavedObjectsOfThePassedType() throws Exception {
 		List<Program> l = dao.getAllObjects(Program.class);
 		assertEquals(2, l.size());
 	}
 	
 	@Test
-	@Verifies(value = "should return only non-retired objects of the passed type if not includeRetired", method = "getAllObjects(Class, boolean)")
 	public void getAllObjects_shouldReturnOnlyNonRetiredObjectsOfThePassedTypeIfNotIncludeRetired() throws Exception {
 		List<Program> l = dao.getAllObjects(Program.class, false);
 		assertEquals(2, l.size());
@@ -127,7 +119,6 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return all saved objects with the given type and exact name", method = "getAllObjectsByName(Class, String, boolean)")
 	public void getAllObjects_shouldReturnAllSavedObjectsWithTheGivenTypeAndExactName() throws Exception {
 		List<Program> l = dao.getAllObjectsByName(Program.class, "TestProgram", true);
 		assertEquals(1, l.size());
@@ -135,14 +126,12 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return all saved objects with the given type and partial name", method = "getAllObjectsByName(Class, String, boolean)")
 	public void getAllObjects_shouldReturnAllSavedObjectsWithTheGivenTypeAndPartialName() throws Exception {
 		List<Program> l = dao.getAllObjectsByName(Program.class, "TestProgram", false);
 		assertEquals(3, l.size());
 	}
 	
 	@Test
-	@Verifies(value = "should delete the object with the passed id", method = "purgeObject(Integer)")
 	public void purgeObject_shouldDeleteTheObjectWithThePassedId() throws Exception {
 		List<Program> l = dao.getAllObjects(Program.class);
 		assertEquals(2, l.size());

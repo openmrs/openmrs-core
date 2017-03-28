@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
-import org.openmrs.test.Verifies;
 
 /**
  * This test class (should) contain tests for all of the {@link UserByNameComparator} methods.
@@ -33,7 +32,6 @@ public class UserByNameComparatorTest {
 	 * @see UserByNameComparator#compare(User,User)
 	 */
 	@Test
-	@Verifies(value = "should sort users by personNames", method = "compare(User,User)")
 	public void compare_shouldSortUsersByPersonNames() throws Exception {
 		
 		Person person1 = new Person();

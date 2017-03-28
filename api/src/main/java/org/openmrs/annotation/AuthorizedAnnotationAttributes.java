@@ -61,8 +61,8 @@ public class AuthorizedAnnotationAttributes {
 	 * @param target The target method
 	 * @return Collection of <code>SecurityConfig</code>
 	 */
-	public Collection getAttributes(Class target) {
-		Set<String> attributes = new HashSet<String>();
+	public Collection<String> getAttributes(Class<?> target) {
+		Set<String> attributes = new HashSet<>();
 		for (Annotation annotation : target.getAnnotations()) {
 			// check for Secured annotations
 			if (annotation instanceof Authorized) {
@@ -82,8 +82,8 @@ public class AuthorizedAnnotationAttributes {
 	 * @param method The target method
 	 * @return Collection of <code>SecurityConfig</code>
 	 */
-	public Collection getAttributes(Method method) {
-		Set<String> attributes = new HashSet<String>();
+	public Collection<String> getAttributes(Method method) {
+		Set<String> attributes = new HashSet<>();
 		
 		for (Annotation annotation : method.getAnnotations()) {
 			// check for Secured annotations
@@ -106,7 +106,7 @@ public class AuthorizedAnnotationAttributes {
 	 * @return boolean true/false whether to "and" privileges together
 	 * @see org.openmrs.annotation.Authorized#requireAll()
 	 */
-	public boolean getRequireAll(Class target) {
+	public boolean getRequireAll(Class<?> target) {
 		for (Annotation annotation : target.getAnnotations()) {
 			// check for Secured annotations
 			if (annotation instanceof Authorized) {
@@ -153,19 +153,19 @@ public class AuthorizedAnnotationAttributes {
 		return false;
 	}
 	
-	public Collection getAttributes(Class clazz, Class filter) {
+	public Collection<?> getAttributes(Class<?> clazz, Class<?> filter) {
 		throw new UnsupportedOperationException("Unsupported operation");
 	}
 	
-	public Collection getAttributes(Method method, Class clazz) {
+	public Collection<?> getAttributes(Method method, Class<?> clazz) {
 		throw new UnsupportedOperationException("Unsupported operation");
 	}
 	
-	public Collection getAttributes(Field field) {
+	public Collection<?> getAttributes(Field field) {
 		throw new UnsupportedOperationException("Unsupported operation");
 	}
 	
-	public Collection getAttributes(Field field, Class clazz) {
+	public Collection<?> getAttributes(Field field, Class<?> clazz) {
 		throw new UnsupportedOperationException("Unsupported operation");
 	}
 	

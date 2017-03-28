@@ -16,7 +16,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Test;
-import org.openmrs.test.Verifies;
 
 /**
  *
@@ -30,7 +29,6 @@ public class PresentationMessageMapTest {
 	 * @see PresentationMessageMap#put(String,PresentationMessage)
 	 */
 	@Test
-	@Verifies(value = "should should ignore non matching locale messages", method = "put(String,PresentationMessage)")
 	public void put_shouldShouldIgnoreNonMatchingLocaleMessages() throws Exception {
 		PresentationMessageMap testPmm = new PresentationMessageMap(Locale.ENGLISH);
 		testPmm.put("right_locale", MockPresentationMessage.createMockPresentationMessage("en"));
@@ -46,7 +44,6 @@ public class PresentationMessageMapTest {
 	 * @see PresentationMessageMap#putAll(Map<PresentationMessage>)
 	 */
 	@Test
-	@Verifies(value = "should filter out non matching locale messages from batch add", method = "putAll(Map<PresentationMessage>)")
 	public void putAll_shouldFilterOutNonMatchingLocaleMessagesFromBatchAdd() throws Exception {
 		Map<String, PresentationMessage> mockMessageMap = new HashMap<String, PresentationMessage>();
 		mockMessageMap.put("right_locale", MockPresentationMessage.createMockPresentationMessage("en"));

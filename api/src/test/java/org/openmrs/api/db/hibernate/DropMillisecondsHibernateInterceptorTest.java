@@ -32,7 +32,7 @@ public class DropMillisecondsHibernateInterceptorTest extends BaseContextSensiti
 	PersonService personService;
 
 	@Test
-	public void shouldClearMillisecondsWhenSavingANewObject() throws Exception {
+	public void shouldClearMillisecondsWhenSavingANewObject() {
 		Date dateWithMillisecond = new Date(567l);
 		Date dateWithoutMillisecond = new Date(0l);
 
@@ -48,7 +48,7 @@ public class DropMillisecondsHibernateInterceptorTest extends BaseContextSensiti
 	}
 
 	@Test
-	public void shouldClearMillisecondsWhenUpdatingAnExistingObject() throws Exception {
+	public void shouldClearMillisecondsWhenUpdatingAnExistingObject() {
 		Date dateWithMillisecond = new Date(567l);
 		Date dateWithoutMillisecond = new Date(0l);
 
