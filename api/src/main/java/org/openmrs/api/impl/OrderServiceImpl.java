@@ -9,19 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import static org.openmrs.Order.Action.DISCONTINUE;
-import static org.openmrs.Order.Action.REVISE;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
-
 import org.apache.commons.lang.time.DateUtils;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.CareSetting;
@@ -63,6 +50,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+
+import static org.openmrs.Order.Action.DISCONTINUE;
+import static org.openmrs.Order.Action.REVISE;
 
 /**
  * Default implementation of the Order-related services class. This method should not be invoked by
@@ -789,10 +789,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) throws APIException {
-		if (orderFrequency.getOrderFrequencyId() != null) {
-			if (dao.isOrderFrequencyInUse(orderFrequency)) {
-				throw new CannotUpdateObjectInUseException("Order.frequency.cannot.edit");
-			}
+		if (orderFrequency.getOrderFrequencyId() != null && dao.isOrderFrequencyInUse(orderFrequency)) {
+			throw new CannotUpdateObjectInUseException("Order.frequency.cannot.edit");
 		}
 		
 		return dao.saveOrderFrequency(orderFrequency);

@@ -9,25 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.ConceptSource;
 import org.openmrs.GlobalProperty;
@@ -53,6 +34,25 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
+
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Default implementation of the administration services. This class should not be used on its own.
@@ -267,34 +267,30 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws APIException {
 		// only try to save it if the global property has a key
-		if (gp.getProperty() != null && gp.getProperty().length() > 0) {
+		if (gp.getProperty() != null && gp.getPropertyValue() != null && gp.getProperty().length() > 0) {
 			if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST)) {
-				if (gp.getPropertyValue() != null) {
-					List<Locale> localeList = new ArrayList<Locale>();
-					
-					for (String localeString : gp.getPropertyValue().split(",")) {
-						localeList.add(LocaleUtility.fromSpecification(localeString.trim()));
-					}
-					if (!localeList.contains(LocaleUtility.getDefaultLocale())) {
-						gp.setPropertyValue(StringUtils.join(getAllowedLocales(), ", "));
-						throw new APIException(Context.getMessageSourceService().getMessage(
-						    "general.locale.localeListNotIncludingDefaultLocale",
-						    new Object[] { LocaleUtility.getDefaultLocale() }, null));
-					}
+				List<Locale> localeList = new ArrayList<Locale>();
+
+				for (String localeString : gp.getPropertyValue().split(",")) {
+					localeList.add(LocaleUtility.fromSpecification(localeString.trim()));
+				}
+				if (!localeList.contains(LocaleUtility.getDefaultLocale())) {
+					gp.setPropertyValue(StringUtils.join(getAllowedLocales(), ", "));
+					throw new APIException(Context.getMessageSourceService().getMessage(
+							"general.locale.localeListNotIncludingDefaultLocale",
+							new Object[] { LocaleUtility.getDefaultLocale() }, null));
 				}
 			} else if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE)) {
-				if (gp.getPropertyValue() != null) {
-					List<Locale> localeList = getAllowedLocales();
-					
-					if (!localeList.contains(LocaleUtility.fromSpecification(gp.getPropertyValue().trim()))) {
-						String value = gp.getPropertyValue();
-						gp.setPropertyValue(LocaleUtility.getDefaultLocale().toString());
-						throw new APIException((Context.getMessageSourceService().getMessage(
-						    "general.locale.defaultNotInAllowedLocalesList", new Object[] { value }, null)));
-					}
+				List<Locale> localeList = getAllowedLocales();
+
+				if (!localeList.contains(LocaleUtility.fromSpecification(gp.getPropertyValue().trim()))) {
+					String value = gp.getPropertyValue();
+					gp.setPropertyValue(LocaleUtility.getDefaultLocale().toString());
+					throw new APIException((Context.getMessageSourceService().getMessage(
+							"general.locale.defaultNotInAllowedLocalesList", new Object[] { value }, null)));
 				}
 			}
-			
+
 			CustomDatatypeUtil.saveIfDirty(gp);
 			dao.saveGlobalProperty(gp);
 			notifyGlobalPropertyChange(gp);

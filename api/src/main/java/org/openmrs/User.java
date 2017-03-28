@@ -9,6 +9,15 @@
  */
 package org.openmrs;
 
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.RoleConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,15 +28,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.openmrs.api.context.Context;
-import org.openmrs.util.LocaleUtility;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.util.RoleConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Defines a User Account in the system. This account belongs to a {@link Person} in the system,
@@ -136,10 +136,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	 *         user is a superUser
 	 */
 	public boolean hasRole(String r, boolean ignoreSuperUser) {
-		if (!ignoreSuperUser) {
-			if (isSuperUser()) {
-				return true;
-			}
+		if (!ignoreSuperUser && isSuperUser()) {
+			return true;
 		}
 		
 		if (roles == null) {
