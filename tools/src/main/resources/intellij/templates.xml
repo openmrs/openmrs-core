@@ -1,5 +1,5 @@
 <templateSet group="OpenMRS">
-  <template name="test" value="@Test&#10;public void $SHOULD_SENTENCE$() throws Exception {&#10;    $END$&#10;}" description="OpenMRS Style JUnit 4 Test" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+  <template name="test" value="@Test&#10;public void $SHOULD_SENTENCE$() {&#10;    $END$&#10;}" description="OpenMRS Style JUnit 4 Test" toReformat="true" toShortenFQNames="true" useStaticImport="true">
     <variable name="SHOULD_SENTENCE" expression="" defaultValue="" alwaysStopAt="true" />
     <context>
       <option name="JAVA_DECLARATION" value="true" />
@@ -78,7 +78,7 @@
       <option name="JAVA_STATEMENT" value="true" />
     </context>
   </template>
-  <template name="testException" value="@Test&#10;public void $SHOULD_FAIL_SENTENCE$() throws Exception {&#10;&#9;$EXPECT$.expect($EXCEPTION$);&#10;&#9;$EXPECT$.expectMessage(&quot;$EXCEPTION_MESSAGE$&quot;);&#10;    $END$&#10;}" description="OpenMRS Style JUnit 4 Test for exception" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+  <template name="testException" value="@Test&#10;public void $SHOULD_FAIL_SENTENCE$() {&#10;&#9;$EXPECT$.expect($EXCEPTION$);&#10;&#9;$EXPECT$.expectMessage(&quot;$EXCEPTION_MESSAGE$&quot;);&#10;    $END$&#10;}" description="OpenMRS Style JUnit 4 Test for exception" toReformat="true" toShortenFQNames="true" useStaticImport="true">
     <variable name="SHOULD_FAIL_SENTENCE" expression="" defaultValue="" alwaysStopAt="true" />
     <variable name="EXPECT" expression="variableOfType(&quot;org.junit.rules.ExpectedException&quot;)" defaultValue="" alwaysStopAt="true" />
     <variable name="EXCEPTION" expression="" defaultValue="" alwaysStopAt="true" />
