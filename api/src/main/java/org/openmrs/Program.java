@@ -192,7 +192,8 @@ public class Program extends BaseOpenmrsMetadata {
 	}
 	
 	public void setAllWorkflows(Set<ProgramWorkflow> allWorkflows) {
-		this.allWorkflows = new HashSet<ProgramWorkflow>(allWorkflows);
+		this.allWorkflows.clear();
+		this.allWorkflows.addAll(allWorkflows);
 	}
 	
 	/**
