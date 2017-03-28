@@ -14,7 +14,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Patient;
@@ -29,18 +32,53 @@ import org.springframework.validation.Errors;
  */
 public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
+	private EncounterValidator encounterValidator;
+	
+	private Encounter encounter;
+	
+	private Errors errors;
+	
+	@Before
+	public void setUp() {
+		encounterValidator = new EncounterValidator();
+		
+		encounter = new Encounter();
+		
+		errors = new BindException(encounter, "encounter");
+	}
+	
+	@Test
+	public void shouldFailIfGivenNull() {
+		
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("The parameter obj should not be null and must be of type " + Encounter.class);
+		encounterValidator.validate(null, errors);
+	}
+	
+	@Test
+	public void shouldFailIfGivenInstanceOfOtherClassThanEncounter() {
+		
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("The parameter obj should not be null and must be of type " + Encounter.class);
+		encounterValidator.validate(new Patient(), errors);
+	}
+	
 	/**
 	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
 	public void validate_shouldFailIfThePatientsForTheVisitAndTheEncounterDontMatch() {
-		Encounter encounter = new Encounter();
+		
 		encounter.setPatient(new Patient(2));
 		Visit visit = new Visit();
 		visit.setPatient(new Patient(3));
 		encounter.setVisit(visit);
-		Errors errors = new BindException(encounter, "encounter");
-		new EncounterValidator().validate(encounter, errors);
+		
+		encounterValidator.validate(encounter, errors);
+		
 		Assert.assertEquals("Encounter.visit.patients.dontMatch", errors.getFieldError("visit").getCode());
 	}
 	
@@ -49,12 +87,13 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailIfTheVisitHasNoPatient() {
-		Encounter encounter = new Encounter();
+		
 		encounter.setPatient(new Patient(2));
 		Visit visit = new Visit();
 		encounter.setVisit(visit);
-		Errors errors = new BindException(encounter, "encounter");
-		new EncounterValidator().validate(encounter, errors);
+		
+		encounterValidator.validate(encounter, errors);
+		
 		Assert.assertEquals("Encounter.visit.patients.dontMatch", errors.getFieldError("visit").getCode());
 	}
 	
@@ -63,9 +102,9 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailIfPatientIsNotSet() {
-		Encounter encounter = new Encounter();
-		Errors errors = new BindException(encounter, "encounter");
-		new EncounterValidator().validate(encounter, errors);
+		
+		encounterValidator.validate(encounter, errors);
+		
 		Assert.assertTrue(errors.hasFieldErrors("patient"));
 	}
 	
@@ -74,18 +113,18 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailIfEncounterDateTimeIsBeforeVisitStartDateTime() {
-		Visit visit = Context.getVisitService().getVisit(1);
 		
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		Visit visit = Context.getVisitService().getVisit(1);
 		visit.setPatient(encounter.getPatient());
 		encounter.setVisit(visit);
-		
 		//Set encounter dateTime to before the visit startDateTime.
 		Date date = new Date(visit.getStartDatetime().getTime() - 1);
 		encounter.setEncounterDatetime(date);
+		errors = new BindException(encounter, "encounter");
 		
-		Errors errors = new BindException(encounter, "encounter");
-		new EncounterValidator().validate(encounter, errors);
+		encounterValidator.validate(encounter, errors);
+		
 		Assert.assertEquals(true, errors.hasFieldErrors("encounterDatetime"));
 	}
 	
@@ -94,19 +133,19 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailIfEncounterDateTimeIsAfterVisitStopDateTime() {
-		Visit visit = Context.getVisitService().getVisit(1);
 		
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		Visit visit = Context.getVisitService().getVisit(1);
 		visit.setPatient(encounter.getPatient());
 		encounter.setVisit(visit);
-		
 		//Set encounter dateTime to after the visit stopDateTime.
 		visit.setStopDatetime(new Date());
 		Date date = new Date(visit.getStopDatetime().getTime() + 1);
 		encounter.setEncounterDatetime(date);
+		errors = new BindException(encounter, "encounter");
 		
-		Errors errors = new BindException(encounter, "encounter");
-		new EncounterValidator().validate(encounter, errors);
+		encounterValidator.validate(encounter, errors);
+		
 		Assert.assertEquals(true, errors.hasFieldErrors("encounterDatetime"));
 	}
 	
@@ -117,15 +156,15 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailIfEncounterDateTimeIsAfterCurrentDateTime() {
 		
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
-		
 		//Set encounter dateTime after the current dateTime.
 		Calendar calendar = new GregorianCalendar();
 		calendar.add(Calendar.DAY_OF_YEAR, 1);
 		Date tomorrowDate = calendar.getTime();
 		encounter.setEncounterDatetime(tomorrowDate);
+		errors = new BindException(encounter, "encounter");
 		
-		Errors errors = new BindException(encounter, "encounter");
-		new EncounterValidator().validate(encounter, errors);
+		encounterValidator.validate(encounter, errors);
+		
 		Assert.assertEquals(true, errors.hasFieldErrors("encounterDatetime"));
 	}
 	
@@ -135,10 +174,8 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailIfEncounterDateTimeIsNotSet() {
 		
-		Encounter encounter = new Encounter();
+		encounterValidator.validate(encounter, errors);
 		
-		Errors errors = new BindException(encounter, "encounter");
-		new EncounterValidator().validate(encounter, errors);
 		Assert.assertTrue(errors.hasFieldErrors("encounterDatetime"));
 	}
 	
@@ -147,9 +184,9 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailIfEncounterTypeIsNotSet() {
-		Encounter encounter = new Encounter();
-		Errors errors = new BindException(encounter, "encounter");
-		new EncounterValidator().validate(encounter, errors);
+		
+		encounterValidator.validate(encounter, errors);
+		
 		Assert.assertTrue(errors.hasFieldErrors("encounterType"));
 	}
 	
@@ -158,13 +195,14 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
-		Encounter encounter = new Encounter();
+		
 		encounter.setEncounterType(new EncounterType());
 		encounter.setPatient(new Patient());
 		encounter.setEncounterDatetime(new Date());
 		encounter.setVoidReason("voidReason");
-		Errors errors = new BindException(encounter, "encounter");
-		new EncounterValidator().validate(encounter, errors);
+		
+		encounterValidator.validate(encounter, errors);
+		
 		Assert.assertFalse(errors.hasErrors());
 	}
 	
@@ -173,14 +211,15 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
-		Encounter encounter = new Encounter();
+		
 		encounter.setEncounterType(new EncounterType());
 		encounter.setPatient(new Patient());
 		encounter.setEncounterDatetime(new Date());
 		encounter
 		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		Errors errors = new BindException(encounter, "encounter");
-		new EncounterValidator().validate(encounter, errors);
+		
+		encounterValidator.validate(encounter, errors);
+		
 		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 }
