@@ -25,27 +25,27 @@ public class HttpUrlTest {
 	ExpectedException exception = ExpectedException.none();
 	
 	@Test
-	public void constructor_shouldNotThrowExceptionIfItIsAnHttpUrl() throws Exception {
+	public void constructor_shouldNotThrowExceptionIfItIsAnHttpUrl() throws MalformedURLException {
 		HttpUrl url = new HttpUrl("http://something");
 		assertThat(url, notNullValue());
 	}
 	
 	@Test
-	public void constructor_shouldThrowMalformedUrlExceptionIfTheUrlDoesNotHaveHttp() throws Exception {
+	public void constructor_shouldThrowMalformedUrlExceptionIfTheUrlDoesNotHaveHttp() throws MalformedURLException {
 		exception.expect(MalformedURLException.class);
 		exception.expectMessage("Not a valid http url");
 		new HttpUrl("not_http");
 	}
 	
 	@Test
-	public void constructor_shouldNotAllowNullUrls() throws Exception {
+	public void constructor_shouldNotAllowNullUrls() throws MalformedURLException {
 		exception.expect(MalformedURLException.class);
 		exception.expectMessage("Url cannot be null");
 		new HttpUrl(null);
 	}
 	
 	@Test
-	public void toString_shouldReturnUrl() throws Exception {
+	public void toString_shouldReturnUrl() throws MalformedURLException {
 		assertThat(new HttpUrl("http://something").toString(), is("http://something"));
 	}
 }

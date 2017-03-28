@@ -66,7 +66,6 @@ public class UserTest {
 	}
 	
 	/**
-	 * @verifies be case insensitive
 	 * @see User#containsRole(String)
 	 */
 	@Test
@@ -77,7 +76,6 @@ public class UserTest {
 	}
 	
 	/**
-	 * @verifies return true if the user has the given role
 	 * @see User#containsRole(String)
 	 */
 	@Test
@@ -87,7 +85,6 @@ public class UserTest {
 	}
 	
 	/**
-	 * @verifies return false if the user does not have the given role
 	 * @see User#containsRole(String)
 	 */
 	@Test

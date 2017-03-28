@@ -23,7 +23,6 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 	 * Simplified test.
 	 * 
 	 * @see PatientIdentifierTypeDefaultComparator#compare(PatientIdentifierType,PatientIdentifierType)
-	 * @verifies order properly
 	 */
 	@Test
 	public void compare_shouldOrderProperly() throws Exception {

@@ -464,17 +464,33 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			// log.debug("searching for user by name");
 			try {
 				List<User> users = Context.getUserService().getUsersByName(givenName,familyName,true);
-				if( users == null) {
-					log.error(getFindingUserErrorMessage(idNumber, familyName, givenName) + ": User not found");
-					return null;
-				}
-				else if( users.size() == 1){
+				if (users.size() == 1) {
 					return users.get(0).getUserId();
 				}
-				else{
+				else if (users.size() > 1) {
 					//Return null if that user ambiguous
 					log.error(getFindingUserErrorMessage(idNumber, familyName, givenName) + ": Found " + users.size() + " ambiguous users.");
 					return null;
+				}
+				else { // size == 0
+					// legacy behavior is looking up by username
+					StringBuilder username = new StringBuilder();
+					if (familyName != null) {
+						username.append(familyName);
+					}
+					if (givenName != null) {
+						if (username.length() > 0) {
+							username.append(" "); // separate names with a space
+						}
+						username.append(givenName);
+					}
+					User user = Context.getUserService().getUserByUsername(username.toString());
+					
+					if (user == null) {
+						log.error(getFindingUserErrorMessage(idNumber, familyName, givenName) + ": User not found");
+						return null;
+					}
+					return user.getUserId();
 				}
 			}
 			catch (Exception e) {

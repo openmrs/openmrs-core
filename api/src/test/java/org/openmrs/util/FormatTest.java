@@ -18,7 +18,6 @@ import org.junit.Test;
 public class FormatTest {
 
     /**
-     * @verifies that all arguments can be null
      * @see Format#format(Date, Locale, Format.FORMAT_TYPE)
      */
     @Test
@@ -27,7 +26,6 @@ public class FormatTest {
     }
 
     /**
-     * @verifies that the date and locale arguments can be null
      * @see Format#format(Date, Locale, Format.FORMAT_TYPE)
      */
     @Test
@@ -36,7 +34,6 @@ public class FormatTest {
     }
 
     /**
-     * @verifies that the type and locale arguments can be null
      * @see Format#format(Date, Locale, Format.FORMAT_TYPE)
      */
     @Test
@@ -45,7 +42,6 @@ public class FormatTest {
     }
 
     /**
-     * @verifies that the locale argument can be null
      * @see Format#format(Date, Locale, Format.FORMAT_TYPE)
      */
     @Test
@@ -54,7 +50,6 @@ public class FormatTest {
     }
 
     /**
-     * @verifies that the date and type arguments can be null
      * @see Format#format(Date, Locale, Format.FORMAT_TYPE)
      */
     @Test
@@ -63,7 +58,6 @@ public class FormatTest {
     }
 
     /**
-     * @verifies that the date argument can be null
      * @see Format#format(Date, Locale, Format.FORMAT_TYPE)
      */
     @Test
@@ -72,7 +66,6 @@ public class FormatTest {
     }
 
     /**
-     * @verifies that the type argument can be null
      * @see Format#format(Date, Locale, Format.FORMAT_TYPE)
      */
     @Test
@@ -81,7 +74,6 @@ public class FormatTest {
     }
 
     /**
-     * @verifies that with non-null arguments, the method returns the correct date
      * @see Format#format(Date, Locale, Format.FORMAT_TYPE)
      */
     @Test

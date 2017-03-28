@@ -25,7 +25,6 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.Validator;
@@ -50,8 +49,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
-	@Verifies(value = "should not authenticate with null password", method = "authenticate(String,String)")
-	public void authenticate_shouldNotAuthenticateWithNullPassword() throws Exception {
+	public void authenticate_shouldNotAuthenticateWithNullPassword() {
 		Context.authenticate("some username", null);
 	}
 	
@@ -59,8 +57,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
-	@Verifies(value = "should not authenticate with null password and proper system id", method = "authenticate(String,String)")
-	public void authenticate_shouldNotAuthenticateWithNullPasswordAndProperSystemId() throws Exception {
+	public void authenticate_shouldNotAuthenticateWithNullPasswordAndProperSystemId() {
 		Context.authenticate("1-8", null);
 	}
 	
@@ -68,8 +65,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
-	@Verifies(value = "should not authenticate with null password and proper username", method = "authenticate(String,String)")
-	public void authenticate_shouldNotAuthenticateWithNullPasswordAndProperUsername() throws Exception {
+	public void authenticate_shouldNotAuthenticateWithNullPasswordAndProperUsername() {
 		Context.authenticate("admin", null);
 	}
 	
@@ -77,8 +73,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
-	@Verifies(value = "should not authenticate with null username", method = "authenticate(String,String)")
-	public void authenticate_shouldNotAuthenticateWithNullUsername() throws Exception {
+	public void authenticate_shouldNotAuthenticateWithNullUsername() {
 		Context.authenticate(null, "some password");
 	}
 	
@@ -86,8 +81,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
-	@Verifies(value = "should not authenticate with null username and password", method = "authenticate(String,String)")
-	public void authenticate_shouldNotAuthenticateWithNullUsernameAndPassword() throws Exception {
+	public void authenticate_shouldNotAuthenticateWithNullUsernameAndPassword() {
 		Context.authenticate(null, null);
 	}
 	
@@ -95,8 +89,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#getLocale()
 	 */
 	@Test
-	@Verifies(value = "should not fail if session hasnt been opened", method = "getLocale()")
-	public void getLocale_shouldNotFailIfSessionHasntBeenOpened() throws Exception {
+	public void getLocale_shouldNotFailIfSessionHasntBeenOpened() {
 		Context.closeSession();
 		Assert.assertEquals(LocaleUtility.getDefaultLocale(), Context.getLocale());
 	}
@@ -105,8 +98,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#getUserContext()
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should fail if session hasnt been opened", method = "getUserContext()")
-	public void getUserContext_shouldFailIfSessionHasntBeenOpened() throws Exception {
+	public void getUserContext_shouldFailIfSessionHasntBeenOpened() {
 		Context.closeSession();
 		Context.getUserContext(); // trigger the api exception
 	}
@@ -115,8 +107,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#logout()
 	 */
 	@Test
-	@Verifies(value = "should not fail if session hasnt been opened yet", method = "logout()")
-	public void logout_shouldNotFailIfSessionHasntBeenOpenedYet() throws Exception {
+	public void logout_shouldNotFailIfSessionHasntBeenOpenedYet() {
 		Context.closeSession();
 		Context.logout();
 	}
@@ -125,8 +116,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#isSessionOpen()
 	 */
 	@Test
-	@Verifies(value = "should return true if session is closed", method = "isSessionOpen()")
-	public void isSessionOpen_shouldReturnTrueIfSessionIsClosed() throws Exception {
+	public void isSessionOpen_shouldReturnTrueIfSessionIsClosed() {
 		Assert.assertTrue(Context.isSessionOpen());
 		Context.closeSession();
 		Assert.assertFalse(Context.isSessionOpen());
@@ -136,8 +126,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#refreshAuthenticatedUser()
 	 */
 	@Test
-	@Verifies(value = "should get fresh values from the database", method = "refreshAuthenticatedUser()")
-	public void refreshAuthenticatedUser_shouldGetFreshValuesFromTheDatabase() throws Exception {
+	public void refreshAuthenticatedUser_shouldGetFreshValuesFromTheDatabase() {
 		User evictedUser = Context.getAuthenticatedUser();
 		Context.evictFromSession(evictedUser);
 		
@@ -158,8 +147,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#getRegisteredComponents(Class)
 	 */
 	@Test
-	@Verifies(value = "should return a list of all registered beans of the passed type", method = "getRegisteredComponents(Class)")
-	public void getRegisteredComponents_shouldReturnAListOfAllRegisteredBeansOfThePassedType() throws Exception {
+	public void getRegisteredComponents_shouldReturnAListOfAllRegisteredBeansOfThePassedType() {
 		List<Validator> validators = Context.getRegisteredComponents(Validator.class);
 		Assert.assertTrue(validators.size() > 0);
 		Assert.assertTrue(Validator.class.isAssignableFrom(validators.iterator().next().getClass()));
@@ -169,8 +157,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#getRegisteredComponents(Class)
 	 */
 	@Test
-	@Verifies(value = "should return an empty list if no beans have been registered of the passed type", method = "getRegisteredComponents(Class)")
-	public void getRegisteredComponents_shouldReturnAnEmptyListIfNoBeansHaveBeenRegisteredOfThePassedType() throws Exception {
+	public void getRegisteredComponents_shouldReturnAnEmptyListIfNoBeansHaveBeenRegisteredOfThePassedType() {
 		List<Location> l = Context.getRegisteredComponents(Location.class);
 		Assert.assertNotNull(l);
 		Assert.assertEquals(0, l.size());
@@ -180,8 +167,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#getRegisteredComponent(String,Class)
 	 */
 	@Test
-	@Verifies(value = "return bean of the correct type", method = "getRegisteredComponent(String, Class)")
-	public void getRegisteredComponent_shouldReturnBeanHaveBeenRegisteredOfThePassedTypeAndName() throws Exception {
+	public void getRegisteredComponent_shouldReturnBeanHaveBeenRegisteredOfThePassedTypeAndName() {
 		
 		EncounterVisitHandler registeredComponent = Context.getRegisteredComponent("existingOrNewVisitAssignmentHandler",
 		    EncounterVisitHandler.class);
@@ -193,9 +179,8 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#getRegisteredComponent(String, Class)
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "fail for bean with the given type but different name", method = "getRegisteredComponent(String, Class)")
 	public void getRegisteredComponent_shouldFailIfBeanHaveBeenREgisteredOfThePassedTypeAndNameDoesntExist()
-	        throws Exception {
+	{
 		
 		Context.getRegisteredComponent("invalidBeanName", EncounterVisitHandler.class);
 		
@@ -209,8 +194,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#getService(Class)
 	 */
 	@Test
-	@Verifies(value = "should return the same object when called multiple times for the same class", method = "getService(Class)")
-	public void getService_shouldReturnTheSameObjectWhenCalledMultipleTimesForTheSameClass() throws Exception {
+	public void getService_shouldReturnTheSameObjectWhenCalledMultipleTimesForTheSameClass() {
 		PatientService ps1 = Context.getService(PatientService.class);
 		PatientService ps2 = Context.getService(PatientService.class);
 		Assert.assertTrue(ps1 == ps2);
@@ -220,8 +204,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * @see Context#becomeUser(String)
 	 */
 	@Test
-	@Verifies(value = "change locale when become another user", method = "becomeUser(String)")
-	public void becomeUser_shouldChangeLocaleWhenBecomeAnotherUser() throws Exception {
+	public void becomeUser_shouldChangeLocaleWhenBecomeAnotherUser() {
 		UserService userService = Context.getUserService();
 		
 		User user = new User(new Person());
@@ -240,7 +223,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldUpdateUserLocaleToTheContext() throws Exception {
+	public void shouldUpdateUserLocaleToTheContext() {
 		//Logged in with en_GB locale by default
 		Assert.assertEquals("en_GB", Context.getLocale().toString());
 		UserService userService = Context.getUserService();

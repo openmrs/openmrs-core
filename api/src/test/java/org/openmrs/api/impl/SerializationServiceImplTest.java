@@ -18,7 +18,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openmrs.serialization.OpenmrsSerializer;
 import org.openmrs.serialization.SerializationException;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests the {@link SerializationServiceImpl} class
@@ -44,7 +43,6 @@ public class SerializationServiceImplTest {
 	 * @see SerializationServiceImpl#setSerializers(List<OpenmrsSerializer>)
 	 */
 	@Test
-	@Verifies(value = "should not reset serializers list when called multiple times", method = "setSerializers(List<+QOpenmrsSerializer;>)")
 	public void setSerializers_shouldNotResetSerializersListWhenCalledMultipleTimes() throws Exception {
 		SerializationServiceImpl ssi = new SerializationServiceImpl();
 		Assert.assertEquals(0, ssi.getSerializers().size());

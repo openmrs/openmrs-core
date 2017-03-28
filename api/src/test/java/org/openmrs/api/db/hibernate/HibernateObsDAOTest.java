@@ -20,7 +20,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Obs;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests for {@link org.openmrs.api.db.hibernate.HibernateObsDAO}
@@ -32,7 +31,7 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 	private SessionFactory sessionFactory = null;
 	
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		if (dao == null)
 			// fetch the dao from the spring application context
 			dao = (HibernateObsDAO) applicationContext.getBean("obsDAO");
@@ -41,12 +40,10 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies the order of the fetched Obs is proper according to the specified sort options
 	 * @see org.openmrs.api.db.hibernate.HibernateObsDAO#getObservations(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, Integer, Integer, java.util.Date, java.util.Date, boolean)
 	 */
 	@Test
-	@Verifies(value = "the order of the fetched Obs is proper according to the specified sort options", method = "getObservations(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, Integer, Integer, java.util.Date, java.util.Date, boolean)")
-	public void getObservations_shouldBeOrderedCorrectly() throws Exception {
+	public void getObservations_shouldBeOrderedCorrectly() {
 		Session session = sessionFactory.getCurrentSession();
 		
 		List<Obs> obsListActual;

@@ -15,7 +15,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.Test;
-import org.openmrs.test.Verifies;
 
 public class SchedulerUtilTest {
 	
@@ -25,7 +24,6 @@ public class SchedulerUtilTest {
 	 * @see SchedulerUtil#getNextExecution(TaskDefinition)
 	 */
 	@Test
-	@Verifies(value = "should get the correct repeat interval", method = "getNextExecution(TaskDefinition)")
 	public void getNextExecution_shouldGetTheCorrectRepeatInterval() throws Exception {
 		
 		// Represents the start time of the task (right now)

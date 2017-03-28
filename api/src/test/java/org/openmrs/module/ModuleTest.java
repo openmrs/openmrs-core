@@ -35,7 +35,6 @@ public class ModuleTest {
 	}
 
 	/*
-	 * @verifies throw exception when message is null
 	 * @see Module#setStartupErrorMessage(String)
 	 */
 	@Test(expected = ModuleException.class)
@@ -44,7 +43,6 @@ public class ModuleTest {
 	}
 
 	/*
-	 * @verifies throw exception when throwable is null
 	 * @see Module#setStartupErrorMessage(String, Throwable)
 	 */
 	@Test(expected = ModuleException.class)
@@ -53,7 +51,6 @@ public class ModuleTest {
 	}
 
 	/*
-	 * @verifies set startupErrorMessage when exceptionMessage is null
 	 * @see Module#setStartupErrorMessage(String, Throwable)
 	 */
 	@Test
@@ -68,7 +65,6 @@ public class ModuleTest {
 	}
 
 	/*
-	 * @verifies append the throwable's message to exceptionMessage
  	 * @see Module#setStartupErrorMessage(String, Throwable)
 	 */
 	@Test
@@ -82,7 +78,6 @@ public class ModuleTest {
 	}
 
 	/*
-	 * @verifies set modules when there is a null required modules map
 	 * @see Module#setRequiredModules(List<String>)
 	 */
 	@Test
@@ -109,7 +104,6 @@ public class ModuleTest {
 	}
 
 	/*
-	 * @verifies return null if no required modules exist
 	 * @see Module#getRequiredModuleVersion(String)
 	 */
 	@Test
@@ -122,7 +116,6 @@ public class ModuleTest {
 	}
 
 	/*
-	 * @verifies return null if no required module by given name exists
 	 * @see Module#getRequiredModuleVersion(String)
 	 */
 	@Test
@@ -137,7 +130,6 @@ public class ModuleTest {
 	}
 
 	/*
-	 * @verifies should add module to required modules map
 	 * @see Module#addRequiredModule(String, String)
 	 */
 	@Test
@@ -149,7 +141,6 @@ public class ModuleTest {
 	}
 
 	/*
-	 * @verifies dispose all classInstances, not AdvicePoints
 	 * @see Module#disposeAdvicePointsClassInstance()
 	 */
 	@Test

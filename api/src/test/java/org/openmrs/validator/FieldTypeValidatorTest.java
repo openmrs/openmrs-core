@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.FieldType;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -27,8 +26,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	 * 
 	 */
 	@Test
-	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() {
 		FieldType type = new FieldType();
 		type.setName(null);
 		type.setDescription("Humba humba humba ...");
@@ -53,8 +51,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	 * 
 	 */
 	@Test
-	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		FieldType type = new FieldType();
 		type.setName("soccer");
 		
@@ -68,8 +65,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.validator.FieldTypeValidator#validate(Object, Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if field type name is duplicate", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfFieldTypeNameIsDuplicate() throws Exception {
+	public void validate_shouldFailIfFieldTypeNameIsDuplicate() {
 		FieldType type = new FieldType();
 		type.setName("some field type");
 		
@@ -84,8 +80,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	 *
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		FieldType type = new FieldType();
 		type.setName("soccer");
 		
@@ -100,8 +95,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	 *
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		FieldType type = new FieldType();
 		type.setName("too long text too long text too long text too long text");
 		

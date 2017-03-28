@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.ConceptMapType;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -26,8 +25,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the concept map type name is a duplicate", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheConceptMapTypeNameIsADuplicate() throws Exception {
+	public void validate_shouldFailIfTheConceptMapTypeNameIsADuplicate() {
 		ConceptMapType mapType = new ConceptMapType();
 		mapType.setName("is a");
 		Errors errors = new BindException(mapType, "mapType");
@@ -39,8 +37,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should fail if the concept map type object is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheConceptMapTypeObjectIsNull() throws Exception {
+	public void validate_shouldFailIfTheConceptMapTypeObjectIsNull() {
 		Errors errors = new BindException(new ConceptMapType(), "mapType");
 		new ConceptMapTypeValidator().validate(null, errors);
 	}
@@ -49,8 +46,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the name is a white space character", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheNameIsAWhiteSpaceCharacter() throws Exception {
+	public void validate_shouldFailIfTheNameIsAWhiteSpaceCharacter() {
 		ConceptMapType mapType = new ConceptMapType();
 		mapType.setName(" ");
 		Errors errors = new BindException(mapType, "mapType");
@@ -62,8 +58,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the name is an empty string", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheNameIsAnEmptyString() throws Exception {
+	public void validate_shouldFailIfTheNameIsAnEmptyString() {
 		ConceptMapType mapType = new ConceptMapType();
 		mapType.setName("");
 		Errors errors = new BindException(mapType, "mapType");
@@ -75,8 +70,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the name is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheNameIsNull() throws Exception {
+	public void validate_shouldFailIfTheNameIsNull() {
 		ConceptMapType mapType = new ConceptMapType();
 		Errors errors = new BindException(mapType, "mapType");
 		new ConceptMapTypeValidator().validate(mapType, errors);
@@ -87,8 +81,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "pass if the name is unique amongst all concept map type names", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfTheNameIsUniqueAmongstAllConceptMapTypeNames() throws Exception {
+	public void validate_shouldPassIfTheNameIsUniqueAmongstAllConceptMapTypeNames() {
 		ConceptMapType mapType = new ConceptMapType();
 		mapType.setName("unique-name");
 		Errors errors = new BindException(mapType, "mapType");
@@ -100,8 +93,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		ConceptMapType mapType = new ConceptMapType();
 		mapType.setName("unique-name");
 		mapType.setDescription("Description");
@@ -115,8 +107,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptMapTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ConceptMapType mapType = new ConceptMapType();
 		mapType.setName("unique-name");
 		mapType

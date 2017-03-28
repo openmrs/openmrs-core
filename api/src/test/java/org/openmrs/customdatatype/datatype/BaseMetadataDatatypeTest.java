@@ -18,11 +18,10 @@ import org.openmrs.customdatatype.CustomDatatype;
 public class BaseMetadataDatatypeTest {
 	
 	/**
-	 * @verifies use the name in summary instance
 	 * @see BaseMetadataDatatype#doGetTextSummary(org.openmrs.OpenmrsMetadata)
 	 */
 	@Test
-	public void doGetTextSummary_shouldUseTheNameInSummaryInstance() throws Exception {
+	public void doGetTextSummary_shouldUseTheNameInSummaryInstance() {
 		OpenmrsMetadata location = new Location();
 		String expectedSummary = "some summary";
 		location.setName(expectedSummary);

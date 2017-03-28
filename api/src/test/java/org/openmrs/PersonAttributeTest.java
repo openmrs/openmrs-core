@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests methods on the PersonAttribute class
@@ -24,7 +23,6 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	 * @see PersonAttribute#toString()
 	 */
 	@Test
-	@Verifies(value = "should return toString of hydrated value", method = "toString()")
 	public void toString_shouldReturnToStringOfHydratedValue() throws Exception {
 		// type = CIVIL STATUS, concept = MARRIED
 		PersonAttributeType type = Context.getPersonService().getPersonAttributeType(8);
@@ -36,7 +34,6 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	 * @see PersonAttribute#equalsContent(PersonAttribute)
 	 */
 	@Test
-	@Verifies(value = "should return true if attributeType value and void status are the same", method = "equalsContent(PersonAttribute)")
 	public void equalsContent_shouldReturnTrueIfAttributeTypeValueAndVoidStatusAreTheSame() throws Exception {
 		PersonAttribute pa = new PersonAttribute(2); // a different personAttributeid than below
 		pa.setAttributeType(new PersonAttributeType(1));
@@ -54,7 +51,6 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	 * @see PersonAttribute#getHydratedObject()
 	 */
 	@Test
-	@Verifies(value = "should load class in format property", method = "getHydratedObject()")
 	public void getHydratedObject_shouldLoadClassInFormatProperty() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setFormat("org.openmrs.Concept");
@@ -71,7 +67,6 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	 * @see PersonAttribute#getHydratedObject()
 	 */
 	@Test
-	@Verifies(value = "should load user class in format property", method = "getHydratedObject()")
 	public void getHydratedObject_shouldLoadUserClassInFormatProperty() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setFormat("org.openmrs.User");
@@ -89,7 +84,6 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	 * @see PersonAttribute#getHydratedObject()
 	 */
 	@Test
-	@Verifies(value = "should still load class in format property if not Attributable", method = "getHydratedObject()")
 	public void getHydratedObject_shouldStillLoadClassInFormatPropertyIfNotAttributable() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setFormat("java.lang.String");
@@ -107,7 +101,6 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	 * @see PersonAttribute#voidAttribute(String)
 	 */
 	@Test
-	@Verifies(value = "should set voided bit to true", method = "voidAttribute(String)")
 	public void voidAttribute_shouldSetVoidedBitToTrue() throws Exception {
 		PersonAttribute pa = new PersonAttribute(2);
 		pa.setVoided(false);

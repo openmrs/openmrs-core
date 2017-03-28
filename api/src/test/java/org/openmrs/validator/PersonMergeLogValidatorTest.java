@@ -22,7 +22,6 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PersonMergeLogValidator#validate(Object,Errors)
-	 * @verifies fail validation if personMergeLogData is null
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonMergeLogDataIsNull() throws Exception {
@@ -37,7 +36,6 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PersonMergeLogValidator#validate(Object,Errors)
-	 * @verifies fail validation if winner is null
 	 */
 	@Test
 	public void validate_shouldFailValidationIfWinnerIsNull() throws Exception {
@@ -52,7 +50,6 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PersonMergeLogValidator#validate(Object,Errors)
-	 * @verifies fail validation if loser is null
 	 */
 	@Test
 	public void validate_shouldFailValidationIfLoserIsNull() throws Exception {
@@ -67,7 +64,6 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PersonMergeLogValidator#validate(Object,Errors)
-	 * @verifies pass validation if all fields are correct
 	 */
 	@Test
 	public void validate_shouldPassValidationIfAllFieldsAreCorrect() throws Exception {
@@ -83,7 +79,6 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PersonMergeLogValidator#validate(Object,Errors)
-	 * @verifies pass validation if field lengths are correct
 	 */
 	@Test
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
@@ -102,7 +97,6 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PersonMergeLogValidator#validate(Object,Errors)
-	 * @verifies fail validation if field lengths are not correct
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {

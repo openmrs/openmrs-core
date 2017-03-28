@@ -30,7 +30,6 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * This class should test all methods on the person object.<br>
@@ -316,7 +315,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	 * @see Person#getAge(Date)
 	 */
 	@Test
-	@Verifies(value = "should get age after birthday", method = "getAge(Date)")
 	public void getAge_shouldGetAgeAfterBirthday() throws Exception {
 		Calendar birthdate = Calendar.getInstance();
 		birthdate.set(2006, Calendar.JUNE, 2);
@@ -331,7 +329,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	 * @see Person#getAge(Date)
 	 */
 	@Test
-	@Verifies(value = "should get age before birthday", method = "getAge(Date)")
 	public void getAge_shouldGetAgeBeforeBirthday() throws Exception {
 		Calendar birthdate = Calendar.getInstance();
 		birthdate.set(2006, Calendar.JUNE, 2);
@@ -346,7 +343,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	 * @see Person#getAge(Date)
 	 */
 	@Test
-	@Verifies(value = "should get age on birthday with minutes defined", method = "getAge(Date)")
 	public void getAge_shouldGetAgeOnBirthdayWithMinutesDefined() throws Exception {
 		Calendar birthdate = Calendar.getInstance();
 		birthdate.set(2006, Calendar.JUNE, 2, 9, 9, 9);
@@ -361,7 +357,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	 * @see Person#getAge(Date)
 	 */
 	@Test
-	@Verifies(value = "should get age on birthday with no minutes defined", method = "getAge(Date)")
 	public void getAge_shouldGetAgeOnBirthdayWithNoMinutesDefined() throws Exception {
 		Calendar birthdate = Calendar.getInstance();
 		birthdate.set(2006, Calendar.JUNE, 2);
@@ -376,7 +371,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	 * @see Person#getAge()
 	 */
 	@Test
-	@Verifies(value = "should get age after death", method = "getAge()")
 	public void getAge_shouldGetAgeAfterDeath() throws Exception {
 		Calendar birthdate = Calendar.getInstance();
 		birthdate.set(1990, Calendar.JUNE, 2);
@@ -393,7 +387,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	 * @see Person#getAge(Date)
 	 */
 	@Test
-	@Verifies(value = "should get age with given date after death", method = "getAge(Date)")
 	public void getAge_shouldGetAgeWithGivenDateAfterDeath() throws Exception {
 		Calendar birthdate = Calendar.getInstance();
 		birthdate.set(1990, Calendar.JUNE, 2);
@@ -412,7 +405,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	 * @see Person#getAge(Date)
 	 */
 	@Test
-	@Verifies(value = "should get age with given date before death", method = "getAge(Date)")
 	public void getAge_shouldGetAgeWithGivenDateBeforeDeath() throws Exception {
 		Calendar birthdate = Calendar.getInstance();
 		birthdate.set(1990, Calendar.JUNE, 2);
@@ -431,7 +423,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	 * @see Person#getAge(Date)
 	 */
 	@Test
-	@Verifies(value = "should get age with given date before birth", method = "getAge(Date)")
 	public void getAge_shouldGetAgeWithGivenDateBeforeBirth() throws Exception {
 		Calendar birthdate = Calendar.getInstance();
 		birthdate.set(1990, Calendar.JUNE, 2);
@@ -450,7 +441,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	 * @see Person#addAttribute(PersonAttribute)
 	 */
 	@Test
-	@Verifies(value = "should not save an attribute with a blank string value", method = "addAttribute(PersonAttribute)")
 	public void addAttribute_shouldNotSaveAnAttributeWithABlankStringValue() throws Exception {
 		Person p = new Person();
 		
@@ -471,7 +461,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	 * @see Person#addAttribute(PersonAttribute)
 	 */
 	@Test
-	@Verifies(value = "should not save an attribute with a null value", method = "addAttribute(PersonAttribute)")
 	public void addAttribute_shouldNotSaveAnAttributeWithANullValue() throws Exception {
 		Person p = new Person();
 		
@@ -492,7 +481,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	 * @see Person#addAttribute(PersonAttribute)
 	 */
 	@Test
-	@Verifies(value = "should void old attribute when a null or blank string value is added", method = "addAttribute(PersonAttribute)")
 	public void addAttribute_shouldVoidOldAttributeWhenANullOrBlankStringValueIsAdded() throws Exception {
 		Person p = new Person();
 		
@@ -529,7 +517,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	 * @see Person#addAddress(PersonAddress)
 	 */
 	@Test
-	@Verifies(value = "should not add a person address with blank fields", method = "addAddress(PersonAddress)")
 	public void addAddress_shouldNotAddAPersonAddressWithBlankFields() throws Exception {
 		Person p = new Person();
 		PersonAddress pa1 = new PersonAddress();
@@ -544,7 +531,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Person#getPersonAddress()
-	 * @verifies get not-voided person address if preferred address does not exist
 	 */
 	@Test
 	public void getPersonAddress_shouldGetNotvoidedPersonAddressIfPreferredAddressDoesNotExist() throws Exception {
@@ -563,7 +549,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Person#getPersonAddress()
-	 * @verifies get preferred and not-voided person address if exist
 	 */
 	@Test
 	public void getPersonAddress_shouldGetPreferredAndNotvoidedPersonAddressIfExist() throws Exception {
@@ -584,7 +569,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Person#getPersonAddress()
-	 * @verifies get voided person address if person is voided and not-voided address does not exist
 	 */
 	@Test
 	public void getPersonAddress_shouldGetVoidedPersonAddressIfPersonIsVoidedAndNotvoidedAddressDoesNotExist()
@@ -607,7 +591,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Person#getPersonName()
-	 * @verifies get not-voided person name if preferred address does not exist
 	 */
 	@Test
 	public void getPersonName_shouldGetNotvoidedPersonNameIfPreferredAddressDoesNotExist() throws Exception {
@@ -623,7 +606,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Person#getPersonName()
-	 * @verifies get preferred and not-voided person name if exist
 	 */
 	@Test
 	public void getPersonName_shouldGetPreferredAndNotvoidedPersonNameIfExist() throws Exception {
@@ -640,7 +622,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Person#getPersonName()
-	 * @verifies get voided person address if person is voided and not-voided address does not exist
 	 */
 	@Test
 	public void getPersonName_shouldGetVoidedPersonAddressIfPersonIsVoidedAndNotvoidedAddressDoesNotExist() throws Exception {
@@ -655,7 +636,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Person#getPersonAddress()
-	 * @verifies return null if person is not-voided and have voided address
 	 */
 	@Test
 	public void getPersonAddress_shouldReturnNullIfPersonIsNotvoidedAndHaveVoidedAddress() throws Exception {
@@ -672,7 +652,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Person#getPersonName()
-	 * @verifies return null if person is not-voided and have voided names
 	 */
 	@Test
 	public void getPersonName_shouldReturnNullIfPersonIsNotvoidedAndHaveVoidedNames() throws Exception {
@@ -689,7 +668,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see Person#getBirthDateTime()
-	 * @verifies return birthtime along with birthdate
 	 */
 	@Test
 	public void getBirthDateTime_shouldReturnBirthDateTimeAlongWithBirthdate() throws Exception {
@@ -703,7 +681,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see Person#getBirthDateTime()
-	 * @verifies return null if birthdate is null
 	 */
 	@Test
 	public void getBirthDateTime_shouldReturnNullIfBirthdateIsNull() throws Exception {
@@ -715,7 +692,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see Person#getBirthDateTime()
-	 * @verifies return null if birthtime is null
 	 */
 	@Test
 	public void getBirthDateTime_shouldReturnNullIfBirthtimeIsNull() throws Exception {
@@ -728,7 +704,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see Person#getAttribute(String)
-	 * @verifies get attribute based on String attributename
 	 */
 	@Test
 	public void  getAttribute_shouldPersonAttributeBasedOnAttributeName() throws Exception {
@@ -738,7 +713,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see Person#getAttribute(String)
-	 * @verifies null if all voided, get attribute based on String attributename
 	 */
 	@Test
 	public void  getAttribute_shouldReturnNullIfAttributeNameIsVoided() throws Exception {
@@ -748,7 +722,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see Person#getAttribute(PersonAttributeType)
-	 * @verifies null if all voided
 	 */
 	@Test
 	public void  getAttribute_shouldReturnNullWhenExistingPersonAttributeTypeIsVoided () throws Exception {
@@ -760,7 +733,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see Person#getAttribute(Integer)
-	 * @verifies get attribute based on Integer attributetypeid
 	 */
 	@Test
 	public void  getAttribute_shouldreturnPersonAttributeBasedOnAttributeTypeId() throws Exception {
@@ -770,7 +742,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see Person#getAttribute(Integer)
-	 * @verifies null if all voided, get attribute based on String attributetypeid
 	 */
 	@Test
 	public void  getAttribute_shouldReturnNullWhenExistingPersonAttributeWithMatchingAttributeTypeIdIsVoided() throws Exception {
@@ -780,7 +751,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see Person#getAttributes(String)
-	 * @verifies get attributes based on String attributename
 	 */
 	@Test
 	public void  getAttributes_shouldReturnAllPersonAttributesWithMatchingAttributeTypeNames() throws Exception {
@@ -790,7 +760,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see Person#getAttributes(Integer)
-	 * @verifies get attributes based on Integer attributetypeid
 	 */
 	@Test
 	public void  getAttributes_shouldReturnListOfPersonAttributesBasedOnAttributeTypeId() throws Exception {
@@ -800,7 +769,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see Person#getAttributes(Integer)
-	 * @verifies get attributes based on Integer attributetypeid, null if voided
 	 */
 	@Test
 	public void  getAttributes_shouldReturnEmptyListWhenMatchingPersonAttributeByIdIsVoided() throws Exception {
@@ -917,7 +885,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see Person#Person(Person)
-	 * @verifies deep copy all collections
 	 */
 	@Test
 	public void Person_shouldDeepCopyAllCollections() throws Exception {
@@ -954,7 +921,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 	 * This test covers a regression introduced in the first attempt at TRUNK-4925.
 	 * See https://issues.openmrs.org/browse/TRUNK-4925?focusedCommentId=236916
 	 * @see Person#Person(Person)
-	 * @verifies not fail for a collection element with no primary key assigned
 	 */
 	@Test
 	public void Person_shouldNotFailForACollectionElementWithNoPrimaryKeyAssigned() throws Exception {

@@ -21,7 +21,6 @@ import org.openmrs.Order;
 import org.openmrs.OrderGroup;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -35,7 +34,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	private static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		executeDataSet(ORDER_SET);
 	}
 	
@@ -44,8 +43,7 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	@Verifies(value = "saves the order group ", method = "saveOrderGroup(OrderGroup)")
-	public void saveOrderGroup_shouldSaveOrderGroup() throws Exception {
+	public void saveOrderGroup_shouldSaveOrderGroup() {
 		OrderGroup newOrderGroup = new OrderGroup();
 		
 		final Order order = new OrderBuilder().withAction(Order.Action.NEW).withPatient(7).withConcept(1000)

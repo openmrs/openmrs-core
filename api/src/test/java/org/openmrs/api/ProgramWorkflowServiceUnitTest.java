@@ -19,7 +19,6 @@ import org.mockito.Mockito;
 import org.openmrs.Program;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.api.impl.ProgramWorkflowServiceImpl;
-import org.openmrs.test.Verifies;
 
 /**
  * This class unit tests methods in the ProgramWorkflowService class.
@@ -37,7 +36,6 @@ public class ProgramWorkflowServiceUnitTest {
 	}
 	
 	@Test
-	@Verifies(value = "should call the DAO method getProgramsByName", method = "getProgramByName")
 	public void getProgramByName_shouldCallDaoGetProgramsByName() {
 		ProgramWorkflowDAO mockDao = Mockito.mock(ProgramWorkflowDAO.class);
 		pws.setProgramWorkflowDAO(mockDao);
@@ -47,7 +45,6 @@ public class ProgramWorkflowServiceUnitTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return null when DAO returns an empty list", method = "getProgramByName")
 	public void getProgramByName_shouldReturnNullWhenThereIsNoProgramForGivenName() {
 		ProgramWorkflowDAO mockDao = Mockito.mock(ProgramWorkflowDAO.class);
 		List<Program> noProgramWithGivenName = new ArrayList<Program>();
@@ -58,7 +55,6 @@ public class ProgramWorkflowServiceUnitTest {
 	}
 	
 	@Test(expected = org.openmrs.api.ProgramNameDuplicatedException.class)
-	@Verifies(value = "should fail when two programs found with same name", method = "getProgramByName()")
 	public void getProgramByName_shouldFailWhenTwoProgramsFoundWithSameName() {
 		ProgramWorkflowDAO mockDao = Mockito.mock(ProgramWorkflowDAO.class);
 		List<Program> programsWithGivenName = new ArrayList<Program>();

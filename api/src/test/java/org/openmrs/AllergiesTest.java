@@ -30,7 +30,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 	Allergies allergies;
 	
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		allergies = new Allergies();
 
 		executeDataSet(ALLERGY_OTHER_NONCODED_TEST_DATASET);
@@ -75,7 +75,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldAddAllergyCollectionAndSetCorrectStatus(){
 		Assert.assertEquals(allergies.getAllergyStatus(), Allergies.UNKNOWN);
-		List<Allergy> allergyList = new ArrayList<Allergy>();
+		List<Allergy> allergyList = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {
 			allergyList.add(new Allergy());
 		}
@@ -443,7 +443,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		Allergy allergy2 = new Allergy();
 		allergy2.setAllergen(new Allergen(null, concept, null));
 		
-		List<Allergy> allergies = new ArrayList<Allergy>();
+		List<Allergy> allergies = new ArrayList<>();
 		allergies.add(allergy1);
 		allergies.add(allergy2);
 		
@@ -462,7 +462,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		Allergy allergy2 = new Allergy();
 		allergy2.setAllergen(new Allergen(null, concept, null));
 		
-		List<Allergy> allergies = new ArrayList<Allergy>();
+		List<Allergy> allergies = new ArrayList<>();
 		allergies.add(allergy1);
 		allergies.add(allergy2);
 		
@@ -482,7 +482,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		Allergy allergy2 = new Allergy();
 		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
 		
-		List<Allergy> allergies = new ArrayList<Allergy>();
+		List<Allergy> allergies = new ArrayList<>();
 		allergies.add(allergy1);
 		allergies.add(allergy2);
 		
@@ -502,7 +502,7 @@ public class AllergiesTest extends BaseContextSensitiveTest {
 		Allergy allergy2 = new Allergy();
 		allergy2.setAllergen(new Allergen(null, concept, "OTHER VALUE"));
 		
-		List<Allergy> allergies = new ArrayList<Allergy>();
+		List<Allergy> allergies = new ArrayList<>();
 		allergies.add(allergy1);
 		allergies.add(allergy2);
 		

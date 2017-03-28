@@ -28,7 +28,6 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -37,13 +36,8 @@ import org.springframework.validation.Errors;
  */
 public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	
-	/**
-	 * @verifies {@link ConceptValidator#validate(Object,Errors)} test = should fail if there is a
-	 *           duplicate unretired concept name in the locale
-	 */
 	@Test(expected = DuplicateConceptNameException.class)
-	@Verifies(value = "should fail if there is a duplicate unretired concept name in the locale", method = "validate(Concept)")
-	public void validate_shouldFailIfThereIsADuplicateUnretiredConceptNameInTheLocale() throws Exception {
+	public void validate_shouldFailIfThereIsADuplicateUnretiredConceptNameInTheLocale() {
 		Context.setLocale(new Locale("en", "GB"));
 		Concept concept = Context.getConceptService().getConcept(5497);
 		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
@@ -57,16 +51,14 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should fail if the object parameter is null", method = "validate(Concept)")
-	public void validate_shouldFailIfTheObjectParameterIsNull() throws Exception {
+	public void validate_shouldFailIfTheObjectParameterIsNull() {
 		Errors errors = new BindException(null, "concept");
 		new ConceptValidator().validate(null, errors);
 		Assert.assertTrue(errors.hasErrors());
 	}
 	
 	@Test
-	@Verifies(value = "should pass if the concept is being updated with no name change", method = "validate(Concept)")
-	public void validate_shouldPassIfTheConceptIsBeingUpdatedWithNoNameChange() throws Exception {
+	public void validate_shouldPassIfTheConceptIsBeingUpdatedWithNoNameChange() {
 		
 		Concept conceptToUpdate = Context.getConceptService().getConcept(5497);
 		conceptToUpdate.setCreator(Context.getAuthenticatedUser());
@@ -80,8 +72,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if any name is an empty string", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfAnyNameIsAnEmptyString() throws Exception {
+	public void validate_shouldFailIfAnyNameIsAnEmptyString() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("name", Context.getLocale()));
 		concept.addName(new ConceptName("", Context.getLocale()));
@@ -94,8 +85,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "fail if any name is a null value", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfAnyNameIsANullValue() throws Exception {
+	public void validate_shouldFailIfAnyNameIsANullValue() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("name", Context.getLocale()));
 		concept.addName(new ConceptName(null, Context.getLocale()));
@@ -110,8 +100,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test(expected = DuplicateConceptNameException.class)
-	@Verifies(value = "should fail if any names in the same locale for this concept are similar", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfAnyNamesInTheSameLocaleForThisConceptAreSimilar() throws Exception {
+	public void validate_shouldFailIfAnyNamesInTheSameLocaleForThisConceptAreSimilar() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("same name", Context.getLocale()));
 		concept.addName(new ConceptName("same name", Context.getLocale()));
@@ -128,8 +117,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test(expected = DuplicateConceptNameException.class)
-	@Verifies(value = "should fail if there is a duplicate unretired fully specified name in the same locale", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfThereIsADuplicateUnretiredFullySpecifiedNameInTheSameLocale() throws Exception {
+	public void validate_shouldFailIfThereIsADuplicateUnretiredFullySpecifiedNameInTheSameLocale() {
 		Context.setLocale(new Locale("en", "GB"));
 		Concept concept = Context.getConceptService().getConcept(5497);
 		Assert.assertEquals(true, concept.getFullySpecifiedName(Context.getLocale()).isFullySpecifiedName());
@@ -147,8 +135,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test(expected = DuplicateConceptNameException.class)
-	@Verifies(value = "should fail if there is a duplicate unretired preferred name in the same locale", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfThereIsADuplicateUnretiredPreferredNameInTheSameLocale() throws Exception {
+	public void validate_shouldFailIfThereIsADuplicateUnretiredPreferredNameInTheSameLocale() {
 		Context.setLocale(new Locale("en", "GB"));
 		Concept concept = Context.getConceptService().getConcept(5497);
 		ConceptName preferredName = new ConceptName("preferred name", Context.getLocale());
@@ -167,11 +154,11 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if there is no name explicitly marked as fully specified", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfThereIsNoNameExplicitlyMarkedAsFullySpecified() throws Exception {
+	public void validate_shouldFailIfThereIsNoNameExplicitlyMarkedAsFullySpecified() {
 		Concept concept = Context.getConceptService().getConcept(5497);
-		for (ConceptName name : concept.getNames())
+		for (ConceptName name : concept.getNames()) {
 			name.setConceptNameType(null);
+		}
 		
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
@@ -182,8 +169,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass if the concept has atleast one fully specified name added to it", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfTheConceptHasAtleastOneFullySpecifiedNameAddedToIt() throws Exception {
+	public void validate_shouldPassIfTheConceptHasAtleastOneFullySpecifiedNameAddedToIt() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("one name", Context.getLocale()));
 		concept.addDescription(new ConceptDescription("some description",null));
@@ -198,8 +184,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass if the duplicate ConceptName is neither preferred nor fully Specified", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfTheDuplicateConceptNameIsNeitherPreferredNorFullySpecified() throws Exception {
+	public void validate_shouldPassIfTheDuplicateConceptNameIsNeitherPreferredNorFullySpecified() {
 		Context.setLocale(new Locale("en", "GB"));
 		Concept concept = Context.getConceptService().getConcept(5497);
 		//use a synonym as the duplicate name
@@ -217,8 +202,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass if the concept with a duplicate name is retired", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfTheConceptWithADuplicateNameIsRetired() throws Exception {
+	public void validate_shouldPassIfTheConceptWithADuplicateNameIsRetired() {
 		Context.setLocale(new Locale("en", "GB"));
 		Concept concept = Context.getConceptService().getConcept(5497);
 		concept.setRetired(true);
@@ -234,10 +218,9 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptValidator#validate(Object,Errors)
-	 * @verifies pass if the concept being validated is retired and has a duplicate name
 	 */
 	@Test
-	public void validate_shouldPassIfTheConceptBeingValidatedIsRetiredAndHasADuplicateName() throws Exception {
+	public void validate_shouldPassIfTheConceptBeingValidatedIsRetiredAndHasADuplicateName() {
 		Context.setLocale(new Locale("en", "GB"));
 		Concept concept = Context.getConceptService().getConcept(5497);
 		Context.getConceptService().saveConcept(concept);
@@ -255,8 +238,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass if the concept has a synonym that is also a short name", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfTheConceptHasASynonymThatIsAlsoAShortName() throws Exception {
+	public void validate_shouldPassIfTheConceptHasASynonymThatIsAlsoAShortName() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("CD4", Context.getLocale()));
 		concept.addDescription(new ConceptDescription("some description",null));
@@ -276,8 +258,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if a term is mapped multiple times to the same concept", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfATermIsMappedMultipleTimesToTheSameConcept() throws Exception {
+	public void validate_shouldFailIfATermIsMappedMultipleTimesToTheSameConcept() {
 		Concept concept = new Concept();
 		concept.setConceptClass(new ConceptClass());
 		concept.setDatatype(new ConceptDatatype());
@@ -300,8 +281,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass if the duplicate name in the locale for the concept being validated is voided", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfTheDuplicateNameInTheLocaleForTheConceptBeingValidatedIsVoided() throws Exception {
+	public void validate_shouldPassIfTheDuplicateNameInTheLocaleForTheConceptBeingValidatedIsVoided() {
 		ConceptService cs = Context.getConceptService();
 		ConceptName otherName = cs.getConceptName(1439);
 		//sanity check since names should only be unique amongst preferred and fully specified names
@@ -326,12 +306,10 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptValidator#validate(Object,Errors)
-	 * @verifies fail if there is a duplicate unretired concept name in the same locale different
-	 *           than the system locale
 	 */
 	@Test(expected = DuplicateConceptNameException.class)
 	public void validate_shouldFailIfThereIsADuplicateUnretiredConceptNameInTheSameLocaleDifferentThanTheSystemLocale()
-	        throws Exception {
+	{
 		Context.setLocale(new Locale("pl"));
 		Locale en = new Locale("en", "GB");
 		Concept concept = Context.getConceptService().getConcept(5497);
@@ -348,8 +326,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass for a new concept with a map created with deprecated concept map methods", method = "validate(Object,Errors)")
-	public void validate_shouldPassForANewConceptWithAMapCreatedWithDeprecatedConceptMapMethods() throws Exception {
+	public void validate_shouldPassForANewConceptWithAMapCreatedWithDeprecatedConceptMapMethods() {
 		ConceptService cs = Context.getConceptService();
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("test name", Context.getLocale()));
@@ -367,8 +344,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass for an edited concept with a map created with deprecated concept map methods", method = "validate(Object,Errors)")
-	public void validate_shouldPassForAnEditedConceptWithAMapCreatedWithDeprecatedConceptMapMethods() throws Exception {
+	public void validate_shouldPassForAnEditedConceptWithAMapCreatedWithDeprecatedConceptMapMethods() {
 		ConceptService cs = Context.getConceptService();
 		Concept concept = cs.getConcept(5497);
 		ConceptMap map = new ConceptMap();
@@ -380,10 +356,9 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptValidator#validate(Object,Errors)
-	 * @verifies not fail if a term has two new mappings on it
 	 */
 	@Test
-	public void validate_shouldNotFailIfATermHasTwoNewMappingsOnIt() throws Exception {
+	public void validate_shouldNotFailIfATermHasTwoNewMappingsOnIt() {
 		Concept concept = new Concept();
 		ConceptService cs = Context.getConceptService();
 		concept.addName(new ConceptName("my name", Context.getLocale()));
@@ -406,8 +381,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("CD4", Context.getLocale()));
 		concept.addDescription(new ConceptDescription("some description",null));
@@ -425,8 +399,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("CD4", Context.getLocale()));
 		concept.addDescription(new ConceptDescription("some description",null));
@@ -446,8 +419,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass if fully specified name is the same as short name", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfFullySpecifiedNameIsTheSameAsShortName() throws Exception {
+	public void validate_shouldPassIfFullySpecifiedNameIsTheSameAsShortName() {
 		Concept concept = new Concept();
 		
 		ConceptName conceptFullySpecifiedName = new ConceptName("YES", new Locale("pl"));
@@ -471,8 +443,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass if different concepts have the same short name", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfDifferentConceptsHaveTheSameShortNames() throws Exception {
+	public void validate_shouldPassIfDifferentConceptsHaveTheSameShortNames() {
 		Context.setLocale(new Locale("en", "GB"));
 		
 		List<Concept> concepts = Context.getConceptService().getConceptsByName("HSM");
@@ -502,7 +473,6 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value="should fail if coded concept contains itself as answer ",method = "validate(Object,Errors)")
 	public void validate_shouldFailIfCodedConceptContainsItselfAsAnAnswer() {
 		Concept concept = Context.getConceptService().getConcept(30);
 
@@ -518,8 +488,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 **/
 	@Test
-	@Verifies(value = "not fail if any description is a not entered while creating a new concept ", method = "validate(Object,Errors)")
-	public void validate_shouldNotFailIfAnyDescriptionIsNotEnteredWhileCreatingANewConcept() throws Exception {
+	public void validate_shouldNotFailIfAnyDescriptionIsNotEnteredWhileCreatingANewConcept() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name", Context.getLocale()));
 		Errors errors = new BindException(concept, "concept");
@@ -531,8 +500,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 **/
 	@Test
-	@Verifies(value = "should pass if  none of the concept descriptions is null", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfNoneofTheConceptDescriptionsIsNull() throws Exception {
+	public void validate_shouldPassIfNoneofTheConceptDescriptionsIsNull() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name",Context.getLocale()));
 		concept.addDescription(new ConceptDescription("some description",null));
@@ -547,8 +515,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 **/
 	@Test
-	@Verifies(value = "should not fail if blank concept description is passed", method = "validate(Object,Errors)")
-	public void validate_shouldNotFailIfBlankConceptDescriptionIsPassed() throws Exception {
+	public void validate_shouldNotFailIfBlankConceptDescriptionIsPassed() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name",Context.getLocale()));
 		concept.addDescription(new ConceptDescription("   ",null));
@@ -561,8 +528,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 **/
 	@Test
-	@Verifies(value = "should fail if the concept datatype is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheConceptDatatypeIsNull() throws Exception {
+	public void validate_shouldFailIfTheConceptDatatypeIsNull() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name",Context.getLocale()));
 		concept.addDescription(new ConceptDescription("some description",null));
@@ -576,8 +542,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptValidator#validate(Object,Errors)
 	 **/
 	@Test
-	@Verifies(value = "should fail if the concept class is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheConceptClassIsNull() throws Exception {
+	public void validate_shouldFailIfTheConceptClassIsNull() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name",Context.getLocale()));
 		concept.addDescription(new ConceptDescription("some description",null));

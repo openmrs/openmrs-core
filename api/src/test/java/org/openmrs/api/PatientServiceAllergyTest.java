@@ -51,7 +51,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#getAllergies(Patient)
-	 * @verifies get the allergy list and status
 	 */
 	@Test
 	public void getAllergyByUuid_shouldGetAllergyByUuid() throws Exception {
@@ -61,7 +60,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#getAllergies(Patient)
-	 * @verifies get the allergy list and status
 	 */
 	@Test
 	public void getAllergies_shouldGetTheAllergyListAndStatus() throws Exception {
@@ -86,7 +84,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#setAllergies(Patient,Allergies)
-	 * @verifies save the allergy list and status
 	 */
 	@Test
 	public void setAllergies_shouldSaveTheAllergyListAndStatus() throws Exception {
@@ -115,8 +112,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#setAllergies(Patient,Allergies)
-	 * @verifies void removed allergies and maintain status as see list if some allergies are
-	 *           removed
 	 */
 	@Test
 	public void setAllergies_shouldVoidRemovedAllergiesAndMaintainStatusAsSeeListIfSomeAllergiesAreRemoved()
@@ -150,7 +145,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#setAllergies(Patient,Allergies)
-	 * @verifies void all allergies and set status to unknown if all allergies are removed
 	 */
 	@Test
 	public void setAllergies_shouldVoidAllAllergiesAndSetStatusToUnknownIfAllAllergiesAreRemoved() throws Exception {
@@ -175,8 +169,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#setAllergies(Patient,Allergies)
-	 * @verifies void all allergies and set status to no known allergies if all allergies are
-	 *           removed and status set as such
 	 */
 	@Test
 	public void setAllergies_shouldVoidAllAllergiesAndSetStatusToNoKnownAllergiesIfAllAllergiesAreRemovedAndStatusSetAsSuch()
@@ -204,7 +196,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#setAllergies(Patient,Allergies)
-	 * @verifies set status to no known allergies for patient without allergies
 	 */
 	@Test
 	public void setAllergies_shouldSetStatusToNoKnownAllergiesForPatientWithoutAllergies()
@@ -228,7 +219,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#setAllergies(Patient,Allergies)
-	 * @verifies void allergies with edited comment
 	 */
 	@Test
 	public void setAllergies_shouldVoidAllergiesWithEditedComment()
@@ -261,7 +251,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#setAllergies(Patient,Allergies)
-	 * @verifies void allergies with edited severity
 	 */
 	@Test
 	public void setAllergies_shouldVoidAllergiesWithEditedSeverity()
@@ -294,7 +283,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#setAllergies(Patient,Allergies)
-	 * @verifies void allergies with edited coded allergen
 	 */
 	@Test
 	public void setAllergies_shouldVoidAllergiesWithEditedCodedAllergen()
@@ -327,7 +315,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#setAllergies(Patient,Allergies)
-	 * @verifies void allergies with edited non coded allergen
 	 */
 	@Test
 	public void setAllergies_shouldVoidAllergiesWithEditedNonCodedAllergen()
@@ -360,7 +347,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#setAllergies(Patient,Allergies)
-	 * @verifies void allergies with removed reactions
 	 */
 	@Test
 	public void setAllergies_shouldVoidAllergiesWithRemovedReactions()
@@ -393,7 +379,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#setAllergies(Patient,Allergies)
-	 * @verifies void allergies with added reactions
 	 */
 	@Test
 	public void setAllergies_shouldVoidAllergiesWithAddedReactions()
@@ -427,7 +412,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#setAllergies(Patient,Allergies)
-	 * @verifies void allergies with edited reaction coded
 	 */
 	@Test
 	public void setAllergies_shouldVoidAllergiesWithEditedReactionCoded()
@@ -461,7 +445,6 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#setAllergies(Patient,Allergies)
-	 * @verifies void allergies with edited reaction non coded
 	 */
 	@Test
 	public void setAllergies_shouldVoidAllergiesWithEditedReactionNonCoded()

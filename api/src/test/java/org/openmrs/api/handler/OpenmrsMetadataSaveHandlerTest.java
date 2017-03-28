@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.User;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests for {@link OpenmrsMetadataSaveHandler}
@@ -27,7 +26,6 @@ public class OpenmrsMetadataSaveHandlerTest {
 	 * @see OpenmrsMetadataSaveHandler#handle(OpenmrsMetadata,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should trim whitespace from name", method = "handle(OpenmrsMetadata,User,Date,String)")
 	public void handle_shouldTrimWhitespaceFromName() throws Exception {
 		String NAME = "the location name";
 		OpenmrsMetadataSaveHandler handler = new OpenmrsMetadataSaveHandler();
@@ -41,7 +39,6 @@ public class OpenmrsMetadataSaveHandlerTest {
 	 * @see OpenmrsMetadataSaveHandler#handle(OpenmrsMetadata,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should trim whitespace from description", method = "handle(OpenmrsMetadata,User,Date,String)")
 	public void handle_shouldTrimWhitespaceFromDescription() throws Exception {
 		String DESC = "the location desc";
 		OpenmrsMetadataSaveHandler handler = new OpenmrsMetadataSaveHandler();

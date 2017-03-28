@@ -16,7 +16,6 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  *
@@ -27,8 +26,7 @@ public class ConceptAnswersEditorTest extends BaseContextSensitiveTest {
 	 * @see ConceptAnswersEditor#setAsText(String)
 	 */
 	@Test
-	@Verifies(value = "set the sort weights with the least possible changes", method = "setAsText(String)")
-	public void setAsText_shouldSetTheSortWeightsWithTheLeastPossibleChanges() throws Exception {
+	public void setAsText_shouldSetTheSortWeightsWithTheLeastPossibleChanges() {
 		ConceptService service = Context.getConceptService();
 		Concept c = service.getConcept(21);
 		

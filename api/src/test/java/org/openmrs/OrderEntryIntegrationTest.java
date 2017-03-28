@@ -211,7 +211,6 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies void an order
 	 * @see OrderService#voidOrder(org.openmrs.Order, String)
 	 */
 	@Test
@@ -232,7 +231,6 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies unvoid an order
 	 * @see OrderService#unvoidOrder(org.openmrs.Order)
 	 */
 	@Test

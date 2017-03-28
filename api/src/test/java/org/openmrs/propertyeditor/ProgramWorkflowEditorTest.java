@@ -17,7 +17,6 @@ public class ProgramWorkflowEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProgramWorkflowEditor#setAsText(String)
-	 * @verifies set using uuid
 	 */
 	@Test
 	public void setAsText_shouldSetUsingUuid() throws Exception {

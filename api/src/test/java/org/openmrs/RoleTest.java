@@ -19,7 +19,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.RoleConstants;
 
 /**
@@ -73,7 +72,6 @@ public class RoleTest {
 	 * @see Role#hasPrivilege(String)
 	 */
 	@Test
-	@Verifies(value = "should not fail given null parameter", method = "hasPrivilege(String)")
 	public void hasPrivilege_shouldNotFailGivenNullParameter() throws Exception {
 		Role role = new Role();
 		
@@ -85,7 +83,6 @@ public class RoleTest {
 	 * @see Role#hasPrivilege(String)
 	 */
 	@Test
-	@Verifies(value = "should return true if found", method = "hasPrivilege(String)")
 	public void hasPrivilege_shouldReturnTrueIfFound() throws Exception {
 		Role role = new Role();
 		
@@ -99,7 +96,6 @@ public class RoleTest {
 	 * @see Role#hasPrivilege(String)
 	 */
 	@Test
-	@Verifies(value = "should return false if not found", method = "hasPrivilege(String)")
 	public void hasPrivilege_shouldReturnFalseIfNotFound() throws Exception {
 		Role role = new Role();
 		assertFalse("This roles should not have the privilege", role.hasPrivilege("some other privilege name"));
@@ -109,7 +105,6 @@ public class RoleTest {
 	 * @see Role#hasPrivilege(String)
 	 */
 	@Test
-	@Verifies(value = "should return true for any privilegeName if super user", method = "hasPrivilege(String)")
 	public void hasPrivilege_shouldReturnTrueForAnyPrivilegeNameIfSuperUser() throws Exception {
 		// check super user "super" status
 		Role role = new Role(RoleConstants.SUPERUSER);
@@ -124,7 +119,6 @@ public class RoleTest {
 	 * @see Role#getAllParentRoles()
 	 */
 	@Test
-	@Verifies(value = "should only return parent roles", method = "getAllParentRoles()")
 	public void getAllParentRoles_shouldOnlyReturnParentRoles() throws Exception {
 		Role grandparent = new Role("Grandparent");
 		Role aunt = new Role("Aunt");
@@ -168,7 +162,6 @@ public class RoleTest {
 	 * @see Role#getAllChildRoles()
 	 */
 	@Test
-	@Verifies(value = "should only return child roles", method = "getAllChildRoles()")
 	public void getAllChildRoles_shouldOnlyReturnChildRoles() throws Exception {
 		Role grandparent = new Role("Grandparent");
 		Role aunt = new Role("Aunt");

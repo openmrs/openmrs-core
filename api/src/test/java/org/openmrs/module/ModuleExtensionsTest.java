@@ -38,7 +38,6 @@ public class ModuleExtensionsTest {
 	}
 
 	/*
-	 * @verifies not expand extensionNames if extensionNames is null
 	 * @see Module#getExtensions()
 	 */
 	@Test
@@ -56,7 +55,6 @@ public class ModuleExtensionsTest {
 	}
 
 	/*
-         * @verifies not expand extensionNames if extensionNames is empty
 	 * @see Module#getExtensions()
 	 */
 	@Test
@@ -74,7 +72,6 @@ public class ModuleExtensionsTest {
 	}
 
 	/*
-         * @verifies not expand extensionNames if extensions matches extensionNames
 	 * @see Module#getExtensions()
 	 */
 	@Test
@@ -95,7 +92,6 @@ public class ModuleExtensionsTest {
 	}
 
 	/*
-         * @verifies expand extensionNames if extensions does not match extensionNames
 	 * @see Module#getExtensions()
 	 */
 	@Test

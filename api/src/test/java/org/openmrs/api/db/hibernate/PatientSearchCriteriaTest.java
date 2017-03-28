@@ -41,7 +41,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies process simple space as separator
 	 * @see PatientSearchCriteria#getQueryParts(String)
 	 */
 	@Test
@@ -53,7 +52,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies process comma as separator
 	 * @see PatientSearchCriteria#getQueryParts(String)
 	 */
 	@Test
@@ -65,7 +63,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies process mixed separators
 	 * @see PatientSearchCriteria#getQueryParts(String)
 	 */
 	@Test
@@ -77,7 +74,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not return empty name parts
 	 * @see PatientSearchCriteria#getQueryParts(String)
 	 */
 	@Test
@@ -89,7 +85,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies reject null as name
 	 * @see PatientSearchCriteria#getQueryParts(String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
@@ -98,7 +93,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies recognise short name
 	 * @see PatientSearchCriteria#isShortName(String)
 	 */
 	@Test
@@ -107,7 +101,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies recognise long name
 	 * @see PatientSearchCriteria#isShortName(String)
 	 */
 	@Test
@@ -116,7 +109,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return start as default match mode
 	 * @see PatientSearchCriteria#getMatchMode()
 	 */
 	@Test
@@ -126,7 +118,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return start as configured match mode
 	 * @see PatientSearchCriteria#getMatchMode()
 	 */
 	@Test
@@ -146,7 +137,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return anywhere as configured match mode
 	 * @see PatientSearchCriteria#getMatchMode()
 	 */
 	@Test
@@ -166,7 +156,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies identify search by name
 	 * @see PatientSearchCriteria#getSearchMode(String, String, java.util.List, boolean)
 	 */
 	@Test
@@ -188,7 +177,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies identify search by identifier
 	 * @see PatientSearchCriteria#getSearchMode(String, String, java.util.List, boolean)
 	 */
 	@Test
@@ -204,7 +192,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies identify search by identifier type list
 	 * @see PatientSearchCriteria#getSearchMode(String, String, java.util.List, boolean)
 	 */
 	@Test
@@ -241,7 +228,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies identify search by identifier and identifier type list
 	 * @see PatientSearchCriteria#getSearchMode(String, String, java.util.List, boolean)
 	 */
 	@Test
@@ -258,7 +244,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies identify search by name or identifier
 	 * @see PatientSearchCriteria#getSearchMode(String, String, java.util.List, boolean)
 	 */
 	@Test
@@ -334,7 +319,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies identify search by name and identifier
 	 * @see PatientSearchCriteria#getSearchMode(String, String, java.util.List, boolean)
 	 */
 	@Test
@@ -364,7 +348,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return source value when target is blank
 	 * @see PatientSearchCriteria#copySearchParameter(String, String)
 	 */
 	@Test
@@ -375,7 +358,6 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return target value when target is non-blank
 	 * @see PatientSearchCriteria#copySearchParameter(String, String)
 	 */
 	@Test

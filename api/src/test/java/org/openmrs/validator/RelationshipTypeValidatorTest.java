@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.RelationshipType;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -26,7 +25,6 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
-	 * @verifies fail validation if aIsToB(or A is To B) is null or empty or whitespace
 	 */
 	@Test
 	public void validate_shouldFailValidationIfaIsToBIsNullOrEmptyOrWhitespace() throws Exception {
@@ -49,7 +47,6 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
-	 * @verifies fail validation if bIsToA(or B is To A) is null or empty or whitespace
 	 */
 	@Test
 	public void validate_shouldFailValidationIfbIsToAIsNullOrEmptyOrWhitespace() throws Exception {
@@ -72,7 +69,6 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
-	 * @verifies fail validation if description is null or empty or whitespace
 	 */
 	@Test
 	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
@@ -96,7 +92,6 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * Test for all the field being set to some values
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
-	 * @verifies pass validation if all required fields are set
 	 */
 	@Test
 	public void validate_shouldPassValidationIfAllRequiredFieldsAreSet() throws Exception {
@@ -113,7 +108,6 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.validator.RelationshipTypeValidator#validate(Object, Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if relationshipTypeName exist", method = "validate(Object,Errors)")
 	public void validate_shouldPassEditingEncounterTypeName() throws Exception {
 		RelationshipType type = new RelationshipType();
 		type.setaIsToB("Doctor");
@@ -127,7 +121,6 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * Test for all the field being set to some values
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
-	 * @verifies pass validation if field lengths are correct
 	 */
 	@Test
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
@@ -144,7 +137,6 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * Test for all the field being set to some values
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
-	 * @verifies fail validation if field lengths are not correct
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
