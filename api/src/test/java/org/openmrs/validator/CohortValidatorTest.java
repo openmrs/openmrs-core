@@ -10,7 +10,10 @@
 package org.openmrs.validator;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Patient;
@@ -22,18 +25,61 @@ import org.springframework.validation.Errors;
  * Contains test methods for the {@link CohortValidator}
  */
 public class CohortValidatorTest extends BaseContextSensitiveTest {
+	
+	private static final String nullOrIncompatibleObjErrorMessage = "The parameter obj should not be null and must be of type"
+	        + Cohort.class;
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
+	private CohortValidator validator;
+	
+	private Cohort cohort;
 
+	private Patient patient;
+	
+	private CohortMembership cohortMembership;
+	
+	private Errors errors;
+	
+	@Before
+	public void setUp() {
+		validator = new CohortValidator();
+		
+		cohort = new Cohort(2);
+		patient = new Patient(7);
+		cohortMembership = new CohortMembership(patient);
+		cohort.addMembership(cohortMembership);
+		
+		errors = new BindException(cohort, "cohort");
+	}
+	
+	@Test
+	public void shouldFailIfGivenNull() {
+		
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage(nullOrIncompatibleObjErrorMessage);
+		validator.validate(null, errors);
+	}
+	
+	@Test
+	public void shouldFailIfGivenInstanceOfOtherClassThanCohort() {
+		
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage(nullOrIncompatibleObjErrorMessage);
+		validator.validate(new Patient(), errors);
+	}
+	
 	/**
 	 * @see CohortValidator#validate(Object, Errors)
 	 */
 	@Test
 	public void validate_shouldFailIfPatientIsVoided() {
-		Cohort cohort = new Cohort(2);
-		Patient patient = new Patient(7);
+		
 		patient.setVoided(true);
-		cohort.addMembership(new CohortMembership(patient));
-		Errors errors = new BindException(cohort, "cohort");
-		new CohortValidator().validate(cohort, errors);
+		
+		validator.validate(cohort, errors);
+		
 		Assert.assertTrue(errors.hasFieldErrors("members"));
 		String eMessage = "Patient " + patient.getPatientId() + " is voided, cannot add voided members to a cohort";
 		Assert.assertTrue(errors.getFieldErrors().stream().anyMatch(e -> e.getDefaultMessage().equals(eMessage)));
@@ -41,35 +87,32 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void validate_shouldPassIfPatientIsNonVoided() {
-		Cohort cohort = new Cohort(2);
-		cohort.addMembership(new CohortMembership(new Patient(7)));
-		Errors errors = new BindException(cohort, "cohort");
-		new CohortValidator().validate(cohort, errors);
+		
+		validator.validate(cohort, errors);
+		
 		Assert.assertFalse(errors.hasErrors());
 		Assert.assertFalse(errors.hasFieldErrors("members"));
 	}
 
 	@Test
 	public void validate_shouldPassIfMembershipisVoided() {
-		Cohort cohort = new Cohort(2);
-		CohortMembership cohortMembership = new CohortMembership(new Patient(7));
+		
 		cohortMembership.setVoided(true);
-		cohort.addMembership(cohortMembership);
-		Errors errors = new BindException(cohort, "cohort");
-		new CohortValidator().validate(cohort, errors);
+		
+		validator.validate(cohort, errors);
+		
 		Assert.assertFalse(errors.hasErrors());
 		Assert.assertFalse(errors.hasFieldErrors("members"));
 	}
 
 	@Test
 	public void validate_shouldPassIfPatientAndMembershipAreVoided() {
-		Cohort cohort = new Cohort(2);
-		Patient patient = new Patient(7);
+		
 		patient.setVoided(true);
-		CohortMembership cohortMembership = new CohortMembership(patient);
 		cohortMembership.setVoided(true);
-		Errors errors = new BindException(cohort, "cohort");
-		new CohortValidator().validate(cohort, errors);
+		
+		validator.validate(cohort, errors);
+		
 		Assert.assertFalse(errors.hasErrors());
 		Assert.assertFalse(errors.hasFieldErrors("members"));
 	}
