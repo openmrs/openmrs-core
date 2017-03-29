@@ -266,41 +266,39 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws APIException {
-		// only try to save it if the global property has a key
+		// only try to save it if the global property has a key and a value
 		if (gp.getProperty() != null && gp.getProperty().length() > 0) {
-			if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST)) {
-				if (gp.getPropertyValue() != null) {
-					List<Locale> localeList = new ArrayList<Locale>();
-					
-					for (String localeString : gp.getPropertyValue().split(",")) {
-						localeList.add(LocaleUtility.fromSpecification(localeString.trim()));
-					}
-					if (!localeList.contains(LocaleUtility.getDefaultLocale())) {
-						gp.setPropertyValue(StringUtils.join(getAllowedLocales(), ", "));
-						throw new APIException(Context.getMessageSourceService().getMessage(
-						    "general.locale.localeListNotIncludingDefaultLocale",
-						    new Object[] { LocaleUtility.getDefaultLocale() }, null));
-					}
+			if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST)
+					&& gp.getPropertyValue() != null) {
+				List<Locale> localeList = new ArrayList<Locale>();
+
+				for (String localeString : gp.getPropertyValue().split(",")) {
+					localeList.add(LocaleUtility.fromSpecification(localeString.trim()));
 				}
-			} else if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE)) {
-				if (gp.getPropertyValue() != null) {
-					List<Locale> localeList = getAllowedLocales();
-					
-					if (!localeList.contains(LocaleUtility.fromSpecification(gp.getPropertyValue().trim()))) {
-						String value = gp.getPropertyValue();
-						gp.setPropertyValue(LocaleUtility.getDefaultLocale().toString());
-						throw new APIException((Context.getMessageSourceService().getMessage(
-						    "general.locale.defaultNotInAllowedLocalesList", new Object[] { value }, null)));
-					}
+				if (!localeList.contains(LocaleUtility.getDefaultLocale())) {
+					gp.setPropertyValue(StringUtils.join(getAllowedLocales(), ", "));
+					throw new APIException(Context.getMessageSourceService().getMessage(
+							"general.locale.localeListNotIncludingDefaultLocale",
+							new Object[] { LocaleUtility.getDefaultLocale() }, null));
+				}
+			} else if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE)
+					&& gp.getPropertyValue() != null) {
+				List<Locale> localeList = getAllowedLocales();
+
+				if (!localeList.contains(LocaleUtility.fromSpecification(gp.getPropertyValue().trim()))) {
+					String value = gp.getPropertyValue();
+					gp.setPropertyValue(LocaleUtility.getDefaultLocale().toString());
+					throw new APIException((Context.getMessageSourceService().getMessage(
+							"general.locale.defaultNotInAllowedLocalesList", new Object[] { value }, null)));
 				}
 			}
-			
+
 			CustomDatatypeUtil.saveIfDirty(gp);
 			dao.saveGlobalProperty(gp);
 			notifyGlobalPropertyChange(gp);
 			return gp;
 		}
-		
+
 		return gp;
 	}
 	
