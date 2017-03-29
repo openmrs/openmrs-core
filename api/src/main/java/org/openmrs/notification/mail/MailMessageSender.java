@@ -96,10 +96,12 @@ public class MailMessageSender implements MessageSender {
 		
 		MimeMessage mimeMessage = new MimeMessage(session);
 		
-		// TODO Need to test the null case.  
 		// Transport should use default mail.from value defined in properties.
 		if (message.getSender() != null) {
 			mimeMessage.setSender(new InternetAddress(message.getSender()));
+		}else {
+			String defaultFromMailAddress = Context.getAdministrationService().getGlobalProperty("mail.from");
+			mimeMessage.setSender(new InternetAddress(defaultFromMailAddress));
 		}
 		
 		mimeMessage
