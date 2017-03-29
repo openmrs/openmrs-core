@@ -35,7 +35,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.Reflect;
 
 /**
@@ -293,7 +292,6 @@ public class ObsTest {
 	 * @see Obs#isComplex()
 	 */
 	@Test
-	@Verifies(value = "should return true if the concept is complex", method = "isComplex()")
 	public void isComplex_shouldReturnTrueIfTheConceptIsComplex() throws Exception {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd.setName("Complex");
@@ -312,7 +310,6 @@ public class ObsTest {
 	 * @see Obs#setValueAsString(String)
 	 */
 	@Test(expected = RuntimeException.class)
-	@Verifies(value = "should fail if the value of the string is empty", method = "setValueAsString(String)")
 	public void setValueAsString_shouldFailIfTheValueOfTheStringIsEmpty() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueAsString("");
@@ -322,7 +319,6 @@ public class ObsTest {
 	 * @see Obs#setValueAsString(String)
 	 */
 	@Test(expected = RuntimeException.class)
-	@Verifies(value = "should fail if the value of the string is null", method = "setValueAsString(String)")
 	public void setValueAsString_shouldFailIfTheValueOfTheStringIsNull() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueAsString(null);
@@ -332,7 +328,6 @@ public class ObsTest {
 	 * @see Obs#getValueAsBoolean()
 	 */
 	@Test
-	@Verifies(value = "should return false for value_numeric concepts if value is 0", method = "getValueAsBoolean()")
 	public void getValueAsBoolean_shouldReturnFalseForValue_numericConceptsIfValueIs0() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(0.0);
@@ -343,7 +338,6 @@ public class ObsTest {
 	 * @see Obs#getValueAsBoolean()
 	 */
 	@Test
-	@Verifies(value = "should return null for value_numeric concepts if value is neither 1 nor 0", method = "getValueAsBoolean()")
 	public void getValueAsBoolean_shouldReturnNullForValue_numericConceptsIfValueIsNeither1Nor0() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(24.8);
@@ -351,7 +345,6 @@ public class ObsTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return non precise values for NumericConcepts", method = "getValueAsString(Locale)")
 	public void getValueAsString_shouldReturnNonPreciseValuesForNumericConcepts() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(25.125);
@@ -366,7 +359,6 @@ public class ObsTest {
 	}
 	
 	@Test
-	@Verifies(value = "should not return long decimal numbers as scientific notation", method = "getValueAsString(Locale)")
 	public void getValueAsString_shouldNotReturnLongDecimalNumbersAsScientificNotation() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(123456789.0);
@@ -375,7 +367,6 @@ public class ObsTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return date in correct format", method = "getValueAsString()")
 	public void getValueAsString_shouldReturnDateInCorrectFormat() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueDatetime(new Date());
@@ -395,7 +386,6 @@ public class ObsTest {
 	 * @see Obs#getValueAsBoolean()
 	 */
 	@Test
-	@Verifies(value = "should return true for value_numeric concepts if value is 1", method = "getValueAsBoolean()")
 	public void getValueAsBoolean_shouldReturnTrueForValue_numericConceptsIfValueIs1() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueNumeric(1.0);
@@ -404,7 +394,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#getGroupMembers(boolean)
-	 * @verifies Get all group members if passed true, and non-voided if passed false
 	 */
 	@Test
 	public void getGroupMembers_shouldGetAllGroupMembersIfPassedTrueAndNonvoidedIfPassedFalse() throws Exception {
@@ -426,7 +415,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#hasGroupMembers(boolean)
-	 * @verifies return true if this obs has group members based on parameter
 	 */
 	@Test
 	public void hasGroupMembers_shouldReturnTrueIfThisObsHasGroupMembersBasedOnParameter() throws Exception {
@@ -441,7 +429,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#isObsGrouping()
-	 * @verifies ignore voided Obs
 	 */
 	@Test
 	public void isObsGrouping_shouldIncludeVoidedObs() throws Exception {
@@ -454,7 +441,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#getValueAsString(Locale)
-	 * @verifies use commas or decimal places depending on locale
 	 */
 	@Test
 	public void getValueAsString_shouldUseCommasOrDecimalPlacesDependingOnLocale() throws Exception {
@@ -466,7 +452,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#getValueAsString(Locale)
-	 * @verifies not use thousand separator
 	 */
 	@Test
 	public void getValueAsString_shouldNotUseThousandSeparator() throws Exception {
@@ -478,7 +463,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#getValueAsString(Locale)
-	 * @verifies return regular number for size of zero to or greater than ten digits
 	 */
 	@Test
 	public void getValueAsString_shouldReturnRegularNumberForSizeOfZeroToOrGreaterThanTenDigits() throws Exception {
@@ -490,7 +474,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#getValueAsString(Locale)
-	 * @verifies return regular number if decimal places are as high as six
 	 */
 	@Test
 	public void getValueAsString_shouldReturnRegularNumberIfDecimalPlacesAreAsHighAsSix() throws Exception {
@@ -501,7 +484,6 @@ public class ObsTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return localized name of the value coded concept", method = "getValueAsString(Locale)")
 	public void getValueAsString_shouldReturnLocalizedCodedConcept() throws Exception {
 		ConceptDatatype cdt = new ConceptDatatype();
 		cdt.setHl7Abbreviation("CWE");
@@ -522,7 +504,6 @@ public class ObsTest {
 	 * @see Obs#setFormField(String,String)
 	 */
 	@Test
-	@Verifies(value = "should set the underlying formNamespaceAndPath in the correct pattern", method = "setFormField(String,String)")
 	public void setFormField_shouldSetTheUnderlyingFormNamespaceAndPathInTheCorrectPattern() throws Exception {
 		final String ns = "my ns";
 		final String path = "my path";
@@ -537,7 +518,6 @@ public class ObsTest {
 	 * @see Obs#getFormFieldNamespace()
 	 */
 	@Test
-	@Verifies(value = "should return null if the namespace is not specified", method = "getFormFieldNamespace()")
 	public void getFormFieldNamespace_shouldReturnNullIfTheNamespaceIsNotSpecified() throws Exception {
 		Obs obs = new Obs();
 		obs.setFormField("", "my path");
@@ -548,7 +528,6 @@ public class ObsTest {
 	 * @see Obs#getFormFieldNamespace()
 	 */
 	@Test
-	@Verifies(value = "should return the correct namespace for a form field with a path", method = "getFormFieldNamespace()")
 	public void getFormFieldNamespace_shouldReturnTheCorrectNamespaceForAFormFieldWithAPath() throws Exception {
 		final String ns = "my ns";
 		final String path = "my path";
@@ -561,7 +540,6 @@ public class ObsTest {
 	 * @see Obs#getFormFieldNamespace()
 	 */
 	@Test
-	@Verifies(value = "should return the namespace for a form field that has no path", method = "getFormFieldNamespace()")
 	public void getFormFieldNamespace_shouldReturnTheNamespaceForAFormFieldThatHasNoPath() throws Exception {
 		final String ns = "my ns";
 		Obs obs = new Obs();
@@ -573,7 +551,6 @@ public class ObsTest {
 	 * @see Obs#getFormFieldPath()
 	 */
 	@Test
-	@Verifies(value = "should return null if the path is not specified", method = "getFormFieldPath()")
 	public void getFormFieldPath_shouldReturnNullIfThePathIsNotSpecified() throws Exception {
 		Obs obs = new Obs();
 		obs.setFormField("my ns", "");
@@ -584,7 +561,6 @@ public class ObsTest {
 	 * @see Obs#getFormFieldPath()
 	 */
 	@Test
-	@Verifies(value = "should return the correct path for a form field with a namespace", method = "getFormFieldPath()")
 	public void getFormFieldPath_shouldReturnTheCorrectPathForAFormFieldWithANamespace() throws Exception {
 		final String ns = "my ns";
 		final String path = "my path";
@@ -597,7 +573,6 @@ public class ObsTest {
 	 * @see Obs#getFormFieldPath()
 	 */
 	@Test
-	@Verifies(value = "should return the path for a form field that has no namespace", method = "getFormFieldPath()")
 	public void getFormFieldPath_shouldReturnThePathForAFormFieldThatHasNoNamespace() throws Exception {
 		final String path = "my path";
 		Obs obs = new Obs();
@@ -609,7 +584,6 @@ public class ObsTest {
 	 * @see Obs#setFormField(String,String)
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should reject a namepace and path combination longer than the max length", method = "setFormField(String,String)")
 	public void setFormField_shouldRejectANamepaceAndPathCombinationLongerThanTheMaxLength() throws Exception {
 		StringBuffer nsBuffer = new StringBuffer(125);
 		for (int i = 0; i < 125; i++) {
@@ -630,7 +604,6 @@ public class ObsTest {
 	 * @see Obs#setFormField(String,String)
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should reject a namepace containing the separator", method = "setFormField(String,String)")
 	public void setFormField_shouldRejectANamepaceContainingTheSeparator() throws Exception {
 		final String ns = "my ns" + FORM_NAMESPACE_PATH_SEPARATOR;
 		Obs obs = new Obs();
@@ -641,7 +614,6 @@ public class ObsTest {
 	 * @see Obs#setFormField(String,String)
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should reject a path containing the separator", method = "setFormField(String,String)")
 	public void setFormField_shouldRejectAPathContainingTheSeparator() throws Exception {
 		final String path = FORM_NAMESPACE_PATH_SEPARATOR + "my path";
 		Obs obs = new Obs();
@@ -650,7 +622,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#isDirty()
-	 * @verifies return false when no change has been made
 	 */
 	@Test
 	public void isDirty_shouldReturnFalseWhenNoChangeHasBeenMade() throws Exception {
@@ -674,7 +645,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#isDirty()
-	 * @verifies return true when any immutable field has been changed with edited obs
 	 */
 	@Test
 	public void isDirty_shouldReturnTrueWhenAnyImmutableFieldHasBeenChangedForEditedObs() throws Exception {
@@ -685,7 +655,6 @@ public class ObsTest {
 
 	/**
 	 * @see Obs#isDirty()
-	 * @verifies return false when any immutable field has been changed with new obs
 	 */
 	@Test
 	public void isDirty_shouldReturnFalseWhenAnyImmutableFieldHasBeenChangedForNewObs() throws Exception {
@@ -726,7 +695,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#isDirty()
-	 * @verifies return false when only mutable fields are changed
 	 */
 	@Test
 	public void isDirty_shouldReturnFalseWhenOnlyMutableFieldsAreChanged() throws Exception {
@@ -748,7 +716,6 @@ public class ObsTest {
 
 	/**
 	 * @see Obs#isDirty()
-	 * @verifies return true when a field is changed from a non null to a null value for edited obs
 	 */
 	@Test
 	public void isDirty_shouldReturnTrueWhenAnImmutableFieldIsChangedFromANonNullToANullValueForEditedObs() throws Exception {
@@ -760,7 +727,6 @@ public class ObsTest {
 
 	/**
 	 * @see Obs#isDirty()
-	 * @verifies return true when a field is changed from a non null to a null value for new obs
 	 */
 	@Test
 	public void isDirty_shouldReturnFalsWhenAnImmutableFieldIsChangedFromANonNullToANullValueForNewObs() throws Exception {
@@ -772,7 +738,6 @@ public class ObsTest {
 
 	/**
 	 * @see Obs#isDirty()
-	 * @verifies return true when a field is changed from a null to a non null value in existing obs
 	 */
 	@Test
 	public void isDirty_shouldReturnTrueWhenAnImmutableFieldIsChangedFromANullToANonNullValueInExistingObs() throws Exception {
@@ -784,7 +749,6 @@ public class ObsTest {
 
 	/**
 	 * @see Obs#isDirty()
-	 * @verifies return true when a field is changed from a null to a non null value in new obs
 	 */
 	@Test
 	public void isDirty_shouldReturnFalseWhenAnImmutableFieldIsChangedFromANullToANonNullValueInNewObs() throws Exception {
@@ -796,7 +760,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#setFormField(String,String)
-	 * @verifies not mark the obs as dirty when the value has not been changed
 	 */
 	@Test
 	public void setFormField_shouldNotMarkTheObsAsDirtyWhenTheValueHasNotBeenChanged() throws Exception {
@@ -807,7 +770,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#setFormField(String,String)
-	 * @verifies mark the obs as dirty when the value has been changed
 	 */
 	@Test
 	public void setFormField_shouldMarkTheObsAsDirtyWhenTheValueHasBeenChanged() throws Exception {
@@ -822,7 +784,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#setFormField(String,String)
-	 * @verifies mark the obs as dirty when the value is changed from a non null to a null value
 	 */
 	@Test
 	public void setFormField_shouldMarkTheObsAsDirtyWhenTheValueIsChangedFromANonNullToANullValue() throws Exception {
@@ -838,7 +799,6 @@ public class ObsTest {
 
 	/**
 	 * @see Obs#setFormField(String,String)
-	 * @verifies mark the obs as dirty when the value is changed from a null to a non null value
 	 */
 	@Test
 	public void setFormField_shouldMarkTheObsAsDirtyWhenTheValueIsChangedFromANullToANonNullValue() throws Exception {
@@ -851,7 +811,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#addGroupMember(Obs)
-	 * @verifies return dirtyflag as false when a duplicate obs is added as a member to existing obs
 	 */
 	@Test
 	public void addGroupMember_shouldReturnFalseWhenADuplicateObsIsAddedAsAMember() throws Exception {
@@ -866,7 +825,6 @@ public class ObsTest {
 
 	/**
 	 * @see Obs#addGroupMember(Obs)
-	 * @verifies return dirtyflag as false when a duplicate obs is added as a member to existing obs
 	 */
 	@Test
 	public void addGroupMember_shouldReturnFalseWhenADuplicateObsIsAddedAsAMemberToNewObs() throws Exception {
@@ -881,7 +839,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#addGroupMember(Obs)
-	 * @verifies return isDirty false when a new obs is added as a member
 	 */
 	@Test
 	public void addGroupMember_shouldReturnFalseWhenANewObsIsAddedAsAMember() throws Exception {
@@ -897,7 +854,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#removeGroupMember(Obs)
-	 * @verifies return false when a non existent obs is removed
 	 */
 	@Test
 	public void removeGroupMember_shouldReturnFalseWhenANonExistentObsIsRemoved() throws Exception {
@@ -908,7 +864,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#removeGroupMember(Obs)
-	 * @verifies return isDirty as false when an existing obs is removed from the group
 	 */
 	@Test
 	public void removeGroupMember_shouldReturnDirtyFalseWhenAnObsIsRemoved() throws Exception {
@@ -923,7 +878,6 @@ public class ObsTest {
 
 	/**
 	 * @see Obs#removeGroupMember(Obs)
-	 * @verifies return isDirty false when an new obs is removed from the group
 	 */
 	@Test
 	public void removeGroupMember_shouldReturnFalseForDirtyFlagWhenAnObsIsRemovedFromGroup() throws Exception {
@@ -938,7 +892,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#setGroupMembers(Set)
-	 * @verifies do not mark the existing obs as dirty when the set is changed from null to a non empty one
 	 */
 	@Test
 	public void setGroupMembers_shouldNotMarkTheExistingObsAsDirtyWhenTheSetIsChangedFromNullToANonEmptyOne() throws Exception {
@@ -952,7 +905,6 @@ public class ObsTest {
 
 	/**
 	 * @see Obs#setGroupMembers(Set)
-	 * @verifies do not mark the new obs as dirty when the set is changed from null to a non empty one
 	 */
 	@Test
 	public void setGroupMembers_shouldNotMarkNewObsAsDirtyWhenTheSetIsChangedFromNullToANonEmptyOne() throws Exception {
@@ -966,7 +918,6 @@ public class ObsTest {
 
 	/**
 	 * @see Obs#setGroupMembers(Set)
-	 * @verifies do not mark the existing obs as dirty when the set is replaced with another with different members
 	 */
 	@Test
 	public void setGroupMembers_shouldNotMarkTheExistingObsAsDirtyWhenTheSetIsReplacedWithAnotherWithDifferentMembers()
@@ -984,7 +935,6 @@ public class ObsTest {
 
 	/**
 	 * @see Obs#setGroupMembers(Set)
-	 * @verifies do not mark the new obs as dirty when the set is replaced with another with different members
 	 */
 	@Test
 	public void setGroupMembers_shouldNotMarkTheNewObsAsDirtyWhenTheSetIsReplacedWithAnotherWithDifferentMembers()
@@ -1002,7 +952,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#setGroupMembers(Set)
-	 * @verifies not mark the obs as dirty when the set is changed from null to an empty one
 	 */
 	@Test
 	public void setGroupMembers_shouldNotMarkTheObsAsDirtyWhenTheSetIsChangedFromNullToAnEmptyOne() throws Exception {
@@ -1014,7 +963,6 @@ public class ObsTest {
 	
 	/**
 	 * @see Obs#setGroupMembers(Set)
-	 * @verifies not mark the obs as dirty when the set is replaced with another with same members
 	 */
 	@Test
 	public void setGroupMembers_shouldNotMarkTheObsAsDirtyWhenTheSetIsReplacedWithAnotherWithSameMembers() throws Exception {
@@ -1032,7 +980,6 @@ public class ObsTest {
 
 	/**
 	 * @see Obs#setObsDatetime(Date)
-	 * @verifies not mark the obs as dirty when same date is set again and existing value is of Timestamp instance
 	 */
 	@Test
 	public void setObsDateTime_shouldNotMarkTheObsAsDirtyWhenDateIsNotChangedAndExistingValueIsOfTimeStampType(){

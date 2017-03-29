@@ -20,7 +20,11 @@ import java.lang.annotation.Target;
  * <br>
  * This allows a unit test to be linked back to a specific behavior being tested on a specific
  * method. The class being tested is implied from the name of the parent test class.
+ * 
+ * @deprecated as of release 2.2.0 in favor of standard testing best practices, see
+ *             https://issues.openmrs.org/browse/TRUNK-5122
  */
+@Deprecated
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Verifies {

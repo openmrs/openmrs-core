@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -28,8 +27,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() {
 		EncounterType type = new EncounterType();
 		type.setName(null);
 		type.setDescription("Aaaaah");
@@ -53,8 +51,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() {
 		EncounterType type = new EncounterType();
 		type.setName("CLOSE");
 		type.setDescription(null);
@@ -78,8 +75,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		EncounterType type = new EncounterType();
 		type.setName("CLOSE");
 		type.setDescription("Aaaaah");
@@ -94,8 +90,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation for an existing EncounterType", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationWhenEditingAnExistingEncounterType() throws Exception {
+	public void validate_shouldPassValidationWhenEditingAnExistingEncounterType() {
 		EncounterType type = Context.getEncounterService().getEncounterType("Scheduled");
 		Assert.assertNotNull(type);
 		
@@ -109,8 +104,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterTypeValidator#validate(Object, Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if encounter type name is duplicate", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfEncounterTypeNameIsDuplicate() throws Exception {
+	public void validate_shouldFailIfEncounterTypeNameIsDuplicate() {
 		
 		Assert.assertNotNull(Context.getEncounterService().getEncounterType("Scheduled"));
 		
@@ -126,8 +120,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		EncounterType type = new EncounterType();
 		type.setName("name");
 		type.setDescription("some descriptin not exceeding the limit");
@@ -143,8 +136,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		EncounterType type = new EncounterType();
 		type.setName(StringUtils.repeat("longer than 50 chars", 6));
 		type.setDescription(StringUtils.repeat("longer than 1024 chars", 120));

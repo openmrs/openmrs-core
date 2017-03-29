@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests the methods on the {@link Graph} class
@@ -25,7 +24,6 @@ public class GraphTest {
 	 * @see Graph#topologicalSort()
 	 */
 	@Test
-	@Verifies(value = "should sort graph in topological order", method = "topologicalSort()")
 	public void topologicalSort_shouldSortGraphInTopologicalOrder() throws CycleException {
 		
 		Graph<String> graph = new Graph<String>();
@@ -60,7 +58,6 @@ public class GraphTest {
 	 * @see Graph#topologicalSort()
 	 */
 	@Test(expected = CycleException.class)
-	@Verifies(value = "should throw CycleException", method = "topologicalSort()")
 	public void topologicalSort_shouldThrowCycleException() throws CycleException {
 		
 		Graph<String> graph = new Graph<String>();

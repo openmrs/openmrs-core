@@ -26,7 +26,7 @@ public class AllergenTest extends BaseContextSensitiveTest {
 	Allergen allergen;
 	
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		executeDataSet(ALLERGY_OTHER_NONCODED_TEST_DATASET);
 		Allergen.setOtherNonCodedConceptUuid(Context.getAdministrationService().getGlobalProperty(
 			    OpenmrsConstants.GP_ALLERGEN_OTHER_NON_CODED_UUID));

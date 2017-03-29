@@ -16,7 +16,6 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.openmrs.patient.UnallowedIdentifierException;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests the {@link LuhnIdentifierValidator}
@@ -42,7 +41,6 @@ public class LuhnIdentifierValidatorTest {
 	 * @see LuhnIdentifierValidator#getValidIdentifier(String)
 	 */
 	@Test
-	@Verifies(value = "should get valid identifier", method = "getValidIdentifier(String)")
 	public void getValidIdentifier_shouldGetValidIdentifier() throws Exception {
 		
 		//Make sure valid identifiers come back with the right check digit
@@ -57,7 +55,6 @@ public class LuhnIdentifierValidatorTest {
 	 * @see LuhnIdentifierValidator#getValidIdentifier(String)
 	 */
 	@Test
-	@Verifies(value = "should fail with invalid identifiers", method = "getValidIdentifier(String)")
 	public void getValidIdentifier_shouldFailWithInvalidIdentifiers() throws Exception {
 		//Make sure invalid identifiers throw an exception
 		

@@ -51,7 +51,6 @@ public class WebModuleUtilTest {
 	
 	/**
 	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
-	 * @verifies return false for different package names
 	 * @throws Exception
 	 */
 	@Test
@@ -64,7 +63,6 @@ public class WebModuleUtilTest {
 	
 	/**
 	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
-	 * @verifies return false if module has longer package name
 	 * @throws Exception
 	 */
 	@Test
@@ -77,7 +75,6 @@ public class WebModuleUtilTest {
 	
 	/**
 	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
-	 * @verifies properly match subpackages
 	 * @throws Exception
 	 */
 	@Test
@@ -90,7 +87,6 @@ public class WebModuleUtilTest {
 	
 	/**
 	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String)
-	 * @verifies return false for empty package names
 	 * @throws Exception
 	 */
 	@Test
@@ -103,7 +99,6 @@ public class WebModuleUtilTest {
 	
 	/**
 	 * @see WebModuleUtil#startModule(Module, ServletContext, boolean)
-	 * @verifies creates dwr-modules.xml if not found
 	 */
 	@Test
 	public void startModule_shouldCreateDwrModulesXmlIfNotExists() throws Exception {
@@ -131,7 +126,6 @@ public class WebModuleUtilTest {
 	
 	/**
 	 * @see WebModuleUtil#startModule(Module, ServletContext, boolean)
-	 * @verifies dwr-modules.xml has dwr tag of module started
 	 */
 	@Test
 	public void startModule_dwrModuleXmlshouldContainModuleInfo() throws Exception {		
@@ -206,7 +200,6 @@ public class WebModuleUtilTest {
 	
 	/**
 	 * @see WebModuleUtil#getModuleWebFolder(String)
-	 * @verifies return null if the dispatcher servlet is not yet set
 	 */
 	@Test(expected = ModuleException.class)
 	public void getModuleWebFolder_shouldReturnNullIfTheDispatcherServletIsNotYetSet() throws Exception {
@@ -217,7 +210,6 @@ public class WebModuleUtilTest {
 	
 	/**
 	 * @see WebModuleUtil#getModuleWebFolder(String)
-	 * @verifies return the correct module folder
 	 */
 	@Test
 	public void getModuleWebFolder_shouldReturnTheCorrectModuleFolder() throws Exception {
@@ -231,7 +223,6 @@ public class WebModuleUtilTest {
 	
 	/**
 	 * @see WebModuleUtil#getModuleWebFolder(String)
-	 * @verifies return the correct module folder if real path has a trailing slash
 	 */
 	@Test
 	public void getModuleWebFolder_shouldReturnTheCorrectModuleFolderIfRealPathHasATrailingSlash() throws Exception {

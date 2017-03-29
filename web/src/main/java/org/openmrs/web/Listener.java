@@ -231,6 +231,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		
 		//Ensure that we are being called from WebDaemon
 		//TODO this did not work because callerClass was org.openmrs.web.WebDaemon$1 instead of org.openmrs.web.WebDaemon
+		/*Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
 		// start openmrs
 		try {
 			// load bundled modules that are packaged into the webapp
@@ -574,9 +575,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			// remove the user context that we set earlier
 			Context.closeSession();
 		}
-		
-		// commented out because we are not init'ing it in the contextInitialization anymore
-		
 		try {
 			for (Enumeration<Driver> e = DriverManager.getDrivers(); e.hasMoreElements();) {
 				Driver driver = e.nextElement();

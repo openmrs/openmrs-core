@@ -18,7 +18,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests methods in TimerSchedulerServiceImpl
@@ -31,7 +30,6 @@ public class TimerSchedulerServiceImplTest extends BaseContextSensitiveTest {
 	 * @see TimerSchedulerServiceImpl#scheduleTask(TaskDefinition)
 	 */
 	@Test
-	@Verifies(value = "should handle zero repeat interval", method = "scheduleTask(TaskDefinition)")
 	public void scheduleTask_shouldHandleZeroRepeatInterval() throws Exception {
 		
 		// Represents the start time of the task (right now)

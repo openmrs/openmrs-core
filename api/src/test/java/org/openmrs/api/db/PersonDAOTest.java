@@ -19,7 +19,6 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 public class PersonDAOTest extends BaseContextSensitiveTest {
 	
@@ -42,7 +41,6 @@ public class PersonDAOTest extends BaseContextSensitiveTest {
 	 * @see PersonDAO#getSavedPersonAttributeTypeName(org.openmrs.PersonAttributeType)
 	 */
 	@Test
-	@Verifies(value = "should get saved personAttributeType name from database", method = "getSavedPersonAttributeTypeName(org.openmrs.PersonAttributeType)")
 	public void getSavedPersonAttributeTypeName_shouldGetSavedPersonAttributeTypeNameFromDatabase() throws Exception {
 		PersonAttributeType pat = Context.getPersonService().getPersonAttributeType(1);
 		
@@ -62,14 +60,12 @@ public class PersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return personName from the DB given valid person name id", method = "getPersonName(Integer)")
 	public void getPersonName_shouldGetSavedPersonNameById() throws Exception {
 		PersonName personName = dao.getPersonName(2);
 		assertEquals(2, (int) personName.getId());
 	}
 	
 	@Test
-	@Verifies(value = "should return null from the DB given invalid person name id", method = "getPersonName(Integer)")
 	public void getPersonName_shouldNotGetPersonNameGivenInvalidId() throws Exception {
 		PersonName personName = dao.getPersonName(-1);
 		assertNull(personName);

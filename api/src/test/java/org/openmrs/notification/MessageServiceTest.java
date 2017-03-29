@@ -16,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * Unit tests for the MessageService.
@@ -44,7 +43,6 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	 * @see MessageService#createMessage(String,String,String,String)
 	 */
 	@Test
-	@Verifies(value = "should create message", method = "createMessage(String,String,String,String)")
 	public void createMessage_shouldCreateMessage() throws Exception {
 		String recipients = "foo@bar.com,marco@polo.com";
 		String sender = "me@mydomain.com";
@@ -86,7 +84,6 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	 * @see MessageService#sendMessage(Message)
 	 */
 	@Test
-	@Verifies(value = "should send message", method = "sendMessage(Message)")
 	public void sendMessage_shouldSendMessage() throws Exception {
 		Message tryToSend1 = ms.createMessage("recipient@example.com", "sender@example.com", "subject", "content");
 		try {

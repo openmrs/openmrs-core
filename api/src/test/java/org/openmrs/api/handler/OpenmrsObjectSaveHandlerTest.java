@@ -21,7 +21,6 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.AllowEmptyStrings;
 import org.openmrs.annotation.AllowLeadingOrTrailingWhitespace;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests for {@link OpenmrsObjectSaveHandler}
@@ -32,7 +31,6 @@ public class OpenmrsObjectSaveHandlerTest {
 	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "set empty string properties to null", method = "handle(OpenmrsObject,User,Date,String)")
 	public void handle_shouldSetEmptyStringPropertiesToNull() {
 		Role role = new Role();
 		role.setName("");
@@ -50,7 +48,6 @@ public class OpenmrsObjectSaveHandlerTest {
 	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "not set empty string properties to null for AllowEmptyStrings annotation", method = "handle(OpenmrsObject,User,Date,String)")
 	public void handle_shouldNotSetEmptyStringPropertiesToNullForAllowEmptyStringsAnnotation() {
 		SomeClass obj = new SomeClass("");
 		new OpenmrsObjectSaveHandler().handle(obj, null, null, null);
@@ -61,7 +58,6 @@ public class OpenmrsObjectSaveHandlerTest {
 	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "not trim empty strings for AllowLeadingOrTrailingWhitespace annotation", method = "handle(OpenmrsObject,User,Date,String)")
 	public void handle_shouldNotTrimEmptyStringsForAllowLeadingOrTrailingWhitespaceAnnotation() {
 		SomeClass obj = new SomeClass(null, " ");
 		new OpenmrsObjectSaveHandler().handle(obj, null, null, null);
@@ -72,7 +68,6 @@ public class OpenmrsObjectSaveHandlerTest {
 	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "trim strings without AllowLeadingOrTrailingWhitespace annotation", method = "handle(OpenmrsObject,User,Date,String)")
 	public void handle_shouldTrimStringsWithoutAllowLeadingOrTrailingWhitespaceAnnotation() {
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setCode(" code ");
@@ -85,7 +80,6 @@ public class OpenmrsObjectSaveHandlerTest {
 	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "trim empty strings for AllowEmptyStrings annotation", method = "handle(OpenmrsObject,User,Date,String)")
 	public void handle_shouldTrimEmptyStringsForAllowEmptyStringsAnnotation() {
 		SomeClass obj = new SomeClass(" name ");
 		new OpenmrsObjectSaveHandler().handle(obj, null, null, null);

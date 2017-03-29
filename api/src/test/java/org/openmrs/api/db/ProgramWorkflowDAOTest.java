@@ -19,7 +19,6 @@ import org.openmrs.Concept;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 	
@@ -39,7 +38,6 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should get saved personAttributeType name from database", method = "saveProgram")
 	public void saveProgram_shouldSaveProgram() throws Exception {
 		Program program = createProgram();
 		dao.saveProgram(program);
@@ -54,7 +52,6 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should assign a concept to a program and save it to the database", method = "saveProgram")
 	public void saveProgram_shouldAlsoSaveOutcomesConcept() {
 		Concept outcomesConcept = Context.getConceptService().getConcept(3);
 		Program program = createProgram();
@@ -67,7 +64,6 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return an empty list when there is no program in the dB with given name", method = "getProgramsByName")
 	public void getProgramsByName_whenThereAreNoProgramsWithTheGivenName_shouldReturnAnEmptyList() {
 		Program program = createProgram();
 		program.setName("wrongProgramName");
@@ -79,7 +75,6 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return only and exactly the programs with the given name", method = "getProgramsByName")
 	public void getProgramsByName_whenThereAreProgramsWithTheGivenName_shouldReturnAllProgramsWithTheGivenName() {
 		Program program1 = createProgram();
 		program1.setName("testProgramName");

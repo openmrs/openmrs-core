@@ -22,7 +22,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		authenticate();
 	}
 	
@@ -32,7 +32,7 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldGetAlerts() throws Exception {
+	public void shouldGetAlerts() {
 		
 		AlertService as = Context.getAlertService();
 		//System.out.println(as.getAllAlerts());

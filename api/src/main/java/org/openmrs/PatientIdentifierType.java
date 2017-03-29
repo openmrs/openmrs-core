@@ -65,9 +65,7 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata {
 	private Boolean required = Boolean.FALSE;
 	
 	private String formatDescription;
-	
-	private Boolean checkDigit = Boolean.FALSE;
-	
+
 	private String validator;
 	
 	private LocationBehavior locationBehavior;

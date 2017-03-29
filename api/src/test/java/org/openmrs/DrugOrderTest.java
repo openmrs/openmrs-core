@@ -28,11 +28,10 @@ import org.openmrs.order.OrderUtilTest;
 public class DrugOrderTest {
 	
 	/**
-	 * @verifies set all the relevant fields
 	 * @see DrugOrder#cloneForDiscontinuing()
 	 */
 	@Test
-	public void cloneForDiscontinuing_shouldSetAllTheRelevantFields() throws Exception {
+	public void cloneForDiscontinuing_shouldSetAllTheRelevantFields() {
 		DrugOrder order = new DrugOrder();
 		order.setPatient(new Patient());
 		order.setCareSetting(new CareSetting());
@@ -41,7 +40,7 @@ public class DrugOrderTest {
 		order.setDrug(drug);
 		order.setOrderType(new OrderType());
 		
-		DrugOrder dcOrder = (DrugOrder) order.cloneForDiscontinuing();
+		DrugOrder dcOrder = order.cloneForDiscontinuing();
 		
 		assertEquals(order.getDrug(), dcOrder.getDrug());
 		
@@ -59,7 +58,7 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies copy all drug order fields
+	 * @throws Exception
 	 * @see DrugOrder#copy()
 	 */
 	@Test
@@ -74,7 +73,7 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies set all the relevant fields
+	 * @throws Exception
 	 * @see DrugOrder#cloneForRevision()
 	 */
 	@Test
@@ -89,7 +88,7 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies set the relevant fields for a DC order
+	 * @throws Exception
 	 * @see DrugOrder#cloneForRevision()
 	 */
 	@Test
@@ -113,11 +112,10 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return false if the other order is null
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnFalseIfTheOtherOrderIsNull() throws Exception {
+	public void hasSameOrderableAs_shouldReturnFalseIfTheOtherOrderIsNull() {
 		DrugOrder order = new DrugOrder();
 		order.setConcept(new Concept());
 		
@@ -125,11 +123,10 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return false if the other order is not a drug order
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnFalseIfTheOtherOrderIsNotADrugOrder() throws Exception {
+	public void hasSameOrderableAs_shouldReturnFalseIfTheOtherOrderIsNotADrugOrder() {
 		DrugOrder order = new DrugOrder();
 		Drug drug1 = new Drug();
 		Concept concept = new Concept();
@@ -143,11 +140,10 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return false if both drugs are null and the concepts are different
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnFalseIfBothDrugsAreNullAndTheConceptsAreDifferent() throws Exception {
+	public void hasSameOrderableAs_shouldReturnFalseIfBothDrugsAreNullAndTheConceptsAreDifferent() {
 		DrugOrder order = new DrugOrder();
 		order.setConcept(new Concept());
 		
@@ -158,11 +154,10 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return false if the concepts match and only this has a drug
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndOnlyThisHasADrug() throws Exception {
+	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndOnlyThisHasADrug() {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		Drug drug1 = new Drug();
@@ -177,11 +172,10 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return false if the concepts match and only the other has a drug
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndOnlyTheOtherHasADrug() throws Exception {
+	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndOnlyTheOtherHasADrug() {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		order.setConcept(concept);
@@ -196,11 +190,10 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return false if the concepts match and drugs are different and not null
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndDrugsAreDifferentAndNotNull() throws Exception {
+	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndDrugsAreDifferentAndNotNull() {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		Drug drug1 = new Drug();
@@ -218,11 +211,10 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return true if both drugs are null and the concepts match
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnTrueIfBothDrugsAreNullAndTheConceptsMatch() throws Exception {
+	public void hasSameOrderableAs_shouldReturnTrueIfBothDrugsAreNullAndTheConceptsMatch() {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		order.setConcept(concept);
@@ -234,11 +226,10 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies return true if the drugs match
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnTrueIfTheDrugsMatch() throws Exception {
+	public void hasSameOrderableAs_shouldReturnTrueIfTheDrugsMatch() {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		Drug drug1 = new Drug();
@@ -252,13 +243,13 @@ public class DrugOrderTest {
 	}
 	
 	@Test
-	public void shouldSetDefaultDosingTypeToFreeText() throws Exception {
+	public void shouldSetDefaultDosingTypeToFreeText() {
 		DrugOrder drugOrder = new DrugOrder();
 		assertEquals(SimpleDosingInstructions.class, drugOrder.getDosingType());
 	}
 	
 	@Test
-	public void shouldAllowToSetCustomDosingTypes() throws Exception {
+	public void shouldAllowToSetCustomDosingTypes() {
 		DrugOrder drugOrder = new DrugOrder();
 		assertEquals(SimpleDosingInstructions.class, drugOrder.getDosingType());
 		CustomDosingInstructions customDosingInstructions = new CustomDosingInstructions();
@@ -269,7 +260,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies delegate calculation to dosingInstructions
 	 * @see DrugOrder#setAutoExpireDateBasedOnDuration()
 	 */
 	@Test
@@ -287,7 +277,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies not calculate for discontinue action
 	 * @see DrugOrder#setAutoExpireDateBasedOnDuration()
 	 */
 	@Test
@@ -303,7 +292,6 @@ public class DrugOrderTest {
 	}
 	
 	/**
-	 * @verifies not calculate if autoExpireDate already set
 	 * @see DrugOrder#setAutoExpireDateBasedOnDuration()
 	 */
 	@Test
@@ -318,11 +306,10 @@ public class DrugOrderTest {
 	}
 
 	/**
-	 * @verifies return true if the drugs match and drug non coded match
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnTrueIfTheConceptsMatchAndHaveSameDrugNonCoded() throws Exception {
+	public void hasSameOrderableAs_shouldReturnTrueIfTheConceptsMatchAndHaveSameDrugNonCoded() {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		order.setConcept(concept);
@@ -336,11 +323,10 @@ public class DrugOrderTest {
 	}
 
 	/**
-	 * @verifies return false if the concepts match and drug non coded do not match
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndHaveDifferentDrugNonCoded() throws Exception {
+	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndHaveDifferentDrugNonCoded() {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		order.setConcept(concept);
@@ -354,11 +340,10 @@ public class DrugOrderTest {
 	}
 
 	/**
-	 * @verifies return true if the concepts match and drug non coded match trimming spaces
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnTrueIfTheConceptsMatchAndHaveSameDrugNonCodedTrimmingSpaces() throws Exception {
+	public void hasSameOrderableAs_shouldReturnTrueIfTheConceptsMatchAndHaveSameDrugNonCodedTrimmingSpaces() {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		order.setConcept(concept);
@@ -372,11 +357,10 @@ public class DrugOrderTest {
 	}
 
 	/**
-	 * @verifies return false if the concepts match and either of drug non coded is null
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndEitherOfDrugNonCodedIsNull() throws Exception {
+	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndEitherOfDrugNonCodedIsNull() {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		order.setConcept(concept);
@@ -389,11 +373,10 @@ public class DrugOrderTest {
 	}
 
 	/**
-	 * @verifies return True if the concepts match and both of the drug non coded is null
 	 * @see DrugOrder#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnTrueIfTheConceptsMatchAndBothDrugNonCodedIsNull() throws Exception {
+	public void hasSameOrderableAs_shouldReturnTrueIfTheConceptsMatchAndBothDrugNonCodedIsNull() {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		order.setConcept(concept);

@@ -341,8 +341,6 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
 	@Override
 	public List<T> list() {
-		//debug
-
 		if (noUniqueTerms) {
 			return Collections.emptyList();
 		}

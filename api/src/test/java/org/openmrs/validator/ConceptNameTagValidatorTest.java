@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -26,8 +25,7 @@ import org.springframework.validation.Errors;
 public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "fail validation if conceptNameTag is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfConceptNameTagIsNull() throws Exception {
+	public void validate_shouldFailValidationIfConceptNameTagIsNull() {
 		Errors errors = new BindException(new ConceptNameTag(), "cnt");
 		new ConceptNameTagValidator().validate(null, errors);
 	}
@@ -36,8 +34,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "fail validation if tag is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfTagIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfTagIsNullOrEmptyOrWhitespace() {
 		ConceptNameTag cnt = new ConceptNameTag();
 		
 		Errors errors = new BindException(cnt, "cnt");
@@ -59,8 +56,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "pass validation if tag does not exist and is not null or empty", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		ConceptNameTag cnt = new ConceptNameTag();
 		
 		cnt.setTag("tag");
@@ -74,8 +70,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the concept name tag is a duplicate", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheConceptNameTagIsADuplicate() throws Exception {
+	public void validate_shouldFailIfTheConceptNameTagIsADuplicate() {
 		String objectName = "duplicate concept name tag";
 		
 		ConceptNameTag existing = Context.getConceptService().getConceptNameTag(1);
@@ -93,8 +88,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		ConceptNameTag cnt = new ConceptNameTag();
 		
 		cnt.setTag("tag");
@@ -109,8 +103,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ConceptNameTag cnt = new ConceptNameTag();
 		
 		cnt
@@ -125,8 +118,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "pass validation if the concept name tag being validated is the same as the test one", method = "validate(Object,Errors)")
-	public void validate_shouldNotFailIfTheConceptNameTagIsTheSame() throws Exception {
+	public void validate_shouldNotFailIfTheConceptNameTagIsTheSame() {
 		String objectName = "duplicate concept name tag";
 		
 		ConceptNameTag existing = Context.getConceptService().getConceptNameTag(1);

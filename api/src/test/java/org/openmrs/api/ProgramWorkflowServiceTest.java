@@ -36,7 +36,6 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
-import org.openmrs.test.Verifies;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -76,7 +75,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#savePatientProgram(PatientProgram)
 	 */
 	@Test
-	@Verifies(value = "should update patient program", method = "savePatientProgram(PatientProgram)")
 	public void savePatientProgram_shouldUpdatePatientProgram() throws Exception {
 		
 		Date today = new Date();
@@ -129,7 +127,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#saveProgram(Program)
 	 */
 	@Test
-	@Verifies(value = "should create program workflows", method = "saveProgram(Program)")
 	public void saveProgram_shouldCreateProgramWorkflows() throws Exception {
 		
 		int numBefore = Context.getProgramWorkflowService().getAllPrograms().size();
@@ -177,7 +174,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getConceptStateConversionByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getConceptStateConversionByUuid(String)")
 	public void getConceptStateConversionByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "6c72b064-506d-11de-80cb-001e378eb67e";
 		ConceptStateConversion conceptStateConversion = Context.getProgramWorkflowService().getConceptStateConversionByUuid(
@@ -189,7 +185,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getConceptStateConversionByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptStateConversionByUuid(String)")
 	public void getConceptStateConversionByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getProgramWorkflowService().getConceptStateConversionByUuid("some invalid uuid"));
 	}
@@ -198,7 +193,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getPatientProgramByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getPatientProgramByUuid(String)")
 	public void getPatientProgramByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "2edf272c-bf05-4208-9f93-2fa213ed0415";
 		PatientProgram patientProgram = Context.getProgramWorkflowService().getPatientProgramByUuid(uuid);
@@ -209,7 +203,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getPatientProgramByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getPatientProgramByUuid(String)")
 	public void getPatientProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getProgramWorkflowService().getPatientProgramByUuid("some invalid uuid"));
 	}
@@ -218,7 +211,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getPatientStateByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getPatientStateByUuid(String)")
 	public void getPatientStateByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "ea89deaa-23cc-4840-92fe-63d199c37e4c";
 		PatientState patientState = Context.getProgramWorkflowService().getPatientStateByUuid(uuid);
@@ -229,7 +221,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getPatientStateByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getPatientStateByUuid(String)")
 	public void getPatientStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getProgramWorkflowService().getPatientStateByUuid("some invalid uuid"));
 	}
@@ -238,7 +229,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getProgramByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getProgramByUuid(String)")
 	public void getProgramByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "eae98b4c-e195-403b-b34a-82d94103b2c0";
 		Program program = Context.getProgramWorkflowService().getProgramByUuid(uuid);
@@ -249,7 +239,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getProgramByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getProgramByUuid(String)")
 	public void getProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getProgramWorkflowService().getProgramByUuid("some invalid uuid"));
 	}
@@ -258,7 +247,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getStateByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getStateByUuid(String)")
 	public void getStateByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "92584cdc-6a20-4c84-a659-e035e45d36b0";
 		ProgramWorkflowState state = Context.getProgramWorkflowService().getStateByUuid(uuid);
@@ -269,7 +257,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getStateByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getStateByUuid(String)")
 	public void getStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getProgramWorkflowService().getStateByUuid("some invalid uuid"));
 	}
@@ -278,7 +265,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getWorkflowByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getWorkflowByUuid(String)")
 	public void getWorkflowByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "84f0effa-dd73-46cb-b931-7cd6be6c5f81";
 		ProgramWorkflow programWorkflow = Context.getProgramWorkflowService().getWorkflowByUuid(uuid);
@@ -289,7 +275,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getWorkflowByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getWorkflowByUuid(String)")
 	public void getWorkflowByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getProgramWorkflowService().getWorkflowByUuid("some invalid uuid"));
 	}
@@ -302,7 +287,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 */
 	
 	@Test
-	@Verifies(value = "should sort names containing numbers intelligently", method = "getSortedStates()")
 	public void getSortedStates_shouldSortNamesContainingNumbersIntelligently() throws Exception {
 		
 		ProgramWorkflow program = new ProgramWorkflow();
@@ -335,7 +319,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should get possible outcomes for a program", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldGetOutcomesForASet() throws Exception {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 		
@@ -344,7 +327,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should get possible outcomes for a program with outcome questions", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldGetOutcomesForAQuestion() throws Exception {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 		
@@ -353,7 +335,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should get no possible outcomes for a program that does not exist", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldReturnEmptyListWhenNoProgramExists() throws Exception {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 		
@@ -362,7 +343,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should get no possible outcomes for a program with no outcome", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldReturnEmptyListWhenProgramHasNoOutcome() throws Exception {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 		
@@ -372,7 +352,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProgramWorkflowService#saveProgram(Program)
-	 * @verifies update detached program
 	 */
 	@Test
 	public void saveProgram_shouldUpdateDetachedProgram() throws Exception {
@@ -388,7 +367,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#triggerStateConversion(Patient,Concept,Date)
 	 */
 	@Test
-	@Verifies(value = "should skip past patient programs that are already completed", method = "triggerStateConversion(Patient,Concept,Date)")
 	public void triggerStateConversion_shouldSkipPastPatientProgramsThatAreAlreadyCompleted() throws Exception {
 		Integer patientProgramId = 1;
 		PatientProgram pp = pws.getPatientProgram(patientProgramId);
@@ -407,21 +385,18 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return program when name matches", method = "getProgramByName()")
 	public void getProgramByName_shouldReturnProgramWhenNameMatches() {
 		Program p = pws.getProgramByName("program name");
 		assertNotNull(p);
 	}
 	
 	@Test
-	@Verifies(value = "should return null when program does not exist with given name", method = "getProgramByName()")
 	public void getProgramByName_shouldReturnNullWhenNoProgramForGivenName() {
 		Program p = pws.getProgramByName("unexisting program");
 		assertNull(p);
 	}
 	
 	@Test
-	@Verifies(value = "should save the retire program with resaon", method = "retireProgram(Program program,String reason)")
 	public void retireProgram_shouldSaveTheRetiredProgramWithReason() throws APIException {
 		String reason = "Feeling well.";
 		
@@ -442,7 +417,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should purge program with patients enrolled", method = "purgeProgram(Program program, boolean cascade)")
 	public void purgeProgram_shouldPurgeProgramWithPatientsEnrolled() {
 		Program program = Context.getProgramWorkflowService().getProgram(2);
 		

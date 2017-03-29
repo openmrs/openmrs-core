@@ -102,10 +102,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Override
 	public Form duplicateForm(Form form) throws APIException {
-		// Map of /Old FormFieldId/ to /New FormField Object/
-		//formFieldMap.put(null, null); //for parentless formFields
 		checkIfFormsAreLocked();
-		// get original form id for reference later
 		Integer originalFormId = form.getFormId();
 		
 		for (FormField formField : form.getFormFields()) {

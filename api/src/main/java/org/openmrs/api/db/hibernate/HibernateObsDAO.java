@@ -243,12 +243,6 @@ public class HibernateObsDAO implements ObsDAO {
 			DetachedCriteria crit = DetachedCriteria.forClass(User.class, "user").setProjection(Property.forName("userId"));
 			criteria.add(Subqueries.propertyIn("person.personId", crit));
 		}
-		
-		if (personTypes.contains(PERSON_TYPE.PERSON)) {
-			// all observations are already on person's.  Limit to non-patient and non-users here
-			//criteria.add(Restrictions.eqProperty("obs.person.personId", "person.personId"));
-		}
-		
 		return criteria;
 	}
 	

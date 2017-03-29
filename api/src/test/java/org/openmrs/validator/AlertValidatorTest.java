@@ -10,6 +10,7 @@
 package org.openmrs.validator;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.notification.Alert;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -22,73 +23,71 @@ import org.springframework.validation.Errors;
  */
 public class AlertValidatorTest extends BaseContextSensitiveTest {
 	
-	/**
-	 * @see AlertValidator#validate(Object,Errors)
-	 * @verifies fail validation if Alert Text is null or empty or whitespace
-	 */
-	@Test
-	public void validate_shouldFailValidationIfAlertTextIsNullOrEmptyOrWhitespace() throws Exception {
-		Alert alert = new Alert();
-		Assert.assertNull(alert.getText());
+	private AlertValidator validator;
+	
+	private Alert alert;
+	
+	private Errors errors;
+	
+	@Before
+	public void setUp() {
+		validator = new AlertValidator();
 		
-		Errors errors = new BindException(alert, "alert");
-		new AlertValidator().validate(alert, errors);
-		Assert.assertTrue(errors.hasFieldErrors("text"));
+		alert = new Alert();
+		
+		errors = new BindException(alert, "alert");
+	}
+	
+	@Test
+	public void shouldFailValidationIfAlertTextIsNull() {
+		
+		validator.validate(alert, errors);
+		
+		assertThatFieldTextHasError();
+	}
+
+	@Test
+	public void shouldFailValidationIfAlertTextIsEmpty() {
 		
 		alert.setText("");
-		errors = new BindException(alert, "alert");
-		new AlertValidator().validate(alert, errors);
-		Assert.assertTrue(errors.hasFieldErrors("text"));
+		
+		validator.validate(alert, errors);
+		
+		assertThatFieldTextHasError();
+	}
+	
+	@Test
+	public void shouldFailValidationIfAlertTextIsOnlyWhitespaces() {
 		
 		alert.setText(" ");
-		errors = new BindException(alert, "alert");
-		new AlertValidator().validate(alert, errors);
-		Assert.assertTrue(errors.hasFieldErrors("text"));
+		
+		validator.validate(alert, errors);
+		
+		assertThatFieldTextHasError();
 	}
 	
-	/**
-	 * Test for all the values being set
-	 * @see AlertValidator#validate(Object,Errors)
-	 * @verifies pass validation if all required values are set
-	 */
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredValuesAreSet() throws Exception {
-		Alert alert = new Alert();
+	public void validate_shouldPassValidationIfAllRequiredValuesAreSet() {
+		
 		alert.setText("Alert Text");
 		
-		Errors errors = new BindException(alert, "alert");
-		new AlertValidator().validate(alert, errors);
-		Assert.assertFalse(errors.hasErrors());
-	}
-	
-	/**
-	 * Test for all the values being set
-	 * @see AlertValidator#validate(Object,Errors)
-	 * @verifies pass validation if field lengths are correct
-	 */
-	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
-		Alert alert = new Alert();
-		alert.setText("text");
+		validator.validate(alert, errors);
 		
-		Errors errors = new BindException(alert, "alert");
-		new AlertValidator().validate(alert, errors);
 		Assert.assertFalse(errors.hasErrors());
 	}
 	
-	/**
-	 * Test for all the values being set
-	 * @see AlertValidator#validate(Object,Errors)
-	 * @verifies fail validation if field lengths are not correct
-	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
-		Alert alert = new Alert();
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
+		
 		alert
 		        .setText("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		
-		Errors errors = new BindException(alert, "alert");
-		new AlertValidator().validate(alert, errors);
+		validator.validate(alert, errors);
+		
+		assertThatFieldTextHasError();
+	}
+	
+	private void assertThatFieldTextHasError() {
 		Assert.assertTrue(errors.hasFieldErrors("text"));
 	}
 }

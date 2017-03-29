@@ -152,6 +152,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 					updateStatement.setString(4, name);
 					updateStatement.setString(5, UUID.randomUUID().toString());
 					updateStatement.executeUpdate();
+					updateStatement.close();
 					
 					// Tag the first english name as preferred. This is ugly, but it's not feasible to
 					// fix this before refactoring concept_name_tags.
@@ -160,6 +161,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 						        .prepareStatement("INSERT INTO concept_name_tag_map (concept_name_id, concept_name_tag_id) VALUES (?, 4)");
 						updateStatement.setInt(1, conceptNameId);
 						updateStatement.executeUpdate();
+						updateStatement.close();
 						preferredDoneAlready = true;
 					}
 					
@@ -211,6 +213,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			        .prepareStatement("UPDATE obs SET value_coded = ?, value_numeric = NULL WHERE value_numeric != 0 AND concept_id IN (SELECT concept_id FROM concept WHERE datatype_id = 10)");
 			updateStatement.setInt(1, trueConceptId);
 			updateStatement.executeUpdate();
+			updateStatement.close();
 			
 			updateStatement = connection
 			        .prepareStatement("UPDATE obs SET value_coded = ?, value_numeric = NULL WHERE value_numeric = 0 AND concept_id IN (SELECT concept_id FROM concept WHERE datatype_id = 10)");

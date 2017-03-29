@@ -17,7 +17,6 @@ public class VisitEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see VisitEditor#setAsText(String)
-	 * @verifies set using id
 	 */
 	@Test
 	public void setAsText_shouldSetUsingId() throws Exception {
@@ -28,7 +27,6 @@ public class VisitEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see VisitEditor#setAsText(String)
-	 * @verifies set using uuid
 	 */
 	@Test
 	public void setAsText_shouldSetUsingUuid() throws Exception {

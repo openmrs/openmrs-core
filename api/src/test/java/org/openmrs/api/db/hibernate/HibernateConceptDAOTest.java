@@ -27,7 +27,6 @@ import org.openmrs.Drug;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
@@ -39,7 +38,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	private HibernateConceptDAO dao;
 	
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		executeDataSet(PROVIDERS_INITIAL_XML);
 		
 		updateSearchIndex();
@@ -47,11 +46,9 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateConceptDAO#getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)
-	 * @verifies return a drug if either the drug name or concept name matches the phase not both
 	 */
 	@Test
-	@Verifies(value = "return a drug if either the drug name or concept name matches the phase not both", method = "getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)")
-	public void getDrugs_shouldReturnDrugIf_eitherDrugNameOrConceptNameMatchesThePhaseNotBoth() throws Exception {
+	public void getDrugs_shouldReturnDrugIf_eitherDrugNameOrConceptNameMatchesThePhaseNotBoth() {
 		Concept concept = dao.getConcept(3);
 		
 		// concept has "COUGH SYRUP" as a concept_name and also Drug has
@@ -59,16 +56,13 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		// either drug name or concept name match the phase
 		List<Drug> drugList = dao.getDrugs("COUGH", concept, true, true, false, 0, 10);
 		Assert.assertEquals(2, drugList.size());
-		
 	}
 	
 	/**
 	 * @see HibernateConceptDAO#getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)
-	 * @verifies return distinct drugs
 	 */
 	@Test
-	@Verifies(value = "return distinct drugs", method = "getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)")
-	public void getDrugs_shouldReturnDistinctDrugs() throws Exception {
+	public void getDrugs_shouldReturnDistinctDrugs() {
 		Concept concept1 = dao.getConcept(14);
 		
 		List<Drug> drugList = dao.getDrugs("TEST_DRUG", concept1, true, true, false, 0, 10);
@@ -78,11 +72,9 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateConceptDAO#getDrugs(String,Concept,boolean)
-	 * @verifies returns a drug regardless of case sensitivity
 	 */
 	@Test
-	@Verifies(value = "return a drug if drug name is passed with upper or lower case", method = "getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)")
-	public void getDrugs_shouldReturnDrugIf_EitherDrugNameIsUpperOrLowerCase() throws Exception {
+	public void getDrugs_shouldReturnDrugIf_EitherDrugNameIsUpperOrLowerCase() {
 		List<Drug> drugList1 = dao.getDrugs("Triomune-30", null, true);
 		Assert.assertEquals(1, drugList1.size());
 		
@@ -93,12 +85,9 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateConceptDAO#getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)
-	 * @verifies return a drug if phrase match drug_name No need to match both concept_name and
-	 *           drug_name
 	 */
 	@Test
-	@Verifies(value = "return a drug if phrase match drug_name No need to match both concept_name and drug_name", method = "getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)")
-	public void getDrugs_shouldReturnDrugIfPhraseMatchDrugNameNoNeedToMatchBothConceptNameAndDrugName() throws Exception {
+	public void getDrugs_shouldReturnDrugIfPhraseMatchDrugNameNoNeedToMatchBothConceptNameAndDrugName() {
 		// This concept does not contain concept_name with "Triomune"
 		Concept concept2 = dao.getConcept(3);
 		
@@ -112,12 +101,9 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateConceptDAO#getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)
-	 * @verifies return a drug, if phrase match concept_name No need to match both concept_name and
-	 *           drug_name
 	 */
 	@Test
-	@Verifies(value = "return a drug, if phrase match concept_name No need to match both concept_name and drug_name", method = "getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)")
-	public void getDrugs_shouldReturnDrugIfPhaseMatchConceptNameNoNeedToMatchBothConceptNameAndDrugName() throws Exception {
+	public void getDrugs_shouldReturnDrugIfPhaseMatchConceptNameNoNeedToMatchBothConceptNameAndDrugName() {
 		Concept concept4 = dao.getConcept(7);
 		
 		//In this test, there is no any drug_name with "VOIDED" but concept_name
@@ -130,11 +116,9 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateConceptDAO#getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)
-	 * @verifies return drug when phrase match drug_name even searchDrugConceptNames is false
 	 */
 	@Test
-	@Verifies(value = "return drug when phrase match drug_name even searchDrugConceptNames is false", method = "getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)")
-	public void getDrugs_shouldReturnDrugWhenPhraseMatchDrugNameEvenSerchDrugConceeptNameIsfalse() throws Exception {
+	public void getDrugs_shouldReturnDrugWhenPhraseMatchDrugNameEvenSerchDrugConceeptNameIsfalse() {
 		
 		List<Drug> drugList = dao.getDrugs("Triomune-30", null, true, false, false, 0, 10);
 		Assert.assertEquals(1, drugList.size());
@@ -143,11 +127,9 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateConceptDAO#getDrugs(String)
-	 * @verifies return drug should not return retired
 	 */
 	@Test
-	@Verifies(value = "return drug should not return retired", method = "getDrugs(String)")
-	public void getDrugs_shouldNotReturnRetired() throws Exception {
+	public void getDrugs_shouldNotReturnRetired() {
 		
 		List<Drug> drugList = dao.getDrugs("TEST_DRUG_NAME_RETIRED");
 		Assert.assertEquals(0, drugList.size());
@@ -156,11 +138,9 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateConceptDAO#getDrugs(String)
-	 * @verifies return drug should return non-retired
 	 */
 	@Test
-	@Verifies(value = "return drug should return non-retired", method = "getDrugs(String)")
-	public void getDrugs_shouldReturnNonRetired() throws Exception {
+	public void getDrugs_shouldReturnNonRetired() {
 		
 		List<Drug> drugList = dao.getDrugs("TEST_DRUG_NAME");
 		Assert.assertEquals(1, drugList.size());
@@ -168,8 +148,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	@Verifies(value = "return a drug if drug name is passed with special character", method = "getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)")
-	public void getDrugs_shouldReturnDrugEvenIf_DrugNameHasSpecialCharacters() throws Exception {
+	public void getDrugs_shouldReturnDrugEvenIf_DrugNameHasSpecialCharacters() {
 		List<Drug> drugList1 = dao.getDrugs("DRUG_NAME_WITH_SPECIAL_CHARACTERS (", null, true);
 		Assert.assertEquals(1, drugList1.size());
 
@@ -177,10 +156,9 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see HibernateConceptDAO#getConceptAttributeCount(ConceptAttributeType)
-	 * @verifies return attribute count for given attribute type
 	 */
 	@Test
-	public void shouldGetConceptAttributeCountForAttributeType() throws Exception {
+	public void shouldGetConceptAttributeCountForAttributeType() {
 		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
 		ConceptAttributeType conceptAttributeType = Context.getConceptService().getConceptAttributeType(1);
 		Assert.assertEquals(1, dao.getConceptAttributeCount(conceptAttributeType));
@@ -188,7 +166,7 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test //TRUNK-4967
-	public void isConceptNameDuplicate_shouldNotFailIfConceptDoesNotHaveADefaultNameForLocale() throws Exception {
+	public void isConceptNameDuplicate_shouldNotFailIfConceptDoesNotHaveADefaultNameForLocale() {
 		//given
 		ConceptClass diagnosis = dao.getConceptClasses("Diagnosis").get(0);
 		ConceptDatatype na = dao.getConceptDatatypeByName("N/A");

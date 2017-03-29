@@ -37,7 +37,6 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -64,7 +63,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getAllProviderAttributeTypes(boolean)
-	 * @verifies get all provider attribute types excluding retired
 	 */
 	@Test
 	public void getAllProviderAttributeTypes_shouldGetAllProviderAttributeTypesExcludingRetired() throws Exception {
@@ -74,7 +72,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getAllProviderAttributeTypes(boolean)
-	 * @verifies get all provider attribute types including retired
 	 */
 	@Test
 	public void getAllProviderAttributeTypes_shouldGetAllProviderAttributeTypesIncludingRetired() throws Exception {
@@ -84,7 +81,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getAllProviderAttributeTypes()
-	 * @verifies get all provider attribute types including retired by default
 	 */
 	@Test
 	public void getAllProviderAttributeTypes_shouldGetAllProviderAttributeTypesIncludingRetiredByDefault() throws Exception {
@@ -94,7 +90,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getAllProviders()
-	 * @verifies get all providers
 	 */
 	@Test
 	public void getAllProviders_shouldGetAllProviders() throws Exception {
@@ -104,7 +99,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getAllProviders(boolean)
-	 * @verifies get all providers that are unretired
 	 */
 	@Test
 	public void getAllProviders_shouldGetAllProvidersThatAreUnretired() throws Exception {
@@ -114,7 +108,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProvider(Integer)
-	 * @verifies get provider given ID
 	 */
 	@Test
 	public void getProvider_shouldGetProviderGivenID() throws Exception {
@@ -124,7 +117,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviderAttribute(Integer)
-	 * @verifies get providerAttribute given ID
 	 */
 	@Test
 	public void getProviderAttribute_shouldGetProviderAttributeGivenID() throws Exception {
@@ -134,7 +126,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviderAttributeByUuid(String)
-	 * @verifies get providerAttribute given Uuid
 	 */
 	
 	@Test
@@ -145,7 +136,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviderAttributeType(Integer)
-	 * @verifies get provider attribute type for the given id
 	 */
 	@Test
 	public void getProviderAttributeType_shouldGetProviderAttributeTypeForTheGivenId() throws Exception {
@@ -156,7 +146,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviderAttributeTypeByUuid(String)
-	 * @verifies get the provider attribute type by it's uuid
 	 */
 	@Test
 	public void getProviderAttributeTypeByUuid_shouldGetTheProviderAttributeTypeByItsUuid() throws Exception {
@@ -167,7 +156,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviderByUuid(String)
-	 * @verifies get provider given Uuid
 	 */
 	@Test
 	public void getProviderByUuid_shouldGetProviderGivenUuid() throws Exception {
@@ -178,7 +166,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviders(String, Integer, Integer, java.util.Map)
-	 * @verifies fetch provider with given name with case in sensitive
 	 */
 	@Test
 	public void getProviders_shouldFetchProviderWithGivenNameWithCaseInSensitive() throws Exception {
@@ -188,7 +175,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviders(String, Integer, Integer, java.util.Map)
-	 * @verifies fetch provider by matching query string with any unVoided PersonName's Given Name
 	 */
 	@Test
 	public void getProviders_shouldFetchProviderByMatchingQueryStringWithAnyUnVoidedPersonNamesGivenName() throws Exception {
@@ -197,7 +183,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviders(String, Integer, Integer, java.util.Map)
-	 * @verifies fetch provider by matching query string with any unVoided PersonName's middleName
 	 */
 	@Test
 	public void getProviders_shouldFetchProviderByMatchingQueryStringWithAnyUnVoidedPersonNamesMiddleName() throws Exception {
@@ -206,7 +191,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviders(String, Integer, Integer, java.util.Map)
-	 * @verifies fetch provider by matching query string with any unVoided Person's familyName
 	 */
 	@Test
 	public void getProviders_shouldFetchProviderByMatchingQueryStringWithAnyUnVoidedPersonsFamilyName() throws Exception {
@@ -215,7 +199,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviders(String, Integer, Integer, java.util.Map)
-	 * @verifies not fetch provider if the query string matches with any voided Person name for that
 	 */
 	@Test
 	public void getProviders_shouldNotFetchProviderIfTheQueryStringMatchesWithAnyVoidedPersonNameForThat() throws Exception {
@@ -225,7 +208,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#purgeProvider(Provider)
-	 * @verifies delete a provider
 	 */
 	@Test
 	public void purgeProvider_shouldDeleteAProvider() throws Exception {
@@ -236,7 +218,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#purgeProviderAttributeType(ProviderAttributeType)
-	 * @verifies delete a provider attribute type
 	 */
 	@Test
 	public void purgeProviderAttributeType_shouldDeleteAProviderAttributeType() throws Exception {
@@ -248,7 +229,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#retireProvider(Provider,String)
-	 * @verifies retire a provider
 	 */
 	@Test
 	public void retireProvider_shouldRetireAProvider() throws Exception {
@@ -263,7 +243,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#retireProviderAttributeType(ProviderAttributeType,String)
-	 * @verifies retire provider type attribute
 	 */
 	@Test
 	public void retireProviderAttributeType_shouldRetireProviderTypeAttribute() throws Exception {
@@ -279,7 +258,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#saveProvider(Provider)
-	 * @verifies save a Provider with Person alone
 	 */
 	@Test
 	public void saveProvider_shouldSaveAProviderWithPersonAlone() throws Exception {
@@ -298,7 +276,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#saveProviderAttributeType(ProviderAttributeType)
-	 * @verifies save the provider attribute type
 	 */
 	@Test
 	public void saveProviderAttributeType_shouldSaveTheProviderAttributeType() throws Exception {
@@ -313,7 +290,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#unretireProvider(Provider)
-	 * @verifies unretire a provider
 	 */
 	@Test
 	public void unretireProvider_shouldUnretireAProvider() throws Exception {
@@ -325,7 +301,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#unretireProviderAttributeType(ProviderAttributeType)
-	 * @verifies unretire a provider attribute type
 	 */
 	@Test
 	public void unretireProviderAttributeType_shouldUnretireAProviderAttributeType() throws Exception {
@@ -338,7 +313,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviders(String, Integer, Integer, java.util.Map)
-	 * @verifies get all providers with given attribute values
 	 */
 	@Test
 	public void getProviders_shouldGetAllProvidersWithGivenAttributeValues() throws Exception {
@@ -351,7 +325,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviders(String, Integer, Integer, java.util.Map)
-	 * @verifies not find any providers if none have given attribute values
 	 */
 	@Test
 	public void getProviders_shouldNotFindAnyProvidersIfNoneHaveGivenAttributeValues() throws Exception {
@@ -363,7 +336,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviders(String, Integer, Integer, java.util.Map)
-	 * @verifies finds retired providers by default
 	 */
 	@Test
 	public void getProviders_shouldReturnRetiredProvidersByDefault() throws Exception {
@@ -373,7 +345,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviders(String, Integer, Integer, java.util.Map, boolean)
-	 * @verifies does not find retired providers if includeRetired is false
 	 */
 	@Test
 	public void getProviders_shouldNotReturnRetiredProvidersIfIncludeRetiredIsFalse() throws Exception {
@@ -383,7 +354,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProvidersByPerson(Person)
-	 * @verifies fail if person is null
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void getProvidersByPerson_shouldFailIfPersonIsNull() throws Exception {
@@ -398,7 +368,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProvidersByPerson(Person)
-	 * @verifies return provider for given person
 	 */
 	@Test
 	public void getProvidersByPerson_shouldReturnProvidersForGivenPerson() throws Exception {
@@ -419,7 +388,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviders(String,Integer,Integer,Map)
-	 * @verifies return all providers if query is empty
 	 */
 	@Test
 	public void getProviders_shouldReturnAllProvidersIfQueryIsEmptyAndIncludeRetiredTrue() throws Exception {
@@ -437,7 +405,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 * @see ProviderService#isProviderIdentifierUnique(Provider)
 	 */
 	@Test
-	@Verifies(value = "should return false if the identifier is a duplicate", method = "isProviderIdentifierUnique(Provider)")
 	public void isProviderIdentifierUnique_shouldReturnFalseIfTheIdentifierIsADuplicate() throws Exception {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateProvider = service.getProvider(200);
@@ -451,7 +418,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 * @see ProviderService#getProviderByIdentifier(String)
 	 */
 	@Test
-	@Verifies(value = "should get a provider matching the specified identifier ignoring case", method = "getProviderByIdentifier(String)")
 	public void getProviderByIdentifier_shouldGetAProviderMatchingTheSpecifiedIdentifierIgnoringCase() throws Exception {
 		String identifier = "8a760";
 		Provider provider = service.getProviderByIdentifier(identifier);
@@ -463,7 +429,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ProviderService#getProviders(String,Integer,Integer,Map,boolean)
-	 * @verifies find provider by identifier
 	 */
 	@Test
 	public void getProviders_shouldFindProviderByIdentifier() throws Exception {
@@ -478,7 +443,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 * @see ProviderService#isProviderIdentifierUnique(Provider)
 	 */
 	@Test
-	@Verifies(value = "should return true if the identifier is null", method = "isProviderIdentifierUnique(Provider)")
 	public void isProviderIdentifierUnique_shouldReturnTrueIfTheIdentifierIsNull() throws Exception {
 		Provider provider = new Provider();
 		Assert.assertTrue(service.isProviderIdentifierUnique(provider));
@@ -488,7 +452,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 * @see ProviderService#isProviderIdentifierUnique(Provider)
 	 */
 	@Test
-	@Verifies(value = "should return true if the identifier is a blank string", method = "isProviderIdentifierUnique(Provider)")
 	public void isProviderIdentifierUnique_shouldReturnTrueIfTheIdentifierIsABlankString() throws Exception {
 		Provider provider = new Provider();
 		provider.setIdentifier("");
@@ -499,7 +462,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 * @see ProviderService#getCountOfProviders(String,null)
 	 */
 	@Test
-	@Verifies(value = "should fetch number of provider matching given query", method = "getCountOfProviders(String,null)")
 	public void getCountOfProviders_shouldFetchNumberOfProviderMatchingGivenQuery() throws Exception {
 		assertEquals(1, service.getCountOfProviders("Hippo").intValue());
 		Person person = Context.getPersonService().getPerson(502);
@@ -521,7 +483,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Ignore
-	@Verifies(value = "should exclude retired providers", method = "getCountOfProviders(String)")
 	public void getCountOfProviders_shouldExcludeRetiredProviders() throws Exception {
 		assertEquals(2, service.getCountOfProviders("provider").intValue());
 	}
@@ -531,13 +492,11 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Ignore
-	@Verifies(value = "should include retired providers if includeRetired is set to true", method = "getCountOfProviders(String,null)")
 	public void getCountOfProviders_shouldIncludeRetiredProvidersIfIncludeRetiredIsSetToTrue() throws Exception {
 		assertEquals(4, service.getCountOfProviders("provider").intValue());
 	}
 	
 	/**
-	 * @verifies get the unknown provider account
 	 * @see ProviderService#getUnknownProvider()
 	 */
 	@Test

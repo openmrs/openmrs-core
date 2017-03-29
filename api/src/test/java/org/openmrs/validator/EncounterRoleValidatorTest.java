@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.openmrs.EncounterRole;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -27,8 +26,7 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.validator.EncounterRoleValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the name of the encounter role is null empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheNameOfTheEncounterRoleIsNullEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailIfTheNameOfTheEncounterRoleIsNullEmptyOrWhitespace() {
 		
 		EncounterRole encounterRoleNo1 = new EncounterRole();
 		encounterRoleNo1.setName(null);
@@ -53,8 +51,7 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.validator.EncounterRoleValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if encounter role name is duplicate", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfEncounterRoleNameIsDuplicate() throws Exception {
+	public void validate_shouldFailIfEncounterRoleNameIsDuplicate() {
 		
 		Assert.assertNotNull(Context.getEncounterService().getEncounterRoleByName("Unknown"));
 		
@@ -70,8 +67,7 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 	 * {@link org.openmrs.validator.EncounterRoleValidator#validate(Object, org.springframework.validation.Errors)}
 	 */
 	@Test
-	@Verifies(value = "should pass editing encounter role name", method = "validate(Object,Errors)")
-	public void validate_shouldPassEditingEncounterRoleName() throws Exception {
+	public void validate_shouldPassEditingEncounterRoleName() {
 		
 		EncounterRole encounterRole = Context.getEncounterService().getEncounterRoleByName("Unknown");
 		Assert.assertNotNull(encounterRole);
@@ -87,8 +83,7 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 	 * {@link org.openmrs.validator.EncounterRoleValidator#validate(Object, org.springframework.validation.Errors)}
 	 */
 	@Test
-	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		
 		EncounterRole encounterRole = Context.getEncounterService().getEncounterRoleByName("Unknown");
 		Assert.assertNotNull(encounterRole);
@@ -104,8 +99,7 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 	 * {@link org.openmrs.validator.EncounterRoleValidator#validate(Object, org.springframework.validation.Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		
 		EncounterRole encounterRole = new EncounterRole();
 		encounterRole

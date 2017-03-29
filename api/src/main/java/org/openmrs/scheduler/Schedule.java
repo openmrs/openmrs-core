@@ -191,13 +191,6 @@ public class Schedule {
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
-	
-	/**
-	 * Set the start time for when the task should be executed. For instance, use "new Date()", if
-	 * you want it to start now.
-	 * 
-	 * @param startTime start time for the task
-	 */
 
 	/**
 	 * Gets the number of seconds until task is executed again.

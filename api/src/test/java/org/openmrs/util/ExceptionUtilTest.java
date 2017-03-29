@@ -20,7 +20,6 @@ public class ExceptionUtilTest {
 	
 	/**
 	 * @see ExceptionUtil#rethrowIfCause(Throwable,Class)
-	 * @verifies allow an intermediate exception to be rethrown
 	 */
 	@Test
 	public void rethrowIfCause_shouldAllowAnIntermediateExceptionToBeRethrown() throws Exception {

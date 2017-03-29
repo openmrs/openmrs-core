@@ -14,7 +14,6 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -27,7 +26,6 @@ public class PersonNameTest {
 	 * @see PersonName#newInstance(PersonName)
 	 */
 	@Test
-	@Verifies(value = "should copy every property of given personName", method = "newInstance(PersonName)")
 	public void newInstance_shouldCopyEveryPropertyOfGivenPersonName() throws Exception {
 		Integer personNameId = 333;
 		boolean preferred = true;
@@ -81,7 +79,6 @@ public class PersonNameTest {
 	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
-	@Verifies(value = "should return true if all fields other than ID, person and preferred are equal", method = "equalsContent(PersonName)")
 	public void equalsContent_shouldReturnTrueIfAllFieldsOtherThanIdPersonAndPreferredAreEqual() throws Exception {
 		PersonName pn = new PersonName(1);
 		pn.setPrefix("Count");
@@ -114,7 +111,6 @@ public class PersonNameTest {
 	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
-	@Verifies(value = "should return false if suffixes are not equal", method = "equalsContent(PersonName)")
 	public void equalsContent_shouldReturnFalseIfSuffixesAreNotEqual() throws Exception {
 		PersonName nameWithSenior = new PersonName(1);
 		PersonName nameWithJunior = new PersonName(2);
@@ -129,7 +125,6 @@ public class PersonNameTest {
 	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
-	@Verifies(value = "should return false if family name prefixes are not equal", method = "equalsContent(PersonName)")
 	public void equalsContent_shouldReturnFalseIfPrefixesAreNotEqual() throws Exception {
 		PersonName nameWithVanDer = new PersonName(1);
 		PersonName nameWithDe = new PersonName(2);
@@ -144,7 +139,6 @@ public class PersonNameTest {
 	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
-	@Verifies(value = "should return false if family name 2 is not equal", method = "equalsContent(PersonName)")
 	public void equalsContent_shouldReturnFalseIfFamilyName2IsNotEqual() throws Exception {
 		PersonName name1 = new PersonName(1);
 		PersonName name2 = new PersonName(2);
@@ -159,7 +153,6 @@ public class PersonNameTest {
 	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
-	@Verifies(value = "should return false if prefix is not equal", method = "equalsContent(PersonName)")
 	public void equalsContent_shouldReturnFalseIfPrefixIsNotEqual() throws Exception {
 		PersonName name1 = new PersonName(1);
 		PersonName name2 = new PersonName(2);
@@ -174,7 +167,6 @@ public class PersonNameTest {
 	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
-	@Verifies(value = "should return false if degrees are not equal", method = "equalsContent(PersonName)")
 	public void equalsContent_shouldReturnFalseIfDegreesAreNotEqual() throws Exception {
 		PersonName nameWithDoctor = new PersonName(1);
 		PersonName nameWithProfessor = new PersonName(2);
@@ -189,7 +181,6 @@ public class PersonNameTest {
 	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
-	@Verifies(value = "should return true if only difference in content fields is between null and empty string", method = "equalsContent(PersonName)")
 	public void equalsContent_shouldReturnTrueIfOnlyInContentFieldsDifferenceIsBetweenNullAndEmptyString() throws Exception {
 		PersonName pn = new PersonName(1);
 		pn.setPrefix("");
@@ -222,7 +213,6 @@ public class PersonNameTest {
 	 * @see PersonName#getFamilyName()
 	 */
 	@Test
-	@Verifies(value = "should return obscured name if obscure_patients is set to true", method = "getFamilyName()")
 	public void getFamilyName_shouldReturnObscuredNameIfObscure_patientsIsSetToTrue() throws Exception {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
 		
@@ -236,7 +226,6 @@ public class PersonNameTest {
 	 * @see PersonName#getFamilyName2()
 	 */
 	@Test
-	@Verifies(value = "should return null if obscure_patients is set to true", method = "getFamilyName2()")
 	public void getFamilyName2_shouldReturnNullIfObscure_patientsIsSetToTrue() throws Exception {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
 		
@@ -251,7 +240,6 @@ public class PersonNameTest {
 	 * @see PersonName#getFamilyNamePrefix()
 	 */
 	@Test
-	@Verifies(value = "should return null if obscure_patients is set to true", method = "getFamilyNamePrefix()")
 	public void getFamilyNamePrefix_shouldReturnNullIfObscure_patientsIsSetToTrue() throws Exception {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
 		
@@ -266,7 +254,6 @@ public class PersonNameTest {
 	 * @see PersonName#getFamilyNameSuffix()
 	 */
 	@Test
-	@Verifies(value = "should return null if obscure_patients is set to true", method = "getFamilyNameSuffix()")
 	public void getFamilyNameSuffix_shouldReturnNullIfObscure_patientsIsSetToTrue() throws Exception {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
 		
@@ -281,7 +268,6 @@ public class PersonNameTest {
 	 * @see PersonName#getGivenName()
 	 */
 	@Test
-	@Verifies(value = "should return obscured name if obscure_patients is set to true", method = "getGivenName()")
 	public void getGivenName_shouldReturnObscuredNameIfObscure_patientsIsSetToTrue() throws Exception {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
 		
@@ -295,7 +281,6 @@ public class PersonNameTest {
 	 * @see PersonName#getMiddleName()
 	 */
 	@Test
-	@Verifies(value = "should return obscured name if obscure_patients is set to true", method = "getMiddleName()")
 	public void getMiddleName_shouldReturnObscuredNameIfObscure_patientsIsSetToTrue() throws Exception {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
 		
@@ -309,7 +294,6 @@ public class PersonNameTest {
 	 * @see PersonName#getPrefix()
 	 */
 	@Test
-	@Verifies(value = "should return null if obscure_patients is set to true", method = "getPrefix()")
 	public void getPrefix_shouldReturnNullIfObscure_patientsIsSetToTrue() throws Exception {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
 		
@@ -322,7 +306,6 @@ public class PersonNameTest {
 	
 	/**
 	 * @see PersonName#getFullName()
-	 * @verifies not put spaces around an empty middle name
 	 */
 	@Test
 	public void getFullName_shouldNotPutSpacesAroundAnEmptyMiddleName() throws Exception {
@@ -337,7 +320,6 @@ public class PersonNameTest {
 	 * @see PersonName#getFullName()
 	 */
 	@Test
-	@Verifies(value = "should Not Return Long If Person Name Format Is Short", method = "getFullName()")
 	public void getFullName_shouldNotReturnLongIfPersonNameFormatIsShort() throws Exception {
 		PersonName pn = new PersonName();
 		PersonName.setFormat(OpenmrsConstants.PERSON_NAME_FORMAT_LONG);
@@ -354,7 +336,6 @@ public class PersonNameTest {
 	}
 	
 	@Test
-	@Verifies(value = "should Not Return Short If Person Name Format Is Long", method = "getFullName()")
 	public void getFullName_shouldNotReturnShortIfPersonNameFormatIsLong() throws Exception {
 		PersonName pn = new PersonName();
 		PersonName.setFormat(OpenmrsConstants.PERSON_NAME_FORMAT_LONG);
@@ -370,7 +351,6 @@ public class PersonNameTest {
 	}
 	
 	@Test
-	@Verifies(value = "should Return Short If Person Name Format Is null", method = "getFullName()")
 	public void getFullName_shouldReturnShortIfPersonNameFormatIsNull() throws Exception {
 		PersonName pn = new PersonName();
 		PersonName.setFormat(OpenmrsConstants.PERSON_NAME_FORMAT_LONG);

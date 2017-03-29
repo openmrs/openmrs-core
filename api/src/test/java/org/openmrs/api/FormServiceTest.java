@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,7 +44,6 @@ import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.SerializableComplexObsHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -67,7 +67,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldFormCreateUpdateDelete() throws Exception {
+	public void shouldFormCreateUpdateDelete() {
 		FormService formService = Context.getFormService();
 		
 		//testing Form creation
@@ -130,7 +130,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldFieldCreateModifyDelete() throws Exception {
+	public void shouldFieldCreateModifyDelete() {
 		
 		executeDataSet(INITIAL_FIELDS_XML);
 		
@@ -207,8 +207,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFormField(Form,Concept,Collection<QFormField;>,null)
 	 */
 	@Test
-	@Verifies(value = "should ignore formFields passed to ignoreFormFields", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
-	public void getFormField_shouldIgnoreFormFieldsPassedToIgnoreFormFields() throws Exception {
+	public void getFormField_shouldIgnoreFormFieldsPassedToIgnoreFormFields() {
 		
 		executeDataSet(INITIAL_FIELDS_XML);
 		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
@@ -218,7 +217,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		// test that the first formfield is ignored when a second fetch
 		// is done on the same form and same concept
-		List<FormField> ignoreFormFields = new Vector<FormField>();
+		List<FormField> ignoreFormFields = new Vector<>();
 		ignoreFormFields.add(ff);
 		FormField ff2 = Context.getFormService().getFormField(new Form(1), new Concept(1), ignoreFormFields, false);
 		assertNotNull(ff2);
@@ -230,8 +229,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFormField(Form,Concept,Collection<QFormField;>,null)
 	 */
 	@Test
-	@Verifies(value = "should not fail with null ignoreFormFields argument", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
-	public void getFormField_shouldNotFailWithNullIgnoreFormFieldsArgument() throws Exception {
+	public void getFormField_shouldNotFailWithNullIgnoreFormFieldsArgument() {
 		// test that a null ignoreFormFields doesn't error out
 		FormField ff = Context.getFormService().getFormField(new Form(1), new Concept(3), null, false);
 		assertNotNull(ff);
@@ -244,14 +242,13 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 
 	 */
 	@Test
-	@Verifies(value = "should return duplicate form when given fields included in form multiple times", method = "getForms(String,Boolean,Collection,Boolean,Collection,Collection,Collection)")
-	public void getForms_shouldReturnDuplicateFormWhenGivenFieldsIncludedInFormMultipleTimes() throws Exception {
+	public void getForms_shouldReturnDuplicateFormWhenGivenFieldsIncludedInFormMultipleTimes() {
 		executeDataSet(INITIAL_FIELDS_XML);
 		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
 		
 		FormService formService = Context.getFormService();
 		
-		List<Field> fields = new Vector<Field>();
+		List<Field> fields = new Vector<>();
 		fields.add(new Field(1));
 		
 		List<Form> forms = formService.getForms(null, null, null, null, null, null, fields);
@@ -260,19 +257,18 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @throws Exception 
+	 * @
 	 * @see FormService#getForms(String,Boolean,Collection,Boolean,Collection,Collection,Collection)
-	 * @verifies return forms containing all form fields in containingAllFormFields
 	 */
 	@Test
-	public void getForms_shouldReturnFormsContainingAllFormFieldsInContainingAllFormFields() throws Exception {
+	public void getForms_shouldReturnFormsContainingAllFormFieldsInContainingAllFormFields() {
 		
 		executeDataSet(INITIAL_FIELDS_XML);
 		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
 		
 		FormService formService = Context.getFormService();
 		
-		Set<FormField> formFields = new HashSet<FormField>();
+		Set<FormField> formFields = new HashSet<>();
 		formFields.add(new FormField(3));
 		formFields.add(new FormField(5));
 		formFields.add(new FormField(7));
@@ -280,7 +276,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		List<Form> forms = formService.getForms(null, null, null, null, null, formFields, null);
 		assertEquals(1, forms.size());
 		
-		formFields = new HashSet<FormField>();
+		formFields = new HashSet<>();
 		formFields.add(new FormField(2));
 		formFields.add(new FormField(4));
 		formFields.add(new FormField(6));
@@ -296,8 +292,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 
 	 */
 	@Test
-	@Verifies(value = "return forms that have any matching formFields in containingAnyFormField", method = "getForms(String,Boolean,Collection,Boolean,Collection,Collection,Collection)")
-	public void getForms_shouldReturnFormsThatHaveAnyMatchingFormFieldsInContainingAnyFormField() throws Exception {
+	public void getForms_shouldReturnFormsThatHaveAnyMatchingFormFieldsInContainingAnyFormField() {
 		
 		Integer numberOfExpectedForms = new Integer(2);
 		
@@ -321,7 +316,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		int formFieldAIdentifier = 2;
 		int formFieldBIdentifier = 9;
 		
-		Collection<FormField> containingAnyFormField = new ArrayList<FormField>();
+		Collection<FormField> containingAnyFormField = new ArrayList<>();
 		FormField formFieldA = formService.getFormField(formFieldAIdentifier);
 		FormField formFieldB = formService.getFormField(formFieldBIdentifier);
 		containingAnyFormField.add(formFieldA);
@@ -360,8 +355,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#saveFieldType(FieldType)
 	 */
 	@Test
-	@Verifies(value = "should create new field type", method = "saveFieldType(FieldType)")
-	public void saveFieldType_shouldCreateNewFieldType() throws Exception {
+	public void saveFieldType_shouldCreateNewFieldType() {
 		FieldType fieldType = new FieldType();
 		
 		fieldType.setName("testing");
@@ -379,8 +373,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#saveFieldType(FieldType)
 	 */
 	@Test
-	@Verifies(value = "should update existing field type", method = "saveFieldType(FieldType)")
-	public void saveFieldType_shouldUpdateExistingFieldType() throws Exception {
+	public void saveFieldType_shouldUpdateExistingFieldType() {
 		FormService formService = Context.getFormService();
 		
 		FieldType fieldType = formService.getFieldType(1);
@@ -398,8 +391,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#duplicateForm(Form)
 	 */
 	@Test
-	@Verifies(value = "should clear changed details and update creation details", method = "duplicateForm(Form)")
-	public void duplicateForm_shouldClearChangedDetailsAndUpdateCreationDetails() throws Exception {
+	public void duplicateForm_shouldClearChangedDetailsAndUpdateCreationDetails() {
 		FormService formService = Context.getFormService();
 		Form form = formService.getForm(1);
 		
@@ -417,8 +409,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFormField(Form,Concept,Collection<QFormField;>,null)
 	 */
 	@Test
-	@Verifies(value = "should simply return null for nonexistent concepts", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
-	public void getFormField_shouldSimplyReturnNullForNonexistentConcepts() throws Exception {
+	public void getFormField_shouldSimplyReturnNullForNonexistentConcepts() {
 		// test a non existent concept
 		assertNull(Context.getFormService().getFormField(new Form(1), new Concept(293934), null, false));
 	}
@@ -427,8 +418,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFormField(Form,Concept,Collection<QFormField;>,null)
 	 */
 	@Test
-	@Verifies(value = "should simply return null for nonexistent forms", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
-	public void getFormField_shouldSimplyReturnNullForNonexistentForms() throws Exception {
+	public void getFormField_shouldSimplyReturnNullForNonexistentForms() {
 		// test a non existent form
 		assertNull(Context.getFormService().getFormField(new Form(12343), new Concept(293934), null, false));
 	}
@@ -437,8 +427,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#duplicateForm(Form)
 	 */
 	@Test
-	@Verifies(value = "should give a new uuid to the duplicated form", method = "duplicateForm(Form)")
-	public void duplicateForm_shouldGiveANewUuidToTheDuplicatedForm() throws Exception {
+	public void duplicateForm_shouldGiveANewUuidToTheDuplicatedForm() {
 		FormService formService = Context.getFormService();
 		Form form = formService.getForm(1);
 		String originalUUID = form.getUuid();
@@ -452,8 +441,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFieldAnswerByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getFieldAnswerByUuid(String)")
-	public void getFieldAnswerByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getFieldAnswerByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getFormService().getFieldAnswerByUuid("some invalid uuid"));
 	}
 	
@@ -461,8 +449,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFieldByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getFieldByUuid(String)")
-	public void getFieldByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getFieldByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "db016b7d-39a5-4911-89da-0eefbfef7cb2";
 		Field field = Context.getFormService().getFieldByUuid(uuid);
 		assertEquals(1, (int) field.getFieldId());
@@ -472,8 +459,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFieldByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getFieldByUuid(String)")
-	public void getFieldByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getFieldByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getFormService().getFieldByUuid("some invalid uuid"));
 	}
 	
@@ -481,8 +467,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFieldTypeByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getFieldTypeByUuid(String)")
-	public void getFieldTypeByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getFieldTypeByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "e7016b7d-39a5-4911-89da-0eefbfef7cb5";
 		FieldType fieldType = Context.getFormService().getFieldTypeByUuid(uuid);
 		assertEquals(2, (int) fieldType.getFieldTypeId());
@@ -492,8 +477,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFieldTypeByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getFieldTypeByUuid(String)")
-	public void getFieldTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getFieldTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getFormService().getFieldTypeByUuid("some invalid uuid"));
 	}
 	
@@ -501,8 +485,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFormByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getFormByUuid(String)")
-	public void getFormByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getFormByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "d9218f76-6c39-45f4-8efa-4c5c6c199f50";
 		Form form = Context.getFormService().getFormByUuid(uuid);
 		assertEquals(1, (int) form.getFormId());
@@ -512,8 +495,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFormByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getFormByUuid(String)")
-	public void getFormByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getFormByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getFormService().getFormByUuid("some invalid uuid"));
 	}
 	
@@ -521,8 +503,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFormFieldByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getFormFieldByUuid(String)")
-	public void getFormFieldByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getFormFieldByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "1c822b7b-7840-463d-ba70-e0c8338a4c2d";
 		FormField formField = Context.getFormService().getFormFieldByUuid(uuid);
 		assertEquals(2, (int) formField.getFormFieldId());
@@ -532,8 +513,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFormFieldByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getFormFieldByUuid(String)")
-	public void getFormFieldByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getFormFieldByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getFormService().getFormFieldByUuid("some invalid uuid"));
 	}
 	
@@ -541,8 +521,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#saveFormField(FormField)
 	 */
 	@Test
-	@Verifies(value = "should propagate save to the Field property on the given FormField", method = "saveFormField(FormField)")
-	public void saveFormField_shouldPropagateSaveToTheFieldPropertyOnTheGivenFormField() throws Exception {
+	public void saveFormField_shouldPropagateSaveToTheFieldPropertyOnTheGivenFormField() {
 		// create a new Field
 		Field field = new Field();
 		field.setName("This is a new field");
@@ -564,8 +543,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFormsContainingConcept(Concept)
 	 */
 	@Test
-	@Verifies(value = "should get all forms for concept", method = "getFormsContainingConcept(Concept)")
-	public void getFormsContainingConcept_shouldGetAllFormsForConcept() throws Exception {
+	public void getFormsContainingConcept_shouldGetAllFormsForConcept() {
 		Concept concept = Context.getConceptService().getConcept(3);
 		
 		assertEquals(1, Context.getFormService().getFormsContainingConcept(concept).size());
@@ -575,8 +553,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#getFormsContainingConcept(Concept)
 	 */
 	@Test
-	@Verifies(value = "should merge fields with similar attributes", method = "mergeDuplicateFields()")
-	public void mergeDuplicateFields_shouldMergeDuplicateFieldsInFormFieldsAndThenPurgeTheDuplicateFields() throws Exception {
+	public void mergeDuplicateFields_shouldMergeDuplicateFieldsInFormFieldsAndThenPurgeTheDuplicateFields() {
 		
 		executeDataSet(INITIAL_FIELDS_XML);
 		executeDataSet(FORM_FIELDS_XML);
@@ -591,11 +568,11 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws ParseException
 	 * @see FormService#saveFormResource(org.openmrs.FormResource)
 	 */
 	@Test
-	@Verifies(value = "should persist a FormResource", method = "saveFormResource()")
-	public void saveFormResource_shouldPersistAFormResource() throws Exception {
+	public void saveFormResource_shouldPersistAFormResource() throws ParseException {
 		Form form = Context.getFormService().getForm(1);
 		FormResource resource = new FormResource();
 		resource.setForm(form);
@@ -615,11 +592,11 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws ParseException
 	 * @see FormService#duplicateForm(Form)
 	 */
 	@Test
-	@Verifies(value = "should copy resources for old form to new form", method = "duplicateForm(Form)")
-	public void duplicateForm_shouldCopyResourcesForOldFormToNewForm() throws Exception {
+	public void duplicateForm_shouldCopyResourcesForOldFormToNewForm() throws ParseException {
 		// save an original resource
 		Form form = Context.getFormService().getForm(1);
 		String name = "Start Date";
@@ -645,11 +622,11 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws ParseException
 	 * @see FormService#purgeFormResource(Form,String,String)
 	 */
 	@Test
-	@Verifies(value = "should delete a form resource", method = "purgeFormResource(Form,String,String)")
-	public void purgeFormResource_shouldDeleteAFormResource() throws Exception {
+	public void purgeFormResource_shouldDeleteAFormResource() throws ParseException {
 		// save an original resource
 		Form form = Context.getFormService().getForm(1);
 		String name = "Start Date";
@@ -679,11 +656,11 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws ParseException
 	 * @see FormService#saveFormResource(FormResource)
 	 */
 	@Test
-	@Verifies(value = "should overwrite an existing resource with same name", method = "saveFormResource(FormResource)")
-	public void saveFormResource_shouldOverwriteAnExistingResourceWithSameName() throws Exception {
+	public void saveFormResource_shouldOverwriteAnExistingResourceWithSameName() throws ParseException {
 		String name = "Start Date";
 		
 		// save an original resource
@@ -718,11 +695,11 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws ParseException
 	 * @see FormService#purgeForm(Form)
 	 */
 	@Test
-	@Verifies(value = "should delete form resources for deleted form", method = "purgeForm(Form)")
-	public void purgeForm_shouldDeleteFormResourcesForDeletedForm() throws Exception {
+	public void purgeForm_shouldDeleteFormResourcesForDeletedForm() throws ParseException {
 		// create a new form
 		Form form = new Form();
 		form.setName("form resource test form");
@@ -756,11 +733,11 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws IOException
 	 * @see FormService#saveFormResource(FormResource)
 	 */
 	@Test
-	@Verifies(value = "should be able to save an XSLT", method = "saveFormResource(FormResource)")
-	public void saveFormResource_shouldBeAbleToSaveAnXSLT() throws Exception {
+	public void saveFormResource_shouldBeAbleToSaveAnXSLT() throws IOException {
 		// set up new form
 		Form form = new Form();
 		form.setName("form resource test form");
@@ -811,8 +788,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
-	@Verifies(value = "should inject form fields from serializable complex obs handlers", method = "saveFormField(FormField)")
-	public void saveFormField_shouldInjectFormFieldsFromSerializableComplexObsHandlers() throws Exception {
+	public void saveFormField_shouldInjectFormFieldsFromSerializableComplexObsHandlers() {
 		executeDataSet("org/openmrs/api/include/ConceptComplex.xml");
 		Context.getObsService().registerHandler("NeigborHandler", new NeighborHandler());
 		Concept concept = Context.getConceptService().getConcept(6043);
@@ -846,7 +822,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		@Override
 		public Set<FormField> getFormFields() {
-			Set<FormField> formFields = new HashSet<FormField>();
+			Set<FormField> formFields = new HashSet<>();
 			Field firstName = new Field();
 			firstName.setName("firstName");
 			Field lastName = new Field();
@@ -908,8 +884,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#saveForm(Form)
 	 */
 	@Test
-	@Verifies(method = "saveForm(Form)", value = "should save given form successfully")
-	public void saveForm_shouldSaveGivenFormSuccessfully() throws Exception {
+	public void saveForm_shouldSaveGivenFormSuccessfully() {
 		FormService fs = Context.getFormService();
 		createFormsLockedGPAndSetValue("false");
 		
@@ -927,7 +902,6 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#saveForm(Form)
 	 */
 	@Test
-	@Verifies(method = "saveForm(Form)", value = "should update an existing form")
 	public void saveForm_shouldUpdateAnExistingForm() {
 		FormService fs = Context.getFormService();
 		createFormsLockedGPAndSetValue("false");
@@ -946,8 +920,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @throws FormsLockedException
 	 */
 	@Test(expected = FormsLockedException.class)
-	@Verifies(method = "saveForm(Form)", value = "should throw an error when trying to save an existing form while forms are locked")
-	public void saveForm_shouldThrowAnErrorWhenTryingToSaveAnExistingFormWhileFormsAreLocked() throws Exception {
+	public void saveForm_shouldThrowAnErrorWhenTryingToSaveAnExistingFormWhileFormsAreLocked() {
 		FormService fs = Context.getFormService();
 		createFormsLockedGPAndSetValue("true");
 		
@@ -962,8 +935,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @throws FormsLockedException
 	 */
 	@Test(expected = FormsLockedException.class)
-	@Verifies(method = "saveForm(Form)", value = "should throw an error when trying to save a new form while forms are locked")
-	public void saveForm_shouldThrowAnErrorWhenTryingToSaveANewFormWhileFormsAreLocked() throws Exception {
+	public void saveForm_shouldThrowAnErrorWhenTryingToSaveANewFormWhileFormsAreLocked() {
 		FormService fs = Context.getFormService();
 		createFormsLockedGPAndSetValue("true");
 		
@@ -980,8 +952,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @throws FormsLockedException
 	 */
 	@Test(expected = FormsLockedException.class)
-	@Verifies(method = "purgeForm(Form)", value = "should throw an error when trying to delete a form while forms are locked")
-	public void purgeForm_shouldThrowAnErrorWhenTryingToDeleteFormWhileFormsAreLocked() throws Exception {
+	public void purgeForm_shouldThrowAnErrorWhenTryingToDeleteFormWhileFormsAreLocked() {
 		FormService fs = Context.getFormService();
 		createFormsLockedGPAndSetValue("true");
 		
@@ -994,8 +965,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#purgeForm(Form)
 	 */
 	@Test
-	@Verifies(method = "purgeForm(Form)", value = "should delete given form successfully")
-	public void purgeForm_shouldDeleteGivenFormSuccessfully() throws Exception {
+	public void purgeForm_shouldDeleteGivenFormSuccessfully() {
 		FormService fs = Context.getFormService();
 		createFormsLockedGPAndSetValue("false");
 		
@@ -1010,8 +980,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @throws FormsLockedException
 	 */
 	@Test(expected = FormsLockedException.class)
-	@Verifies(method = "duplicateForm(Form)", value = "should throw an error when trying to duplicate a form while forms are locked")
-	public void duplicateForm_shouldThrowAnErrorWhenTryingToDuplicateFormWhileFormsAreLocked() throws Exception {
+	public void duplicateForm_shouldThrowAnErrorWhenTryingToDuplicateFormWhileFormsAreLocked() {
 		FormService fs = Context.getFormService();
 		createFormsLockedGPAndSetValue("true");
 		
@@ -1023,8 +992,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see FormService#duplicateForm(Form)
 	 */
 	@Test
-	@Verifies(method = "duplicateForm(Form)", value = "should duplicate given form successfully")
-	public void duplicateForm_shouldDuplicateGivenFormSuccessfully() throws Exception {
+	public void duplicateForm_shouldDuplicateGivenFormSuccessfully() {
 		FormService fs = Context.getFormService();
 		createFormsLockedGPAndSetValue("false");
 		

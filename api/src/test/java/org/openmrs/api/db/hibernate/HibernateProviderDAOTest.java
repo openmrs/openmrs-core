@@ -36,7 +36,7 @@ public class HibernateProviderDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		service = Context.getProviderService();
 		
 		if (personDao == null)
@@ -47,10 +47,9 @@ public class HibernateProviderDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateProviderDAO#getProvidersByPerson(Person,boolean)
-	 * @verifies not return retired providers if includeRetired false
 	 */
 	@Test
-	public void getProvidersByPerson_shouldNotReturnRetiredProvidersIfIncludeRetiredFalse() throws Exception {
+	public void getProvidersByPerson_shouldNotReturnRetiredProvidersIfIncludeRetiredFalse() {
 		Collection<Provider> providers = service.getProvidersByPerson(personDao.getPerson(2), false);
 		Assert.assertEquals(1, providers.size());
 		Assert.assertFalse(providers.iterator().next().getRetired());
@@ -58,10 +57,9 @@ public class HibernateProviderDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateProviderDAO#getProvidersByPerson(Person,boolean)
-	 * @verifies list retired providers at the end
 	 */
 	@Test
-	public void getProvidersByPerson_shouldListRetiredProvidersAtTheEnd() throws Exception {
+	public void getProvidersByPerson_shouldListRetiredProvidersAtTheEnd() {
 		List<Provider> providers = new ArrayList<Provider>();
 		providers = (List<Provider>) service.getProvidersByPerson(personDao.getPerson(2), true);
 		
@@ -70,10 +68,9 @@ public class HibernateProviderDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateProviderDAO#getProvidersByPerson(Person,boolean)
-	 * @verifies return all providers if includeRetired true
 	 */
 	@Test
-	public void getProvidersByPerson_shouldReturnAllProvidersIfIncludeRetiredTrue() throws Exception {
+	public void getProvidersByPerson_shouldReturnAllProvidersIfIncludeRetiredTrue() {
 		Assert.assertEquals(2, service.getProvidersByPerson(personDao.getPerson(2), true).size());
 	}
 }

@@ -70,12 +70,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	private Set<String> providedPackages = new LinkedHashSet<String>();
 	
 	private boolean disposed = false;
-	
-	/**
-	 * Holds a list of all classes for this classloader so that they can be cleaned up.
-	 * This is also used to fix: https://tickets.openmrs.org/browse/TRUNK-4053
-	 */
-	private Map<String, Class<?>> loadedClasses = new HashMap<String, Class<?>>();
+
 	
 	/**
 	 * @param module Module
@@ -733,44 +728,6 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		String libname = System.mapLibraryName(name);
 		String result = null;
-		//TODO
-		//		for (Library lib : getModule().getLibraries()) {
-		//			if (lib.isCodeLibrary()) {
-		//				continue;
-		//			}
-		//			URL libUrl = null; //pathResolver.resolvePath(lib, lib.getPath() + libname);
-		//			if (log.isDebugEnabled()) {
-		//				log.debug("findLibrary(String): trying URL " + libUrl);
-		//			}
-		//			File libFile = OpenmrsUtil.url2file(libUrl);
-		//			if (libFile != null) {
-		//				if (log.isDebugEnabled()) {
-		//					log.debug("findLibrary(String): URL " + libUrl
-		//				}
-		//				if (libFile.isFile()) {
-		//					result = libFile.getAbsolutePath();
-		//					break;
-		//				}
-		//				continue;
-		//			}
-		//			// we have some kind of non-local URL
-		//			// try to copy it to local temporary file
-		//			if (libFile != null) {
-		//				if (libFile.isFile()) {
-		//					result = libFile.getAbsolutePath();
-		//					break;
-		//				}
-		//				libraryCache.remove(libUrl);
-		//			}
-		//			if (libraryCache.containsKey(libUrl)) {
-		//				// already tried to cache this library
-		//			}
-		//			libFile = cacheLibrary(libUrl, libname);
-		//			if (libFile != null) {
-		//				result = libFile.getAbsolutePath();
-		//				break;
-		//			}
-		//		}
 		if (log.isTraceEnabled()) {
 			log
 			        .trace("findLibrary(String): name=" + name + ", libname=" + libname + ", result=" + result + ", this="
@@ -991,14 +948,6 @@ public class ModuleClassLoader extends URLClassLoader {
 				result.add(url);
 			}
 		}
-		//			for (Enumeration enm = resourceLoader.findResources(name);
-		//					enm.hasMoreElements();) {
-		//				URL url = (URL) enm.nextElement();
-		//				if (isResourceVisible(name, url, requestor)) {
-		//					result.add(url);
-		//				}
-		//			}
-		//		}
 		if (seenModules == null) {
 			seenModules = new HashSet<String>();
 		}

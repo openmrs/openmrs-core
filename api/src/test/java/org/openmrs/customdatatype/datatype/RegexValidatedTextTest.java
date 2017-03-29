@@ -25,7 +25,6 @@ public class RegexValidatedTextTest {
 	
 	/**
 	 * @see RegexValidatedTextDatatype#validate(String)
-	 * @verifies accept a string that matches the regex
 	 */
 	@Test
 	public void validate_shouldAcceptAStringThatMatchesTheRegex() throws Exception {
@@ -34,7 +33,6 @@ public class RegexValidatedTextTest {
 	
 	/**
 	 * @see RegexValidatedTextDatatype#validate(String)
-	 * @verifies fail if the string does not match the regex
 	 */
 	@Test(expected = InvalidCustomValueException.class)
 	public void validate_shouldFailIfTheStringDoesNotMatchTheRegex() throws Exception {
@@ -43,7 +41,6 @@ public class RegexValidatedTextTest {
 	
 	/**
 	 * @see RegexValidatedTextDatatype#save(String, String))
-	 * @verifies fail if the string does not match the regex
 	 */
 	@Test(expected = InvalidCustomValueException.class)
 	public void toPersistentString_shouldFailIfTheStringDoesNotMatchTheRegex() throws Exception {

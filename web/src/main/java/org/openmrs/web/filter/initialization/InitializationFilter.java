@@ -1709,6 +1709,7 @@ public class InitializationFilter extends StartupFilter {
 						}
 						catch (InputRequiredException inputRequiredEx) {
 							// TODO display a page looping over the required input and ask the user for each.
+							// 		When done and the user and put in their say, call DatabaseUpdater.update(Map);
 							//		with the user's question/answer pairs
 							log
 							        .warn("Unable to continue because user input is required for the db updates and we cannot do anything about that right now");

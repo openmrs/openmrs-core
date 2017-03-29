@@ -30,7 +30,7 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	private ProviderService service;
 	
 	@Before
-	public void before() throws Exception {
+	public void before() {
 		service = Context.getProviderService();
 		executeDataSet(PROVIDERS_INITIAL_XML);
 		executeDataSet(PROVIDER_ATTRIBUTE_TYPES_XML);
@@ -38,13 +38,11 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies void the attribute if an attribute with same attribute type already exists and the
-	 *           maxOccurs is set to 1
 	 * @see org.openmrs.BaseCustomizableMetadata#setAttribute(org.openmrs.attribute.Attribute)
 	 */
 	@Test
 	public void setAttribute_shouldVoidTheAttributeIfAnAttributeWithSameAttributeTypeAlreadyExistsAndTheMaxOccursIsSetTo1()
-	        throws Exception {
+	{
 		Provider provider = new Provider();
 		provider.setIdentifier("test");
 		
@@ -66,11 +64,10 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies work for attributes with datatypes whose values are stored in other tables
 	 * @see org.openmrs.BaseCustomizableMetadata#setAttribute(org.openmrs.attribute.Attribute)
 	 */
 	@Test
-	public void setAttribute_shouldWorkForAttriubutesWithDatatypesWhoseValuesAreStoredInOtherTables() throws Exception {
+	public void setAttribute_shouldWorkForAttriubutesWithDatatypesWhoseValuesAreStoredInOtherTables() {
 		Provider provider = new Provider();
 		provider.setIdentifier("test");
 		
@@ -92,7 +89,7 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	}
 	
 	private ProviderAttribute buildProviderAttribute(ProviderAttributeType providerAttributeType, Object value)
-	        throws Exception {
+	{
 		ProviderAttribute providerAttribute = new ProviderAttribute();
 		providerAttribute.setAttributeType(providerAttributeType);
 		providerAttribute.setValue(value.toString());

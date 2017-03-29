@@ -112,6 +112,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			// Note: A merge might be necessary here because hibernate thinks that Patients
 			// and Persons are the same objects.  So it sees a Person object in the
 			// cache and claims it is a duplicate of this Patient object.
+			//patient = (Patient) sessionFactory.getCurrentSession().merge(patient);
 			sessionFactory.getCurrentSession().saveOrUpdate(patient);
 			
 			return patient;

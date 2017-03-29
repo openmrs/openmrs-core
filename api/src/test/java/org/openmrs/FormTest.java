@@ -11,7 +11,6 @@ package org.openmrs;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.test.Verifies;
 
 /**
  * This class tests the all of the {@link Form} non-trivial object methods.
@@ -26,8 +25,7 @@ public class FormTest {
 	 * @see Form#Form(Integer)
 	 */
 	@Test
-	@Verifies(value = "should set formId with given parameter", method = "Form(Integer)")
-	public void Form_shouldSetFormIdWithGivenParameter() throws Exception {
+	public void Form_shouldSetFormIdWithGivenParameter() {
 		Form form = new Form(123);
 		Assert.assertEquals(123, form.getFormId().intValue());
 	}

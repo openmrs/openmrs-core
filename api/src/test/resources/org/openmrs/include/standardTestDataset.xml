@@ -421,6 +421,7 @@
   <global_property property="order.testSpecimenSourcesConceptUuid" property_value="5e02d1a0-7869-11e4-981f-0800200c9a73" uuid="56466f40-d9c5-11e3-9c1a-0800200c9a66"/>
   <global_property property="order.drugRoutesConceptUuid" property_value="6e02d1a0-7869-11e4-981f-0800200c9a89" uuid="67466f40-d9c5-22e3-9c1a-0800200c9a66"/>
   <global_property property="validation.disable" property_value="false" uuid="4a5e5566-b559-4026-bd73-7254e91a7268"/>
+  <global_property property="search.caseSensitiveDatabaseStringComparison" property_value="true" uuid="2015cbd0-0c74-4f1e-a194-febb98966195"/>
   <concept_stop_word concept_stop_word_id="1" word="A" locale="en" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972eb"/>
   <concept_stop_word concept_stop_word_id="2" word="AN" locale="en" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ec"/>
   <concept_stop_word concept_stop_word_id="3" word="BUT" locale="en_GB" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ed"/>

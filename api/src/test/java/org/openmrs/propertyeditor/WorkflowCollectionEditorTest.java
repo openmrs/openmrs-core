@@ -22,7 +22,6 @@ public class WorkflowCollectionEditorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see WorkflowCollectionEditor#setAsText(String)
-	 * @verifies update workflows in program
 	 */
 	@Test
 	public void setAsText_shouldUpdateWorkflowsInProgram() throws Exception {

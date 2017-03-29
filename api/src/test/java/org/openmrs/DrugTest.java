@@ -23,11 +23,10 @@ public class DrugTest extends BaseContextSensitiveTest {
 	private final static String UUID_2 = "4eef1530-7d3d-11e3-ac6d-e388e198a21e";
 	
 	/**
-	 * @verifies set drug as the drug to which a mapping is being added
 	 * @see Drug#addDrugReferenceMap(DrugReferenceMap)
 	 */
 	@Test
-	public void addDrugReferenceMap_shouldSetDrugAsTheDrugToWhichAMappingIsBeingAdded() throws Exception {
+	public void addDrugReferenceMap_shouldSetDrugAsTheDrugToWhichAMappingIsBeingAdded() {
 		Drug drug1 = new Drug();
 		drug1.setUuid(UUID_1);
 		Drug drug2 = new Drug();
@@ -40,11 +39,10 @@ public class DrugTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies should not add duplicate drug reference maps
 	 * @see Drug#addDrugReferenceMap(DrugReferenceMap)
 	 */
 	@Test
-	public void addDrugReferenceMap_shouldShouldNotAddDuplicateDrugReferenceMaps() throws Exception {
+	public void addDrugReferenceMap_shouldShouldNotAddDuplicateDrugReferenceMaps() {
 		Drug drug = new Drug();
 		
 		DrugReferenceMap map1 = new DrugReferenceMap();

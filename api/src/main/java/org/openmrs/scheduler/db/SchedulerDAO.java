@@ -70,13 +70,7 @@ public interface SchedulerDAO {
 	 * @throws DAOException
 	 */
 	public void deleteTask(Integer taskId) throws DAOException;
-	
-	/**
-	 * Creates a new schedule.
-	 * 
-	 * @param schedule to be created
-	 * @throws DAOException
-	 */
+
 	/**
 	 * Get schedule by internal identifier
 	 * 

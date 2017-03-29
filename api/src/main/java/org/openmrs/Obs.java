@@ -826,13 +826,9 @@ public class Obs extends BaseOpenmrsData {
 	 * @should return true if the concept is complex
 	 */
 	public boolean isComplex() {
-		//			return true;
-		//		}
-		
 		if (getConcept() != null) {
 			return getConcept().isComplex();
 		}
-		
 		return false;
 	}
 	
@@ -969,7 +965,7 @@ public class Obs extends BaseOpenmrsData {
 				} else {
 					if (getConcept() instanceof ConceptNumeric) {
 						ConceptNumeric cn = (ConceptNumeric) getConcept();
-						if (!cn.isAllowDecimal()) {
+						if (!cn.getAllowDecimal()) {
 							double d = getValueNumeric();
 							int i = (int) d;
 							return Integer.toString(i);

@@ -23,7 +23,6 @@ public class WebUtilTest {
 
 	/**
 	 * @see org.openmrs.web.WebUtil#getContextPath()
-	 * @verifies should return empty string if webappname is null
 	 */
 	@Test
 	public void getContextPath_shouldReturnEmptyStringWhenWebAppNameIsNull() throws Exception {
@@ -33,7 +32,6 @@ public class WebUtilTest {
 	
 	/**
 	 * @see org.openmrs.web.WebUtil#getContextPath()
-	 * @verifies should return empty string if webappname is empty string
 	 */
 	@Test
 	public void getContextPath_shouldReturnEmptyStringWhenWebAppNameIsEmptyString() throws Exception {
@@ -43,7 +41,6 @@ public class WebUtilTest {
 	
 	/**
 	 * @see org.openmrs.web.WebUtil#getContextPath()
-	 * @verifies should return webappname with leading slash if webappname has a value
 	 */
 	@Test
 	public void getContextPath_shouldReturnValueSpecifiedInWebAppName() throws Exception {
@@ -53,7 +50,6 @@ public class WebUtilTest {
 	
 	/**
 	 * @see WebUtil#normalizeLocale(String)
-	 * @verifies ignore leading spaces
 	 */
 	@Test
 	public void normalizeLocale_shouldIgnoreLeadingSpaces() throws Exception {
@@ -62,7 +58,6 @@ public class WebUtilTest {
 	
 	/**
 	 * @see WebUtil#normalizeLocale(String)
-	 * @verifies accept language only locales
 	 */
 	@Test
 	public void normalizeLocale_shouldAcceptLanguageOnlyLocales() throws Exception {
@@ -71,7 +66,6 @@ public class WebUtilTest {
 	
 	/**
 	 * @see WebUtil#normalizeLocale(String)
-	 * @verifies not accept invalid locales
 	 */
 	@Test
 	public void normalizeLocale_shouldNotAcceptInvalidLocales() throws Exception {
@@ -81,7 +75,6 @@ public class WebUtilTest {
 	
 	/**
 	 * @see WebUtil#normalizeLocale(String)
-	 * @verifies not fail with empty strings
 	 */
 	@Test
 	public void normalizeLocale_shouldNotFailWithEmptyStrings() throws Exception {
@@ -90,7 +83,6 @@ public class WebUtilTest {
 	
 	/**
 	 * @see WebUtil#normalizeLocale(String)
-	 * @verifies not fail with whitespace only
 	 */
 	@Test
 	public void normalizeLocale_shouldNotFailWithWhitespaceOnly() throws Exception {
@@ -99,7 +91,6 @@ public class WebUtilTest {
 
 	/**
 	 * @see WebUtil#normalizeLocale(String)
-	 * @verifies does not fail with "\t"
 	 */
 	@Test
 	public void normalizeLocale_shouldNotFailWithTab() throws Exception {
@@ -109,7 +100,6 @@ public class WebUtilTest {
 
 	/**
 	 * @see WebUtil#normalizeLocale(String)
-	 * @verifies does not fail with "Ši"
 	 */
 	@Test
 	public void normalizeLocale_shouldNotFailWithUnicode() {
@@ -118,7 +108,6 @@ public class WebUtilTest {
 
 	/**
 	 * @see WebUtil#normalizeLocale(String)
-	 * @verifies does not fail with "s"
 	 */
 	@Test
 	public void normalizeLocale_shouldNotFailWithSingleChar() {
@@ -127,7 +116,6 @@ public class WebUtilTest {
 
 	/**
 	 * @see WebUtil#normalizeLocale(String)
-	 * @verifies does not fail with "_"
 	 */
 	@Test
 	public void normalizeLocale_shouldNotFailWithUnderline() throws Exception {
@@ -137,7 +125,6 @@ public class WebUtilTest {
 
 	/**
 	 * @see WebUtil#sanitizeLocales(String)
-	 * @verifies skip over invalid locales
 	 */
 	@Test
 	public void sanitizeLocales_shouldSkipOverInvalidLocales() throws Exception {
@@ -146,7 +133,6 @@ public class WebUtilTest {
 	
 	/**
 	 * @see WebUtil#sanitizeLocales(String)
-	 * @verifies not fail with empty string
 	 */
 	@Test
 	public void sanitizeLocales_shouldNotFailWithEmptyString() throws Exception {

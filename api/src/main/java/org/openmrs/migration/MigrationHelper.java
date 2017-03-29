@@ -329,13 +329,6 @@ public class MigrationHelper {
 				// STATUS:HIVEMR-V1,9266,IMB HIV PROGRAM,TREATMENT STATUS,ACTIVE,2005-08-25,,
 				s = s.substring(s.indexOf(":") + 1);
 				String[] temp = s.split(",");
-				/* We're using a cache of 'knownPatientPrograms' instead of the following commented code
-				String identifier = temp[1];
-				List<PatientIdentifier> pis = ps.getPatientIdentifiers(identifier, pit);
-				if (pis.size() != 1)
-					throw new IllegalArgumentException("Found " + pis.size() + " instances of identifier " + identifier + " of type " + pit);
-				Patient p = pis.get(0).getPatient();
-				*/
 				Program program = programsByName.get(temp[2]);
 				if (program == null) {
 					throw new RuntimeException("Couldn't find program \"" + temp[2] + "\" in " + programsByName);

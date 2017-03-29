@@ -19,7 +19,6 @@ import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 
 /**
  * Tests for the {@link PersonVoidHandler} class.
@@ -30,7 +29,6 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should set the personVoided bit", method = "handle(Person,User,Date,String)")
 	public void handle_shouldSetThePersonVoidedBit() throws Exception {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = new Person();
@@ -43,7 +41,6 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should set the personVoidReason", method = "handle(Person,User,Date,String)")
 	public void handle_shouldSetThePersonVoidReason() throws Exception {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = new Person();
@@ -55,7 +52,6 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should set personPersonVoidedBy", method = "handle(Person,User,Date,String)")
 	public void handle_shouldSetPersonVoidedBy() throws Exception {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = new Person();
@@ -67,7 +63,6 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should not set personPersonVoidedBy if non null", method = "handle(Person,User,Date,String)")
 	public void handle_shouldNotSetPersonVoidedByIfNonNull() throws Exception {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = new Person();
@@ -80,7 +75,6 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should set personDateVoided", method = "handle(Person,User,Date,String)")
 	public void handle_shouldSetPersonDateVoided() throws Exception {
 		Date d = new Date();
 		
@@ -94,7 +88,6 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should not set personDateVoided if non null", method = "handle(Person,User,Date,String)")
 	public void handle_shouldNotSetPersonDateVoidedIfNonNull() throws Exception {
 		Date d = new Date(new Date().getTime() - 1000); // a time that is not "now"
 		
@@ -110,7 +103,6 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	@Verifies(value = "should not set the personVoidReason if already personVoided", method = "handle(Person,User,Date,String)")
 	public void handle_shouldNotSetThePersonVoidReasonIfAlreadyPersonVoided() throws Exception {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = new Person();
@@ -122,7 +114,6 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
-	 * @verifies retire users
 	 */
 	@Test
 	public void handle_shouldRetireUsers() throws Exception {
