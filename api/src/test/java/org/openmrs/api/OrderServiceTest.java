@@ -227,7 +227,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		int N = 50;
 		final Set<String> uniqueOrderNumbers = new HashSet<String>(50);
 		List<Thread> threads = new ArrayList<Thread>();
-		for (int i = 0; i < N; i++) {
+		for (int i = 1; i <= N; i++) {
 			threads.add(new Thread(new Runnable() {
 				
 				@Override
@@ -244,10 +244,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 				}
 			}));
 		}
-		for (int i = 0; i < N; ++i) {
+		for (int i = 1; i <= N; i++) {
 			threads.get(i).start();
 		}
-		for (int i = 0; i < N; ++i) {
+		for (int i = 1; i <= N; i++) {
 			threads.get(i).join();
 		}
 		//since we used a set we should have the size as N indicating that there were no duplicates
