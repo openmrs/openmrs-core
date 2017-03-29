@@ -208,7 +208,6 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 				
 				//TODO properties files are now in api jar files which cannot be modified. TRUNK-4097
 				//We should therefore remove this method implementation or stop claiming that we are a mutable resource
-				//OpenmrsUtil.storeProperties(props, propertyFile.getInputStream(), "OpenMRS Application Messages");
 			}
 			catch (Exception e) {
 				log.error("Error generated", e);
@@ -230,7 +229,6 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 				
 				//TODO properties files are now in api jar files which cannot be modified. TRUNK-4097
 				//We should therefore remove this method implementation or stop claiming that we are a mutable resource
-				//OpenmrsUtil.storeProperties(props, propertyFile, PROPERTIES_FILE_COMMENT);
 			}
 			catch (Exception e) {
 				log.error("Error generated", e);

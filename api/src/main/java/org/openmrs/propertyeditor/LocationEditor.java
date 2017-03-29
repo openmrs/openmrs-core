@@ -61,7 +61,7 @@ public class LocationEditor extends PropertyEditorSupport {
 	public String getAsText() {
 		Location t = (Location) getValue();
 		if (t == null && Context.isAuthenticated()) {
-			return null; //return Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
+			return null;
 		} else {
 			if (t != null) {
 				return t.getLocationId().toString();

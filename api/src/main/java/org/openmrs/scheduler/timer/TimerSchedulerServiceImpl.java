@@ -209,7 +209,6 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 			// TODO Do we ever want the same task definition to run more than once?
 			TimerSchedulerTask schedulerTask = scheduledTasks.get(taskDefinition.getId());
 			if (schedulerTask != null) {
-				//schedulerTask.cancel();					
 				log.info("Shutting down the existing instance of this task to avoid conflicts!!");
 				schedulerTask.shutdown();
 			}

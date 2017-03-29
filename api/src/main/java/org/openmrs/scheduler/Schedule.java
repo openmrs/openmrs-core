@@ -75,13 +75,11 @@ public class Schedule {
 	public static final int HOURS_PER_DAY = 24;
 	
 	public static final int DAYS_PER_WEEK = 7;
-	
-	//public static DEFAULT_DATE_FORMAT = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss");
+
 	public static final int DAILY = MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 	
 	public static final int WEEKLY = DAILY * DAYS_PER_WEEK;
-	
-	//public static final int MONTHLY; 
+
 	//public static final int ANNUALLY;
 	
 	/**
@@ -193,24 +191,6 @@ public class Schedule {
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
-	
-	/**
-	 * Set the start time for when the task should be executed. For instance, use "new Date()", if
-	 * you want it to start now.
-	 * 
-	 * @param startTime start time for the task
-	 */
-	/*	public void setStartTime(String startTime) { 
-			try {
-		            this.startTime = this.dateFormatter.parse(startTime);
-		            }
-			catch (Exception e) { 
-				//If there's an error, we'll just set the start time to now.
-				// TODO: This might not be the desired behavior, so I'll have to come back to it.
-		             this.startTime = new	             Date(); 
-		             }
-			}
-	*/
 
 	/**
 	 * Gets the number of seconds until task is executed again.

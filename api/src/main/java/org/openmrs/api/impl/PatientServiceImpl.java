@@ -884,10 +884,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (!"M".equals(preferred.getGender()) && !"F".equals(preferred.getGender())) {
 			preferred.setGender(notPreferred.getGender());
 		}
-		/*
-		 * if (preferred.getRace() == null || preferred.getRace().equals(""))
-		 * preferred.setRace(notPreferred.getRace());
-		 */
 
 		mergedData.setPriorDateOfBirth(preferred.getBirthdate());
 		mergedData.setPriorDateOfBirthEstimated(preferred.getBirthdateEstimated());

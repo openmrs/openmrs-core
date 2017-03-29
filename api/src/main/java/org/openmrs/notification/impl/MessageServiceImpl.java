@@ -174,7 +174,6 @@ public class MessageServiceImpl implements MessageService {
 		log.debug("Sending message to user with user id " + recipientId);
 		User user = Context.getUserService().getUser(recipientId);
 		message.addRecipient(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS));
-		// message.setFormat( user( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_FORMAT ) );
 		Context.getMessageService().sendMessage(message);
 	}
 	
@@ -191,7 +190,6 @@ public class MessageServiceImpl implements MessageService {
 		if (address != null) {
 			message.addRecipient(address);
 		}
-		// message.setFormat( user.getProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_FORMAT ) );
 		Context.getMessageService().sendMessage(message);
 	}
 	

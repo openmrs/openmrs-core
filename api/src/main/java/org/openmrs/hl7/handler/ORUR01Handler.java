@@ -180,13 +180,8 @@ public class ORUR01Handler implements Application {
 	 */
 	private Message processORU_R01(ORU_R01 oru) throws HL7Exception {
 		
-		// TODO: ideally, we would branch or alter our behavior based on the
-		// sending application.
-		// String sendingApplication = getSendingApplication(oru);
-		
-		// validate message
 		validate(oru);
-		
+
 		// extract segments for convenient use below
 		MSH msh = getMSH(oru);
 		PID pid = getPID(oru);
@@ -1203,11 +1198,6 @@ public class ORUR01Handler implements Application {
 		int sec = (dtm.length() >= 14 ? Integer.parseInt(dtm.substring(12, 14)) : 0);
 		Calendar cal = Calendar.getInstance();
 		cal.set(year, month, day, hour, min, sec);
-		// if (cal.getTimeZone().getRawOffset() != timeZoneOffsetMillis) {
-		// TimeZone tz = (TimeZone)TimeZone.getDefault().clone();
-		// tz.setRawOffset(timeZoneOffsetMillis);
-		// cal.setTimeZone(tz);
-		// }
 		return cal.getTime();
 	}
 	
