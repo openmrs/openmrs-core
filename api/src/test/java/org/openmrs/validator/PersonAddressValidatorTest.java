@@ -39,7 +39,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeAllTests() throws Exception {
+	public void runBeforeAllTests() {
 		validator = new PersonAddressValidator();
 		ps = Context.getPersonService();
 	}
@@ -48,7 +48,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheStartDateIsInTheFuture() throws Exception {
+	public void validate_shouldFailIfTheStartDateIsInTheFuture() {
 		PersonAddress personAddress = new PersonAddress();
 		Calendar c = Calendar.getInstance();
 		// put the time into the future by a minute
@@ -63,7 +63,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheEndDateIsBeforeTheStartDate() throws Exception {
+	public void validate_shouldFailIfTheEndDateIsBeforeTheStartDate() {
 		PersonAddress personAddress = new PersonAddress();
 		Calendar c = Calendar.getInstance();
 		personAddress.setStartDate(c.getTime());
@@ -78,7 +78,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassIfAllTheDatesAreValid() throws Exception {
+	public void validate_shouldPassIfAllTheDatesAreValid() {
 		PersonAddress personAddress = new PersonAddress();
 		Calendar c = Calendar.getInstance();
 		personAddress.setStartDate(c.getTime());
@@ -92,7 +92,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassIfStartDateAndEndDateAreBothNull() throws Exception {
+	public void validate_shouldPassIfStartDateAndEndDateAreBothNull() {
 		PersonAddress personAddress = new PersonAddress();
 		personAddress.setStartDate(null);
 		personAddress.setEndDate(null);
@@ -105,7 +105,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassIfStartDateIsNull() throws Exception {
+	public void validate_shouldPassIfStartDateIsNull() {
 		PersonAddress personAddress = new PersonAddress();
 		Calendar c = Calendar.getInstance();
 		personAddress.setStartDate(null);
@@ -119,7 +119,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassIfEndDateIsNull() throws Exception {
+	public void validate_shouldPassIfEndDateIsNull() {
 		PersonAddress personAddress = new PersonAddress();
 		Calendar c = Calendar.getInstance();
 		personAddress.setStartDate(c.getTime());
@@ -133,7 +133,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAddressValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfRequiredFieldsAreEmpty() throws Exception {
+	public void validate_shouldFailIfRequiredFieldsAreEmpty() {
 		executeDataSet(PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH);
 		Address personAddress = new PersonAddress();
 		
@@ -146,7 +146,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAddressValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassIfRequiredFieldsAreNotEmpty() throws Exception {
+	public void validate_shouldPassIfRequiredFieldsAreNotEmpty() {
 		executeDataSet(PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH);
 		Address personAddress = new PersonAddress();
 		personAddress.setAddress1("Address1");
@@ -160,7 +160,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		PersonAddress personAddress = new PersonAddress();
 		personAddress.setStartDate(null);
 		personAddress.setEndDate(null);
@@ -186,7 +186,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		PersonAddress personAddress = new PersonAddress();
 		personAddress.setStartDate(null);
 		personAddress.setEndDate(null);

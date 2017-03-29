@@ -37,7 +37,7 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PatientDataUnvoidHandler#handle(Patient,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldUnvoidTheOrdersAndEncountersAssociatedWithThePatient() throws Exception {
+	public void handle_shouldUnvoidTheOrdersAndEncountersAssociatedWithThePatient() {
 		Patient patient = Context.getPatientService().getPatient(7);
 		patient = Context.getPatientService().voidPatient(patient, "Void Reason");
 		Assert.assertTrue(patient.getVoided());
@@ -90,7 +90,7 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PatientDataUnvoidHandler#handle(Patient,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotUnvoidTheOrdersAndEncountersThatNeverGotVoidedWithThePatient() throws Exception {
+	public void handle_shouldNotUnvoidTheOrdersAndEncountersThatNeverGotVoidedWithThePatient() {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-otherEncounters.xml");
 		Patient patient = Context.getPatientService().getPatient(7);
 		
@@ -117,7 +117,7 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(testEncounter.getVoided());
 		Assert.assertTrue(testOrder.getVoided());
 		
-		List<Patient> patients = new ArrayList<Patient>();
+		List<Patient> patients = new ArrayList<>();
 		patients.add(patient);
 		
 		//wait a bit so that the patient isn't voided on the same millisecond

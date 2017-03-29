@@ -19,7 +19,7 @@ public class ProviderEditorTest extends BaseContextSensitiveTest {
 	 * @see ProviderEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingId() throws Exception {
+	public void setAsText_shouldSetUsingId() {
 		ProviderEditor editor = new ProviderEditor();
 		editor.setAsText("1");
 		Assert.assertNotNull(editor.getValue());
@@ -29,7 +29,7 @@ public class ProviderEditorTest extends BaseContextSensitiveTest {
 	 * @see ProviderEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingUuid() throws Exception {
+	public void setAsText_shouldSetUsingUuid() {
 		ProviderEditor editor = new ProviderEditor();
 		editor.setAsText("c2299800-cca9-11e0-9572-0800200c9a66");
 		Assert.assertNotNull(editor.getValue());

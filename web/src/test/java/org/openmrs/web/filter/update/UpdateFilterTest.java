@@ -11,6 +11,8 @@ package org.openmrs.web.filter.update;
 
 import java.sql.Connection;
 
+import javax.servlet.ServletException;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
@@ -22,18 +24,20 @@ import org.openmrs.web.test.BaseWebContextSensitiveTest;
 public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	
 	/**
+	 * @throws ServletException
 	 * @see UpdateFilter#authenticateAsSuperUser(String,String)
 	 */
 	@Test
-	public void authenticateAsSuperUser_shouldReturnFalseIfGivenInvalidCredentials() throws Exception {
+	public void authenticateAsSuperUser_shouldReturnFalseIfGivenInvalidCredentials() throws ServletException {
 		Assert.assertFalse(new UpdateFilter().authenticateAsSuperUser("a-bad-username", "a-bad-password"));
 	}
 	
 	/**
+	 * @throws ServletException
 	 * @see UpdateFilter#authenticateAsSuperUser(String,String)
 	 */
 	@Test
-	public void authenticateAsSuperUser_shouldReturnFalseIfGivenUserIsNotSuperuser() throws Exception {
+	public void authenticateAsSuperUser_shouldReturnFalseIfGivenUserIsNotSuperuser() throws ServletException {
 		// can switch to using "butch" in standardDataSet once we know bruno's password
 		executeDataSet("org/openmrs/api/include/UserServiceTest.xml");
 		Context.authenticate("userWithSha512Hash", "test"); // sanity check
@@ -43,14 +47,16 @@ public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws ServletException
 	 * @see UpdateFilter#authenticateAsSuperUser(String,String)
 	 */
 	@Test
-	public void authenticateAsSuperUser_shouldReturnTrueIfGivenUserIsSuperuser() throws Exception {
+	public void authenticateAsSuperUser_shouldReturnTrueIfGivenUserIsSuperuser() throws ServletException {
 		Assert.assertTrue(new UpdateFilter().authenticateAsSuperUser("admin", "test"));
 	}
 	
 	/**
+	 * @throws Exception
 	 * @see UpdateFilter#isSuperUser(Connection,Integer)
 	 */
 	@Test
@@ -59,6 +65,7 @@ public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws Exception
 	 * @see UpdateFilter#isSuperUser(Connection,Integer)
 	 */
 	@Test

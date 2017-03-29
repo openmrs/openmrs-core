@@ -12,7 +12,6 @@ package org.openmrs.validator;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
@@ -32,7 +31,6 @@ import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ObjectError;
 
 /**
  * Tests methods on the {@link OrderValidator} class.
@@ -54,19 +52,19 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfOrderIsNull() throws Exception {
+	public void validate_shouldFailValidationIfOrderIsNull() {
 		Errors errors = new BindException(new Order(), "order");
 		new OrderValidator().validate(null, errors);
 		
 		Assert.assertTrue(errors.hasErrors());
-		Assert.assertEquals("error.general", ((List<ObjectError>) errors.getAllErrors()).get(0).getCode());
+		Assert.assertEquals("error.general", errors.getAllErrors().get(0).getCode());
 	}
 	
 	/**
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfOrderAndEncounterHaveDifferentPatients() throws Exception {
+	public void validate_shouldFailValidationIfOrderAndEncounterHaveDifferentPatients() {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
@@ -82,7 +80,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfDateActivatedIsBeforeEncountersEncounterDatetime() throws Exception {
+	public void validate_shouldFailValidationIfDateActivatedIsBeforeEncountersEncounterDatetime() {
 		Date encounterDate = new Date();
 		Date orderDate = DateUtils.addDays(encounterDate, -1);
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
@@ -103,7 +101,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfVoidedIsNull() throws Exception {
+	public void validate_shouldFailValidationIfVoidedIsNull() {
 		Order order = new Order();
 		order.setVoided(null);
 		order.setConcept(Context.getConceptService().getConcept(88));
@@ -124,7 +122,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfConceptIsNull() throws Exception {
+	public void validate_shouldFailValidationIfConceptIsNull() {
 		Order order = new Order();
 		order.setPatient(Context.getPatientService().getPatient(2));
 		order.setOrderer(Context.getProviderService().getProvider(1));
@@ -142,7 +140,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfPatientIsNull() throws Exception {
+	public void validate_shouldFailValidationIfPatientIsNull() {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setOrderer(Context.getProviderService().getProvider(1));
@@ -160,7 +158,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfOrdererIsNull() throws Exception {
+	public void validate_shouldFailValidationIfOrdererIsNull() {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
@@ -178,7 +176,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfEncounterIsNull() throws Exception {
+	public void validate_shouldFailValidationIfEncounterIsNull() {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
@@ -194,7 +192,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfUrgencyIsNull() throws Exception {
+	public void validate_shouldFailValidationIfUrgencyIsNull() {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
@@ -210,7 +208,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfActionIsNull() throws Exception {
+	public void validate_shouldFailValidationIfActionIsNull() {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
@@ -223,6 +221,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws Exception
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
@@ -247,7 +246,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfDateActivatedAfterAutoExpireDate() throws Exception {
+	public void validate_shouldFailValidationIfDateActivatedAfterAutoExpireDate() {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
@@ -268,7 +267,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfScheduledDateIsNullWhenUrgencyIsON_SCHEDULED_DATE() throws Exception {
+	public void validate_shouldFailValidationIfScheduledDateIsNullWhenUrgencyIsON_SCHEDULED_DATE() {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
@@ -291,7 +290,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfScheduledDateIsSetAndUrgencyIsNotSetAsON_SCHEDULED_DATE() throws Exception {
+	public void validate_shouldFailValidationIfScheduledDateIsSetAndUrgencyIsNotSetAsON_SCHEDULED_DATE() {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
@@ -314,7 +313,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfOrderTypejavaClassDoesNotMatchOrderclass() throws Exception {
+	public void validate_shouldFailValidationIfOrderTypejavaClassDoesNotMatchOrderclass() {
 		Order order = new DrugOrder();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
@@ -332,7 +331,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfTheClassOfTheOrderIsASubclassOfOrderTypejavaClass() throws Exception {
+	public void validate_shouldPassValidationIfTheClassOfTheOrderIsASubclassOfOrderTypejavaClass() {
 		SomeDrugOrder order = new SomeDrugOrder();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
@@ -348,7 +347,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllFieldsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfAllFieldsAreCorrect() {
 		Order order = new DrugOrder();
 		Encounter encounter = new Encounter();
 		order.setConcept(Context.getConceptService().getConcept(88));
@@ -376,7 +375,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldNotAllowAFutureDateActivated() throws Exception {
+	public void validate_shouldNotAllowAFutureDateActivated() {
 		Patient patient = Context.getPatientService().getPatient(7);
 		TestOrder order = new TestOrder();
 		order.setPatient(patient);
@@ -400,7 +399,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Order order = new Order();
 		Encounter encounter = new Encounter();
 		order.setConcept(Context.getConceptService().getConcept(88));
@@ -429,7 +428,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void saveOrder_shouldNotSaveOrderIfInvalidOrderGroupEncounter() throws Exception {
+	public void saveOrder_shouldNotSaveOrderIfInvalidOrderGroupEncounter() {
 		executeDataSet(ORDER_SET);
 		OrderGroup orderGroup = new OrderGroup();
 		
@@ -449,7 +448,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Order order = new Order();
 		Encounter encounter = new Encounter();
 		order.setConcept(Context.getConceptService().getConcept(88));
@@ -485,7 +484,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void saveOrder_shouldNotSaveOrderIfInvalidOrderGroupPatient() throws Exception {
+	public void saveOrder_shouldNotSaveOrderIfInvalidOrderGroupPatient() {
 		executeDataSet(ORDER_SET);
 		OrderGroup orderGroup = new OrderGroup();
 		

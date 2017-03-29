@@ -26,7 +26,7 @@ public class OpenmrsTestAnnotationsTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldCallBaseSetupMethod() throws Exception {
+	public void shouldCallBaseSetupMethod() {
 		// make sure we're authenticated
 		Assert.assertTrue(Context.isAuthenticated());
 		// make sure we have some data from the EXAMPLE_XML_DATASET_PACKAGE_PATH
@@ -47,7 +47,7 @@ public class OpenmrsTestAnnotationsTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@SkipBaseSetup
-	public void shouldSkipAuthentication() throws Exception {
+	public void shouldSkipAuthentication() {
 		
 		// this depends on Context.logout() being in the previous test method
 		

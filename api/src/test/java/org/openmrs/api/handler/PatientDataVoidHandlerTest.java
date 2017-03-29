@@ -32,7 +32,7 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PatientDataVoidHandler#handle(Patient,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldVoidTheOrdersEncountersAndObservationsAssociatedWithThePatient() throws Exception {
+	public void handle_shouldVoidTheOrdersEncountersAndObservationsAssociatedWithThePatient() {
 		Patient patient = Context.getPatientService().getPatient(7);
 		Assert.assertFalse(patient.getVoided());
 		

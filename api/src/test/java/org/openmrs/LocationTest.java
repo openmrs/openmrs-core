@@ -27,7 +27,7 @@ public class LocationTest {
 	 * @see Location#isInHierarchy(Location,Location)
 	 */
 	@Test
-	public void isInHierarchy_shouldShouldFindLocationInHierarchy() throws Exception {
+	public void isInHierarchy_shouldShouldFindLocationInHierarchy() {
 		Location locationGrandParent = new Location();
 		Location locationParent = new Location();
 		Location locationChild = new Location();
@@ -51,17 +51,17 @@ public class LocationTest {
 		Location childOnfLocationTwo = new Location();
 		
 		//make child-parent relations
-		rootLocation.setChildLocations(new HashSet<Location>(Arrays.asList(locationOne, locationTwo)));
+		rootLocation.setChildLocations(new HashSet<>(Arrays.asList(locationOne, locationTwo)));
 		
-		locationOne.setChildLocations(new HashSet<Location>(Arrays.asList(childOflocationOne)));
-		locationTwo.setChildLocations(new HashSet<Location>(Arrays.asList(childOnfLocationTwo)));
+		locationOne.setChildLocations(new HashSet<>(Arrays.asList(childOflocationOne)));
+		locationTwo.setChildLocations(new HashSet<>(Arrays.asList(childOnfLocationTwo)));
 		
 		childOflocationOne.setChildLocations(new HashSet<Location>());
 		childOnfLocationTwo.setChildLocations(new HashSet<Location>());
 		
 		Set<Location> descendantLocations = rootLocation.getDescendantLocations(true);
 		
-		Set<Location> expectedLocations = new HashSet<Location>(Arrays.asList(locationOne, locationTwo, childOflocationOne,
+		Set<Location> expectedLocations = new HashSet<>(Arrays.asList(locationOne, locationTwo, childOflocationOne,
 		    childOnfLocationTwo));
 		Assert.assertThat(descendantLocations, equalTo(expectedLocations));
 		
@@ -82,11 +82,11 @@ public class LocationTest {
 		Location firstChildOfRetiredLocation = new Location();
 		
 		//make child-parent relations
-		rootLocation.setChildLocations(new HashSet<Location>(Arrays.asList(nonRetiredLocation, retiredLocation)));
+		rootLocation.setChildLocations(new HashSet<>(Arrays.asList(nonRetiredLocation, retiredLocation)));
 		
-		nonRetiredLocation.setChildLocations(new HashSet<Location>(Arrays.asList(firstChildOfNonRetiredLocation,
+		nonRetiredLocation.setChildLocations(new HashSet<>(Arrays.asList(firstChildOfNonRetiredLocation,
 		    secondChildOfNonRetiredLocation)));
-		retiredLocation.setChildLocations(new HashSet<Location>(Arrays.asList(firstChildOfRetiredLocation)));
+		retiredLocation.setChildLocations(new HashSet<>(Arrays.asList(firstChildOfRetiredLocation)));
 		
 		firstChildOfNonRetiredLocation.setChildLocations(new HashSet<Location>());
 		secondChildOfNonRetiredLocation.setChildLocations(new HashSet<Location>());
@@ -96,7 +96,7 @@ public class LocationTest {
 		//action
 		Set<Location> descendantLocations = rootLocation.getDescendantLocations(false);
 		
-		Set<Location> expectedLocations = new HashSet<Location>(Arrays.asList(nonRetiredLocation,
+		Set<Location> expectedLocations = new HashSet<>(Arrays.asList(nonRetiredLocation,
 		    firstChildOfNonRetiredLocation, secondChildOfNonRetiredLocation));
 		
 		Assert.assertThat(descendantLocations, equalTo(expectedLocations));

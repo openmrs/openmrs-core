@@ -23,7 +23,7 @@ public class PatientEditorTest extends BaseContextSensitiveTest {
 	 * @see PatientEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingId() throws Exception {
+	public void setAsText_shouldSetUsingId() {
 		PatientEditor editor = new PatientEditor();
 		editor.setAsText("2");
 		Assert.assertNotNull(editor.getValue());
@@ -33,7 +33,7 @@ public class PatientEditorTest extends BaseContextSensitiveTest {
 	 * @see PatientEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingUuid() throws Exception {
+	public void setAsText_shouldSetUsingUuid() {
 		PatientEditor editor = new PatientEditor();
 		editor.setAsText("da7f524f-27ce-4bb2-86d6-6d1d05312bd5");
 		Assert.assertNotNull(editor.getValue());

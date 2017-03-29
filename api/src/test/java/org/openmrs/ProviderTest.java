@@ -21,7 +21,7 @@ public class ProviderTest {
 	 * @see Provider#getName()
 	 */
 	@Test
-	public void getName_shouldReturnPersonFullNameIfPersonIsNotNullOrNullOtherwise() throws Exception {
+	public void getName_shouldReturnPersonFullNameIfPersonIsNotNullOrNullOtherwise() {
 		Provider provider = new Provider();
 		
 		Person person = new Person(1);
@@ -34,7 +34,7 @@ public class ProviderTest {
 	 * @see Provider#toString()
 	 */
 	@Test
-	public void toString_shouldReturnPersonAllNamesWithSpecificFormat() throws Exception {
+	public void toString_shouldReturnPersonAllNamesWithSpecificFormat() {
 		
 		Provider provider = new Provider();
 		provider.setProviderId(1);

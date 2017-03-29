@@ -33,17 +33,18 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		executeDataSet("org/openmrs/notification/include/MessageServiceTest-initial.xml");
 		
 		ms = Context.getMessageService();
 	}
 	
 	/**
+	 * @throws MessageException
 	 * @see MessageService#createMessage(String,String,String,String)
 	 */
 	@Test
-	public void createMessage_shouldCreateMessage() throws Exception {
+	public void createMessage_shouldCreateMessage() throws MessageException {
 		String recipients = "foo@bar.com,marco@polo.com";
 		String sender = "me@mydomain.com";
 		String subject = "foo";
@@ -81,10 +82,11 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws MessageException
 	 * @see MessageService#sendMessage(Message)
 	 */
 	@Test
-	public void sendMessage_shouldSendMessage() throws Exception {
+	public void sendMessage_shouldSendMessage() throws MessageException {
 		Message tryToSend1 = ms.createMessage("recipient@example.com", "sender@example.com", "subject", "content");
 		try {
 			ms.sendMessage(tryToSend1);

@@ -43,7 +43,7 @@ public class SerializationServiceImplTest {
 	 * @see SerializationServiceImpl#setSerializers(List<OpenmrsSerializer>)
 	 */
 	@Test
-	public void setSerializers_shouldNotResetSerializersListWhenCalledMultipleTimes() throws Exception {
+	public void setSerializers_shouldNotResetSerializersListWhenCalledMultipleTimes() {
 		SerializationServiceImpl ssi = new SerializationServiceImpl();
 		Assert.assertEquals(0, ssi.getSerializers().size());
 		

@@ -31,7 +31,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#areCompatible(Locale,Locale)
 	 */
 	@Test
-	public void areCompatible_shouldConfirmMatchingLanguageAsCompatible() throws Exception {
+	public void areCompatible_shouldConfirmMatchingLanguageAsCompatible() {
 		Locale lhs = Locale.ENGLISH;
 		Locale rhs = Locale.ENGLISH;
 		
@@ -42,7 +42,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#areCompatible(Locale,Locale)
 	 */
 	@Test
-	public void areCompatible_shouldNotConfirmDifferentLanguageAsCompatible() throws Exception {
+	public void areCompatible_shouldNotConfirmDifferentLanguageAsCompatible() {
 		Locale lhs = Locale.ENGLISH;
 		Locale rhs = Locale.FRENCH;
 		
@@ -53,7 +53,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#areCompatible(Locale,Locale)
 	 */
 	@Test
-	public void areCompatible_shouldConfirmMatchingCountryAsCompatible() throws Exception {
+	public void areCompatible_shouldConfirmMatchingCountryAsCompatible() {
 		Locale lhs = Locale.US;
 		Locale rhs = Locale.US;
 		
@@ -64,7 +64,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#areCompatible(Locale,Locale)
 	 */
 	@Test
-	public void areCompatible_shouldNotConfirmDifferentCountryAsCompatible() throws Exception {
+	public void areCompatible_shouldNotConfirmDifferentCountryAsCompatible() {
 		Locale lhs = Locale.US;
 		Locale rhs = Locale.UK;
 		
@@ -78,7 +78,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#areCompatible(Locale,Locale)
 	 */
 	@Test
-	public void areCompatible_shouldConfirmSameLanguageMissingCountryAsCompatible() throws Exception {
+	public void areCompatible_shouldConfirmSameLanguageMissingCountryAsCompatible() {
 		Locale lhs = Locale.US;
 		Locale rhs = Locale.ENGLISH;
 		
@@ -92,7 +92,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#areCompatible(Locale,Locale)
 	 */
 	@Test
-	public void areCompatible_shouldConfirmDifferentLanguageMissingCountryAsCompatible() throws Exception {
+	public void areCompatible_shouldConfirmDifferentLanguageMissingCountryAsCompatible() {
 		Locale lhs = Locale.US;
 		Locale rhs = Locale.FRENCH;
 		
@@ -103,7 +103,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#getDefaultLocale()
 	 */
 	@Test
-	public void getDefaultLocale_shouldNotFailWithBogusGlobalPropertyValue() throws Exception {
+	public void getDefaultLocale_shouldNotFailWithBogusGlobalPropertyValue() {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, asdfasdf"));
 		
@@ -121,7 +121,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#getDefaultLocale()
 	 */
 	@Test
-	public void getDefaultLocale_shouldNotFailWithEmptyGlobalPropertyValue() throws Exception {
+	public void getDefaultLocale_shouldNotFailWithEmptyGlobalPropertyValue() {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, ""));
 		
@@ -133,7 +133,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#getDefaultLocale()
 	 */
 	@Test
-	public void getDefaultLocale_shouldNotReturnNullIfGlobalPropertyDoesNotExist() throws Exception {
+	public void getDefaultLocale_shouldNotReturnNullIfGlobalPropertyDoesNotExist() {
 		// sanity check
 		Assert.assertNull(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE));
@@ -146,11 +146,12 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#getDefaultLocale()
 	 */
 	@Test
-	public void getDefaultLocale_shouldReturnLocaleObjectForGlobalProperty() throws Exception {
+	public void getDefaultLocale_shouldReturnLocaleObjectForGlobalProperty() {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, ja"));
 		
-		GlobalProperty gp = Context.getAdministrationService().saveGlobalProperty(
+		Context.getAdministrationService()
+		        .saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "ja"));
 		
 		Assert.assertEquals(Locale.JAPANESE, LocaleUtility.getDefaultLocale());
@@ -160,7 +161,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#fromSpecification(String)
 	 */
 	@Test
-	public void fromSpecification_shouldGetLocaleFromTwoCharacterLanguageCode() throws Exception {
+	public void fromSpecification_shouldGetLocaleFromTwoCharacterLanguageCode() {
 		Assert.assertEquals(Locale.ENGLISH, LocaleUtility.fromSpecification("en"));
 	}
 	
@@ -168,7 +169,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#fromSpecification(String)
 	 */
 	@Test
-	public void fromSpecification_shouldGetLocaleFromLanguageCodeAndCountryCode() throws Exception {
+	public void fromSpecification_shouldGetLocaleFromLanguageCodeAndCountryCode() {
 		Assert.assertEquals(Locale.UK, LocaleUtility.fromSpecification("en_GB"));
 	}
 	
@@ -176,7 +177,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#fromSpecification(String)
 	 */
 	@Test
-	public void fromSpecification_shouldGetLocaleFromLanguageCodeCountryCodeAndVariant() throws Exception {
+	public void fromSpecification_shouldGetLocaleFromLanguageCodeCountryCodeAndVariant() {
 		Locale locale = LocaleUtility.fromSpecification("en_US_Traditional_WIN");
 		Assert.assertEquals(Locale.US.getLanguage(), locale.getLanguage());
 		Assert.assertEquals(Locale.US.getCountry(), locale.getCountry());
@@ -187,7 +188,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#getLocalesInOrder()
 	 */
 	@Test
-	public void getLocalesInOrder_shouldAlwaysHaveEnglishIncludedInTheReturnedCollection() throws Exception {
+	public void getLocalesInOrder_shouldAlwaysHaveEnglishIncludedInTheReturnedCollection() {
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
 		Assert.assertEquals(true, localesInOrder.contains(Locale.ENGLISH));
 	}
@@ -197,7 +198,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getLocalesInOrder_shouldAlwaysHaveDefaultLocaleDefaultValueIncludedInTheReturnedCollection()
-	        throws Exception {
+	{
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
 		Assert.assertEquals(true, localesInOrder.contains(LocaleUtility
 		        .fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE)));
@@ -207,7 +208,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#getLocalesInOrder()
 	 */
 	@Test
-	public void getLocalesInOrder_shouldHaveDefaultLocaleAsTheFirstElementIfUserHasNoPreferredLocale() throws Exception {
+	public void getLocalesInOrder_shouldHaveDefaultLocaleAsTheFirstElementIfUserHasNoPreferredLocale() {
 		// make sure the user doesn't have a locale
 		Context.setLocale(null);
 		
@@ -219,7 +220,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#getLocalesInOrder()
 	 */
 	@Test
-	public void getLocalesInOrder_shouldHaveDefaultLocaleAsTheSecondElementIfUserHasAPreferredLocale() throws Exception {
+	public void getLocalesInOrder_shouldHaveDefaultLocaleAsTheSecondElementIfUserHasAPreferredLocale() {
 		Locale lu_UG = new Locale("lu", "UG");
 		Context.setLocale(lu_UG);
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
@@ -232,7 +233,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#getLocalesInOrder()
 	 */
 	@Test
-	public void getLocalesInOrder_shouldReturnASetOfLocalesWithAPredictableOrder() throws Exception {
+	public void getLocalesInOrder_shouldReturnASetOfLocalesWithAPredictableOrder() {
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST,
 		        "lu, sw_KE, en_US, en_GB", "Test Allowed list of locales");
 		Context.getAdministrationService().saveGlobalProperty(gp);
@@ -252,7 +253,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#getLocalesInOrder()
 	 */
 	@Test
-	public void getLocalesInOrder_shouldReturnASetOfLocalesWithNoDuplicates() throws Exception {
+	public void getLocalesInOrder_shouldReturnASetOfLocalesWithNoDuplicates() {
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST,
 		        "lu_UG, lu, sw_KE, en_US, en, en, en_GB, sw_KE", "Test Allowed list of locales");
 		Context.getAdministrationService().saveGlobalProperty(gp);
@@ -290,7 +291,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocaleUtility#getDefaultLocale()
 	 */
 	@Test
-	public void getDefaultLocale_shouldNotCacheLocaleWhenSessionIsNotOpen() throws Exception {
+	public void getDefaultLocale_shouldNotCacheLocaleWhenSessionIsNotOpen() {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, ja"));
 		// set GP default locale to valid locale that is not the OpenmrsConstant default locale

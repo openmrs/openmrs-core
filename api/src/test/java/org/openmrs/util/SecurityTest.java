@@ -25,7 +25,7 @@ public class SecurityTest {
 	 * @see Security#encodeString(String)
 	 */
 	@Test
-	public void encodeString_shouldEncodeStringsTo128Characters() throws Exception {
+	public void encodeString_shouldEncodeStringsTo128Characters() {
 		String hash = Security.encodeString("test" + "c788c6ad82a157b712392ca695dfcf2eed193d7f");
 		Assert.assertEquals(HASH_LENGTH, hash.length());
 	}
@@ -34,7 +34,7 @@ public class SecurityTest {
 	 * @see Security#encodeString(String)
 	 */
 	@Test
-	public void encodeString_shouldEncodeStringsToXCharactersWithXCharactersSalt() throws Exception {
+	public void encodeString_shouldEncodeStringsToXCharactersWithXCharactersSalt() {
 		String hash = Security.encodeString("test" + Security.getRandomToken());
 		Assert.assertEquals(HASH_LENGTH, hash.length());
 	}
@@ -43,7 +43,7 @@ public class SecurityTest {
 	 * @see Security#hashMatches(String,String)
 	 */
 	@Test
-	public void hashMatches_shouldMatchStringsHashedWithSha1Algorithm() throws Exception {
+	public void hashMatches_shouldMatchStringsHashedWithSha1Algorithm() {
 		Assert.assertTrue(Security.hashMatches("4a1750c8607d0fa237de36c6305715c223415189", "test"
 		        + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
 	}
@@ -52,7 +52,7 @@ public class SecurityTest {
 	 * @see Security#hashMatches(String,String)
 	 */
 	@Test
-	public void hashMatches_shouldMatchStringsHashedWithSha512AlgorithmAnd128CharactersSalt() throws Exception {
+	public void hashMatches_shouldMatchStringsHashedWithSha512AlgorithmAnd128CharactersSalt() {
 		String password = "1d1436658853aceceadd72e92f1ae9089a0000fbb38cea519ce34eae9f28523930ecb212177dbd607d83dc275fde3e9ca648deb557d503ad0bcd01a955a394b2";
 		String passwordToHash = "test"
 		        + "0d7bb319434295261601202e14494b959cdd69c6ceb54ee3890e176ae780ce9edf797f48afde5f39906a6bd75b8a5feeac8f5339615acf7429c7dda85220d329";
@@ -63,7 +63,7 @@ public class SecurityTest {
 	 * @see Security#hashMatches(String,String)
 	 */
 	@Test
-	public void hashMatches_shouldMatchStringsHashedWithIncorrectSha1Algorithm() throws Exception {
+	public void hashMatches_shouldMatchStringsHashedWithIncorrectSha1Algorithm() {
 		Assert.assertTrue(Security.hashMatches("4a1750c8607dfa237de36c6305715c223415189", "test"
 		        + "c788c6ad82a157b712392ca695dfcf2eed193d7f"));
 	}
@@ -72,7 +72,7 @@ public class SecurityTest {
 	 * @see Security#decrypt(String)
 	 */
 	@Test
-	public void decrypt_shouldDecryptShortAndLongText() throws Exception {
+	public void decrypt_shouldDecryptShortAndLongText() {
 		// use specific IV and Key
 		byte[] initVector = Base64.decode("9wyBUNglFCRVSUhMfsTa3Q==");
 		byte[] secretKey = Base64.decode("dTfyELRrAICGDwzjHDjuhw==");
@@ -181,7 +181,7 @@ public class SecurityTest {
 	 * @see Security#encrypt(String)
 	 */
 	@Test
-	public void encrypt_shouldEncryptShortAndLongText() throws Exception {
+	public void encrypt_shouldEncryptShortAndLongText() {
 		// small text
 		String expected = "a";
 		String encrypted = Security.encrypt(expected);

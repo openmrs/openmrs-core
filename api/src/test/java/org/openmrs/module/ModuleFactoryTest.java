@@ -33,7 +33,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	protected static final String MODULE3_PATH = "org/openmrs/module/include/test3-1.0-SNAPSHOT.omod";
 	
 	@Before
-	public void before() throws Exception {
+	public void before() {
 		ModuleUtil.shutdown();
 		
 		String modulesToLoad = MODULE1_PATH + " ";
@@ -130,7 +130,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		moduleLocation += "/i/broke/this/path/module.omod";
 		File moduleToLoad = new File(moduleLocation);
 		
-		List<File> modulesToLoad = new ArrayList<File>();
+		List<File> modulesToLoad = new ArrayList<>();
 		modulesToLoad.add(moduleToLoad);
 		ModuleFactory.loadModules(modulesToLoad);
 		
@@ -181,7 +181,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	}
 	
 	private List<File> getModuleFiles() {
-		List<File> modulesToLoad = new ArrayList<File>();
+		List<File> modulesToLoad = new ArrayList<>();
 		modulesToLoad.add(new File(ModuleUtil.class.getClassLoader().getResource(MODULE1_PATH).getPath()));
 		modulesToLoad.add(new File(ModuleUtil.class.getClassLoader().getResource(MODULE2_PATH).getPath()));
 		modulesToLoad.add(new File(ModuleUtil.class.getClassLoader().getResource(MODULE3_PATH).getPath()));

@@ -27,41 +27,41 @@ public class UserTest {
 	private final String ROLE_WHICH_DOES_NOT_EXIT = "Role Which Does Not Exist";
 	
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		user = new User();
 		user.addRole(new Role("Some Role", "This is a test role"));
 	}
 	
 	@Test
-	public void hasRole_shouldHaveRole() throws Exception {
+	public void hasRole_shouldHaveRole() {
 		assertTrue(user.hasRole("Some Role"));
 	}
 	
 	@Test
-	public void hasRole_shouldNotHaveRole() throws Exception {
+	public void hasRole_shouldNotHaveRole() {
 		assertFalse(user.hasRole("Not A Role"));
 	}
 	
 	@Test
-	public void hasRole_shouldHaveAnyRoleWhenSuperUser() throws Exception {
+	public void hasRole_shouldHaveAnyRoleWhenSuperUser() {
 		user.addRole(new Role(RoleConstants.SUPERUSER));
 		assertTrue(user.hasRole("Not A Role"));
 	}
 	
 	@Test
-	public void hasRole_shouldNotHaveAnyRoleWhenSuperWhenIgnoreSuperUserFlagIsTrue() throws Exception {
+	public void hasRole_shouldNotHaveAnyRoleWhenSuperWhenIgnoreSuperUserFlagIsTrue() {
 		user.addRole(new Role(RoleConstants.SUPERUSER));
 		assertFalse(user.hasRole("Not A Role", true));
 	}
 	
 	@Test
-	public void isSuperUser_shouldBeSuperUser() throws Exception {
+	public void isSuperUser_shouldBeSuperUser() {
 		user.addRole(new Role(RoleConstants.SUPERUSER));
 		assertTrue(user.isSuperUser());
 	}
 	
 	@Test
-	public void isSuperUser_shouldNotBeSuperUser() throws Exception {
+	public void isSuperUser_shouldNotBeSuperUser() {
 		assertFalse(user.isSuperUser());
 	}
 	
@@ -69,7 +69,7 @@ public class UserTest {
 	 * @see User#containsRole(String)
 	 */
 	@Test
-	public void containsRole_shouldBeCaseInsensitive() throws Exception {
+	public void containsRole_shouldBeCaseInsensitive() {
 		user.addRole(new Role(MATERNITY_NURSE_UPPERCASE));
 		assertTrue(user.containsRole(MATERNITY_NURSE_UPPERCASE));
 		assertTrue(user.containsRole(MATERNITY_NURSE_LOWERCASE));
@@ -79,7 +79,7 @@ public class UserTest {
 	 * @see User#containsRole(String)
 	 */
 	@Test
-	public void containsRole_shouldReturnTrueIfTheUserHasTheGivenRole() throws Exception {
+	public void containsRole_shouldReturnTrueIfTheUserHasTheGivenRole() {
 		user.addRole(new Role(MATERNITY_NURSE_UPPERCASE));
 		assertTrue(user.containsRole(MATERNITY_NURSE_UPPERCASE));
 	}
@@ -88,7 +88,7 @@ public class UserTest {
 	 * @see User#containsRole(String)
 	 */
 	@Test
-	public void containsRole_shouldReturnFalseIfTheUserDoesNotHaveTheGivenRole() throws Exception {
+	public void containsRole_shouldReturnFalseIfTheUserDoesNotHaveTheGivenRole() {
 		assertFalse(user.containsRole(ROLE_WHICH_DOES_NOT_EXIT));
 	}
 	

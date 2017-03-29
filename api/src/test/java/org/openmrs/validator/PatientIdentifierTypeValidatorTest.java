@@ -26,7 +26,7 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 	 * 
 	 */
 	@Test
-	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() {
 		PatientIdentifierType type = new PatientIdentifierType();
 		type.setName(null);
 		type.setDescription("some text");
@@ -51,7 +51,7 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 	 * 
 	 */
 	@Test
-	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() {
 		PatientIdentifierType type = new PatientIdentifierType();
 		type.setName("name");
 		type.setDescription(null);
@@ -76,7 +76,7 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 	 * 
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		PatientIdentifierType type = new PatientIdentifierType();
 		type.setName("restraining");
 		type.setDescription(":(");
@@ -144,7 +144,7 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see org.openmrs.validator.PatientIdentifierTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfPatientIdentifierTypeNameAlreadyExist() throws Exception {
+	public void validate_shouldFailValidationIfPatientIdentifierTypeNameAlreadyExist() {
 		PatientIdentifierType type = new PatientIdentifierType();
 		type.setName("OpenMRS Identification Number");
 		type.setDescription("helps");
@@ -162,7 +162,7 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 	 *
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		PatientIdentifierType type = new PatientIdentifierType();
 		type.setName("name");
 		type.setFormat("format");
@@ -181,7 +181,7 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 	 *
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		PatientIdentifierType type = new PatientIdentifierType();
 		type
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

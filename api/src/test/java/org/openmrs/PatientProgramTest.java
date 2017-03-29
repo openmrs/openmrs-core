@@ -30,7 +30,7 @@ public class PatientProgramTest {
 	 * @see PatientProgram#voidLastState(ProgramWorkflow,User,Date,String)
 	 */
 	@Test
-	public void voidLastState_shouldVoidStateWithEndDateNullIfStartDatesEqual() throws Exception {
+	public void voidLastState_shouldVoidStateWithEndDateNullIfStartDatesEqual() {
 		//given
 		PatientProgram program = new PatientProgram();
 		ProgramWorkflow workflow = new ProgramWorkflow();

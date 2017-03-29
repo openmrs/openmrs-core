@@ -43,7 +43,7 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		
 		Assert.assertNotNull(Context.getSerializationService().getDefaultSerializer());
 		
@@ -56,21 +56,21 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getObject_shouldReturnTheSavedObject() throws Exception {
+	public void getObject_shouldReturnTheSavedObject() {
 		Program data = dao.getObject(Program.class, 1);
 		assertEquals(data.getId().intValue(), 1);
 		assertEquals(data.getName(), "TestProgram");
 	}
 	
 	@Test
-	public void getObjectByUuid_shouldReturnTheSavedObject() throws Exception {
+	public void getObjectByUuid_shouldReturnTheSavedObject() {
 		Program data = dao.getObjectByUuid(Program.class, "83b452ca-a4c8-4bf2-9e0b-8bbddf2f9901");
 		assertEquals(data.getId().intValue(), 2);
 		assertEquals(data.getName(), "TestProgram2");
 	}
 	
 	@Test
-	public void saveObject_shouldSaveThePassedObjectIfSupported() throws Exception {
+	public void saveObject_shouldSaveThePassedObjectIfSupported() {
 		Program data = new Program();
 		data.setName("NewProgram");
 		data.setDescription("This is to test saving a Program");
@@ -83,7 +83,7 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void saveObject_shouldSetAuditableFieldsBeforeSerializing() throws Exception {
+	public void saveObject_shouldSetAuditableFieldsBeforeSerializing() {
 		Program data = new Program();
 		data.setName("NewProgram");
 		data.setDescription("This is to test saving a Program");
@@ -96,7 +96,7 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = DAOException.class)
-	public void saveObject_shouldThrowAnExceptionIfObjectNotSupported() throws Exception {
+	public void saveObject_shouldThrowAnExceptionIfObjectNotSupported() {
 		dao.unregisterSupportedType(Program.class);
 		Program data = new Program();
 		data.setName("NewProgram");
@@ -105,13 +105,13 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getAllObjects_shouldReturnAllSavedObjectsOfThePassedType() throws Exception {
+	public void getAllObjects_shouldReturnAllSavedObjectsOfThePassedType() {
 		List<Program> l = dao.getAllObjects(Program.class);
 		assertEquals(2, l.size());
 	}
 	
 	@Test
-	public void getAllObjects_shouldReturnOnlyNonRetiredObjectsOfThePassedTypeIfNotIncludeRetired() throws Exception {
+	public void getAllObjects_shouldReturnOnlyNonRetiredObjectsOfThePassedTypeIfNotIncludeRetired() {
 		List<Program> l = dao.getAllObjects(Program.class, false);
 		assertEquals(2, l.size());
 		l = dao.getAllObjects(Program.class, true);
@@ -119,20 +119,20 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getAllObjects_shouldReturnAllSavedObjectsWithTheGivenTypeAndExactName() throws Exception {
+	public void getAllObjects_shouldReturnAllSavedObjectsWithTheGivenTypeAndExactName() {
 		List<Program> l = dao.getAllObjectsByName(Program.class, "TestProgram", true);
 		assertEquals(1, l.size());
 		assertEquals(l.get(0).getName(), "TestProgram");
 	}
 	
 	@Test
-	public void getAllObjects_shouldReturnAllSavedObjectsWithTheGivenTypeAndPartialName() throws Exception {
+	public void getAllObjects_shouldReturnAllSavedObjectsWithTheGivenTypeAndPartialName() {
 		List<Program> l = dao.getAllObjectsByName(Program.class, "TestProgram", false);
 		assertEquals(3, l.size());
 	}
 	
 	@Test
-	public void purgeObject_shouldDeleteTheObjectWithThePassedId() throws Exception {
+	public void purgeObject_shouldDeleteTheObjectWithThePassedId() {
 		List<Program> l = dao.getAllObjects(Program.class);
 		assertEquals(2, l.size());
 		dao.purgeObject(2);

@@ -25,7 +25,7 @@ public class PersonUnvoidHandlerTest {
 	 * @see PersonUnvoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldUnsetThePersonVoidedBit() throws Exception {
+	public void handle_shouldUnsetThePersonVoidedBit() {
 		UnvoidHandler<Person> handler = new PersonUnvoidHandler();
 		Person person = new Person();
 		person.setPersonVoided(true); // make sure personVoided is set
@@ -37,7 +37,7 @@ public class PersonUnvoidHandlerTest {
 	 * @see PersonUnvoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldUnsetThePersonVoider() throws Exception {
+	public void handle_shouldUnsetThePersonVoider() {
 		UnvoidHandler<Person> handler = new PersonUnvoidHandler();
 		Person person = new Person();
 		person.setPersonVoided(true);
@@ -50,7 +50,7 @@ public class PersonUnvoidHandlerTest {
 	 * @see PersonUnvoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldUnsetThePersonDateVoided() throws Exception {
+	public void handle_shouldUnsetThePersonDateVoided() {
 		UnvoidHandler<Person> handler = new PersonUnvoidHandler();
 		Person person = new Person();
 		person.setPersonVoided(true);
@@ -63,7 +63,7 @@ public class PersonUnvoidHandlerTest {
 	 * @see PersonUnvoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldUnsetThePersonVoidReason() throws Exception {
+	public void handle_shouldUnsetThePersonVoidReason() {
 		UnvoidHandler<Person> handler = new PersonUnvoidHandler();
 		Person person = new Person();
 		person.setPersonVoided(true);
@@ -76,7 +76,7 @@ public class PersonUnvoidHandlerTest {
 	 * @see PersonUnvoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldOnlyActOnAlreadyVoidedObjects() throws Exception {
+	public void handle_shouldOnlyActOnAlreadyVoidedObjects() {
 		UnvoidHandler<Person> handler = new PersonUnvoidHandler();
 		Person person = new Person();
 		person.setPersonVoided(false);
@@ -88,7 +88,7 @@ public class PersonUnvoidHandlerTest {
 	 * @see PersonUnvoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotActOnObjectsWithADifferentPersonDateVoided() throws Exception {
+	public void handle_shouldNotActOnObjectsWithADifferentPersonDateVoided() {
 		Date d = new Date(new Date().getTime() - 1000); // a time that isn't right now
 		
 		UnvoidHandler<Person> handler = new PersonUnvoidHandler();

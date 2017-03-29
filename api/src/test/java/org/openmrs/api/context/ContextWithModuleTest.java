@@ -60,10 +60,11 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws ClassNotFoundException
 	 * @see Context#loadClass(String)
 	 */
 	@Test
-	public void loadClass_shouldLoadClassWithOpenmrsClassLoader() throws Exception {
+	public void loadClass_shouldLoadClassWithOpenmrsClassLoader() throws ClassNotFoundException {
 		Class<?> c = Context.loadClass("org.openmrs.module.test1.api.Test1Service");
 		Assert.assertTrue("Should be loaded by OpenmrsClassLoader", c.getClassLoader() instanceof ModuleClassLoader);
 	}

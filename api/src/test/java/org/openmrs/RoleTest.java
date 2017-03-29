@@ -35,7 +35,7 @@ public class RoleTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldAddRemovePrivilege() throws Exception {
+	public void shouldAddRemovePrivilege() {
 		Role role = new Role();
 		
 		// test the null parameter cases
@@ -72,7 +72,7 @@ public class RoleTest {
 	 * @see Role#hasPrivilege(String)
 	 */
 	@Test
-	public void hasPrivilege_shouldNotFailGivenNullParameter() throws Exception {
+	public void hasPrivilege_shouldNotFailGivenNullParameter() {
 		Role role = new Role();
 		
 		// test the null case
@@ -83,7 +83,7 @@ public class RoleTest {
 	 * @see Role#hasPrivilege(String)
 	 */
 	@Test
-	public void hasPrivilege_shouldReturnTrueIfFound() throws Exception {
+	public void hasPrivilege_shouldReturnTrueIfFound() {
 		Role role = new Role();
 		
 		// very basic privilege adding and checking
@@ -96,7 +96,7 @@ public class RoleTest {
 	 * @see Role#hasPrivilege(String)
 	 */
 	@Test
-	public void hasPrivilege_shouldReturnFalseIfNotFound() throws Exception {
+	public void hasPrivilege_shouldReturnFalseIfNotFound() {
 		Role role = new Role();
 		assertFalse("This roles should not have the privilege", role.hasPrivilege("some other privilege name"));
 	}
@@ -105,7 +105,7 @@ public class RoleTest {
 	 * @see Role#hasPrivilege(String)
 	 */
 	@Test
-	public void hasPrivilege_shouldReturnTrueForAnyPrivilegeNameIfSuperUser() throws Exception {
+	public void hasPrivilege_shouldReturnTrueForAnyPrivilegeNameIfSuperUser() {
 		// check super user "super" status
 		Role role = new Role(RoleConstants.SUPERUSER);
 		
@@ -119,7 +119,7 @@ public class RoleTest {
 	 * @see Role#getAllParentRoles()
 	 */
 	@Test
-	public void getAllParentRoles_shouldOnlyReturnParentRoles() throws Exception {
+	public void getAllParentRoles_shouldOnlyReturnParentRoles() {
 		Role grandparent = new Role("Grandparent");
 		Role aunt = new Role("Aunt");
 		Role uncle = new Role("Uncle");
@@ -162,7 +162,7 @@ public class RoleTest {
 	 * @see Role#getAllChildRoles()
 	 */
 	@Test
-	public void getAllChildRoles_shouldOnlyReturnChildRoles() throws Exception {
+	public void getAllChildRoles_shouldOnlyReturnChildRoles() {
 		Role grandparent = new Role("Grandparent");
 		Role aunt = new Role("Aunt");
 		Role uncle = new Role("Uncle");

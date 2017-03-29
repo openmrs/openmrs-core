@@ -29,10 +29,11 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 	/**
 	 * Test that module A that requires module B can call a service method on module B
 	 * 
+	 * @throws ClassNotFoundException
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldAllowModuleAToLoadModuleBIfARequiresB() throws Exception {
+	public void shouldAllowModuleAToLoadModuleBIfARequiresB() throws ClassNotFoundException {
 		OpenmrsClassLoader loader = OpenmrsClassLoader.getInstance();
 		Class<?> module1ServiceClass = loader.loadClass("org.openmrs.module.test1.api.Test1Service");
 		Class<?> module2ServiceClass = loader.loadClass("org.openmrs.module.test2.api.Test2Service");

@@ -33,7 +33,7 @@ public class PatientTest {
 	 * @see Patient#addIdentifier(PatientIdentifier)
 	 */
 	@Test
-	public void addIdentifier_shouldAddIdentifierToCurrentList() throws Exception {
+	public void addIdentifier_shouldAddIdentifierToCurrentList() {
 		
 		Patient p = new Patient();
 		
@@ -139,7 +139,7 @@ public class PatientTest {
 	 * @see Patient#addIdentifier(PatientIdentifier)
 	 */
 	@Test
-	public void addIdentifier_shouldNotFailWithNullIdentifiersList() throws Exception {
+	public void addIdentifier_shouldNotFailWithNullIdentifiersList() {
 		Patient p = new Patient();
 		p.setIdentifiers(null);
 		p.addIdentifier(new PatientIdentifier());
@@ -149,7 +149,7 @@ public class PatientTest {
 	 * @see Patient#getIdentifiers()
 	 */
 	@Test
-	public void getIdentifiers_shouldNotReturnNull() throws Exception {
+	public void getIdentifiers_shouldNotReturnNull() {
 		Patient p = new Patient();
 		p.setIdentifiers(null);
 		Assert.assertNotNull(p.getIdentifiers());
@@ -159,7 +159,7 @@ public class PatientTest {
 	 * @see Patient#addIdentifier(PatientIdentifier)
 	 */
 	@Test
-	public void addIdentifier_shouldNotAddIdentifierThatIsInListAlready() throws Exception {
+	public void addIdentifier_shouldNotAddIdentifierThatIsInListAlready() {
 		Patient p = new Patient();
 		
 		assertNotNull(p.getIdentifiers());
@@ -184,7 +184,7 @@ public class PatientTest {
 	 * @see Patient#removeIdentifier(PatientIdentifier)
 	 */
 	@Test
-	public void removeIdentifier_shouldRemoveIdentifierIfExists() throws Exception {
+	public void removeIdentifier_shouldRemoveIdentifierIfExists() {
 		Patient p = new Patient();
 		
 		PatientIdentifier pa1 = new PatientIdentifier();
@@ -224,7 +224,7 @@ public class PatientTest {
 	}
 	
 	@Test
-	public void removeIdentifier_shouldTestIdentifierCollectionChanged() throws Exception {
+	public void removeIdentifier_shouldTestIdentifierCollectionChanged() {
 		Patient p = new Patient();
 		
 		PatientIdentifier pa1 = new PatientIdentifier();
@@ -282,7 +282,7 @@ public class PatientTest {
 	 * @see Patient#getActiveIdentifiers()
 	 */
 	@Test
-	public void getActiveIdentifiers_shouldReturnPreferredIdentifiersFirstInTheList() throws Exception {
+	public void getActiveIdentifiers_shouldReturnPreferredIdentifiersFirstInTheList() {
 		Patient p = new Patient();
 		p.setIdentifiers(null);
 		PatientIdentifier pa1 = new PatientIdentifier();

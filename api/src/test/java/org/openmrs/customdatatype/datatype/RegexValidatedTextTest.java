@@ -27,7 +27,7 @@ public class RegexValidatedTextTest {
 	 * @see RegexValidatedTextDatatype#validate(String)
 	 */
 	@Test
-	public void validate_shouldAcceptAStringThatMatchesTheRegex() throws Exception {
+	public void validate_shouldAcceptAStringThatMatchesTheRegex() {
 		datatype.validate("thisisgood");
 	}
 	
@@ -35,7 +35,7 @@ public class RegexValidatedTextTest {
 	 * @see RegexValidatedTextDatatype#validate(String)
 	 */
 	@Test(expected = InvalidCustomValueException.class)
-	public void validate_shouldFailIfTheStringDoesNotMatchTheRegex() throws Exception {
+	public void validate_shouldFailIfTheStringDoesNotMatchTheRegex() {
 		datatype.validate("spaces not allowed");
 	}
 	
@@ -43,7 +43,7 @@ public class RegexValidatedTextTest {
 	 * @see RegexValidatedTextDatatype#save(String, String))
 	 */
 	@Test(expected = InvalidCustomValueException.class)
-	public void toPersistentString_shouldFailIfTheStringDoesNotMatchTheRegex() throws Exception {
+	public void toPersistentString_shouldFailIfTheStringDoesNotMatchTheRegex() {
 		datatype.save("spaces not allowed", null);
 	}
 }

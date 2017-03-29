@@ -25,7 +25,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfNameIsNullOrEmpty() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNullOrEmpty() {
 		Location location = new Location();
 		location.setDescription("desc");
 		
@@ -40,7 +40,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfRetiredAndRetireReasonIsNullOrEmpty() throws Exception {
+	public void validate_shouldFailValidationIfRetiredAndRetireReasonIsNullOrEmpty() {
 		Location location = new Location();
 		location.setName("County General");
 		location.setRetired(true);
@@ -55,7 +55,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldSetRetiredToFalseIfRetireReasonIsNullOrEmpty() throws Exception {
+	public void validate_shouldSetRetiredToFalseIfRetireReasonIsNullOrEmpty() {
 		Location location = new Location();
 		location.setName("County General");
 		location.setRetired(true);
@@ -70,7 +70,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllFieldsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfAllFieldsAreCorrect() {
 		Location location = new Location();
 		location.setName("County General");
 		location.setDescription("desc");
@@ -85,7 +85,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfRetiredLocationIsGivenRetiredReason() throws Exception {
+	public void validate_shouldPassValidationIfRetiredLocationIsGivenRetiredReason() {
 		Location location = new Location();
 		location.setName("County General");
 		location.setDescription("desc");
@@ -102,7 +102,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfParentLocationCreatesALoop() throws Exception {
+	public void validate_shouldFailValidationIfParentLocationCreatesALoop() {
 		Location location1 = new Location();
 		Location location2 = new Location();
 		Location location3 = new Location();
@@ -123,7 +123,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.validator.LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfLocationNameAlreadyExist() throws Exception {
+	public void validate_shouldFailValidationIfLocationNameAlreadyExist() {
 		Location location = new Location();
 		location.setName("Unknown Location");
 		location.setDescription("desc");
@@ -138,7 +138,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Location location = new Location();
 		location.setName("name");
 		location.setDescription("description");
@@ -167,7 +167,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Location location = new Location();
 		String longString = "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text";
 		location.setName(longString);

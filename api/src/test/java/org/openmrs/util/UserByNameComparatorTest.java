@@ -32,7 +32,7 @@ public class UserByNameComparatorTest {
 	 * @see UserByNameComparator#compare(User,User)
 	 */
 	@Test
-	public void compare_shouldSortUsersByPersonNames() throws Exception {
+	public void compare_shouldSortUsersByPersonNames() {
 		
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));

@@ -23,7 +23,7 @@ public class PersonByNameComparatorTest {
 	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
 	@Test
-	public void comparePersonsByName_shouldReturnNegativeIfPersonNameForPerson1ComesBeforeThatOfPerson2() throws Exception {
+	public void comparePersonsByName_shouldReturnNegativeIfPersonNameForPerson1ComesBeforeThatOfPerson2() {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));
 		Person person2 = new Person();
@@ -36,7 +36,7 @@ public class PersonByNameComparatorTest {
 	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
 	@Test
-	public void comparePersonsByName_shouldReturnPositiveIfPersonNameForPerson1ComesAfterThatOfPerson2() throws Exception {
+	public void comparePersonsByName_shouldReturnPositiveIfPersonNameForPerson1ComesAfterThatOfPerson2() {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleNamf", "familyName"));
 		Person person2 = new Person();
@@ -49,7 +49,7 @@ public class PersonByNameComparatorTest {
 	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
 	@Test
-	public void comparePersonsByName_shouldReturnZeroIfTheGivenNameMiddleNameAndFamilyNameMatch() throws Exception {
+	public void comparePersonsByName_shouldReturnZeroIfTheGivenNameMiddleNameAndFamilyNameMatch() {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));
 		Person person2 = new Person();
@@ -59,7 +59,7 @@ public class PersonByNameComparatorTest {
 	}
 	
 	@Test
-	public void comparePersonsByName_shouldNotBeCaseSensitive() throws Exception {
+	public void comparePersonsByName_shouldNotBeCaseSensitive() {
 		Person person1 = new Person();
 		person1.addName(new PersonName("GIVENNAME", "MIDDLENAME", "FAMILYNAME"));
 		Person person2 = new Person();

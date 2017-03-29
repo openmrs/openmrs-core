@@ -25,7 +25,7 @@ public class OpenmrsProfileIncludeFilterTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsProfileIncludeFilter#match(MetadataReader,MetadataReaderFactory)
 	 */
 	@Test
-	public void match_shouldCreateBeanForOpenmrs1_8AndLater() throws Exception {
+	public void match_shouldCreateBeanForOpenmrs1_8AndLater() {
 		OpenmrsComponent1_8 bean = applicationContext.getBean(OpenmrsComponent1_8.class);
 		
 		assertThat(bean, is(notNullValue()));
@@ -35,7 +35,7 @@ public class OpenmrsProfileIncludeFilterTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsProfileIncludeFilter#match(MetadataReader,MetadataReaderFactory)
 	 */
 	@Test(expected = NoSuchBeanDefinitionException.class)
-	public void match_shouldNotCreateBeanForOpenmrs1_6To1_7() throws Exception {
+	public void match_shouldNotCreateBeanForOpenmrs1_6To1_7() {
 		applicationContext.getBean(OpenmrsComponent1_6To1_7.class);
 	}
 	

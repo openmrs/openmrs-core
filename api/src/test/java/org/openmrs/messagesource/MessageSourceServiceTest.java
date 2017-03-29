@@ -31,7 +31,7 @@ public class MessageSourceServiceTest extends BaseContextSensitiveTest {
 	 * @see MessageSourceServiceImpl#getMessage(MessageSourceResolvable resolvable, Locale locale)
 	 */
 	@Test
-	public void getMessage_shouldReturnTheLastErrorCodeIfnoLocalizationIsFound() throws Exception {
+	public void getMessage_shouldReturnTheLastErrorCodeIfnoLocalizationIsFound() {
 		MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(), "request");
 		errors.rejectValue("myField", "myErrorCode");
 		MessageSourceResolvable fieldError = errors.getFieldError("myField");

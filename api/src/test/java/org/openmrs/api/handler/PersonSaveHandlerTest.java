@@ -28,7 +28,7 @@ public class PersonSaveHandlerTest extends BaseContextSensitiveTest {
      * @see PersonSaveHandler#handle(Person,User, Date,String)
      */
     @Test
-    public void handle_shouldIgnoreBlankAddresses() throws Exception {
+    public void handle_shouldIgnoreBlankAddresses() {
         PersonSaveHandler handler = new PersonSaveHandler();
         Person person = new Person();
         PersonName personName = new PersonName("John","","Smith");

@@ -22,7 +22,7 @@ public class VisitTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		VisitType visitType = new VisitType();
 		visitType.setName("name");
 		visitType.setDescription("some text");
@@ -38,7 +38,7 @@ public class VisitTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		VisitType visitType = new VisitType();
 		visitType
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

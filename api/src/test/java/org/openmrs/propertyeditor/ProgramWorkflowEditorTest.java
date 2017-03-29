@@ -19,7 +19,7 @@ public class ProgramWorkflowEditorTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingUuid() throws Exception {
+	public void setAsText_shouldSetUsingUuid() {
 		ProgramWorkflowEditor editor = new ProgramWorkflowEditor();
 		editor.setAsText("84f0effa-dd73-46cb-b931-7cd6be6c5f81");
 		Assert.assertNotNull(editor.getValue());

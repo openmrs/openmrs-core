@@ -44,7 +44,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void validate_shouldFailIfTheOrderTypeObjectIsNull() throws Exception {
+	public void validate_shouldFailIfTheOrderTypeObjectIsNull() {
 		Errors errors = new BindException(new OrderType(), "orderType");
 		new OrderTypeValidator().validate(null, errors);
 	}
@@ -53,7 +53,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfNameIsNull() throws Exception {
+	public void validate_shouldFailIfNameIsNull() {
 		OrderType orderType = new OrderType();
 		Errors errors = new BindException(orderType, "orderType");
 		new OrderTypeValidator().validate(orderType, errors);
@@ -64,7 +64,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfNameIsEmpty() throws Exception {
+	public void validate_shouldFailIfNameIsEmpty() {
 		OrderType orderType = new OrderType();
 		orderType.setName("");
 		Errors errors = new BindException(orderType, "orderType");
@@ -76,7 +76,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfNameIsWhitespace() throws Exception {
+	public void validate_shouldFailIfNameIsWhitespace() {
 		OrderType orderType = new OrderType();
 		orderType.setName("");
 		Errors errors = new BindException(orderType, "orderType");
@@ -88,7 +88,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfNameIsWhiteSpace() throws Exception {
+	public void validate_shouldFailIfNameIsWhiteSpace() {
 		OrderType orderType = new OrderType();
 		orderType.setName(" ");
 		Errors errors = new BindException(orderType, "orderType");
@@ -100,7 +100,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfNameIsADuplicate() throws Exception {
+	public void validate_shouldFailIfNameIsADuplicate() {
 		OrderType orderType = new OrderType();
 		orderType.setName(orderService.getOrderType(1).getName());
 		Errors errors = new BindException(orderType, "orderType");
@@ -112,7 +112,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfConceptClassIsADuplicate() throws Exception {
+	public void validate_shouldFailIfConceptClassIsADuplicate() {
 		OrderType orderType = new OrderType();
 		orderType.setName("concept class test");
 		OrderType existing = orderService.getOrderType(2);
@@ -127,7 +127,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfParentIsAmongItsDescendants() throws Exception {
+	public void validate_shouldFailIfParentIsAmongItsDescendants() {
 		OrderType orderType = orderService.getOrderType(2);
 		OrderType descendant = orderService.getOrderType(9);
 		Assert.assertTrue(descendant.getParent().getParent().equals(orderType));
@@ -141,7 +141,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfParentIsAlsoADirectChild() throws Exception {
+	public void validate_shouldFailIfParentIsAlsoADirectChild() {
 		OrderType orderType = orderService.getOrderType(8);
 		OrderType descendant = orderService.getOrderType(12);
 		Assert.assertTrue(descendant.getParent().equals(orderType));
@@ -155,7 +155,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassIfAllFieldsAreCorrectForANewOrderType() throws Exception {
+	public void validate_shouldPassIfAllFieldsAreCorrectForANewOrderType() {
 		OrderType orderType = new OrderType();
 		orderType.setName("unique name");
 		orderType.setJavaClassName("org.openmrs.TestDrugOrder");
@@ -172,7 +172,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassIfAllFieldsAreCorrectForAnExistingOrderType() throws Exception {
+	public void validate_shouldPassIfAllFieldsAreCorrectForAnExistingOrderType() {
 		OrderType orderType = orderService.getOrderType(1);
 		assertNotNull(orderType);
 		Errors errors = new BindException(orderType, "orderType");
@@ -185,7 +185,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldBeInvokedWhenAnOrderTypeIsSaved() throws Exception {
+	public void validate_shouldBeInvokedWhenAnOrderTypeIsSaved() {
 		OrderType orderType = orderService.getOrderType(1);
 		orderType.setName(null);
 		expectedException.expect(APIException.class);
@@ -198,7 +198,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		OrderType orderType = new OrderType();
 		orderType.setName("unique name");
 		orderType.setJavaClassName("org.openmrs.TestDrugOrder");
@@ -219,7 +219,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		OrderType orderType = new OrderType();
 		orderType
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

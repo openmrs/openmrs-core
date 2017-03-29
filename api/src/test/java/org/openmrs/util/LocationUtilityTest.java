@@ -28,7 +28,7 @@ public class LocationUtilityTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDefaultLocation_shouldReturnTheUpdatedDefaultLocationWhenTheValueOfTheGlobalPropertyIsChanged()
-	        throws Exception {
+	{
 		//sanity check
 		Assert.assertEquals("Unknown Location", LocationUtility.getDefaultLocation().getName());
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME, "Xanadu", "Testing");
@@ -40,7 +40,7 @@ public class LocationUtilityTest extends BaseContextSensitiveTest {
 	 * @see LocationUtility#getUserDefaultLocation()
 	 */
 	@Test
-	public void getUserDefaultLocation_shouldReturnTheUserSpecifiedLocationIfAnyIsSet() throws Exception {
+	public void getUserDefaultLocation_shouldReturnTheUserSpecifiedLocationIfAnyIsSet() {
 		//sanity check
 		Assert.assertNull(LocationUtility.getUserDefaultLocation());
 		User user = Context.getAuthenticatedUser();

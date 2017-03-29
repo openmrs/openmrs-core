@@ -27,7 +27,7 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfaIsToBIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfaIsToBIsNullOrEmptyOrWhitespace() {
 		RelationshipType type = new RelationshipType();
 		
 		Errors errors = new BindException(type, "type");
@@ -49,7 +49,7 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfbIsToAIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfbIsToAIsNullOrEmptyOrWhitespace() {
 		RelationshipType type = new RelationshipType();
 		
 		Errors errors = new BindException(type, "type");
@@ -71,7 +71,7 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() {
 		RelationshipType type = new RelationshipType();
 		
 		Errors errors = new BindException(type, "type");
@@ -94,7 +94,7 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredFieldsAreSet() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsAreSet() {
 		RelationshipType type = new RelationshipType();
 		type.setaIsToB("A is To B");
 		type.setbIsToA("B is To A");
@@ -108,7 +108,7 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.validator.RelationshipTypeValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldPassEditingEncounterTypeName() throws Exception {
+	public void validate_shouldPassEditingEncounterTypeName() {
 		RelationshipType type = new RelationshipType();
 		type.setaIsToB("Doctor");
 		type.setbIsToA("Patient");
@@ -123,7 +123,7 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		RelationshipType type = new RelationshipType();
 		type.setaIsToB("A is To B");
 		type.setbIsToA("B is To A");
@@ -139,7 +139,7 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		RelationshipType type = new RelationshipType();
 		type
 		        .setaIsToB("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

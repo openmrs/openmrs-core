@@ -26,7 +26,7 @@ public class LocationTagEditorTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void prepareData() throws Exception {
+	public void prepareData() {
 		executeDataSet(LOC_INITIAL_DATA_XML);
 	}
 	
@@ -34,7 +34,7 @@ public class LocationTagEditorTest extends BaseContextSensitiveTest {
 	 * @see LocationTagEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingId() throws Exception {
+	public void setAsText_shouldSetUsingId() {
 		LocationTagEditor editor = new LocationTagEditor();
 		editor.setAsText("1");
 		Assert.assertNotNull(editor.getValue());
@@ -44,7 +44,7 @@ public class LocationTagEditorTest extends BaseContextSensitiveTest {
 	 * @see LocationTagEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingUuid() throws Exception {
+	public void setAsText_shouldSetUsingUuid() {
 		LocationTagEditor editor = new LocationTagEditor();
 		editor.setAsText("001e503a-47ed-11df-bc8b-001e378eb67e");
 		Assert.assertNotNull(editor.getValue());

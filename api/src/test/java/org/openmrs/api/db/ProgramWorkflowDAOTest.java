@@ -31,14 +31,14 @@ public class ProgramWorkflowDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		// fetch the dao from the spring application context
 		// this bean name matches the name in /metadata/spring/applicationContext-service.xml
 		dao = (ProgramWorkflowDAO) applicationContext.getBean("programWorkflowDAO");
 	}
 	
 	@Test
-	public void saveProgram_shouldSaveProgram() throws Exception {
+	public void saveProgram_shouldSaveProgram() {
 		Program program = createProgram();
 		dao.saveProgram(program);
 	}

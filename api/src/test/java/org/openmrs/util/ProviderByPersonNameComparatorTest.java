@@ -22,7 +22,7 @@ public class ProviderByPersonNameComparatorTest {
 	 */
 	@Test
 	public void compareProvidersByPersonsName_shouldReturnNegativeIfPersonNameForProvider1ComesBeforeThatOfProvider2()
-	        throws Exception {
+	        {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));
 		Provider provider1 = new Provider();
@@ -42,7 +42,7 @@ public class ProviderByPersonNameComparatorTest {
 	 */
 	@Test
 	public void compareProvidersByPersonName_shouldReturnPositiveIfPersonNameForProvider1ComesAfterThatOfProvider2()
-	        throws Exception {
+	        {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenNamf", "middleName", "familyName"));
 		Provider provider1 = new Provider();
@@ -61,7 +61,7 @@ public class ProviderByPersonNameComparatorTest {
 	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
 	@Test
-	public void compareProvidersByPersonName_shouldReturnZeroIfTheGivenNameMiddleNameAndFamilyNameMatch() throws Exception {
+	public void compareProvidersByPersonName_shouldReturnZeroIfTheGivenNameMiddleNameAndFamilyNameMatch() {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));
 		Provider provider1 = new Provider();
@@ -77,7 +77,7 @@ public class ProviderByPersonNameComparatorTest {
 	}
 	
 	@Test
-	public void compareProvidersByPersonName_shouldNotFailIfProvider1HasNoAssociatedPerson() throws Exception {
+	public void compareProvidersByPersonName_shouldNotFailIfProvider1HasNoAssociatedPerson() {
 		Provider provider1 = new Provider();
 		
 		Person person2 = new Person();
@@ -91,7 +91,7 @@ public class ProviderByPersonNameComparatorTest {
 	}
 	
 	@Test
-	public void compareProvidersByPersonName_shouldNotFailIfProvider2HasNoAssociatedPerson() throws Exception {
+	public void compareProvidersByPersonName_shouldNotFailIfProvider2HasNoAssociatedPerson() {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));
 		Provider provider1 = new Provider();
@@ -104,7 +104,7 @@ public class ProviderByPersonNameComparatorTest {
 	}
 	
 	@Test
-	public void compareProvidersByPersonName_shouldNotFailIfNeitherProviderHasAnAssociatedPerson() throws Exception {
+	public void compareProvidersByPersonName_shouldNotFailIfNeitherProviderHasAnAssociatedPerson() {
 		
 		Provider provider1 = new Provider();
 		Provider provider2 = new Provider();

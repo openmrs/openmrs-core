@@ -24,7 +24,7 @@ public class SchedulerUtilTest {
 	 * @see SchedulerUtil#getNextExecution(TaskDefinition)
 	 */
 	@Test
-	public void getNextExecution_shouldGetTheCorrectRepeatInterval() throws Exception {
+	public void getNextExecution_shouldGetTheCorrectRepeatInterval() {
 		
 		// Represents the start time of the task (right now)
 		Calendar startTime = Calendar.getInstance();

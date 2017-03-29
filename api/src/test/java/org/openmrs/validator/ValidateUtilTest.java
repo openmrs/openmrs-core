@@ -32,13 +32,13 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	 * @see ValidateUtil#validate(Object)
 	 */
 	@Test(expected = ValidationException.class)
-	public void validate_shouldThrowValidationExceptionIfErrorsOccurDuringValidation() throws Exception {
+	public void validate_shouldThrowValidationExceptionIfErrorsOccurDuringValidation() {
 		Location loc = new Location();
 		ValidateUtil.validate(loc);
 	}
 	
 	@Test
-	public void validate_shouldThrowAPIExceptionIfErrorsOccurDuringValidation() throws Exception {
+	public void validate_shouldThrowAPIExceptionIfErrorsOccurDuringValidation() {
 		Location loc = new Location();
 		
 		try {
@@ -118,7 +118,7 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	 * @see ValidateUtil#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPopulateErrorsIfObjectInvalid() throws Exception {
+	public void validate_shouldPopulateErrorsIfObjectInvalid() {
 		Location loc = new Location();
 		Errors errors = new BindException(loc, "");
 		ValidateUtil.validate(loc, errors);

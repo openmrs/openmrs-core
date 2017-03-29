@@ -43,7 +43,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosen() throws Exception {
+	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosen() {
 		Patient pa = Context.getPatientService().getPatient(2);
 		Assert.assertNotNull(pa.getPatientIdentifier());
 		//set all identifiers to be non-preferred
@@ -59,7 +59,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	 * @see PatientValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosenForVoidedPatients() throws Exception {
+	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosenForVoidedPatients() {
 		Patient pa = Context.getPatientService().getPatient(432);
 		
 		Assert.assertTrue(pa.getVoided());//sanity check
@@ -73,7 +73,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 	
 	@Test
-	public void validate_shouldNotFailWhenPatientHasOnlyOneIdentifierAndItsNotPreferred() throws Exception {
+	public void validate_shouldNotFailWhenPatientHasOnlyOneIdentifierAndItsNotPreferred() {
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
 		Patient patient = new Patient();
 		PersonName pName = new PersonName();
@@ -108,7 +108,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	 * @see org.openmrs.validator.PatientValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfGenderIsBlank() throws Exception {
+	public void validate_shouldFailValidationIfGenderIsBlank() {
 		Patient pa = new Patient(1);
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
@@ -121,7 +121,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	 */
 	@Override
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
 		Patient patient = new Patient();
 		PersonName pName = new PersonName();
@@ -159,7 +159,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	 */
 	@Override
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
 		Patient patient = new Patient();
 		PersonName pName = new PersonName();

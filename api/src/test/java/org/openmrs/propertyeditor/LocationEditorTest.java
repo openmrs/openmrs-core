@@ -19,7 +19,7 @@ public class LocationEditorTest extends BaseContextSensitiveTest {
 	 * @see LocationEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingId() throws Exception {
+	public void setAsText_shouldSetUsingId() {
 		LocationEditor editor = new LocationEditor();
 		editor.setAsText("1");
 		Assert.assertNotNull(editor.getValue());
@@ -29,7 +29,7 @@ public class LocationEditorTest extends BaseContextSensitiveTest {
 	 * @see LocationEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingUuid() throws Exception {
+	public void setAsText_shouldSetUsingUuid() {
 		LocationEditor editor = new LocationEditor();
 		editor.setAsText("8d6c993e-c2cc-11de-8d13-0010c6dffd0f");
 		Assert.assertNotNull(editor.getValue());

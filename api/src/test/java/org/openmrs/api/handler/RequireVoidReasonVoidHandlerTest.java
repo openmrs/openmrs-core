@@ -30,7 +30,7 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void handle_shouldThrowIllegalArgumentExceptionIfPatientVoidReasonIsNull() throws Exception {
+	public void handle_shouldThrowIllegalArgumentExceptionIfPatientVoidReasonIsNull() {
 		Patient p = Context.getPatientService().getPatient(2);
 		Context.getPatientService().voidPatient(p, null);
 	}
@@ -39,7 +39,7 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void handle_shouldThrowIllegalArgumentExceptionIfEncounterVoidReasonIsEmpty() throws Exception {
+	public void handle_shouldThrowIllegalArgumentExceptionIfEncounterVoidReasonIsEmpty() {
 		Encounter e = Context.getEncounterService().getEncounter(3);
 		Context.getEncounterService().voidEncounter(e, "");
 	}
@@ -48,7 +48,7 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void handle_shouldThrowIllegalArgumentExceptionIfObsVoidReasonIsBlank() throws Exception {
+	public void handle_shouldThrowIllegalArgumentExceptionIfObsVoidReasonIsBlank() {
 		Obs o = Context.getObsService().getObs(7);
 		Context.getObsService().voidObs(o, "  ");
 	}
@@ -57,7 +57,7 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotThrowExceptionIfVoidReasonIsNotBlank() throws Exception {
+	public void handle_shouldNotThrowExceptionIfVoidReasonIsNotBlank() {
 		Obs o = Context.getObsService().getObs(7);
 		Context.getObsService().voidObs(o, "Some Reason");
 	}
@@ -66,7 +66,7 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotThrowExceptionIfVoidReasonIsNullForUnsupportedTypes() throws Exception {
+	public void handle_shouldNotThrowExceptionIfVoidReasonIsNullForUnsupportedTypes() {
 		Person p = Context.getPersonService().getPerson(1);
 		Context.getPersonService().voidPerson(p, null);
 	}

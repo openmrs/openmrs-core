@@ -23,35 +23,35 @@ import org.junit.Test;
 public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	
 	@Test
-	public void shouldCallWillStartOnStartup() throws Exception {
+	public void shouldCallWillStartOnStartup() {
 		assertTrue(moduleTestData.getWillStartCallCount(MODULE1_ID) == 1);
 		assertTrue(moduleTestData.getWillStartCallCount(MODULE2_ID) == 1);
 		assertTrue(moduleTestData.getWillStartCallCount(MODULE3_ID) == 1);
 	}
 	
 	@Test
-	public void shouldNotCallStartedOnStartup() throws Exception {
+	public void shouldNotCallStartedOnStartup() {
 		assertTrue(moduleTestData.getStartedCallCount(MODULE1_ID) == 0);
 		assertTrue(moduleTestData.getStartedCallCount(MODULE2_ID) == 0);
 		assertTrue(moduleTestData.getStartedCallCount(MODULE3_ID) == 0);
 	}
 	
 	@Test
-	public void shouldNotCallWillStopOnStartup() throws Exception {
+	public void shouldNotCallWillStopOnStartup() {
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE1_ID) == 0);
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE2_ID) == 0);
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE3_ID) == 0);
 	}
 	
 	@Test
-	public void shouldNotCallStoppedOnStartup() throws Exception {
+	public void shouldNotCallStoppedOnStartup() {
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 0);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 0);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE3_ID) == 0);
 	}
 	
 	@Test
-	public void shouldStartModulesInOrder() throws Exception {
+	public void shouldStartModulesInOrder() {
 		//module2 depends on module1 while module3 depends on module2
 		//so startup order should be module1, module2, module3
 		assertTrue(moduleTestData.getWillStartCallTime(MODULE1_ID) <= moduleTestData.getWillStartCallTime(MODULE2_ID));
@@ -62,7 +62,7 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	public void shouldCallWillStopAndStoppedOnlyForStoppedModule() throws Exception {
+	public void shouldCallWillStopAndStoppedOnlyForStoppedModule() {
 		ModuleFactory.stopModule(ModuleFactory.getModuleById(MODULE3_ID));
 		
 		//should have called willStop() for only module3
@@ -77,7 +77,7 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	public void shouldStopDependantModulesOnStopModule() throws Exception {
+	public void shouldStopDependantModulesOnStopModule() {
 		//since module2 depends on module1, and module3 depends on module2
 		//stopping module1 should also stop both module2 and module3
 		ModuleFactory.stopModule(ModuleFactory.getModuleById(MODULE1_ID));
@@ -106,7 +106,7 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	public void shouldCallWillStopAndStoppedOnShutdown() throws Exception {
+	public void shouldCallWillStopAndStoppedOnShutdown() {
 		ModuleUtil.shutdown();
 		
 		//should have called willStop() for module1, module2, and module3
@@ -157,7 +157,7 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	public void shouldCallWillStopAndStoppedOnUnloadModule() throws Exception {
+	public void shouldCallWillStopAndStoppedOnUnloadModule() {
 		
 		ModuleFactory.unloadModule(ModuleFactory.getModuleById(MODULE3_ID));
 		

@@ -37,7 +37,7 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		
 		if (dao == null)
 			// fetch the dao from the spring application context
@@ -48,7 +48,7 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	 * @see VisitDAO#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Date, java.util.Date, java.util.Date, java.util.Date, boolean, boolean)
 	 */
 	@Test
-	public void getVisits_shouldReturnAllUnvoidedVisitsIfIncludeEndedIsSetToTrue() throws Exception {
+	public void getVisits_shouldReturnAllUnvoidedVisitsIfIncludeEndedIsSetToTrue() {
 		executeDataSet(VISITS_WITH_DATES_XML);
 		Assert.assertEquals(13, dao.getVisits(null, null, null, null, null, null, null, null, null, true, false).size());
 	}
@@ -57,7 +57,7 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	 * @see VisitDAO#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Date, java.util.Date, java.util.Date, java.util.Date, boolean, boolean)
 	 */
 	@Test
-	public void getVisits_shouldReturnOnlyActiveVisitsIfIncludeEndedIsSetToFalse() throws Exception {
+	public void getVisits_shouldReturnOnlyActiveVisitsIfIncludeEndedIsSetToFalse() {
 		executeDataSet(VISITS_WITH_DATES_XML);
 		Assert.assertEquals(6, dao.getVisits(null, null, null, null, null, null, null, null, null, false, false).size());
 	}
@@ -66,9 +66,9 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	 * @see VisitDAO#getNextVisit(Visit,Collection<VisitType>,Date)
 	 */
 	@Test
-	public void getNextVisit_shouldReturnTheNextUnvoidedActiveVisitMatchingTheSpecifiedTypesAndStartDate() throws Exception {
+	public void getNextVisit_shouldReturnTheNextUnvoidedActiveVisitMatchingTheSpecifiedTypesAndStartDate() {
 		executeDataSet(VISITS_INCLUDE_VISITS_TO_AUTO_CLOSE_XML);
-		ArrayList<VisitType> visitTypes = new ArrayList<VisitType>();
+		ArrayList<VisitType> visitTypes = new ArrayList<>();
 		visitTypes.add(dao.getVisitType(4));
 		Calendar cal = Calendar.getInstance();
 		cal.set(2005, 0, 4, 23, 59, 59);

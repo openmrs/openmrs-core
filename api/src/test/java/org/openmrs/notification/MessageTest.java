@@ -58,7 +58,7 @@ public class MessageTest {
 	 * @see Message#Message(Integer,String,String,String,String,String,String,String)
 	 */
 	@Test
-	public void Message_shouldFillInAllParameters() throws Exception {
+	public void Message_shouldFillInAllParameters() {
 		int id = 1;
 		String recipients = "recipient1@example.com,recipient2@example.com";
 		String sender = "foo@bar.com";
@@ -81,7 +81,7 @@ public class MessageTest {
 	 * @see Message#setRecipients(String)
 	 */
 	@Test
-	public void setRecipients_shouldSetMultipleRecipients() throws Exception {
+	public void setRecipients_shouldSetMultipleRecipients() {
 		Message testMessage = createTestMessage1();
 		
 		String recipients = "recipient1@example.com,recipient2@example.com";
@@ -95,7 +95,7 @@ public class MessageTest {
 	 * @see Message#addRecipient(String)
 	 */
 	@Test
-	public void addRecipient_shouldAddNewRecipient() throws Exception {
+	public void addRecipient_shouldAddNewRecipient() {
 		Message testMessage = createTestMessage1();
 		
 		String oldRecipients = testMessage.getRecipients();
@@ -110,7 +110,7 @@ public class MessageTest {
 	 * @see Message#hasAttachment()
 	 */
 	@Test
-	public void hasAttachment_shouldRReturnTrueIfThisMessageHasAnAttachment() throws Exception {
+	public void hasAttachment_shouldRReturnTrueIfThisMessageHasAnAttachment() {
 		Message testMessage1 = createTestMessage1();
 		Message testMessage2 = createTestMessage2();
 		

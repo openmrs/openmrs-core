@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -58,7 +59,9 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	private static GlobalProperty luhnGP = new GlobalProperty(
 	        OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR,
 	        OpenmrsConstants.LUHN_IDENTIFIER_VALIDATOR);
+	
 	/**
+	 * @throws Exception
 	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onSetUpInTransaction()
 	 */
 	@Before
@@ -76,9 +79,9 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void collectionContains_shouldUseEqualsMethodForComparisonInsteadOfCompareToGivenListCollection()
-	        throws Exception {
+	{
 		
-		ArrayList<PatientIdentifier> identifiers = new ArrayList<PatientIdentifier>();
+		ArrayList<PatientIdentifier> identifiers = new ArrayList<>();
 		
 		PatientIdentifier pi = new PatientIdentifier();
 		pi.setIdentifier("123");
@@ -106,9 +109,9 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void collectionContains_shouldUseEqualsMethodForComparisonInsteadOfCompareToGivenSortedSetCollection()
-	        throws Exception {
+	{
 		
-		SortedSet<PatientIdentifier> identifiers = new TreeSet<PatientIdentifier>();
+		SortedSet<PatientIdentifier> identifiers = new TreeSet<>();
 		
 		PatientIdentifier pi = new PatientIdentifier();
 		pi.setIdentifier("123");
@@ -136,7 +139,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#url2file(URL)
 	 */
 	@Test
-	public void url2file_shouldReturnNullGivenNullParameter() throws Exception {
+	public void url2file_shouldReturnNullGivenNullParameter() {
 		assertNull(OpenmrsUtil.url2file(null));
 	}
 
@@ -144,7 +147,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
-	public void validatePassword_shouldFailWithDigitOnlyPasswordByDefault() throws Exception {
+	public void validatePassword_shouldFailWithDigitOnlyPasswordByDefault() {
 		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
 	}
 	
@@ -152,7 +155,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
-	public void validatePassword_shouldFailWithDigitOnlyPasswordIfNotAllowed() throws Exception {
+	public void validatePassword_shouldFailWithDigitOnlyPasswordIfNotAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
 		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
 	}
@@ -161,7 +164,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
-	public void validatePassword_shouldPassWithDigitOnlyPasswordIfAllowed() throws Exception {
+	public void validatePassword_shouldPassWithDigitOnlyPasswordIfAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
 		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
@@ -171,7 +174,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
-	public void validatePassword_shouldFailWithCharOnlyPasswordByDefault() throws Exception {
+	public void validatePassword_shouldFailWithCharOnlyPasswordByDefault() {
 		OpenmrsUtil.validatePassword("admin", "testonly", "1-8");
 	}
 	
@@ -179,7 +182,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
-	public void validatePassword_shouldFailWithCharOnlyPasswordIfNotAllowed() throws Exception {
+	public void validatePassword_shouldFailWithCharOnlyPasswordIfNotAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
 		OpenmrsUtil.validatePassword("admin", "testonly", "1-8");
 	}
@@ -188,7 +191,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
-	public void validatePassword_shouldPassWithCharOnlyPasswordIfAllowed() throws Exception {
+	public void validatePassword_shouldPassWithCharOnlyPasswordIfAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
 		OpenmrsUtil.validatePassword("admin", "testonly", "1-8");
@@ -198,7 +201,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
-	public void validatePassword_shouldFailWithoutUpperAndLowerCasePasswordByDefault() throws Exception {
+	public void validatePassword_shouldFailWithoutUpperAndLowerCasePasswordByDefault() {
 		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
 	}
 	
@@ -206,7 +209,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
-	public void validatePassword_shouldFailWithoutUpperAndLowerCasePasswordIfNotAllowed() throws Exception {
+	public void validatePassword_shouldFailWithoutUpperAndLowerCasePasswordIfNotAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
 		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
 	}
@@ -215,7 +218,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
-	public void validatePassword_shouldPassWithoutUpperAndLowerCasePasswordIfAllowed() throws Exception {
+	public void validatePassword_shouldPassWithoutUpperAndLowerCasePasswordIfAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
 		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
 	}
@@ -224,7 +227,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = WeakPasswordException.class)
-	public void validatePassword_shouldFailWithPasswordEqualsToUserNameByDefault() throws Exception {
+	public void validatePassword_shouldFailWithPasswordEqualsToUserNameByDefault() {
 		OpenmrsUtil.validatePassword("Admin1234", "Admin1234", "1-8");
 	}
 	
@@ -232,7 +235,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = WeakPasswordException.class)
-	public void validatePassword_shouldFailWithPasswordEqualsToUserNameIfNotAllowed() throws Exception {
+	public void validatePassword_shouldFailWithPasswordEqualsToUserNameIfNotAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "true");
 		OpenmrsUtil.validatePassword("Admin1234", "Admin1234", "1-8");
 	}
@@ -241,7 +244,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
-	public void validatePassword_shouldPassWithPasswordEqualsToUserNameIfAllowed() throws Exception {
+	public void validatePassword_shouldPassWithPasswordEqualsToUserNameIfAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "false");
 		OpenmrsUtil.validatePassword("Admin1234", "Admin1234", "1-8");
 	}
@@ -250,7 +253,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = WeakPasswordException.class)
-	public void validatePassword_shouldFailWithPasswordEqualsToSystemIdByDefault() throws Exception {
+	public void validatePassword_shouldFailWithPasswordEqualsToSystemIdByDefault() {
 		OpenmrsUtil.validatePassword("admin", "Admin1234", "Admin1234");
 	}
 	
@@ -258,7 +261,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = WeakPasswordException.class)
-	public void validatePassword_shouldFailWithPasswordEqualsToSystemIdIfNotAllowed() throws Exception {
+	public void validatePassword_shouldFailWithPasswordEqualsToSystemIdIfNotAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "true");
 		OpenmrsUtil.validatePassword("admin", "Admin1234", "Admin1234");
 	}
@@ -267,7 +270,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
-	public void validatePassword_shouldPassWithPasswordEqualsToSystemIdIfAllowed() throws Exception {
+	public void validatePassword_shouldPassWithPasswordEqualsToSystemIdIfAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "false");
 		OpenmrsUtil.validatePassword("admin", "Admin1234", "Admin1234");
 	}
@@ -276,7 +279,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = ShortPasswordException.class)
-	public void validatePassword_shouldFailWithShortPasswordByDefault() throws Exception {
+	public void validatePassword_shouldFailWithShortPasswordByDefault() {
 		OpenmrsUtil.validatePassword("admin", "1234567", "1-8");
 	}
 	
@@ -284,7 +287,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = ShortPasswordException.class)
-	public void validatePassword_shouldFailWithShortPasswordIfNotAllowed() throws Exception {
+	public void validatePassword_shouldFailWithShortPasswordIfNotAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
 		OpenmrsUtil.validatePassword("admin", "12345", "1-8");
 	}
@@ -293,7 +296,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
-	public void validatePassword_shouldPassWithShortPasswordIfAllowed() throws Exception {
+	public void validatePassword_shouldPassWithShortPasswordIfAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "0");
 		OpenmrsUtil.validatePassword("admin", "H4t", "1-8");
 	}
@@ -302,7 +305,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
-	public void validatePassword_shouldFailWithPasswordNotMatchingConfiguredRegex() throws Exception {
+	public void validatePassword_shouldFailWithPasswordNotMatchingConfiguredRegex() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX,
 		    "[A-Z][a-z][0-9][0-9][a-z][A-Z][a-z][a-z][a-z][a-z]");
 		OpenmrsUtil.validatePassword("admin", "he11oWorld", "1-8");
@@ -312,7 +315,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
-	public void validatePassword_shouldPassWithPasswordMatchingConfiguredRegex() throws Exception {
+	public void validatePassword_shouldPassWithPasswordMatchingConfiguredRegex() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX,
 		    "[A-Z][a-z][0-9][0-9][a-z][A-Z][a-z][a-z][a-z][a-z]");
 		OpenmrsUtil.validatePassword("admin", "He11oWorld", "1-8");
@@ -322,7 +325,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
-	public void validatePassword_shouldAllowPasswordToContainNonAlphanumericCharacters() throws Exception {
+	public void validatePassword_shouldAllowPasswordToContainNonAlphanumericCharacters() {
 		OpenmrsUtil.validatePassword("admin", "Test1234?", "1-8");
 	}
 	
@@ -330,7 +333,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
-	public void validatePassword_shouldAllowPasswordToContainWhiteSpaces() throws Exception {
+	public void validatePassword_shouldAllowPasswordToContainWhiteSpaces() {
 		OpenmrsUtil.validatePassword("admin", "Test *&^ 1234? ", "1-8");
 	}
 	
@@ -338,7 +341,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#getDateFormat(Locale)
 	 */
 	@Test
-	public void getDateFormat_shouldReturnAPatternWithFourYCharactersInIt() throws Exception {
+	public void getDateFormat_shouldReturnAPatternWithFourYCharactersInIt() {
 		Assert.assertEquals("MM/dd/yyyy", OpenmrsUtil.getDateFormat(Locale.US).toLocalizedPattern());
 		Assert.assertEquals("dd/MM/yyyy", OpenmrsUtil.getDateFormat(Locale.UK).toLocalizedPattern());
 		Assert.assertEquals("tt.MM.uuuu", OpenmrsUtil.getDateFormat(Locale.GERMAN).toLocalizedPattern());
@@ -349,7 +352,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#containsUpperAndLowerCase(String)
 	 */
 	@Test
-	public void containsUpperAndLowerCase_shouldReturnTrueIfStringContainsUpperAndLowerCase() throws Exception {
+	public void containsUpperAndLowerCase_shouldReturnTrueIfStringContainsUpperAndLowerCase() {
 		Assert.assertTrue(OpenmrsUtil.containsUpperAndLowerCase("Hello"));
 		Assert.assertTrue(OpenmrsUtil.containsUpperAndLowerCase("methodName"));
 		Assert.assertTrue(OpenmrsUtil.containsUpperAndLowerCase("the letter K"));
@@ -360,7 +363,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#containsUpperAndLowerCase(String)
 	 */
 	@Test
-	public void containsUpperAndLowerCase_shouldReturnFalseIfStringDoesNotContainLowerCaseCharacters() throws Exception {
+	public void containsUpperAndLowerCase_shouldReturnFalseIfStringDoesNotContainLowerCaseCharacters() {
 		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase("HELLO"));
 		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase("THE NUMBER 10?"));
 		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase(""));
@@ -371,7 +374,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#containsUpperAndLowerCase(String)
 	 */
 	@Test
-	public void containsUpperAndLowerCase_shouldReturnFalseIfStringDoesNotContainUpperCaseCharacters() throws Exception {
+	public void containsUpperAndLowerCase_shouldReturnFalseIfStringDoesNotContainUpperCaseCharacters() {
 		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase("hello"));
 		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase("the number 10?"));
 		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase(""));
@@ -382,7 +385,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#containsOnlyDigits(String)
 	 */
 	@Test
-	public void containsOnlyDigits_shouldReturnTrueIfStringContainsOnlyDigits() throws Exception {
+	public void containsOnlyDigits_shouldReturnTrueIfStringContainsOnlyDigits() {
 		Assert.assertTrue(OpenmrsUtil.containsOnlyDigits("1234567890"));
 	}
 	
@@ -390,7 +393,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#containsOnlyDigits(String)
 	 */
 	@Test
-	public void containsOnlyDigits_shouldReturnFalseIfStringContainsAnyNonDigits() throws Exception {
+	public void containsOnlyDigits_shouldReturnFalseIfStringContainsAnyNonDigits() {
 		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits("1.23"));
 		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits("123A"));
 		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits("12 3"));
@@ -402,7 +405,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#containsDigit(String)
 	 */
 	@Test
-	public void containsDigit_shouldReturnTrueIfStringContainsAnyDigits() throws Exception {
+	public void containsDigit_shouldReturnTrueIfStringContainsAnyDigits() {
 		Assert.assertTrue(OpenmrsUtil.containsDigit("There is 1 digit here."));
 	}
 	
@@ -410,7 +413,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#containsDigit(String)
 	 */
 	@Test
-	public void containsDigit_shouldReturnFalseIfStringContainsNoDigits() throws Exception {
+	public void containsDigit_shouldReturnFalseIfStringContainsNoDigits() {
 		Assert.assertFalse(OpenmrsUtil.containsDigit("ABC .$!@#$%^&*()-+=/?><.,~`|[]"));
 		Assert.assertFalse(OpenmrsUtil.containsDigit(""));
 		Assert.assertFalse(OpenmrsUtil.containsDigit(null));
@@ -425,7 +428,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test
-	public void validatePassword_shouldStillWorkWithoutAnOpenSession() throws Exception {
+	public void validatePassword_shouldStillWorkWithoutAnOpenSession() {
 		Context.closeSession();
 		OpenmrsUtil.validatePassword("admin", "1234Password", "systemId");
 	}
@@ -434,7 +437,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#getDateFormat(Locale)
 	 */
 	@Test
-	public void getDateFormat_shouldNotAllowTheReturnedSimpleDateFormatToBeModified() throws Exception {
+	public void getDateFormat_shouldNotAllowTheReturnedSimpleDateFormatToBeModified() {
 		// start with a locale that is not currently cached by getDateFormat()
 		Locale locale = new Locale("hk");
 		Assert.assertTrue("default locale is potentially already cached", !Context.getLocale().equals(locale));
@@ -461,7 +464,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void openmrsDateFormat_shouldParseValidDate() throws Exception {
+	public void openmrsDateFormat_shouldParseValidDate() throws ParseException {
 		SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en", "GB"));
 		sdf.parse("20/12/2001");
 		
@@ -470,7 +473,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void openmrsDateFormat_shouldNotAllowDatesWithInvalidDaysOrMonths() throws Exception {
+	public void openmrsDateFormat_shouldNotAllowDatesWithInvalidDaysOrMonths() {
 		
 		try {
 			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en", "GB"));
@@ -502,7 +505,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void openmrsDateFormat_shouldAllowSingleDigitDatesAndMonths() throws Exception {
+	public void openmrsDateFormat_shouldAllowSingleDigitDatesAndMonths() throws ParseException {
 		
 		SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en"));
 		sdf.parse("1/1/2001");
@@ -510,7 +513,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void openmrsDateFormat_shouldNotAllowTwoDigitYears() throws Exception {
+	public void openmrsDateFormat_shouldNotAllowTwoDigitYears() {
 		
 		try {
 			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en"));
@@ -525,7 +528,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#shortenedStackTrace(String)
 	 */
 	@Test
-	public void shortenedStackTrace_shouldRemoveSpringframeworkAndReflectionRelatedLines() throws Exception {
+	public void shortenedStackTrace_shouldRemoveSpringframeworkAndReflectionRelatedLines() {
 		String test = "ca.uhn.hl7v2.HL7Exception: Error while processing HL7 message: ORU_R01\n"
 		        + "\tat org.openmrs.hl7.impl.HL7ServiceImpl.processHL7Message(HL7ServiceImpl.java:752)\n"
 		        + "\tat sun.reflect.GeneratedMethodAccessor262.invoke(Unknown Source)\n"
@@ -655,7 +658,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#shortenedStackTrace(String)
 	 */
 	@Test
-	public void shortenedStackTrace_shouldReturnNullIfStackTraceIsNull() throws Exception {
+	public void shortenedStackTrace_shouldReturnNullIfStackTraceIsNull() {
 		Assert.assertNull("null value was not returned with null parameter", OpenmrsUtil.shortenedStackTrace(null));
 	}
 	
@@ -663,7 +666,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#nullSafeEqualsIgnoreCase(String,String)
 	 */
 	@Test
-	public void nullSafeEqualsIgnoreCase_shouldBeCaseInsensitive() throws Exception {
+	public void nullSafeEqualsIgnoreCase_shouldBeCaseInsensitive() {
 		Assert.assertTrue(OpenmrsUtil.nullSafeEqualsIgnoreCase("equal", "Equal"));
 	}
 	
@@ -671,12 +674,12 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#nullSafeEqualsIgnoreCase(String,String)
 	 */
 	@Test
-	public void nullSafeEqualsIgnoreCase_shouldReturnFalseIfOnlyOneOfTheStringsIsNull() throws Exception {
+	public void nullSafeEqualsIgnoreCase_shouldReturnFalseIfOnlyOneOfTheStringsIsNull() {
 		Assert.assertFalse(OpenmrsUtil.nullSafeEqualsIgnoreCase(null, ""));
 	}
 	
 	@Test
-	public void storeProperties_shouldEscapeSlashes() throws Exception {
+	public void storeProperties_shouldEscapeSlashes() throws IOException {
 		Charset utf8 = Charset.forName("UTF-8");
 		String expectedProperty = "blacklistRegex";
 		String expectedValue = "[^\\p{InBasicLatin}\\p{InLatin1Supplement}]";
@@ -698,10 +701,11 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @throws IOException
 	 * @see OpenmrsUtil#copyFile(InputStream, OutputStream)
 	 */
 	@Test
-	public void copyFile_shouldNotCopyTheOutputstreamWhenOutputstreamIsNull() throws Exception {
+	public void copyFile_shouldNotCopyTheOutputstreamWhenOutputstreamIsNull() throws IOException {
 		String exampleInputStreamString = "ExampleInputStream";
 		ByteArrayInputStream input = new ByteArrayInputStream(exampleInputStreamString.getBytes());
 
@@ -715,10 +719,11 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 
 
 	/**
+	 * @throws IOException
 	 * @see OpenmrsUtil#copyFile(InputStream, OutputStream)
 	 */
 	@Test
-	public void copyFile_shouldNotCopyTheOutputstreamIfInputstreamIsNull() throws Exception {
+	public void copyFile_shouldNotCopyTheOutputstreamIfInputstreamIsNull() throws IOException {
 		InputStream input = null;
 
 		ByteArrayOutputStream output = spy(new ByteArrayOutputStream());
@@ -730,10 +735,11 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @throws IOException
 	 * @see OpenmrsUtil#copyFile(InputStream, OutputStream)
 	 */
 	@Test
-	public void copyFile_shouldCopyInputstreamToOutputstreamAndCloseTheOutputstream() throws Exception {
+	public void copyFile_shouldCopyInputstreamToOutputstreamAndCloseTheOutputstream() throws IOException {
 
 		String exampleInputStreamString = "ExampleInputStream";
 		ByteArrayInputStream expectedByteArrayInputStream = new ByteArrayInputStream(exampleInputStreamString.getBytes());

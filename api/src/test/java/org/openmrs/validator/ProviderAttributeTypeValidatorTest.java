@@ -25,7 +25,7 @@ public class ProviderAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see ProviderAttributeTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		ProviderAttributeType type = new ProviderAttributeType();
 		type.setName("name");
 		type.setDatatypeClassname("org.openmrs.customdatatype.datatype.FreeTextDatatype");
@@ -42,7 +42,7 @@ public class ProviderAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see ProviderAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ProviderAttributeType type = new ProviderAttributeType();
 		type
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

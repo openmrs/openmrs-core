@@ -30,7 +30,7 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test(expected = APIException.class)
-	public void handle_shouldThrowAPIExceptionIfPatientVoidReasonIsNull() throws Exception {
+	public void handle_shouldThrowAPIExceptionIfPatientVoidReasonIsNull() {
 		Patient p = Context.getPatientService().getPatient(2);
 		p.setVoided(true);
 		p.setVoidReason(null);
@@ -41,7 +41,7 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test(expected = APIException.class)
-	public void handle_shouldThrowAPIExceptionIfEncounterVoidReasonIsEmpty() throws Exception {
+	public void handle_shouldThrowAPIExceptionIfEncounterVoidReasonIsEmpty() {
 		Encounter e = Context.getEncounterService().getEncounter(3);
 		e.setVoided(true);
 		e.setVoidReason("");
@@ -52,7 +52,7 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test(expected = APIException.class)
-	public void handle_shouldThrowAPIExceptionIfObsVoidReasonIsBlank() throws Exception {
+	public void handle_shouldThrowAPIExceptionIfObsVoidReasonIsBlank() {
 		Encounter e = Context.getEncounterService().getEncounter(3);
 		e.setVoided(true);
 		e.setVoidReason("  ");
@@ -63,7 +63,7 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotThrowExceptionIfVoidReasonIsNotBlank() throws Exception {
+	public void handle_shouldNotThrowExceptionIfVoidReasonIsNotBlank() {
 		Encounter e = Context.getEncounterService().getEncounter(3);
 		e.setVoided(true);
 		e.setVoidReason("Some Reason");
@@ -74,7 +74,7 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotThrowExceptionIfVoidReasonIsNullForUnsupportedTypes() throws Exception {
+	public void handle_shouldNotThrowExceptionIfVoidReasonIsNullForUnsupportedTypes() {
 		Person p = Context.getPersonService().getPerson(1);
 		p.setVoided(true);
 		p.setVoidReason(null);

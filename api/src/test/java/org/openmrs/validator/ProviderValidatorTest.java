@@ -41,7 +41,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	private static final String OTHERS_PROVIDERS_XML = "org/openmrs/api/include/ProviderServiceTest-otherProviders.xml";
 	
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		provider = new Provider();
 		errors = new BindException(provider, "provider");
 		providerValidator = new ProviderValidator();
@@ -52,7 +52,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldBeValidIfIdentifierIsNotSet() throws Exception {
+	public void validate_shouldBeValidIfIdentifierIsNotSet() {
 		//given
 		provider.setIdentifier(null);
 		
@@ -75,7 +75,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldBeValidIfIdentifierIsSet() throws Exception {
+	public void validate_shouldBeValidIfIdentifierIsSet() {
 		//given
 		provider.setIdentifier("id");
 		
@@ -90,7 +90,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldBeInvalidIfProviderIsRetiredAndTheRetiredReasonIsNotMentioned() throws Exception {
+	public void validate_shouldBeInvalidIfProviderIsRetiredAndTheRetiredReasonIsNotMentioned() {
 		provider.setIdentifier("id");
 		provider.setRetired(true);
 		provider.setPerson(new Person());
@@ -113,7 +113,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldBeInvalidIfPersonIsNotSet() throws Exception {
+	public void validate_shouldBeInvalidIfPersonIsNotSet() {
 		//given
 		provider.setIdentifier("id");
 		provider.setPerson(null);
@@ -133,7 +133,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldBeValidIfOnlyPersonIsSet() throws Exception {
+	public void validate_shouldBeValidIfOnlyPersonIsSet() {
 		//given
 		provider.setIdentifier("id");
 		provider.setPerson(new Person(1));
@@ -149,7 +149,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldRejectAProviderIfItHasFewerThanMinOccursOfAnAttribute() throws Exception {
+	public void validate_shouldRejectAProviderIfItHasFewerThanMinOccursOfAnAttribute() {
 		provider.setId(null);
 		provider.setPerson(null);
 		executeDataSet(PROVIDER_ATTRIBUTE_TYPES_XML);
@@ -168,7 +168,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldRejectAProviderIfItHasMoreThanMaxOccursOfAnAttribute() throws Exception {
+	public void validate_shouldRejectAProviderIfItHasMoreThanMaxOccursOfAnAttribute() {
 		provider.setId(null);
 		provider.setPerson(null);
 		executeDataSet(PROVIDER_ATTRIBUTE_TYPES_XML);
@@ -191,7 +191,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldAcceptDuplicateIdentifierIfTheExistingProviderIsNotRetired() throws Exception {
+	public void validate_shouldAcceptDuplicateIdentifierIfTheExistingProviderIsNotRetired() {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateProvider = providerService.getProvider(200);
 		
@@ -206,7 +206,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldAcceptDuplicateIdentifierIfTheExistingProviderIsRetired() throws Exception {
+	public void validate_shouldAcceptDuplicateIdentifierIfTheExistingProviderIsRetired() {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateRetiredProvider = providerService.getProvider(201);
 		Assert.assertTrue(duplicateRetiredProvider.getRetired());
@@ -222,7 +222,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldAcceptADuplicateIdentifierForANewProviderWhichIsNotRetired() throws Exception {
+	public void validate_shouldAcceptADuplicateIdentifierForANewProviderWhichIsNotRetired() {
 		Provider duplicateProvider = providerService.getProvider(1);
 		Assert.assertFalse(duplicateProvider.getRetired());
 		
@@ -237,7 +237,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldAcceptADuplicateIdentifierForANewProviderWhichIsRetired() throws Exception {
+	public void validate_shouldAcceptADuplicateIdentifierForANewProviderWhichIsRetired() {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateProvider = providerService.getProvider(1);
 		Assert.assertFalse(duplicateProvider.getRetired());
@@ -254,7 +254,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Provider provider = new Provider();
 		provider.setIdentifier("identifier");
 		provider.setRetireReason("retireReason");
@@ -275,7 +275,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Provider provider = new Provider();
 		provider
 		        .setIdentifier("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

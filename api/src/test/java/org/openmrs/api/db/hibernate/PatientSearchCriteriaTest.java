@@ -44,7 +44,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#getQueryParts(String)
 	 */
 	@Test
-	public void getQueryParts_shouldProcessSimpleSpaceAsSeparator() throws Exception {
+	public void getQueryParts_shouldProcessSimpleSpaceAsSeparator() {
 		String[] actual = patientSearchCriteria.getQueryParts("Anton Bert Charles");
 		String[] expected = { "Anton", "Bert", "Charles" };
 		
@@ -55,7 +55,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#getQueryParts(String)
 	 */
 	@Test
-	public void getQueryParts_shouldProcessCommaAsSeparator() throws Exception {
+	public void getQueryParts_shouldProcessCommaAsSeparator() {
 		String[] actual = patientSearchCriteria.getQueryParts("Anton,Bert,Charles");
 		String[] expected = { "Anton", "Bert", "Charles" };
 		
@@ -66,7 +66,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#getQueryParts(String)
 	 */
 	@Test
-	public void getQueryParts_shouldProcessMixedSeparators() throws Exception {
+	public void getQueryParts_shouldProcessMixedSeparators() {
 		String[] actual = patientSearchCriteria.getQueryParts("Anton,Bert, Charles Dorian  Ernie");
 		String[] expected = { "Anton", "Bert", "Charles", "Dorian", "Ernie" };
 		
@@ -77,7 +77,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#getQueryParts(String)
 	 */
 	@Test
-	public void getQueryParts_shouldNotReturnEmptyNameParts() throws Exception {
+	public void getQueryParts_shouldNotReturnEmptyNameParts() {
 		String[] actual = patientSearchCriteria.getQueryParts(" Anton  Bert   Charles ");
 		String[] expected = { "Anton", "Bert", "Charles" };
 		
@@ -88,7 +88,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#getQueryParts(String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void getQueryParts_shouldRejectNullAsName() throws Exception {
+	public void getQueryParts_shouldRejectNullAsName() {
 		patientSearchCriteria.getQueryParts(null);
 	}
 	
@@ -96,7 +96,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#isShortName(String)
 	 */
 	@Test
-	public void isShortName_shouldRecogniseShortName() throws Exception {
+	public void isShortName_shouldRecogniseShortName() {
 		Assert.assertTrue(patientSearchCriteria.isShortName("J"));
 	}
 	
@@ -104,7 +104,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#isShortName(String)
 	 */
 	@Test
-	public void isShortName_shouldRecogniseLongName() throws Exception {
+	public void isShortName_shouldRecogniseLongName() {
 		Assert.assertFalse(patientSearchCriteria.isShortName("Jo"));
 	}
 	
@@ -112,7 +112,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#getMatchMode()
 	 */
 	@Test
-	public void getMatchMode_shouldReturnStartAsDefaultMatchMode() throws Exception {
+	public void getMatchMode_shouldReturnStartAsDefaultMatchMode() {
 		globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
 		Assert.assertEquals(MatchMode.START, patientSearchCriteria.getMatchMode());
 	}
@@ -121,7 +121,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#getMatchMode()
 	 */
 	@Test
-	public void getMatchMode_shouldReturnStartAsConfiguredMatchMode() throws Exception {
+	public void getMatchMode_shouldReturnStartAsConfiguredMatchMode() {
 		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
@@ -140,7 +140,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#getMatchMode()
 	 */
 	@Test
-	public void getMatchMode_shouldReturnAnywhereAsConfiguredMatchMode() throws Exception {
+	public void getMatchMode_shouldReturnAnywhereAsConfiguredMatchMode() {
 		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE);
@@ -159,7 +159,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#getSearchMode(String, String, java.util.List, boolean)
 	 */
 	@Test
-	public void getSearchMode_shouldIdentifySearchByName() throws Exception {
+	public void getSearchMode_shouldIdentifySearchByName() {
 		Assert.assertEquals(PatientSearchMode.PATIENT_SEARCH_BY_NAME, patientSearchCriteria.getSearchMode("name", null,
 		    null, false));
 		
@@ -180,7 +180,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#getSearchMode(String, String, java.util.List, boolean)
 	 */
 	@Test
-	public void getSearchMode_shouldIdentifySearchByIdentifier() throws Exception {
+	public void getSearchMode_shouldIdentifySearchByIdentifier() {
 		Assert.assertEquals(PatientSearchMode.PATIENT_SEARCH_BY_IDENTIFIER, patientSearchCriteria.getSearchMode(null,
 		    "identifier", null, false));
 		
@@ -195,8 +195,8 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#getSearchMode(String, String, java.util.List, boolean)
 	 */
 	@Test
-	public void getSearchMode_shouldIdentifySearchByIdentifierTypeList() throws Exception {
-		List<PatientIdentifierType> patientIdentifierTypeList = new ArrayList<PatientIdentifierType>();
+	public void getSearchMode_shouldIdentifySearchByIdentifierTypeList() {
+		List<PatientIdentifierType> patientIdentifierTypeList = new ArrayList<>();
 		patientIdentifierTypeList.add(new PatientIdentifierType());
 		
 		// testing variations of empty or blank value for name
@@ -231,8 +231,8 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#getSearchMode(String, String, java.util.List, boolean)
 	 */
 	@Test
-	public void getSearchMode_shouldIdentifySearchByIdentifierAndIdentifierTypeList() throws Exception {
-		List<PatientIdentifierType> patientIdentifierTypeList = new ArrayList<PatientIdentifierType>();
+	public void getSearchMode_shouldIdentifySearchByIdentifierAndIdentifierTypeList() {
+		List<PatientIdentifierType> patientIdentifierTypeList = new ArrayList<>();
 		patientIdentifierTypeList.add(new PatientIdentifierType());
 		
 		Assert.assertEquals(PatientSearchMode.PATIENT_SEARCH_BY_IDENTIFIER, patientSearchCriteria.getSearchMode(null,
@@ -247,8 +247,8 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#getSearchMode(String, String, java.util.List, boolean)
 	 */
 	@Test
-	public void getSearchMode_shouldIdentifySearchByNameOrIdentifier() throws Exception {
-		List<PatientIdentifierType> patientIdentifierTypeList = new ArrayList<PatientIdentifierType>();
+	public void getSearchMode_shouldIdentifySearchByNameOrIdentifier() {
+		List<PatientIdentifierType> patientIdentifierTypeList = new ArrayList<>();
 		patientIdentifierTypeList.add(new PatientIdentifierType());
 		
 		// test cases where "name" is the only parameter that is non-empty and non-blank
@@ -322,8 +322,8 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#getSearchMode(String, String, java.util.List, boolean)
 	 */
 	@Test
-	public void getSearchMode_shouldIdentifySearchByNameAndIdentifier() throws Exception {
-		List<PatientIdentifierType> patientIdentifierTypeList = new ArrayList<PatientIdentifierType>();
+	public void getSearchMode_shouldIdentifySearchByNameAndIdentifier() {
+		List<PatientIdentifierType> patientIdentifierTypeList = new ArrayList<>();
 		patientIdentifierTypeList.add(new PatientIdentifierType());
 		
 		// test cases where "name" and "identifier" are the only parameters that are non-empty and non-blank
@@ -351,7 +351,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#copySearchParameter(String, String)
 	 */
 	@Test
-	public void copySearchParameter_shouldReturnSourceValueWhenTargetIsBlank() throws Exception {
+	public void copySearchParameter_shouldReturnSourceValueWhenTargetIsBlank() {
 		Assert.assertEquals("source", patientSearchCriteria.copySearchParameter("source", null));
 		Assert.assertEquals("source", patientSearchCriteria.copySearchParameter("source", ""));
 		Assert.assertEquals("source", patientSearchCriteria.copySearchParameter("source", "   \n\t "));
@@ -361,7 +361,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 * @see PatientSearchCriteria#copySearchParameter(String, String)
 	 */
 	@Test
-	public void copySearchParameter_shouldReturnTargetValueWhenTargetIsNonblank() throws Exception {
+	public void copySearchParameter_shouldReturnTargetValueWhenTargetIsNonblank() {
 		Assert.assertEquals("target", patientSearchCriteria.copySearchParameter(null, "target"));
 		Assert.assertEquals("target", patientSearchCriteria.copySearchParameter("", "target"));
 		Assert.assertEquals("target", patientSearchCriteria.copySearchParameter("   \n\t ", "target"));

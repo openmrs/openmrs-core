@@ -31,7 +31,7 @@ public class PersonDAOTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		// fetch the dao from the spring application context 
 		// this bean name matches the name in /metadata/spring/applicationContext-service.xml 
 		dao = (PersonDAO) applicationContext.getBean("personDAO");
@@ -41,7 +41,7 @@ public class PersonDAOTest extends BaseContextSensitiveTest {
 	 * @see PersonDAO#getSavedPersonAttributeTypeName(org.openmrs.PersonAttributeType)
 	 */
 	@Test
-	public void getSavedPersonAttributeTypeName_shouldGetSavedPersonAttributeTypeNameFromDatabase() throws Exception {
+	public void getSavedPersonAttributeTypeName_shouldGetSavedPersonAttributeTypeNameFromDatabase() {
 		PersonAttributeType pat = Context.getPersonService().getPersonAttributeType(1);
 		
 		// save the name from the db for later checks
@@ -60,13 +60,13 @@ public class PersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getPersonName_shouldGetSavedPersonNameById() throws Exception {
+	public void getPersonName_shouldGetSavedPersonNameById() {
 		PersonName personName = dao.getPersonName(2);
 		assertEquals(2, (int) personName.getId());
 	}
 	
 	@Test
-	public void getPersonName_shouldNotGetPersonNameGivenInvalidId() throws Exception {
+	public void getPersonName_shouldNotGetPersonNameGivenInvalidId() {
 		PersonName personName = dao.getPersonName(-1);
 		assertNull(personName);
 	}

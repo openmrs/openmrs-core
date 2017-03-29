@@ -24,7 +24,7 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonMergeLogValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfPersonMergeLogDataIsNull() throws Exception {
+	public void validate_shouldFailValidationIfPersonMergeLogDataIsNull() {
 		PersonMergeLog personMergeLog = new PersonMergeLog();
 		personMergeLog.setWinner(new Person());
 		personMergeLog.setLoser(new Person());
@@ -38,7 +38,7 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonMergeLogValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfWinnerIsNull() throws Exception {
+	public void validate_shouldFailValidationIfWinnerIsNull() {
 		PersonMergeLog personMergeLog = new PersonMergeLog();
 		personMergeLog.setLoser(new Person());
 		personMergeLog.setPersonMergeLogData(new PersonMergeLogData());
@@ -52,7 +52,7 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonMergeLogValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfLoserIsNull() throws Exception {
+	public void validate_shouldFailValidationIfLoserIsNull() {
 		PersonMergeLog personMergeLog = new PersonMergeLog();
 		personMergeLog.setWinner(new Person());
 		personMergeLog.setPersonMergeLogData(new PersonMergeLogData());
@@ -66,7 +66,7 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonMergeLogValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllFieldsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfAllFieldsAreCorrect() {
 		PersonMergeLog personMergeLog = new PersonMergeLog();
 		personMergeLog.setWinner(new Person());
 		personMergeLog.setLoser(new Person());
@@ -81,7 +81,7 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonMergeLogValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		PersonMergeLog personMergeLog = new PersonMergeLog();
 		personMergeLog.setWinner(new Person());
 		personMergeLog.setLoser(new Person());
@@ -99,7 +99,7 @@ public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonMergeLogValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		PersonMergeLog personMergeLog = new PersonMergeLog();
 		personMergeLog.setWinner(new Person());
 		personMergeLog.setLoser(new Person());

@@ -28,7 +28,7 @@ public class PersonAttributeHelperTest extends BaseContextSensitiveTest {
 	private PersonAttributeHelper helper = null;
 	
 	@Before
-	public void getPersonDAO() throws Exception {
+	public void getPersonDAO() {
 		executeDataSet(PEOPLE_FROM_THE_SHIRE_XML);
 		sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		helper = new PersonAttributeHelper(sessionFactory);
@@ -38,7 +38,7 @@ public class PersonAttributeHelperTest extends BaseContextSensitiveTest {
 	 * @see PersonAttributeHelper#personAttributeExists(String)
 	 */
 	@Test
-	public void personAttributeExists_shouldReturnTrueIfAPersonAttributeExists() throws Exception {
+	public void personAttributeExists_shouldReturnTrueIfAPersonAttributeExists() {
 		Assert.assertTrue(helper.personAttributeExists("Master thief"));
 		Assert.assertTrue(helper.personAttributeExists("Senior ring bearer"));
 		Assert.assertTrue(helper.personAttributeExists("Story teller"));
@@ -52,7 +52,7 @@ public class PersonAttributeHelperTest extends BaseContextSensitiveTest {
 	 * @see PersonAttributeHelper#voidedPersonAttributeExists(String)
 	 */
 	@Test
-	public void voidedPersonAttributeExists_shouldReturnTrueIfAVoidedPersonAttributeExists() throws Exception {
+	public void voidedPersonAttributeExists_shouldReturnTrueIfAVoidedPersonAttributeExists() {
 		Assert.assertTrue(helper.voidedPersonAttributeExists("Master thief"));
 		Assert.assertTrue(helper.voidedPersonAttributeExists("Mushroom pie"));
 		
@@ -63,7 +63,7 @@ public class PersonAttributeHelperTest extends BaseContextSensitiveTest {
 	 * @see PersonAttributeHelper#nonVoidedPersonAttributeExists(String)
 	 */
 	@Test
-	public void nonVoidedPersonAttributeExists_shouldReturnTrueIfANonvoidedPersonAttributeExists() throws Exception {
+	public void nonVoidedPersonAttributeExists_shouldReturnTrueIfANonvoidedPersonAttributeExists() {
 		Assert.assertTrue(helper.nonVoidedPersonAttributeExists("Story teller"));
 		Assert.assertTrue(helper.nonVoidedPersonAttributeExists("Porridge with honey"));
 		
@@ -74,7 +74,7 @@ public class PersonAttributeHelperTest extends BaseContextSensitiveTest {
 	 * @see PersonAttributeHelper#nonSearchablePersonAttributeExists(String)
 	 */
 	@Test
-	public void nonSearchablePersonAttributeExists_shouldReturnTrueIfANonsearchablePersonAttributeExists() throws Exception {
+	public void nonSearchablePersonAttributeExists_shouldReturnTrueIfANonsearchablePersonAttributeExists() {
 		Assert.assertFalse(helper.nonSearchablePersonAttributeExists("Master thief"));
 		Assert.assertFalse(helper.nonSearchablePersonAttributeExists("Senior ring bearer"));
 		Assert.assertFalse(helper.nonSearchablePersonAttributeExists("Story teller"));
@@ -89,7 +89,7 @@ public class PersonAttributeHelperTest extends BaseContextSensitiveTest {
 	 * @see PersonAttributeHelper#searchablePersonAttributeExists(String)
 	 */
 	@Test
-	public void searchablePersonAttributeExists_shouldReturnTrueIfASearchablePersonAttributeExists() throws Exception {
+	public void searchablePersonAttributeExists_shouldReturnTrueIfASearchablePersonAttributeExists() {
 		Assert.assertTrue(helper.searchablePersonAttributeExists("Master thief"));
 		Assert.assertTrue(helper.searchablePersonAttributeExists("Senior ring bearer"));
 		Assert.assertTrue(helper.searchablePersonAttributeExists("Story teller"));

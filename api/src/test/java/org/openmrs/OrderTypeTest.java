@@ -27,7 +27,7 @@ public class OrderTypeTest {
 	 * @see org.openmrs.OrderType#getJavaClass()
 	 */
 	@Test
-	public void setJavaClass_shouldGetJavaClassObject() throws Exception {
+	public void setJavaClass_shouldGetJavaClassObject() {
 		//Create a new OrderType
 		OrderType orderType = new OrderType();
 		
@@ -42,7 +42,7 @@ public class OrderTypeTest {
 	 * @see OrderType#addConceptClass(ConceptClass)
 	 */
 	@Test
-	public void addConceptClass_shouldAddTheSpecifiedConceptClass() throws Exception {
+	public void addConceptClass_shouldAddTheSpecifiedConceptClass() {
 		OrderType ot = new OrderType();
 		ConceptClass cc = new ConceptClass();
 		ot.addConceptClass(cc);
@@ -56,7 +56,7 @@ public class OrderTypeTest {
 	 * @see OrderType#addConceptClass(ConceptClass)
 	 */
 	@Test
-	public void addConceptClass_shouldNotAddADuplicateConceptClass() throws Exception {
+	public void addConceptClass_shouldNotAddADuplicateConceptClass() {
 		OrderType ot = new OrderType();
 		ConceptClass cc1 = new ConceptClass();
 		ot.addConceptClass(cc1);

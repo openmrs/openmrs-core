@@ -17,7 +17,7 @@ import org.openmrs.api.context.Context;
 public class StartModuleAnnotatioTest extends BaseModuleContextSensitiveTest {
 	
 	@Test
-	public void shouldStartModules() throws Exception {
+	public void shouldStartModules() throws ClassNotFoundException {
 		
 		Class<?> atdServiceClass = Context.loadClass("org.openmrs.module.atdproducer.service.ATDService");
 		Class<?> dssServiceClass = Context.loadClass("org.openmrs.module.dssmodule.DssService");

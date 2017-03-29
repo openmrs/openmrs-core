@@ -23,7 +23,7 @@ public class VisitAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitAttributeTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		VisitAttributeType visitAttributeType = new VisitAttributeType();
 		visitAttributeType.setName("name");
 		visitAttributeType.setMinOccurs(1);
@@ -42,7 +42,7 @@ public class VisitAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		VisitAttributeType visitAttributeType = new VisitAttributeType();
 		visitAttributeType
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

@@ -29,7 +29,7 @@ public class PresentationMessageMapTest {
 	 * @see PresentationMessageMap#put(String,PresentationMessage)
 	 */
 	@Test
-	public void put_shouldShouldIgnoreNonMatchingLocaleMessages() throws Exception {
+	public void put_shouldShouldIgnoreNonMatchingLocaleMessages() {
 		PresentationMessageMap testPmm = new PresentationMessageMap(Locale.ENGLISH);
 		testPmm.put("right_locale", MockPresentationMessage.createMockPresentationMessage("en"));
 		testPmm.put("wrong_locale", MockPresentationMessage.createMockPresentationMessage(Locale.GERMAN));
@@ -44,7 +44,7 @@ public class PresentationMessageMapTest {
 	 * @see PresentationMessageMap#putAll(Map<PresentationMessage>)
 	 */
 	@Test
-	public void putAll_shouldFilterOutNonMatchingLocaleMessagesFromBatchAdd() throws Exception {
+	public void putAll_shouldFilterOutNonMatchingLocaleMessagesFromBatchAdd() {
 		Map<String, PresentationMessage> mockMessageMap = new HashMap<String, PresentationMessage>();
 		mockMessageMap.put("right_locale", MockPresentationMessage.createMockPresentationMessage("en"));
 		mockMessageMap.put("wrong_locale", MockPresentationMessage.createMockPresentationMessage(Locale.GERMAN));

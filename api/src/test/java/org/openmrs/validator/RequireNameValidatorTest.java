@@ -24,7 +24,7 @@ public class RequireNameValidatorTest {
 	 * @see RequireNameValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() {
 		EncounterRole role = new EncounterRole();
 		role.setName(null);
 		role.setDescription(":(");
@@ -48,7 +48,7 @@ public class RequireNameValidatorTest {
 	 * @see RequireNameValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfNameHasProperValue() throws Exception {
+	public void validate_shouldPassValidationIfNameHasProperValue() {
 		EncounterRole role = new EncounterRole();
 		role.setName("restraining");
 		

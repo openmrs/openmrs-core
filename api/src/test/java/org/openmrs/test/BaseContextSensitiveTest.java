@@ -47,6 +47,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.DatabaseUnitRuntimeException;
+import org.dbunit.database.AmbiguousTableNameException;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -567,6 +568,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	/**
 	 * This initializes the empty in-memory database with some rows in order to actually run some
 	 * tests
+	 * 
+	 * @throws Exception
 	 */
 	public void initializeInMemoryDatabase() throws Exception {
 		//Don't allow the user to overwrite data
@@ -817,33 +820,44 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * 
 	 * @throws Exception
 	 */
-	public void deleteAllData() throws Exception {
-		Context.clearSession();
-		
-		Connection connection = getConnection();
-		
-		turnOffDBConstraints(connection);
-		
-		IDatabaseConnection dbUnitConn = setupDatabaseConnection(connection);
-		
-		// find all the tables for this connection
-		ResultSet resultSet = connection.getMetaData().getTables(null, "PUBLIC", "%", null);
-		DefaultDataSet dataset = new DefaultDataSet();
-		while (resultSet.next()) {
-			String tableName = resultSet.getString(3);
-			dataset.addTable(new DefaultTable(tableName));
+	public void deleteAllData() {
+		try {
+			Context.clearSession();
+			
+			Connection connection = getConnection();
+			
+			turnOffDBConstraints(connection);
+			
+			IDatabaseConnection dbUnitConn = setupDatabaseConnection(connection);
+			
+			// find all the tables for this connection
+			ResultSet resultSet = connection.getMetaData().getTables(null, "PUBLIC", "%", null);
+			DefaultDataSet dataset = new DefaultDataSet();
+			while (resultSet.next()) {
+				String tableName = resultSet.getString(3);
+				dataset.addTable(new DefaultTable(tableName));
+			}
+			
+			// do the actual deleting/truncating
+			DatabaseOperation.DELETE_ALL.execute(dbUnitConn, dataset);
+			
+			turnOnDBConstraints(connection);
+			
+			connection.commit();
+			
+			updateSearchIndex();
+			
+			isBaseSetup = false;
 		}
-		
-		// do the actual deleting/truncating
-		DatabaseOperation.DELETE_ALL.execute(dbUnitConn, dataset);
-		
-		turnOnDBConstraints(connection);
-		
-		connection.commit();
-		
-		updateSearchIndex();
-		
-		isBaseSetup = false;
+		catch (AmbiguousTableNameException e) {
+			throw new DatabaseUnitRuntimeException(e);
+		}
+		catch (SQLException e) {
+			throw new DatabaseUnitRuntimeException(e);
+		}
+		catch (DatabaseUnitException e) {
+			throw new DatabaseUnitRuntimeException(e);
+		}
 	}
 	
 	/**
@@ -867,11 +881,11 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * If you annotate a test with "@SkipBaseSetup", this method will call {@link #deleteAllData()},
 	 * but only if you use the in memory DB.
 	 * 
+	 * @throws SQLException
 	 * @see SkipBaseSetup
 	 * @see SkipBaseSetupAnnotationExecutionListener
 	 * @see #initializeInMemoryDatabase()
 	 * @see #authenticate()
-	 * @throws Exception
 	 */
 	@Before
 	public void baseSetupWithStandardDataAndAuthentication() throws Exception {

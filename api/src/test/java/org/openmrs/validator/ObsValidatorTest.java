@@ -48,7 +48,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfPersonIdIsNull() throws Exception {
+	public void validate_shouldFailValidationIfPersonIdIsNull() {
 		Obs obs = new Obs();
 		obs.setConcept(Context.getConceptService().getConcept(5089));
 		obs.setObsDatetime(new Date());
@@ -67,7 +67,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfObsDatetimeIsNull() throws Exception {
+	public void validate_shouldFailValidationIfObsDatetimeIsNull() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(5089));
@@ -86,7 +86,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfParentObshasValues() throws Exception {
+	public void validate_shouldFailIfParentObshasValues() {
 		
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
@@ -126,7 +126,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfObsHasNoValuesAndNotParent() throws Exception {
+	public void validate_shouldFailIfObsHasNoValuesAndNotParent() {
 		
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
@@ -143,7 +143,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfConceptIsNull() throws Exception {
+	public void validate_shouldFailValidationIfConceptIsNull() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setObsDatetime(new Date());
@@ -162,7 +162,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfConceptDatatypeIsBooleanAndValueBooleanIsNull() throws Exception {
+	public void validate_shouldFailValidationIfConceptDatatypeIsBooleanAndValueBooleanIsNull() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(18));
@@ -181,7 +181,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfConceptDatatypeIsCodedAndValueCodedIsNull() throws Exception {
+	public void validate_shouldFailValidationIfConceptDatatypeIsCodedAndValueCodedIsNull() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(4));
@@ -200,7 +200,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfConceptDatatypeIsDateAndValueDatetimeIsNull() throws Exception {
+	public void validate_shouldFailValidationIfConceptDatatypeIsDateAndValueDatetimeIsNull() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(20));
@@ -219,7 +219,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfConceptDatatypeIsNumericAndValueNumericIsNull() throws Exception {
+	public void validate_shouldFailValidationIfConceptDatatypeIsNumericAndValueNumericIsNull() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(5089));
@@ -238,7 +238,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfConceptDatatypeIsTextAndValueTextIsNull() throws Exception {
+	public void validate_shouldFailValidationIfConceptDatatypeIsTextAndValueTextIsNull() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(19));
@@ -254,7 +254,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfObsAncestorsContainsObs() throws Exception {
+	public void validate_shouldFailValidationIfObsAncestorsContainsObs() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(3)); // datatype = N/A
@@ -277,7 +277,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllValuesPresent() throws Exception {
+	public void validate_shouldPassValidationIfAllValuesPresent() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(5089));
@@ -294,7 +294,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfValueTextIsGreaterThanTheMaximumLength() throws Exception {
+	public void validate_shouldFailValidationIfValueTextIsGreaterThanTheMaximumLength() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(19));
@@ -322,7 +322,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldRejectAnInvalidConceptAndDrugCombination() throws Exception {
+	public void validate_shouldRejectAnInvalidConceptAndDrugCombination() {
 		Obs obs = new Obs();
 		obs.setPerson(new Person(7));
 		obs.setObsDatetime(new Date());
@@ -346,7 +346,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassIfAnswerConceptAndConceptOfValueDrugMatch() throws Exception {
+	public void validate_shouldPassIfAnswerConceptAndConceptOfValueDrugMatch() {
 		Obs obs = new Obs();
 		obs.setPerson(new Person(7));
 		obs.setObsDatetime(new Date());
@@ -371,7 +371,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(5089));
@@ -394,7 +394,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(5089));
@@ -421,7 +421,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#supports(Class)
 	 */
 	@Test
-	public void supports_shouldSupportObsClass() throws Exception {
+	public void supports_shouldSupportObsClass() {
 		assertTrue(obsValidator.supports(Obs.class));
 		assertFalse(obsValidator.supports(Concept.class));
 	}
@@ -430,7 +430,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldNotValidateIfObsIsVoided() throws Exception {
+	public void validate_shouldNotValidateIfObsIsVoided() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(5089));
@@ -452,7 +452,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldNotValidateAVoidedChildObs() throws Exception {
+	public void validate_shouldNotValidateAVoidedChildObs() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(5089));
@@ -480,7 +480,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldFailForANullObject() throws Exception {
+	public void validate_shouldFailForANullObject() {
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage(CoreMatchers.equalTo("Obs can't be null"));
 		obsValidator.validate(null, null);
@@ -490,7 +490,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfValueTextIsLessThanTheMaximumLength() throws Exception {
+	public void validate_shouldPassValidationIfValueTextIsLessThanTheMaximumLength() {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(19));

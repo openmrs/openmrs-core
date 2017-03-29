@@ -24,7 +24,7 @@ public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
 	@Test(expected = NoSuchBeanDefinitionException.class)
-	public void match_shouldNotIncludeBeanForOpenmrsFrom1_6To1_7() throws Exception {
+	public void match_shouldNotIncludeBeanForOpenmrsFrom1_6To1_7() {
 		applicationContext.getBean(OpenmrsProfile1_6To1_7.class);
 	}
 	
@@ -32,7 +32,7 @@ public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
 	@Test
-	public void match_shouldIncludeBeanForOpenmrs1_10AndLater() throws Exception {
+	public void match_shouldIncludeBeanForOpenmrs1_10AndLater() {
 		OpenmrsProfile1_10 bean = applicationContext.getBean(OpenmrsProfile1_10.class);
 		
 		assertThat(bean, is(notNullValue()));
@@ -42,7 +42,7 @@ public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
 	@Test
-	public void match_shouldIncludeBeanForOpenmrs1_8AndLater() throws Exception {
+	public void match_shouldIncludeBeanForOpenmrs1_8AndLater() {
 		OpenmrsProfile1_8 bean = applicationContext.getBean(OpenmrsProfile1_8.class);
 		
 		assertThat(bean, is(notNullValue()));
@@ -52,7 +52,7 @@ public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsProfileExcludeFilter#match(org.springframework.core.type.classreading.MetadataReader, org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
 	@Test(expected = NoSuchBeanDefinitionException.class)
-	public void match_shouldNotIncludeBeanForOpenmrs1_8AndLaterIfModuleMissing() throws Exception {
+	public void match_shouldNotIncludeBeanForOpenmrs1_8AndLaterIfModuleMissing() {
 		applicationContext.getBean(OpenmrsProfile1_8WithHtmlformentry.class);
 	}
 	

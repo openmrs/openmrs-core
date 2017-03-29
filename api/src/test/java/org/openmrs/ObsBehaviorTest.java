@@ -46,7 +46,7 @@ public class ObsBehaviorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldHaveAllObsLoadedWithAnEncounterFromTheDatabaseNotMarkedAsDirty() throws Exception {
+	public void shouldHaveAllObsLoadedWithAnEncounterFromTheDatabaseNotMarkedAsDirty() {
 		Encounter e = encounterService.getEncounter(3);
 		Collection<Obs> allObs = e.getAllObs(true);
 		assertFalse(allObs.isEmpty());
@@ -55,7 +55,7 @@ public class ObsBehaviorTest extends BaseContextSensitiveTest {
 	
 	@Test
 	@Ignore
-	public void shouldVoidAndReplaceOnlyEditedUnvoidedObsWhenTheyAreFlushedToTheDatabase() throws Exception {
+	public void shouldVoidAndReplaceOnlyEditedUnvoidedObsWhenTheyAreFlushedToTheDatabase() {
 		executeDataSet(OBS_DATASET_XML);
 		final String newValueText = "some new value that for sure is different";
 		final Integer encounterId = 201;

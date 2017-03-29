@@ -49,7 +49,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeAllTests() throws Exception {
+	public void runBeforeAllTests() {
 		if (null == orderSetService) {
 			orderSetService = Context.getOrderSetService();
 		}
@@ -62,7 +62,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldSaveOrderSet() throws Exception {
+	public void shouldSaveOrderSet() {
 		executeDataSet(ORDER_SET);
 		Integer initialNumberOfOrderSets = orderSetService.getOrderSets(false).size();
 		
@@ -78,7 +78,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldSaveAndUpdateOrderSet() throws Exception {
+	public void shouldSaveAndUpdateOrderSet() {
 		executeDataSet(ORDER_SET);
 		
 		OrderSet orderSet = orderSetBuilder(false, false);
@@ -104,7 +104,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldRetrieveOrderSetMembersOfAnOrderSet() throws Exception {
+	public void shouldRetrieveOrderSetMembersOfAnOrderSet() {
 		executeDataSet(ORDER_SET);
 		OrderSet orderSet = orderSetService.getOrderSet(2001);
 		
@@ -116,7 +116,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldNotAutomaticallyPropagateToSetMembersIfExcludingOrderSet() throws Exception {
+	public void shouldNotAutomaticallyPropagateToSetMembersIfExcludingOrderSet() {
 		executeDataSet(ORDER_SET);
 		
 		List<OrderSet> orderSets = orderSetService.getOrderSets(false);
@@ -128,7 +128,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldAddOrderSetMemberAtLastPositionInsideAnExistingOrderSetIfPositionIsNull() throws Exception {
+	public void shouldAddOrderSetMemberAtLastPositionInsideAnExistingOrderSetIfPositionIsNull() {
 		executeDataSet(ORDER_SET);
 		
 		OrderSet orderSet = orderSetService.getOrderSet(2001);
@@ -155,7 +155,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldAddOrderSetMemberAtSomePositionInsideAnExistingOrderSet() throws Exception {
+	public void shouldAddOrderSetMemberAtSomePositionInsideAnExistingOrderSet() {
 		executeDataSet(ORDER_SET);
 		
 		OrderSet orderSet = orderSetService.getOrderSet(2001);
@@ -195,7 +195,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldReturnInTheSameArrangementInWhichTheOrderSetMembersAreSaved() throws Exception {
+	public void shouldReturnInTheSameArrangementInWhichTheOrderSetMembersAreSaved() {
 		executeDataSet(ORDER_SET);
 		
 		OrderSet newOrderSet = new OrderSet();
@@ -224,7 +224,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		thirdOrderSetMember.setDateCreated(new Date());
 		thirdOrderSetMember.setRetired(false);
 		
-		List<OrderSetMember> orderSetMembers = new ArrayList<OrderSetMember>(Arrays.asList(firstOrderSetMember,
+		List<OrderSetMember> orderSetMembers = new ArrayList<>(Arrays.asList(firstOrderSetMember,
 		    thirdOrderSetMember, secondOrderSetMember));
 		newOrderSet.setOrderSetMembers(orderSetMembers);
 		
@@ -237,7 +237,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldAddOrderSetMemberFromTheEndOfTheListIfNegativePositionIsGiven() throws Exception {
+	public void shouldAddOrderSetMemberFromTheEndOfTheListIfNegativePositionIsGiven() {
 		executeDataSet(ORDER_SET);
 		
 		OrderSet orderSet = orderSetService.getOrderSet(2001);
@@ -266,7 +266,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void shouldFetchUnRetiredOrderSetMembers() throws Exception {
+	public void shouldFetchUnRetiredOrderSetMembers() {
 		executeDataSet(ORDER_SET);
 
 		OrderSet orderSet = orderSetService.getOrderSet(2000);
@@ -287,7 +287,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void shouldDeleteAnOrderSetMemberInAnOrderSet() throws Exception {
+	public void shouldDeleteAnOrderSetMemberInAnOrderSet() {
 		executeDataSet(ORDER_SET);
 
 		OrderSet orderSet = orderSetService.getOrderSet(2001);
@@ -304,7 +304,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void shouldFetchOrderSetMemberByUuid() throws Exception {
+	public void shouldFetchOrderSetMemberByUuid() {
 		String orderSetUuid = "2d3fb1d0-ae06-22e3-a5e2-0140211c2002";
 		executeDataSet(ORDER_SET);
 
@@ -313,7 +313,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void shouldRetireOrderSetAndOrderSetMembersAsWell() throws Exception {
+	public void shouldRetireOrderSetAndOrderSetMembersAsWell() {
 		executeDataSet(ORDER_SET);
 
 		int initialNumberOfOrderSets = orderSetService.getOrderSets(false).size();
@@ -348,7 +348,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		orderSetMember.setRetired(orderSetMemberRetired);
 		orderSetMember.setOrderSet(orderSet);
 		
-		List<OrderSetMember> orderSetMembers = new ArrayList<OrderSetMember>();
+		List<OrderSetMember> orderSetMembers = new ArrayList<>();
 		orderSetMembers.addAll(Arrays.asList(orderSetMember));
 		orderSet.setOrderSetMembers(orderSetMembers);
 		orderSet.setCreator(new User(1));

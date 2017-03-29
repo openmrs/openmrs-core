@@ -44,7 +44,7 @@ public class PatientStateTest {
 	 * @see PatientState#getActive(Date)
 	 */
 	@Test
-	public void getActive_shouldReturnFalseIfVoidedAndDateInRange() throws Exception {
+	public void getActive_shouldReturnFalseIfVoidedAndDateInRange() {
 		//given
 		PatientState patientState = new PatientState();
 		patientState.setStartDate(leftRange);
@@ -62,7 +62,7 @@ public class PatientStateTest {
 	 * @see PatientState#getActive(Date)
 	 */
 	@Test
-	public void getActive_shouldReturnFalseIfVoidedAndDateNotInRange() throws Exception {
+	public void getActive_shouldReturnFalseIfVoidedAndDateNotInRange() {
 		//given
 		PatientState patientState = new PatientState();
 		patientState.setStartDate(leftRange);
@@ -80,7 +80,7 @@ public class PatientStateTest {
 	 * @see PatientState#getActive(Date)
 	 */
 	@Test
-	public void getActive_shouldReturnTrueIfNotVoidedAndDateInRange() throws Exception {
+	public void getActive_shouldReturnTrueIfNotVoidedAndDateInRange() {
 		//given
 		PatientState patientState = new PatientState();
 		patientState.setStartDate(leftRange);
@@ -98,7 +98,7 @@ public class PatientStateTest {
 	 * @see PatientState#getActive(Date)
 	 */
 	@Test
-	public void getActive_shouldReturnTrueIfNotVoidedAndDateInRangeWithNullStartDate() throws Exception {
+	public void getActive_shouldReturnTrueIfNotVoidedAndDateInRangeWithNullStartDate() {
 		//given
 		PatientState patientState = new PatientState();
 		patientState.setStartDate(null);
@@ -116,7 +116,7 @@ public class PatientStateTest {
 	 * @see PatientState#getActive(Date)
 	 */
 	@Test
-	public void getActive_shouldReturnTrueIfNotVoidedAndDateInRangeWithNullEndDate() throws Exception {
+	public void getActive_shouldReturnTrueIfNotVoidedAndDateInRangeWithNullEndDate() {
 		//given
 		PatientState patientState = new PatientState();
 		patientState.setStartDate(leftRange);
@@ -134,7 +134,7 @@ public class PatientStateTest {
 	 * @see PatientState#getActive(Date)
 	 */
 	@Test
-	public void getActive_shouldReturnTrueIfNotVoidedAndBothStartDateAndEndDateNulled() throws Exception {
+	public void getActive_shouldReturnTrueIfNotVoidedAndBothStartDateAndEndDateNulled() {
 		//given
 		PatientState patientState = new PatientState();
 		patientState.setStartDate(null);
@@ -152,7 +152,7 @@ public class PatientStateTest {
 	 * @see PatientState#getActive(Date)
 	 */
 	@Test
-	public void getActive_shouldCompareWithCurrentDateIfDateNull() throws Exception {
+	public void getActive_shouldCompareWithCurrentDateIfDateNull() {
 		//given
 		PatientState patientState = new PatientState();
 		patientState.setStartDate(leftRange);
@@ -170,7 +170,7 @@ public class PatientStateTest {
 	 * @see PatientState#getActive(Date)
 	 */
 	@Test
-	public void getActive_shouldReturnFalseIfNotVoidedAndDateEarlierThanStartDate() throws Exception {
+	public void getActive_shouldReturnFalseIfNotVoidedAndDateEarlierThanStartDate() {
 		//given
 		PatientState patientState = new PatientState();
 		patientState.setStartDate(leftRange);
@@ -188,7 +188,7 @@ public class PatientStateTest {
 	 * @see PatientState#getActive(Date)
 	 */
 	@Test
-	public void getActive_shouldReturnFalseIfNotVoidedAndDateLaterThanEndDate() throws Exception {
+	public void getActive_shouldReturnFalseIfNotVoidedAndDateLaterThanEndDate() {
 		//given
 		PatientState patientState = new PatientState();
 		patientState.setStartDate(leftRange);
@@ -206,7 +206,7 @@ public class PatientStateTest {
 	 * @see PatientState#compareTo(PatientState)
 	 */
 	@Test
-	public void compareTo_shouldReturnPositiveIfStartDatesEqualAndThisEndDateNull() throws Exception {
+	public void compareTo_shouldReturnPositiveIfStartDatesEqualAndThisEndDateNull() {
 		//given
 		PatientState patientState = new PatientState();
 		patientState.setStartDate(leftRange);
@@ -229,7 +229,7 @@ public class PatientStateTest {
 	 * @see PatientState#compareTo(PatientState)
 	 */
 	@Test
-	public void compareTo_shouldReturnNegativeIfThisStartDateNull() throws Exception {
+	public void compareTo_shouldReturnNegativeIfThisStartDateNull() {
 		//given
 		PatientState patientState = new PatientState();
 		patientState.setStartDate(null);
@@ -252,7 +252,7 @@ public class PatientStateTest {
 	 * @see PatientState#compareTo(PatientState)
 	 */
 	@Test
-	public void compareTo_shouldPassIfTwoStatesHaveTheSameStartDateEndDateAndUuid() throws Exception {
+	public void compareTo_shouldPassIfTwoStatesHaveTheSameStartDateEndDateAndUuid() {
 		
 		PatientState patientState = new PatientState();
 		patientState.setStartDate(leftRange);
@@ -273,7 +273,7 @@ public class PatientStateTest {
 	 * @see PatientState#compareTo(PatientState)
 	 */
 	@Test
-	public void compareTo_shouldReturnPositiveOrNegativeIfTwoStatesHaveTheSameStartDatesEndDatesAndUuids() throws Exception {
+	public void compareTo_shouldReturnPositiveOrNegativeIfTwoStatesHaveTheSameStartDatesEndDatesAndUuids() {
 		uuid1 = "some uuid 1";
 		uuid2 = "some uuid 2";
 		

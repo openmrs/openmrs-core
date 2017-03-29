@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -50,7 +51,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	private static long DATE_TIME_2014_02_11_00_00_00_0 = 1392073200000L;
 	
 	@Before
-	public void before() throws Exception {
+	public void before() throws ParseException {
 		executeDataSet(DATA_XML);
 		visitService = Context.getVisitService();
 		
@@ -68,7 +69,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true");
 	}
 	
@@ -76,7 +77,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldAcceptAVisitThatHasTheRightNumberOfAttributeOccurrences() throws Exception {
+	public void validate_shouldAcceptAVisitThatHasTheRightNumberOfAttributeOccurrences() {
 		Visit visit = makeVisit();
 		visit.addAttribute(makeAttribute("one"));
 		visit.addAttribute(makeAttribute("two"));
@@ -87,7 +88,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test(expected = APIException.class)
-	public void validate_shouldRejectAVisitIfItHasFewerThanMinOccursOfAnAttribute() throws Exception {
+	public void validate_shouldRejectAVisitIfItHasFewerThanMinOccursOfAnAttribute() {
 		Visit visit = makeVisit();
 		visit.addAttribute(makeAttribute("one"));
 		ValidateUtil.validate(visit);
@@ -97,7 +98,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test(expected = APIException.class)
-	public void validate_shouldRejectAVisitIfItHasMoreThanMaxOccursOfAnAttribute() throws Exception {
+	public void validate_shouldRejectAVisitIfItHasMoreThanMaxOccursOfAnAttribute() {
 		Visit visit = makeVisit();
 		visit.addAttribute(makeAttribute("one"));
 		visit.addAttribute(makeAttribute("two"));
@@ -129,7 +130,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfPatientIsNotSet() throws Exception {
+	public void validate_shouldFailIfPatientIsNotSet() {
 		VisitService vs = Context.getVisitService();
 		Visit visit = new Visit();
 		visit.setVisitType(vs.getVisitType(1));
@@ -143,7 +144,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfStartDatetimeIsNotSet() throws Exception {
+	public void validate_shouldFailIfStartDatetimeIsNotSet() {
 		VisitService vs = Context.getVisitService();
 		Visit visit = new Visit();
 		visit.setVisitType(vs.getVisitType(1));
@@ -157,7 +158,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfVisitTypeIsNotSet() throws Exception {
+	public void validate_shouldFailIfVisitTypeIsNotSet() {
 		Visit visit = new Visit();
 		visit.setPatient(Context.getPatientService().getPatient(2));
 		visit.setStartDatetime(new Date());
@@ -170,7 +171,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheEndDatetimeIsBeforeTheStartDatetime() throws Exception {
+	public void validate_shouldFailIfTheEndDatetimeIsBeforeTheStartDatetime() {
 		Visit visit = new Visit();
 		Calendar c = Calendar.getInstance();
 		visit.setStartDatetime(c.getTime());
@@ -185,7 +186,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheStartDatetimeIsAfterAnyEncounter() throws Exception {
+	public void validate_shouldFailIfTheStartDatetimeIsAfterAnyEncounter() {
 		Visit visit = Context.getVisitService().getVisit(1);
 		
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
@@ -207,7 +208,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfTheStopDatetimeIsBeforeAnyEncounter() throws Exception {
+	public void validate_shouldFailIfTheStopDatetimeIsBeforeAnyEncounter() {
 		Visit visit = Context.getVisitService().getVisit(1);
 		
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
@@ -233,7 +234,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	// This is a general problem, i.e. that validators on Customizable can't really be called unless you set Hibernate's flushMode to MANUAL.  
 	// Once we figure it out, this test can be un-Ignored
 	@Ignore
-	public void validate_shouldFailIfAnAttributeIsBad() throws Exception {
+	public void validate_shouldFailIfAnAttributeIsBad() {
 		Visit visit = visitService.getVisit(1);
 		visit.addAttribute(makeAttribute(new Date()));
 		visit.addAttribute(makeAttribute("not a date"));
@@ -248,7 +249,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldRejectAVisitIfStartDateTimeIsEqualToStartDateTimeOfAnotherVisitOfTheSamePatient()
-	        throws Exception {
+	        {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(DATE_TIME_2014_01_04_00_00_00_0);
 		
@@ -265,7 +266,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldRejectAVisitIfStartDateTimeFallsIntoAnotherVisitOfTheSamePatient() throws Exception {
+	public void validate_shouldRejectAVisitIfStartDateTimeFallsIntoAnotherVisitOfTheSamePatient() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2014, Calendar.JANUARY, 6);
 		
@@ -282,7 +283,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldRejectAVisitIfStopDateTimeFallsIntoAnotherVisitOfTheSamePatient() throws Exception {
+	public void validate_shouldRejectAVisitIfStopDateTimeFallsIntoAnotherVisitOfTheSamePatient() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2014, Calendar.JANUARY, 2);
 		
@@ -302,7 +303,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldRejectAVisitIfItContainsAnotherVisitOfTheSamePatient() throws Exception {
+	public void validate_shouldRejectAVisitIfItContainsAnotherVisitOfTheSamePatient() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2014, Calendar.JANUARY, 2);
 		
@@ -323,7 +324,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldAcceptAVisitIfStartDateTimeIsEqualToStartDateTimeOfAnotherVoidedVisitOfTheSamePatient()
-	        throws Exception {
+	        {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(DATE_TIME_2014_02_05_00_00_00_0);
 		
@@ -343,7 +344,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldAcceptAVisitIfStartDateTimeFallsIntoAnotherVoidedVisitOfTheSamePatient() throws Exception {
+	public void validate_shouldAcceptAVisitIfStartDateTimeFallsIntoAnotherVoidedVisitOfTheSamePatient() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2014, Calendar.FEBRUARY, 6);
 		
@@ -363,7 +364,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldAcceptAVisitIfStopDateTimeFallsIntoAnotherVoidedVisitOfTheSamePatient() throws Exception {
+	public void validate_shouldAcceptAVisitIfStopDateTimeFallsIntoAnotherVoidedVisitOfTheSamePatient() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2014, Calendar.FEBRUARY, 2);
 		
@@ -386,7 +387,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldAcceptAVisitIfItContainsAnotherVoidedVisitOfTheSamePatient() throws Exception {
+	public void validate_shouldAcceptAVisitIfItContainsAnotherVoidedVisitOfTheSamePatient() {
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2014, Calendar.FEBRUARY, 2);
@@ -425,7 +426,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Visit visit = makeVisit(42);
 		visit.setVoidReason("voidReason");
 		
@@ -438,7 +439,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Visit visit = makeVisit(42);
 		visit
 		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

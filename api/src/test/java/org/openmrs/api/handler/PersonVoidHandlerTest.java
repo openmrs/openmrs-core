@@ -29,7 +29,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetThePersonVoidedBit() throws Exception {
+	public void handle_shouldSetThePersonVoidedBit() {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = new Person();
 		person.setPersonVoided(false); // make sure personVoided is false
@@ -41,7 +41,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetThePersonVoidReason() throws Exception {
+	public void handle_shouldSetThePersonVoidReason() {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = new Person();
 		handler.handle(person, null, null, "THE REASON");
@@ -52,7 +52,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetPersonVoidedBy() throws Exception {
+	public void handle_shouldSetPersonVoidedBy() {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = new Person();
 		handler.handle(person, new User(2), null, " ");
@@ -63,7 +63,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotSetPersonVoidedByIfNonNull() throws Exception {
+	public void handle_shouldNotSetPersonVoidedByIfNonNull() {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = new Person();
 		person.setPersonVoidedBy(new User(3));
@@ -75,7 +75,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldSetPersonDateVoided() throws Exception {
+	public void handle_shouldSetPersonDateVoided() {
 		Date d = new Date();
 		
 		VoidHandler<Person> handler = new PersonVoidHandler();
@@ -88,7 +88,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotSetPersonDateVoidedIfNonNull() throws Exception {
+	public void handle_shouldNotSetPersonDateVoidedIfNonNull() {
 		Date d = new Date(new Date().getTime() - 1000); // a time that is not "now"
 		
 		VoidHandler<Person> handler = new PersonVoidHandler();
@@ -103,7 +103,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldNotSetThePersonVoidReasonIfAlreadyPersonVoided() throws Exception {
+	public void handle_shouldNotSetThePersonVoidReasonIfAlreadyPersonVoided() {
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = new Person();
 		person.setPersonVoided(true);
@@ -116,7 +116,7 @@ public class PersonVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see PersonVoidHandler#handle(Person,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldRetireUsers() throws Exception {
+	public void handle_shouldRetireUsers() {
 		//given
 		VoidHandler<Person> handler = new PersonVoidHandler();
 		Person person = Context.getPersonService().getPerson(2);

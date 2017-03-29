@@ -25,7 +25,7 @@ public class LocationTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationTagValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		LocationTag locationTag = new LocationTag();
 		
 		locationTag.setName("name");
@@ -42,7 +42,7 @@ public class LocationTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see LocationTagValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		LocationTag locationTag = new LocationTag();
 		
 		locationTag

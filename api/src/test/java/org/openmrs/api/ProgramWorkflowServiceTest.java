@@ -56,7 +56,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	protected ConceptService cs = null;
 	
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		executeDataSet(CREATE_PATIENT_PROGRAMS_XML);
 		
 		if (pws == null) {
@@ -75,7 +75,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#savePatientProgram(PatientProgram)
 	 */
 	@Test
-	public void savePatientProgram_shouldUpdatePatientProgram() throws Exception {
+	public void savePatientProgram_shouldUpdatePatientProgram() {
 		
 		Date today = new Date();
 		
@@ -127,7 +127,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#saveProgram(Program)
 	 */
 	@Test
-	public void saveProgram_shouldCreateProgramWorkflows() throws Exception {
+	public void saveProgram_shouldCreateProgramWorkflows() {
 		
 		int numBefore = Context.getProgramWorkflowService().getAllPrograms().size();
 		
@@ -163,7 +163,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		ProgramWorkflow wf = p.getWorkflowByName("CIVIL STATUS");
 		assertNotNull(wf);
 		
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 		for (ProgramWorkflowState s : wf.getStates()) {
 			names.add(s.getConcept().getName().getName());
 		}
@@ -174,7 +174,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getConceptStateConversionByUuid(String)
 	 */
 	@Test
-	public void getConceptStateConversionByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getConceptStateConversionByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "6c72b064-506d-11de-80cb-001e378eb67e";
 		ConceptStateConversion conceptStateConversion = Context.getProgramWorkflowService().getConceptStateConversionByUuid(
 		    uuid);
@@ -185,7 +185,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getConceptStateConversionByUuid(String)
 	 */
 	@Test
-	public void getConceptStateConversionByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getConceptStateConversionByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getProgramWorkflowService().getConceptStateConversionByUuid("some invalid uuid"));
 	}
 	
@@ -193,7 +193,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getPatientProgramByUuid(String)
 	 */
 	@Test
-	public void getPatientProgramByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getPatientProgramByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "2edf272c-bf05-4208-9f93-2fa213ed0415";
 		PatientProgram patientProgram = Context.getProgramWorkflowService().getPatientProgramByUuid(uuid);
 		Assert.assertEquals(2, (int) patientProgram.getPatientProgramId());
@@ -203,7 +203,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getPatientProgramByUuid(String)
 	 */
 	@Test
-	public void getPatientProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getPatientProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getProgramWorkflowService().getPatientProgramByUuid("some invalid uuid"));
 	}
 	
@@ -211,7 +211,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getPatientStateByUuid(String)
 	 */
 	@Test
-	public void getPatientStateByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getPatientStateByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "ea89deaa-23cc-4840-92fe-63d199c37e4c";
 		PatientState patientState = Context.getProgramWorkflowService().getPatientStateByUuid(uuid);
 		Assert.assertEquals(1, (int) patientState.getPatientStateId());
@@ -221,7 +221,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getPatientStateByUuid(String)
 	 */
 	@Test
-	public void getPatientStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getPatientStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getProgramWorkflowService().getPatientStateByUuid("some invalid uuid"));
 	}
 	
@@ -229,7 +229,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getProgramByUuid(String)
 	 */
 	@Test
-	public void getProgramByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getProgramByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "eae98b4c-e195-403b-b34a-82d94103b2c0";
 		Program program = Context.getProgramWorkflowService().getProgramByUuid(uuid);
 		Assert.assertEquals(1, (int) program.getProgramId());
@@ -239,7 +239,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getProgramByUuid(String)
 	 */
 	@Test
-	public void getProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getProgramWorkflowService().getProgramByUuid("some invalid uuid"));
 	}
 	
@@ -247,7 +247,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getStateByUuid(String)
 	 */
 	@Test
-	public void getStateByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getStateByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "92584cdc-6a20-4c84-a659-e035e45d36b0";
 		ProgramWorkflowState state = Context.getProgramWorkflowService().getStateByUuid(uuid);
 		Assert.assertEquals(1, (int) state.getProgramWorkflowStateId());
@@ -257,7 +257,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getStateByUuid(String)
 	 */
 	@Test
-	public void getStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getProgramWorkflowService().getStateByUuid("some invalid uuid"));
 	}
 	
@@ -265,7 +265,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getWorkflowByUuid(String)
 	 */
 	@Test
-	public void getWorkflowByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getWorkflowByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "84f0effa-dd73-46cb-b931-7cd6be6c5f81";
 		ProgramWorkflow programWorkflow = Context.getProgramWorkflowService().getWorkflowByUuid(uuid);
 		Assert.assertEquals(1, (int) programWorkflow.getProgramWorkflowId());
@@ -275,7 +275,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#getWorkflowByUuid(String)
 	 */
 	@Test
-	public void getWorkflowByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getWorkflowByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getProgramWorkflowService().getWorkflowByUuid("some invalid uuid"));
 	}
 	
@@ -287,7 +287,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 */
 	
 	@Test
-	public void getSortedStates_shouldSortNamesContainingNumbersIntelligently() throws Exception {
+	public void getSortedStates_shouldSortNamesContainingNumbersIntelligently() {
 		
 		ProgramWorkflow program = new ProgramWorkflow();
 		
@@ -319,7 +319,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getPossibleOutcomes_shouldGetOutcomesForASet() throws Exception {
+	public void getPossibleOutcomes_shouldGetOutcomesForASet() {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 		
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(4);
@@ -327,7 +327,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getPossibleOutcomes_shouldGetOutcomesForAQuestion() throws Exception {
+	public void getPossibleOutcomes_shouldGetOutcomesForAQuestion() {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 		
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(5);
@@ -335,7 +335,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getPossibleOutcomes_shouldReturnEmptyListWhenNoProgramExists() throws Exception {
+	public void getPossibleOutcomes_shouldReturnEmptyListWhenNoProgramExists() {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 		
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(999);
@@ -343,7 +343,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getPossibleOutcomes_shouldReturnEmptyListWhenProgramHasNoOutcome() throws Exception {
+	public void getPossibleOutcomes_shouldReturnEmptyListWhenProgramHasNoOutcome() {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 		
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(1);
@@ -354,7 +354,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * @see ProgramWorkflowService#saveProgram(Program)
 	 */
 	@Test
-	public void saveProgram_shouldUpdateDetachedProgram() throws Exception {
+	public void saveProgram_shouldUpdateDetachedProgram() {
 		Program program = Context.getProgramWorkflowService().getProgramByUuid("eae98b4c-e195-403b-b34a-82d94103b2c0");
 		program.setDescription("new description");
 		Context.evictFromSession(program);
@@ -364,10 +364,11 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws InterruptedException
 	 * @see ProgramWorkflowService#triggerStateConversion(Patient,Concept,Date)
 	 */
 	@Test
-	public void triggerStateConversion_shouldSkipPastPatientProgramsThatAreAlreadyCompleted() throws Exception {
+	public void triggerStateConversion_shouldSkipPastPatientProgramsThatAreAlreadyCompleted() throws InterruptedException {
 		Integer patientProgramId = 1;
 		PatientProgram pp = pws.getPatientProgram(patientProgramId);
 		Date originalDateCompleted = new Date();

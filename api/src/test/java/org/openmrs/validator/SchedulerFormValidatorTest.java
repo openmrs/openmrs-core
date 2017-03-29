@@ -25,7 +25,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() {
 		TaskDefinition def = new TaskDefinition();
 		def.setName(null);
 		def.setRepeatInterval(3600000L);
@@ -50,7 +50,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfTaskClassIsEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfTaskClassIsEmptyOrWhitespace() {
 		TaskDefinition def = new TaskDefinition();
 		def.setName("Chores");
 		def.setRepeatInterval(3600000L);
@@ -70,7 +70,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfRepeatIntervalIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfRepeatIntervalIsNullOrEmptyOrWhitespace() {
 		TaskDefinition def = new TaskDefinition();
 		def.setName("Chores");
 		def.setTaskClass("org.openmrs.scheduler.tasks.HelloWorldTask");
@@ -89,7 +89,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfClassIsNotInstanceOfTask() throws Exception {
+	public void validate_shouldFailValidationIfClassIsNotInstanceOfTask() {
 		TaskDefinition def = new TaskDefinition();
 		def.setName("Chores");
 		def.setRepeatInterval(3600000L);
@@ -106,7 +106,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfClassIsNotAccessible() throws Exception {
+	public void validate_shouldFailValidationIfClassIsNotAccessible() {
 		TaskDefinition def = new TaskDefinition();
 		def.setName("Chores");
 		def.setRepeatInterval(3600000L);
@@ -123,7 +123,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfClassCannotBeInstantiated() throws Exception {
+	public void validate_shouldFailValidationIfClassCannotBeInstantiated() {
 		TaskDefinition def = new TaskDefinition();
 		def.setName("Chores");
 		def.setRepeatInterval(3600000L);
@@ -140,7 +140,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfClassNotFound() throws Exception {
+	public void validate_shouldFailValidationIfClassNotFound() {
 		TaskDefinition def = new TaskDefinition();
 		def.setName("Chores");
 		def.setRepeatInterval(3600000L);
@@ -157,7 +157,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		TaskDefinition def = new TaskDefinition();
 		def.setName("Chores");
 		def.setRepeatInterval(3600000L);
@@ -173,7 +173,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		TaskDefinition def = new TaskDefinition();
 		def.setName("Chores");
 		def.setRepeatInterval(3600000L);
@@ -191,7 +191,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		TaskDefinition def = new TaskDefinition();
 		def
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

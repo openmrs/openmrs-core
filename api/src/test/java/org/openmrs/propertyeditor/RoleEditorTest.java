@@ -19,7 +19,7 @@ public class RoleEditorTest extends BaseContextSensitiveTest {
 	 * @see RoleEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingName() throws Exception {
+	public void setAsText_shouldSetUsingName() {
 		RoleEditor editor = new RoleEditor();
 		editor.setAsText("Provider");
 		Assert.assertNotNull(editor.getValue());
@@ -29,7 +29,7 @@ public class RoleEditorTest extends BaseContextSensitiveTest {
 	 * @see RoleEditor#setAsText(String)
 	 */
 	@Test
-	public void setAsText_shouldSetUsingUuid() throws Exception {
+	public void setAsText_shouldSetUsingUuid() {
 		RoleEditor editor = new RoleEditor();
 		editor.setAsText("3480cb6d-c291-46c8-8d3a-96dc33d199fb");
 		Assert.assertNotNull(editor.getValue());

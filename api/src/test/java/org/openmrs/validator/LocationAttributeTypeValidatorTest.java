@@ -33,7 +33,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
 	}
 	
@@ -41,7 +41,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see LocationAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() {
 		LocationAttributeType type = new LocationAttributeType();
 		type.setName(null);
 		type.setDescription("description");
@@ -65,7 +65,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see LocationAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		LocationAttributeType type = new LocationAttributeType();
 		type.setName("name");
 		type.setDatatypeClassname("org.openmrs.customdatatype.datatype.FreeTextDatatype");
@@ -80,7 +80,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see LocationAttributeTypeValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfLocationAttributeTypeNameIsDuplicate() throws Exception {
+	public void validate_shouldFailIfLocationAttributeTypeNameIsDuplicate() {
 		
 		Assert.assertNotNull(Context.getLocationService().getLocationAttributeTypeByName("Audit Date"));
 		
@@ -97,7 +97,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see LocationAttributeTypeValidator#validate(Object, Errors)
 	 */
 	@Test
-	public void validate_shouldPassEditingLocationAttributeTypeName() throws Exception {
+	public void validate_shouldPassEditingLocationAttributeTypeName() {
 		
 		LocationAttributeType et = Context.getLocationService().getLocationAttributeTypeByName("Audit Date");
 		Assert.assertNotNull(et);
@@ -111,7 +111,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see LocationAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		LocationAttributeType type = new LocationAttributeType();
 		type.setName("name");
 		type.setDatatypeClassname("org.openmrs.customdatatype.datatype.FreeTextDatatype");
@@ -128,7 +128,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	 * @see LocationAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		LocationAttributeType type = new LocationAttributeType();
 		type
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

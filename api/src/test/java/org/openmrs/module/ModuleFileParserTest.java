@@ -32,10 +32,14 @@ import org.xml.sax.SAXException;
 public class ModuleFileParserTest {
 	
 	/**
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws ParserConfigurationException
 	 * @see ModuleFileParser#getConditionalResources(org.w3c.dom.Element)
 	 */
 	@Test
-	public void getConditionalResources_shouldParseOpenmrsVersionAndModules() throws Exception {
+	public void getConditionalResources_shouldParseOpenmrsVersionAndModules()
+	        throws ParserConfigurationException, SAXException, IOException {
 		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><module configVersion=\"1.2\">"
 		        + "<conditionalResources><conditionalResource>"
 		        + "<path>/lib/htmlformentry-api-1.10*</path><openmrsVersion>1.10</openmrsVersion>"
@@ -76,10 +80,14 @@ public class ModuleFileParserTest {
 	}
 	
 	/**
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws ParserConfigurationException
 	 * @see ModuleFileParser#getConditionalResources(org.w3c.dom.Element)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void getConditionalResources_shouldThrowExceptionIfMultipleConditionalResourcesTagsFound() throws Exception {
+	public void getConditionalResources_shouldThrowExceptionIfMultipleConditionalResourcesTagsFound()
+	        throws ParserConfigurationException, SAXException, IOException {
 		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><module configVersion=\"1.2\">"
 		        + "<conditionalResources></conditionalResources><conditionalResources></conditionalResources></module>";
 		Element documentElement = getRootElement(xml);
@@ -88,10 +96,14 @@ public class ModuleFileParserTest {
 	}
 	
 	/**
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws ParserConfigurationException
 	 * @see ModuleFileParser#getConditionalResources(org.w3c.dom.Element)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void getConditionalResources_shouldThrowExceptionIfConditionalResourcesContainsInvalidTag() throws Exception {
+	public void getConditionalResources_shouldThrowExceptionIfConditionalResourcesContainsInvalidTag()
+	        throws ParserConfigurationException, SAXException, IOException {
 		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><module configVersion=\"1.2\">"
 		        + "<conditionalResources><invalidTag></invalidTag></conditionalResources></module>";
 		Element documentElement = getRootElement(xml);
@@ -100,10 +112,14 @@ public class ModuleFileParserTest {
 	}
 	
 	/**
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws ParserConfigurationException
 	 * @see ModuleFileParser#getConditionalResources(org.w3c.dom.Element)
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void getConditionalResources_shouldThrowExceptionIfPathIsBlank() throws Exception {
+	public void getConditionalResources_shouldThrowExceptionIfPathIsBlank()
+	        throws ParserConfigurationException, SAXException, IOException {
 		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><module configVersion=\"1.2\">"
 		        + "<conditionalResources><conditionalResource>" + "<path></path><openmrsVersion>1.10</openmrsVersion>"
 		        + "</conditionalResource>></conditionalResources></module>";
@@ -113,10 +129,14 @@ public class ModuleFileParserTest {
 	}
 	
 	/**
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws ParserConfigurationException
 	 * @see ModuleFileParser#getConditionalResources(org.w3c.dom.Element)
 	 */
 	@Test
-	public void getConditionalResources_shouldParseConditionalResourceWithWhitespace() throws Exception {
+	public void getConditionalResources_shouldParseConditionalResourceWithWhitespace()
+	        throws ParserConfigurationException, SAXException, IOException {
 		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><module configVersion=\"1.2\">"
 		        + "<conditionalResources>     	<conditionalResource>     	"
 		        + "<path>/lib/htmlformentry-api-1.10*</path><openmrsVersion>1.10</openmrsVersion>"

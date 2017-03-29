@@ -41,7 +41,7 @@ public class LuhnIdentifierValidatorTest {
 	 * @see LuhnIdentifierValidator#getValidIdentifier(String)
 	 */
 	@Test
-	public void getValidIdentifier_shouldGetValidIdentifier() throws Exception {
+	public void getValidIdentifier_shouldGetValidIdentifier() {
 		
 		//Make sure valid identifiers come back with the right check digit
 		
@@ -55,7 +55,7 @@ public class LuhnIdentifierValidatorTest {
 	 * @see LuhnIdentifierValidator#getValidIdentifier(String)
 	 */
 	@Test
-	public void getValidIdentifier_shouldFailWithInvalidIdentifiers() throws Exception {
+	public void getValidIdentifier_shouldFailWithInvalidIdentifiers() {
 		//Make sure invalid identifiers throw an exception
 		
 		for (int j = 0; j < invalidIdentifiers.length; j++) {

@@ -37,7 +37,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 @ContextConfiguration(locations = { "classpath*:webModuleApplicationContext.xml" }, inheritLocations = true, loader = TestContextLoader.class)
 public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	
-	public void createWebInfFolderIfNotExist() throws Exception {
+	public void createWebInfFolderIfNotExist() {
 		//when run from the IDE and this folder does not exist, some tests fail with
 		//org.openmrs.module.ModuleException: Unable to load module messages from file: 
 		// /Projects/openmrs/core/web/target/test-classes/WEB-INF/module_messages_fr.properties
@@ -49,7 +49,7 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	public void shouldCallWillRefreshContextAndContextRefreshedOnRefresh() throws Exception {
+	public void shouldCallWillRefreshContextAndContextRefreshedOnRefresh() {
 		
 		ModuleUtil.refreshApplicationContext((AbstractRefreshableApplicationContext) applicationContext, false, null);
 		
@@ -95,7 +95,7 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	public void shouldRefreshOtherModulesOnStartingStoppedModule() throws Exception {
+	public void shouldRefreshOtherModulesOnStartingStoppedModule() {
 		Module module = ModuleFactory.getModuleById(MODULE3_ID);
 		ModuleFactory.stopModule(module);
 		
@@ -156,7 +156,7 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	public void shouldRefreshOtherModulesOnInstallingNewModule() throws Exception {
+	public void shouldRefreshOtherModulesOnInstallingNewModule() {
 		//first completely remove module3
 		Module module = ModuleFactory.getModuleById(MODULE3_ID);
 		ModuleFactory.stopModule(module);
@@ -199,7 +199,7 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	public void shouldUpgradeModule() throws Exception {
+	public void shouldUpgradeModule() {
 		Module module = ModuleFactory.getModuleById(MODULE3_ID);
 		
 		assertTrue(module.getVersion().equals("1.0-SNAPSHOT"));
@@ -220,7 +220,7 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	public void shouldUpgradeModuleWithDependents() throws Exception {
+	public void shouldUpgradeModuleWithDependents() {
 		Module module = ModuleFactory.getModuleById(MODULE1_ID);
 		assertTrue(module.getVersion().equals("1.0-SNAPSHOT"));
 		

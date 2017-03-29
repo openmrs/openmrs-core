@@ -26,7 +26,7 @@ public class OpenmrsMetadataSaveHandlerTest {
 	 * @see OpenmrsMetadataSaveHandler#handle(OpenmrsMetadata,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldTrimWhitespaceFromName() throws Exception {
+	public void handle_shouldTrimWhitespaceFromName() {
 		String NAME = "the location name";
 		OpenmrsMetadataSaveHandler handler = new OpenmrsMetadataSaveHandler();
 		Location loc = new Location();
@@ -39,7 +39,7 @@ public class OpenmrsMetadataSaveHandlerTest {
 	 * @see OpenmrsMetadataSaveHandler#handle(OpenmrsMetadata,User,Date,String)
 	 */
 	@Test
-	public void handle_shouldTrimWhitespaceFromDescription() throws Exception {
+	public void handle_shouldTrimWhitespaceFromDescription() {
 		String DESC = "the location desc";
 		OpenmrsMetadataSaveHandler handler = new OpenmrsMetadataSaveHandler();
 		Location loc = new Location();
