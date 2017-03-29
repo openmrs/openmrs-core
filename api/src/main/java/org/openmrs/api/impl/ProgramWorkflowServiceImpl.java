@@ -69,37 +69,56 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Override
 	public Program saveProgram(Program program) throws APIException {
-		// Program
+
 		if (program.getConcept() == null) {
 			throw new APIException("Program.concept.required", (Object[]) null);
 		}
-		
-		// ProgramWorkflow
+
 		for (ProgramWorkflow workflow : program.getAllWorkflows()) {
-			
-			if (workflow.getConcept() == null) {
-				throw new APIException("ProgramWorkflow.concept.required", (Object[]) null);
-			}
-			if (workflow.getProgram() == null) {
-				workflow.setProgram(program);
-			} else if (!workflow.getProgram().equals(program)) {
-				throw new APIException("Program.error.contains.ProgramWorkflow", new Object[] { workflow.getProgram() });
-			}
-			
-			// ProgramWorkflowState
+			ensureProgramIsSet(workflow, program);
+
 			for (ProgramWorkflowState state : workflow.getStates()) {
-				
-				if (state.getConcept() == null || state.getInitial() == null || state.getTerminal() == null) {
-					throw new APIException("ProgramWorkflowState.requires", (Object[]) null);
-				}
-				if (state.getProgramWorkflow() == null) {
-					state.setProgramWorkflow(workflow);
-				} else if (!state.getProgramWorkflow().equals(workflow)) {
-					throw new APIException("ProgramWorkflow.error.contains.state", new Object[] { workflow.getProgram() });
-				}
+				ensureProgramWorkflowIsSet(state, workflow);
 			}
 		}
 		return dao.saveProgram(program);
+	}
+
+	/**
+	 * Helper method to ensure the program is set to the given workflow by doing the validations
+	 * @param workflow
+	 * @param program
+	 * @throws APIException if workflow concept is null OR workflow program is not equal to given program
+	 */
+	private void ensureProgramIsSet(ProgramWorkflow workflow, Program program) throws APIException{
+
+		if (workflow.getConcept() == null) {
+			throw new APIException("ProgramWorkflow.concept.required", (Object[]) null);
+		}
+		if (workflow.getProgram() == null) {
+			workflow.setProgram(program);
+		} else if (!workflow.getProgram().equals(program)) {
+			throw new APIException("Program.error.contains.ProgramWorkflow", new Object[] { workflow.getProgram() });
+		}
+	}
+
+	/**
+	 * Helper method to set the workflow into a given ProgramWorkflowState
+	 * @param state
+	 * @param workflow
+	 * @throws APIException
+	 */
+	private void ensureProgramWorkflowIsSet(ProgramWorkflowState state, ProgramWorkflow workflow) throws APIException{
+
+		if (state.getConcept() == null || state.getInitial() == null || state.getTerminal() == null) {
+			throw new APIException("ProgramWorkflowState.requires", (Object[]) null);
+		}
+
+		if (state.getProgramWorkflow() == null) {
+			state.setProgramWorkflow(workflow);
+		} else if (!state.getProgramWorkflow().equals(workflow)) {
+			throw new APIException("ProgramWorkflow.error.contains.state", new Object[] { workflow.getProgram() });
+		}
 	}
 	
 	/**
