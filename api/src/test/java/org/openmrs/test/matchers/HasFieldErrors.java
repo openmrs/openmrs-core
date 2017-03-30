@@ -28,6 +28,7 @@ import org.springframework.validation.Errors;
  * 
  * @see org.springframework.validation.Errors;
  * @see org.springframework.validation.FieldError;
+ * @since 2.2.0
  */
 public final class HasFieldErrors extends TypeSafeMatcher<Errors> {
 	
