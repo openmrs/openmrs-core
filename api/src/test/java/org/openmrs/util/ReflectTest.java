@@ -253,6 +253,9 @@ class OpenmrsObjectImp extends NormalClass implements OpenmrsObject {
 	
 	protected Collection<BaseOpenmrsObject> subClassField;
 	
+	@SuppressWarnings("unused")
+	private String nonCollectionField;
+	
 	Collection genericCollectionField;
 	
 	@Override
