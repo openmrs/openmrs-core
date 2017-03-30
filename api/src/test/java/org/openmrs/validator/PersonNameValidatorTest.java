@@ -9,7 +9,12 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.not;
+import static org.openmrs.test.matchers.HasFieldErrors.hasFieldErrors;
+
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -66,7 +71,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("givenName"));
+		assertThat(errors, hasFieldErrors("givenName", "Patient.names.required.given.family"));
 	}
 	
 	/**
@@ -79,7 +84,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("givenName"));
+		assertThat(errors, hasFieldErrors("givenName", "Patient.names.required.given.family"));
 	}
 	
 	/**
@@ -92,7 +97,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("givenName"));
+		assertThat(errors, hasFieldErrors("givenName", "Patient.names.required.given.family"));
 	}
 	
 	/**
@@ -105,7 +110,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("givenName"));
+		assertThat(errors, hasFieldErrors("givenName", "Patient.names.required.given.family"));
 	}
 	
 	/**
@@ -118,8 +123,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("givenName"));
-		
+		assertThat(errors, not(hasFieldErrors("givenName")));
 	}
 	
 	/**
@@ -130,7 +134,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyName"));
+		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 	
 	/**
@@ -143,7 +147,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyName"));
+		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 	
 	/**
@@ -156,7 +160,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyName"));
+		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 	
 	/**
@@ -169,7 +173,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("familyName"));
+		assertThat(errors, hasFieldErrors("familyName", "FamilyName.invalid"));
 	}
 	
 	/**
@@ -182,7 +186,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyName"));
+		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 	
 	/**
@@ -198,7 +202,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("prefix"));
+		assertThat(errors, hasFieldErrors("prefix", "error.exceededMaxLengthOfField"));
 	}
 	
 	/**
@@ -211,7 +215,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("prefix"));
+		assertThat(errors, not(hasFieldErrors("prefix")));
 	}
 	
 	/**
@@ -224,7 +228,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("prefix"));
+		assertThat(errors, not(hasFieldErrors("prefix")));
 	}
 	
 	/**
@@ -238,7 +242,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("givenName"));
+		assertThat(errors, hasFieldErrors("givenName", "error.exceededMaxLengthOfField"));
 	}
 	
 	/**
@@ -251,7 +255,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("givenName"));
+		assertThat(errors, not(hasFieldErrors("givenName")));
 	}
 	
 	/**
@@ -264,7 +268,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("givenName"));
+		assertThat(errors, not(hasFieldErrors("givenName")));
 	}
 	
 	/**
@@ -278,7 +282,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("middleName"));
+		assertThat(errors, hasFieldErrors("middleName", "error.exceededMaxLengthOfField"));
 	}
 	
 	/**
@@ -291,7 +295,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("middleName"));
+		assertThat(errors, not(hasFieldErrors("middleName")));
 	}
 	
 	/**
@@ -304,7 +308,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("middleName"));
+		assertThat(errors, not(hasFieldErrors("middleName")));
 	}
 	
 	/**
@@ -320,7 +324,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("familyNamePrefix"));
+		assertThat(errors, hasFieldErrors("familyNamePrefix", "error.exceededMaxLengthOfField"));
 	}
 	
 	/**
@@ -333,7 +337,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyNamePrefix"));
+		assertThat(errors, not(hasFieldErrors("familyNamePrefix")));
 	}
 	
 	/**
@@ -346,7 +350,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyNamePrefix"));
+		assertThat(errors, not(hasFieldErrors("familyNamePrefix")));
 	}
 	
 	/**
@@ -360,7 +364,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("familyName"));
+		assertThat(errors, hasFieldErrors("familyName", "error.exceededMaxLengthOfField"));
 	}
 	
 	/**
@@ -373,7 +377,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyName"));
+		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 	
 	/**
@@ -386,7 +390,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyName"));
+		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 	
 	/**
@@ -400,7 +404,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("familyName2"));
+		assertThat(errors, hasFieldErrors("familyName2", "error.exceededMaxLengthOfField"));
 	}
 	
 	/**
@@ -413,7 +417,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyName2"));
+		assertThat(errors, not(hasFieldErrors("familyName2")));
 	}
 	
 	/**
@@ -426,7 +430,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyName2"));
+		assertThat(errors, not(hasFieldErrors("familyName2")));
 	}
 	
 	/**
@@ -442,7 +446,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("familyNameSuffix"));
+		assertThat(errors, hasFieldErrors("familyNameSuffix", "error.exceededMaxLengthOfField"));
 	}
 	
 	/**
@@ -455,7 +459,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyNameSuffix"));
+		assertThat(errors, not(hasFieldErrors("familyNameSuffix")));
 	}
 	
 	/**
@@ -468,7 +472,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyNameSuffix"));
+		assertThat(errors, not(hasFieldErrors("familyNameSuffix")));
 	}
 	
 	/**
@@ -484,7 +488,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("degree"));
+		assertThat(errors, hasFieldErrors("degree", "error.exceededMaxLengthOfField"));
 	}
 	
 	/**
@@ -497,7 +501,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("degree"));
+		assertThat(errors, not(hasFieldErrors("degree")));
 	}
 	
 	/**
@@ -510,7 +514,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("degree"));
+		assertThat(errors, not(hasFieldErrors("degree")));
 	}
 	
 	/**
@@ -523,7 +527,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("givenName"));
+		assertThat(errors, hasFieldErrors("givenName", "GivenName.invalid"));
 	}
 	
 	/**
@@ -536,7 +540,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("givenName"));
+		assertThat(errors, not(hasFieldErrors("givenName")));
 	}
 	
 	/**
@@ -549,7 +553,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("middleName"));
+		assertThat(errors, hasFieldErrors("middleName", "MiddleName.invalid"));
 	}
 	
 	/**
@@ -562,7 +566,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("middleName"));
+		assertThat(errors, not(hasFieldErrors("middleName")));
 	}
 	
 	/**
@@ -575,7 +579,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("familyName"));
+		assertThat(errors, hasFieldErrors("familyName", "FamilyName.invalid"));
 	}
 	
 	/**
@@ -588,7 +592,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyName"));
+		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 	
 	/**
@@ -601,7 +605,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("familyName2"));
+		assertThat(errors, hasFieldErrors("familyName2", "FamilyName2.invalid"));
 	}
 	
 	/**
@@ -614,7 +618,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyName2"));
+		assertThat(errors, not(hasFieldErrors("familyName2")));
 	}
 	
 	/**
@@ -629,7 +633,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("familyName"));
+		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 	
 	/**
@@ -644,7 +648,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertFalse(errors.hasFieldErrors("givenName"));
+		assertThat(errors, not(hasFieldErrors("givenName")));
 	}
 	
 	/**
@@ -718,15 +722,9 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(personName, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("prefix"));
-		Assert.assertTrue(errors.hasFieldErrors("givenName"));
-		Assert.assertTrue(errors.hasFieldErrors("familyNamePrefix"));
-		Assert.assertTrue(errors.hasFieldErrors("familyName"));
-		Assert.assertTrue(errors.hasFieldErrors("familyName2"));
-		Assert.assertTrue(errors.hasFieldErrors("familyNameSuffix"));
-		Assert.assertTrue(errors.hasFieldErrors("degree"));
-		Assert.assertTrue(errors.hasFieldErrors("middleName"));
-		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+		Stream.of("prefix", "givenName", "familyNamePrefix", "familyName", "familyName2", "familyNameSuffix", "degree",
+		    "middleName", "voidReason")
+		        .forEach(f -> assertThat(errors, hasFieldErrors(f, "error.exceededMaxLengthOfField")));
 	}
 
     /**
@@ -740,8 +738,8 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, true, false);
 		
-		Assert.assertTrue(errors.hasFieldErrors("names[0]." + "givenName"));
-    }
+		assertThat(errors, hasFieldErrors("names[0]." + "givenName"));
+	}
 
 	/**
 	 * @see PersonNameValidator#validate(Object, Errors)
@@ -754,7 +752,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(personName, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("givenName"));
+		assertThat(errors, hasFieldErrors("givenName"));
 	}
 	
 	/**
@@ -768,7 +766,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("givenName"));
+		assertThat(errors, hasFieldErrors("givenName"));
 	}
 
 	/**
@@ -782,7 +780,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("givenName"));
+		assertThat(errors, hasFieldErrors("givenName"));
 	}
 	
 	/**
@@ -796,7 +794,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("middleName"));
+		assertThat(errors, hasFieldErrors("middleName"));
 	}
 	
 	/**
@@ -810,7 +808,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("middleName"));
+		assertThat(errors, hasFieldErrors("middleName"));
 	}
 
 	/**
@@ -824,7 +822,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("familyName"));
+		assertThat(errors, hasFieldErrors("familyName"));
 	}
 
 	/**
@@ -838,7 +836,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("familyName"));
+		assertThat(errors, hasFieldErrors("familyName"));
 	}
 	
 	/**
@@ -852,7 +850,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("familyName2"));
+		assertThat(errors, hasFieldErrors("familyName2"));
 	}
 
 	/**
@@ -866,6 +864,6 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
-		Assert.assertTrue(errors.hasFieldErrors("familyName2"));
+		assertThat(errors, hasFieldErrors("familyName2"));
 	}
 }
