@@ -10,19 +10,34 @@
 package org.openmrs.propertyeditor;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Location;
+import org.openmrs.api.LocationService;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class LocationEditorTest extends BaseContextSensitiveTest {
+
+	LocationEditor editor;
+
+	@Autowired
+	private LocationService locationService;
 	
 	/**
 	 * @see LocationEditor#setAsText(String)
 	 */
+
+	@Before
+	public void before() {
+		editor = new LocationEditor(); 
+	}
+
 	@Test
 	public void setAsText_shouldSetUsingId() {
-		LocationEditor editor = new LocationEditor();
 		editor.setAsText("1");
-		Assert.assertNotNull(editor.getValue());
+		Location expectedLocation = locationService.getLocation(1);
+		Assert.assertEquals(expectedLocation, editor.getValue());
 	}
 	
 	/**
@@ -30,8 +45,19 @@ public class LocationEditorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void setAsText_shouldSetUsingUuid() {
-		LocationEditor editor = new LocationEditor();
 		editor.setAsText("8d6c993e-c2cc-11de-8d13-0010c6dffd0f");
-		Assert.assertNotNull(editor.getValue());
+		Location expectedLocation = locationService.getLocationByUuid("8d6c993e-c2cc-11de-8d13-0010c6dffd0f");
+		Assert.assertEquals(expectedLocation, editor.getValue());
+	}
+
+	@Test
+	public void getAsText_shouldGetNullIfTextNull() {
+		Assert.assertNull(editor.getAsText());
+	}
+
+	@Test
+	public void getAsText_shouldGetTextIfTextNotNull() {
+		editor.setAsText("1");
+		Assert.assertNotNull(editor.getAsText());
 	}
 }
