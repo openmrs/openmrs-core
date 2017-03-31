@@ -25,7 +25,7 @@ import org.openmrs.User;
 public class JavaSerializationTest {
 	
 	@Test
-	public void shouldSerializeOpenMrsData() throws Exception {
+	public void shouldSerializeOpenMrsData() {
 
         Date date = new Date();
         User user = new User(1);
@@ -62,7 +62,7 @@ public class JavaSerializationTest {
     }
 
     @Test
-    public void shouldSerializeOpenMrsMetadata() throws Exception {
+	public void shouldSerializeOpenMrsMetadata() {
 
         Date date = new Date();
         User user = new User(1);

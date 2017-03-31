@@ -569,12 +569,13 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * This initializes the empty in-memory database with some rows in order to actually run some
 	 * tests
 	 * 
+	 * @throws SQLException
 	 * @throws Exception
 	 */
-	public void initializeInMemoryDatabase() throws Exception {
+	public void initializeInMemoryDatabase() throws SQLException {
 		//Don't allow the user to overwrite data
 		if (!useInMemoryDatabase())
-			throw new Exception(
+			throw new RuntimeException(
 			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
 		/*
 		 * Hbm2ddl used in tests creates primary key columns, which are not auto incremented, if
@@ -888,7 +889,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @see #authenticate()
 	 */
 	@Before
-	public void baseSetupWithStandardDataAndAuthentication() throws Exception {
+	public void baseSetupWithStandardDataAndAuthentication() throws SQLException {
 		// Open a session if needed
 		if (!Context.isSessionOpen()) {
 			Context.openSession();

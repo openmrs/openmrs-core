@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +61,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	 * @see HL7Service#saveHL7InQueue(HL7InQueue)
 	 */
 	@Test
-	public void saveHL7InQueue_shouldAddGeneratedUuidIfUuidIsNull() throws Exception {
+	public void saveHL7InQueue_shouldAddGeneratedUuidIfUuidIsNull() {
 		HL7InQueue hl7 = new HL7InQueue();
 		
 		hl7.setHL7Data("dummy data");
@@ -73,10 +74,12 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
+	 * @throws IOException
 	 * @see HL7Service#processHL7InQueue(HL7InQueue)
 	 */
 	@Test
-	public void processHL7InQueue_shouldCreateHL7InArchiveAfterSuccessfulParsing() throws Exception {
+	public void processHL7InQueue_shouldCreateHL7InArchiveAfterSuccessfulParsing() throws HL7Exception, IOException {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		
 		File tempDir = new File(System.getProperty("java.io.tmpdir"), HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME);
@@ -101,10 +104,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#processHL7InQueue(HL7InQueue)
 	 */
 	@Test
-	public void processHL7InQueue_shouldCreateHL7InErrorAfterFailedParsing() throws Exception {
+	public void processHL7InQueue_shouldCreateHL7InErrorAfterFailedParsing() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		
 		// sanity check, make sure there aren't any error items
@@ -118,10 +122,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#processHL7InQueue(HL7InQueue)
 	 */
 	@Test(expected = HL7Exception.class)
-	public void processHL7InQueue_shouldFailIfGivenInQueueIsAlreadyMarkedAsProcessing() throws Exception {
+	public void processHL7InQueue_shouldFailIfGivenInQueueIsAlreadyMarkedAsProcessing() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		
 		HL7Service hl7service = Context.getHL7Service();
@@ -131,10 +136,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#processHL7Message(Message)
 	 */
 	@Test
-	public void processHL7Message_shouldSaveHl7MessageToTheDatabase() throws Exception {
+	public void processHL7Message_shouldSaveHl7MessageToTheDatabase() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -159,10 +165,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#parseHL7String(String)
 	 */
 	@Test
-	public void parseHL7String_shouldParseTheGivenStringIntoMessage() throws Exception {
+	public void parseHL7String_shouldParseTheGivenStringIntoMessage() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
 		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -193,7 +200,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		// calls the setHL7Handlers method so we're doing it manually here
 		Class<Application> c = (Class<Application>) Context.loadClass("org.openmrs.module.examplehl7handlers.ADRHandler");
 		Application classInstance = c.newInstance();
-		HashMap<String, Application> map = new HashMap<String, Application>();
+		HashMap<String, Application> map = new HashMap<>();
 		map.put("ADR_A19", classInstance);
 		HL7ServiceImpl.getInstance().setHL7Handlers(map);
 		
@@ -209,7 +216,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(message);
 		
 		try {
-			Message result = hl7service.processHL7Message(message);
+			hl7service.processHL7Message(message);
 			Assert.fail("Should not be here. The ADR_A19 parser provided by the module throws an ApplicationException.");
 		}
 		catch (HL7Exception e) {
@@ -245,7 +252,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		Class<Application> c = (Class<Application>) Context
 		        .loadClass("org.openmrs.module.examplehl7handlers.AlternateORUR01Handler");
 		Application classInstance = c.newInstance();
-		HashMap<String, Application> map = new HashMap<String, Application>();
+		HashMap<String, Application> map = new HashMap<>();
 		map.put("ORU_R01", classInstance);
 		HL7ServiceImpl.getInstance().setHL7Handlers(map);
 		
@@ -263,10 +270,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#resolvePersonFromIdentifiers(null)
 	 */
 	@Test
-	public void resolvePersonFromIdentifiers_shouldFindAPersonBasedOnAPatientIdentifier() throws Exception {
+	public void resolvePersonFromIdentifiers_shouldFindAPersonBasedOnAPatientIdentifier() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -287,10 +295,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#resolvePersonFromIdentifiers(null)
 	 */
 	@Test
-	public void resolvePersonFromIdentifiers_shouldFindAPersonBasedOnAUUID() throws Exception {
+	public void resolvePersonFromIdentifiers_shouldFindAPersonBasedOnAUUID() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -311,10 +320,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#resolvePersonFromIdentifiers(null)
 	 */
 	@Test
-	public void resolvePersonFromIdentifiers_shouldFindAPersonBasedOnTheInternalPersonID() throws Exception {
+	public void resolvePersonFromIdentifiers_shouldFindAPersonBasedOnTheInternalPersonID() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -335,10 +345,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#resolvePersonFromIdentifiers(null)
 	 */
 	@Test
-	public void resolvePersonFromIdentifiers_shouldReturnNullIfNoPersonIsFound() throws Exception {
+	public void resolvePersonFromIdentifiers_shouldReturnNullIfNoPersonIsFound() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -358,10 +369,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
 	@Test(expected = HL7Exception.class)
-	public void getPersonFromNK1_shouldFailIfAPersonWithTheSameUUIDExists() throws Exception {
+	public void getPersonFromNK1_shouldFailIfAPersonWithTheSameUUIDExists() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -380,10 +392,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
 	@Test(expected = HL7Exception.class)
-	public void getPersonFromNK1_shouldFailIfNoBirthdateSpecified() throws Exception {
+	public void getPersonFromNK1_shouldFailIfNoBirthdateSpecified() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
 		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -401,10 +414,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
 	@Test(expected = HL7Exception.class)
-	public void getPersonFromNK1_shouldFailIfNoGenderSpecified() throws Exception {
+	public void getPersonFromNK1_shouldFailIfNoGenderSpecified() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
 		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -422,10 +436,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
 	@Test(expected = HL7Exception.class)
-	public void getPersonFromNK1_shouldFailOnAnInvalidGender() throws Exception {
+	public void getPersonFromNK1_shouldFailOnAnInvalidGender() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
 		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -443,10 +458,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
 	@Test
-	public void getPersonFromNK1_shouldReturnASavedNewPerson() throws Exception {
+	public void getPersonFromNK1_shouldReturnASavedNewPerson() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
 		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -465,10 +481,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
 	@Test
-	public void getPersonFromNK1_shouldReturnAPatientIfValidPatientIdentifiersExist() throws Exception {
+	public void getPersonFromNK1_shouldReturnAPatientIfValidPatientIdentifiersExist() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -488,10 +505,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#getUuidFromIdentifiers(null)
 	 */
 	@Test
-	public void getUuidFromIdentifiers_shouldFindAUUIDInAnyPositionOfTheArray() throws Exception {
+	public void getUuidFromIdentifiers_shouldFindAUUIDInAnyPositionOfTheArray() throws HL7Exception {
 		// at the beginning of the list
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -545,10 +563,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#getUuidFromIdentifiers(null)
 	 */
 	@Test
-	public void getUuidFromIdentifiers_shouldReturnNullIfNoUUIDFound() throws Exception {
+	public void getUuidFromIdentifiers_shouldReturnNullIfNoUUIDFound() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
 		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -567,10 +586,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#getUuidFromIdentifiers(null)
 	 */
 	@Test
-	public void getUuidFromIdentifiers_shouldNotFailIfMultipleSimilarUUIDsExistInIdentifiers() throws Exception {
+	public void getUuidFromIdentifiers_shouldNotFailIfMultipleSimilarUUIDsExistInIdentifiers() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
 		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -589,10 +609,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#getUuidFromIdentifiers(null)
 	 */
 	@Test(expected = HL7Exception.class)
-	public void getUuidFromIdentifiers_shouldFailIfMultipleDifferentUUIDsExistInIdentifiers() throws Exception {
+	public void getUuidFromIdentifiers_shouldFailIfMultipleDifferentUUIDsExistInIdentifiers() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
 		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -611,10 +632,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#getUuidFromIdentifiers(null)
 	 */
 	@Test
-	public void getUuidFromIdentifiers_shouldNotFailIfNoAssigningAuthorityIsFound() throws Exception {
+	public void getUuidFromIdentifiers_shouldNotFailIfNoAssigningAuthorityIsFound() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
 		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
@@ -632,10 +654,12 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)
 	 */
 	@Test
-	public void resolveLocationId_shouldReturnInternalIdentifierOfLocationIfOnlyLocationNameIsSpecified() throws Exception {
+	public void resolveLocationId_shouldReturnInternalIdentifierOfLocationIfOnlyLocationNameIsSpecified()
+	        throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -656,10 +680,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)
 	 */
 	@Test
-	public void resolveLocationId_shouldReturnInternalIdentifierOfLocationIfOnlyLocationIdIsSpecified() throws Exception {
+	public void resolveLocationId_shouldReturnInternalIdentifierOfLocationIfOnlyLocationIdIsSpecified() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -680,10 +705,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)
 	 */
 	@Test
-	public void resolveLocationId_shouldReturnNullIfLocationIdAndNameAreIncorrect() throws Exception {
+	public void resolveLocationId_shouldReturnNullIfLocationIdAndNameAreIncorrect() throws HL7Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
@@ -704,10 +730,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#resolveUserId(ca.uhn.hl7v2.model.v25.datatype.XCN)
 	 */
 	@Test
-	public void resolveUserId_shouldReturnNullForAmbiguousUsersUsingFirstAndLastNameGivenUserIDIsNull() throws Exception {
+	public void resolveUserId_shouldReturnNullForAmbiguousUsersUsingFirstAndLastNameGivenUserIDIsNull() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		//construct a message such that id Number at ORC is null
 		Message message = hl7service
@@ -728,10 +755,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#resolveUserId(ca.uhn.hl7v2.model.v25.datatype.XCN)
 	 */
 	@Test
-	public void resolveUserId_shouldReturnUserUsingFirstAndLastNameGivenUserIDIsNull() throws Exception {
+	public void resolveUserId_shouldReturnUserUsingFirstAndLastNameGivenUserIDIsNull() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		//construct a message such that id Number at ORC is null
 		Message message = hl7service
@@ -750,10 +778,11 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws HL7Exception
 	 * @see HL7Service#resolveUserId(ca.uhn.hl7v2.model.v25.datatype.XCN)
 	 */
 	@Test
-	public void resolveUserId_shouldReturnUserUsingUsername() throws Exception {
+	public void resolveUserId_shouldReturnUserUsingUsername() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		//construct a message such that id Number at ORC is null
 		Message message = hl7service

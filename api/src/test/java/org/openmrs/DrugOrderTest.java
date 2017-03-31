@@ -92,7 +92,7 @@ public class DrugOrderTest {
 	 * @see DrugOrder#cloneForRevision()
 	 */
 	@Test
-	public void cloneForRevision_shouldSetTheRelevantFieldsForADCOrder() throws Exception {
+	public void cloneForRevision_shouldSetTheRelevantFieldsForADCOrder() {
 		Order order = new DrugOrder();
 		order.setAction(Order.Action.DISCONTINUE);
 		Date date = new Date();

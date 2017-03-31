@@ -25,7 +25,7 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 	 * @see RoleValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfRoleIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldFailValidationIfRoleIsNullOrEmptyOrWhitespace() {
 		Role role = new Role();
 		role.setRole(null);
 		role.setDescription("some text");
@@ -49,7 +49,7 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 	 * @see RoleValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() {
 		Role role = new Role();
 		role.setRole("Bowling race car driver");
 		role.setDescription(null);
@@ -73,7 +73,7 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 	 * @see RoleValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfRoleHasLeadingOrTrailingSpace() throws Exception {
+	public void validate_shouldFailValidationIfRoleHasLeadingOrTrailingSpace() {
 		Role role = new Role();
 		role.setDescription("some text");
 		role.setRole(" Bowling race car driver");
@@ -94,7 +94,7 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 	 * @see RoleValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		Role role = new Role();
 		role.setRole("Bowling race car driver");
 		role.setDescription("You don't bowl or race fast cars");
@@ -109,7 +109,7 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 	 * @see RoleValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Role role = new Role();
 		role.setRole("Bowling race car driver");
 		role.setDescription("description");
@@ -124,7 +124,7 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 	 * @see RoleValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Role role = new Role();
 		role
 		        .setRole("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");

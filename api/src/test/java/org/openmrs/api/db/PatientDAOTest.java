@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,13 +54,9 @@ import org.openmrs.api.db.hibernate.PersonAttributeHelper;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PatientDAOTest extends BaseContextSensitiveTest {
-	
-	private final static Logger log = LoggerFactory.getLogger(PatientDAOTest.class);
 	
 	private final static String PEOPLE_FROM_THE_SHIRE_XML = "org/openmrs/api/db/hibernate/include/HibernatePersonDAOTest-people.xml";
 	
@@ -175,11 +172,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @throws Exception
+	 * @throws SQLException
 	 * @see PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)
 	 */
 	@Test
-	public void getPatients_shouldEscapeUnderscoreCharacterInIdentifierPhrase() throws Exception {
+	public void getPatients_shouldEscapeUnderscoreCharacterInIdentifierPhrase() throws SQLException {
 		deleteAllData();
 		baseSetupWithStandardDataAndAuthentication();
 		Patient patient2 = patientService.getPatient(2);
@@ -1036,7 +1033,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
 		
-		List<Patient> patients = dao.getPatients("xyz", 0, 11);
+		dao.getPatients("xyz", 0, 11);
 		
 		if (oldPropertyValue != null) {
 			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
@@ -1686,7 +1683,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
 		
-		List<Patient> patients = dao.getPatients("xyz", 0, 11);
+		dao.getPatients("xyz", 0, 11);
 		
 		if (oldPropertyValue != null) {
 			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,

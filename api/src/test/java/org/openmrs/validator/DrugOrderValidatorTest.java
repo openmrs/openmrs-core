@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -565,11 +566,11 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @throws Exception
+	 * @throws SQLException
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
 	 */
 	@Test
-	public void saveOrder_shouldPassDrugOrderWithoutADrugWhenDrugOrderRequireDrugGBIsNotSet() throws Exception {
+	public void saveOrder_shouldPassDrugOrderWithoutADrugWhenDrugOrderRequireDrugGBIsNotSet() throws SQLException {
 		deleteAllData();
 		baseSetupWithStandardDataAndAuthentication();
 		Patient patient = Context.getPatientService().getPatient(7);

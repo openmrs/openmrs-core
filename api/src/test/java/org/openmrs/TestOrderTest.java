@@ -23,6 +23,7 @@ import org.openmrs.order.OrderUtilTest;
 public class TestOrderTest {
 	
 	/**
+	 * @throws Exception
 	 * @see TestOrder#copy()
 	 */
 	@Test
@@ -31,6 +32,7 @@ public class TestOrderTest {
 	}
 	
 	/**
+	 * @throws Exception
 	 * @see TestOrder#cloneForRevision()
 	 */
 	@Test
@@ -51,7 +53,7 @@ public class TestOrderTest {
 	 * @see TestOrder#cloneForDiscontinuing()
 	 */
 	@Test
-	public void cloneForDiscontinuing_shouldSetAllTheRelevantFields() throws Exception {
+	public void cloneForDiscontinuing_shouldSetAllTheRelevantFields() {
 		TestOrder anOrder = new TestOrder();
 		anOrder.setPatient(new Patient());
 		anOrder.setCareSetting(new CareSetting());
@@ -78,7 +80,7 @@ public class TestOrderTest {
 	 * @see TestOrder#cloneForRevision()
 	 */
 	@Test
-	public void cloneForRevision_shouldSetTheRelevantFieldsForADCOrder() throws Exception {
+	public void cloneForRevision_shouldSetTheRelevantFieldsForADCOrder() {
 		Order order = new TestOrder();
 		order.setAction(Order.Action.DISCONTINUE);
 		Date date = new Date();

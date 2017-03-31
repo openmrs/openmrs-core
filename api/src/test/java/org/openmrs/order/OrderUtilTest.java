@@ -32,21 +32,26 @@ public class OrderUtilTest {
 		return order.isActive(asOfDate) && order.getAction() != Order.Action.DISCONTINUE;
 	}
 	
-	public static void setDateStopped(Order targetOrder, Date dateStopped) throws Exception {
-		Field field = null;
-		Boolean isAccessible = null;
+	public static void setDateStopped(Order targetOrder, Date dateStopped) {
 		try {
-			field = Order.class.getDeclaredField("dateStopped");
-			isAccessible = field.isAccessible();
-			if (!isAccessible) {
-				field.setAccessible(true);
+			Field field = null;
+			Boolean isAccessible = null;
+			try {
+				field = Order.class.getDeclaredField("dateStopped");
+				isAccessible = field.isAccessible();
+				if (!isAccessible) {
+					field.setAccessible(true);
+				}
+				field.set(targetOrder, dateStopped);
 			}
-			field.set(targetOrder, dateStopped);
+			finally {
+				if (field != null && isAccessible != null) {
+					field.setAccessible(isAccessible);
+				}
+			}
 		}
-		finally {
-			if (field != null && isAccessible != null) {
-				field.setAccessible(isAccessible);
-			}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	

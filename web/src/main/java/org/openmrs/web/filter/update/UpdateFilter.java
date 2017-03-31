@@ -120,7 +120,7 @@ public class UpdateFilter extends StartupFilter {
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	        ServletException {
 		
-		Map<String, Object> referenceMap = new HashMap<String, Object>();
+		Map<String, Object> referenceMap = new HashMap<>();
 		checkLocaleAttributesForFirstTime(httpRequest);
 		// we need to save current user language in references map since it will be used when template
 		// will be rendered
@@ -144,7 +144,7 @@ public class UpdateFilter extends StartupFilter {
 
         final String updJobStatus = "updateJobStarted";
 		String page = httpRequest.getParameter("page");
-		Map<String, Object> referenceMap = new HashMap<String, Object>();
+		Map<String, Object> referenceMap = new HashMap<>();
 		if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null) {
 			referenceMap
 			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
@@ -245,7 +245,7 @@ public class UpdateFilter extends StartupFilter {
 			
 			httpResponse.setContentType("text/json");
 			httpResponse.setHeader("Cache-Control", "no-cache");
-			Map<String, Object> result = new HashMap<String, Object>();
+			Map<String, Object> result = new HashMap<>();
 			if (updateJob != null) {
 				result.put("hasErrors", updateJob.hasErrors());
 				if (updateJob.hasErrors()) {
@@ -456,10 +456,11 @@ public class UpdateFilter extends StartupFilter {
 	 * @param connection the java sql connection to use
 	 * @param userId the user id to look at
 	 * @return true if the given user is a super user
+	 * @throws SQLException
 	 * @should return true if given user has superuser role
 	 * @should return false if given user does not have the super user role
 	 */
-	protected boolean isSuperUser(Connection connection, Integer userId) throws Exception {
+	protected boolean isSuperUser(Connection connection, Integer userId) throws SQLException {
 		// the 'Administrator' part of this string is necessary because if the database was upgraded
 		// by OpenMRS 1.6 alpha then System Developer was renamed to that. This has to be here so we
 		// can roll back that change in 1.6 beta+
@@ -609,9 +610,9 @@ public class UpdateFilter extends StartupFilter {
 		
 		private String executingChangesetId = null;
 		
-		private List<String> changesetIds = new ArrayList<String>();
+		private List<String> changesetIds = new ArrayList<>();
 		
-		private Map<String, Object[]> errors = new HashMap<String, Object[]>();
+		private Map<String, Object[]> errors = new HashMap<>();
 		
 		private String message = null;
 		
@@ -619,10 +620,10 @@ public class UpdateFilter extends StartupFilter {
 		
 		private boolean hasUpdateWarnings = false;
 		
-		private List<String> updateWarnings = new LinkedList<String>();
+		private List<String> updateWarnings = new LinkedList<>();
 		
 		public synchronized void reportError(String error, Object... params) {
-			Map<String, Object[]> errors = new HashMap<String, Object[]>();
+			Map<String, Object[]> errors = new HashMap<>();
 			errors.put(error, params);
 			reportErrors(errors);
 		}
@@ -646,16 +647,6 @@ public class UpdateFilter extends StartupFilter {
 		public void start() {
 			setUpdatesRequired(true);
 			thread.start();
-		}
-		
-		@SuppressWarnings("unused")
-		public void waitForCompletion() {
-			try {
-				thread.join();
-			}
-			catch (InterruptedException e) {
-				log.error("Error generated", e);
-			}
 		}
 		
 		public synchronized void setMessage(String message) {
@@ -752,7 +743,7 @@ public class UpdateFilter extends StartupFilter {
 						}
 						catch (DatabaseUpdateException e) {
 							log.error("Unable to update the database", e);
-							Map<String, Object[]> errors = new HashMap<String, Object[]>();
+							Map<String, Object[]> errors = new HashMap<>();
 							errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE, null);
 							for (String message : Arrays.asList(e.getMessage().split("\n"))) {
 								errors.put(message, null);

@@ -65,7 +65,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	protected PersonService personService = null;
 	
 	@Before
-	public void onSetUpInTransaction() throws Exception {
+	public void onSetUpInTransaction() {
 		if (ps == null) {
 			ps = Context.getPatientService();
 			adminService = Context.getAdministrationService();
@@ -81,7 +81,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * @see PersonService#getRelationshipsByPerson(Person)
 	 */
 	@Test
-	public void getRelationshipsByPerson_shouldOnlyGetUnvoidedRelationships() throws Exception {
+	public void getRelationshipsByPerson_shouldOnlyGetUnvoidedRelationships() {
 		executeDataSet(CREATE_PATIENT_XML);
 		executeDataSet(CREATE_RELATIONSHIP_XML);
 		
@@ -192,7 +192,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		patientIdentifier.setIdentifierType(patientIdTypes.get(0));
 		patientIdentifier.setLocation(new Location(1));
 		patientIdentifier.setPreferred(true);
-		Set<PatientIdentifier> patientIdentifiers = new TreeSet<PatientIdentifier>();
+		Set<PatientIdentifier> patientIdentifiers = new TreeSet<>();
 		patientIdentifiers.add(patientIdentifier);
 		patient.setIdentifiers(patientIdentifiers);
 		
@@ -205,7 +205,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 */
 	private List<Relationship> createTestDatedRelationships(Person personA, Person personB, RelationshipType rt)
 	        throws Exception {
-		List<Relationship> rels = new Vector<Relationship>();
+		List<Relationship> rels = new Vector<>();
 		
 		// Start & end dates
 		Relationship r = new Relationship(); // 0

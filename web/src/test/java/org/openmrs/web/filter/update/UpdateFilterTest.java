@@ -10,6 +10,7 @@
 package org.openmrs.web.filter.update;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 
@@ -56,20 +57,22 @@ public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
+	 * @throws SQLException
 	 * @throws Exception
 	 * @see UpdateFilter#isSuperUser(Connection,Integer)
 	 */
 	@Test
-	public void isSuperUser_shouldReturnTrueIfGivenUserHasSuperuserRole() throws Exception {
+	public void isSuperUser_shouldReturnTrueIfGivenUserHasSuperuserRole() throws SQLException {
 		Assert.assertTrue(new UpdateFilter().isSuperUser(getConnection(), 1));
 	}
 	
 	/**
+	 * @throws SQLException
 	 * @throws Exception
 	 * @see UpdateFilter#isSuperUser(Connection,Integer)
 	 */
 	@Test
-	public void isSuperUser_shouldReturnFalseIfGivenUserDoesNotHaveTheSuperUserRole() throws Exception {
+	public void isSuperUser_shouldReturnFalseIfGivenUserDoesNotHaveTheSuperUserRole() throws SQLException {
 		Assert.assertFalse(new UpdateFilter().isSuperUser(getConnection(), 502));
 	}
 	

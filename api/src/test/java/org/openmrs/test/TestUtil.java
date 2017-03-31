@@ -42,8 +42,7 @@ public class TestUtil {
 	 * @param expected
 	 * @param actual
 	 */
-	@SuppressWarnings("unchecked")
-	public static void assertCollectionContentsEquals(Collection expected, Collection actual) throws AssertionError {
+	public static void assertCollectionContentsEquals(Collection<?> expected, Collection<?> actual) throws AssertionError {
 		try {
 			if (!expected.containsAll(actual) || !actual.containsAll(expected)) {
 				throw new AssertionError("Expected " + expected + " but found " + actual);

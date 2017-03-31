@@ -93,7 +93,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfGivenEmptyImplementationIdObject() throws Exception {
+	public void validate_shouldFailIfGivenEmptyImplementationIdObject() {
 		// save a blank impl id. exception thrown
 		ImplementationId implementationId = new ImplementationId();
 		Errors errors = new BindException(implementationId, "implementationId");
@@ -108,7 +108,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfGivenACaretInTheImplementationIdCode() throws Exception {
+	public void validate_shouldFailIfGivenACaretInTheImplementationIdCode() {
 		ImplementationId invalidId = new ImplementationId();
 		invalidId.setImplementationId("caret^caret");
 		invalidId.setName("an invalid impl id for a unit test");
@@ -126,7 +126,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfGivenAPipeInTheImplementationIdCode() throws Exception {
+	public void validate_shouldFailIfGivenAPipeInTheImplementationIdCode() {
 		// save an impl id with an invalid hl7 code
 		ImplementationId invalidId2 = new ImplementationId();
 		invalidId2.setImplementationId("pipe|pipe");

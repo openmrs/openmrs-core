@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.TestUtil.containsId;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -88,7 +89,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	@SkipBaseSetup
-	public void saveUser_shouldShouldCreateUserWhoIsPatientAlready() throws Exception {
+	public void saveUser_shouldShouldCreateUserWhoIsPatientAlready() throws SQLException {
 		// create the basic user and give it full rights
 		initializeInMemoryDatabase();
 		
@@ -478,7 +479,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	@SkipBaseSetup
-	public void getUserByUuid_shouldFetchUserWithGivenUuid() throws Exception {
+	public void getUserByUuid_shouldFetchUserWithGivenUuid() throws SQLException {
 		initializeInMemoryDatabase();
 		executeDataSet(XML_FILENAME);
 		authenticate();
@@ -490,7 +491,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	@SkipBaseSetup
-	public void getUsersByName_shouldFetchUsersExactlyMatchingTheGivenGivenNameAndFamilyName() throws Exception {
+	public void getUsersByName_shouldFetchUsersExactlyMatchingTheGivenGivenNameAndFamilyName() throws SQLException {
 		initializeInMemoryDatabase();
 		executeDataSet(XML_FILENAME);
 		authenticate();
@@ -537,7 +538,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	@SkipBaseSetup
-	public void getUsersByName_shouldNotFetchAnyDuplicateUsers() throws Exception {
+	public void getUsersByName_shouldNotFetchAnyDuplicateUsers() throws SQLException {
 		initializeInMemoryDatabase();
 		executeDataSet(XML_FILENAME);
 		authenticate();
