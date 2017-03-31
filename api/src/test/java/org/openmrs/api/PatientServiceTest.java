@@ -3085,6 +3085,30 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		ps.retirePatientIdentifierType(pit, "Retire test");
 	}
 	
+	@Test(expected = APIException.class)
+	public void retirePatientIdentifierType_shouldThrowAPIExceptionWhenNullReasonIsPassed() throws Exception {
+		PatientService ps = Context.getPatientService();
+		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
+		ps.retirePatientIdentifierType(pit, null);
+	}
+	
+	@Test
+	public void retirePatientIdentifierType_shouldRetireAndSetReasonAndRetiredByAndDate() {
+		PatientService ps = Context.getPatientService();
+		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
+		String reason = "moved away";
+		PatientIdentifierType result = ps.retirePatientIdentifierType(pit, reason);
+
+		assertTrue(result.getRetired());
+		assertEquals(result.getRetireReason(), reason);
+		assertEquals(result.getRetiredBy(), Context.getAuthenticatedUser());
+		Date today = new Date();
+		Date dateRetired = result.getDateRetired();
+		assertEquals(dateRetired.getDay(), today.getDay());
+		assertEquals(dateRetired.getMonth(), today.getMonth());
+		assertEquals(dateRetired.getYear(), today.getYear());
+	}
+	
 	@Test(expected = PatientIdentifierTypeLockedException.class)
 	public void unretirePatientIdentifierType_shouldThrowErrorWhenTryingToUnretireAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
 	    throws Exception {
