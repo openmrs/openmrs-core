@@ -249,16 +249,15 @@ public class HibernatePatientDAO implements PatientDAO {
 		// join with the patient table to prevent patient identifiers from patients
 		// that already voided getting returned
 		criteria.createAlias("patient", "patient");
+
 		criteria.add(Restrictions.eq("patient.voided", false));
 		
-		// make sure the patient object isn't voided
 		criteria.add(Restrictions.eq("voided", false));
 		
 		if (identifier != null) {
 			criteria.add(Restrictions.eq("identifier", identifier));
 		}
 		
-		// TODO add junit test for getting by identifier type
 		if (!patientIdentifierTypes.isEmpty()) {
 			criteria.add(Restrictions.in("identifierType", patientIdentifierTypes));
 		}
@@ -267,7 +266,6 @@ public class HibernatePatientDAO implements PatientDAO {
 			criteria.add(Restrictions.in("location", locations));
 		}
 		
-		// TODO add junit test for getting by patients
 		if (!patients.isEmpty()) {
 			criteria.add(Restrictions.in("patient", patients));
 		}
