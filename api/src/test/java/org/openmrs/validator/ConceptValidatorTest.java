@@ -9,6 +9,9 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.openmrs.test.matchers.HasGlobalErrors.hasGlobalErrors;
+
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -78,7 +81,8 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		concept.addName(new ConceptName("", Context.getLocale()));
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(true, errors.hasErrors());
+		
+		assertThat(errors, hasGlobalErrors("Concept.name.empty"));
 	}
 	
 	/**

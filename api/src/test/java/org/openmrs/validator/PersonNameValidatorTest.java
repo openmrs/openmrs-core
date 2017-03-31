@@ -12,6 +12,7 @@ package org.openmrs.validator;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.openmrs.test.matchers.HasFieldErrors.hasFieldErrors;
+import static org.openmrs.test.matchers.HasGlobalErrors.hasGlobalErrors;
 
 import java.util.HashMap;
 import java.util.stream.Stream;
@@ -60,7 +61,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		validator.validate(null, errors);
 		
-		Assert.assertTrue(errors.hasErrors());
+		assertThat(errors, hasGlobalErrors("error.name"));
 	}
 	
 	/**
