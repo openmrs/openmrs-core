@@ -452,8 +452,7 @@ public class HibernateFormDAO implements FormDAO {
 		if (retired != null) {
 			crit.add(Restrictions.eq("retired", retired));
 		}
-		
-		// TODO junit test
+
 		if (!containingAnyFormField.isEmpty()) {
 			// Convert form field persistents to integers
 			Set<Integer> anyFormFieldIds = new HashSet<Integer>();
