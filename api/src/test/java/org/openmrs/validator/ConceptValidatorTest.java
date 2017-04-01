@@ -9,7 +9,9 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.openmrs.test.matchers.HasFieldErrors.hasFieldErrors;
 import static org.openmrs.test.matchers.HasGlobalErrors.hasGlobalErrors;
 
 import java.util.Calendar;
@@ -17,7 +19,10 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
@@ -31,6 +36,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -39,211 +45,259 @@ import org.springframework.validation.Errors;
  */
 public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	
-	@Test(expected = DuplicateConceptNameException.class)
-	public void validate_shouldFailIfThereIsADuplicateUnretiredConceptNameInTheLocale() {
-		Context.setLocale(new Locale("en", "GB"));
-		Concept concept = Context.getConceptService().getConcept(5497);
-		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
+	private ConceptValidator validator;
+	
+	private Concept concept;
+	
+	private Errors errors;
+	
+	@Autowired
+	private ConceptService conceptService;
+	
+	private Concept cd4Count;
+	
+	private Concept weight;
+	
+	@Before
+	public void setUp() {
+		validator = new ConceptValidator();
+		concept = new Concept();
+		errors = new BindException(concept, "concept");
+		cd4Count = conceptService.getConcept(5497);
+		weight = conceptService.getConcept(5089);
+	}
+	
+	@Test
+	public void validate_shouldFailIfTheObjectParameterIsNull() {
 		
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("The parameter obj should not be null and must be of type" + Concept.class);
+		validator.validate(null, errors);
+	}
+	
+	@Test
+	public void shouldFailIfNamesAreEmpty() {
+		
+		validator.validate(concept, errors);
+		
+		assertThat(errors, hasGlobalErrors("Concept.name.atLeastOneRequired"));
+	}
+	
+	@Test
+	public void validate_shouldFailIfTheConceptDatatypeIsNull() {
+		
+		concept.addName(new ConceptName("some name", Context.getLocale()));
+		concept.addDescription(new ConceptDescription("some description", null));
+		concept.setConceptClass(new ConceptClass(1));
+		
+		validator.validate(concept, errors);
+		
+		assertThat(errors, hasFieldErrors("datatype", "Concept.datatype.empty"));
+	}
+	
+	@Test
+	public void validate_shouldFailIfTheConceptClassIsNull() {
+		
+		concept.addName(new ConceptName("some name", Context.getLocale()));
+		concept.addDescription(new ConceptDescription("some description", null));
+		concept.setDatatype(new ConceptDatatype(1));
+		
+		validator.validate(concept, errors);
+		
+		assertThat(errors, hasFieldErrors("conceptClass", "Concept.conceptClass.empty"));
+	}
+	@Test
+	public void validate_shouldFailIfAnyNameIsAnEmptyString() {
+		
+		concept.addDescription(new ConceptDescription("some description", null));
+		concept.setConceptClass(new ConceptClass(1));
+		concept.setDatatype(new ConceptDatatype(1));
+		concept.addName(new ConceptName("name", Context.getLocale()));
+		concept.addName(new ConceptName("", Context.getLocale()));
+		
+		validator.validate(concept, errors);
+		
+		assertThat(errors, hasGlobalErrors("Concept.name.empty"));
+	}
+	
+	@Test
+	public void validate_shouldFailIfAnyNameIsANullValue() {
+		
+		concept.addDescription(new ConceptDescription("some description", null));
+		concept.setConceptClass(new ConceptClass(1));
+		concept.setDatatype(new ConceptDatatype(1));
+		concept.addName(new ConceptName("name", Context.getLocale()));
+		concept.addName(new ConceptName(null, Context.getLocale()));
+		
+		validator.validate(concept, errors);
+		
+		assertThat(errors, hasGlobalErrors("Concept.name.empty"));
+	}
+	
+	@Test
+	public void validate_shouldFailIfThereIsADuplicateUnretiredConceptNameInTheLocale() {
+		
+		Context.setLocale(new Locale("en", "GB"));
+		concept = cd4Count;
+		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
 		ConceptName newName = new ConceptName(duplicateName, Context.getLocale());
 		newName.setDateCreated(Calendar.getInstance().getTime());
 		newName.setCreator(Context.getAuthenticatedUser());
 		concept.addName(newName);
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
+		errors = new BindException(concept, "concept");
+		
+		expectedException.expect(DuplicateConceptNameException.class);
+		expectedException
+		        .expectMessage("'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "'");
+		validator.validate(concept, errors);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void validate_shouldFailIfTheObjectParameterIsNull() {
-		Errors errors = new BindException(null, "concept");
-		new ConceptValidator().validate(null, errors);
-		Assert.assertTrue(errors.hasErrors());
+	@Test
+	public void validate_shouldFailIfAnyNamesInTheSameLocaleForThisConceptAreSimilar() {
+		
+		concept.addName(new ConceptName("same name", Context.getLocale()));
+		concept.addName(new ConceptName("same name", Context.getLocale()));
+		concept.addDescription(new ConceptDescription("some description",null));
+		concept.setConceptClass(new ConceptClass());
+		concept.setDatatype(new ConceptDatatype());
+		
+		expectedException.expect(DuplicateConceptNameException.class);
+		expectedException
+		        .expectMessage("'same name' is a duplicate name in locale '" + Context.getLocale() + "'");
+		validator.validate(concept, errors);
+	}
+	
+	@Test
+	public void validate_shouldFailIfThereIsADuplicateUnretiredFullySpecifiedNameInTheSameLocale() {
+		
+		Context.setLocale(new Locale("en", "GB"));
+		Assert.assertEquals(true, cd4Count.getFullySpecifiedName(Context.getLocale()).isFullySpecifiedName());
+		String duplicateName = cd4Count.getFullySpecifiedName(Context.getLocale()).getName();
+		Concept anotherConcept = weight;
+		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName);
+		Errors errors = new BindException(anotherConcept, "concept");
+		
+		expectedException.expect(DuplicateConceptNameException.class);
+		expectedException
+		        .expectMessage("'" + duplicateName + "' is a duplicate name in locale '" + Context.getLocale() + "'");
+		validator.validate(anotherConcept, errors);
+	}
+	
+	@Test
+	public void validate_shouldFailIfThereIsADuplicateUnretiredPreferredNameInTheSameLocale() {
+		
+		Context.setLocale(new Locale("en", "GB"));
+		Concept concept = cd4Count;
+		ConceptName preferredName = new ConceptName("preferred name", Context.getLocale());
+		concept.setPreferredName(preferredName);
+		conceptService.saveConcept(concept);
+		Assert.assertEquals("preferred name", concept.getPreferredName(Context.getLocale()).getName());
+		Concept anotherConcept = weight;
+		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName("preferred name");
+		Errors errors = new BindException(anotherConcept, "concept");
+		
+		expectedException.expect(DuplicateConceptNameException.class);
+		expectedException
+		        .expectMessage("'" + preferredName + "' is a duplicate name in locale '" + Context.getLocale() + "'");
+		validator.validate(anotherConcept, errors);
+	}
+	
+	@Test
+	public void validate_shouldFailIfThereIsNoNameExplicitlyMarkedAsFullySpecified() {
+		
+		Concept concept = cd4Count;
+		for (ConceptName name : concept.getNames()) {
+			name.setConceptNameType(null);
+		}
+		Errors errors = new BindException(concept, "concept");
+		
+		validator.validate(concept, errors);
+		
+		assertThat(errors, hasGlobalErrors("Concept.error.no.FullySpecifiedName"));
 	}
 	
 	@Test
 	public void validate_shouldPassIfTheConceptIsBeingUpdatedWithNoNameChange() {
 		
-		Concept conceptToUpdate = Context.getConceptService().getConcept(5497);
+		Concept conceptToUpdate = cd4Count;
 		conceptToUpdate.setCreator(Context.getAuthenticatedUser());
 		Errors errors = new BindException(conceptToUpdate, "concept");
-		new ConceptValidator().validate(conceptToUpdate, errors);
+		
+		validator.validate(conceptToUpdate, errors);
+		
 		Assert.assertFalse(errors.hasErrors());
-		
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
-	@Test
-	public void validate_shouldFailIfAnyNameIsAnEmptyString() {
-		Concept concept = new Concept();
-		concept.addName(new ConceptName("name", Context.getLocale()));
-		concept.addName(new ConceptName("", Context.getLocale()));
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		
-		assertThat(errors, hasGlobalErrors("Concept.name.empty"));
-	}
-	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
-	@Test
-	public void validate_shouldFailIfAnyNameIsANullValue() {
-		Concept concept = new Concept();
-		concept.addName(new ConceptName("name", Context.getLocale()));
-		concept.addName(new ConceptName(null, Context.getLocale()));
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(true, errors.hasErrors());
-	}
-	
-	/**
-	 * Tests for duplicate names for the same concept and not with names for other concepts
-	 * 
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
-	@Test(expected = DuplicateConceptNameException.class)
-	public void validate_shouldFailIfAnyNamesInTheSameLocaleForThisConceptAreSimilar() {
-		Concept concept = new Concept();
-		concept.addName(new ConceptName("same name", Context.getLocale()));
-		concept.addName(new ConceptName("same name", Context.getLocale()));
-		concept.addDescription(new ConceptDescription("some description",null));
-		concept.setConceptClass(new ConceptClass());
-		concept.setDatatype(new ConceptDatatype());
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-	}
-	
-	/**
-	 * Tests for uniqueness amongst all fully specified names in the same locale
-	 * 
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
-	@Test(expected = DuplicateConceptNameException.class)
-	public void validate_shouldFailIfThereIsADuplicateUnretiredFullySpecifiedNameInTheSameLocale() {
-		Context.setLocale(new Locale("en", "GB"));
-		Concept concept = Context.getConceptService().getConcept(5497);
-		Assert.assertEquals(true, concept.getFullySpecifiedName(Context.getLocale()).isFullySpecifiedName());
-		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
-		
-		Concept anotherConcept = Context.getConceptService().getConcept(5089);
-		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName);
-		Errors errors = new BindException(anotherConcept, "concept");
-		new ConceptValidator().validate(anotherConcept, errors);
-	}
-	
-	/**
-	 * Tests for uniqueness amongst all preferred names in the same locale
-	 * 
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
-	@Test(expected = DuplicateConceptNameException.class)
-	public void validate_shouldFailIfThereIsADuplicateUnretiredPreferredNameInTheSameLocale() {
-		Context.setLocale(new Locale("en", "GB"));
-		Concept concept = Context.getConceptService().getConcept(5497);
-		ConceptName preferredName = new ConceptName("preferred name", Context.getLocale());
-		concept.setPreferredName(preferredName);
-		Context.getConceptService().saveConcept(concept);
-		Assert.assertEquals("preferred name", concept.getPreferredName(Context.getLocale()).getName());
-		
-		Concept anotherConcept = Context.getConceptService().getConcept(5089);
-		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName("preferred name");
-		
-		Errors errors = new BindException(anotherConcept, "concept");
-		new ConceptValidator().validate(anotherConcept, errors);
-	}
-	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
-	@Test
-	public void validate_shouldFailIfThereIsNoNameExplicitlyMarkedAsFullySpecified() {
-		Concept concept = Context.getConceptService().getConcept(5497);
-		for (ConceptName name : concept.getNames()) {
-			name.setConceptNameType(null);
-		}
-		
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(true, errors.hasErrors());
-	}
-	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldPassIfTheConceptHasAtleastOneFullySpecifiedNameAddedToIt() {
-		Concept concept = new Concept();
+		
 		concept.addName(new ConceptName("one name", Context.getLocale()));
 		concept.addDescription(new ConceptDescription("some description",null));
 		concept.setConceptClass(new ConceptClass());
 		concept.setDatatype(new ConceptDatatype());
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(false, errors.hasErrors());
+		
+		validator.validate(concept, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldPassIfTheDuplicateConceptNameIsNeitherPreferredNorFullySpecified() {
+		
 		Context.setLocale(new Locale("en", "GB"));
-		Concept concept = Context.getConceptService().getConcept(5497);
+		Concept concept = cd4Count;
 		//use a synonym as the duplicate name
 		ConceptName duplicateName = concept.getSynonyms(Context.getLocale()).iterator().next();
 		Assert.assertEquals(true, duplicateName.isSynonym());
-		
-		Concept anotherConcept = Context.getConceptService().getConcept(5089);
+		Concept anotherConcept = weight;
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName.getName());
 		Errors errors = new BindException(anotherConcept, "concept");
-		new ConceptValidator().validate(anotherConcept, errors);
+		
+		validator.validate(anotherConcept, errors);
+		
 		Assert.assertEquals(false, errors.hasErrors());
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldPassIfTheConceptWithADuplicateNameIsRetired() {
-		Context.setLocale(new Locale("en", "GB"));
-		Concept concept = Context.getConceptService().getConcept(5497);
-		concept.setRetired(true);
-		Context.getConceptService().saveConcept(concept);
-		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
 		
-		Concept anotherConcept = Context.getConceptService().getConcept(5089);
+		Context.setLocale(new Locale("en", "GB"));
+		Concept concept = cd4Count;
+		concept.setRetired(true);
+		conceptService.saveConcept(concept);
+		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
+		Concept anotherConcept = weight;
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName);
 		Errors errors = new BindException(anotherConcept, "concept");
-		new ConceptValidator().validate(anotherConcept, errors);
-		Assert.assertEquals(false, errors.hasErrors());
+		
+		validator.validate(anotherConcept, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldPassIfTheConceptBeingValidatedIsRetiredAndHasADuplicateName() {
-		Context.setLocale(new Locale("en", "GB"));
-		Concept concept = Context.getConceptService().getConcept(5497);
-		Context.getConceptService().saveConcept(concept);
-		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
 		
-		Concept anotherConcept = Context.getConceptService().getConcept(5089);
+		Context.setLocale(new Locale("en", "GB"));
+		Concept concept = cd4Count;
+		conceptService.saveConcept(concept);
+		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
+		Concept anotherConcept = weight;
 		anotherConcept.setRetired(true);
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName);
 		Errors errors = new BindException(anotherConcept, "concept");
-		new ConceptValidator().validate(anotherConcept, errors);
-		Assert.assertEquals(false, errors.hasErrors());
+		
+		validator.validate(anotherConcept, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldPassIfTheConceptHasASynonymThatIsAlsoAShortName() {
-		Concept concept = new Concept();
+		
 		concept.addName(new ConceptName("CD4", Context.getLocale()));
 		concept.addDescription(new ConceptDescription("some description",null));
 		concept.setConceptClass(new ConceptClass());
@@ -253,48 +307,40 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		ConceptName name = new ConceptName("CD4", Context.getLocale());
 		name.setConceptNameType(ConceptNameType.SHORT);
 		concept.addName(name);
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
+		
+		validator.validate(concept, errors);
+		
 		Assert.assertFalse(errors.hasErrors());
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldFailIfATermIsMappedMultipleTimesToTheSameConcept() {
-		Concept concept = new Concept();
+		
 		concept.setConceptClass(new ConceptClass());
 		concept.setDatatype(new ConceptDatatype());
-		ConceptService cs = Context.getConceptService();
 		concept.addName(new ConceptName("my name", Context.getLocale()));
 		concept.addDescription(new ConceptDescription("some description",null));
-		ConceptMap map1 = new ConceptMap(cs.getConceptReferenceTerm(1), cs.getConceptMapType(1));
+		ConceptMap map1 = new ConceptMap(conceptService.getConceptReferenceTerm(1), conceptService.getConceptMapType(1));
 		concept.addConceptMapping(map1);
-		ConceptMap map2 = new ConceptMap(cs.getConceptReferenceTerm(1), cs.getConceptMapType(1));
+		ConceptMap map2 = new ConceptMap(conceptService.getConceptReferenceTerm(1), conceptService.getConceptMapType(1));
 		concept.addConceptMapping(map2);
 		
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
+		validator.validate(concept, errors);
 		
-		//the second mapping should be rejected
-		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[1]"));
+		assertThat(errors, hasFieldErrors("conceptMappings[1]"));
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldPassIfTheDuplicateNameInTheLocaleForTheConceptBeingValidatedIsVoided() {
-		ConceptService cs = Context.getConceptService();
-		ConceptName otherName = cs.getConceptName(1439);
+		
+		ConceptName otherName = conceptService.getConceptName(1439);
 		//sanity check since names should only be unique amongst preferred and fully specified names
 		Assert.assertTrue(otherName.isFullySpecifiedName() || otherName.isPreferred());
 		Assert.assertFalse(otherName.getVoided());
 		Assert.assertFalse(otherName.getConcept().getRetired());
 		
 		//change to a duplicate name in the same locale
-		ConceptName duplicateName = cs.getConceptName(2477);
+		ConceptName duplicateName = conceptService.getConceptName(2477);
 		duplicateName.setName(otherName.getName());
 		Concept concept = duplicateName.getConcept();
 		concept.setPreferredName(duplicateName);
@@ -304,89 +350,79 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		duplicateName.setVoided(true);
 		
 		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
+		
+		validator.validate(concept, errors);
+		
 		Assert.assertFalse(errors.hasErrors());
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
-	@Test(expected = DuplicateConceptNameException.class)
+	@Test
 	public void validate_shouldFailIfThereIsADuplicateUnretiredConceptNameInTheSameLocaleDifferentThanTheSystemLocale()
 	{
 		Context.setLocale(new Locale("pl"));
 		Locale en = new Locale("en", "GB");
-		Concept concept = Context.getConceptService().getConcept(5497);
+		Concept concept = cd4Count;
 		Assert.assertEquals(true, concept.getFullySpecifiedName(en).isFullySpecifiedName());
 		String duplicateName = concept.getFullySpecifiedName(en).getName();
-		
-		Concept anotherConcept = Context.getConceptService().getConcept(5089);
+		Concept anotherConcept = weight;
 		anotherConcept.getFullySpecifiedName(en).setName(duplicateName);
 		Errors errors = new BindException(anotherConcept, "concept");
-		new ConceptValidator().validate(anotherConcept, errors);
+		
+		expectedException.expect(DuplicateConceptNameException.class);
+		expectedException
+		        .expectMessage("'" + duplicateName + "' is a duplicate name in locale '" + en + "'");
+		validator.validate(concept, errors);
+		validator.validate(anotherConcept, errors);
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldPassForANewConceptWithAMapCreatedWithDeprecatedConceptMapMethods() {
-		ConceptService cs = Context.getConceptService();
-		Concept concept = new Concept();
+		
 		concept.addName(new ConceptName("test name", Context.getLocale()));
 		concept.addDescription(new ConceptDescription("some description",null));
 		concept.setConceptClass(new ConceptClass());
 		concept.setDatatype(new ConceptDatatype());
 		ConceptMap map = new ConceptMap();
 		map.getConceptReferenceTerm().setCode("unique code");
-		map.getConceptReferenceTerm().setConceptSource(cs.getConceptSource(1));
+		map.getConceptReferenceTerm().setConceptSource(conceptService.getConceptSource(1));
 		concept.addConceptMapping(map);
+		
 		ValidateUtil.validate(concept);
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldPassForAnEditedConceptWithAMapCreatedWithDeprecatedConceptMapMethods() {
-		ConceptService cs = Context.getConceptService();
-		Concept concept = cs.getConcept(5497);
+		
+		Concept concept = cd4Count;
 		ConceptMap map = new ConceptMap();
 		map.getConceptReferenceTerm().setCode("unique code");
-		map.getConceptReferenceTerm().setConceptSource(cs.getConceptSource(1));
+		map.getConceptReferenceTerm().setConceptSource(conceptService.getConceptSource(1));
 		concept.addConceptMapping(map);
+		
 		ValidateUtil.validate(concept);
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldNotFailIfATermHasTwoNewMappingsOnIt() {
-		Concept concept = new Concept();
-		ConceptService cs = Context.getConceptService();
+		
 		concept.addName(new ConceptName("my name", Context.getLocale()));
-		ConceptReferenceTerm newTerm = new ConceptReferenceTerm(cs.getConceptSource(1), "1234", "term one two three four");
-		ConceptMap map1 = new ConceptMap(newTerm, cs.getConceptMapType(1));
+		ConceptReferenceTerm newTerm = new ConceptReferenceTerm(conceptService.getConceptSource(1), "1234",
+		        "term one two three four");
+		ConceptMap map1 = new ConceptMap(newTerm, conceptService.getConceptMapType(1));
 		concept.addConceptMapping(map1);
-		ConceptReferenceTerm newTermTwo = new ConceptReferenceTerm(cs.getConceptSource(1), "12345",
+		ConceptReferenceTerm newTermTwo = new ConceptReferenceTerm(conceptService.getConceptSource(1), "12345",
 		        "term one two three four five");
-		ConceptMap map2 = new ConceptMap(newTermTwo, cs.getConceptMapType(1));
+		ConceptMap map2 = new ConceptMap(newTermTwo, conceptService.getConceptMapType(1));
 		concept.addConceptMapping(map2);
 		
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
+		validator.validate(concept, errors);
 		
-		//the second mapping should be rejected
-		Assert.assertEquals(false, errors.hasFieldErrors("conceptMappings[1]"));
+		assertThat(errors, not(hasFieldErrors("conceptMappings[1]")));
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
-		Concept concept = new Concept();
+		
 		concept.addName(new ConceptName("CD4", Context.getLocale()));
 		concept.addDescription(new ConceptDescription("some description",null));
 		concept.setVersion("version");
@@ -394,17 +430,14 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		concept.setConceptClass(new ConceptClass());
 		concept.setDatatype(new ConceptDatatype());
 
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
+		validator.validate(concept, errors);
+		
 		Assert.assertFalse(errors.hasErrors());
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
-		Concept concept = new Concept();
+		
 		concept.addName(new ConceptName("CD4", Context.getLocale()));
 		concept.addDescription(new ConceptDescription("some description",null));
 		concept.setConceptClass(new ConceptClass());
@@ -413,49 +446,40 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		concept
 		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertTrue(errors.hasFieldErrors("version"));
-		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+		validator.validate(concept, errors);
+		
+		assertThat(errors, hasFieldErrors("version", "error.exceededMaxLengthOfField"));
+		assertThat(errors, hasFieldErrors("retireReason", "error.exceededMaxLengthOfField"));
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldPassIfFullySpecifiedNameIsTheSameAsShortName() {
-		Concept concept = new Concept();
 		
 		ConceptName conceptFullySpecifiedName = new ConceptName("YES", new Locale("pl"));
 		conceptFullySpecifiedName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
-		
 		ConceptName conceptShortName = new ConceptName("yes", new Locale("pl"));
 		conceptShortName.setConceptNameType(ConceptNameType.SHORT);
-		
 		concept.addName(conceptFullySpecifiedName);
 		concept.addName(conceptShortName);
 		concept.addDescription(new ConceptDescription("some description",null));
 		concept.setConceptClass(new ConceptClass());
 		concept.setDatatype(new ConceptDatatype());
 
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(false, errors.hasErrors());
+		validator.validate(concept, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
 	}
 	
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldPassIfDifferentConceptsHaveTheSameShortNames() {
+		
 		Context.setLocale(new Locale("en", "GB"));
 		
-		List<Concept> concepts = Context.getConceptService().getConceptsByName("HSM");
+		List<Concept> concepts = conceptService.getConceptsByName("HSM");
 		Assert.assertEquals(1, concepts.size());
 		Assert.assertEquals(true, concepts.get(0).getShortNameInLocale(Context.getLocale()).getName()
 		        .equalsIgnoreCase("HSM"));
 		
-		Concept concept = new Concept();
 		concept.setConceptClass(new ConceptClass());
 		concept.setDatatype(new ConceptDatatype());
 		ConceptName conceptFullySpecifiedName = new ConceptName("holosystolic murmur", Context.getLocale());
@@ -468,91 +492,56 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		concept.addName(conceptShortName);
 		concept.addDescription(new ConceptDescription("some description",null));
 		
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(false, errors.hasErrors());
+		validator.validate(concept, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
 	}
 
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 */
 	@Test
 	public void validate_shouldFailIfCodedConceptContainsItselfAsAnAnswer() {
-		Concept concept = Context.getConceptService().getConcept(30);
-
+		
+		Concept concept = conceptService.getConcept(30);
 		ConceptAnswer conceptAnswer = new ConceptAnswer(concept);
 		concept.addAnswer(conceptAnswer);
 
 		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(true, errors.hasErrors());
+		
+		validator.validate(concept, errors);
+		
+		assertThat(errors, hasGlobalErrors("Concept.contains.itself.as.answer"));
 	}
 
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 **/
 	@Test
 	public void validate_shouldNotFailIfAnyDescriptionIsNotEnteredWhileCreatingANewConcept() {
-		Concept concept = new Concept();
+		
 		concept.addName(new ConceptName("some name", Context.getLocale()));
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertFalse(errors.hasFieldErrors("descriptions"));
+		
+		validator.validate(concept, errors);
+		
+		assertThat(errors, not(hasFieldErrors("description")));
 	}
 
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 **/
 	@Test
 	public void validate_shouldPassIfNoneofTheConceptDescriptionsIsNull() {
-		Concept concept = new Concept();
+		
 		concept.addName(new ConceptName("some name",Context.getLocale()));
 		concept.addDescription(new ConceptDescription("some description",null));
 		concept.setConceptClass(new ConceptClass());
 		concept.setDatatype(new ConceptDatatype());
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
+		
+		validator.validate(concept, errors);
+		
 		Assert.assertFalse(errors.hasErrors());
 	}
 
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 **/
 	@Test
 	public void validate_shouldNotFailIfBlankConceptDescriptionIsPassed() {
-		Concept concept = new Concept();
+		
 		concept.addName(new ConceptName("some name",Context.getLocale()));
 		concept.addDescription(new ConceptDescription("   ",null));
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertFalse(errors.hasFieldErrors("descriptions"));
-	}
-
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 **/
-	@Test
-	public void validate_shouldFailIfTheConceptDatatypeIsNull() {
-		Concept concept = new Concept();
-		concept.addName(new ConceptName("some name",Context.getLocale()));
-		concept.addDescription(new ConceptDescription("some description",null));
-		concept.setConceptClass(new ConceptClass(1));
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(errors.getFieldError("datatype").getCode(), "Concept.datatype.empty");
-	}
-
-	/**
-	 * @see ConceptValidator#validate(Object,Errors)
-	 **/
-	@Test
-	public void validate_shouldFailIfTheConceptClassIsNull() {
-		Concept concept = new Concept();
-		concept.addName(new ConceptName("some name",Context.getLocale()));
-		concept.addDescription(new ConceptDescription("some description",null));
-		concept.setDatatype(new ConceptDatatype(1));
-		Errors errors = new BindException(concept, "concept");
-		new ConceptValidator().validate(concept, errors);
-		Assert.assertEquals(errors.getFieldError("conceptClass").getCode(), "Concept.conceptClass.empty");
+		
+		validator.validate(concept, errors);
+		
+		assertThat(errors, not(hasFieldErrors("description")));
 	}
 }
