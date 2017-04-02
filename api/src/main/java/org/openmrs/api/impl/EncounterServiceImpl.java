@@ -88,35 +88,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		    dao.getEncounters(query, null, null, null, includeVoided), null);
 	}
 	
-
-	private void failIfDeniedToEdit(Encounter encounter) throws APIException {
-		throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
-			     .getEditPrivilege() });
-	}
-		
-	private void createVisitForNewEncounter(Encounter encounter) {
-		//Am using Context.getEncounterService().getActiveEncounterVisitHandler() instead of just
-		//getActiveEncounterVisitHandler() for modules which may want to AOP around this call.
-		EncounterVisitHandler encounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
-		if (encounterVisitHandler != null) {
-			encounterVisitHandler.beforeCreateEncounter(encounter);
-				
-			//If we have been assigned a new visit, persist it.
-			if (encounter.getVisit() != null && encounter.getVisit().getVisitId() == null) {
-				Context.getVisitService().saveVisit(encounter.getVisit());
-			}
-		}
-	}
-
-	private boolean requirePrivilege(Encounter encounter) {
-		if (encounter.getEncounterId() == null) {
-			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
-			return true;
-		} else {
-			Context.requirePrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
-			return false;
-		}
-	}
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#saveEncounter(org.openmrs.Encounter)
@@ -235,6 +206,36 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		return encounter;
 	}
 
+
+	private void failIfDeniedToEdit(Encounter encounter) throws APIException {
+		throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
+			     .getEditPrivilege() });
+	}
+		
+	private void createVisitForNewEncounter(Encounter encounter) {
+		//Am using Context.getEncounterService().getActiveEncounterVisitHandler() instead of just
+		//getActiveEncounterVisitHandler() for modules which may want to AOP around this call.
+		EncounterVisitHandler encounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
+		if (encounterVisitHandler != null) {
+			encounterVisitHandler.beforeCreateEncounter(encounter);
+				
+			//If we have been assigned a new visit, persist it.
+			if (encounter.getVisit() != null && encounter.getVisit().getVisitId() == null) {
+				Context.getVisitService().saveVisit(encounter.getVisit());
+			}
+		}
+	}
+
+	private boolean requirePrivilege(Encounter encounter) {
+		if (encounter.getEncounterId() == null) {
+			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
+			return true;
+		} else {
+			Context.requirePrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+			return false;
+		}
+	}
+	
 	/**
 	 * This method will remove given Collection of obs and their group members from encounter
 	 *
