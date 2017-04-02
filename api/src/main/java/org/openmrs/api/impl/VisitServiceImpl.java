@@ -358,6 +358,17 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		}
 		return visitTypeNames;
 	}
+
+	private void getVisitTypesToStop(String gpValue, VisitService vs) {
+		List<VisitType> visitTypesToStop = new ArrayList<VisitType>();
+		String[] visitTypeNames = getVisitTypesFromVisitTypeNames(gpValue);
+		List<VisitType> allVisitTypes = vs.getAllVisitTypes();
+		for (VisitType visitType : allVisitTypes) {
+			if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase())) {
+				visitTypesToStop.add(visitType);
+			}
+		}
+	}
 	/**
 	 * @see org.openmrs.api.VisitService#stopVisits(Date)
 	 */
@@ -365,7 +376,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	public void stopVisits(Date maximumStartDate) {
 		String gpValue = getVisitTypeNamesFromGlobalPropertyValue();
 		VisitService vs = Context.getVisitService();
-		
+
 		if (StringUtils.isBlank(gpValue)) {
     		return;
 		}
@@ -374,17 +385,12 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 				maximumStartDate = new Date();
 			}
 			
-			List<VisitType> visitTypesToStop = new ArrayList<VisitType>();
-			String[] visitTypeNames = getVisitTypesFromVisitTypeNames(gpValue);
-			
-			List<VisitType> allVisitTypes = vs.getAllVisitTypes();
-			for (VisitType visitType : allVisitTypes) {
-				if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase())) {
-					visitTypesToStop.add(visitType);
-				}
+			List<VisitType> visitTypesToStop = getVisitTypesToStop(gpValue, vs);
+
+			if (visitTypesToStop.isEmpty()) {
+				return;
 			}
-			
-			if (!visitTypesToStop.isEmpty()) {
+			else {
 				int counter = 0;
 				Date stopDate = new Date();
 				Visit nextVisit = dao.getNextVisit(null, visitTypesToStop, maximumStartDate);
