@@ -1,22 +1,3 @@
-Skip to content
-This repository
-Search
-Pull requests
-Issues
-Gist
- @suthagar23
- Sign out
- Unwatch 1
-  Star 0
- Fork 1,742 suthagar23/openmrs-core
-forked from openmrs/openmrs-core
- Code  Pull requests 0  Projects 0  Pulse  Graphs  Settings
-Tree: 58d64b7564 Find file Copy pathopenmrs-core/api/src/main/java/org/openmrs/api/impl/EncounterServiceImpl.java
-58d64b7  2 hours ago
-@suthagar23 suthagar23 TRUNK-324:Extract private methods coverage fixed
-26 contributors @wluyima @dkayiwa @k-joseph @rkorytkowski @djazayeri @teleivo @suthagar23 @surangak @lluismf @akolodziejski @ykarim @mvorobey @vinkesh @rpuzdrowski @PKatGITHUB @pmuchowski @suniala @mddubey @jkondrat @Izaron @dszafranek @dkithmal @chaityabshah @bmamlin @bharatak @ys-achinta
-RawBlameHistory     
-976 lines (857 sloc)  33.2 KB
 /**
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
