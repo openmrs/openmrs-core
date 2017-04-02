@@ -89,12 +89,12 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 
-	private void failIfDeniedToEdit(Encounter encounter) throws APIException{
+	private void failIfDeniedToEdit(Encounter encounter) throws APIException {
 		throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
 			     .getEditPrivilege() });
 	}
 		
-	private void createVisitForNewEncounter(Encounter encounter){
+	private void createVisitForNewEncounter(Encounter encounter) {
 		//Am using Context.getEncounterService().getActiveEncounterVisitHandler() instead of just
 		//getActiveEncounterVisitHandler() for modules which may want to AOP around this call.
 		EncounterVisitHandler encounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
@@ -108,7 +108,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 	}
 
-	private boolean requirePrivilege(Encounter encounter){
+	private boolean requirePrivilege(Encounter encounter) {
 		if (encounter.getEncounterId() == null) {
 			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
 			return true;
