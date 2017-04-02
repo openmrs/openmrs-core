@@ -376,7 +376,6 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	public void stopVisits(Date maximumStartDate) {
 		String gpValue = getVisitTypeNamesFromGlobalPropertyValue();
 		VisitService vs = Context.getVisitService();
-
 		if (StringUtils.isBlank(gpValue)) {
     		return;
 		}
