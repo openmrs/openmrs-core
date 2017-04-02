@@ -206,7 +206,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		return encounter;
 	}
 
-
 	private void failIfDeniedToEdit(Encounter encounter) throws APIException {
 		throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
 			     .getEditPrivilege() });
@@ -235,7 +234,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			return false;
 		}
 	}
-	
+
 	/**
 	 * This method will remove given Collection of obs and their group members from encounter
 	 *
