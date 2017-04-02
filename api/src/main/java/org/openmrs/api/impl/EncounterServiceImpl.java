@@ -973,5 +973,3 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		return saveEncounter(encounterCopy);
 	}
 }
-Contact GitHub API Training Shop Blog About
-© 2017 GitHub, Inc. Terms Privacy Security Status Help
