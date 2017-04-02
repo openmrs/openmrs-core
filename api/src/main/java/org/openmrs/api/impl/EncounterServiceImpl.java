@@ -123,6 +123,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Override
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
+		
 		// if authenticated user is not supposed to edit encounter of certain type
 		if (!canEditEncounter(encounter, null)) {
 			failIfDeniedToEdit(encounter);
@@ -926,7 +927,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @param user the user instance to check if it has given privilege
 	 * @return true if given user has specified privilege
 	 */
-
+	
 	private boolean userHasEncounterPrivilege(Privilege privilege, User user) {
 		//If the encounter privilege is null, everyone can see and edit the encounter.
 		if (privilege == null) {
