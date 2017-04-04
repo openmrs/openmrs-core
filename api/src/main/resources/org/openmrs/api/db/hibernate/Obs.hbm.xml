@@ -63,7 +63,19 @@
 			column="void_reason" length="255" />
 		<property name="formNamespaceAndPath" type="java.lang.String"
 			column="form_namespace_and_path" length="255" access="field" />
-
+		<property name="status" column="status" length="16" not-null="true">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">org.openmrs.Obs$Status</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property name="interpretation" column="interpretation" length="32">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">org.openmrs.Obs$Interpretation</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		
 		<!-- Associations -->
 
 		<many-to-one name="person" class="Person" not-null="true" column="person_id" />
