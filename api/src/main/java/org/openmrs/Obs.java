@@ -79,7 +79,9 @@ public class Obs extends BaseOpenmrsData {
 		INTERMEDIATE,
 		RESISTANT,
 		SIGNIFICANT_CHANGE_DOWN,
-		SIGNIFICANT_CHANGE_UP
+		SIGNIFICANT_CHANGE_UP,
+		OFF_SCALE_LOW,
+		OFF_SCALE_HIGH
 	}
 	
 	public enum Status {
