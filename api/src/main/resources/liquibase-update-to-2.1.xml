@@ -528,4 +528,12 @@
 								 referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
 
+	<changeSet id="TRUNK-5140-20170404-1000" author="Shruthi,Salauddin" >
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="obs" columnName="value_complex"/>
+		</preConditions>
+		<comment>Modify column length to 1000 from 255</comment>
+		<modifyDataType tableName="obs" columnName="value_complex" newDataType="varchar(1000)"/>
+	</changeSet>
+
 </databaseChangeLog>
