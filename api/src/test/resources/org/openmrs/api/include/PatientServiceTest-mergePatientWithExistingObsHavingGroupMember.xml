@@ -80,12 +80,12 @@
 	<concept_numeric concept_id="605" precise="0"/>
 
 
-	<obs obs_id="111" encounter_id="57" person_id="11" location_id="2" obs_datetime="2008-08-18 15:09:05.0" date_created="2008-08-18 15:09:05.0"
+	<obs obs_id="111" status="FINAL" encounter_id="57" person_id="11" location_id="2" obs_datetime="2008-08-18 15:09:05.0" date_created="2008-08-18 15:09:05.0"
 		 uuid="ef4554cb-22gg-471a-lld7-1434552c337c1" creator="1" concept_id="601" voided="0" />
-	<obs obs_id="112" encounter_id="57" person_id="11" location_id="2" obs_datetime="2008-08-18 15:09:05.0" date_created="2008-08-18 15:09:05.0"
+	<obs obs_id="112" status="FINAL" encounter_id="57" person_id="11" location_id="2" obs_datetime="2008-08-18 15:09:05.0" date_created="2008-08-18 15:09:05.0"
 		 uuid="eee554cb-2afa-471a-9cd7-1434552c337c2"  creator="1" obs_group_id="111" concept_id="602" voided="0" />
-	<obs obs_id="113" encounter_id="57" person_id="11" location_id="2" obs_datetime="2008-08-18 15:09:05.0" date_created="2008-08-18 15:09:05.0"
+	<obs obs_id="113" status="FINAL" encounter_id="57" person_id="11" location_id="2" obs_datetime="2008-08-18 15:09:05.0" date_created="2008-08-18 15:09:05.0"
 		 uuid="eee554cb-22ff-471a-9cd7-1434552c337c2" creator="1" obs_group_id="112" value_numeric="120" concept_id="605" voided="0" />
-	<obs obs_id="114" encounter_id="57" person_id="11" location_id="2" obs_datetime="2008-08-18 15:09:05.0" date_created="2008-08-18 15:09:05.0"
+	<obs obs_id="114" status="FINAL" encounter_id="57" person_id="11" location_id="2" obs_datetime="2008-08-18 15:09:05.0" date_created="2008-08-18 15:09:05.0"
 		 uuid="eeea54cb-2aee-471a-9cd7-1434a5aa337a4" creator="1" obs_group_id="111" value_numeric="133" concept_id="603" voided="1" />
 </dataset>

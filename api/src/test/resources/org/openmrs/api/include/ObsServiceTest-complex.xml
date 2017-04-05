@@ -21,7 +21,7 @@
   <concept_description concept_description_id="8474" concept_id="8474" description="Some description" locale="en_GB" creator="1" date_created="2004-08-12 00:00:00.0" uuid="9h8d721b-d333-40b7-b449-6e0e739d15d0"/>
   <concept_complex concept_id="8474" handler="TextHandler" />
   
-  <obs obs_id="44" person_id="2" concept_id="8473" obs_datetime="2008-02-09 00:00:00.0" location_id="1" value_complex="gif image |openmrs_logo_small.gif" creator="1" date_created="2006-02-10 15:57:35.0" voided="false" uuid="9b6639b2-5785-4603-a364-075c2d61cd51"/>
-  <obs obs_id="45" person_id="2" concept_id="8474" obs_datetime="2008-02-09 00:00:00.0" location_id="1" value_complex="txt image |sometext.txt" creator="1" date_created="2006-02-10 15:57:35.0" voided="false" uuid="95732bf6-0e08-4b95-844d-c396709b0286"/>
+  <obs obs_id="44" person_id="2" concept_id="8473" status="FINAL" obs_datetime="2008-02-09 00:00:00.0" location_id="1" value_complex="gif image |openmrs_logo_small.gif" creator="1" date_created="2006-02-10 15:57:35.0" voided="false" uuid="9b6639b2-5785-4603-a364-075c2d61cd51"/>
+  <obs obs_id="45" person_id="2" concept_id="8474" status="FINAL" obs_datetime="2008-02-09 00:00:00.0" location_id="1" value_complex="txt image |sometext.txt" creator="1" date_created="2006-02-10 15:57:35.0" voided="false" uuid="95732bf6-0e08-4b95-844d-c396709b0286"/>
   
 </dataset>

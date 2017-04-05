@@ -56,7 +56,7 @@
   <encounter_type encounter_type_id="2" name="Test Enc Type 2" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="b30cb8f5-c9bc-4563-a510-355b17355d75"/>
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="18befd68-0020-4407-8f7d-8d8101e8499c"/>
   <location location_id="2" name="Test Location 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="ed54917c-22dd-4054-9938-9768d596a941"/>
-  <obs obs_id="1" person_id="2" concept_id="905" obs_datetime="2007-05-01 00:00:00.0" location_id="1" value_numeric="100.0" creator="1" date_created="2005-03-01 00:00:00.0" voided="false" uuid="059138c5-8b07-49c6-8060-e7401c0c1987"/>
+  <obs obs_id="1" person_id="2" status="FINAL" concept_id="905" obs_datetime="2007-05-01 00:00:00.0" location_id="1" value_numeric="100.0" creator="1" date_created="2005-03-01 00:00:00.0" voided="false" uuid="059138c5-8b07-49c6-8060-e7401c0c1987"/>
   <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="2178037d-f86b-4f12-8d8b-be3ebc220022"/>
   <person person_id="3" gender="F" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="4f8b3970-7407-429c-a903-9704785519ef"/>
   <person_name person_name_id="2" preferred="true" person_id="3" given_name="John3" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="24865f9b-1943-45ae-81ba-7925dece6c84"/>
@@ -68,7 +68,7 @@
   <relationship_type relationship_type_id="2" preferred="0" weight="0" creator="1" date_created="2007-05-04 00:00:00.0" retired="0" uuid="8d91a01c-c2cc-11de-8d13-0010c6dffd0f" a_is_to_b="Sibling" b_is_to_a="Sibling" description="Relationship between brother/sister, brother/brother, and sister/sister"/>
   <relationship_type relationship_type_id="3" preferred="0" weight="0" creator="1" date_created="2007-05-04 00:00:00.0" retired="0" uuid="8d91a210-c2cc-11de-8d13-0010c6dffd0f" a_is_to_b="Parent" b_is_to_a="Child" description="Relationship from a mother/father to the child"/>
   
-  <obs obs_id="1" concept_id="905" value_numeric="100" obs_datetime="2007-05-01 00:00:00.0" person_id="2" location_id="1" creator="1" date_created="2005-03-01 00:00:00.0" voided="0" uuid="92cf9a23-850a-408d-a31e-3b6fa286e0e5"/>
+  <obs obs_id="1" concept_id="905" status="FINAL" value_numeric="100" obs_datetime="2007-05-01 00:00:00.0" person_id="2" location_id="1" creator="1" date_created="2005-03-01 00:00:00.0" voided="0" uuid="92cf9a23-850a-408d-a31e-3b6fa286e0e5"/>
   
   <concept concept_id="1284" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2005-02-24 12:33:10.0" version="" uuid="b16cf212-e9ac-4127-a4db-7f03b37584e2"/>
   <concept concept_id="6042" retired="false" datatype_id="2" class_id="4" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-22 12:18:13.0" uuid="9b68403d-8c7e-4961-8952-2da8f249a155"/>

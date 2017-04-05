@@ -9,11 +9,15 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -123,6 +127,10 @@ public class ObsTest {
 			fieldValue = new Person(setAlternateValue ? 10 : 17);
 		} else if (field.getType().equals(ComplexData.class)) {
 			fieldValue = new ComplexData(setAlternateValue ? "some complex data" : "Some other value", new Object());
+		} else if (field.getType().equals(Obs.Interpretation.class)) {
+			fieldValue = setAlternateValue ? Obs.Interpretation.ABNORMAL : Obs.Interpretation.CRITICALLY_ABNORMAL;
+		} else if (field.getType().equals(Obs.Status.class)) {
+			fieldValue = setAlternateValue ? Obs.Status.AMENDED : Obs.Status.PRELIMINARY;
 		} else {
 			fieldValue = field.getType().newInstance();
 		}
@@ -994,5 +1002,41 @@ public class ObsTest {
 
 		assertFalse(obs.isDirty());
 	}
+	
+	@Test
+	public void shouldSetFinalStatusOnNewObsByDefault() throws Exception {
+		Obs obs = new Obs();
+		assertThat(obs.getStatus(), is(Obs.Status.FINAL));
+	}
+	
+	@Test
+	public void newInstance_shouldCopyMostFields() throws Exception {
+		Obs obs = new Obs();
+		obs.setStatus(Obs.Status.PRELIMINARY);
+		obs.setInterpretation(Obs.Interpretation.LOW);
+		obs.setConcept(new Concept());
+		obs.setValueNumeric(1.2);
+		
+		Obs copy = Obs.newInstance(obs);
+		
+		// these fields are not copied
+		assertThat(copy.getObsId(), nullValue());
+		assertThat(copy.getUuid(), not(obs.getUuid()));
+		
+		// other fields are copied
+		assertThat(copy.getConcept(), is(obs.getConcept()));
+		assertThat(copy.getValueNumeric(), is(obs.getValueNumeric()));
+		assertThat(copy.getStatus(), is(obs.getStatus()));
+		assertThat(copy.getInterpretation(), is(obs.getInterpretation()));
+		// TODO test that the rest of the fields are set
+	}
+	
+	@Test
+	public void shouldSupportInterpretationProperty() throws Exception {
+		Obs obs = new Obs();
+		assertThat(obs.getInterpretation(), nullValue());
 
+		obs.setInterpretation(Obs.Interpretation.NORMAL);
+		assertThat(obs.getInterpretation(), is(Obs.Interpretation.NORMAL));
+	}
 }

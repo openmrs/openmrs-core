@@ -527,5 +527,31 @@
 								 baseTableName="relationship_type" baseColumnNames="changed_by"
 								 referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
+	
+	<changeSet id="TRUNK-4976-20170403-1" author="darius">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="obs" columnName="status"/>
+			</not>
+		</preConditions>
+		<comment>Adding "status" column to obs table</comment>
+		<addColumn tableName="obs">
+			<column name="status" type="varchar(16)" defaultValue="FINAL">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="TRUNK-4976-20170403-2" author="darius">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="obs" columnName="interpretation"/>
+			</not>
+		</preConditions>
+		<comment>Adding "interpretation" column to obs table</comment>
+		<addColumn tableName="obs">
+			<column name="interpretation" type="varchar(32)"/>
+		</addColumn>
+	</changeSet>
 
 </databaseChangeLog>
