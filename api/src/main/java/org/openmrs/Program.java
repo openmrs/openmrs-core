@@ -191,7 +191,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	}
 	
 	public void setAllWorkflows(Set<ProgramWorkflow> allWorkflows) {
-		this.allWorkflows = new HashSet<ProgramWorkflow>(allWorkflows);
+		this.allWorkflows = allWorkflows;
 	}
 	
 	/**
