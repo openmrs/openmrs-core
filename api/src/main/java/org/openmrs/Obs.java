@@ -64,6 +64,9 @@ import org.slf4j.LoggerFactory;
  */
 public class Obs extends BaseOpenmrsData {
 	
+	/**
+	 * @since 2.1.0
+	 */
 	public enum Interpretation {
 		NORMAL,
 		ABNORMAL,
@@ -84,6 +87,9 @@ public class Obs extends BaseOpenmrsData {
 		OFF_SCALE_HIGH
 	}
 	
+	/**
+	 * @since 2.1.0
+	 */
 	public enum Status {
 		PRELIMINARY,
 		FINAL,
