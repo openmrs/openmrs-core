@@ -9,10 +9,12 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
@@ -65,6 +67,7 @@ import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * TODO clean up and add tests for all methods in ObsService
@@ -78,6 +81,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	protected static final String COMPLEX_OBS_XML = "org/openmrs/api/include/ObsServiceTest-complex.xml";
 
 	protected static final String REVISION_OBS_XML = "org/openmrs/api/include/ObsServiceTest-RevisionObs.xml";
+	
+	@Autowired
+	private ObsService obsService;
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -2001,5 +2007,51 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 				}
 			}
 		}
+	}
+	
+	@Test
+	public void saveObs_shouldSetStatusToAmendedWhenModifyingAnObsWithFinalStatus() throws Exception {
+		Obs existing = obsService.getObs(7);
+		existing.setValueNumeric(60.0);
+		Obs amended = obsService.saveObs(existing, "testing");
+		assertThat(amended.getValueNumeric(), is(60.0));
+		assertThat(amended.getStatus(), is(Obs.Status.AMENDED));
+		assertThat(existing.getStatus(), is(Obs.Status.FINAL));
+	}
+	
+	@Test
+	public void saveObs_shouldNotChangeStatusOfPreliminaryWhenModifyingAnObs() throws Exception {
+		Obs existing = obsService.getObs(9);
+		existing.setValueNumeric(175.0);
+		Obs newObs = obsService.saveObs(existing, "testing");
+		assertThat(newObs.getValueNumeric(), is(175.0));
+		assertThat(newObs.getStatus(), is(Obs.Status.PRELIMINARY));
+	}
+	
+	@Test
+	public void saveObs_shouldLetYouChangeStatusFromPreliminaryToFinalWhenModifyingAnObs() throws Exception {
+		Obs existing = obsService.getObs(9);
+		existing.setValueNumeric(175.0);
+		existing.setStatus(Obs.Status.FINAL);
+		Obs newObs = obsService.saveObs(existing, "testing");
+		assertThat(newObs.getValueNumeric(), is(175.0));
+		assertThat(newObs.getStatus(), is(Obs.Status.FINAL));
+	}
+	
+	/**
+	 * Tests that we support a manual workaround in case you need to modify a FINAL obs and leave its status as FINAL
+	 */
+	@Test
+	public void shouldNotAutomaticallySetStatusWhenManuallyCopyingAnObs() throws Exception {
+		Obs existing = obsService.getObs(7);
+		Obs newObs = Obs.newInstance(existing);
+		newObs.setValueNumeric(60.0);
+		newObs.setPreviousVersion(existing);
+		newObs = obsService.saveObs(newObs, null);
+		obsService.voidObs(existing, "testing");
+		
+		assertThat(existing.getStatus(), is(Obs.Status.FINAL));
+		assertThat(existing.getVoided(), is(true));
+		assertThat(newObs.getStatus(), is(Obs.Status.FINAL));
 	}
 }
