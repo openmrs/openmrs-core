@@ -1923,4 +1923,32 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 	}
+
+	@Test
+	@Verifies(value = "should add person with encounter patient for a new obs", method = "saveObs(Obs,String)")
+	public void saveObs_shouldUpdateObsPersonValueWithEncounterPatientForNewObs() throws Exception {
+		executeDataSet(ENCOUNTER_OBS_XML);
+
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+		EncounterService es = Context.getEncounterService();
+		PersonService ps = Context.getPersonService();
+
+		Obs o = new Obs();
+		o.setConcept(cs.getConcept(3));
+		o.setDateCreated(new Date());
+		o.setCreator(Context.getAuthenticatedUser());
+		o.setLocation(new Location(1));
+		o.setObsDatetime(new Date());
+		o.setValueText("Testing");
+		// Setting this person (2) as different from that of encounter person (7)
+		o.setPerson(ps.getPerson(2));
+		o.setEncounter(es.getEncounter(2));
+		assertTrue(es.getEncounter(2).getPatient().getId().equals(7));
+		try{
+			Obs obs = os.saveObs(o,null);
+		}catch (Exception e){
+			assertEquals("Obs.error.patient.id.mismatch",e.getMessage());
+		}
+	}
 }
