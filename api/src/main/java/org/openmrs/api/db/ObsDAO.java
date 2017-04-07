@@ -77,4 +77,14 @@ public interface ObsDAO {
 	 * @return Obs or null
 	 */
 	public Obs getRevisionObs(Obs initialObs);
+	
+	/**
+	 * Gets the value of status currently saved in the database for the given obs, bypassing any caches. This is used
+	 * when the user updates an existing obs so we can determine whether to change its status or not.
+	 * @param obs
+	 * @return
+	 * @since 2.1.0
+	 */
+	public Obs.Status getSavedStatus(Obs obs);
+	
 }
