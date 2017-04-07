@@ -44,6 +44,7 @@ import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.SerializableComplexObsHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -392,17 +393,16 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void duplicateForm_shouldClearChangedDetailsAndUpdateCreationDetails() {
+		Date startOfTest = DateUtil.truncateToSeconds(new Date());
 		FormService formService = Context.getFormService();
 		Form form = formService.getForm(1);
 		
 		Form dupForm = formService.duplicateForm(form);
 		
-		// some of these assertions are affected by inserting resources after creating the form
-		//Assert.assertNull(dupForm.getChangedBy());
-		//Assert.assertNull(dupForm.getDateChanged());
+		Assert.assertNull(dupForm.getChangedBy());
+		Assert.assertNull(dupForm.getDateChanged());
 		assertEquals(Context.getAuthenticatedUser(), dupForm.getCreator());
-		long oneMinuteDelta = 60 * 1000;
-		assertEquals(new Date().getTime(), dupForm.getDateCreated().getTime(), oneMinuteDelta);
+		assertFalse(dupForm.getDateCreated().before(startOfTest));
 	}
 	
 	/**
