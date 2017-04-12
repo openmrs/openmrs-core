@@ -8,9 +8,7 @@
  * graphic logo is a trademark of OpenMRS Inc.
  */
 
-package org.openmrs.api.order.exception;
-
-import org.openmrs.api.APIException;
+package org.openmrs.api;
 
 /**
  * Superclass of all order entry related exceptions and should typically be thrown whenever there is

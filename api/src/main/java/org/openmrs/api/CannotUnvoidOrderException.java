@@ -7,18 +7,18 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.api.order.exception;
+package org.openmrs.api;
 
 /**
- * Thrown when the Order has already been discontinued.
+ * Thrown when an attempt to unvoid an order fails.
  * 
  * @since 2.1
  */
-public class CannotStopInactiveOrderException extends OrderEntryException {
+public class CannotUnvoidOrderException extends OrderEntryException {
 	
-	public static final long serialVersionUID = 22121214L;
+	public static final long serialVersionUID = 22121315L;
 	
-	public CannotStopInactiveOrderException() {
-		super("Order.cannot.discontinue.inactive", (Object[]) null);
+	public CannotUnvoidOrderException(String action) {
+		super("Order.action.cannot.unvoid", new Object[] { action });
 	}
 }
