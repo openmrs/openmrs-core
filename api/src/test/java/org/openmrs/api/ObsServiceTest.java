@@ -1350,7 +1350,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * @see ObsService#saveObs(Obs,String)
 	 */
 	@Test
-	public void saveObs_shouldAllowChangingOfEveryPropertyOnObs() {
+	public void saveObs_shouldAllowSettingPropertiesOnObs() {
 		ObsService obsService = Context.getObsService();
 		
 		Order order = null;
@@ -1367,39 +1367,36 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		String valueText = "value text2";
 		String comment = "commenting2";
 		
-		Obs oToUpdate = new Obs();
-		oToUpdate.setOrder(order);
-		oToUpdate.setConcept(concept);
-		oToUpdate.setPerson(patient);
-		oToUpdate.setEncounter(encounter);
-		oToUpdate.setObsDatetime(datetime);
-		oToUpdate.setLocation(location);
-		oToUpdate.setValueGroupId(valueGroupId);
-		oToUpdate.setValueDatetime(valueDatetime);
-		oToUpdate.setValueCoded(valueCoded);
-		oToUpdate.setValueNumeric(valueNumeric);
-		oToUpdate.setValueModifier(valueModifier);
-		oToUpdate.setValueText(valueText);
-		oToUpdate.setComment(comment);
+		Obs obs = new Obs();
+		obs.setOrder(order);
+		obs.setConcept(concept);
+		obs.setPerson(patient);
+		obs.setEncounter(encounter);
+		obs.setObsDatetime(datetime);
+		obs.setLocation(location);
+		obs.setValueGroupId(valueGroupId);
+		obs.setValueDatetime(valueDatetime);
+		obs.setValueCoded(valueCoded);
+		obs.setValueNumeric(valueNumeric);
+		obs.setValueModifier(valueModifier);
+		obs.setValueText(valueText);
+		obs.setComment(comment);
 		
-		// do an update in the database for the same Obs
-		Obs o1ToUpdateSaved = obsService.saveObs(oToUpdate, "Updating o1 with all new values");
+		Obs saved = obsService.saveObs(obs, null);
 		
-		Obs obsSaved = obsService.getObs(o1ToUpdateSaved.getObsId());
-		
-		assertEquals(order, obsSaved.getOrder());
-		assertEquals(patient, obsSaved.getPerson());
-		assertEquals(comment, obsSaved.getComment());
-		assertEquals(concept, obsSaved.getConcept());
-		assertEquals(encounter, obsSaved.getEncounter());
-		assertEquals(DateUtil.truncateToSeconds(datetime), obsSaved.getObsDatetime());
-		assertEquals(location, obsSaved.getLocation());
-		assertEquals(valueGroupId, obsSaved.getValueGroupId());
-		assertEquals(DateUtil.truncateToSeconds(valueDatetime), obsSaved.getValueDatetime());
-		assertEquals(valueCoded, obsSaved.getValueCoded());
-		assertEquals(valueNumeric, obsSaved.getValueNumeric());
-		assertEquals(valueModifier, obsSaved.getValueModifier());
-		assertEquals(valueText, obsSaved.getValueText());
+		assertEquals(order, saved.getOrder());
+		assertEquals(patient, saved.getPerson());
+		assertEquals(comment, saved.getComment());
+		assertEquals(concept, saved.getConcept());
+		assertEquals(encounter, saved.getEncounter());
+		assertEquals(DateUtil.truncateToSeconds(datetime), saved.getObsDatetime());
+		assertEquals(location, saved.getLocation());
+		assertEquals(valueGroupId, saved.getValueGroupId());
+		assertEquals(DateUtil.truncateToSeconds(valueDatetime), saved.getValueDatetime());
+		assertEquals(valueCoded, saved.getValueCoded());
+		assertEquals(valueNumeric, saved.getValueNumeric());
+		assertEquals(valueModifier, saved.getValueModifier());
+		assertEquals(valueText, saved.getValueText());
 	}
 	
 	/**

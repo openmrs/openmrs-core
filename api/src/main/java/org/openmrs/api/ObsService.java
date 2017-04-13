@@ -87,14 +87,25 @@ public interface ObsService extends OpenmrsService {
 	public Obs getRevisionObs(Obs initialObs);
 
 	/**
-	 * Save the given obs to the database. This will move the contents of the given <code>obs</code>
-	 * to the database. This acts as both the initial save and an update kind of save. The returned
-	 * obs will be the same as the obs passed in. It is included for chaining. If this is an initial
-	 * save, the obsId on the given <code>obs</code> object will be updated to reflect the auto
-	 * numbering from the database. The obsId on the returned obs will also have this number. If
-	 * there is already an obsId on the given <code>obs</code> object, the given obs will be voided
-	 * and a new row in the database will be created that has a new obs id.
-	 * 
+	 * <p>Save the given obs to the database. The behavior differs for first-time save, and edit.</p>
+	 *
+	 * <p>When you save a new observation to the database:
+	 * <ul>
+	 *     <li>the obs you pass in is saved to the database, and its obsId field is filled in</li>
+	 *     <li>the obs you pass in is returned</li>
+	 *     <li>the changeMesssage parameter is ignored</li>
+	 * </ul>
+	 * </p>
+	 *
+	 * <p>When you edit an existing observation:
+	 * <ul>
+	 *     <li>the values of the obs you pass to this method are written to the database as <em>new</em> obs</li>
+	 *     <li>the newly-created obs is returned (i.e. not the one you passed in)</li>
+	 *     <li>the obs you passed is marked as voided, with changeMessage as the void reason</li>
+	 *     <li>the newly-created obs points back to the voided one via its previousVersion field</li>
+	 * </ul>
+	 * </p>
+	 *
 	 * @param obs the Obs to save to the database
 	 * @param changeMessage String explaining why <code>obs</code> is being changed. If
 	 *            <code>obs</code> is a new obs, changeMessage is nullable, or if it is being
@@ -105,7 +116,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should not overwrite file when updating a complex obs
 	 * @should void the given obs in the database
 	 * @should create very basic obs and add new obsId
-	 * @should allow changing of every property on obs
+	 * @should allow setting properties on obs
 	 * @should return a different object when updating an obs
 	 * @should set creator and dateCreated on new obs
 	 * @should cascade save to child obs groups
