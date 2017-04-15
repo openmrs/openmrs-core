@@ -1848,6 +1848,14 @@
             <replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
         </modifySql>
     </changeSet>
+
+    <changeSet id="201401101644" author="Akshika">
+        <preConditions onFail="HALT" onFailMessage="You can not make StartDate,orderer or encounter NULL. please fill it">
+            <sqlCheck expectedResult="0">select count(*) from orders where startDate is NULL or orderer is NULL or encounter is NULL</sqlCheck>
+        </preConditions>
+    </changeSet>
+
+
     <changeSet author="sunbiz" id="20110914-0114">
         <createTable tableName="concept_complex">
             <column name="concept_id" type="int">
