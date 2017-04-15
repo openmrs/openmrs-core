@@ -5809,7 +5809,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-     
+
      <changeSet id="201110072043-fix-provider-attribute-type-columns" author="djazayeri">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="provider_attribute_type" columnName="datatype_config"/></not>
@@ -5876,7 +5876,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-     
+
      <changeSet id="20110705-2300-create-encounter-role-table" author="kishoreyekkanti">
          <validCheckSum>3:409eb019d6387707442af989139b8345</validCheckSum>
          <validCheckSum>3:a381ef81f10e4f7443b4d4c8d6231de8</validCheckSum>
@@ -5971,7 +5971,7 @@
 	 </changeSet>
      
      <changeSet id="20110819-1455-insert-unknown-encounter-role" author="raff">
-     	<preConditions onFail="MARK_RAN">
+	     	<preConditions onFail="MARK_RAN">
  			<sqlCheck expectedResult="0">
  				select count(*) from encounter_role where uuid = 'a0b03050-c99b-11e0-9572-0800200c9a66'
  			</sqlCheck>
@@ -6124,7 +6124,7 @@
 			referencedTableName="obs" referencedColumnNames="obs_id"
 			/>
 	</changeSet>
-	
+
 	<changeSet id="201110091820-c" author="jkeiper">
 		<preConditions onFail="MARK_RAN">
 			<and>
