@@ -16,6 +16,8 @@ package org.openmrs.web.controller;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +47,7 @@ import org.springframework.web.servlet.view.RedirectView;
 /**
  * This is the controller for the "My Profile" page. This lets logged in users
  * set personal preferences, update their own information, etc.
- * 
+ *
  * @see OptionsForm
  */
 public class OptionsFormController extends SimpleFormController {
@@ -101,7 +103,7 @@ public class OptionsFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified
 	 * by the input form and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -204,6 +206,22 @@ public class OptionsFormController extends SimpleFormController {
 				}
 			}
 			
+			String notifyType = opts.getNotification();
+			if (notifyType != null) {
+				if (notifyType.equals("internal") || notifyType.equals("internalProtected") || notifyType.equals("email")) {
+					if (opts.getNotificationAddress().isEmpty()) {
+						errors.reject("error.options.notificationAddress.empty");
+					} else {
+						String EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+						Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+						Matcher matcher = pattern.matcher(opts.getNotificationAddress());
+						if (matcher.matches() == false) {
+							errors.reject("error.options.notificationAddress.invalid");
+						}
+					}
+				}
+			}
+			
 			if (!errors.hasErrors()) {
 				user.setUsername(opts.getUsername());
 				user.setUserProperties(properties);
@@ -253,7 +271,7 @@ public class OptionsFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells
 	 * Spring the form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -286,7 +304,7 @@ public class OptionsFormController extends SimpleFormController {
 	/**
 	 * Called prior to form display. Allows for data to be put in the request to
 	 * be used in the view
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
