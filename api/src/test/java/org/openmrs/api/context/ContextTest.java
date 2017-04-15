@@ -238,25 +238,4 @@ public class ContextTest extends BaseContextSensitiveTest {
 		
 		Context.logout();
 	}
-	
-	@Test
-	public void shouldUpdateUserLocaleToTheContext() throws Exception {
-		//Logged in with en_GB locale by default
-		Assert.assertEquals("en_GB", Context.getLocale().toString());
-		UserService userService = Context.getUserService();
-		
-		//set different locale for admin user
-		User user = userService.getUserByUsername("admin");
-		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, "pt_BR");
-		//log out
-		Context.logout();
-		//login with different locale
-		Context.authenticate(user.getUsername(),"test");
-		Context.refreshAuthenticatedUser();
-		//default locale is the locale with which user is logged in
-		Assert.assertEquals("pt_BR", Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE));
-		//Context.getLocale is user logged in locale
-		Assert.assertEquals("pt_BR", Context.getLocale().toString());
-		
-	}
 }
