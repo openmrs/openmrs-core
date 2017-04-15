@@ -7379,6 +7379,44 @@
 								 referencedColumnNames="user_id"
 								 referencedTableName="users"/>
 	</changeSet>
+		<changeSet id="201401021035" author="dkithmal">
+        <preConditions onFail="MARK_RAN">
+			<columnExists tableName="privilege" columnName="privilege"/>
+		</preConditions>
+		<comment>
+			Increasing the size of the privilege column in the privilege table
+		</comment>
+        <dropForeignKeyConstraint constraintName="privilege_which_can_edit" baseTableName="person_attribute_type" />
+        <dropForeignKeyConstraint constraintName="privilege_definitons" baseTableName="role_privilege" />
+		<ext:modifyColumn tableName="privilege">
+		    <column name="privilege" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+        <addForeignKeyConstraint baseTableName="person_attribute_type" baseColumnNames="edit_privilege" constraintName="privilege_which_can_edit"
+                                 referencedTableName="privilege" referencedColumnNames="privilege"/>
+        <addForeignKeyConstraint constraintName="privilege_definitions"
+                                 baseTableName="role_privilege" baseColumnNames="privilege"
+                                 referencedTableName="privilege" referencedColumnNames="privilege"/>
+	</changeSet>
+	
+	<changeSet id="201401021036" author="dkithmal">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="role_privilege" columnName="privilege"/>
+		</preConditions>
+		<comment>
+			Increasing the size of the privilege column in the role_privilege table
+		</comment>
+        <dropForeignKeyConstraint constraintName="privilege_definitions" baseTableName="role_privilege" />
+		<ext:modifyColumn tableName="role_privilege">
+		    <column name="privilege" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+        <addForeignKeyConstraint constraintName="privilege_definitions"
+                                 baseTableName="role_privilege" baseColumnNames="privilege"
+                                 referencedTableName="privilege" referencedColumnNames="privilege"/>
+	</changeSet>
 
     <changeSet id="201402041600-TRUNK-4138" author="wyclif">
         <preConditions onFail="MARK_RAN">
