@@ -1284,6 +1284,8 @@
         </modifySql>
     </changeSet>
     <changeSet author="ben (generated)" id="1227303685425-51">
+        <validCheckSum>3:60328c8b3f8be3bc4b2d5e40691b8e58</validCheckSum> <!-- old checksum for non-nullable creator -->
+        <validCheckSum>3:308c259886e442254ca616d365db78a2</validCheckSum> <!-- checksum for nullable creator -->
         <createTable tableName="person">
             <column autoIncrement="true" name="person_id" type="int">
                 <constraints nullable="false" primaryKey="true"/>

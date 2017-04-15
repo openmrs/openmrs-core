@@ -32,6 +32,8 @@
         </sql>
     </changeSet>
     <changeSet author="ben (generated)" id="1226348923233-22">
+        <validCheckSum>3:ccf0fca99e44d670270d1aa9bc75a450</validCheckSum>
+        <validCheckSum>3:2d4897a84ce4408d8fcec69767a5c563</validCheckSum>
         <insert tableName="person">
             <column name="person_id" valueNumeric="1"/>
             <column name="gender" value=""/>
