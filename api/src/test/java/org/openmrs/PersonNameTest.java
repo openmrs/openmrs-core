@@ -24,6 +24,9 @@ import org.junit.Test;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 /**
  * This class should test all methods on the PersonName object This class does not touch the
  * database, so it does not need to extend the normal openmrs BaseTest
@@ -31,10 +34,10 @@ import org.openmrs.util.OpenmrsConstants;
 public class PersonNameTest {
 	
 	/**
-	 * @see {@link PersonName#equals(Object)}
+	 * @see {@link PersonName#equalsContent(Object)}
 	 */
 	@Test
-	@Verifies(value = "should not fail if either has a null person property", method = "equals(Object)")
+	@Verifies(value = "should not fail if either has a null person property", method = "equalsContent(Object)")
 	public void equals_shouldNotFailIfEitherHasANullPersonProperty() throws Exception {
 		
 		PersonName pn1 = new PersonName();
@@ -50,15 +53,15 @@ public class PersonNameTest {
 		pn2.setVoided(false);
 		
 		// this should not fail if the "person" object on PersonName is null
-		assertFalse("The names should not be equal", pn1.equals(pn2));
-		assertFalse("The names should not be equal", pn2.equals(pn1));
+		assertFalse("The names should not be equal", pn1.equalsContent(pn2));
+		assertFalse("The names should not be equal", pn2.equalsContent(pn1));
 	}
 	
 	/**
-	 * @see {@link PersonName#equals(Object)}
+	 * @see {@link PersonName#equalsContent(Object)}
 	 */
 	@Test
-	@Verifies(value = "should return false if this has a missing person property", method = "equals(Object)")
+	@Verifies(value = "should return false if this has a missing person property", method = "equalsContent(Object)")
 	public void equals_shouldReturnFalseIfThisHasAMissingPersonProperty() throws Exception {
 		PersonName pn1 = new PersonName();
 		pn1.setGivenName("firsttest");
@@ -77,14 +80,14 @@ public class PersonNameTest {
 		pn2.setPerson(person);
 		
 		// test in both directions
-		assertFalse("The names should not be equal", pn1.equals(pn2));
+		assertFalse("The names should not be equal", pn1.equalsContent(pn2));
 	}
 	
 	/**
-	 * @see {@link PersonName#equals(Object)}
+	 * @see {@link PersonName#equalsContent(Object)}
 	 */
 	@Test
-	@Verifies(value = "should return false if obj has a missing person property", method = "equals(Object)")
+	@Verifies(value = "should return false if obj has a missing person property", method = "equalsContent(Object)")
 	public void equals_shouldReturnFalseIfObjHasAMissingPersonProperty() throws Exception {
 		PersonName pn1 = new PersonName();
 		pn1.setGivenName("firsttest");
@@ -101,14 +104,14 @@ public class PersonNameTest {
 		// if only one has a non-null person object
 		Person person = new Person();
 		pn2.setPerson(person);
-		assertFalse("The names should not be equal", pn2.equals(pn1));
+		assertFalse("The names should not be equal", pn2.equalsContent(pn1));
 	}
 	
 	/**
-	 * @see {@link PersonName#equals(Object)}
+	 * @see {@link PersonName#equalsContent(Object)}
 	 */
 	@Test
-	@Verifies(value = "should return true if properties are equal and have null person", method = "equals(Object)")
+	@Verifies(value = "should return true if properties are equal and have null person", method = "equalsContent(Object)")
 	public void equals_shouldReturnTrueIfPropertiesAreEqualAndHaveNullPerson() throws Exception {
 		PersonName pn1 = new PersonName();
 		pn1.setGivenName("firsttest");
@@ -123,8 +126,8 @@ public class PersonNameTest {
 		pn3.setDateCreated(new Date());
 		pn3.setVoided(false);
 		
-		assertTrue("The names should be equal", pn1.equals(pn3));
-		assertTrue("The names should be equal", pn3.equals(pn1));
+		assertTrue("The names should be equal", pn1.equalsContent(pn3));
+		assertTrue("The names should be equal", pn3.equalsContent(pn1));
 		
 	}
 	
@@ -313,18 +316,141 @@ public class PersonNameTest {
 	 * @see {@link PersonName#equalsContent(PersonName)}
 	 */
 	@Test
-	@Verifies(value = "should return true if given middle and family name are equal", method = "equalsContent(PersonName)")
-	public void equalsContent_shouldReturnTrueIfGivenMiddleAndFamilyNameAreEqual() throws Exception {
-		PersonName pn = new PersonName(1); // a different person name id than below
+	@Verifies(value = "should return true if all fields other than ID, person and preferred are equal", method = "equalsContent(PersonName)")
+	public void equalsContent_shouldReturnTrueIfAllFieldsOtherThanIdPersonAndPreferredAreEqual() throws Exception {
+		PersonName pn = new PersonName(1);
+		pn.setPrefix("Count");
 		pn.setGivenName("Adam");
 		pn.setMiddleName("Alex");
+		pn.setFamilyNamePrefix("family prefix");
 		pn.setFamilyName("Jones");
-		PersonName other = new PersonName(2); // a different person name id than above
+		pn.setFamilyName2("Howard");
+		pn.setFamilyNameSuffix("Jr.");
+		pn.setDegree("Dr.");
+		pn.setPreferred(true);
+		pn.setPerson(new Person(999));
+		
+		PersonName other = new PersonName(2);
+		other.setPrefix("Count");
 		other.setGivenName("Adam");
 		other.setMiddleName("Alex");
+		other.setFamilyNamePrefix("family prefix");
 		other.setFamilyName("Jones");
+		other.setFamilyName2("Howard");
+		other.setFamilyNameSuffix("Jr.");
+		other.setDegree("Dr.");
+		other.setPreferred(false);
+		other.setPerson(new Person(111));
 		
-		Assert.assertTrue(pn.equalsContent(other));
+		assertThat(pn.equalsContent(other), is(true));
+	}
+	
+	/**
+	 * @see {@link PersonName#equalsContent(PersonName)}
+	 */
+	@Test
+	@Verifies(value = "should return false if suffixes are not equal", method = "equalsContent(PersonName)")
+	public void equalsContent_shouldReturnFalseIfSuffixesAreNotEqual() throws Exception {
+		PersonName nameWithSenior = new PersonName(1);
+		PersonName nameWithJunior = new PersonName(2);
+		
+		nameWithSenior.setFamilyNameSuffix("Sr.");
+		nameWithJunior.setFamilyNameSuffix("Jr.");
+		
+		assertThat(nameWithSenior.equalsContent(nameWithJunior), is(false));
+	}
+	
+	/**
+	 * @see {@link PersonName#equalsContent(PersonName)}
+	 */
+	@Test
+	@Verifies(value = "should return false if family name prefixes are not equal", method = "equalsContent(PersonName)")
+	public void equalsContent_shouldReturnFalseIfPrefixesAreNotEqual() throws Exception {
+		PersonName nameWithVanDer = new PersonName(1);
+		PersonName nameWithDe = new PersonName(2);
+		
+		nameWithVanDer.setFamilyNamePrefix("van der");
+		nameWithDe.setFamilyNamePrefix("de");
+		
+		assertThat(nameWithVanDer.equalsContent(nameWithDe), is(false));
+	}
+	
+	/**
+	 * @see {@link PersonName#equalsContent(PersonName)}
+	 */
+	@Test
+	@Verifies(value = "should return false if family name 2 is not equal", method = "equalsContent(PersonName)")
+	public void equalsContent_shouldReturnFalseIfFamilyName2IsNotEqual() throws Exception {
+		PersonName name1 = new PersonName(1);
+		PersonName name2 = new PersonName(2);
+		
+		name1.setFamilyName2("van der");
+		name2.setFamilyName2("de");
+		
+		assertThat(name1.equalsContent(name2), is(false));
+	}
+	
+	/**
+	 * @see {@link PersonName#equalsContent(PersonName)}
+	 */
+	@Test
+	@Verifies(value = "should return false if prefix is not equal", method = "equalsContent(PersonName)")
+	public void equalsContent_shouldReturnFalseIfPrefixIsNotEqual() throws Exception {
+		PersonName name1 = new PersonName(1);
+		PersonName name2 = new PersonName(2);
+		
+		name1.setPrefix("count");
+		name2.setPrefix("baron");
+		
+		assertThat(name1.equalsContent(name2), is(false));
+	}
+	
+	/**
+	 * @see {@link PersonName#equalsContent(PersonName)}
+	 */
+	@Test
+	@Verifies(value = "should return false if degrees are not equal", method = "equalsContent(PersonName)")
+	public void equalsContent_shouldReturnFalseIfDegreesAreNotEqual() throws Exception {
+		PersonName nameWithDoctor = new PersonName(1);
+		PersonName nameWithProfessor = new PersonName(2);
+		
+		nameWithDoctor.setDegree("Dr.");
+		nameWithProfessor.setFamilyNameSuffix("Prof.");
+		
+		assertThat(nameWithDoctor.equalsContent(nameWithProfessor), is(false));
+	}
+	
+	/**
+	 * @see {@link PersonName#equalsContent(PersonName)}
+	 */
+	@Test
+	@Verifies(value = "should return true if only difference in content fields is between null and empty string", method = "equalsContent(PersonName)")
+	public void equalsContent_shouldReturnTrueIfOnlyInContentFieldsDifferenceIsBetweenNullAndEmptyString() throws Exception {
+		PersonName pn = new PersonName(1);
+		pn.setPrefix("");
+		pn.setGivenName("");
+		pn.setMiddleName("");
+		pn.setFamilyNamePrefix("");
+		pn.setFamilyName("");
+		pn.setFamilyName2("");
+		pn.setFamilyNameSuffix("");
+		pn.setDegree("");
+		pn.setPreferred(true);
+		pn.setPerson(new Person(999));
+		
+		PersonName other = new PersonName(2);
+		other.setPrefix(null);
+		other.setGivenName(null);
+		other.setMiddleName(null);
+		other.setFamilyNamePrefix(null);
+		other.setFamilyName(null);
+		other.setFamilyName2(null);
+		other.setFamilyNameSuffix(null);
+		other.setDegree(null);
+		other.setPreferred(false);
+		other.setPerson(new Person(111));
+		
+		assertThat(pn.equalsContent(other), is(true));
 	}
 	
 	/**

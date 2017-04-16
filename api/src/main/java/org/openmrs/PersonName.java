@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.apache.commons.lang.builder.EqualsBuilder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +28,8 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 import org.springframework.util.StringUtils;
+
+import static org.apache.commons.lang.StringUtils.defaultString;
 
 /**
  * A Person can have zero to n PersonName(s).
@@ -87,33 +90,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	}
 	
 	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj PersonName to compare to
-	 * @return boolean true/false whether or not they are the same objects
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 * @should not fail if either has a null person property
-	 * @should return false if this has a missing person property
-	 * @should return false if obj has a missing person property
-	 * @should return true if properties are equal and have null person
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof PersonName) {
-			PersonName pname = (PersonName) obj;
-			if (this.personNameId != null && pname.getPersonNameId() != null)
-				return (this.personNameId.equals(pname.getPersonNameId()));
-			else {
-				return (OpenmrsUtil.nullSafeEquals(getPerson(), pname.getPerson())
-				        && OpenmrsUtil.nullSafeEqualsIgnoreCase(getGivenName(), pname.getGivenName())
-				        && OpenmrsUtil.nullSafeEqualsIgnoreCase(getMiddleName(), pname.getMiddleName()) && OpenmrsUtil
-				        .nullSafeEqualsIgnoreCase(getFamilyName(), pname.getFamilyName()));
-			}
-			
-		}
-		return false;
-	}
-	
-	/**
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
@@ -134,38 +110,13 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean equalsContent(PersonName otherName) {
-		boolean returnValue = true;
-		
-		// these are the methods to compare. All are expected to be Strings
-		String[] methods = { "getGivenName", "getMiddleName", "getFamilyName" };
-		
-		Class nameClass = this.getClass();
-		
-		// loop over all of the selected methods and compare this and other
-		for (String methodName : methods) {
-			try {
-				Method method = nameClass.getMethod(methodName, new Class[] {});
-				
-				String thisValue = (String) method.invoke(this);
-				String otherValue = (String) method.invoke(otherName);
-				
-				if (otherValue != null && otherValue.length() > 0)
-					returnValue &= otherValue.equals(thisValue);
-				
-			}
-			catch (NoSuchMethodException e) {
-				log.warn("No such method for comparison " + methodName, e);
-			}
-			catch (IllegalAccessException e) {
-				log.error("Error while comparing names", e);
-			}
-			catch (InvocationTargetException e) {
-				log.error("Error while comparing names", e);
-			}
-			
-		}
-		
-		return returnValue;
+		return new EqualsBuilder().append(defaultString(otherName.getPrefix()), defaultString(prefix)).append(
+		    defaultString(otherName.getGivenName()), defaultString(givenName)).append(
+		    defaultString(otherName.getMiddleName()), defaultString(middleName)).append(
+		    defaultString(otherName.getFamilyNamePrefix()), defaultString(familyNamePrefix)).append(
+		    defaultString(otherName.getDegree()), defaultString(degree)).append(defaultString(otherName.getFamilyName()),
+		    defaultString(familyName)).append(defaultString(otherName.getFamilyName2()), defaultString(familyName2)).append(
+		    defaultString(otherName.getFamilyNameSuffix()), defaultString(familyNameSuffix)).isEquals();
 	}
 	
 	/**
