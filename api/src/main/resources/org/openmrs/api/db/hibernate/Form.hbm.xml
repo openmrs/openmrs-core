@@ -27,7 +27,7 @@
 			column="uuid" length="38" unique="true" />
 
 		<property name="name" type="java.lang.String" 
-			column="name" not-null="true" length="50" />
+			column="name" not-null="true" length="255" />
 
 		<property name="version" type="java.lang.String" 
 			column="version" not-null="true" length="50" />
@@ -77,7 +77,7 @@
 			column="date_retired" length="19" />
 
 		<property name="retireReason" type="java.lang.String" 
-			column="retired_reason" length="50" />
+			column="retired_reason" length="255" />
 
 	</class>
 </hibernate-mapping>
