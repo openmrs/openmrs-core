@@ -296,44 +296,50 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Override
 	public Person savePerson(Person person) throws APIException {
+		setPreferredPersonName(person);
+		setPreferredPersonAddress(person);
+		return dao.savePerson(person);
+	}
+
+	private void setPreferredPersonName(Person person) {
 		PersonName preferredName = null;
 		PersonName possiblePreferredName = person.getPersonName();
 		if (possiblePreferredName != null && possiblePreferredName.getPreferred() && !possiblePreferredName.getVoided()) {
 			preferredName = possiblePreferredName;
 		}
-		
+
 		for (PersonName name : person.getNames()) {
 			if (preferredName == null && !name.getVoided()) {
 				name.setPreferred(true);
 				preferredName = name;
 				continue;
 			}
-			
+
 			if (!name.equals(preferredName)) {
 				name.setPreferred(false);
 			}
 		}
-		
+	}
+	
+	private void setPreferredPersonAddress(Person person) {
 		PersonAddress preferredAddress = null;
 		PersonAddress possiblePreferredAddress = person.getPersonAddress();
 		if (possiblePreferredAddress != null && possiblePreferredAddress.getPreferred()
-		        && !possiblePreferredAddress.getVoided()) {
+				&& !possiblePreferredAddress.getVoided()) {
 			preferredAddress = possiblePreferredAddress;
 		}
-		
+
 		for (PersonAddress address : person.getAddresses()) {
 			if (preferredAddress == null && !address.getVoided()) {
 				address.setPreferred(true);
 				preferredAddress = address;
 				continue;
 			}
-			
+
 			if (!address.equals(preferredAddress)) {
 				address.setPreferred(false);
 			}
 		}
-		
-		return dao.savePerson(person);
 	}
 	
 	/**
