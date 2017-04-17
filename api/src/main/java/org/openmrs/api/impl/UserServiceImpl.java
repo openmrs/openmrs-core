@@ -346,6 +346,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#changePassword(org.openmrs.User, java.lang.String)
 	 */
 	public void changePassword(User u, String pw) throws APIException {
+		OpenmrsUtil.validatePassword(u.getUsername(), pw, u.getSystemId());
 		dao.changePassword(u, pw);
 	}
 	
@@ -353,6 +354,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#changePassword(java.lang.String, java.lang.String)
 	 */
 	public void changePassword(String pw, String pw2) throws APIException {
+		User defaultUser = Context.getAuthenticatedUser();
+		
+		OpenmrsUtil.validatePassword(defaultUser.getUsername(), pw2, defaultUser.getSystemId());
 		dao.changePassword(pw, pw2);
 	}
 	
@@ -360,6 +364,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#changeHashedPassword(User, String, String)
 	 */
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException {
+		OpenmrsUtil.validatePassword(user.getUsername(), hashedPassword, user.getSystemId());
 		dao.changeHashedPassword(user, hashedPassword, salt);
 	}
 	
