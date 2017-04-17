@@ -298,7 +298,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	public Drug saveDrug(Drug drug) throws APIException {
 		checkIfLocked();
-		return dao.saveDrug(drug);
+		Drug savedDrug = dao.saveDrug(drug);
+		Context.updateSearchIndexForObject(savedDrug);
+		return savedDrug;
 	}
 	
 	/**

@@ -403,7 +403,26 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(newConceptSource.getDateCreated(), expectedDate);
 	}
-	
+
+	/**
+	 * @see {@link ConceptService#saveDrug(Drug)}
+	 */
+	@Test
+	@Verifies(value = "should pass when drug index is updated on save", method = "saveDrug(Drug)")
+	public void saveDrug_shouldUpdateDrugIndex() throws Exception {
+		Drug drug = new Drug();
+		drug.setName("ASPIRIN BRANDED");
+		drug.setConcept(conceptService.getConceptByName("ASPIRIN"));
+		drug.setStrength("500mg");
+
+		Drug saveDrug = conceptService.saveDrug(drug);
+		assertNotNull(saveDrug);
+
+		List<Drug> drugs = conceptService.getDrugs("ASPIRIN BRANDED");
+		assertEquals(1, drugs.size());
+		assertEquals("ASPIRIN BRANDED", drugs.get(0).getName());
+	}
+
 	/**
 	 * @see {@link ConceptService#getConcept(String)}
 	 */
