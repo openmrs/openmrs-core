@@ -6337,6 +6337,11 @@
 	</changeSet>
 	
 	<changeSet id="20111222-1659" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="clob_datatype_storage"/>
+			</not>
+		</preConditions>
 		<comment>Create clob_datatype_storage table</comment>
 		<createTable tableName="clob_datatype_storage">
 			<column name="id" type="int" autoIncrement="true">
@@ -7278,6 +7283,11 @@
     </changeSet>
 
 	<changeSet id="201306141103-TRUNK-3884" author="susantan">
+		<preConditions onFail="MARK_RAN">
+			<not><foreignKeyConstraintExists foreignKeyName="encounter_provider_creator"/></not>
+			<not><foreignKeyConstraintExists foreignKeyName="encounter_provider_changed_by"/></not>
+			<not><foreignKeyConstraintExists foreignKeyName="encounter_provider_voided_by"/></not>
+		</preConditions>
 		<comment>Adding 3 foreign key relationships (creator,created_by,voided_by) to encounter_provider table</comment>
 		<addForeignKeyConstraint constraintName="encounter_provider_creator" baseTableName="encounter_provider" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
 		<addForeignKeyConstraint constraintName="encounter_provider_changed_by" baseTableName="encounter_provider" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
