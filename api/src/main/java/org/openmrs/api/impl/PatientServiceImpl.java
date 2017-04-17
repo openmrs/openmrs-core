@@ -359,7 +359,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		// patient and patientidentifier attributes taken care of by the BaseUnvoidHandler
 		
-		return dao.savePatient(patient);
+		return Context.getPatientService().savePatient(patient);
 	}
 	
 	/**

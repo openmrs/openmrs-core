@@ -1338,22 +1338,23 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void unretireOrderFrequency_shouldUnretireGivenOrderFrequency() {
-		OrderFrequency orderFrequency = orderService.getOrderFrequency(3);
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-otherOrderFrequencies.xml");
+		OrderFrequency orderFrequency = orderService.getOrderFrequency(103);
 		assertNotNull(orderFrequency);
 		assertTrue(orderFrequency.getRetired());
-		assertEquals("Some Retire Reason", orderFrequency.getRetireReason());
+		assertEquals(null,orderFrequency.getRetireReason());
 		assertNotNull(orderFrequency.getDateRetired());
-		
+
 		orderService.unretireOrderFrequency(orderFrequency);
 		
-		orderFrequency = orderService.getOrderFrequency(3);
+		orderFrequency = orderService.getOrderFrequency(103);
 		assertNotNull(orderFrequency);
 		assertFalse(orderFrequency.getRetired());
 		assertNull(orderFrequency.getRetireReason());
 		assertNull(orderFrequency.getDateRetired());
-		
+
 		//Should not change the number of order frequencies.
-		assertEquals(3, orderService.getOrderFrequencies(true).size());
+		assertEquals(7, orderService.getOrderFrequencies(true).size());
 	}
 	
 	@Test

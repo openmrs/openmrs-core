@@ -441,7 +441,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	@Override
 	public LocationAttributeType unretireLocationAttributeType(LocationAttributeType locationAttributeType) {
-		return dao.saveLocationAttributeType(locationAttributeType);
+		return Context.getLocationService().saveLocationAttributeType(locationAttributeType);
 	}
 	
 	/**

@@ -206,7 +206,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public Visit unvoidVisit(Visit visit) throws APIException {
-		return dao.saveVisit(visit);
+		return Context.getVisitService().saveVisit(visit);
 	}
 	
 	/**
@@ -326,7 +326,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public VisitAttributeType unretireVisitAttributeType(VisitAttributeType visitAttributeType) {
-		return dao.saveVisitAttributeType(visitAttributeType);
+		return Context.getVisitService().saveVisitAttributeType(visitAttributeType);
 	}
 	
 	/**

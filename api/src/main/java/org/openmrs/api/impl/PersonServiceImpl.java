@@ -228,8 +228,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		type.setDateRetired(null);
 		type.setRetiredBy(null);
 		type.setRetireReason(null);
-		dao.savePersonAttributeType(type);
-		
+		Context.getPersonService().savePersonAttributeType(type);
+
 	}
 	
 	/**
@@ -363,7 +363,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			return null;
 		}
 		
-		return dao.savePerson(person);
+		return Context.getPersonService().savePerson(person);
 	}
 	
 	/**
