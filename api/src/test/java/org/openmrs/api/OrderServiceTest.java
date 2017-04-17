@@ -1342,7 +1342,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderFrequency orderFrequency = orderService.getOrderFrequency(103);
 		assertNotNull(orderFrequency);
 		assertTrue(orderFrequency.getRetired());
-		assertEquals(null,orderFrequency.getRetireReason());
+		assertNotNull(orderFrequency.getRetireReason());
 		assertNotNull(orderFrequency.getDateRetired());
 
 		orderService.unretireOrderFrequency(orderFrequency);
