@@ -45,9 +45,23 @@ public final class OpenmrsConstants {
 	
 	private static String KEY_OPENMRS_APPLICATION_DATA_DIRECTORY = "OPENMRS_APPLICATION_DATA_DIRECTORY";
 	
-	public static void SET_KEY_OPENMRS_APPLICATION_DATA_DIRECTORY(String name){
-		KEY_OPENMRS_APPLICATION_DATA_DIRECTORY = name;
+	// Property Accessors
+	/**
+	 * sets KEY_OPENMRS_APPLICATION_DATA_DIRECTORY
+	 * 
+	 * @param KEY_OPENMRS_APPLICATION_DATA_DIRECTORY
+	 * @since 2.2
+	 */
+	public static void SET_KEY_OPENMRS_APPLICATION_DATA_DIRECTORY(String KEY_OPENMRS_APPLICATION_DATA_DIRECTORY){
+		KEY_OPENMRS_APPLICATION_DATA_DIRECTORY = KEY_OPENMRS_APPLICATION_DATA_DIRECTORY;
 	}
+	
+	/**
+	 * gets KEY_OPENMRS_APPLICATION_DATA_DIRECTORY
+	 * 
+	 * @return KEY_OPENMRS_APPLICATION_DATA_DIRECTORY
+	 * @since 2.2
+	 */
 	public static String GET_KEY_OPENMRS_APPLICATION_DATA_DIRECTORY(){
 		return KEY_OPENMRS_APPLICATION_DATA_DIRECTORY;
 	}
@@ -57,7 +71,7 @@ public final class OpenmrsConstants {
 	 * This is the hard coded primary key of the concept class for DRUG. This has to be done because
 	 * some logic in the API acts on this concept class
 	 */
-	public static final int CONCEPT_CLASS_DRUG = 3;
+	public final int CONCEPT_CLASS_DRUG = 3;
 	
 	/**
 	 * hack alert: During an ant build, the openmrs api jar manifest file is loaded with these
