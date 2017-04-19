@@ -175,14 +175,14 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should not return retired answers if includeRetired is false
 	 */
 	public Collection<ConceptAnswer> getAnswers(boolean includeRetired) {
-        if (includeRetired) {
-            return getAnswers();
-        } else {
-            return getAnswers().stream()
-                    .filter(a -> !a.getAnswerConcept().getRetired())
-                    .collect(Collectors.toSet());
-        }
-    }
+		if (includeRetired) {
+			return getAnswers();
+		} else {
+			return getAnswers().stream()
+					.filter(a -> !a.getAnswerConcept().getRetired())
+					.collect(Collectors.toSet());
+		}
+	}
 
 	/**
 	 * Set this Concept as having the given <code>answers</code>; This method assumes that the
