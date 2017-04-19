@@ -102,9 +102,8 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	@Override
 	public Cohort addPatientToCohort(Cohort cohort, Patient patient) {
 		if (!cohort.contains(patient.getPatientId())) {
-			CohortMembership cohortMembership = new CohortMembership(patient);
+			CohortMembership cohortMembership = new CohortMembership(patient.getPatientId());
 			Context.getCohortService().addMembershipToCohort(cohort, cohortMembership);
-			Context.getCohortService().saveCohort(cohort);
 		}
 		return cohort;
 	}
@@ -116,8 +115,8 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	@Override
 	public Cohort removePatientFromCohort(Cohort cohort, Patient patient) {
 		if (cohort.contains(patient.getPatientId())) {
-			cohort.removeMember(patient);
-			Context.getCohortService().saveCohort(cohort);
+			CohortMembership membership = cohort.getActiveMembership(patient);
+			Context.getCohortService().removeMembershipFromCohort(cohort, membership);
 		}
 		return cohort;
 	}
@@ -127,8 +126,8 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<Cohort> getCohortsContainingPatient(Patient patient, Boolean voided) {
-		return dao.getCohortsContainingPatientId(patient.getPatientId(), voided);
+	public List<Cohort> getCohortsContainingPatient(Patient patient, boolean includeVoided, Date asOfDate) {
+		return dao.getCohortsContainingPatientId(patient.getPatientId(), includeVoided, asOfDate);
 	}
 	
 	@Override
@@ -194,17 +193,16 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	@Override
 	public Cohort addMembershipToCohort(Cohort cohort, CohortMembership cohortMembership) throws APIException {
 		cohort.addMembership(cohortMembership);
-		Context.getCohortService().saveCohort(cohort);
-		return cohort;
+		return Context.getCohortService().saveCohort(cohort);
 	}
 
 	/**
-	 * @see org.openmrs.api.CohortService#removeMemberShipFromCohort(org.openmrs.Cohort,
+	 * @see org.openmrs.api.CohortService#removeMembershipFromCohort(org.openmrs.Cohort,
 	 * 		org.openmrs.CohortMembership)
 	 */
 	@Override
-	public Cohort removeMemberShipFromCohort(Cohort cohort, CohortMembership cohortMembership) throws APIException {
-		if (cohort.contains(cohortMembership.getPatient())) {
+	public Cohort removeMembershipFromCohort(Cohort cohort, CohortMembership cohortMembership) throws APIException {
+		if (cohort.contains(cohortMembership.getPatientId())) {
 			cohort.removeMembership(cohortMembership);
 			Context.getCohortService().saveCohort(cohort);
 		}
@@ -218,33 +216,31 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	public void patientVoided(Patient patient) throws APIException {
 		List<Cohort> cohorts = Context.getCohortService().getCohortsContainingPatient(patient);
 		for (Cohort cohort : cohorts) {
-			List<CohortMembership> membersToVoid = cohort.getMembers().stream()
-					.filter(m -> !m.getVoided() && patient.getVoided() && m.getPatient().getPatientId().equals(patient.getPatientId()))
-					.collect(Collectors.toList());
-			for (CohortMembership member : membersToVoid) {
-				member.setVoided(patient.getVoided());
-				member.setDateVoided(patient.getDateVoided());
-				member.setVoidedBy(patient.getVoidedBy());
-				member.setVoidReason(patient.getVoidReason());
+			if (patient.getVoided()) {
+				List<CohortMembership> memberships = cohort.getMemberships(false);
+				memberships.forEach(m -> {
+					m.setVoided(patient.getVoided());
+					m.setDateVoided(patient.getDateVoided());
+					m.setVoidedBy(patient.getVoidedBy());
+					m.setVoidReason(patient.getVoidReason());
+				});
 			}
-			cohort.removeMember(patient);
-			Context.getCohortService().saveCohort(cohort);
 		}
 	}
 	
 	/**
-	 * @see org.openmrs.api.CohortService#patientUnvoided(Patient, User, Date, String)
+	 * @see org.openmrs.api.CohortService#patientUnvoided(Patient, User, Date)
 	 */
 	@Override
-	public void patientUnvoided(Patient patient, User voidedBy, Date dateVoided, String voidReason) throws APIException {
-		List<Cohort> cohorts = Context.getCohortService().getCohortsContainingPatient(patient);
+	public void patientUnvoided(Patient patient, User voidedBy, Date dateVoided) throws APIException {
+		List<Cohort> cohorts = Context.getCohortService()
+				.getCohortsContainingPatient(patient, false, new Date());
 		for (Cohort cohort : cohorts) {
-			List<CohortMembership> membersToUnvoid = cohort.getMembers().stream()
-					.filter(m -> m.getVoided() &&
-							m.getPatient().getPatientId().equals(patient.getPatientId()) &&
-							m.getVoidedBy().equals(voidedBy) &&
-							DateUtils.isSameDay(m.getDateVoided(), dateVoided) &&
-							m.getVoidReason().equals(voidReason))
+			List<CohortMembership> membersToUnvoid = cohort.getMemberships().stream()
+					.filter(m -> m.getVoided()
+							&& m.getPatientId().equals(patient.getPatientId())
+							&& m.getVoidedBy().equals(voidedBy)
+							&& DateUtils.isSameDay(m.getDateVoided(), dateVoided))
 					.collect(Collectors.toList());
 			if (!membersToUnvoid.isEmpty()) {
 				for (CohortMembership member : membersToUnvoid) {

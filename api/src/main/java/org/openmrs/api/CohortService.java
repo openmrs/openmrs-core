@@ -140,14 +140,15 @@ public interface CohortService extends OpenmrsService {
 	 *
 	 * @since 2.1
 	 * @param patient patient used to find the cohorts
-	 * @return Cohorts that contain the given patient
+	 * @param includeVoided voided true/false whether or not to include voided cohorts
+	 * @param asOfDate  @return Cohorts that contain the given patient
 	 * @throws APIException
 	 * @should not return voided cohorts
 	 * @should return cohorts that have given patient
 	 */
 	@Authorized( { PrivilegeConstants.GET_PATIENT_COHORTS })
-	public List<Cohort> getCohortsContainingPatient(Patient patient, Boolean voided) throws APIException;
-	
+	public List<Cohort> getCohortsContainingPatient(Patient patient, boolean includeVoided, Date asOfDate);
+
 	/**
 	 * Find all Cohorts that contain the given patient. (Not including voided Cohorts)
 	 * 
@@ -232,7 +233,7 @@ public interface CohortService extends OpenmrsService {
 	 * @should removes Membership from Cohort by setting end date and save the Cohort
 	 */
 	@Authorized( {PrivilegeConstants.EDIT_COHORTS })
-	Cohort removeMemberShipFromCohort(Cohort cohort, CohortMembership cohortMembership);
+	Cohort removeMembershipFromCohort(Cohort cohort, CohortMembership cohortMembership);
 
 	/**
 	 * Void membership of Cohort that contain the voided Patients
@@ -252,5 +253,5 @@ public interface CohortService extends OpenmrsService {
 	 * @should unvoid the membership for the patient that was passed in
 	 */
 	@Authorized( {PrivilegeConstants.EDIT_COHORTS })
-	void patientUnvoided(Patient patient, User voidedBy, Date dateVoided, String voidReason);
+	void patientUnvoided(Patient patient, User voidedBy, Date dateVoided);
 }

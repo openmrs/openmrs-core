@@ -16,6 +16,8 @@ import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Patient;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -41,13 +43,21 @@ public class CohortValidator implements Validator {
 
 
 		Cohort cohort = (Cohort) obj;
-		Collection<CohortMembership> members = cohort.getMembers();
-		if (!CollectionUtils.isEmpty(members)) {
-			for (CohortMembership member : members) {
-				Patient p = member.getPatient();
-				if (p.getVoided() && !member.getVoided()) {
-					String eMessage = "Patient " + p.getPatientId() + " is voided, cannot add voided members to a cohort";
-					errors.rejectValue("members", "Cohort.patientAndMemberShouldBeVoided", eMessage);
+		if (!cohort.getVoided()) {
+			Collection<CohortMembership> members = cohort.getMemberships();
+			if (!CollectionUtils.isEmpty(members)) {
+				for (CohortMembership member : members) {
+					Patient p = Context.getPatientService().getPatient(member.getPatientId());
+					int dateCompare = OpenmrsUtil.compareWithNullAsLatest(member.getStartDate(), member.getEndDate());
+					if (p != null && p.getVoided() && !member.getVoided()) {
+						String message = "Patient " + p.getPatientId()
+								+ " is voided, cannot add voided members to a cohort";
+						errors.rejectValue("memberships", "Cohort.patientAndMemberShouldBeVoided", message);
+					}
+					if (dateCompare == 1) {
+						String message = "Start date is null or end date is before start date";
+						errors.rejectValue("memberships", "Cohort.startDateShouldNotBeNullOrBeforeEndDate", message);
+					}
 				}
 			}
 		}
