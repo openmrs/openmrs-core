@@ -89,7 +89,7 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(errors.hasFieldErrors("memberships"));
 		String eMessage = "Patient " + patient.getPatientId() + " is voided, cannot add voided members to a cohort";
-		Assert.assertEquals(errors.getFieldError("memberships").getDefaultMessage(), eMessage);
+		Assert.assertEquals(eMessage, errors.getFieldError("memberships").getDefaultMessage());
 	}
 
 	@Test

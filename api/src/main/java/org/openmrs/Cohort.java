@@ -12,7 +12,6 @@ package org.openmrs;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -22,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * This class represents a list of patientIds.
  */
-public class Cohort extends BaseOpenmrsData  {
+public class Cohort extends BaseOpenmrsData {
 	
 	public static final long serialVersionUID = 0L;
 	
@@ -33,7 +32,7 @@ public class Cohort extends BaseOpenmrsData  {
 	private String description;
 	
 	private Collection<CohortMembership> memberships;
-
+	
 	public Cohort() {
 		memberships = new TreeSet<CohortMembership>();
 	}
@@ -41,7 +40,7 @@ public class Cohort extends BaseOpenmrsData  {
 	/**
 	 * Convenience constructor to create a Cohort object that has an primarykey/internal identifier
 	 * of <code>cohortId</code>
-	 * 
+	 *
 	 * @param cohortId the internal identifier for this cohort
 	 */
 	public Cohort(Integer cohortId) {
@@ -51,8 +50,8 @@ public class Cohort extends BaseOpenmrsData  {
 	
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
-	 * but
-	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
+	 * but {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
+	 * 
 	 * @param name
 	 * @param description optional description
 	 * @param ids option array of Integer ids
@@ -68,8 +67,8 @@ public class Cohort extends BaseOpenmrsData  {
 	
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
-	 * but
-	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
+	 * but {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
+	 * 
 	 * @param name
 	 * @param description optional description
 	 * @param patients optional array of patients
@@ -83,8 +82,8 @@ public class Cohort extends BaseOpenmrsData  {
 	
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
-	 * but
-	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
+	 * but {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
+	 * 
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
 	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
@@ -94,8 +93,8 @@ public class Cohort extends BaseOpenmrsData  {
 	
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
-	 * but
-	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
+	 * but {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
+	 * 
 	 * @param name
 	 * @param description optional description
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
@@ -118,6 +117,7 @@ public class Cohort extends BaseOpenmrsData  {
 	 * Convenience constructor taking in a string that is a list of comma separated patient ids This
 	 * constructor does not check whether the database contains patients with the given ids, but
 	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
+	 * 
 	 * @param commaSeparatedIds
 	 */
 	public Cohort(String commaSeparatedIds) {
@@ -132,10 +132,10 @@ public class Cohort extends BaseOpenmrsData  {
 	public String getCommaSeparatedPatientIds() {
 		return StringUtils.join(getMemberIds(), ',');
 	}
-
+	
 	public boolean contains(Integer patientId) {
-		return getMemberships() != null && getMemberships().stream()
-				.anyMatch(m -> m.getPatientId().equals(patientId) && m.isActive());
+		return getMemberships() != null
+		        && getMemberships().stream().anyMatch(m -> m.getPatientId().equals(patientId) && m.isActive());
 	}
 	
 	/**
@@ -144,7 +144,7 @@ public class Cohort extends BaseOpenmrsData  {
 	public boolean contains(Patient patient) {
 		return contains(patient.getPatientId());
 	}
-
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("Cohort id=" + getCohortId());
@@ -156,25 +156,9 @@ public class Cohort extends BaseOpenmrsData  {
 		}
 		return sb.toString();
 	}
-
-	public void addMember(Integer memberId) {
-		this.addMembership(new CohortMembership(memberId));
-	}
-
-	public void removeMember(Integer memberId) {
-		removeMember(new Patient(memberId));
-	}
 	
-	/**
-	 * @since 2.1.0
-	 */
-	public boolean removeMember(Patient patient) {
-		CohortMembership memberToRemove = this.getActiveMembership(patient);
-		if (memberToRemove != null && memberToRemove.getPatientId().equals(patient.getPatientId())) {
-			memberToRemove.setEndDate(new Date());
-			return true;
-		}
-		return false;
+	public boolean addMember(Integer memberId) {
+		return this.addMembership(new CohortMembership(memberId));
 	}
 	
 	/**
@@ -191,25 +175,26 @@ public class Cohort extends BaseOpenmrsData  {
 	public boolean addMembership(Integer patientId) {
 		return addMembership(new CohortMembership(patientId));
 	}
-
+	
 	/**
 	 * @since 2.1.0
 	 */
-	public void removeMembership(CohortMembership cohortMembership) {
-		cohortMembership.setEndDate(new Date());
+	public boolean removeMembership(CohortMembership cohortMembership) {
+		return getMemberships().remove(cohortMembership);
 	}
-
+	
 	/**
 	 * @since 2.1.0
 	 * @param includeVoided boolean true/false to include/exclude voided memberships
-	 * @return ArrayList of cohort memberships
+	 * @return Collection of cohort memberships
 	 */
-	public List<CohortMembership> getMemberships(boolean includeVoided) {
-		return getMemberships().stream()
-				.filter(m -> m.getVoided() == includeVoided)
-				.collect(Collectors.toList());
+	public Collection<CohortMembership> getMemberships(boolean includeVoided) {
+		if (includeVoided) {
+			return getMemberships();
+		}
+		return getMemberships().stream().filter(m -> m.getVoided() == includeVoided).collect(Collectors.toList());
 	}
-
+	
 	/**
 	 * @since 2.1.0
 	 */
@@ -219,51 +204,31 @@ public class Cohort extends BaseOpenmrsData  {
 		}
 		return memberships;
 	}
-
+	
 	/**
 	 * @since 2.1.0
 	 * @param asOfDate date used to return active memberships
-	 * @return ArrayList of cohort memberships
+	 * @return Collection of cohort memberships
 	 */
-	public List<CohortMembership> getActiveMemberships(Date asOfDate) {
-		return getMemberships().stream()
-				.filter(m -> m.isActive(asOfDate))
-				.collect(Collectors.toList());
+	public Collection<CohortMembership> getActiveMemberships(Date asOfDate) {
+		return getMemberships().stream().filter(m -> m.isActive(asOfDate)).collect(Collectors.toList());
 	}
-
-	public List<CohortMembership> getActiveMemberships() {
+	
+	public Collection<CohortMembership> getActiveMemberships() {
 		return getActiveMemberships(new Date());
-	}
-
-	/**
-	 * @since 2.1.0
-	 */
-	public CohortMembership getActiveMembership(Patient patient) {
-		return getMemberships().stream()
-				.filter(m -> m.isActive() && m.getPatientId().equals(patient.getPatientId()))
-				.collect(Collectors.toList())
-				.get(0);
 	}
 	
 	/**
 	 * @since 2.1.0
 	 */
-	public boolean purgeMemberships(List<CohortMembership> cohortMembershipList) {
-		List<CohortMembership> membershipsToPurge = getMemberships().stream()
-				.filter(m -> cohortMembershipList.stream()
-						.anyMatch(c -> m.getPatientId().equals(c.getPatientId())))
-				.collect(Collectors.toList());
-		if (membershipsToPurge != null) {
-			membershipsToPurge.forEach(m -> getMemberships().remove(m));
-			return true;
-		}
-		return false;
+	public CohortMembership getActiveMembership(Patient patient) {
+		return getMemberships().stream().filter(m -> m.isActive() && m.getPatientId().equals(patient.getPatientId()))
+		        .collect(Collectors.toList()).get(0);
 	}
-
-
+	
 	public int size() {
-		return getMemberships().stream()
-				.filter(m -> !m.getVoided() && m.getEndDate() == null).collect(Collectors.toList()).size();
+		return getMemberships().stream().filter(m -> !m.getVoided() && m.getEndDate() == null).collect(Collectors.toList())
+		        .size();
 	}
 	
 	public int getSize() {
@@ -278,7 +243,7 @@ public class Cohort extends BaseOpenmrsData  {
 	
 	/**
 	 * Returns the union of two cohorts
-	 * 
+	 *
 	 * @param a The first Cohort
 	 * @param b The second Cohort
 	 * @return Cohort
@@ -299,7 +264,7 @@ public class Cohort extends BaseOpenmrsData  {
 	
 	/**
 	 * Returns the intersection of two cohorts, treating null as an empty cohort
-	 * 
+	 *
 	 * @param a The first Cohort
 	 * @param b The second Cohort
 	 * @return Cohort
@@ -316,7 +281,7 @@ public class Cohort extends BaseOpenmrsData  {
 	
 	/**
 	 * Subtracts a cohort from a cohort
-	 * 
+	 *
 	 * @param a the original Cohort
 	 * @param b the Cohort to subtract
 	 * @return Cohort
@@ -332,8 +297,7 @@ public class Cohort extends BaseOpenmrsData  {
 		}
 		return ret;
 	}
-
-
+	
 	// getters and setters
 	
 	public Integer getCohortId() {
@@ -359,7 +323,7 @@ public class Cohort extends BaseOpenmrsData  {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	public Set<Integer> getMemberIds() {
 		Set<Integer> memberIds = new TreeSet<Integer>();
 		for (CohortMembership member : getMemberships()) {
@@ -367,18 +331,18 @@ public class Cohort extends BaseOpenmrsData  {
 		}
 		return memberIds;
 	}
-
+	
 	public void setMemberIds(Set<Integer> memberIds) {
 		Set<Integer> ids = new TreeSet<Integer>(memberIds);
 		for (Integer id : ids) {
 			addMembership(new CohortMembership(id));
 		}
 	}
-
+	
 	public void setMemberships(Collection<CohortMembership> members) {
 		this.memberships = members;
 	}
-
+	
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -396,6 +360,6 @@ public class Cohort extends BaseOpenmrsData  {
 	@Override
 	public void setId(Integer id) {
 		setCohortId(id);
-
+		
 	}
 }
