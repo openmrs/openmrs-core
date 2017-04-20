@@ -221,10 +221,10 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	}
 	
 	/**
-	 * @see CohortService#endMembership(CohortMembership)
+	 * @see CohortService#endCohortMembership(CohortMembership)
 	 */
 	@Override
-	public CohortMembership endMembership(CohortMembership cohortMembership) {
+	public CohortMembership endCohortMembership(CohortMembership cohortMembership) {
 		cohortMembership.setEndDate(new Date());
 		Context.getCohortService().saveCohort(cohortMembership.getCohort());
 		return cohortMembership;
