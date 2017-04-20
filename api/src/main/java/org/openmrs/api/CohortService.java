@@ -39,7 +39,7 @@ public interface CohortService extends OpenmrsService {
 	 * @param dao
 	 */
 	public void setCohortDAO(CohortDAO dao);
-
+	
 	/**
 	 * Save a cohort to the database (create if new, or update if changed) This method will throw an
 	 * exception if any patientIds in the Cohort don't exist.
@@ -50,7 +50,7 @@ public interface CohortService extends OpenmrsService {
 	 * @should create new cohorts
 	 * @should update an existing cohort
 	 */
-	@Authorized( { PrivilegeConstants.ADD_COHORTS, PrivilegeConstants.EDIT_COHORTS })
+	@Authorized({ PrivilegeConstants.ADD_COHORTS, PrivilegeConstants.EDIT_COHORTS })
 	public Cohort saveCohort(Cohort cohort) throws APIException;
 	
 	/**
@@ -65,7 +65,7 @@ public interface CohortService extends OpenmrsService {
 	 * @should void cohort
 	 * @should not change an already voided cohort
 	 */
-	@Authorized( { PrivilegeConstants.DELETE_COHORTS })
+	@Authorized({ PrivilegeConstants.DELETE_COHORTS })
 	public Cohort voidCohort(Cohort cohort, String reason) throws APIException;
 	
 	/**
@@ -85,7 +85,7 @@ public interface CohortService extends OpenmrsService {
 	 * @throws APIException
 	 * @should get cohort by id
 	 */
-	@Authorized( { PrivilegeConstants.GET_PATIENT_COHORTS })
+	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
 	public Cohort getCohort(Integer id) throws APIException;
 	
 	/**
@@ -98,7 +98,7 @@ public interface CohortService extends OpenmrsService {
 	 * @should get the nonvoided cohort if two exist with same name
 	 * @should only get non voided cohorts by name
 	 */
-	@Authorized( { PrivilegeConstants.GET_PATIENT_COHORTS })
+	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
 	public Cohort getCohort(String name) throws APIException;
 	
 	/**
@@ -109,7 +109,7 @@ public interface CohortService extends OpenmrsService {
 	 * @should get all nonvoided cohorts in database
 	 * @should not return any voided cohorts
 	 */
-	@Authorized( { PrivilegeConstants.GET_PATIENT_COHORTS })
+	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
 	public List<Cohort> getAllCohorts() throws APIException;
 	
 	/**
@@ -120,7 +120,7 @@ public interface CohortService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return all cohorts and voided
 	 */
-	@Authorized( { PrivilegeConstants.GET_PATIENT_COHORTS })
+	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
 	public List<Cohort> getAllCohorts(boolean includeVoided) throws APIException;
 	
 	/**
@@ -141,14 +141,14 @@ public interface CohortService extends OpenmrsService {
 	 * @since 2.1
 	 * @param patient patient used to find the cohorts
 	 * @param includeVoided voided true/false whether or not to include voided cohorts
-	 * @param asOfDate  @return Cohorts that contain the given patient
+	 * @param asOfDate @return Cohorts that contain the given patient
 	 * @throws APIException
 	 * @should not return voided cohorts
 	 * @should return cohorts that have given patient
 	 */
-	@Authorized( { PrivilegeConstants.GET_PATIENT_COHORTS })
+	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
 	public List<Cohort> getCohortsContainingPatient(Patient patient, boolean includeVoided, Date asOfDate);
-
+	
 	/**
 	 * Find all Cohorts that contain the given patient. (Not including voided Cohorts)
 	 * 
@@ -158,7 +158,7 @@ public interface CohortService extends OpenmrsService {
 	 * @should not return voided cohorts
 	 * @should return cohorts that have given patient
 	 */
-	@Authorized( { PrivilegeConstants.GET_PATIENT_COHORTS })
+	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
 	public List<Cohort> getCohortsContainingPatient(Patient patient) throws APIException;
 	
 	/**
@@ -168,7 +168,7 @@ public interface CohortService extends OpenmrsService {
 	 * @return All non-voided Cohorts that contain the given patientId
 	 * @throws APIException
 	 */
-	@Authorized( { PrivilegeConstants.GET_PATIENT_COHORTS })
+	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws APIException;
 	
 	/**
@@ -183,7 +183,7 @@ public interface CohortService extends OpenmrsService {
 	 * @should add a patient and insert the cohort to database
 	 * @should not fail if cohort already contains patient
 	 */
-	@Authorized( { PrivilegeConstants.EDIT_COHORTS })
+	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
 	public Cohort addPatientToCohort(Cohort cohort, Patient patient) throws APIException;
 	
 	/**
@@ -197,7 +197,7 @@ public interface CohortService extends OpenmrsService {
 	 * @should not fail if cohort doesn't contain patient
 	 * @should save cohort after removing patient
 	 */
-	@Authorized( { PrivilegeConstants.EDIT_COHORTS })
+	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
 	public Cohort removePatientFromCohort(Cohort cohort, Patient patient) throws APIException;
 	
 	/**
@@ -208,9 +208,9 @@ public interface CohortService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Authorized( { PrivilegeConstants.GET_PATIENT_COHORTS })
+	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
 	public Cohort getCohortByUuid(String uuid);
-
+	
 	/**
 	 * Adds membership to a Cohort
 	 *
@@ -220,21 +220,39 @@ public interface CohortService extends OpenmrsService {
 	 * @return the Cohort that was passed in with the CohortMembership
 	 * @should add Membership to Cohort and save the Cohort
 	 */
-	@Authorized( {PrivilegeConstants.EDIT_COHORTS })
+	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
 	Cohort addMembershipToCohort(Cohort cohort, CohortMembership cohortMembership);
-
+	
 	/**
-	 * Removes membership from a Cohort
+	 * Removes a CohortMembership from its parent Cohort
 	 *
 	 * @since 2.1
-	 * @param cohort cohort to remove the membership
 	 * @param cohortMembership membership that will be removed from cohort
-	 * @return the Cohort that was passed in with the CohortMembership
-	 * @should removes Membership from Cohort by setting end date and save the Cohort
 	 */
-	@Authorized( {PrivilegeConstants.EDIT_COHORTS })
-	Cohort removeMembershipFromCohort(Cohort cohort, CohortMembership cohortMembership);
-
+	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
+	void purgeCohortMembership(CohortMembership cohortMembership);
+	
+	/**
+	 * Marks the specified CohortMembership as voided
+	 * 
+	 * @param cohortMembership the CohortMembership to void
+	 * @param reason void reason
+	 * @return the voided CohortMembership
+	 * @since 2.1
+	 */
+	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
+	CohortMembership voidCohortMembership(CohortMembership cohortMembership, String reason);
+	
+	/**
+	 * Ends the specified CohortMembership i.e. sets its end date to the current date
+	 * 
+	 * @param cohortMembership the CohortMembership to end
+	 * @return the ended CohortMembership
+	 * @since 2.1
+	 */
+	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
+	CohortMembership endMembership(CohortMembership cohortMembership);
+	
 	/**
 	 * Void membership of Cohort that contain the voided Patients
 	 *
@@ -242,7 +260,7 @@ public interface CohortService extends OpenmrsService {
 	 * @param patient patient that was voided
 	 * @should void the membership for the patient that was passed in
 	 */
-	@Authorized( {PrivilegeConstants.EDIT_COHORTS })
+	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
 	void patientVoided(Patient patient);
 	
 	/**
@@ -252,6 +270,6 @@ public interface CohortService extends OpenmrsService {
 	 * @param patient patient that was unvoided
 	 * @should unvoid the membership for the patient that was passed in
 	 */
-	@Authorized( {PrivilegeConstants.EDIT_COHORTS })
+	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
 	void patientUnvoided(Patient patient, User voidedBy, Date dateVoided);
 }

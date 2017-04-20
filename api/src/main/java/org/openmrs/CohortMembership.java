@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.Objects;
 
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -24,7 +23,7 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 	public static final long serialVersionUID = 0L;
 	
 	protected static final Logger log = LoggerFactory.getLogger(CohortMembership.class);
-
+	
 	private Integer cohortMemberId;
 	
 	private Cohort cohort;
@@ -34,16 +33,16 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 	private Date startDate;
 	
 	private Date endDate;
-
+	
 	// Constructor
 	public CohortMembership() {
 	}
-
+	
 	public CohortMembership(Integer patientId, Date startDate) {
 		this.patientId = patientId;
 		this.startDate = startDate;
 	}
-
+	
 	public CohortMembership(Integer patientId) {
 		this(patientId, new Date());
 	}
@@ -59,33 +58,32 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 		} else {
 			date = asOfDate;
 		}
-		return !this.getVoided()
-				&& (date.equals(this.getStartDate()) || date.after(this.getStartDate()))
-				&& (this.getEndDate() == null || date.before(this.getEndDate()));
+		return !this.getVoided() && (date.equals(this.getStartDate()) || date.after(this.getStartDate()))
+		        && (this.getEndDate() == null || date.before(this.getEndDate()));
 	}
-
+	
 	public boolean isActive() {
 		return isActive(null);
 	}
-
+	
 	@Override
 	public Integer getId() {
 		return getCohortMemberId();
 	}
-
+	
 	@Override
 	public void setId(Integer id) {
 		setCohortMemberId(id);
 	}
-
+	
 	public Integer getCohortMemberId() {
 		return cohortMemberId;
 	}
-
+	
 	public void setCohortMemberId(Integer cohortMemberId) {
 		this.cohortMemberId = cohortMemberId;
 	}
-
+	
 	public Cohort getCohort() {
 		return cohort;
 	}
@@ -117,23 +115,38 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-
+	
+	/**
+	 * Compares the specified membership to this membership, the logic is such that if the items are
+	 * inserted into a sorted set, the voided and inactive memberships are pushed to the very end,
+	 * while the ordering of the remaining memberships is arbitrary.
+	 * 
+	 * @param o
+	 * @return
+	 */
 	@Override
 	public int compareTo(CohortMembership o) {
-		int ret = -1;
-		if (Objects.equals(this.getPatientId(), o.getPatientId())
-				&& Objects.equals(this.getCohort().getCohortId(), o.getCohort().getCohortId())
-				&& this.getStartDate().equals(o.getStartDate())
-				&& OpenmrsUtil.compare(this.getStartDate(), o.getStartDate()) == 0
-				&& ((this.getEndDate() != null && o.getEndDate() != null
-				&& OpenmrsUtil.compare(this.getEndDate(), o.getEndDate()) == 0)
-				|| (this.getEndDate() == null && o.getEndDate() == null))) {
-			ret = 0;
-		} else if (this.isActive() && !o.isActive()) {
-			ret = -1;
-		} else if (!this.isActive() && o.isActive()) {
-			ret = 1;
+		if ((this.getVoided() && !o.getVoided()) || (!this.isActive() && o.isActive())) {
+			return 1;
+		} else if ((!this.getVoided() && o.getVoided()) || (this.isActive() && !o.isActive())) {
+			return -1;
 		}
-		return ret;
+		
+		int ret = OpenmrsUtil.compareWithNullAsGreatest(this.getCohort().getCohortId(), o.getCohort().getCohortId());
+		if (ret != 0) {
+			return ret;
+		}
+		
+		ret = this.getPatientId().compareTo(o.getPatientId());
+		if (ret != 0) {
+			return ret;
+		}
+		
+		ret = OpenmrsUtil.compareWithNullAsEarliest(this.getEndDate(), o.getEndDate());
+		if (ret != 0) {
+			return ret;
+		}
+		
+		return OpenmrsUtil.compare(this.getStartDate(), o.getStartDate());
 	}
 }
