@@ -520,12 +520,12 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void endMembership_shouldEndTheCohortMembership() {
+	public void endCohortMembership_shouldEndTheCohortMembership() {
 		executeDataSet(COHORT_XML);
 		Cohort cohort = service.getCohort(1);
 		CohortMembership cm = cohort.getActiveMemberships().iterator().next();
 		assertNull(cm.getEndDate());
-		service.endMembership(cm);
+		service.endCohortMembership(cm);
 		assertNotNull(cm.getEndDate());
 		assertFalse(cohort.contains(cm.getPatientId()));
 	}

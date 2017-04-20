@@ -251,7 +251,7 @@ public interface CohortService extends OpenmrsService {
 	 * @since 2.1
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
-	CohortMembership endMembership(CohortMembership cohortMembership);
+	CohortMembership endCohortMembership(CohortMembership cohortMembership);
 	
 	/**
 	 * Void membership of Cohort that contain the voided Patients
