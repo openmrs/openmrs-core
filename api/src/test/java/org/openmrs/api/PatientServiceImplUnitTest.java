@@ -9,11 +9,25 @@
  */
 package org.openmrs.api;
 
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openmrs.*;
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.User;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.validator.PatientIdentifierValidator;
@@ -24,9 +38,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Mockito.*;
 
 /**
  * This class tests methods in the PatientService class
@@ -66,13 +77,15 @@ public class PatientServiceImplUnitTest {
         Assert.assertEquals(duplicatePatients.size(), 1);
     }
 
-    @Test(expected = MissingRequiredIdentifierException.class)
+    @Test
     public void checkPatientIdentifiers_shouldThrowMissingRequiredIdentifierGivenRequiredIdentifierTypeMissing() throws Exception {
         // given
         final PatientIdentifierType requiredIdentifierType = new PatientIdentifierType(12345);
         requiredIdentifierType.setUuid("some type uuid");
+        requiredIdentifierType.setName("NameOfRequiredIdentifierType");
         final PatientIdentifierType patientIdentifierType = new PatientIdentifierType(6789);
         patientIdentifierType.setUuid("another type uuid");
+        patientIdentifierType.setName("NameOfPatientIdentifierType");
 
         final List<PatientIdentifierType> requiredTypes = new ArrayList<>();
         requiredTypes.add(requiredIdentifierType);
@@ -82,10 +95,18 @@ public class PatientServiceImplUnitTest {
         final Patient patientWithIdentifiers = new Patient();
         patientWithIdentifiers.addIdentifier(new PatientIdentifier("some identifier", patientIdentifierType, mock(Location.class)));
 
-        // when
-        patientService.checkPatientIdentifiers(patientWithIdentifiers);
+        try {
+            // when
+            patientService.checkPatientIdentifiers(patientWithIdentifiers);
+            fail();
+            // then
+        } catch(MissingRequiredIdentifierException e) {
+            assertTrue(e.getMessage().contains("required"));
+            assertTrue(e.getMessage().contains("NameOfRequiredIdentifierType"));
+        } catch(Exception e) {
+            fail("Expecting MissingRequiredIdentifierException");
+        }
 
-        // then throws exception
     }
 
     @Test
@@ -114,25 +135,40 @@ public class PatientServiceImplUnitTest {
         // then no exception
     }
 
-    @Test(expected = DuplicateIdentifierException.class)
+    @Test
     public void checkPatientIdentifiers_shouldThrowDuplicateIdentifierGivenDuplicateIdentifiers() throws Exception {
         // given
         final Integer equalIdentifierTypeId = 12345;
-        final PatientIdentifierType patientIdentifierType = new PatientIdentifierType(equalIdentifierTypeId);
-        final PatientIdentifierType anotherSamePatientIdentifier = new PatientIdentifierType(equalIdentifierTypeId);
+        final String equalIdentifierTypeName = "TypeName";
+        final String equalIdentifier = "Identifier1";
 
-        final List<PatientIdentifierType> requiredTypes = new ArrayList<>();
+        final PatientIdentifierType identifierType = new PatientIdentifierType(equalIdentifierTypeId);
+        identifierType.setName(equalIdentifierTypeName);
+        final PatientIdentifierType sameIdentifierType = new PatientIdentifierType(equalIdentifierTypeId);
+        sameIdentifierType.setName(equalIdentifierTypeName);
+
         when(patientDaoMock.getPatientIdentifierTypes(any(), any(), any(), any()))
-                .thenReturn(requiredTypes);
+                .thenReturn(new ArrayList<>());
 
         final Patient patientWithIdentifiers = new Patient();
-        patientWithIdentifiers.addIdentifier(new PatientIdentifier("some identifier", patientIdentifierType, mock(Location.class)));
-        patientWithIdentifiers.addIdentifier(new PatientIdentifier("some identifier", anotherSamePatientIdentifier, mock(Location.class)));
+        final PatientIdentifier patientIdentifier = new PatientIdentifier("some identifier", identifierType, mock(Location.class));
+
+        patientIdentifier.setIdentifier(equalIdentifier);
+        patientWithIdentifiers.addIdentifier(patientIdentifier);
+        final PatientIdentifier patientIdentifierSameType = new PatientIdentifier("some identifier", sameIdentifierType, mock(Location.class));
+        patientIdentifierSameType.setIdentifier(equalIdentifier);
+        patientWithIdentifiers.addIdentifier(patientIdentifierSameType);
 
         // when
-        patientService.checkPatientIdentifiers(patientWithIdentifiers);
+        try {
+            patientService.checkPatientIdentifiers(patientWithIdentifiers);
+            // then
+            fail();
+        } catch (DuplicateIdentifierException e) {
+            assertNotNull(e.getPatientIdentifier());
+            assertTrue(e.getMessage().contains("Identifier1 id type #: 12345"));
+        }
 
-        // then throws exception
     }
 
     @Test(expected = InsufficientIdentifiersException.class)
@@ -159,6 +195,38 @@ public class PatientServiceImplUnitTest {
         patientService.checkPatientIdentifiers(patient);
 
         // no exception
+    }
+
+    @Test
+    public void getPatientIdentifierTypes_shouldReturnPatientIdentifierTypesFromDao() {
+
+        // given
+        final List<PatientIdentifierType> expectedIdentifierTypes = new ArrayList<>();
+        expectedIdentifierTypes.add(new PatientIdentifierType(12345));
+        when(patientDaoMock.getPatientIdentifierTypes(any(), any(), any(), any()))
+                .thenReturn(expectedIdentifierTypes);
+
+        // when
+        final List<PatientIdentifierType> actualIdentifierTypes = patientService.getPatientIdentifierTypes("a name", "a format", true, false);
+
+        // then
+        verify(patientDaoMock, times(1)).getPatientIdentifierTypes("a name", "a format", true, false);
+        assertEquals(expectedIdentifierTypes.get(0).getPatientIdentifierTypeId(), actualIdentifierTypes.get(0).getPatientIdentifierTypeId());
+    }
+
+    @Test
+    public void getPatientIdentifierTypes_shouldReturnEmptyListGivenDaoReturnsNull() {
+
+        // given
+        when(patientDaoMock.getPatientIdentifierTypes(any(), any(), any(), any()))
+                .thenReturn(null);
+
+        // when
+        final List<PatientIdentifierType> actualIdentifierTypes = patientService.getPatientIdentifierTypes("a name", "a format", true, false);
+
+        // then
+        verify(patientDaoMock, times(1)).getPatientIdentifierTypes("a name", "a format", true, false);
+        assertEquals(0, actualIdentifierTypes.size());
     }
 
     private PatientIdentifier createVoidedPatientIdentifier() {
