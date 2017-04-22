@@ -9,35 +9,6 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
-import static org.openmrs.util.AddressMatcher.containsAddress;
-import static org.openmrs.util.NameMatcher.containsFullName;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Vector;
-import java.util.stream.Collectors;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -66,6 +37,7 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.Visit;
+
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
@@ -82,9 +54,42 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Vector;
+import java.util.stream.Collectors;
+
+import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
+import static org.openmrs.util.AddressMatcher.containsAddress;
+import static org.openmrs.util.NameMatcher.containsFullName;
+
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
  * PatientService class
+ * Before adding a test, check if you can better test it with @see org.openmrs.api.{@link PatientServiceImplUnitTest}, which
+ * does not use the context, but mocks dependencies.
  */
 public class PatientServiceTest extends BaseContextSensitiveTest {
 	
@@ -167,16 +172,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 				.filter(order -> Objects.equals(drugOrder, order.getOrderType()))
 				.collect(Collectors.toList());
 		return !preferredPatientOrders.isEmpty();
-	}
-
-	@Test(expected = APIException.class)
-	public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenEmptyAttributes() throws Exception {
-		patientService.getDuplicatePatientsByAttributes(Arrays.asList());
-	}
-
-	@Test(expected = APIException.class)
-	public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenNoAttributes() throws Exception {
-		patientService.getDuplicatePatientsByAttributes(null);
 	}
 
 	/**
@@ -932,13 +927,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifier patientIdentifier = new PatientIdentifier("7TU-8", pit, null);
 		Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
 	}
-	
+
 	/**
 	 * @see PatientService#checkPatientIdentifiers(Patient)
 	 */
 	@Test
 	public void checkPatientIdentifiers_shouldIgnoreVoidedPatientIdentifier() throws Exception {
-		
+
 		Patient patient = new Patient();
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
 		patientIdentifier.setIdentifierType(Context.getPatientService().getAllPatientIdentifierTypes(false).get(0));
@@ -947,7 +942,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientIdentifier.setVoidedBy(Context.getAuthenticatedUser());
 		patientIdentifier.setVoidReason("Testing whether voided identifiers are ignored");
 		patient.addIdentifier(patientIdentifier);
-		
+
 		// add a non-voided identifier so that the initial
 		// "at least one nonvoided identifier" check passes
 		patientIdentifier = new PatientIdentifier();
@@ -958,30 +953,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientIdentifier.setVoidedBy(Context.getAuthenticatedUser());
 		patientIdentifier.setVoidReason("Testing whether voided identifiers are ignored");
 		patient.addIdentifier(patientIdentifier);
-		
+
 		// If the identifier is ignored, it won't throw a
 		// BlankIdentifierException as it should
 		Context.getPatientService().checkPatientIdentifiers(patient);
-		
-	}
-	
-	/**
-	 * @see PatientService#checkPatientIdentifiers(Patient)
-	 */
-	@Test(expected = InsufficientIdentifiersException.class)
-	public void checkPatientIdentifiers_shouldRequireOneNonVoidedPatientIdentifier() throws Exception {
-		
-		Patient patient = new Patient();
-		PatientIdentifier patientIdentifier = new PatientIdentifier();
-		patientIdentifier.setIdentifierType(Context.getPatientService().getAllPatientIdentifierTypes(false).get(0));
-		patientIdentifier.setVoided(true);
-		patientIdentifier.setVoidedBy(Context.getAuthenticatedUser());
-		patientIdentifier.setVoidReason("Testing whether voided identifiers are ignored");
-		patient.addIdentifier(patientIdentifier);
-		
-		// this patient only has a voided identifier, so saving is not allowed
-		Context.getPatientService().checkPatientIdentifiers(patient);
-		
+
 	}
 	
 	/**
@@ -999,6 +975,69 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// Should throw blank identifier exception
 		Context.getPatientService().checkPatientIdentifiers(patient);
 		
+	}
+
+	/**
+	 * @see PatientService#checkPatientIdentifiers(Patient)
+	 */
+	@Test
+	public void checkPatientIdentifiers_shouldThrowErrorGivenPatientIdentifierIsInvalid()
+			throws Exception {
+
+		// given
+		Patient patient = new Patient();
+		PatientIdentifier nonBlankIdentifierWithoutLocation = new PatientIdentifier();
+		nonBlankIdentifierWithoutLocation.setVoided(false);
+		nonBlankIdentifierWithoutLocation.setLocation(null);
+		nonBlankIdentifierWithoutLocation.setIdentifier("an identifier");
+		nonBlankIdentifierWithoutLocation.setIdentifierType(new PatientIdentifierType(21345));
+
+		nonBlankIdentifierWithoutLocation.setIdentifierType(Context.getPatientService().getAllPatientIdentifierTypes(false).get(0));
+		patient.addIdentifier(nonBlankIdentifierWithoutLocation);
+
+		assertEquals(1, patient.getIdentifiers().size());
+
+		try {
+		// when
+			Context.getPatientService().checkPatientIdentifiers(patient);
+
+		// then
+			fail("should throw PatientIdentifierException");
+		} catch (BlankIdentifierException e) {
+			fail("should not throw BlankIdentifierException");
+		} catch (PatientIdentifierException e) {
+			assertEquals(1, patient.getIdentifiers().size());
+		}
+
+	}
+
+	/**
+	 * @see PatientService#checkPatientIdentifiers(Patient)
+	 */
+	@Test
+	public void checkPatientIdentifiers_shouldRemovePatientIdentifierGivenItIsBlank()
+			throws Exception {
+
+		// given
+		Patient patient = new Patient();
+		PatientIdentifier blankPatientIdentifier = new PatientIdentifier();
+		blankPatientIdentifier.setIdentifier("");
+		blankPatientIdentifier.setIdentifierType(new PatientIdentifierType(21345));
+
+		blankPatientIdentifier.setIdentifierType(Context.getPatientService().getAllPatientIdentifierTypes(false).get(0));
+		patient.addIdentifier(blankPatientIdentifier);
+
+		assertEquals(1, patient.getIdentifiers().size());
+		try {
+		// when
+			Context.getPatientService().checkPatientIdentifiers(patient);
+
+		// then
+			fail("should throw BlankIdentifierException");
+		} catch (BlankIdentifierException e) {
+			assertEquals(0, patient.getIdentifiers().size());
+		}
+
 	}
 	
 	/**
@@ -1050,22 +1089,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.checkPatientIdentifiers(patient);
 		
 	}
-	
-	/**
-	 * @see PatientService#checkPatientIdentifiers(Patient)
-	 */
-	@Test
-	public void checkPatientIdentifiers_shouldThrowErrorWhenPatientDoesNotHaveOneOrMoreRequiredIdentifiers()
-	    throws Exception {
-		
-		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
-		
-		log.info(patientIdentifierType.getRequired().toString());
-		
-		// TODO Finish
-		
-	}
-	
+
 	/**
 	 * @see PatientService#getAllIdentifierValidators()
 	 */
