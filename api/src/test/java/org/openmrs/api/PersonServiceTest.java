@@ -9,8 +9,12 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.openmrs.test.TestUtil.containsId;
 
@@ -434,8 +438,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham Jazayeri Junior", 1979, "M");
 		Assert.assertEquals(2, matches.size());
-		Assert.assertTrue(containsId(matches, 1006));
-		Assert.assertTrue(containsId(matches, 1007));
+		assertTrue(containsId(matches, 1006));
+		assertTrue(containsId(matches, 1007));
 	}
 	
 	/**
@@ -446,15 +450,15 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius", 1979, "M");
 		Assert.assertEquals(9, matches.size());
-		Assert.assertTrue(containsId(matches, 1000));
-		Assert.assertTrue(containsId(matches, 1001));
-		Assert.assertTrue(containsId(matches, 1002));
-		Assert.assertTrue(containsId(matches, 1003));
-		Assert.assertTrue(containsId(matches, 1004));
-		Assert.assertTrue(containsId(matches, 1005));
-		Assert.assertTrue(containsId(matches, 1006));
-		Assert.assertTrue(containsId(matches, 1007));
-		Assert.assertTrue(containsId(matches, 1008));
+		assertTrue(containsId(matches, 1000));
+		assertTrue(containsId(matches, 1001));
+		assertTrue(containsId(matches, 1002));
+		assertTrue(containsId(matches, 1003));
+		assertTrue(containsId(matches, 1004));
+		assertTrue(containsId(matches, 1005));
+		assertTrue(containsId(matches, 1006));
+		assertTrue(containsId(matches, 1007));
+		assertTrue(containsId(matches, 1008));
 	}
 	
 	/**
@@ -465,12 +469,12 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham", 1979, "M");
 		Assert.assertEquals(6, matches.size());
-		Assert.assertTrue(containsId(matches, 1000));
-		Assert.assertTrue(containsId(matches, 1003));
-		Assert.assertTrue(containsId(matches, 1004));
-		Assert.assertTrue(containsId(matches, 1005));
-		Assert.assertTrue(containsId(matches, 1006));
-		Assert.assertTrue(containsId(matches, 1007));
+		assertTrue(containsId(matches, 1000));
+		assertTrue(containsId(matches, 1003));
+		assertTrue(containsId(matches, 1004));
+		assertTrue(containsId(matches, 1005));
+		assertTrue(containsId(matches, 1006));
+		assertTrue(containsId(matches, 1007));
 	}
 	
 	/**
@@ -481,9 +485,9 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham Jazayeri", 1979, "M");
 		Assert.assertEquals(3, matches.size());
-		Assert.assertTrue(containsId(matches, 1003));
-		Assert.assertTrue(containsId(matches, 1006));
-		Assert.assertTrue(containsId(matches, 1007));
+		assertTrue(containsId(matches, 1003));
+		assertTrue(containsId(matches, 1006));
+		assertTrue(containsId(matches, 1007));
 	}
 	
 	/**
@@ -496,9 +500,9 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		List<Person> people = Context.getPersonService().getPeople("Johnson", false);
 		Assert.assertEquals(3, people.size());
-		Assert.assertTrue(TestUtil.containsId(people, 2));
-		Assert.assertTrue(TestUtil.containsId(people, 4));
-		Assert.assertTrue(TestUtil.containsId(people, 5));
+		assertTrue(TestUtil.containsId(people, 2));
+		assertTrue(TestUtil.containsId(people, 4));
+		assertTrue(TestUtil.containsId(people, 5));
 	}
 	
 	/**
@@ -510,8 +514,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		Set<Person> people = Context.getPersonService().getSimilarPeople("Johnson", null, "M");
 		Assert.assertEquals(2, people.size());
-		Assert.assertTrue(TestUtil.containsId(people, 2));
-		Assert.assertTrue(TestUtil.containsId(people, 4));
+		assertTrue(TestUtil.containsId(people, 2));
+		assertTrue(TestUtil.containsId(people, 4));
 	}
 	
 	/**
@@ -522,7 +526,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createRetiredPersonAttributeType.xml");
 		
 		List<PersonAttributeType> attributeTypes = Context.getPersonService().getAllPersonAttributeTypes();
-		Assert.assertTrue("At least one element, otherwise no checking for retired will take place",
+		assertTrue("At least one element, otherwise no checking for retired will take place",
 		    attributeTypes.size() > 0);
 		
 		boolean foundRetired = false;
@@ -533,7 +537,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 		
-		Assert.assertTrue("There should be at least one retired person attribute type found in the list", foundRetired);
+		assertTrue("There should be at least one retired person attribute type found in the list", foundRetired);
 	}
 	
 	/**
@@ -545,7 +549,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createRetiredPersonAttributeType.xml");
 		
 		List<PersonAttributeType> attributeTypes = Context.getPersonService().getAllPersonAttributeTypes(false);
-		Assert.assertTrue("At least one element, otherwise no checking for retired will take place",
+		assertTrue("At least one element, otherwise no checking for retired will take place",
 		    attributeTypes.size() > 0);
 		
 		boolean foundRetired = false;
@@ -569,7 +573,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		//TODO: is this the correct way? or should we loop to find a retired type and then perform the following?
 		List<PersonAttributeType> attributeTypes = Context.getPersonService().getAllPersonAttributeTypes(true);
-		Assert.assertTrue("At least one element, otherwise no checking for retired will take place",
+		assertTrue("At least one element, otherwise no checking for retired will take place",
 		    attributeTypes.size() > 0);
 		
 		boolean foundRetired = false;
@@ -580,7 +584,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 		
-		Assert.assertTrue("There should be at least one retired person attribute type found in the list", foundRetired);
+		assertTrue("There should be at least one retired person attribute type found in the list", foundRetired);
 	}
 	
 	/**
@@ -591,8 +595,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createRetiredRelationship.xml");
 		
 		List<Relationship> relationships = Context.getPersonService().getAllRelationships();
-		Assert
-		        .assertTrue("At least one element, otherwise no checking for voided will take place",
+		assertTrue("At least one element, otherwise no checking for voided will take place",
 		            relationships.size() > 0);
 		
 		boolean foundVoided = false;
@@ -614,8 +617,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createRetiredRelationship.xml");
 		
 		List<Relationship> relationships = Context.getPersonService().getAllRelationships(true);
-		Assert
-		        .assertTrue("At least one element, otherwise no checking for voided will take place",
+		assertTrue("At least one element, otherwise no checking for voided will take place",
 		            relationships.size() > 0);
 		
 		boolean foundVoided = false;
@@ -626,7 +628,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 		
-		Assert.assertTrue("There should be voided relationship here", foundVoided);
+		assertTrue("There should be voided relationship here", foundVoided);
 	}
 	
 	/**
@@ -638,8 +640,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createRetiredRelationship.xml");
 		
 		List<Relationship> relationships = Context.getPersonService().getAllRelationships(false);
-		Assert
-		        .assertTrue("At least one element, otherwise no checking for voided will take place",
+		assertTrue("At least one element, otherwise no checking for voided will take place",
 		            relationships.size() > 0);
 		
 		boolean foundVoided = false;
@@ -661,9 +662,18 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createRetiredRelationship.xml");
 		
 		List<RelationshipType> relationshipTypes = Context.getPersonService().getAllRelationshipTypes();
-		Assert.assertTrue("Number of relationship type are 6", relationshipTypes.size() == 6);
+		assertTrue("Number of relationship type are 6", relationshipTypes.size() == 6);
 	}
-	
+
+	/**
+	 * @see PersonService#getPerson(Integer)
+	 */
+	@Test
+	public void getPerson_shouldReturnNullWhenPersonNull() throws Exception {
+		Person person = Context.getPersonService().getPerson(null);
+		Assert.assertNull(person);
+	}
+
 	/**
 	 * @see PersonService#getPerson(Integer)
 	 */
@@ -689,7 +699,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void getPersonAttribute_shouldReturnPersonAttributeWhenGivenIdDoesExist() throws Exception {
 		PersonAttribute personAttribute = Context.getPersonService().getPersonAttribute(17);
 		Assert.assertNotNull(personAttribute);
-		Assert.assertTrue("Expecting the return is of a person attribute", personAttribute.getClass().equals(
+		assertTrue("Expecting the return is of a person attribute", personAttribute.getClass().equals(
 		    PersonAttribute.class));
 	}
 	
@@ -730,15 +740,15 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		List<PersonAttributeType> attributeTypes = Context.getPersonService().getPersonAttributeTypes(
 		    "A nonexistent attr type name", null, null, null);
 		Assert.assertNotNull(attributeTypes);
-		Assert.assertTrue("Number of matched attribute type is 0", attributeTypes.isEmpty());
+		assertTrue("Number of matched attribute type is 0", attributeTypes.isEmpty());
 		
 		attributeTypes = Context.getPersonService().getPersonAttributeTypes(null, "org.openmrs.Concept", null, null);
 		Assert.assertNotNull(attributeTypes);
-		Assert.assertTrue("Number of matched attribute type is 1", attributeTypes.size() == 1);
+		assertTrue("Number of matched attribute type is 1", attributeTypes.size() == 1);
 		
 		attributeTypes = Context.getPersonService().getPersonAttributeTypes(null, null, null, false);
 		Assert.assertNotNull(attributeTypes);
-		Assert.assertTrue("Number of matched attribute type is 6", attributeTypes.size() == 6);
+		assertTrue("Number of matched attribute type is 6", attributeTypes.size() == 6);
 	}
 	
 	/**
@@ -752,7 +762,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		List<PersonAttributeType> attributeTypes = Context.getPersonService().getPersonAttributeTypes(
 		    "A non-existent attr type name", "java.lang.String", null, false);
 		Assert.assertNotNull(attributeTypes);
-		Assert.assertTrue("Should return empty list", attributeTypes.isEmpty());
+		assertTrue("Should return empty list", attributeTypes.isEmpty());
 	}
 	
 	/**
@@ -785,7 +795,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		RelationshipType relationshipType = personService.getRelationshipType(15);
 		Map<Person, List<Person>> relationshipMap = personService.getRelationshipMap(relationshipType);
 		Assert.assertNotNull(relationshipMap);
-		Assert.assertTrue("There should be no element in the map", relationshipMap.isEmpty());
+		assertTrue("There should be no element in the map", relationshipMap.isEmpty());
 	}
 	
 	/**
@@ -798,7 +808,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Person firstPerson = personService.getPerson(502);
 		List<Relationship> relationships = personService.getRelationships(firstPerson, null, null);
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be relationship found given the from person", relationships.size() > 0);
+		assertTrue("There should be relationship found given the from person", relationships.size() > 0);
 	}
 	
 	/**
@@ -811,7 +821,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Person secondPerson = personService.getPerson(7);
 		List<Relationship> relationships = personService.getRelationships(null, secondPerson, null);
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be relationship found given the to person", relationships.size() > 0);
+		assertTrue("There should be relationship found given the to person", relationships.size() > 0);
 	}
 	
 	/**
@@ -824,7 +834,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		RelationshipType relationshipType = personService.getRelationshipType(1);
 		List<Relationship> relationships = personService.getRelationships(null, null, relationshipType);
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be relationship found given the relationship type", relationships.size() > 0);
+		assertTrue("There should be relationship found given the relationship type", relationships.size() > 0);
 	}
 	
 	/**
@@ -837,7 +847,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Person firstPerson = personService.getPerson(502);
 		List<Relationship> relationships = personService.getRelationships(firstPerson, null, null, new Date());
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be relationship found given the from person", relationships.size() > 0);
+		assertTrue("There should be relationship found given the from person", relationships.size() > 0);
 	}
 	
 	/**
@@ -850,7 +860,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Person secondPerson = personService.getPerson(7);
 		List<Relationship> relationships = personService.getRelationships(null, secondPerson, null, new Date());
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be relationship found given the to person", relationships.size() > 0);
+		assertTrue("There should be relationship found given the to person", relationships.size() > 0);
 	}
 	
 	/**
@@ -863,7 +873,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		RelationshipType relationshipType = personService.getRelationshipType(1);
 		List<Relationship> relationships = personService.getRelationships(null, null, relationshipType, new Date());
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be relationship found given the relationship type", relationships.size() > 0);
+		assertTrue("There should be relationship found given the relationship type", relationships.size() > 0);
 	}
 	
 	/**
@@ -879,7 +889,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		List<Relationship> relationships = personService.getRelationships(firstPerson, secondPerson, relationshipType,
 		    new Date());
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be no relationship found given the from person", relationships.isEmpty());
+		assertTrue("There should be no relationship found given the from person", relationships.isEmpty());
 	}
 	
 	/**
@@ -928,7 +938,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Person firstPerson = personService.getPerson(502);
 		List<Relationship> relationships = personService.getRelationships(firstPerson, null, null, new Date(), new Date());
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be relationship found given the from person", relationships.size() > 0);
+		assertTrue("There should be relationship found given the from person", relationships.size() > 0);
 	}
 	
 	/**
@@ -941,7 +951,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Person secondPerson = personService.getPerson(7);
 		List<Relationship> relationships = personService.getRelationships(null, secondPerson, null, new Date(), new Date());
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be relationship found given the to person", relationships.size() > 0);
+		assertTrue("There should be relationship found given the to person", relationships.size() > 0);
 	}
 	
 	/**
@@ -955,7 +965,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		List<Relationship> relationships = personService.getRelationships(null, null, relationshipType, new Date(),
 		    new Date());
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be relationship found given the relationship type", relationships.size() > 0);
+		assertTrue("There should be relationship found given the relationship type", relationships.size() > 0);
 	}
 	
 	/**
@@ -971,7 +981,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		List<Relationship> relationships = personService.getRelationships(firstPerson, secondPerson, relationshipType,
 		    new Date(), new Date());
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be no relationship found given the from person", relationships.isEmpty());
+		assertTrue("There should be no relationship found given the from person", relationships.isEmpty());
 	}
 	
 	/**
@@ -1021,7 +1031,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Person person = personService.getPerson(2);
 		List<Relationship> relationships = personService.getRelationshipsByPerson(person);
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be relationship found given the person", relationships.size() > 0);
+		assertTrue("There should be relationship found given the person", relationships.size() > 0);
 	}
 	
 	/**
@@ -1036,7 +1046,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Person person = personService.getPerson(6);
 		List<Relationship> relationships = personService.getRelationshipsByPerson(person);
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be no relationship found given the person", relationships.isEmpty());
+		assertTrue("There should be no relationship found given the person", relationships.isEmpty());
 		
 	}
 	
@@ -1050,7 +1060,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Person person = personService.getPerson(2);
 		List<Relationship> relationships = personService.getRelationshipsByPerson(person, new Date());
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be relationship found given the person", relationships.size() > 0);
+		assertTrue("There should be relationship found given the person", relationships.size() > 0);
 	}
 	
 	/**
@@ -1065,7 +1075,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Person person = personService.getPerson(6);
 		List<Relationship> relationships = personService.getRelationshipsByPerson(person, new Date());
 		Assert.assertNotNull(relationships);
-		Assert.assertTrue("There should be no relationship found given the person", relationships.isEmpty());
+		assertTrue("There should be no relationship found given the person", relationships.isEmpty());
 		
 	}
 	
@@ -1076,7 +1086,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void getRelationshipType_shouldReturnRelationshipTypeWithTheGivenRelationshipTypeId() throws Exception {
 		RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);
 		Assert.assertNotNull(relationshipType);
-		Assert.assertTrue("Expecting the return is of a relationship type", relationshipType.getClass().equals(
+		assertTrue("Expecting the return is of a relationship type", relationshipType.getClass().equals(
 		    RelationshipType.class));
 	}
 	
@@ -1105,7 +1115,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void getRelationshipTypes_shouldReturnEmptyListWhenNoRelationshipTypeMatchTheSearchString() throws Exception {
 		List<RelationshipType> relationshipTypes = Context.getPersonService().getRelationshipTypes("Doctor");
 		Assert.assertNotNull(relationshipTypes);
-		Assert.assertTrue("There should be no relationship type for the given name", relationshipTypes.isEmpty());
+		assertTrue("There should be no relationship type for the given name", relationshipTypes.isEmpty());
 	}
 	
 	/**
@@ -1117,7 +1127,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createRetiredRelationship.xml");
 		List<RelationshipType> relationshipTypes = Context.getPersonService().getRelationshipTypes("Sibling/Sibling", true);
 		Assert.assertNotNull(relationshipTypes);
-		Assert.assertTrue("There should be relationship type for the given name", relationshipTypes.size() > 0);
+		assertTrue("There should be relationship type for the given name", relationshipTypes.size() > 0);
 	}
 	
 	/**
@@ -1128,7 +1138,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	        throws Exception {
 		List<RelationshipType> relationshipTypes = Context.getPersonService().getRelationshipTypes("Doctor/Patient", true);
 		Assert.assertNotNull(relationshipTypes);
-		Assert.assertTrue("There should be no relationship type for the given name", relationshipTypes.isEmpty());
+		assertTrue("There should be no relationship type for the given name", relationshipTypes.isEmpty());
 	}
 	
 	/**
@@ -1454,7 +1464,22 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Person personUpdated = Context.getPersonService().savePerson(personSaved);
 		Assert.assertEquals("M", personUpdated.getGender());
 	}
-	
+
+	/**
+	 * @see PersonService#saveRelationship(Relationship)
+	 */
+	@Test(expected = APIException.class)
+	public void saveRelationship_shouldThrowAPIException()  {
+		Relationship relationship = new Relationship();
+		Person person = new Person();
+		relationship.setPersonA(person);
+		relationship.setPersonB(person);
+
+		personService.saveRelationship(relationship);
+
+	}
+
+
 	/**
 	 * @see PersonService#saveRelationship(Relationship)
 	 */
@@ -1512,7 +1537,14 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		RelationshipType updatedRelationshipType = personService.saveRelationshipType(savedRelationshipType);
 		Assert.assertEquals(true, updatedRelationshipType.getPreferred());
 	}
-	
+
+
+	@Test
+	public void unvoidPerson_shouldReturnNullwhenGivenNull() {
+		Assert.assertEquals(Context.getPersonService().unvoidPerson(null), null);
+
+	}
+
 	/**
 	 * @see PersonService#unvoidPerson(Person) TODO NullPointerException during
 	 *      RequiredDataAdvice.before() TODO Should we be able to unvoid an already not voided
@@ -1523,7 +1555,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createPersonPurgeVoidTest.xml");
 		Person person = Context.getPersonService().getPerson(1002);
 		
-		Assert.assertTrue(person.getVoided());
+		assertTrue(person.getVoided());
 		Assert.assertNotNull(person.getDateVoided());
 		
 		Person unvoidedPerson = Context.getPersonService().unvoidPerson(person);
@@ -1543,7 +1575,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Relationship voidedRelationship = Context.getPersonService().voidRelationship(relationship,
 		    "Test Voiding Relationship");
 		
-		Assert.assertTrue(voidedRelationship.getVoided());
+		assertTrue(voidedRelationship.getVoided());
 		Assert.assertNotNull(voidedRelationship.getVoidedBy());
 		Assert.assertNotNull(voidedRelationship.getVoidReason());
 		Assert.assertNotNull(voidedRelationship.getDateVoided());
@@ -1555,10 +1587,19 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(unvoidedRelationship.getVoidReason());
 		Assert.assertNull(unvoidedRelationship.getDateVoided());
 	}
-	
+
 	/**
 	 * @see PersonService#voidPerson(Person,String)
 	 */
+	@Test
+	public void voidPerson_shouldReturnNullwhenGivenNull() {
+		Assert.assertEquals(Context.getPersonService().voidPerson(null, "Testing person null"), null);
+
+	}
+
+		/**
+		 * @see PersonService#voidPerson(Person,String)
+		 */
 	@Test
 	public void voidPerson_shouldReturnVoidedPersonWithGivenReason() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createPersonPurgeVoidTest.xml");
@@ -1570,13 +1611,68 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		Person voidedPerson = Context.getPersonService().getPerson(1001);
 		
-		Assert.assertTrue(voidedPerson.getVoided());
+		assertTrue(voidedPerson.getVoided());
 		Assert.assertNotNull(voidedPerson.getVoidedBy());
 		Assert.assertNotNull(voidedPerson.getPersonVoidReason());
 		Assert.assertNotNull(voidedPerson.getPersonDateVoided());
 		Assert.assertEquals(voidedPerson.getPersonVoidReason(), "Test Voiding Person");
 	}
-	
+
+	/**
+	 * @see PersonService#voidRelationship(Relationship,String)
+	 */
+	@Test
+	public void voidRelationship_shouldVoidRelationshipIfGivenRelationshipIsNotVoided() {
+		Relationship relationship = personService.getRelationship(1);
+
+		assertFalse("We need an unvoided relationship to test the method", relationship.getVoided());
+
+		String voidReason = "Something";
+		Relationship returnedRelationship = personService.voidRelationship(relationship, voidReason);
+
+		assertTrue(returnedRelationship.getVoided());
+		assertThat(returnedRelationship.getVoidReason(), is(voidReason));
+		assertNotNull(returnedRelationship.getDateVoided());
+		assertEquals(returnedRelationship.getVoidedBy(), Context.getAuthenticatedUser());
+	}
+
+	/**
+	 * @see PersonService#voidRelationship(Relationship,String)
+	 */
+	@Test
+	public void voidRelationship_shouldVoidRelationshipWithVoidReasonNullIfGivenRelationshipIsNotVoided() {
+		Relationship relationship = personService.getRelationship(1);
+
+		assertFalse("We need an unvoided relationship to test the method", relationship.getVoided());
+
+		String voidReason = null;
+		Relationship returnedRelationship = personService.voidRelationship(relationship, voidReason);
+
+		assertTrue(returnedRelationship.getVoided());
+		assertThat(returnedRelationship.getVoidReason(), is(voidReason));
+		assertNotNull(returnedRelationship.getDateVoided());
+		assertEquals(returnedRelationship.getVoidedBy(), Context.getAuthenticatedUser());
+	}
+	/**
+	 * @see PersonService#voidRelationship(Relationship,String)
+	 */
+	@Test
+	public void voidRelationship_shouldVoidRelationshipWithSpecialUserIfGivenRelationshipIsNotVoided() {
+		Relationship relationship = personService.getRelationship(1);
+
+		assertFalse("We need an unvoided relationship to test the method", relationship.getVoided());
+
+		String voidReason = "Something";
+		User user = new User();
+		relationship.setVoidedBy(user);
+		Relationship returnedRelationship = personService.voidRelationship(relationship, voidReason);
+
+		assertTrue(returnedRelationship.getVoided());
+		assertThat(returnedRelationship.getVoidReason(), is(voidReason));
+		assertNotNull(returnedRelationship.getDateVoided());
+		assertEquals(returnedRelationship.getVoidedBy(), user);
+	}
+
 	/**
 	 * @see PersonService#voidRelationship(Relationship,String)
 	 */
@@ -1586,7 +1682,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Relationship voidedRelationship = Context.getPersonService().voidRelationship(relationship,
 		    "Test Voiding Relationship");
 		
-		Assert.assertTrue(voidedRelationship.getVoided());
+		assertTrue(voidedRelationship.getVoided());
 		Assert.assertNotNull(voidedRelationship.getVoidedBy());
 		Assert.assertNotNull(voidedRelationship.getVoidReason());
 		Assert.assertNotNull(voidedRelationship.getDateVoided());
@@ -1774,7 +1870,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		PersonName voidedPersonName = Context.getPersonService().voidPersonName(personName, "Test Voiding PersonName");
 		
-		Assert.assertTrue(voidedPersonName.getVoided());
+		assertTrue(voidedPersonName.getVoided());
 		Assert.assertNotNull(voidedPersonName.getVoidedBy());
 		Assert.assertNotNull(voidedPersonName.getDateVoided());
 		Assert.assertEquals(voidedPersonName.getVoidReason(), "Test Voiding PersonName");
@@ -1788,7 +1884,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/PersionServiceTest-voidUnvoidPersonName.xml");
 		PersonName voidedPersonName = Context.getPersonService().getPersonNameByUuid("a6ghgh7e-1384-493a-a55b-d325924acd94");
 		
-		Assert.assertTrue(voidedPersonName.getVoided());
+		assertTrue(voidedPersonName.getVoided());
 		
 		PersonName unvoidedPersonName = Context.getPersonService().unvoidPersonName(voidedPersonName);
 		
@@ -1825,7 +1921,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		PersonAddress voidedPersonAddress = Context.getPersonService().voidPersonAddress(personAddress,
 		    "Test Voiding PersonAddress");
 		
-		Assert.assertTrue(voidedPersonAddress.getVoided());
+		assertTrue(voidedPersonAddress.getVoided());
 		Assert.assertNotNull(voidedPersonAddress.getVoidedBy());
 		Assert.assertNotNull(voidedPersonAddress.getDateVoided());
 		Assert.assertEquals(voidedPersonAddress.getVoidReason(), "Test Voiding PersonAddress");
@@ -1840,7 +1936,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		PersonAddress voidedPersonAddress = Context.getPersonService().getPersonAddressByUuid(
 		    "33ghghb5-821c-4e5e-ad1d-a9bce331e777");
 		
-		Assert.assertTrue(voidedPersonAddress.getVoided());
+		assertTrue(voidedPersonAddress.getVoided());
 		
 		PersonAddress unvoidedPersonAddress = Context.getPersonService().unvoidPersonAddress(voidedPersonAddress);
 		
@@ -1866,7 +1962,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		personService.unvoidPerson(person);
 		
 		//then
-		Assert.assertTrue(Context.getUserService().getUsersByPerson(person, false).isEmpty());
+		assertTrue(Context.getUserService().getUsersByPerson(person, false).isEmpty());
 	}
 	
 	/**
@@ -1900,7 +1996,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		personService.voidPerson(person, "reason");
 		
 		//then
-		Assert.assertTrue(Context.getUserService().getUsersByPerson(person, false).isEmpty());
+		assertTrue(Context.getUserService().getUsersByPerson(person, false).isEmpty());
 	}
 	
 	/**
@@ -1915,7 +2011,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		personService.voidPerson(person, "reason");
 		
 		//then
-		Assert.assertTrue(person.getVoided());
+		assertTrue(person.getVoided());
 	}
 	
 	/**
@@ -1943,8 +2039,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		person.addAddress(address);
 		
 		personService.savePerson(person);
-		Assert.assertTrue(name.getPreferred());
-		Assert.assertTrue(address.getPreferred());
+		assertTrue(name.getPreferred());
+		assertTrue(address.getPreferred());
 	}
 	
 	/**
@@ -1969,8 +2065,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		person.addAddress(preferredAddress);
 		
 		personService.savePerson(person);
-		Assert.assertTrue(preferredName.getPreferred());
-		Assert.assertTrue(preferredAddress.getPreferred());
+		assertTrue(preferredName.getPreferred());
+		assertTrue(preferredAddress.getPreferred());
 		Assert.assertFalse(name.getPreferred());
 		Assert.assertFalse(address.getPreferred());
 	}
@@ -2001,8 +2097,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		personService.savePerson(person);
 		Assert.assertFalse(preferredName.getPreferred());
 		Assert.assertFalse(preferredAddress.getPreferred());
-		Assert.assertTrue(name.getPreferred());
-		Assert.assertTrue(address.getPreferred());
+		assertTrue(name.getPreferred());
+		assertTrue(address.getPreferred());
 	}
 	
 	/**
