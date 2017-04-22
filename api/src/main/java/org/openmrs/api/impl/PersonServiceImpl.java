@@ -10,6 +10,7 @@
 package org.openmrs.api.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -574,44 +575,15 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Transactional(readOnly = true)
 	public List<PersonAttributeType> getPersonAttributeTypes(PERSON_TYPE personType, ATTR_VIEW_TYPE viewType)
 	        throws APIException {
-		AdministrationService as = Context.getAdministrationService();
 		
-		String attrString = "";
-		
-		// TODO cache the global properties to speed this up??
-		// Is hibernate taking care of caching and not hitting the db every time? (hopefully it is)
 		if (viewType == null) {
 			return Context.getPersonService().getAllPersonAttributeTypes();
-		} else if (viewType == ATTR_VIEW_TYPE.LISTING) {
-			String patientListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "");
-			String userListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "");
-			attrString = combineAttributes(patientListing, userListing, personType);
-		} else if (viewType == ATTR_VIEW_TYPE.VIEWING) {
-			String patientViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "");
-			String userViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "");
-			attrString = combineAttributes(patientViewing, userViewing, personType);
-		} else if (viewType == ATTR_VIEW_TYPE.HEADER) {
-			String patientHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, "");
-			String userHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "");
-			attrString = combineAttributes(patientHeader, userHeader, personType);
-		} else {
-			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
 		}
 		
-		// the java list object to hold the values from the global properties
-		List<String> attrNames = new ArrayList<>();
-		if (StringUtils.isNotBlank(attrString)) {
-			for (String s : StringUtils.split(attrString, ",")) {
-				if (StringUtils.isNotBlank(s)) {
-					attrNames.add(s.trim());
-				}
-			}
-		}
+		List<String> attrNames = getAttributeTypesFromGlobalProperties(viewType, personType);
 		
-		// the actual list we'll be returning
-		List<PersonAttributeType> attrObjects = new Vector<PersonAttributeType>();
+		List<PersonAttributeType> attrObjects = new Vector<>();
 		
-		// get the PersonAttribute objects for each name/id
 		if (!attrNames.isEmpty()) {
 			for (String nameOrId : attrNames) {
 				if (nameOrId.matches("\\d")) {
@@ -624,22 +596,53 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		return attrObjects;
 	}
-	
-	private String combineAttributes(String patientAttributeProperty, String userAttributeProperty, PERSON_TYPE personType) {
-		final StringBuilder result = new StringBuilder();
+
+	List<String> getAttributeTypesFromGlobalProperties(ATTR_VIEW_TYPE viewType, PERSON_TYPE personType) {
+
+		List<String> result = new ArrayList<>();
 		
-		if (personType == null || personType == PERSON_TYPE.PERSON) {
-			result.append(patientAttributeProperty).append(",").append(userAttributeProperty);
-		} else if (personType == PERSON_TYPE.PATIENT) {
-			result.append(patientAttributeProperty);
-		} else if (personType == PERSON_TYPE.USER) {
-			result.append(userAttributeProperty);
+		if (viewType == ATTR_VIEW_TYPE.LISTING) {
+			result = combineAttributes(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, personType);
+		} else if (viewType == ATTR_VIEW_TYPE.VIEWING) {
+			result = combineAttributes(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, personType);
+		} else if (viewType == ATTR_VIEW_TYPE.HEADER) {
+			result = combineAttributes(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, personType);
 		} else {
 			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
 		}
-		return result.toString();
+		return result;
+		
+	}
+
+	private List<String> combineAttributes(String patientAttributeProperty, String userAttributeProperty, PERSON_TYPE personType) {
+		List<String> result = new ArrayList<>();
+		
+		if (personType == null || personType == PERSON_TYPE.PERSON) {
+			result = getGlobalProperty(patientAttributeProperty, userAttributeProperty);
+		} else if (personType == PERSON_TYPE.PATIENT) {
+			result = getGlobalProperty(patientAttributeProperty);
+		} else if (personType == PERSON_TYPE.USER) {
+			result = getGlobalProperty(userAttributeProperty);
+		} else {
+			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
+		}
+		return result;
 	}
 	
+	private List<String> getGlobalProperty(String... properties) {
+		List<String> result = new ArrayList<>();
+		AdministrationService as = Context.getAdministrationService();
+
+		for(String proper : properties) {
+			String id = as.getGlobalProperty(proper, "");
+			if (StringUtils.isNotBlank(id)) {
+				result.add(id.trim());
+			}
+		}
+		return result;
+	}
+
+
 	/**
 	 * @see org.openmrs.api.PersonService#parsePersonName(java.lang.String)
 	 */
