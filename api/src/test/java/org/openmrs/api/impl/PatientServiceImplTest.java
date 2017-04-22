@@ -7,13 +7,14 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.api;
+package org.openmrs.api.impl;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -23,13 +24,25 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.DuplicateIdentifierException;
+import org.openmrs.api.InsufficientIdentifiersException;
+import org.openmrs.api.LocationService;
+import org.openmrs.api.MissingRequiredIdentifierException;
+import org.openmrs.api.ObsService;
+import org.openmrs.api.PatientServiceTest;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
-import org.openmrs.api.impl.PatientServiceImpl;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -37,44 +50,46 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
- * This class tests methods in the PatientService class
- * without using the application context.
+ * This class tests org.openmrs.{@link PatientServiceImpl}
+ * without using the application context and mocking the identifier validator and Context.
+ *
  * If you need an integration test with application context and DB, have a look at @see org.openmrs.api.{@link PatientServiceTest}
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(PatientIdentifierValidator.class)
-public class PatientServiceImplUnitTest {
+@PrepareForTest({ PatientIdentifierValidator.class, Context.class })
+public class PatientServiceImplTest {
 
     private PatientServiceImpl patientService;
     private PatientDAO patientDaoMock;
+    private AdministrationService administrationServiceMock;
+    private ConceptService conceptServiceMock;
+    private ObsService obsServiceMock;
+    private LocationService locationServiceMock;
 
     @Before
     public void before() {
         patientService = new PatientServiceImpl();
         patientDaoMock = mock(PatientDAO.class);
         patientService.setPatientDAO(patientDaoMock);
+
         PowerMockito.mockStatic(PatientIdentifierValidator.class);
-    }
 
-    @Test(expected = APIException.class)
-    public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenEmptyAttributes() throws Exception {
-        patientService.getDuplicatePatientsByAttributes(Arrays.asList());
-    }
+        administrationServiceMock = mock(AdministrationService.class);
+        conceptServiceMock = mock(ConceptService.class);
+        obsServiceMock = mock(ObsService.class);
+        locationServiceMock = mock(LocationService.class);
 
-    @Test(expected = APIException.class)
-    public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenNoAttributes() throws Exception {
-        patientService.getDuplicatePatientsByAttributes(null);
-    }
+        PowerMockito.mockStatic(Context.class);
+        when(Context.getMessageSourceService()).thenReturn(mock(MessageSourceService.class));
+        when(Context.getAdministrationService()).thenReturn(administrationServiceMock);
+        when(Context.getConceptService()).thenReturn(conceptServiceMock);
+        when(Context.getObsService()).thenReturn(obsServiceMock);
+        when(Context.getLocationService()).thenReturn(locationServiceMock);
 
-    @Test
-    public void getDuplicatePatientsByAttributes_shouldCallDaoGivenAttributes() throws Exception {
-        when(patientDaoMock.getDuplicatePatientsByAttributes(anyList())).thenReturn(Arrays.asList(mock(Patient.class)));
-        final List<Patient> duplicatePatients = patientService.getDuplicatePatientsByAttributes(Arrays.asList("some attribute", "another attribute"));
-        verify(patientDaoMock, times(1)).getDuplicatePatientsByAttributes(anyList());
-        Assert.assertEquals(duplicatePatients.size(), 1);
     }
 
     @Test
@@ -197,6 +212,24 @@ public class PatientServiceImplUnitTest {
         // no exception
     }
 
+    @Test(expected = APIException.class)
+    public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenEmptyAttributes() throws Exception {
+        patientService.getDuplicatePatientsByAttributes(Arrays.asList());
+    }
+
+    @Test(expected = APIException.class)
+    public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenNoAttributes() throws Exception {
+        patientService.getDuplicatePatientsByAttributes(null);
+    }
+
+    @Test
+    public void getDuplicatePatientsByAttributes_shouldCallDaoGivenAttributes() throws Exception {
+        when(patientDaoMock.getDuplicatePatientsByAttributes(anyList())).thenReturn(Arrays.asList(mock(Patient.class)));
+        final List<Patient> duplicatePatients = patientService.getDuplicatePatientsByAttributes(Arrays.asList("some attribute", "another attribute"));
+        verify(patientDaoMock, times(1)).getDuplicatePatientsByAttributes(anyList());
+        Assert.assertEquals(duplicatePatients.size(), 1);
+    }
+
     @Test
     public void getPatientIdentifierTypes_shouldReturnPatientIdentifierTypesFromDao() {
 
@@ -227,6 +260,47 @@ public class PatientServiceImplUnitTest {
         // then
         verify(patientDaoMock, times(1)).getPatientIdentifierTypes("a name", "a format", true, false);
         assertEquals(0, actualIdentifierTypes.size());
+    }
+
+
+    @Test(expected = APIException.class)
+    public void processDeath_shouldThrowAPIExceptionIfPatientIsNull() throws Exception{
+        patientService.processDeath(null, new Date(), new Concept(), "unknown");
+    }
+
+    @Test(expected = APIException.class)
+    public void processDeath_shouldThrowAPIExceptionIfDateDiedIsNull() throws Exception{
+        patientService.processDeath(new Patient(), null, new Concept(), "unknown");
+    }
+
+    @Test(expected = APIException.class)
+    public void processDeath_shouldThrowAPIExceptionIfCauseOfDeathIsNull() throws Exception{
+        patientService.processDeath(new Patient(), new Date(), null, "unknown");
+    }
+
+    @Test
+    public void processDeath_shouldMapValuesAndSavePatient() throws Exception{
+        // given
+        final Date dateDied = new Date();
+        final Concept causeOfDeath = new Concept(2);
+
+        when(conceptServiceMock.getConcept(anyString())).thenReturn(new Concept());
+        when(locationServiceMock.getDefaultLocation()).thenReturn(new Location());
+
+        ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
+        when(patientDaoMock.savePatient(argumentCaptor.capture())).thenReturn(new Patient());
+
+        // when
+        final Patient patient = new Patient();
+        patient.addIdentifier(new PatientIdentifier("an identifier", new PatientIdentifierType(1234), new Location()));
+        patientService.processDeath(patient, dateDied, causeOfDeath, "unknown");
+
+        // then
+        final Patient savedPatient = argumentCaptor.getValue();
+        assertEquals(true, savedPatient.getDead());
+        assertEquals(dateDied, savedPatient.getDeathDate());
+        assertEquals(causeOfDeath, savedPatient.getCauseOfDeath());
+
     }
 
     private PatientIdentifier createVoidedPatientIdentifier() {

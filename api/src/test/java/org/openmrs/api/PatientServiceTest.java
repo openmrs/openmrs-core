@@ -30,7 +30,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentMatcher;
-import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -52,6 +51,7 @@ import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
+import org.openmrs.api.impl.PatientServiceImplTest;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
@@ -84,7 +84,7 @@ import java.util.stream.Collectors;
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
  * PatientService class
- * Before adding a test, check if you can better test it with @see org.openmrs.api.{@link PatientServiceImplUnitTest}, which
+ * Before adding a test, check if you can better test it with @see org.openmrs.api.{@link PatientServiceImplTest}, which
  * does not use the context, but mocks dependencies.
  */
 public class PatientServiceTest extends BaseContextSensitiveTest {
@@ -3211,11 +3211,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.mergePatients(preferredPatient, notPreferredPatient);
 	}
 
-	
-	@Test(expected = APIException.class)
-	public void processDeath_shouldThrowAPIExceptionIfPatientIsNull() throws Exception{
-		patientService.processDeath(null, new Date(), new Concept(), "unknown");
-	}
 
 	/**
 	 * @see PatientService#mergePatients(org.openmrs.Patient, org.openmrs.Patient)
