@@ -10,6 +10,7 @@
 package org.openmrs.api;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -2163,8 +2164,58 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getPersonAttributeTypes_shouldReurnAllPersonAttributeTypesWithViewTypeNull() {
-		List<PersonAttributeType> result = personService.getPersonAttributeTypes(null, null);
 		List<PersonAttributeType> expected = personService.getAllPersonAttributeTypes();
+		
+		List<PersonAttributeType> result = personService.getPersonAttributeTypes(null, null);
+		
 		assertThat(result, containsInAnyOrder(expected.toArray()));
+	}
+	
+	@Test
+	public void getPersonAttributeTypes_shouldReturnPatientAttributesWhenGivenViewTypeListing() {
+		adminService.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "1");
+		PersonAttributeType race = personService.getPersonAttributeType(1);
+		
+		List<PersonAttributeType> result = personService.getPersonAttributeTypes(null, PersonService.ATTR_VIEW_TYPE.LISTING);
+		
+		assertThat(result, contains(race));
+		assertEquals(result.size(), 1);
+	}
+	
+	@Test
+	public void getPersonAttributeTypes_shouldReturnUserAndPatientAttributesWhenViewTypeListiningAndPerson() {
+		adminService.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "1");
+		adminService.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "2");
+		PersonAttributeType race = personService.getPersonAttributeType(1);
+		PersonAttributeType birthplace = personService.getPersonAttributeType(2);
+		
+		List<PersonAttributeType> result = personService.getPersonAttributeTypes(OpenmrsConstants.PERSON_TYPE.PERSON, PersonService.ATTR_VIEW_TYPE.LISTING);
+		
+		assertThat(result, contains(race, birthplace));
+		assertEquals(result.size(), 2);
+	}
+	
+	@Test
+	public void getPersonAttributeTypes_shouldReturnPatientAttributesWhenViewTypeViewingAndPatient() {
+		adminService.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "1");
+		adminService.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "2");
+		PersonAttributeType race = personService.getPersonAttributeType(1);
+		
+		List<PersonAttributeType> result = personService.getPersonAttributeTypes(OpenmrsConstants.PERSON_TYPE.PATIENT, PersonService.ATTR_VIEW_TYPE.VIEWING);
+		
+		assertThat(result, contains(race));
+		assertEquals(result.size(), 1);
+	}
+	
+	@Test
+	public void getPersonAttributeTypes_shouldReturnUserAttributesWhenViewTypeHeaderAndUser() {
+		adminService.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, "1");
+		adminService.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "2");
+		PersonAttributeType birthplace = personService.getPersonAttributeType(2);
+		
+		List<PersonAttributeType> result = personService.getPersonAttributeTypes(OpenmrsConstants.PERSON_TYPE.USER, PersonService.ATTR_VIEW_TYPE.HEADER);
+		
+		assertThat(result, contains(birthplace));
+		assertEquals(result.size(), 1);
 	}
 }
