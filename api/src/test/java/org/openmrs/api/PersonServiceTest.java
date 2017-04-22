@@ -10,6 +10,7 @@
 package org.openmrs.api;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
@@ -664,16 +665,15 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		List<RelationshipType> relationshipTypes = Context.getPersonService().getAllRelationshipTypes();
 		assertTrue("Number of relationship type are 6", relationshipTypes.size() == 6);
 	}
-
+	
 	/**
 	 * @see PersonService#getPerson(Integer)
 	 */
 	@Test
 	public void getPerson_shouldReturnNullWhenPersonNull() throws Exception {
-		Person person = Context.getPersonService().getPerson(null);
-		Assert.assertNull(person);
+		Assert.assertNull(Context.getPersonService().getPerson(null));
 	}
-
+	
 	/**
 	 * @see PersonService#getPerson(Integer)
 	 */
@@ -1464,22 +1464,21 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Person personUpdated = Context.getPersonService().savePerson(personSaved);
 		Assert.assertEquals("M", personUpdated.getGender());
 	}
-
+	
 	/**
 	 * @see PersonService#saveRelationship(Relationship)
 	 */
 	@Test(expected = APIException.class)
-	public void saveRelationship_shouldThrowAPIException()  {
+	public void saveRelationship_shouldThrowAPIException() {
 		Relationship relationship = new Relationship();
 		Person person = new Person();
 		relationship.setPersonA(person);
 		relationship.setPersonB(person);
-
+		
 		personService.saveRelationship(relationship);
-
+		
 	}
-
-
+	
 	/**
 	 * @see PersonService#saveRelationship(Relationship)
 	 */
@@ -1537,14 +1536,12 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		RelationshipType updatedRelationshipType = personService.saveRelationshipType(savedRelationshipType);
 		Assert.assertEquals(true, updatedRelationshipType.getPreferred());
 	}
-
-
+	
 	@Test
 	public void unvoidPerson_shouldReturnNullwhenGivenNull() {
-		Assert.assertEquals(Context.getPersonService().unvoidPerson(null), null);
-
+		Assert.assertNull(Context.getPersonService().unvoidPerson(null));
 	}
-
+	
 	/**
 	 * @see PersonService#unvoidPerson(Person) TODO NullPointerException during
 	 *      RequiredDataAdvice.before() TODO Should we be able to unvoid an already not voided
@@ -1594,12 +1591,12 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void voidPerson_shouldReturnNullwhenGivenNull() {
 		Assert.assertEquals(Context.getPersonService().voidPerson(null, "Testing person null"), null);
-
+		
 	}
-
-		/**
-		 * @see PersonService#voidPerson(Person,String)
-		 */
+	
+	/**
+	 * @see PersonService#voidPerson(Person, String)
+	 */
 	@Test
 	public void voidPerson_shouldReturnVoidedPersonWithGivenReason() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createPersonPurgeVoidTest.xml");
@@ -2162,5 +2159,12 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		createPersonAttributeTypeLockedGPAndSetValue("true");
 		PersonAttributeType pat = ps.getPersonAttributeType(1);
 		ps.purgePersonAttributeType(pat);
+	}
+	
+	@Test
+	public void getPersonAttributeTypes_shouldReurnAllPersonAttributeTypesWithViewTypeNull() {
+		List<PersonAttributeType> result = personService.getPersonAttributeTypes(null, null);
+		List<PersonAttributeType> expected = personService.getAllPersonAttributeTypes();
+		assertThat(result, containsInAnyOrder(expected.toArray()));
 	}
 }
