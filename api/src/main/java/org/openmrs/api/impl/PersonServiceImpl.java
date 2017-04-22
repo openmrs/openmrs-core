@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.GlobalProperty;
@@ -581,23 +580,20 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		List<String> attrNames = getAttributeTypesFromGlobalProperties(viewType, personType);
 		
-		List<PersonAttributeType> attrObjects = new Vector<>();
-		
+		List<PersonAttributeType> result = new ArrayList<>();
 		if (!attrNames.isEmpty()) {
 			for (String nameOrId : attrNames) {
 				if (nameOrId.matches("\\d")) {
-					attrObjects.add(Context.getPersonService().getPersonAttributeType(Integer.valueOf(nameOrId)));
+					result.add(Context.getPersonService().getPersonAttributeType(Integer.valueOf(nameOrId)));
 				} else {
-					attrObjects.add(getPersonAttributeTypeByName(nameOrId));
+					result.add(getPersonAttributeTypeByName(nameOrId));
 				}
 			}
 		}
-		
-		return attrObjects;
+		return result;
 	}
 
-	List<String> getAttributeTypesFromGlobalProperties(ATTR_VIEW_TYPE viewType, PERSON_TYPE personType) {
-
+	private List<String> getAttributeTypesFromGlobalProperties(ATTR_VIEW_TYPE viewType, PERSON_TYPE personType) {
 		List<String> result = new ArrayList<>();
 		
 		if (viewType == ATTR_VIEW_TYPE.LISTING) {
@@ -610,37 +606,34 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
 		}
 		return result;
-		
 	}
 
 	private List<String> combineAttributes(String patientAttributeProperty, String userAttributeProperty, PERSON_TYPE personType) {
 		List<String> result = new ArrayList<>();
 		
 		if (personType == null || personType == PERSON_TYPE.PERSON) {
-			result = getGlobalProperty(patientAttributeProperty, userAttributeProperty);
+			result = getGlobalProperties(patientAttributeProperty, userAttributeProperty);
 		} else if (personType == PERSON_TYPE.PATIENT) {
-			result = getGlobalProperty(patientAttributeProperty);
+			result = getGlobalProperties(patientAttributeProperty);
 		} else if (personType == PERSON_TYPE.USER) {
-			result = getGlobalProperty(userAttributeProperty);
+			result = getGlobalProperties(userAttributeProperty);
 		} else {
 			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
 		}
 		return result;
 	}
 	
-	private List<String> getGlobalProperty(String... properties) {
+	private List<String> getGlobalProperties(String... properties) {
 		List<String> result = new ArrayList<>();
 		AdministrationService as = Context.getAdministrationService();
-
-		for(String proper : properties) {
-			String id = as.getGlobalProperty(proper, "");
+		for (String p : properties) {
+			String id = as.getGlobalProperty(p, "");
 			if (StringUtils.isNotBlank(id)) {
 				result.add(id.trim());
 			}
 		}
 		return result;
 	}
-
 
 	/**
 	 * @see org.openmrs.api.PersonService#parsePersonName(java.lang.String)
