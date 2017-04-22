@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -61,6 +62,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatient.xml";
 	
 	protected static final String CREATE_RELATIONSHIP_XML = "org/openmrs/api/include/PersonServiceTest-createRelationship.xml";
+	
+	protected static final String CREATE_PERSON_PROPERTY_XML = "org/openmrs/api/include/PersonServiceTest-PersonAttributeType.xml";
 	
 	protected static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 	
@@ -2190,12 +2193,61 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getPersonAttributeTypes_shouldReurnAllPersonAttributeTypesWithViewTypeNull() {
+	public void getPersonAttributeTypes_shouldReturnAllPersonAttributeTypesWithViewTypeNull() {
 		List<PersonAttributeType> expected = personService.getAllPersonAttributeTypes();
 		
 		List<PersonAttributeType> result = personService.getPersonAttributeTypes(null, null);
 		
 		assertThat(result, containsInAnyOrder(expected.toArray()));
+	}
+	
+	@Test
+	public void getPersonAttributeTypes_shouldReturnEmptyListWithViewTypeListing() {
+		
+		List<PersonAttributeType> result = personService.getPersonAttributeTypes(null, PersonService.ATTR_VIEW_TYPE.LISTING);
+		
+		assertTrue(result.isEmpty());
+	}
+	
+	@Test
+	public void getPersonAttributeTypes_shouldReturnEmptyListWhenViewTypeListingAndPerson() {
+		
+		List<PersonAttributeType> result = personService.getPersonAttributeTypes(OpenmrsConstants.PERSON_TYPE.PERSON, PersonService.ATTR_VIEW_TYPE.LISTING);
+		
+		assertTrue(result.isEmpty());
+	}
+	@Test
+	public void getPersonAttributeTypes_shouldReturnEmptyListWhenViewTypePatientAndViewing() {
+		
+		List<PersonAttributeType> result = personService.getPersonAttributeTypes(OpenmrsConstants.PERSON_TYPE.PATIENT, PersonService.ATTR_VIEW_TYPE.VIEWING);
+		
+		assertTrue(result.isEmpty());
+	}
+	
+	@Test
+	public void getPersonAttributeTypes_shouldReturnListWithNullWhenGlobalPropertyNotExists() {
+		adminService.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "9");
+		assertNull(personService.getPersonAttributeType(9));
+		
+		List<PersonAttributeType> result = personService.getPersonAttributeTypes(null, PersonService.ATTR_VIEW_TYPE.LISTING);
+		
+		// This is a bug Trunk-5149
+		assertEquals(result.size(), 1);
+		assertNull(result.get(0));
+	}
+	
+	@Test
+	public void getPersonAttributeTypes_shouldReturnNothingWhenGlobalPropertyLargerNineExists() {
+		adminService.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "99");
+		executeDataSet(CREATE_PERSON_PROPERTY_XML);
+		
+		assertNotNull(personService.getPersonAttributeType(99));
+		
+		List<PersonAttributeType> result = personService.getPersonAttributeTypes(null, PersonService.ATTR_VIEW_TYPE.LISTING);
+		
+		// This is probably a bug TRUNK-5148
+		assertEquals(result.size(), 1);
+		assertNull(result.get(0));
 	}
 	
 	@Test
