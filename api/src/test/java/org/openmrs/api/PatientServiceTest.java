@@ -169,6 +169,16 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		return !preferredPatientOrders.isEmpty();
 	}
 
+	@Test(expected = APIException.class)
+	public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenEmptyAttributes() throws Exception {
+		patientService.getDuplicatePatientsByAttributes(Arrays.asList());
+	}
+
+	@Test(expected = APIException.class)
+	public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenNoAttributes() throws Exception {
+		patientService.getDuplicatePatientsByAttributes(null);
+	}
+
 	/**
 	 * @see PatientService#getAllIdentifierValidators()
 	 */
