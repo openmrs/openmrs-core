@@ -579,15 +579,12 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		}
 		
 		List<String> attrNames = getAttributeTypesFromGlobalProperties(viewType, personType);
-		
 		List<PersonAttributeType> result = new ArrayList<>();
-		if (!attrNames.isEmpty()) {
-			for (String nameOrId : attrNames) {
-				if (nameOrId.matches("\\d")) {
-					result.add(Context.getPersonService().getPersonAttributeType(Integer.valueOf(nameOrId)));
-				} else {
-					result.add(getPersonAttributeTypeByName(nameOrId));
-				}
+		for (String nameOrId : attrNames) {
+			if (nameOrId.matches("\\d")) {
+				result.add(getPersonAttributeType(Integer.valueOf(nameOrId)));
+			} else {
+				result.add(getPersonAttributeTypeByName(nameOrId));
 			}
 		}
 		return result;
