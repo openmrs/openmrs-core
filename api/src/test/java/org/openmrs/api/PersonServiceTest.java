@@ -697,6 +697,21 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertThat(rt.getRetireReason(), is(reason));
 	}
 	
+	@Test
+	public void unretireRelationshipType_shouldRetireGivenRelationshipType() {
+		
+		RelationshipType rt = personService.getRelationshipType(1);
+		personService.retireRelationshipType(rt, "reason");
+		assertTrue(rt.getRetired());
+		
+		personService.unretireRelationshipType(rt);
+		
+		assertFalse(rt.getRetired());
+		assertNull(rt.getRetiredBy());
+		assertNull(rt.getDateRetired());
+		assertNull(rt.getRetireReason());
+	}
+	
 	/**
 	 * @see PersonService#getPerson(Integer)
 	 */
