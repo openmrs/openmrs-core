@@ -9,18 +9,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.Vector;
-
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Allergen;
 import org.openmrs.Allergies;
@@ -71,6 +59,19 @@ import org.openmrs.validator.PatientIdentifierValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.Vector;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation of the patient service. This class should not be used on its own. The
@@ -280,58 +281,54 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (!patient.getVoided() && patient.getActiveIdentifiers().isEmpty()) {
 			throw new InsufficientIdentifiersException("At least one nonvoided Patient Identifier is required");
 		}
-		
-		List<PatientIdentifier> patientIdentifiers = new ArrayList<>();
+
+		final List<PatientIdentifier> patientIdentifiers = new ArrayList<>();
 		patientIdentifiers.addAll(patient.getIdentifiers());
-		List<PatientIdentifierType> requiredTypes = this.getPatientIdentifierTypes(null, null, true, null);
-		if (requiredTypes == null) {
-			requiredTypes = new ArrayList<PatientIdentifierType>();
-		}
 
-		List<String> identifiersUsed = new ArrayList<>();
+		final Set<String> uniqueIdentifiers = new HashSet<>();
 
-		for (PatientIdentifier pi : patientIdentifiers) {
-			if (pi.getVoided()) {
-				continue;
-			}
-			
-			try {
-				PatientIdentifierValidator.validateIdentifier(pi);
-			}
-			catch (BlankIdentifierException bie) {
-				patient.removeIdentifier(pi);
-				throw bie;
-			}
-			
-			// check if this is a required identifier
-			for (PatientIdentifierType requiredType : requiredTypes) {
-				if (pi.getIdentifierType().equals(requiredType)) {
-					requiredTypes.remove(requiredType);
-					break;
+		patientIdentifiers.stream()
+			.filter(pi -> !pi.getVoided())
+			.forEach(pi -> {
+				try {
+					PatientIdentifierValidator.validateIdentifier(pi);
 				}
-			}
-			
-			// check this patient for duplicate identifiers+identifierType
-			if (identifiersUsed.contains(pi.getIdentifier() + " id type #: "
-			        + pi.getIdentifierType().getPatientIdentifierTypeId())) {
-				throw new DuplicateIdentifierException("This patient has two identical identifiers of type "
-				        + pi.getIdentifierType().getName() + ": " + pi.getIdentifier(), pi);
-			} else {
-				identifiersUsed.add(pi.getIdentifier() + " id type #: "
-				        + pi.getIdentifierType().getPatientIdentifierTypeId());
-			}
-		}
-		
-		if (!requiredTypes.isEmpty()) {
-			String missingNames = "";
-			for (PatientIdentifierType pit : requiredTypes) {
-				missingNames += (missingNames.length() > 0) ? ", " + pit.getName() : pit.getName();
-			}
-			throw new MissingRequiredIdentifierException("Patient is missing the following required identifier(s): "
-			        + missingNames);
+				catch (BlankIdentifierException bie) {
+					patient.removeIdentifier(pi);
+					throw bie;
+				}
+
+				// check this patient for duplicate identifiers+identifierType
+				String compareString = pi.getIdentifier() + " id type #: " + pi.getIdentifierType().getPatientIdentifierTypeId();
+				if(! uniqueIdentifiers.add(compareString)) {
+					throw new DuplicateIdentifierException("This patient has two identical identifiers of type "
+							+ compareString, pi);
+				}
+			});
+
+		checkForMissingRequiredIdentifiers(patientIdentifiers);
+
+	}
+
+	private void checkForMissingRequiredIdentifiers(List<PatientIdentifier> patientIdentifiers) {
+		final Set<PatientIdentifierType> patientIdentifierTypes =
+				patientIdentifiers.stream()
+						.map(identifier -> identifier.getIdentifierType())
+						.collect(Collectors.toSet());
+
+		final List<PatientIdentifierType> requiredTypes = this.getPatientIdentifierTypes(null, null, true, null);
+		final Set<String> missingRequiredTypeNames =
+				requiredTypes.stream()
+						.filter(requiredType -> !patientIdentifierTypes.contains(requiredType))
+						.map(type -> type.getName())
+						.collect(Collectors.toSet());
+
+		if(! missingRequiredTypeNames.isEmpty()) {
+			throw new MissingRequiredIdentifierException(
+					"Patient is missing the following required identifier(s): " + String.join(", ", missingRequiredTypeNames));
 		}
 	}
-		
+
 	/**
 	 * @see org.openmrs.api.PatientService#voidPatient(org.openmrs.Patient, java.lang.String)
 	 */
@@ -434,7 +431,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public List<PatientIdentifierType> getPatientIdentifierTypes(String name, String format, Boolean required,
 	        Boolean hasCheckDigit) throws APIException {
-		return dao.getPatientIdentifierTypes(name, format, required, hasCheckDigit);
+		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(name, format, required, hasCheckDigit);
+		if (patientIdentifierTypes == null) {
+			return new ArrayList<>();
+		}
+		return patientIdentifierTypes;
 	}
 	
 	/**
