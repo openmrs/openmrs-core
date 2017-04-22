@@ -13,8 +13,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -665,6 +665,33 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		List<RelationshipType> relationshipTypes = Context.getPersonService().getAllRelationshipTypes();
 		assertTrue("Number of relationship type are 6", relationshipTypes.size() == 6);
+	}
+	
+	@Test(expected = APIException.class)
+	public void retireRelationshipType_shouldFailIfGivenReasonIsNull() {
+		
+		personService.retireRelationshipType(new RelationshipType(), null);
+	}
+	
+	@Test(expected = APIException.class)
+	public void retireRelationshipType_shouldFailIfGivenReasonIsEmptyString() {
+		
+		personService.retireRelationshipType(new RelationshipType(), "");
+	}
+	
+	@Test
+	public void retireRelationshipType_shouldRetireGivenRelationshipType() {
+		
+		RelationshipType rt = personService.getRelationshipType(1);
+		assertFalse(rt.getRetired());
+		String reason = "reason";
+		
+		personService.retireRelationshipType(rt, reason);
+		
+		assertTrue(rt.getRetired());
+		assertThat(rt.getRetiredBy(), is(Context.getAuthenticatedUser()));
+		assertNotNull(rt.getDateRetired());
+		assertThat(rt.getRetireReason(), is(reason));
 	}
 	
 	/**
