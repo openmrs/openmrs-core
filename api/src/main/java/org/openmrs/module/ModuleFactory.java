@@ -205,7 +205,7 @@ public class ModuleFactory {
 		}
 		
 		//inform modules, that they can't start before other modules
-		
+
 		Map<String, Module> loadedModulesMap = getLoadedModulesMapPackage();
 		for (Module m : loadedModulesMap.values()) {
 			Map<String, String> startBeforeModules = m.getStartBeforeModulesMap();
