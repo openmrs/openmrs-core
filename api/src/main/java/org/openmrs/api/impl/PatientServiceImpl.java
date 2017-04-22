@@ -281,17 +281,16 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			throw new InsufficientIdentifiersException("At least one nonvoided Patient Identifier is required");
 		}
 		
-		List<PatientIdentifier> identifiers = new Vector<PatientIdentifier>();
-		identifiers.addAll(patient.getIdentifiers());
-		List<String> identifiersUsed = new Vector<String>();
-		List<PatientIdentifierType> requiredTypes = Context.getPatientService().getPatientIdentifierTypes(null, null, true,
-		    null);
+		List<PatientIdentifier> patientIdentifiers = new ArrayList<>();
+		patientIdentifiers.addAll(patient.getIdentifiers());
+		List<PatientIdentifierType> requiredTypes = this.getPatientIdentifierTypes(null, null, true, null);
 		if (requiredTypes == null) {
 			requiredTypes = new ArrayList<PatientIdentifierType>();
 		}
-		List<PatientIdentifierType> foundRequiredTypes = new ArrayList<PatientIdentifierType>();
-		
-		for (PatientIdentifier pi : identifiers) {
+
+		List<String> identifiersUsed = new ArrayList<>();
+
+		for (PatientIdentifier pi : patientIdentifiers) {
 			if (pi.getVoided()) {
 				continue;
 			}
@@ -307,7 +306,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			// check if this is a required identifier
 			for (PatientIdentifierType requiredType : requiredTypes) {
 				if (pi.getIdentifierType().equals(requiredType)) {
-					foundRequiredTypes.add(requiredType);
 					requiredTypes.remove(requiredType);
 					break;
 				}
