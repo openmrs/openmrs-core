@@ -205,9 +205,15 @@ public class ModuleFactory {
 		}
 		
 		//inform modules, that they can't start before other modules
+<<<<<<< HEAD
 		
 		Map<String, Module> loadedModulesMap = getLoadedModulesMapPackage();
 		for (Module m : loadedModulesMap.values()) {
+=======
+
+		Map<String, Module> loadedModulesMap = getLoadedModulesMapPackage();
+		for ( Module m :loadedModulesMap.values()) {
+>>>>>>> 8d79f634e56214f35633d5483900bf9d0740f208
 			Map<String, String> startBeforeModules = m.getStartBeforeModulesMap();
 			if (startBeforeModules.size() > 0) {
 				for (String s : startBeforeModules.keySet()) {
@@ -481,7 +487,11 @@ public class ModuleFactory {
 		}
 		
 		Map<String, Module> map = new WeakHashMap<String, Module>();
+<<<<<<< HEAD
 		for (Module loadedModule : loadedModules.values()) {
+=======
+		for ( Module loadedModule: loadedModules.values() ) { 
+>>>>>>> 8d79f634e56214f35633d5483900bf9d0740f208
 			map.put(loadedModule.getPackageName(), loadedModule);
 		}
 		return map;
