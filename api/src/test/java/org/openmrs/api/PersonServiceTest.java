@@ -1661,75 +1661,67 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(voidedPerson.getPersonVoidReason(), "Test Voiding Person");
 	}
 
-	/**
-	 * @see PersonService#voidRelationship(Relationship,String)
-	 */
 	@Test
 	public void voidRelationship_shouldVoidRelationshipIfGivenRelationshipIsNotVoided() {
+		
 		Relationship relationship = personService.getRelationship(1);
-
 		assertFalse("We need an unvoided relationship to test the method", relationship.getVoided());
-
 		String voidReason = "Something";
-		Relationship returnedRelationship = personService.voidRelationship(relationship, voidReason);
 
-		assertTrue(returnedRelationship.getVoided());
-		assertThat(returnedRelationship.getVoidReason(), is(voidReason));
-		assertNotNull(returnedRelationship.getDateVoided());
-		assertEquals(returnedRelationship.getVoidedBy(), Context.getAuthenticatedUser());
+		// TODO - voiding is done by the BaseVoidHandler called via AOP before voidRelationship
+		// is executed. Coverage of voidRelationship is low because relationship.getVoided() is true
+		// when entering voidRelationship
+		// Documented at TRUNK-5151
+		personService.voidRelationship(relationship, voidReason);
+
+		Relationship voidedRelationship = personService.getRelationship(1);
+		assertTrue(voidedRelationship.getVoided());
+		assertThat(voidedRelationship.getVoidReason(), is(voidReason));
+		assertNotNull(voidedRelationship.getDateVoided());
+		assertEquals(voidedRelationship.getVoidedBy(), Context.getAuthenticatedUser());
 	}
 
-	/**
-	 * @see PersonService#voidRelationship(Relationship,String)
-	 */
 	@Test
 	public void voidRelationship_shouldVoidRelationshipWithVoidReasonNullIfGivenRelationshipIsNotVoided() {
-		Relationship relationship = personService.getRelationship(1);
-
-		assertFalse("We need an unvoided relationship to test the method", relationship.getVoided());
-
-		String voidReason = null;
-		Relationship returnedRelationship = personService.voidRelationship(relationship, voidReason);
-
-		assertTrue(returnedRelationship.getVoided());
-		assertThat(returnedRelationship.getVoidReason(), is(voidReason));
-		assertNotNull(returnedRelationship.getDateVoided());
-		assertEquals(returnedRelationship.getVoidedBy(), Context.getAuthenticatedUser());
-	}
-	/**
-	 * @see PersonService#voidRelationship(Relationship,String)
-	 */
-	@Test
-	public void voidRelationship_shouldVoidRelationshipWithSpecialUserIfGivenRelationshipIsNotVoided() {
-		Relationship relationship = personService.getRelationship(1);
-
-		assertFalse("We need an unvoided relationship to test the method", relationship.getVoided());
-
-		String voidReason = "Something";
-		User user = new User();
-		relationship.setVoidedBy(user);
-		Relationship returnedRelationship = personService.voidRelationship(relationship, voidReason);
-
-		assertTrue(returnedRelationship.getVoided());
-		assertThat(returnedRelationship.getVoidReason(), is(voidReason));
-		assertNotNull(returnedRelationship.getDateVoided());
-		assertEquals(returnedRelationship.getVoidedBy(), user);
-	}
-
-	/**
-	 * @see PersonService#voidRelationship(Relationship,String)
-	 */
-	@Test
-	public void voidRelationship_shouldVoidRelationshipWithTheGivenReason() throws Exception {
-		Relationship relationship = Context.getPersonService().getRelationship(1);
-		Relationship voidedRelationship = Context.getPersonService().voidRelationship(relationship,
-		    "Test Voiding Relationship");
 		
+		Relationship relationship = personService.getRelationship(1);
+		assertFalse("We need an unvoided relationship to test the method", relationship.getVoided());
+		String voidReason = null;
+
+		// TODO - voiding is done by the BaseVoidHandler called via AOP before voidRelationship
+		// is executed. Coverage of voidRelationship is low because relationship.getVoided() is true
+		// when entering voidRelationship
+		// Documented at TRUNK-5151
+		personService.voidRelationship(relationship, voidReason);
+		
+		Relationship voidedRelationship = personService.getRelationship(1);
 		assertTrue(voidedRelationship.getVoided());
-		Assert.assertNotNull(voidedRelationship.getVoidedBy());
-		Assert.assertNotNull(voidedRelationship.getVoidReason());
-		Assert.assertNotNull(voidedRelationship.getDateVoided());
-		Assert.assertEquals(voidedRelationship.getVoidReason(), "Test Voiding Relationship");
+		assertThat(voidedRelationship.getVoidReason(), is(voidReason));
+		assertNotNull(voidedRelationship.getDateVoided());
+		assertEquals(voidedRelationship.getVoidedBy(), Context.getAuthenticatedUser());
+	}
+	
+	@Test
+	public void voidRelationship_shouldVoidRelationshipAndSetVoidedByToGivenUserIfGivenRelationshipIsNotVoided() {
+		
+		Relationship relationship = personService.getRelationship(1);
+		assertFalse("We need an unvoided relationship to test the method", relationship.getVoided());
+		String voidReason = "Something";
+		User user = Context.getUserService().getUser(501);
+		assertNotNull("need a user to void", user);
+		relationship.setVoidedBy(user);
+
+		// TODO - voiding is done by the BaseVoidHandler called via AOP before voidRelationship
+		// is executed. Coverage of voidRelationship is low because relationship.getVoided() is true
+		// when entering voidRelationship
+		// Documented at TRUNK-5151
+		personService.voidRelationship(relationship, voidReason);
+		
+		Relationship voidedRelationship = personService.getRelationship(1);
+		assertTrue(voidedRelationship.getVoided());
+		assertThat(voidedRelationship.getVoidReason(), is(voidReason));
+		assertNotNull(voidedRelationship.getDateVoided());
+		assertEquals(voidedRelationship.getVoidedBy(), user);
 	}
 	
 	/**
