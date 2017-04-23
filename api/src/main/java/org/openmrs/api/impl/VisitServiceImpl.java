@@ -346,33 +346,50 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		return dao.getVisitAttributeByUuid(uuid);
 	}
 	
+	private String getVisitTypeNamesFromGlobalPropertyValue() {
+		return Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
+	}
+
+	private String[] getVisitTypesFromVisitTypeNames(String gpValue) {
+		String[] visitTypeNames = StringUtils.split(gpValue.trim(), ",");
+		for (int i = 0; i < visitTypeNames.length; i++) {
+			String currName = visitTypeNames[i];
+			visitTypeNames[i] = currName.trim().toLowerCase();
+		}
+		return visitTypeNames;
+	}
+
+	private void getVisitTypesToStop(String gpValue, VisitService vs) {
+		List<VisitType> visitTypesToStop = new ArrayList<VisitType>();
+		String[] visitTypeNames = getVisitTypesFromVisitTypeNames(gpValue);
+		List<VisitType> allVisitTypes = vs.getAllVisitTypes();
+		for (VisitType visitType : allVisitTypes) {
+			if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase())) {
+				visitTypesToStop.add(visitType);
+			}
+		}
+	}
 	/**
 	 * @see org.openmrs.api.VisitService#stopVisits(Date)
 	 */
 	@Override
 	public void stopVisits(Date maximumStartDate) {
-		String gpValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
+		String gpValue = getVisitTypeNamesFromGlobalPropertyValue();
 		VisitService vs = Context.getVisitService();
-		if (StringUtils.isNotBlank(gpValue)) {
+		if (StringUtils.isBlank(gpValue)) {
+    		return;
+		}
+		else {
 			if (maximumStartDate == null) {
 				maximumStartDate = new Date();
 			}
 			
-			List<VisitType> visitTypesToStop = new ArrayList<VisitType>();
-			String[] visitTypeNames = StringUtils.split(gpValue.trim(), ",");
-			for (int i = 0; i < visitTypeNames.length; i++) {
-				String currName = visitTypeNames[i];
-				visitTypeNames[i] = currName.trim().toLowerCase();
+			List<VisitType> visitTypesToStop = getVisitTypesToStop(gpValue, vs);
+
+			if (visitTypesToStop.isEmpty()) {
+				return;
 			}
-			
-			List<VisitType> allVisitTypes = vs.getAllVisitTypes();
-			for (VisitType visitType : allVisitTypes) {
-				if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase())) {
-					visitTypesToStop.add(visitType);
-				}
-			}
-			
-			if (!visitTypesToStop.isEmpty()) {
+			else {
 				int counter = 0;
 				Date stopDate = new Date();
 				Visit nextVisit = dao.getNextVisit(null, visitTypesToStop, maximumStartDate);
