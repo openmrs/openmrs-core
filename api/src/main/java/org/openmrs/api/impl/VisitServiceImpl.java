@@ -346,12 +346,24 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		return dao.getVisitAttributeByUuid(uuid);
 	}
 	
+	private String getVisitTypeNamesFromGlobalPropertyValue() {
+		return Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
+	}
+
+	private String[] getVisitTypesFromVisitTypeNames(String gpValue) {
+		String[] visitTypeNames = StringUtils.split(gpValue.trim(), ",");
+		for (int i = 0; i < visitTypeNames.length; i++) {
+			String currName = visitTypeNames[i];
+			visitTypeNames[i] = currName.trim().toLowerCase();
+		}
+		return visitTypeNames;
+	}
 	/**
 	 * @see org.openmrs.api.VisitService#stopVisits(Date)
 	 */
 	@Override
 	public void stopVisits(Date maximumStartDate) {
-		String gpValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
+		String gpValue = getVisitTypeNamesFromGlobalPropertyValue();
 		VisitService vs = Context.getVisitService();
 		if (StringUtils.isNotBlank(gpValue)) {
 			if (maximumStartDate == null) {
@@ -359,11 +371,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 			}
 			
 			List<VisitType> visitTypesToStop = new ArrayList<VisitType>();
-			String[] visitTypeNames = StringUtils.split(gpValue.trim(), ",");
-			for (int i = 0; i < visitTypeNames.length; i++) {
-				String currName = visitTypeNames[i];
-				visitTypeNames[i] = currName.trim().toLowerCase();
-			}
+			String[] visitTypeNames = getVisitTypesFromVisitTypeNames(gpValue);
 			
 			List<VisitType> allVisitTypes = vs.getAllVisitTypes();
 			for (VisitType visitType : allVisitTypes) {
