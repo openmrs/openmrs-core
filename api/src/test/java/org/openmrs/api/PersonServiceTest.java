@@ -65,6 +65,10 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String CREATE_PERSON_PROPERTY_XML = "org/openmrs/api/include/PersonServiceTest-PersonAttributeType.xml";
 	
+	private static final Integer RETIRED_PERSON_ATTRIBUTE_TYPE = 1;
+	
+	private static final Integer UNRETIRED_PERSON_ATTRIBUTE_TYPE = 2;
+	
 	protected static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 	
 	protected PatientService ps = null;
@@ -2160,30 +2164,68 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		ps.savePersonAttributeType(pat);
 	}
 	
-	/**
-	 * @see PersonService#retirePersonAttributeType(PersonAttributeType, String)
-	 * @throws PersonAttributeTypeLockedException
-	 */
 	@Test(expected = PersonAttributeTypeLockedException.class)
-	public void retirePersonAttributeType_shouldThrowAnErrorWhenTryingToRetirePersonAttributeTypeWhilePersonAttributeTypesAreLocked()
-	        throws Exception {
-		PersonService ps = Context.getPersonService();
+	public void shouldFailToRetirePersonAttributeTypeWhilePersonAttributeTypesAreLocked() {
+		
 		createPersonAttributeTypeLockedGPAndSetValue("true");
-		PersonAttributeType pat = ps.getPersonAttributeType(1);
-		ps.retirePersonAttributeType(pat, "Retire test");
+		PersonAttributeType pat = personService.getPersonAttributeType(UNRETIRED_PERSON_ATTRIBUTE_TYPE);
+		
+		personService.retirePersonAttributeType(pat, "Retire test");
 	}
 	
-	/**
-	 * @see PersonService#unretirePersonAttributeType(PersonAttributeType)
-	 * @throws PersonAttributeTypeLockedException
-	 */
+	@Test(expected = APIException.class)
+	public void shouldFailToRetirePersonAttributeTypeIfGivenReasonIsNull() {
+		
+		PersonAttributeType pat = personService.getPersonAttributeType(UNRETIRED_PERSON_ATTRIBUTE_TYPE);
+		
+		personService.retirePersonAttributeType(pat, null);
+	}
+	
+	@Test(expected = APIException.class)
+	public void shouldFailToRetirePersonAttributeTypeIfGivenReasonIsEmpty() {
+		
+		PersonAttributeType pat = personService.getPersonAttributeType(UNRETIRED_PERSON_ATTRIBUTE_TYPE);
+		
+		personService.retirePersonAttributeType(pat, "");
+	}
+	
+	@Test
+	public void shouldRetirePersonAttributeType() {
+		
+		PersonAttributeType pat = personService.getPersonAttributeType(UNRETIRED_PERSON_ATTRIBUTE_TYPE);
+		assertFalse("need an unretired PersonAttributeType", pat.getRetired());
+		String retireReason = "reason";
+		
+		personService.retirePersonAttributeType(pat, retireReason);
+		
+		PersonAttributeType retiredPat = personService.getPersonAttributeType(UNRETIRED_PERSON_ATTRIBUTE_TYPE);
+		assertTrue(retiredPat.getRetired());
+		assertThat(retiredPat.getRetiredBy(), is(Context.getAuthenticatedUser()));
+		assertThat(retiredPat.getRetireReason(), is(retireReason));
+		assertNotNull(retiredPat.getDateRetired());
+	}
+	
 	@Test(expected = PersonAttributeTypeLockedException.class)
-	public void unretirePersonAttributeType_shouldThrowAnErrorWhenTryingToUnretirePersonAttributeTypeWhilePersonAttributeTypesAreLocked()
-	        throws Exception {
-		PersonService ps = Context.getPersonService();
+	public void unretirePersonAttributeType_shouldThrowAnErrorWhenTryingToUnretirePersonAttributeTypeWhilePersonAttributeTypesAreLocked() {
+		
 		createPersonAttributeTypeLockedGPAndSetValue("true");
-		PersonAttributeType pat = ps.getPersonAttributeType(1);
-		ps.unretirePersonAttributeType(pat);
+		PersonAttributeType pat = personService.getPersonAttributeType(RETIRED_PERSON_ATTRIBUTE_TYPE);
+		
+		personService.unretirePersonAttributeType(pat);
+	}
+	
+	@Test
+	public void shouldUnretirePersonAttributeType() {
+		
+		PersonAttributeType pat = personService.getPersonAttributeType(RETIRED_PERSON_ATTRIBUTE_TYPE);
+		
+		personService.unretirePersonAttributeType(pat);
+		
+		PersonAttributeType unretiredPat = personService.getPersonAttributeType(UNRETIRED_PERSON_ATTRIBUTE_TYPE);
+		assertFalse(unretiredPat.getRetired());
+		assertNull(unretiredPat.getRetiredBy());
+		assertNull(unretiredPat.getRetireReason());
+		assertNull(unretiredPat.getDateRetired());
 	}
 	
 	/**
