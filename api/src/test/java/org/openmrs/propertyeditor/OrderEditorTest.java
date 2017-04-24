@@ -9,29 +9,24 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.Order;
+import org.openmrs.api.OrderService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class OrderEditorTest extends BaseContextSensitiveTest {
+public class OrderEditorTest extends BasePropertyEditorTest<Order, OrderEditor> {
 	
-	/**
-	 * @see OrderEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingId() {
-		OrderEditor editor = new OrderEditor();
-		editor.setAsText("2");
-		Assert.assertNotNull(editor.getValue());
+	private static final Integer EXISTING_ID = 2;
+	
+	@Autowired
+	OrderService orderService;
+	
+	@Override
+	protected OrderEditor getNewEditor() {
+		return new OrderEditor();
 	}
 	
-	/**
-	 * @see OrderEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingUuid() {
-		OrderEditor editor = new OrderEditor();
-		editor.setAsText("dfca4077-493c-496b-8312-856ee5d1cc26");
-		Assert.assertNotNull(editor.getValue());
+	@Override
+	protected Order getExistingObject() {
+		return orderService.getOrder(EXISTING_ID);
 	}
 }
