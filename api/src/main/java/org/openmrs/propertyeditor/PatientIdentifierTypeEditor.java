@@ -9,62 +9,29 @@
  */
 package org.openmrs.propertyeditor;
 
-import java.beans.PropertyEditorSupport;
-
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 /**
- * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
- * an object back and forth through an html form or other medium. <br>
+ * Allows for serializing/deserializing an object to a string so that Spring knows how to pass an
+ * object back and forth through an html form or other medium. <br>
  * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
  * 
  * @see PatientIdentifierType
  */
-public class PatientIdentifierTypeEditor extends PropertyEditorSupport {
-	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+public class PatientIdentifierTypeEditor extends OpenmrsPropertyEditor<PatientIdentifierType> {
 	
 	public PatientIdentifierTypeEditor() {
 	}
 	
-	/**
-	 * @should set using id
-	 * @should set using uuid
-	 */
 	@Override
-	public void setAsText(String text) throws IllegalArgumentException {
-		PatientService ps = Context.getPatientService();
-		if (StringUtils.hasText(text)) {
-			try {
-				setValue(ps.getPatientIdentifierType(Integer.valueOf(text)));
-			}
-			catch (Exception ex) {
-				PatientIdentifierType patientIdentifierType = ps.getPatientIdentifierTypeByUuid(text);
-				setValue(patientIdentifierType);
-				if (patientIdentifierType == null) {
-					log.error("Error setting text: " + text, ex);
-					throw new IllegalArgumentException("Identifier Type not found: " + ex.getMessage());
-				}
-			}
-		} else {
-			setValue(null);
-		}
+	protected PatientIdentifierType getObjectById(Integer id) {
+		return Context.getPatientService().getPatientIdentifierType(id);
 	}
 	
 	@Override
-	public String getAsText() {
-		PatientIdentifierType t = (PatientIdentifierType) getValue();
-		if (t == null) {
-			return "";
-		} else {
-			return t.getPatientIdentifierTypeId().toString();
-		}
+	protected PatientIdentifierType getObjectByUuid(String uuid) {
+		return Context.getPatientService().getPatientIdentifierTypeByUuid(uuid);
 	}
-	
 }

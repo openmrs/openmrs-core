@@ -9,62 +9,29 @@
  */
 package org.openmrs.propertyeditor;
 
-import java.beans.PropertyEditorSupport;
-
 import org.openmrs.ConceptClass;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 /**
- * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
- * an object back and forth through an html form or other medium. <br>
+ * Allows for serializing/deserializing an object to a string so that Spring knows how to pass an
+ * object back and forth through an html form or other medium. <br>
  * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
  * 
  * @see ConceptClass
  */
-public class ConceptClassEditor extends PropertyEditorSupport {
-	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+public class ConceptClassEditor extends OpenmrsPropertyEditor<ConceptClass> {
 	
 	public ConceptClassEditor() {
 	}
 	
-	/**
-	 * @should set using id
-	 * @should set using uuid
-	 */
 	@Override
-	public void setAsText(String text) throws IllegalArgumentException {
-		log.debug("Setting text: " + text);
-		ConceptService cs = Context.getConceptService();
-		if (StringUtils.hasText(text)) {
-			try {
-				setValue(cs.getConceptClass(Integer.valueOf(text)));
-			}
-			catch (Exception ex) {
-				ConceptClass conceptClass = cs.getConceptClassByUuid(text);
-				setValue(conceptClass);
-				if (conceptClass == null) {
-					throw new IllegalArgumentException("ConceptClass not found: " + ex.getMessage());
-				}
-			}
-		} else {
-			setValue(null);
-		}
+	protected ConceptClass getObjectById(Integer id) {
+		return Context.getConceptService().getConceptClass(id);
 	}
 	
 	@Override
-	public String getAsText() {
-		ConceptClass t = (ConceptClass) getValue();
-		if (t == null) {
-			return "";
-		} else {
-			return t.getConceptClassId().toString();
-		}
+	protected ConceptClass getObjectByUuid(String uuid) {
+		return Context.getConceptService().getConceptClassByUuid(uuid);
 	}
-	
 }

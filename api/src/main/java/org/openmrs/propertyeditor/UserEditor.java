@@ -9,62 +9,29 @@
  */
 package org.openmrs.propertyeditor;
 
-import java.beans.PropertyEditorSupport;
-
 import org.openmrs.User;
-import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 /**
- * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
- * an object back and forth through an html form or other medium. <br>
+ * Allows for serializing/deserializing an object to a string so that Spring knows how to pass an
+ * object back and forth through an html form or other medium. <br>
  * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
  * 
  * @see User
  */
-public class UserEditor extends PropertyEditorSupport {
-	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+public class UserEditor extends OpenmrsPropertyEditor<User> {
 	
 	public UserEditor() {
 	}
 	
-	/**
-	 * @should set using id
-	 * @should set using uuid
-	 */
 	@Override
-	public void setAsText(String text) throws IllegalArgumentException {
-		UserService ps = Context.getUserService();
-		if (StringUtils.hasText(text)) {
-			try {
-				setValue(ps.getUser(Integer.valueOf(text)));
-			}
-			catch (Exception ex) {
-				User u = ps.getUserByUuid(text);
-				setValue(u);
-				if (u == null) {
-					log.error("Error setting text: " + text, ex);
-					throw new IllegalArgumentException("User not found: " + ex.getMessage());
-				}
-			}
-		} else {
-			setValue(null);
-		}
+	protected User getObjectById(Integer id) {
+		return Context.getUserService().getUser(id);
 	}
 	
 	@Override
-	public String getAsText() {
-		User t = (User) getValue();
-		if (t == null) {
-			return "";
-		} else {
-			return t.getUserId().toString();
-		}
+	protected User getObjectByUuid(String uuid) {
+		return Context.getUserService().getUserByUuid(uuid);
 	}
-	
 }

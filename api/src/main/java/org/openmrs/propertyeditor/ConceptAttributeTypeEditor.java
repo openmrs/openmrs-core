@@ -9,47 +9,18 @@
  */
 package org.openmrs.propertyeditor;
 
-import java.beans.PropertyEditorSupport;
-
 import org.openmrs.ConceptAttributeType;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.springframework.util.StringUtils;
 
-public class ConceptAttributeTypeEditor extends PropertyEditorSupport {
+public class ConceptAttributeTypeEditor extends OpenmrsPropertyEditor<ConceptAttributeType> {
 	
-	/**
-	 * @see java.beans.PropertyEditorSupport#getAsText()
-	 */
 	@Override
-	public String getAsText() {
-		ConceptAttributeType conceptAttributeType = (ConceptAttributeType) getValue();
-		return conceptAttributeType == null ? "" : conceptAttributeType.getId().toString();
+	protected ConceptAttributeType getObjectById(Integer id) {
+		return Context.getConceptService().getConceptAttributeType(id);
 	}
 	
-	/**
-	 * @should set using id
-	 * @should set using uuid
-	 *
-	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
-	 */
 	@Override
-	public void setAsText(String text) throws IllegalArgumentException {
-		ConceptService conceptService = Context.getConceptService();
-		if (StringUtils.hasText(text)) {
-			try {
-				setValue(conceptService.getConceptAttributeType(Integer.valueOf(text)));
-			}
-			catch (Exception ex) {
-				ConceptAttributeType conceptAttributeType = conceptService.getConceptAttributeTypeByUuid(text);
-				setValue(conceptAttributeType);
-				if (conceptAttributeType == null) {
-					throw new IllegalArgumentException("ConceptAttributeType not found for " + text, ex);
-				}
-			}
-		} else {
-			setValue(null);
-		}
+	protected ConceptAttributeType getObjectByUuid(String uuid) {
+		return Context.getConceptService().getConceptAttributeTypeByUuid(uuid);
 	}
-	
 }
