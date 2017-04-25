@@ -18,7 +18,7 @@ public class OrderEditorTest extends BasePropertyEditorTest<Order, OrderEditor> 
 	private static final Integer EXISTING_ID = 2;
 	
 	@Autowired
-	OrderService orderService;
+	private OrderService orderService;
 	
 	@Override
 	protected OrderEditor getNewEditor() {
