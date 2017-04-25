@@ -20,12 +20,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
  * Behavior-driven tests of the Cohort class.
  */
-public class CohortTest extends BaseContextSensitiveTest {
+public class CohortTest {
 	
 	private Integer[] ids = { 1, 2, 3 };
 	
@@ -44,7 +43,7 @@ public class CohortTest extends BaseContextSensitiveTest {
 		Arrays.stream(ids).forEach(id -> patients.add(new Patient(id)));
 		
 		Cohort cohort = new Cohort("name", "description", patients);
-		Arrays.stream(ids).forEach(id -> assertTrue(cohort.contains(new Patient(id))));
+		Arrays.stream(ids).forEach(id -> assertTrue(cohort.contains(id)));
 		
 	}
 	

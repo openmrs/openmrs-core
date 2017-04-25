@@ -97,7 +97,30 @@ public class CohortMembershipTest {
 	}
 	
 	/**
-	 * @verifies fail if start date or end date do not match
+	 * @see CohortMembership#compareTo(CohortMembership)
+	 */
+	@Test
+	public void compareTo_shouldSortByStartDate() throws Exception {
+		CohortMembership firstMembership = new CohortMembership(4);
+		CohortMembership secondMembership = new CohortMembership(4);
+		
+		Cohort cohort = new Cohort(1);
+		
+		firstMembership.setCohort(cohort);
+		secondMembership.setCohort(cohort);
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date oneDate = dateFormat.parse("2017-01-01 00:00:00");
+		Date twoDate = dateFormat.parse("2017-01-31 00:00:00");
+		
+		firstMembership.setStartDate(oneDate);
+		secondMembership.setStartDate(twoDate);
+		
+		assertEquals(-1, firstMembership.compareTo(secondMembership));
+		assertEquals(1, secondMembership.compareTo(firstMembership));
+	}
+	
+	/**
 	 * @see CohortMembership#compareTo(CohortMembership)
 	 */
 	@Test
@@ -115,18 +138,14 @@ public class CohortMembershipTest {
 		Date twoDate = dateFormat.parse("2017-01-31 00:00:00");
 		
 		firstMembership.setStartDate(oneDate);
-		secondMembership.setStartDate(twoDate);
-		
-		assertEquals(-1, firstMembership.compareTo(secondMembership));
-		
 		secondMembership.setStartDate(oneDate);
 		secondMembership.setEndDate(twoDate);
 		
-		assertEquals(-1, firstMembership.compareTo(secondMembership));
+		assertEquals(1, firstMembership.compareTo(secondMembership));
+		assertEquals(-1, secondMembership.compareTo(firstMembership));
 	}
 	
 	/**
-	 * @verifies fails if one of the memberships is not active
 	 * @see CohortMembership#compareTo(CohortMembership)
 	 */
 	@Test

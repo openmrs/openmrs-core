@@ -123,12 +123,14 @@ public class Cohort extends BaseOpenmrsData {
 	public Cohort(String commaSeparatedIds) {
 		this();
 		String[] ids = StringUtils.split(commaSeparatedIds, ',');
-		Arrays.stream(ids).forEach(id -> addMembership(Integer.valueOf(id.trim())));
+		Arrays.stream(ids).forEach(id -> addMembership(new CohortMembership(Integer.valueOf(id.trim()))));
 	}
 	
 	/**
+	 * @deprecated since 2.1.0 cohorts are more complex than just a set of patient ids, so there is no one-line replacement
 	 * @return Returns a comma-separated list of patient ids in the cohort.
 	 */
+	@Deprecated
 	public String getCommaSeparatedPatientIds() {
 		return StringUtils.join(getMemberIds(), ',');
 	}
@@ -136,13 +138,6 @@ public class Cohort extends BaseOpenmrsData {
 	public boolean contains(Integer patientId) {
 		return getMemberships() != null
 		        && getMemberships().stream().anyMatch(m -> m.getPatientId().equals(patientId) && m.isActive());
-	}
-	
-	/**
-	 * @since 2.1.0
-	 */
-	public boolean contains(Patient patient) {
-		return contains(patient.getPatientId());
 	}
 	
 	@Override
@@ -170,10 +165,6 @@ public class Cohort extends BaseOpenmrsData {
 			return getMemberships().add(cohortMembership);
 		}
 		return false;
-	}
-	
-	public boolean addMembership(Integer patientId) {
-		return addMembership(new CohortMembership(patientId));
 	}
 	
 	/**
@@ -231,6 +222,10 @@ public class Cohort extends BaseOpenmrsData {
 		        .size();
 	}
 	
+	/**
+	 * @deprecated use {@link #size()}
+	 */
+	@Deprecated
 	public int getSize() {
 		return size();
 	}
@@ -324,6 +319,10 @@ public class Cohort extends BaseOpenmrsData {
 		this.name = name;
 	}
 	
+	/**
+	 * @deprecated since 2.1.0 cohorts are more complex than just a set of patient ids, so there is no one-line replacement
+	 */
+	@Deprecated
 	public Set<Integer> getMemberIds() {
 		Set<Integer> memberIds = new TreeSet<Integer>();
 		for (CohortMembership member : getMemberships()) {
@@ -332,10 +331,19 @@ public class Cohort extends BaseOpenmrsData {
 		return memberIds;
 	}
 	
+	/**
+	 * @deprecated since 2.1.0 cohorts are more complex than just a set of patient ids, so there is no one-line replacement
+	 * @param memberIds
+	 */
+	@Deprecated
 	public void setMemberIds(Set<Integer> memberIds) {
-		Set<Integer> ids = new TreeSet<Integer>(memberIds);
-		for (Integer id : ids) {
-			addMembership(new CohortMembership(id));
+		if (getMemberships().size() == 0) {
+			for (Integer id : memberIds) {
+				addMembership(new CohortMembership(id));
+			}
+		}
+		else {
+			throw new IllegalArgumentException("since 2.1.0 cohorts are more complex than just a set of patient ids");
 		}
 	}
 	

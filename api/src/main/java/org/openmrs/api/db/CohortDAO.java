@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Cohort;
+import org.openmrs.CohortMembership;
 
 /**
  * Database methods for cohort objects.
@@ -30,7 +31,7 @@ public interface CohortDAO {
 	 * @return The cohort with the given cohortId, or null if none exists
 	 * @throws DAOException
 	 */
-	public Cohort getCohort(Integer id) throws DAOException;
+	Cohort getCohort(Integer id) throws DAOException;
 	
 	/**
 	 * Finds a cohort by name
@@ -38,7 +39,7 @@ public interface CohortDAO {
 	 * @param name
 	 * @return The Cohort with the given name, or null if none exists
 	 */
-	public Cohort getCohort(String name);
+	Cohort getCohort(String name);
 	
 	/**
 	 * Gets all cohorts in the database
@@ -47,26 +48,18 @@ public interface CohortDAO {
 	 * @return All cohorts in the database, possibly including voided ones
 	 * @throws DAOException
 	 */
-	public List<Cohort> getAllCohorts(boolean includeVoided) throws DAOException;
+	List<Cohort> getAllCohorts(boolean includeVoided) throws DAOException;
 
 	/**
 	 * Finds all cohorts that contain the given patientId
 	 *
 	 * @param patientId patient id to get the cohorts containing the patient
 	 * @param includeVoided voided true/false whether or not to include voided cohorts
-	 * @param asOfDate  @return List&lt;Cohort&gt; object of matching Cohorts
+	 * @param asOfDate
+	 * @return matching cohorts
 	 * @throws DAOException
 	 */
-	public List<Cohort> getCohortsContainingPatientId(Integer patientId, boolean includeVoided, Date asOfDate);
-	
-	/**
-	 * Finds all cohorts that contain the given patientId
-	 *
-	 * @param patientId patient id to get the cohorts containing the patient
-	 * @return List&lt;Cohort&gt; object of matching Cohorts
-	 * @throws DAOException
-	 */
-	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException;
+	List<Cohort> getCohortsContainingPatientId(Integer patientId, boolean includeVoided, Date asOfDate);
 
 	/**
 	 * Saves a Cohort to the database
@@ -74,7 +67,7 @@ public interface CohortDAO {
 	 * @param cohort Cohort to save
 	 * @return the saved Cohort
 	 */
-	public Cohort saveCohort(Cohort cohort) throws DAOException;
+	Cohort saveCohort(Cohort cohort) throws DAOException;
 	
 	/**
 	 * Finds all Cohorts with matching names
@@ -82,7 +75,7 @@ public interface CohortDAO {
 	 * @param nameFragment
 	 * @return List&lt;Cohort&gt; object of matching Cohorts
 	 */
-	public List<Cohort> getCohorts(String nameFragment) throws DAOException;
+	List<Cohort> getCohorts(String nameFragment) throws DAOException;
 	
 	/**
 	 * Removes a cohort from the database
@@ -90,11 +83,34 @@ public interface CohortDAO {
 	 * @param cohort
 	 * @return the deleted Cohort
 	 */
-	public Cohort deleteCohort(Cohort cohort) throws DAOException;
+	Cohort deleteCohort(Cohort cohort) throws DAOException;
 	
 	/**
 	 * @param uuid
 	 * @return cohort or null
 	 */
-	public Cohort getCohortByUuid(String uuid);
+	Cohort getCohortByUuid(String uuid);
+	
+	/**
+	 * @param uuid
+	 * @return cohort membership or null
+	 * @since 2.1.0
+	 */
+	CohortMembership getCohortMembershipByUuid(String uuid);
+	
+	/**
+	 * @param patientId
+	 * @param activeOnDate optional
+	 * @param includeVoided
+	 * @return cohort memberships for the given patient (optionally active on a given date)
+	 * @since 2.1.0
+	 */
+	List<CohortMembership> getCohortMemberships(Integer patientId, Date activeOnDate, boolean includeVoided);
+	
+	/**
+	 * @param cohortMembership
+	 * @return the cohortMembership (now persisted or updated)
+	 * @since 2.1.0
+	 */
+	CohortMembership saveCohortMembership(CohortMembership cohortMembership);
 }

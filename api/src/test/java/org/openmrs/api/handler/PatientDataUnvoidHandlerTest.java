@@ -9,12 +9,17 @@
  */
 package org.openmrs.api.handler;
 
+import static org.apache.commons.lang3.time.DateUtils.parseDate;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
@@ -45,7 +50,7 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 	public void handle_shouldUnvoidTheOrdersAndEncountersAssociatedWithThePatient() {
 		Patient patient = Context.getPatientService().getPatient(7);
 		patient = Context.getPatientService().voidPatient(patient, "Void Reason");
-		Assert.assertTrue(patient.getVoided());
+		assertTrue(patient.getVoided());
 		
 		EncounterService es = Context.getEncounterService();
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
@@ -53,24 +58,24 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 			.setIncludeVoided(true)
 			.createEncounterSearchCriteria();
 		List<Encounter> encounters = es.getEncounters(encounterSearchCriteria);
-		Assert.assertTrue(CollectionUtils.isNotEmpty(encounters));
+		assertTrue(CollectionUtils.isNotEmpty(encounters));
 		//all encounters void related fields should be null
 		for (Encounter encounter : encounters) {
-			Assert.assertTrue(encounter.getVoided());
-			Assert.assertNotNull(encounter.getDateVoided());
-			Assert.assertNotNull(encounter.getVoidedBy());
-			Assert.assertNotNull(encounter.getVoidReason());
+			assertTrue(encounter.getVoided());
+			assertNotNull(encounter.getDateVoided());
+			assertNotNull(encounter.getVoidedBy());
+			assertNotNull(encounter.getVoidReason());
 		}
 		
 		OrderService os = Context.getOrderService();
 		List<Order> orders = os.getAllOrdersByPatient(patient);
-		Assert.assertFalse(orders.isEmpty());
+		assertFalse(orders.isEmpty());
 		//all order void related fields should be null
 		for (Order order : orders) {
-			Assert.assertTrue(order.getVoided());
-			Assert.assertNotNull(order.getDateVoided());
-			Assert.assertNotNull(order.getVoidedBy());
-			Assert.assertNotNull(order.getVoidReason());
+			assertTrue(order.getVoided());
+			assertNotNull(order.getDateVoided());
+			assertNotNull(order.getVoidedBy());
+			assertNotNull(order.getVoidReason());
 		}
 		
 		User user = Context.getUserService().getUser(1);
@@ -78,16 +83,16 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		
 		//check that the voided related fields were set null 
 		for (Encounter encounter : encounters) {
-			Assert.assertFalse(encounter.getVoided());
-			Assert.assertNull(encounter.getDateVoided());
-			Assert.assertNull(encounter.getVoidedBy());
-			Assert.assertNull(encounter.getVoidReason());
+			assertFalse(encounter.getVoided());
+			assertNull(encounter.getDateVoided());
+			assertNull(encounter.getVoidedBy());
+			assertNull(encounter.getVoidReason());
 		}
 		for (Order order : orders) {
-			Assert.assertFalse(order.getVoided());
-			Assert.assertNull(order.getDateVoided());
-			Assert.assertNull(order.getVoidedBy());
-			Assert.assertNull(order.getVoidReason());
+			assertFalse(order.getVoided());
+			assertNull(order.getDateVoided());
+			assertNull(order.getVoidedBy());
+			assertNull(order.getVoidReason());
 		}
 	}
 	
@@ -104,23 +109,23 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		
 		Encounter testEncounter = es.getEncountersByPatient(patient).get(0);
 		//santy checks
-		Assert.assertFalse(testEncounter.getVoided());
-		Assert.assertNull(testEncounter.getDateVoided());
-		Assert.assertNull(testEncounter.getVoidedBy());
-		Assert.assertNull(testEncounter.getVoidReason());
+		assertFalse(testEncounter.getVoided());
+		assertNull(testEncounter.getDateVoided());
+		assertNull(testEncounter.getVoidedBy());
+		assertNull(testEncounter.getVoidReason());
 		
 		//void one of the encounter orders be voided at a different time for testing purposes
-		Assert.assertFalse(testEncounter.getOrders().isEmpty());
+		assertFalse(testEncounter.getOrders().isEmpty());
 		Order testOrder = testEncounter.getOrders().iterator().next();
-		Assert.assertFalse(testOrder.getVoided());
+		assertFalse(testOrder.getVoided());
 		Context.getOrderService().voidOrder(testOrder, "testing");
-		Assert.assertTrue(testOrder.getVoided());
+		assertTrue(testOrder.getVoided());
 		TestUtil.waitForClockTick();
 		
 		//void one of the unvoided encounters for testing purposes
 		es.voidEncounter(testEncounter, "random reason");
-		Assert.assertTrue(testEncounter.getVoided());
-		Assert.assertTrue(testOrder.getVoided());
+		assertTrue(testEncounter.getVoided());
+		assertTrue(testOrder.getVoided());
 		
 		List<Patient> patients = new ArrayList<>();
 		patients.add(patient);
@@ -130,20 +135,20 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		
 		//now void the patient for testing purposes
 		patient = Context.getPatientService().voidPatient(patient, "Void Reason");
-		Assert.assertTrue(patient.getVoided());
+		assertTrue(patient.getVoided());
 		new PatientDataUnvoidHandler().handle(patient, patient.getVoidedBy(), patient.getDateVoided(), null);
 		//the encounter that was initially voided separately should still be voided
 		testEncounter = es.getEncounter(testEncounter.getId());
-		Assert.assertTrue(testEncounter.getVoided());
-		Assert.assertNotNull(testEncounter.getDateVoided());
-		Assert.assertNotNull(testEncounter.getVoidedBy());
-		Assert.assertNotNull(testEncounter.getVoidReason());
+		assertTrue(testEncounter.getVoided());
+		assertNotNull(testEncounter.getDateVoided());
+		assertNotNull(testEncounter.getVoidedBy());
+		assertNotNull(testEncounter.getVoidReason());
 		
 		//the order that was initially voided separately should still be voided
-		Assert.assertTrue(testOrder.getVoided());
-		Assert.assertNotNull(testOrder.getDateVoided());
-		Assert.assertNotNull(testOrder.getVoidedBy());
-		Assert.assertNotNull(testOrder.getVoidReason());
+		assertTrue(testOrder.getVoided());
+		assertNotNull(testOrder.getDateVoided());
+		assertNotNull(testOrder.getVoidedBy());
+		assertNotNull(testOrder.getVoidReason());
 		
 	}
 	
@@ -156,24 +161,26 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		executeDataSet(COHORT_XML);
 		CohortService cs = Context.getCohortService();
 		Cohort cohort = cs.getCohort(2);
+		CohortMembership otherMembership = cohort.getMemberships().iterator().next();
+		
 		Patient patient = Context.getPatientService().getPatient(7);
 		CohortMembership membership = new CohortMembership(patient.getPatientId());
-		cs.addMembershipToCohort(cohort, membership);
-		Assert.assertTrue(cohort.contains(patient));
+		membership.setStartDate(parseDate("2001-01-01", "yyyy-MM-dd"));
+		membership.setEndDate(parseDate("2001-12-31", "yyyy-MM-dd"));
+		cohort.addMembership(membership);
+		
+		cs.saveCohort(cohort);
 		
 		patient = Context.getPatientService().voidPatient(patient, "Void Reason");
-		Assert.assertTrue(patient.getVoided());
 		
-		Assert.assertTrue(membership.getVoided());
-		Assert.assertNotNull(membership.getDateVoided());
-		Assert.assertNotNull(membership.getVoidedBy());
-		Assert.assertNotNull(membership.getVoidReason());
-
+		assertTrue(membership.getVoided());
+		assertFalse(otherMembership.getVoided());
+		
 		Context.getPatientService().unvoidPatient(patient);
 
-		Assert.assertFalse(membership.getVoided());
-		Assert.assertNull(membership.getDateVoided());
-		Assert.assertNull(membership.getVoidedBy());
-		Assert.assertNull(membership.getVoidReason());
+		assertFalse(membership.getVoided());
+		assertNull(membership.getDateVoided());
+		assertNull(membership.getVoidedBy());
+		assertNull(membership.getVoidReason());
 	}
 }
