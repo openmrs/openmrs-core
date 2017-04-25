@@ -9,29 +9,24 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.Encounter;
+import org.openmrs.api.EncounterService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class EncounterEditorTest extends BaseContextSensitiveTest {
+public class EncounterEditorTest extends BasePropertyEditorTest<Encounter, EncounterEditor> {
 	
-	/**
-	 * @see EncounterEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingId() {
-		EncounterEditor editor = new EncounterEditor();
-		editor.setAsText("3");
-		Assert.assertNotNull(editor.getValue());
+	private static final Integer EXISTING_ID = 3;
+	
+	@Autowired
+	EncounterService encounterService;
+	
+	@Override
+	protected EncounterEditor getNewEditor() {
+		return new EncounterEditor();
 	}
 	
-	/**
-	 * @see EncounterEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingUuid() {
-		EncounterEditor editor = new EncounterEditor();
-		editor.setAsText("6519d653-393b-4118-9c83-a3715b82d4ac");
-		Assert.assertNotNull(editor.getValue());
+	@Override
+	protected Encounter getExistingObject() {
+		return encounterService.getEncounter(EXISTING_ID);
 	}
 }
