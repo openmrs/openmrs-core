@@ -9,44 +9,44 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Assert;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.LocationTag;
+import org.openmrs.api.LocationService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class LocationTagEditorTest extends BaseContextSensitiveTest {
+public class LocationTagEditorTest extends BasePropertyEditorTest<LocationTag, LocationTagEditor> {
 	
 	protected static final String LOC_INITIAL_DATA_XML = "org/openmrs/api/include/LocationServiceTest-initialData.xml";
 	
-	/**
-	 * Run this before each unit test in this class. This adds a bit more data to the base data that
-	 * is done in the "@Before" method in {@link BaseContextSensitiveTest} (which is run right
-	 * before this method).
-	 * 
-	 * @throws Exception
-	 */
+	private static final Integer EXISTING_ID = 1;
+	
+	@Autowired
+	private LocationService locationService;
+	
 	@Before
 	public void prepareData() {
 		executeDataSet(LOC_INITIAL_DATA_XML);
 	}
 	
-	/**
-	 * @see LocationTagEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingId() {
-		LocationTagEditor editor = new LocationTagEditor();
-		editor.setAsText("1");
-		Assert.assertNotNull(editor.getValue());
+	@Override
+	protected LocationTagEditor getNewEditor() {
+		return new LocationTagEditor();
 	}
 	
-	/**
-	 * @see LocationTagEditor#setAsText(String)
-	 */
+	@Override
+	protected LocationTag getExistingObject() {
+		return locationService.getLocationTag(EXISTING_ID);
+	}
+	
+	@Override
 	@Test
-	public void setAsText_shouldSetUsingUuid() {
-		LocationTagEditor editor = new LocationTagEditor();
-		editor.setAsText("001e503a-47ed-11df-bc8b-001e378eb67e");
-		Assert.assertNotNull(editor.getValue());
+	public void shouldReturnEmptyStringIfValueIsNull() {
+		
+		assertThat(editor.getAsText(), is(nullValue()));
 	}
 }

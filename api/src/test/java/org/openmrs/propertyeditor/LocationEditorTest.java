@@ -9,55 +9,36 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Assert;
-import org.junit.Before;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
-import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class LocationEditorTest extends BaseContextSensitiveTest {
+public class LocationEditorTest extends BasePropertyEditorTest<Location, LocationEditor> {
 
-	LocationEditor editor;
+	private static final Integer EXISTING_ID = 1;
 
 	@Autowired
 	private LocationService locationService;
 	
-	/**
-	 * @see LocationEditor#setAsText(String)
-	 */
-
-	@Before
-	public void before() {
-		editor = new LocationEditor(); 
-	}
-
-	@Test
-	public void setAsText_shouldSetUsingId() {
-		editor.setAsText("1");
-		Location expectedLocation = locationService.getLocation(1);
-		Assert.assertEquals(expectedLocation, editor.getValue());
+	@Override
+	protected LocationEditor getNewEditor() {
+		return new LocationEditor();
 	}
 	
-	/**
-	 * @see LocationEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingUuid() {
-		editor.setAsText("8d6c993e-c2cc-11de-8d13-0010c6dffd0f");
-		Location expectedLocation = locationService.getLocationByUuid("8d6c993e-c2cc-11de-8d13-0010c6dffd0f");
-		Assert.assertEquals(expectedLocation, editor.getValue());
+	@Override
+	protected Location getExistingObject() {
+		return locationService.getLocation(EXISTING_ID);
 	}
-
+	
+	@Override
 	@Test
-	public void getAsText_shouldGetNullIfTextNull() {
-		Assert.assertNull(editor.getAsText());
-	}
-
-	@Test
-	public void getAsText_shouldGetTextIfTextNotNull() {
-		editor.setAsText("1");
-		Assert.assertNotNull(editor.getAsText());
+	public void shouldReturnEmptyStringIfValueIsNull() {
+		
+		assertThat(editor.getAsText(), is(nullValue()));
 	}
 }

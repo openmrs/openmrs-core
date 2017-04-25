@@ -9,29 +9,24 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.api.PatientService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class PatientIdentifierTypeEditorTest extends BaseContextSensitiveTest {
+public class PatientIdentifierTypeEditorTest extends BasePropertyEditorTest<PatientIdentifierType, PatientIdentifierTypeEditor> {
 	
-	/**
-	 * @see PatientIdentifierTypeEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingId() {
-		PatientIdentifierTypeEditor editor = new PatientIdentifierTypeEditor();
-		editor.setAsText("1");
-		Assert.assertNotNull(editor.getValue());
+	private static final Integer EXISTING_ID = 1;
+	
+	@Autowired
+	private PatientService patientService;
+	
+	@Override
+	protected PatientIdentifierTypeEditor getNewEditor() {
+		return new PatientIdentifierTypeEditor();
 	}
 	
-	/**
-	 * @see PatientIdentifierTypeEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingUuid() {
-		PatientIdentifierTypeEditor editor = new PatientIdentifierTypeEditor();
-		editor.setAsText("1a339fe9-38bc-4ab3-b180-320988c0b968");
-		Assert.assertNotNull(editor.getValue());
+	@Override
+	protected PatientIdentifierType getExistingObject() {
+		return patientService.getPatientIdentifierType(EXISTING_ID);
 	}
 }

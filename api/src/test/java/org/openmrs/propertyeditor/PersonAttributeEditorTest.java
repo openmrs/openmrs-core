@@ -18,7 +18,7 @@ public class PersonAttributeEditorTest extends BasePropertyEditorTest<PersonAttr
 	private static final Integer EXISTING_ID = 1;
 	
 	@Autowired
-	PersonService personService;
+	private PersonService personService;
 	
 	@Override
 	protected PersonAttributeEditor getNewEditor() {
