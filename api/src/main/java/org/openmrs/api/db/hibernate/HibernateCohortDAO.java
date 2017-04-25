@@ -12,8 +12,6 @@ package org.openmrs.api.db.hibernate;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.CriteriaSpecification;
@@ -22,8 +20,11 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Cohort;
+import org.openmrs.CohortMembership;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.api.db.DAOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Hibernate implementation of the CohortDAO
@@ -34,7 +35,7 @@ import org.openmrs.api.db.DAOException;
  */
 public class HibernateCohortDAO implements CohortDAO {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private SessionFactory sessionFactory;
 	
@@ -50,13 +51,15 @@ public class HibernateCohortDAO implements CohortDAO {
 	/**
 	 * @see org.openmrs.api.db.CohortDAO#getCohort(java.lang.Integer)
 	 */
+	@Override
 	public Cohort getCohort(Integer id) throws DAOException {
 		return (Cohort) sessionFactory.getCurrentSession().get(Cohort.class, id);
 	}
 
 	/**
-	 * @see org.openmrs.api.db.CohortDAO#getCohortsContainingPatientId(java.lang.Integer)
+	 * @see org.openmrs.api.db.CohortDAO#getCohortsContainingPatientId(Integer, boolean, Date)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId, boolean includeVoided,
 	                                                  Date asOfDate) throws DAOException {
@@ -66,8 +69,10 @@ public class HibernateCohortDAO implements CohortDAO {
 
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
 		criteria.createAlias("memberships", "m");
-		criteria.add(Restrictions.le("m.startDate", asOfDate));
-		criteria.add(orEndDate);
+		if (asOfDate != null) {
+			criteria.add(Restrictions.le("m.startDate", asOfDate));
+			criteria.add(orEndDate);
+		}
 		criteria.add(Restrictions.eq("m.patientId", patientId));
 		criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 		
@@ -76,26 +81,30 @@ public class HibernateCohortDAO implements CohortDAO {
 		}
 		return criteria.list();
 	}
-
-	/**
-	 * @see org.openmrs.api.db.CohortDAO#getCohortsContainingPatientId(java.lang.Integer)
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException {
-		return getCohortsContainingPatientId(patientId, false, new Date());
-	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.CohortDAO#getCohortByUuid(java.lang.String)
 	 */
+	@Override
 	public Cohort getCohortByUuid(String uuid) {
 		return (Cohort) sessionFactory.getCurrentSession().createQuery("from Cohort c where c.uuid = :uuid").setString(
 			"uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.CohortDAO#getCohortMembershipByUuid(java.lang.String)
+	 */
+	@Override
+	public CohortMembership getCohortMembershipByUuid(String uuid) {
+		return (CohortMembership) sessionFactory.getCurrentSession()
+				.createQuery("from CohortMembership m where m.uuid = :uuid")
+				.setString("uuid", uuid).uniqueResult();
 	}
 
 	/**
 	 * @see org.openmrs.api.db.CohortDAO#deleteCohort(org.openmrs.Cohort)
 	 */
+	@Override
 	public Cohort deleteCohort(Cohort cohort) throws DAOException {
 		sessionFactory.getCurrentSession().delete(cohort);
 		return null;
@@ -104,6 +113,7 @@ public class HibernateCohortDAO implements CohortDAO {
 	/**
 	 * @see org.openmrs.api.db.CohortDAO#getCohorts(java.lang.String)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Cohort> getCohorts(String nameFragment) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
@@ -115,6 +125,7 @@ public class HibernateCohortDAO implements CohortDAO {
 	/**
 	 * @see org.openmrs.api.db.CohortDAO#getAllCohorts(boolean)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Cohort> getAllCohorts(boolean includeVoided) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
@@ -131,6 +142,7 @@ public class HibernateCohortDAO implements CohortDAO {
 	/**
 	 * @see org.openmrs.api.db.CohortDAO#getCohort(java.lang.String)
 	 */
+	@Override
 	public Cohort getCohort(String name) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
 		
@@ -143,8 +155,32 @@ public class HibernateCohortDAO implements CohortDAO {
 	/**
 	 * @see org.openmrs.api.db.CohortDAO#saveCohort(org.openmrs.Cohort)
 	 */
+	@Override
 	public Cohort saveCohort(Cohort cohort) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(cohort);
 		return cohort;
+	}
+	
+	@Override
+	public List<CohortMembership> getCohortMemberships(Integer patientId, Date activeOnDate, boolean includeVoided) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(CohortMembership.class);
+		criteria.add(Restrictions.eq("patientId", patientId));
+		if (activeOnDate != null) {
+			criteria.add(Restrictions.le("startDate", activeOnDate));
+			criteria.add(Restrictions.or(
+					Restrictions.isNull("endDate"),
+					Restrictions.ge("endDate", activeOnDate)
+			));
+		}
+		if (!includeVoided) {
+			criteria.add(Restrictions.eq("voided", false));
+		}
+		return criteria.list();
+	}
+	
+	@Override
+	public CohortMembership saveCohortMembership(CohortMembership cohortMembership) {
+		sessionFactory.getCurrentSession().saveOrUpdate(cohortMembership);
+		return cohortMembership;
 	}
 }

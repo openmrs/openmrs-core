@@ -88,7 +88,7 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 		return cohort;
 	}
 	
-	protected void setCohort(Cohort cohort) {
+	public void setCohort(Cohort cohort) {
 		this.cohort = cohort;
 	}
 	
@@ -117,36 +117,35 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 	}
 	
 	/**
-	 * Compares the specified membership to this membership, the logic is such that if the items are
-	 * inserted into a sorted set, the voided and inactive memberships are pushed to the very end,
-	 * while the ordering of the remaining memberships is arbitrary.
-	 * 
-	 * @param o
+	 * Sorts by following fields, in order:
+	 * <ol>
+	 *     <li>voided memberships are last</li>
+	 *     <li>cohort.id</li>
+	 *     <li>patientId</li>
+	 *     <li>startDate</li>
+	 *     <li>endDate</li>
+	 * </ol>
+	 *
+	 * @param o other membership to compare this to
 	 * @return
 	 */
 	@Override
 	public int compareTo(CohortMembership o) {
-		if ((this.getVoided() && !o.getVoided()) || (!this.isActive() && o.isActive())) {
-			return 1;
-		} else if ((!this.getVoided() && o.getVoided()) || (this.isActive() && !o.isActive())) {
-			return -1;
+		int ret = this.getVoided().compareTo(o.getVoided());
+		if (ret == 0) {
+			ret = OpenmrsUtil.compareWithNullAsLowest(
+					getCohort() == null ? null : getCohort().getId(),
+					o.getCohort() == null ? null : o.getCohort().getId());
 		}
-		
-		int ret = OpenmrsUtil.compareWithNullAsGreatest(this.getCohort().getCohortId(), o.getCohort().getCohortId());
-		if (ret != 0) {
-			return ret;
+		if (ret == 0) {
+			ret = this.getPatientId().compareTo(o.getPatientId());
 		}
-		
-		ret = this.getPatientId().compareTo(o.getPatientId());
-		if (ret != 0) {
-			return ret;
+		if (ret == 0) {
+			ret = OpenmrsUtil.compare(this.getStartDate(), o.getStartDate());
 		}
-		
-		ret = OpenmrsUtil.compareWithNullAsEarliest(this.getEndDate(), o.getEndDate());
-		if (ret != 0) {
-			return ret;
+		if (ret == 0) {
+			ret = OpenmrsUtil.compareWithNullAsLatest(this.getEndDate(), o.getEndDate());
 		}
-		
-		return OpenmrsUtil.compare(this.getStartDate(), o.getStartDate());
+		return ret;
 	}
 }

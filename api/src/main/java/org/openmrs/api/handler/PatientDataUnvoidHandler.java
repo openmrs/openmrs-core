@@ -75,7 +75,7 @@ public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 			}
 
 			CohortService cs = Context.getCohortService();
-			cs.patientUnvoided(patient, originalVoidingUser, origParentVoidedDate);
+			cs.notifyPatientUnvoided(patient, originalVoidingUser, origParentVoidedDate);
 		}
 	}
 }
