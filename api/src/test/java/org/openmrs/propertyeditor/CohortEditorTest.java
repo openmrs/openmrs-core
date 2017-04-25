@@ -9,37 +9,32 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.Cohort;
+import org.openmrs.api.CohortService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class CohortEditorTest extends BaseContextSensitiveTest {
+public class CohortEditorTest extends BasePropertyEditorTest<Cohort, CohortEditor> {
 	
 	protected static final String COHORT_XML = "org/openmrs/api/include/CohortServiceTest-cohort.xml";
+	
+	private static final Integer EXISTING_ID = 1;
+	
+	@Autowired
+	private CohortService cohortService;
 	
 	@Before
 	public void prepareData() {
 		executeDataSet(COHORT_XML);
 	}
 	
-	/**
-	 * @see CohortEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingId() {
-		CohortEditor editor = new CohortEditor();
-		editor.setAsText("1");
-		Assert.assertNotNull(editor.getValue());
+	@Override
+	protected CohortEditor getNewEditor() {
+		return new CohortEditor();
 	}
 	
-	/**
-	 * @see CohortEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingUuid() {
-		CohortEditor editor = new CohortEditor();
-		editor.setAsText("h9a9m0i6-15e6-467c-9d4b-mbi7teu9lf0f");
-		Assert.assertNotNull(editor.getValue());
+	@Override
+	protected Cohort getExistingObject() {
+		return cohortService.getCohort(EXISTING_ID);
 	}
 }

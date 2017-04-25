@@ -9,29 +9,24 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.VisitType;
+import org.openmrs.api.VisitService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class VisitTypeEditorTest extends BaseContextSensitiveTest {
+public class VisitTypeEditorTest extends BasePropertyEditorTest<VisitType, VisitTypeEditor> {
 	
-	/**
-	 * @see VisitTypeEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingId() {
-		VisitTypeEditor editor = new VisitTypeEditor();
-		editor.setAsText("1");
-		Assert.assertNotNull(editor.getValue());
+	private static final Integer EXISTING_ID = 1;
+	
+	@Autowired
+	private VisitService visitService;
+	
+	@Override
+	protected VisitTypeEditor getNewEditor() {
+		return new VisitTypeEditor();
 	}
 	
-	/**
-	 * @see VisitTypeEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingUuid() {
-		VisitTypeEditor editor = new VisitTypeEditor();
-		editor.setAsText("c0c579b0-8e59-401d-8a4a-976a0b183519");
-		Assert.assertNotNull(editor.getValue());
+	@Override
+	protected VisitType getExistingObject() {
+		return visitService.getVisitType(EXISTING_ID);
 	}
 }

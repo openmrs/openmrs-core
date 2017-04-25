@@ -9,29 +9,24 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.ConceptClass;
+import org.openmrs.api.ConceptService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class ConceptClassEditorTest extends BaseContextSensitiveTest {
+public class ConceptClassEditorTest extends BasePropertyEditorTest<ConceptClass, ConceptClassEditor> {
 	
-	/**
-	 * @see ConceptClassEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingId() {
-		ConceptClassEditor editor = new ConceptClassEditor();
-		editor.setAsText("1");
-		Assert.assertNotNull(editor.getValue());
+	private static final Integer EXISTING_ID = 1;
+	
+	@Autowired
+	private ConceptService conceptService;
+	
+	@Override
+	protected ConceptClassEditor getNewEditor() {
+		return new ConceptClassEditor();
 	}
 	
-	/**
-	 * @see ConceptClassEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingUuid() {
-		ConceptClassEditor editor = new ConceptClassEditor();
-		editor.setAsText("97097dd9-b092-4b68-a2dc-e5e5be961d42");
-		Assert.assertNotNull(editor.getValue());
+	@Override
+	protected ConceptClass getExistingObject() {
+		return conceptService.getConceptClass(EXISTING_ID);
 	}
 }

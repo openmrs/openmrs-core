@@ -9,29 +9,24 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.Form;
+import org.openmrs.api.FormService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class FormEditorTest extends BaseContextSensitiveTest {
+public class FormEditorTest extends BasePropertyEditorTest<Form, FormEditor> {
 	
-	/**
-	 * @see FormEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingId() {
-		FormEditor editor = new FormEditor();
-		editor.setAsText("1");
-		Assert.assertNotNull(editor.getValue());
+	private static final Integer EXISTING_ID = 1;
+	
+	@Autowired
+	private FormService formService;
+	
+	@Override
+	protected FormEditor getNewEditor() {
+		return new FormEditor();
 	}
 	
-	/**
-	 * @see FormEditor#setAsText(String)
-	 */
-	@Test
-	public void setAsText_shouldSetUsingUuid() {
-		FormEditor editor = new FormEditor();
-		editor.setAsText("d9218f76-6c39-45f4-8efa-4c5c6c199f50");
-		Assert.assertNotNull(editor.getValue());
+	@Override
+	protected Form getExistingObject() {
+		return formService.getForm(EXISTING_ID);
 	}
 }
