@@ -143,7 +143,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 		if (pn == null) {
 			throw new IllegalArgumentException();
 		}
-		PersonName newName = new PersonName(pn.getPersonNameId());
+		PersonName newName = new PersonName(Integer.valueOf(pn.getPersonNameId()));
 		if (pn.getGivenName() != null) {
 			newName.setGivenName(String.valueOf(pn.getGivenName()));
 		}
