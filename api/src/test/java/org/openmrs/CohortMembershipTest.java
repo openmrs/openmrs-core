@@ -9,13 +9,18 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -192,5 +197,55 @@ public class CohortMembershipTest {
 		cm2.setCohort(cohort);
 		cm2.setEndDate(new Date());
 		assertTrue(cm1.compareTo(cm2) > 0);
+	}
+	
+	@Test
+	public void compareTo_shouldSort() throws Exception {
+		SimpleDateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Cohort c1 = new Cohort();
+		c1.setCohortId(1);
+		Cohort c2 = new Cohort();
+		c2.setCohortId(2);
+		
+		// ensure that being in another cohort is ignored for sorting
+		// "no start or end" means it's treated as having started forever ago
+		CohortMembership noStartOrEnd = new CohortMembership(1);
+		noStartOrEnd.setStartDate(null);
+		noStartOrEnd.setCohort(c2);
+		noStartOrEnd.setUuid("no start or end date");
+		
+		// this is voided so it should sort to the end of the list
+		CohortMembership voided = new CohortMembership(1);
+		voided.setCohort(c1);
+		voided.setVoided(true);
+		voided.setUuid("voided");
+		
+		// ended goes towards the end, and longer ago goes further at the end
+		CohortMembership endedLongAgo = new CohortMembership(1);
+		endedLongAgo.setCohort(c1);
+		endedLongAgo.setEndDate(ymd.parse("2015-01-01"));
+		endedLongAgo.setUuid("ended 2015");
+		CohortMembership endedRecently = new CohortMembership(2);
+		endedRecently.setCohort(c1);
+		endedRecently.setStartDate(ymd.parse("2016-01-01"));
+		endedRecently.setEndDate(ymd.parse("2017-02-01"));
+		endedRecently.setUuid("ended 2017");
+		
+		// active goes towards the front, started more recently goes further to the front
+		CohortMembership startedLongAgo = new CohortMembership(3);
+		startedLongAgo.setCohort(c1);
+		startedLongAgo.setStartDate(ymd.parse("2015-01-01"));
+		startedLongAgo.setUuid("started 2015");
+		CohortMembership startedRecently = new CohortMembership(3);
+		startedRecently.setCohort(c1);
+		startedRecently.setStartDate(ymd.parse("2016-01-01"));
+		startedRecently.setUuid("started 2016");
+		
+		List<CohortMembership> list = Arrays.asList(noStartOrEnd, voided, endedLongAgo, endedRecently, startedLongAgo,
+				startedRecently);
+		Collections.sort(list);
+		
+		assertThat(list, contains(startedRecently, startedLongAgo, noStartOrEnd, endedRecently, endedLongAgo, voided));
 	}
 }
