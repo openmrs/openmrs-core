@@ -113,7 +113,6 @@ public class Person extends BaseOpenmrsData {
 	 * 
 	 * @param person Person to create this person object from
 	 * @should deep copy all collections
-	 * @should not fail for a collection element with no primary key assigned
 	 */
 	public Person(Person person) {
 		if (person == null) {
