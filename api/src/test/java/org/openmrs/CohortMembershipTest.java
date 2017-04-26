@@ -10,9 +10,11 @@
 package org.openmrs;
 
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.number.OrderingComparison.greaterThan;
+import static org.hamcrest.number.OrderingComparison.lessThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -77,28 +79,21 @@ public class CohortMembershipTest {
 		firstMembership.setStartDate(date);
 		secondMembership.setStartDate(date);
 		
+		firstMembership.setUuid("same-uuid");
+		secondMembership.setUuid("same-uuid");
+		
 		assertEquals(0, firstMembership.compareTo(secondMembership));
 		assertEquals(0, secondMembership.compareTo(firstMembership));
 	}
 	
 	@Test
-	public void compareTo_shouldFailIfPatientOrCohortIdsDoNotMatch() {
-		CohortMembership firstMembership = new CohortMembership(4);
-		CohortMembership secondMembership = new CohortMembership(4);
+	public void compareTo_shouldCompareBasedOnPatientId() {
+		Date date = new Date();
+		CohortMembership firstMembership = new CohortMembership(4, date);
+		CohortMembership secondMembership = new CohortMembership(7, date);
 		
-		Cohort cohort = new Cohort(1);
-		Cohort anotherCohort = new Cohort(2);
-		
-		firstMembership.setCohort(cohort);
-		secondMembership.setCohort(anotherCohort);
-		
-		assertNotEquals(0, firstMembership.compareTo(secondMembership));
-		assertEquals(-1, firstMembership.compareTo(secondMembership));
-		
-		secondMembership.setCohort(cohort);
-		secondMembership.setPatientId(7);
-		
-		assertNotEquals(0, firstMembership.compareTo(secondMembership));
+		assertThat(firstMembership.compareTo(secondMembership), lessThan(0));
+		assertThat(secondMembership.compareTo(firstMembership), greaterThan(0));
 	}
 	
 	/**
@@ -121,8 +116,8 @@ public class CohortMembershipTest {
 		firstMembership.setStartDate(oneDate);
 		secondMembership.setStartDate(twoDate);
 		
-		assertEquals(-1, firstMembership.compareTo(secondMembership));
-		assertEquals(1, secondMembership.compareTo(firstMembership));
+		assertThat(firstMembership.compareTo(secondMembership), greaterThan(0));
+		assertThat(secondMembership.compareTo(firstMembership), lessThan(0));
 	}
 	
 	/**
@@ -146,8 +141,8 @@ public class CohortMembershipTest {
 		secondMembership.setStartDate(oneDate);
 		secondMembership.setEndDate(twoDate);
 		
-		assertEquals(1, firstMembership.compareTo(secondMembership));
-		assertEquals(-1, secondMembership.compareTo(firstMembership));
+		assertThat(firstMembership.compareTo(secondMembership), not(0));
+		assertThat(secondMembership.compareTo(firstMembership), not(0));
 	}
 	
 	/**
@@ -170,7 +165,7 @@ public class CohortMembershipTest {
 		firstMembership.setStartDate(oneDate);
 		secondMembership.setEndDate(twoDate);
 		
-		assertEquals(-1, firstMembership.compareTo(secondMembership));
+		assertThat(firstMembership.compareTo(secondMembership), lessThan(0));
 	}
 	
 	@Test
