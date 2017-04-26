@@ -110,9 +110,10 @@ public class Person extends BaseOpenmrsData {
 	/**
 	 * This constructor is used to build a new Person object copy from another person object
 	 * (usually a patient or a user subobject). All attributes are copied over to the new object.
-	 * 
+	 * NOTE! All child collection objects are copied as pointers, each individual element is not
+	 * copied. <br>
+	 *
 	 * @param person Person to create this person object from
-	 * @should deep copy all collections
 	 */
 	public Person(Person person) {
 		if (person == null) {
@@ -121,10 +122,9 @@ public class Person extends BaseOpenmrsData {
 		
 		personId = person.getPersonId();
 		setUuid(person.getUuid());
-		
-		deepCopyAddresses(person.getAddresses());
-		deepCopyNames(person.getNames());
-		deepCopyAttributes(person.getAttributes());
+		addresses = person.getAddresses();
+		names = person.getNames();
+		attributes = person.getAttributes();
 		
 		gender = person.getGender();
 		birthdate = person.getBirthdate();
@@ -1065,48 +1065,4 @@ public class Person extends BaseOpenmrsData {
 		
 	}
 	
-	// Deep copy helpers
-	
-	/**
-	 * Creates deep copy of set of addresses.
-	 * 
-	 * @param personAddressesSrc Set of addresses to be copied.
-	 * @return Deep copy of given set of addresses.
-	 */
-	private void deepCopyAddresses(Set<PersonAddress> personAddressesSrc) {
-		for (PersonAddress personAddressSrc : personAddressesSrc) {
-			PersonAddress personAddressDst = (PersonAddress) personAddressSrc.clone();
-			personAddressDst.setPerson(this);
-			this.getAddresses().add(personAddressDst);
-		}
-	}
-	
-	/**
-	 * Creates deep copy of set of names.
-	 * 
-	 * @param personNamesSrc Set of names to be copied.
-	 * @return Deep copy of given set of names.
-	 */
-	private void deepCopyNames(Set<PersonName> personNamesSrc) {
-		for (PersonName personNameSrc : personNamesSrc) {
-			PersonName personNameDst = PersonName.newInstance(personNameSrc);
-			personNameDst.setPerson(this);
-			this.getNames().add(personNameDst);
-		}
-	}
-	
-	/**
-	 * Creates deep copy of set of attributes.
-	 * 
-	 * @param personAttributesSrc Set of attributes to be copied.
-	 * @return Deep copy of given set of attributes.
-	 */
-	private void deepCopyAttributes(Set<PersonAttribute> personAttributesSrc) {
-		for (PersonAttribute personAttributeSrc : personAttributesSrc) {
-			PersonAttribute personAttributeDst = personAttributeSrc.copy();
-			personAttributeDst.setPerson(this);
-			personAttributeDst.setPersonAttributeId(personAttributeSrc.getPersonAttributeId());
-			this.getAttributes().add(personAttributeDst);
-		}
-	}
 }
