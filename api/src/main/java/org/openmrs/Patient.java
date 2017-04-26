@@ -47,8 +47,7 @@ public class Patient extends Person {
 	 * attributes are copied over to the new object. NOTE! All child collection objects are copied
 	 * as pointers, each individual element is not copied. <br>
 	 * <br>
-	 * TODO Should the patient specific attributes be copied? (like identifiers)
-	 * 
+	 *
 	 * @param person the person object to copy onto a new Patient
 	 * @see Person#Person(Person)
 	 */
