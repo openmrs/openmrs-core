@@ -119,11 +119,11 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 	/**
 	 * Sorts by following fields, in order:
 	 * <ol>
-	 *     <li>voided memberships are last</li>
-	 *     <li>cohort.id</li>
-	 *     <li>patientId</li>
-	 *     <li>startDate</li>
-	 *     <li>endDate</li>
+	 *     <li>voided (voided memberships sort last)</li>
+	 *     <li>endDate descending (so ended memberships are towards the end, and the older the more towards the end</li>
+	 *     <li>startDate descending (so started more recently is towards the front)</li>
+	 *     <li>patientId ascending (intuitive and consistent tiebreaker for client code)</li>
+	 *     <li>uuid ascending (just so we have a final consistent tie breaker)</li>
 	 * </ol>
 	 *
 	 * @param o other membership to compare this to
@@ -133,18 +133,16 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 	public int compareTo(CohortMembership o) {
 		int ret = this.getVoided().compareTo(o.getVoided());
 		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsLowest(
-					getCohort() == null ? null : getCohort().getId(),
-					o.getCohort() == null ? null : o.getCohort().getId());
+			ret = -OpenmrsUtil.compareWithNullAsLatest(this.getEndDate(), o.getEndDate());
+		}
+		if (ret == 0) {
+			ret = -OpenmrsUtil.compareWithNullAsEarliest(this.getStartDate(), o.getStartDate());
 		}
 		if (ret == 0) {
 			ret = this.getPatientId().compareTo(o.getPatientId());
 		}
 		if (ret == 0) {
-			ret = OpenmrsUtil.compare(this.getStartDate(), o.getStartDate());
-		}
-		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsLatest(this.getEndDate(), o.getEndDate());
+			ret = this.getUuid().compareTo(o.getUuid());
 		}
 		return ret;
 	}
