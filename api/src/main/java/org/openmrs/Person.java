@@ -925,6 +925,10 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		return isPatient;
 	}
 	
+	public boolean getIsPatient() {
+		return isPatient;
+	}
+	
 	/**
 	 * This should only be set by the database layer by looking at whether a row exists in the
 	 * patient table
