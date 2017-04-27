@@ -38,6 +38,8 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOException;
+import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.util.PrivilegeConstants;
@@ -52,7 +54,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	protected static final String XML_FILENAME = "org/openmrs/api/include/UserServiceTest.xml";
 	
 	protected static final String XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION = "org/openmrs/api/include/UserServiceTest-changePasswordAction.xml";
-	
+
+	protected static final String SOME_VALID_PASSWORD = "s0mePassword";
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	
@@ -66,7 +70,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void saveUser_shouldCreateNewUserWithBasicElements() {
+	public void createUser_shouldCreateNewUserWithBasicElements() {
 		assertTrue("The context needs to be correctly authenticated to by a user", Context.isAuthenticated());
 		
 		UserService us = Context.getUserService();
@@ -89,7 +93,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	@SkipBaseSetup
-	public void saveUser_shouldShouldCreateUserWhoIsPatientAlready() throws SQLException {
+	public void createUser_shouldShouldCreateUserWhoIsPatientAlready() throws SQLException {
 		// create the basic user and give it full rights
 		initializeInMemoryDatabase();
 		
@@ -152,7 +156,107 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		List<Patient> allPatientsSet = Context.getPatientService().getAllPatients();
 		assertEquals(1, allPatientsSet.size());
 	}
-	
+
+	@Test(expected = APIException.class)
+	public void createUser_shouldNotAllowExistingUser() {
+		UserService userService = Context.getUserService();
+		User someUser = getBrunoUser(userService);
+
+		userService.createUser(someUser, SOME_VALID_PASSWORD);
+	}
+
+	@Test(expected = APIException.class)
+	public void createUser_shouldNotAllowBlankPassword() {
+		UserService userService = Context.getUserService();
+		User unsavedUser = new User();
+
+		userService.createUser(unsavedUser, "");
+	}
+
+	@Test(expected = APIException.class)
+	public void createUser_shouldNotAllowNullPassword() {
+		UserService userService = Context.getUserService();
+		User unsavedUser = new User();
+
+		userService.createUser(unsavedUser, null);
+	}
+
+	@Test(expected = DAOException.class)
+	public void createUser_shouldNotAllowForDuplicatedUsername() {
+		UserService userService = Context.getUserService();
+		User someUser = getBrunoUser(userService);
+
+		User newUser = userWithValidPerson();
+		newUser.setUsername(someUser.getUsername());
+
+		userService.createUser(newUser, SOME_VALID_PASSWORD);
+	}
+
+	@Test(expected = DAOException.class)
+	public void createUser_shouldNotAllowDuplicatedSystemId() {
+		UserService userService = Context.getUserService();
+		User someUser = getBrunoUser(userService);
+
+		User newUser = userWithValidPerson();
+		newUser.setSystemId(someUser.getSystemId());
+
+		userService.createUser(newUser, SOME_VALID_PASSWORD);
+	}
+
+	@Test(expected = DAOException.class)
+	public void createUser_shouldNotAllowUsernameEqualsExistingSystemId() {
+		UserService userService = Context.getUserService();
+		User someUser = getBrunoUser(userService);
+
+		User newUser = userWithValidPerson();
+		newUser.setUsername(someUser.getSystemId());
+
+		userService.createUser(newUser, SOME_VALID_PASSWORD);
+	}
+
+	@Test(expected = DAOException.class)
+	public void createUser_shouldNotAllowSystemIdEqualsExistingUsername() {
+		UserService userService = Context.getUserService();
+		User someUser = getBrunoUser(userService);
+
+		User newUser = userWithValidPerson();
+		newUser.setSystemId(someUser.getUsername());
+
+		userService.createUser(newUser, SOME_VALID_PASSWORD);
+	}
+
+	@Test(expected = DAOException.class)
+	public void createUser_shouldNotAllowSystemIdEqualsUsernameWithLuhnCheckDigit() {
+		UserService userService = Context.getUserService();
+		User someUser = getBrunoUser(userService);
+
+		User newUser = userWithValidPerson();
+		newUser.setUsername(someUser.getUsername());
+		newUser.setSystemId(decorateWithLuhnIdentifier(someUser.getUsername()));
+
+		userService.createUser(newUser, SOME_VALID_PASSWORD);
+	}
+
+	private User userWithValidPerson() {
+		Person person = new Person();
+		person.addName(new PersonName("jane", "sue", "doe"));
+		person.setGender("F");
+		return new User(person);
+	}
+
+	private User getBrunoUser(UserService userService) {
+		return userService
+				.getAllUsers()
+				.stream()
+				.filter(u -> "bruno".equals(u.getUsername()))
+				.findFirst()
+				.orElseThrow(() -> new RuntimeException("no user with username bruno"));
+	}
+
+	private String decorateWithLuhnIdentifier(String value) {
+		return new LuhnIdentifierValidator().getValidIdentifier(value);
+	}
+
 	@Test
 	public void saveUser_shouldUpdateUsersUsername() {
 		UserService us = Context.getUserService();
