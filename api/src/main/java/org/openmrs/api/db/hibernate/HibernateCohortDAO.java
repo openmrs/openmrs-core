@@ -169,7 +169,7 @@ public class HibernateCohortDAO implements CohortDAO {
 			criteria.add(Restrictions.le("startDate", activeOnDate));
 			criteria.add(Restrictions.or(
 					Restrictions.isNull("endDate"),
-					Restrictions.gt("endDate", activeOnDate)
+					Restrictions.ge("endDate", activeOnDate)
 			));
 		}
 		if (!includeVoided) {
