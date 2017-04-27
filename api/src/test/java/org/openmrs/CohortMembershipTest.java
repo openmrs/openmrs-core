@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
 public class CohortMembershipTest {
@@ -64,6 +65,14 @@ public class CohortMembershipTest {
 		
 		Date dateToTest = dateFormat.parse("2017-02-01 00:00:00");
 		assertFalse(newMember.isActive(dateToTest));
+	}
+	
+	@Test
+	public void isActive_shouldBeInclusiveOfStartAndEndDates() throws Exception {
+		CohortMembership membership = new CohortMembership(4, DateUtils.parseDate("2014-01-02", "yyyy-MM-dd"));
+		membership.setEndDate(new Date());
+		assertTrue(membership.isActive(membership.getStartDate()));
+		assertTrue(membership.isActive(membership.getEndDate()));
 	}
 	
 	@Test

@@ -53,14 +53,9 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 	 * @return boolean true/false if membership is active/inactive
 	 */
 	public boolean isActive(Date asOfDate) {
-		Date date;
-		if (asOfDate == null) {
-			date = new Date();
-		} else {
-			date = asOfDate;
-		}
-		return !this.getVoided() && (date.equals(this.getStartDate()) || date.after(this.getStartDate()))
-		        && (this.getEndDate() == null || date.before(this.getEndDate()));
+		Date date = asOfDate == null ? new Date() : asOfDate;
+		return !this.getVoided() && OpenmrsUtil.compare(startDate, date) <= 0
+				&& OpenmrsUtil.compareWithNullAsLatest(date, endDate) <= 0;
 	}
 	
 	public boolean isActive() {
