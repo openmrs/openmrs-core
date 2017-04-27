@@ -48,6 +48,7 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 	}
 	
 	/**
+	 * Compares asOfDate to [startDate, endDate], inclusive of both endpoints.
 	 * @param asOfDate date to compare if membership is active or inactive
 	 * @return boolean true/false if membership is active/inactive
 	 */
@@ -112,6 +113,12 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 		return endDate;
 	}
 	
+	/**
+	 * OpenMRS treats a membership as active from its startDate to endDate <em>inclusive</em> of both.
+	 * The underlying database field stores a date+time, so in the common case (where you don't care about the time of day
+	 * that cohort membership ended) you want to set the time component to 23:59:59.
+	 * @param endDate
+	 */
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}

@@ -724,8 +724,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getCohortMemberships_shouldNotGetMembershipsContainingPatientOutsideDateRange() throws Exception {
 		executeDataSet(COHORT_XML);
-		// note this should be exclusive of endDate
-		Date longAgo = DateUtils.parseDate("2001-01-01", "yyyy-MM-dd");
+		Date longAgo = DateUtils.parseDate("1999-12-31", "yyyy-MM-dd");
 		List<CohortMembership> memberships = service.getCohortMemberships(6, longAgo, false);
 		assertThat(memberships.size(), is(0));
 	}
