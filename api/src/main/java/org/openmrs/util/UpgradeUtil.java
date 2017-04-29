@@ -9,6 +9,8 @@
  */
 package org.openmrs.util;
 
+import org.openmrs.api.APIException;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.openmrs.api.APIException;
 
 public class UpgradeUtil {
 	
@@ -70,7 +70,7 @@ public class UpgradeUtil {
 
 		try (PreparedStatement select = connection.prepareStatement("select uuid from concept where concept_id = ?")) {
 			select.setInt(1, conceptId);
-			
+
 			ResultSet resultSet = select.executeQuery();
 			if (resultSet.next()) {
 				return resultSet.getString(1);
@@ -85,7 +85,7 @@ public class UpgradeUtil {
 		try (PreparedStatement select = connection
 				.prepareStatement("select property_value from global_property where property = ?")) {
 			select.setString(1, gp);
-			
+
 			ResultSet resultSet = select.executeQuery();
 			if (resultSet.next()) {
 				return resultSet.getString(1);
@@ -100,7 +100,7 @@ public class UpgradeUtil {
 
 		try (PreparedStatement select = connection.prepareStatement("select concept_id from concept where uuid = ?")) {
 			select.setString(1, conceptUuid);
-			
+
 			ResultSet resultSet = select.executeQuery();
 			if (resultSet.next()) {
 				conceptSetId = resultSet.getInt(1);
@@ -114,7 +114,7 @@ public class UpgradeUtil {
 		try (PreparedStatement selectConceptIds = connection
 				.prepareStatement("select concept_id from concept_set where concept_set = ?")) {
 			selectConceptIds.setInt(1, conceptSetId);
-			
+
 			ResultSet resultSet = selectConceptIds.executeQuery();
 			while (resultSet.next()) {
 				conceptIds.add(resultSet.getInt(1));

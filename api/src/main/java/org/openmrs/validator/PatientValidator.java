@@ -9,8 +9,6 @@
  */
 package org.openmrs.validator;
 
-import java.util.Collection;
-
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.annotation.Handler;
@@ -19,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
+
+import java.util.Collection;
 
 /**
  * This class validates a Patient object.
@@ -95,15 +95,12 @@ public class PatientValidator extends PersonValidator {
 			errors.reject("error.preferredIdentifier");
 		}
 		int index = 0;
-		if (!errors.hasErrors()) {
-			// Validate PatientIdentifers
-			if (patient.getIdentifiers() != null) {
-				for (PatientIdentifier identifier : patient.getIdentifiers()) {
-					errors.pushNestedPath("identifiers[" + index + "]");
-					patientIdentifierValidator.validate(identifier, errors);
-					errors.popNestedPath();
-					index++;
-				}
+		if (!errors.hasErrors() && patient.getIdentifiers() != null) {
+			for (PatientIdentifier identifier : patient.getIdentifiers()) {
+				errors.pushNestedPath("identifiers[" + index + "]");
+				patientIdentifierValidator.validate(identifier, errors);
+				errors.popNestedPath();
+				index++;
 			}
 		}
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
