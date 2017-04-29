@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.util.RoleConstants;
 
+import java.util.Collection;
+
 public class UserTest {
 	
 	private User user;
@@ -25,7 +27,8 @@ public class UserTest {
 	private final String MATERNITY_NURSE_LOWERCASE = "maternity nurse";
 	
 	private final String ROLE_WHICH_DOES_NOT_EXIT = "Role Which Does Not Exist";
-	
+
+	private final String AUTHENTICATED_USER_PRIVILEGES = "";
 	@Before
 	public void setUp() {
 		user = new User();
@@ -91,5 +94,50 @@ public class UserTest {
 	public void containsRole_shouldReturnFalseIfTheUserDoesNotHaveTheGivenRole() {
 		assertFalse(user.containsRole(ROLE_WHICH_DOES_NOT_EXIT));
 	}
-	
+
+	@Test
+	public void hasPrivilege_shouldReturnTrueForAuthenticatedUser(){
+		user.addRole(new Role(RoleConstants.AUTHENTICATED));
+		assertTrue(user.hasPrivilege(AUTHENTICATED_USER_PRIVILEGES));
+	}
+
+	@Test
+	public void hasPrivilege_shouldReturnTrueForSuperUser(){
+		user.addRole(new Role(RoleConstants.SUPERUSER));
+		assertTrue(user.hasPrivilege("Any privilege"));
+	}
+
+	@Test
+	public void hasPrivilege_shouldReturnTrueGivenPrivilegeFoundInAnyRole(){
+		Role authenticatedRole = new Role(RoleConstants.AUTHENTICATED);
+		authenticatedRole.addPrivilege(new Privilege("priv1"));
+		user.addRole(authenticatedRole);
+
+		assertTrue(user.hasPrivilege("priv1"));
+	}
+
+	@Test
+	public void hasPrivilege_shouldReturnFalseIfGivenPrivilegeNotFoundInAnyRole(){
+		Role authenticatedRole = new Role(RoleConstants.AUTHENTICATED);
+		authenticatedRole.addPrivilege(new Privilege("priv1"));
+		user.addRole(authenticatedRole);
+
+		Role providerRole = new Role(RoleConstants.PROVIDER);
+		providerRole.addPrivilege(new Privilege("priv2"));
+		user.addRole(providerRole);
+
+		assertFalse(user.hasPrivilege("Unknown privilege"));
+	}
+
+	@Test
+	public void getPrivileges_shouldContainPreviouslyAddedPrivilege(){
+		Role authenticatedRole = new Role(RoleConstants.AUTHENTICATED);
+		Privilege privilege = new Privilege("priv1");
+		authenticatedRole.addPrivilege(privilege);
+		user.addRole(authenticatedRole);
+
+		Collection<Privilege> privilegeCollection = user.getPrivileges();
+		assertTrue(privilegeCollection.contains(privilege));
+	}
+
 }
