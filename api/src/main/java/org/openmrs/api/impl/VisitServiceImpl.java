@@ -351,44 +351,52 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public void stopVisits(Date maximumStartDate) {
+		
+		List<VisitType> visitTypesToStop = getVisitTypesToStop();
+		
+		if (maximumStartDate == null) {
+			maximumStartDate = new Date();
+		}
+		
+		if (visitTypesToStop.isEmpty()) {
+			return;
+		}
+			int counter = 0;
+			Date stopDate = new Date();
+			Visit nextVisit = dao.getNextVisit(null, visitTypesToStop, maximumStartDate);
+			while (nextVisit != null) {
+				nextVisit.setStopDatetime(stopDate);
+				dao.saveVisit(nextVisit);
+				if (counter++ > 50) {
+					//ensure changes are persisted to DB before reclaiming memory
+					Context.flushSession();
+					Context.clearSession();
+					counter = 0;
+				}
+				
+				nextVisit = dao.getNextVisit(nextVisit, visitTypesToStop, maximumStartDate);
+			}
+	}
+	private List<VisitType> getVisitTypesToStop() {
 		String gpValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
+		if(StringUtils.isBlank(gpValue)) {
+			return Collections.emptyList();
+		}
 		VisitService vs = Context.getVisitService();
-		if (StringUtils.isNotBlank(gpValue)) {
-			if (maximumStartDate == null) {
-				maximumStartDate = new Date();
-			}
-			
-			List<VisitType> visitTypesToStop = new ArrayList<VisitType>();
-			String[] visitTypeNames = StringUtils.split(gpValue.trim(), ",");
-			for (int i = 0; i < visitTypeNames.length; i++) {
-				String currName = visitTypeNames[i];
-				visitTypeNames[i] = currName.trim().toLowerCase();
-			}
-			
-			List<VisitType> allVisitTypes = vs.getAllVisitTypes();
-			for (VisitType visitType : allVisitTypes) {
-				if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase())) {
-					visitTypesToStop.add(visitType);
-				}
-			}
-			
-			if (!visitTypesToStop.isEmpty()) {
-				int counter = 0;
-				Date stopDate = new Date();
-				Visit nextVisit = dao.getNextVisit(null, visitTypesToStop, maximumStartDate);
-				while (nextVisit != null) {
-					nextVisit.setStopDatetime(stopDate);
-					dao.saveVisit(nextVisit);
-					if (counter++ > 50) {
-						//ensure changes are persisted to DB before reclaiming memory
-						Context.flushSession();
-						Context.clearSession();
-						counter = 0;
-					}
-					
-					nextVisit = dao.getNextVisit(nextVisit, visitTypesToStop, maximumStartDate);
-				}
+		
+		List<VisitType> visitTypesToStop = new ArrayList<VisitType>();
+		String[] visitTypeNames = StringUtils.split(gpValue.trim(), ",");
+		for (int i = 0; i < visitTypeNames.length; i++) {
+			String currName = visitTypeNames[i];
+			visitTypeNames[i] = currName.trim().toLowerCase();
+		}
+		
+		List<VisitType> allVisitTypes = vs.getAllVisitTypes();
+		for (VisitType visitType : allVisitTypes) {
+			if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase())) {
+				visitTypesToStop.add(visitType);
 			}
 		}
+		return visitTypesToStop;
 	}
 }
