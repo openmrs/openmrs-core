@@ -42,7 +42,7 @@ public class ConceptMapTypeEditor extends PropertyEditorSupport {
 	@Override
 	public String getAsText() {
 		ConceptMapType mapType = (ConceptMapType) getValue();
-		if (mapType == null || mapType.getConceptMapTypeId() == null) {
+		if (mapType == null) {
 			return "";
 		}
 		
