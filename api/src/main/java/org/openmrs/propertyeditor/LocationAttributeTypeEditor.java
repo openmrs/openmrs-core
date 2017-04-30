@@ -41,7 +41,7 @@ public class LocationAttributeTypeEditor extends PropertyEditorSupport {
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		LocationService ls = Context.getLocationService();
-		if (Context.isAuthenticated() && StringUtils.hasText(text)) {
+		if (StringUtils.hasText(text)) {
 			try {
 				setValue(ls.getLocationAttributeType(Integer.valueOf(text)));
 			}
