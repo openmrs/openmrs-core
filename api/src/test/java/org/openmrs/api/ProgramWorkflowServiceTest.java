@@ -245,6 +245,23 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(Context.getProgramWorkflowService().getProgramByUuid("some invalid uuid"));
 	}
 	
+	@Test
+	public void getState_shouldGetStateAssociatedWithGivenIdIfWorkflowStateIdExists() {
+		
+		final Integer EXISTING_WORKFLOW_STATE_ID = 1;
+		
+		ProgramWorkflowState state = pws.getState(EXISTING_WORKFLOW_STATE_ID);
+		
+		assertNotNull("ProgramWorkflowState not found", state);
+		assertThat(state.getId(), is(EXISTING_WORKFLOW_STATE_ID));
+	}
+	
+	@Test
+	public void getState_shouldReturnNullIfGivenWorkflowStateIdDoesNotExists() {
+		
+		assertNull(pws.getState(99999));
+	}
+	
 	/**
 	 * @see ProgramWorkflowService#getStateByUuid(String)
 	 */
