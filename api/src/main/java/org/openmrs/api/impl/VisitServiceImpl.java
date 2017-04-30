@@ -352,52 +352,60 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	@Override
 	public void stopVisits(Date maximumStartDate) {
 		
-		List<VisitType> visitTypesToStop = getVisitTypesToStop();
+		final List<VisitType> visitTypesToStop = getVisitTypesToStop();
 		
 		if (maximumStartDate == null) {
 			maximumStartDate = new Date();
 		}
-		
+			
 		if (visitTypesToStop.isEmpty()) {
 			return;
 		}
-			int counter = 0;
-			Date stopDate = new Date();
-			Visit nextVisit = dao.getNextVisit(null, visitTypesToStop, maximumStartDate);
-			while (nextVisit != null) {
-				nextVisit.setStopDatetime(stopDate);
-				dao.saveVisit(nextVisit);
-				if (counter++ > 50) {
-					//ensure changes are persisted to DB before reclaiming memory
-					Context.flushSession();
-					Context.clearSession();
-					counter = 0;
-				}
-				
-				nextVisit = dao.getNextVisit(nextVisit, visitTypesToStop, maximumStartDate);
+		
+		int counter = 0;
+		Date stopDate = new Date();
+		Visit nextVisit = dao.getNextVisit(null, visitTypesToStop, maximumStartDate);
+		while (nextVisit != null) {
+			nextVisit.setStopDatetime(stopDate);
+			dao.saveVisit(nextVisit);
+			if (counter++ > 50) {
+				//ensure changes are persisted to DB before reclaiming memory
+				Context.flushSession();
+				Context.clearSession();
+				counter = 0;
 			}
+					
+		nextVisit = dao.getNextVisit(nextVisit, visitTypesToStop, maximumStartDate);
+		}
 	}
 	
 	private List<VisitType> getVisitTypesToStop() {
 		String gpValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
 		if (StringUtils.isBlank(gpValue)) {
 			return Collections.emptyList();
+		} else {
+			String[] visitTypeNames = getVisitTypeNamesFromGlobalPropertyValue(gpValue);
+			return getVisitTypesFromVisitTypeNames(visitTypeNames);
 		}
-		VisitService vs = Context.getVisitService();
-		
-		List<VisitType> visitTypesToStop = new ArrayList<VisitType>();
-		String[] visitTypeNames = StringUtils.split(gpValue.trim(), ",");
-		for (int i = 0; i < visitTypeNames.length; i++) {
-			String currName = visitTypeNames[i];
-			visitTypeNames[i] = currName.trim().toLowerCase();
+	}
+	
+	private String[] getVisitTypeNamesFromGlobalPropertyValue(String commaSeparatedNames) {
+		String[] result = StringUtils.split(commaSeparatedNames.trim(), ",");
+		for (int i = 0; i < result.length; i++) {
+			String currName = result[i];
+			result[i] = currName.trim().toLowerCase();
 		}
-		
-		List<VisitType> allVisitTypes = vs.getAllVisitTypes();
-		for (VisitType visitType : allVisitTypes) {
+		return result;
+	}
+	
+	private List<VisitType> getVisitTypesFromVisitTypeNames(String[] visitTypeNames) {
+		List<VisitType> result = new ArrayList<VisitType>();
+		for (VisitType visitType : Context.getVisitService().getAllVisitTypes()) {
 			if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase())) {
-				visitTypesToStop.add(visitType);
+				result.add(visitType);
 			}
 		}
-		return visitTypesToStop;
+		return result;
 	}
+
 }
