@@ -524,6 +524,15 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getWorkflow(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public ProgramWorkflow getWorkflow(Integer workflowId) {
+		return dao.getWorkflow(workflowId);
+	}
+	
+	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getWorkflowByUuid(java.lang.String)
 	 */
 	@Transactional(readOnly = true)
