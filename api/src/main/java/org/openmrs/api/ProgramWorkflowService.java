@@ -347,6 +347,15 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	// **************************
 	
 	/**
+	 * Get {@code ProgramWorkflow} by internal identifier.
+	 * 
+	 * @param workflowId the primary key of the workflow to find, null not ok
+	 * @return the program workflow matching given id or null if not found
+	 * @since 2.2.0
+	 */
+	public ProgramWorkflow getWorkflow(Integer workflowId);
+	
+	/**
 	 * Get ProgramWorkflow by its UUID
 	 * 
 	 * @param uuid

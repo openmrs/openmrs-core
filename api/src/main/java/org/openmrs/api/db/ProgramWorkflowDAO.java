@@ -231,6 +231,15 @@ public interface ProgramWorkflowDAO {
 	public PatientState getPatientStateByUuid(String uuid);
 	
 	/**
+	 * Retrieves a {@code ProgramWorkflow} from the database by its primary key.
+	 * 
+	 * @param workflowId the primary key used to retrieve program workflow
+	 * @return the program workflow matching given id or null if not found
+	 * @since 2.2.0
+	 */
+	public ProgramWorkflow getWorkflow(Integer workflowId);
+	
+	/**
 	 * @param uuid
 	 * @return program workflow or null
 	 */

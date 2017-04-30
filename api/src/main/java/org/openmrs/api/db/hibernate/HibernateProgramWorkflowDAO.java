@@ -330,6 +330,14 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getWorkflow(Integer)
+	 */
+	@Override
+	public ProgramWorkflow getWorkflow(Integer workflowId) {
+		return (ProgramWorkflow) sessionFactory.getCurrentSession().get(ProgramWorkflow.class, workflowId);
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getWorkflowByUuid(java.lang.String)
 	 */
 	@Override
