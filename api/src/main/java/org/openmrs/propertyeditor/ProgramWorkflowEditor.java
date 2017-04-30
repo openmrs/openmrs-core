@@ -42,7 +42,7 @@ public class ProgramWorkflowEditor extends PropertyEditorSupport {
 		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		if (StringUtils.hasText(text)) {
 			try {
-				setValue(pws.getWorkflowByUuid(text));
+				setValue(pws.getWorkflow(Integer.valueOf(text)));
 			}
 			catch (Exception ex) {
 				ProgramWorkflow pw = pws.getWorkflowByUuid(text);
