@@ -223,6 +223,15 @@ public interface ProgramWorkflowDAO {
 	public List<Program> getProgramsByName(String name, boolean includeRetired);
 	
 	/**
+	 * Retrieves a {@code ProgramWorkflowState} from the database by its primary key.
+	 * 
+	 * @param stateId the primary key used to retrieve program workflow state
+	 * @return the program workflow state matching given id or null if not found
+	 * @since 2.2.0
+	 */
+	public ProgramWorkflowState getState(Integer stateId);
+	
+	/**
 	 * @param uuid
 	 * @return program workflow state or null
 	 */
