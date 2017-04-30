@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
- * Property editor for {@link LocationTag}s
- * In version 1.9, added ability for this to also retrieve objects by uuid
+ * Property editor for {@link LocationTag}s In version 1.9, added ability for this to also retrieve
+ * objects by uuid
  * 
  * @since 1.7
  */
@@ -34,13 +34,12 @@ public class LocationTagEditor extends PropertyEditorSupport {
 	/**
 	 * @should set using id
 	 * @should set using uuid
-	 * 
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		LocationService ls = Context.getLocationService();
-		if (Context.isAuthenticated() && StringUtils.hasText(text)) {
+		if (StringUtils.hasText(text)) {
 			try {
 				setValue(ls.getLocationTag(Integer.valueOf(text)));
 			}

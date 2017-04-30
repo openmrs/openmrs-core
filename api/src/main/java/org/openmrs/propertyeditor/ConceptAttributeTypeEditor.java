@@ -36,7 +36,7 @@ public class ConceptAttributeTypeEditor extends PropertyEditorSupport {
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		ConceptService conceptService = Context.getConceptService();
-		if (Context.isAuthenticated() && StringUtils.hasText(text)) {
+		if (StringUtils.hasText(text)) {
 			try {
 				setValue(conceptService.getConceptAttributeType(Integer.valueOf(text)));
 			}
