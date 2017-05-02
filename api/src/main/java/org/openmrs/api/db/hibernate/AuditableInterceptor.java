@@ -45,6 +45,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	
 	/**
 	 * This method is only called when inserting new objects.
+	 * 
 	 * @should return true if dateCreated was null
 	 * @should return true if creator was null
 	 * @should return false if dateCreated and creator was not null
@@ -54,7 +55,8 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	 *      java.lang.Object[], java.lang.String[], org.hibernate.type.Type[])
 	 */
 	@Override
-	public boolean onSave(Object entity, Serializable id, Object[] entityCurrentState, String[] propertyNames, Type[] types) {
+	public boolean onSave(Object entity, Serializable id, Object[] entityCurrentState, String[] propertyNames,
+	        Type[] types) {
 		return setCreatorAndDateCreatedIfNull(entity, entityCurrentState, propertyNames);
 	}
 	
@@ -90,9 +92,8 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	
 	/**
 	 * Sets the creator and dateCreated fields to the current user and the current time if they are
-	 * null.
-	 * if is a Person Object, sets the personCreator and personDateCreated fields to the current user and the current time
-	 * if they are null.
+	 * null. if is a Person Object, sets the personCreator and personDateCreated fields to the
+	 * current user and the current time if they are null.
 	 *
 	 * @param entity
 	 * @param currentState
@@ -117,8 +118,8 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	private boolean changeProperties(Object[] currentState, String[] propertyNames, boolean objectWasChanged,
 	        Map<String, Object> propertyValues, Boolean setNullOnly) {
 		
-		for (String property : propertyValues.keySet()) {
-			if (changePropertyValue(currentState, propertyNames, property, propertyValues.get(property), setNullOnly)) {
+		for (Map.Entry<String, Object> e : propertyValues.entrySet()) {
+			if (changePropertyValue(currentState, propertyNames, e.getKey(), e.getValue(), setNullOnly)) {
 				objectWasChanged = true;
 			}
 		}
