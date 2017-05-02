@@ -59,8 +59,7 @@ public class CachedMessageSource extends AbstractMessageSource implements Mutabl
 	public Collection<PresentationMessage> getPresentations() {
 		Collection<PresentationMessage> allMessages = new Vector<PresentationMessage>();
 		
-		for (Locale locale : localizedMap.keySet()) {
-			PresentationMessageMap codeMessageMap = localizedMap.get(locale);
+		for (PresentationMessageMap codeMessageMap : localizedMap.values()) {
 			allMessages.addAll(codeMessageMap.values());
 		}
 		

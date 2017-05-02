@@ -131,7 +131,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			List<ConceptName> namesWithNoLocale = null;
 			
 			//for each locale
-			for (Locale conceptNameLocale : locales) {
+			for (Map.Entry<Locale, List<ConceptName>> e : localeConceptNamesMap.entrySet()) {
+				Locale conceptNameLocale = e.getKey();
 				boolean fullySpecifiedNameForLocaleFound = false;
 				boolean preferredNameForLocaleFound = false;
 				boolean shortNameForLocaleFound = false;
@@ -139,7 +140,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				Map<String, List<ConceptName>> nameDuplicateConceptNamesMap = new HashMap<String, List<ConceptName>>();
 				
 				//for each name in the locale
-				for (ConceptName nameInLocale : localeConceptNamesMap.get(conceptNameLocale)) {
+				for (ConceptName nameInLocale : e.getValue()) {
 					if (StringUtils.isBlank(nameInLocale.getName())) {
 						updateWarnings.add("ConceptName with id " + nameInLocale.getConceptNameId() + " ("
 						        + nameInLocale.getName() + ") is null, white space character or empty string");
@@ -165,14 +166,16 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 						if (nameInLocale.getLocalePreferred() && !preferredNameForLocaleFound) {
 							if (nameInLocale.isIndexTerm()) {
 								nameInLocale.setLocalePreferred(false);
-								reportUpdatedName(nameInLocale, "Preferred name '" + nameInLocale.getName()
-								        + "' in locale '" + conceptNameLocale.getDisplayName()
-								        + "' has been dropped as the preferred name because it is a search term");
+								reportUpdatedName(nameInLocale,
+								    "Preferred name '" + nameInLocale.getName() + "' in locale '"
+								            + conceptNameLocale.getDisplayName()
+								            + "' has been dropped as the preferred name because it is a search term");
 							} else if (nameInLocale.isShort()) {
 								nameInLocale.setLocalePreferred(false);
-								reportUpdatedName(nameInLocale, "Preferred name '" + nameInLocale.getName()
-								        + "' in locale '" + conceptNameLocale.getDisplayName()
-								        + "' has been dropped as the preferred name because it is a short name");
+								reportUpdatedName(nameInLocale,
+								    "Preferred name '" + nameInLocale.getName() + "' in locale '"
+								            + conceptNameLocale.getDisplayName()
+								            + "' has been dropped as the preferred name because it is a short name");
 							} else {
 								preferredNameForLocaleFound = true;
 							}
@@ -181,20 +184,16 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 						else if (nameInLocale.getLocalePreferred() && preferredNameForLocaleFound) {
 							//drop this name as locale preferred so that we have only one
 							nameInLocale.setLocalePreferred(false);
-							reportUpdatedName(
-							    nameInLocale,
-							    "Preferred name '"
-							            + nameInLocale.getName()
-							            + "' in locale '"
-							            + conceptNameLocale.getDisplayName()
-							            + "' has been dropped as the preferred name because there is already another preferred name in the same locale");
+							reportUpdatedName(nameInLocale, "Preferred name '" + nameInLocale.getName() + "' in locale '"
+							        + conceptNameLocale.getDisplayName()
+							        + "' has been dropped as the preferred name because there is already another preferred name in the same locale");
 						}
 					} else {
 						//Enforce not-null on locale preferred field constraint from the database table
 						nameInLocale.setLocalePreferred(false);
-						reportUpdatedName(nameInLocale, "The locale preferred property of name '" + nameInLocale.getName()
-						        + "' in locale '" + conceptNameLocale.getDisplayName()
-						        + "' has been updated to false from null");
+						reportUpdatedName(nameInLocale,
+						    "The locale preferred property of name '" + nameInLocale.getName() + "' in locale '"
+						            + conceptNameLocale.getDisplayName() + "' has been updated to false from null");
 					}
 					
 					if (nameInLocale.isFullySpecifiedName()) {
@@ -205,9 +204,9 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 							fullySpecifiedNameForLocaleFound = true;
 						} else {
 							nameInLocale.setConceptNameType(null);
-							reportUpdatedName(nameInLocale, "The name '" + nameInLocale.getName() + "' in locale '"
-							        + conceptNameLocale.getDisplayName()
-							        + "' has been converted from fully specified to a synonym");
+							reportUpdatedName(nameInLocale,
+							    "The name '" + nameInLocale.getName() + "' in locale '" + conceptNameLocale.getDisplayName()
+							            + "' has been converted from fully specified to a synonym");
 						}
 					}
 					
@@ -218,9 +217,9 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 						//should have one short name per locale
 						else {
 							nameInLocale.setConceptNameType(null);
-							reportUpdatedName(nameInLocale, "The name '" + nameInLocale.getName() + "' in locale '"
-							        + conceptNameLocale.getDisplayName()
-							        + "' has been converted from a short name to a synonym");
+							reportUpdatedName(nameInLocale,
+							    "The name '" + nameInLocale.getName() + "' in locale '" + conceptNameLocale.getDisplayName()
+							            + "' has been converted from a short name to a synonym");
 						}
 					}
 					
@@ -243,7 +242,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					
 					nameDuplicateConceptNamesMap.get(name).add(nameInLocale);
 					
-				}//close for each name
+				}
 				
 				//No duplicate names allowed for the same locale and concept
 				for (Map.Entry<String, List<ConceptName>> entry : nameDuplicateConceptNamesMap.entrySet()) {
@@ -255,21 +254,6 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					logMessages.add("The name '" + entry.getKey() + "' was found multiple times for the concept with id '"
 					        + conceptId + "' in locale '" + conceptNameLocale.getDisplayName() + "'");
 					
-					/*ConceptName chosenName = null;
-					List<ConceptName> voidedNames = new ArrayList<ConceptName>();
-					for (ConceptName duplicate : entry.getValue()) {
-						//The first name found should be retained and void the rest of the duplicates
-						if (chosenName == null)
-							chosenName = duplicate;
-						else {
-							duplicate.setVoided(true);
-							duplicate.setVoidReason("Duplicate name in locale");
-							voidedNames.add(duplicate);
-							reportUpdatedName(duplicate, "ConceptName with id: " + duplicate.getConceptNameId()
-							        + " has been voided because it is a duplicate name for concept with id " + conceptId
-							        + " in locale '" + conceptNameLocale.getDisplayName() + "'");
-						}
-					}*/
 				}
 				
 				//if this locale has no preferred name found, set one
@@ -294,7 +278,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					}
 				}
 				
-			}//close for each locale
+			}
 			
 			//Make the first name found the fully specified name if none exists
 			if (!hasFullySpecifiedName) {
@@ -311,9 +295,10 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					if (!hasFullySpecifiedName) {
 						conceptName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 						hasFullySpecifiedName = true;
-						reportUpdatedName(conceptName, "ConceptName with id " + conceptName.getConceptNameId() + " ("
-						        + conceptName.getName() + ") in locale '" + defaultLocale.getDisplayName()
-						        + "' has been set as the fully specified name for concept with id : " + conceptId);
+						reportUpdatedName(conceptName,
+						    "ConceptName with id " + conceptName.getConceptNameId() + " (" + conceptName.getName()
+						            + ") in locale '" + defaultLocale.getDisplayName()
+						            + "' has been set as the fully specified name for concept with id : " + conceptId);
 					}
 					//convert to a synonym and should not be preferred, this will avoid inconsistencies, in case
 					//already short, fully specified and preferred names exist
@@ -345,8 +330,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				}
 				
 				for (String duplicateName : entry.getValue()) {
-					updateWarnings.add("Concept Name '" + duplicateName + "' was found multiple times in locale '"
-					        + entry.getKey() + "'");
+					updateWarnings.add(
+					    "Concept Name '" + duplicateName + "' was found multiple times in locale '" + entry.getKey() + "'");
 				}
 			}
 		}
@@ -394,9 +379,10 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			for (ConceptName cn : possibleFullySpecNames) {
 				if (cn.isSynonym()) {
 					cn.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
-					reportUpdatedName(cn, "ConceptName with id " + cn.getConceptNameId() + " (" + cn.getName()
-					        + ") in locale '" + allowedLoc.getDisplayName()
-					        + "' has been set as the fully specified name for concept with id : " + conceptId);
+					reportUpdatedName(cn,
+					    "ConceptName with id " + cn.getConceptNameId() + " (" + cn.getName() + ") in locale '"
+					            + allowedLoc.getDisplayName()
+					            + "' has been set as the fully specified name for concept with id : " + conceptId);
 					return true;
 				}
 			}
@@ -419,9 +405,10 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			if (locale != null) {
 				ConceptName fullySpecName = entry.getValue().get(0);
 				fullySpecName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
-				reportUpdatedName(fullySpecName, "ConceptName with id " + fullySpecName.getConceptNameId() + " ("
-				        + fullySpecName.getName() + ") in locale '" + locale.getDisplayName()
-				        + "' has been set as the fully specified name for concept with id : " + conceptId);
+				reportUpdatedName(fullySpecName,
+				    "ConceptName with id " + fullySpecName.getConceptNameId() + " (" + fullySpecName.getName()
+				            + ") in locale '" + locale.getDisplayName()
+				            + "' has been set as the fully specified name for concept with id : " + conceptId);
 				return true;
 			}
 		}
@@ -498,12 +485,11 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		
 		int duplicates = getInt(connection,
 		    "SELECT count(*) FROM concept_name cn, concept c WHERE cn.concept_id = c.concept_id  AND (cn.concept_name_type = '"
-		            + ConceptNameType.FULLY_SPECIFIED
-		            + "' OR cn.locale_preferred = '1') AND cn.voided = '0' AND cn.name = '"
+		            + ConceptNameType.FULLY_SPECIFIED + "' OR cn.locale_preferred = '1') AND cn.voided = '0' AND cn.name = '"
 		            + HibernateUtil.escapeSqlWildcards(conceptName.getName(), connection.getUnderlyingConnection())
-		            + "' AND cn.locale = '"
-		            + HibernateUtil.escapeSqlWildcards(conceptName.getLocale().toString(), connection
-		                    .getUnderlyingConnection()) + "' AND c.retired = '0' AND c.concept_id != " + conceptId);
+		            + "' AND cn.locale = '" + HibernateUtil.escapeSqlWildcards(conceptName.getLocale().toString(),
+		                connection.getUnderlyingConnection())
+		            + "' AND c.retired = '0' AND c.concept_id != " + conceptId);
 		
 		return duplicates == 0;
 	}
@@ -534,8 +520,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 						defaultLocale = defaultLocale_GP;
 					}
 				} else {
-					updateWarnings.add("'" + defaultLocaleStr
-					        + "' is an invalid value for the global property default locale");
+					updateWarnings
+					        .add("'" + defaultLocaleStr + "' is an invalid value for the global property default locale");
 				}
 			}
 			
@@ -553,8 +539,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 						if (localeStr.trim().length() > 1) {
 							allowedLocales.add(LocaleUtility.fromSpecification(localeStr.trim()));
 						} else {
-							updateWarnings.add("'" + localeStr
-							        + "' is an invalid value for the global property locale.allowed.list");
+							updateWarnings.add(
+							    "'" + localeStr + "' is an invalid value for the global property locale.allowed.list");
 						}
 					}
 				}
@@ -588,7 +574,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	/**
 	 * Convenience Method that fetches all non-voided concept names from the database associated to
 	 * a concept with a matching concept id, stores the names in a map with locales as the keys and
-	 * the lists of conceptNames in each locale as the values i.e &lt;Locale List&lt;ConceptNames&gt;&gt;.
+	 * the lists of conceptNames in each locale as the values i.e &lt;Locale
+	 * List&lt;ConceptNames&gt;&gt;.
 	 *
 	 * @param connection a DatabaseConnection
 	 * @param conceptId the conceptId for the conceptNames to fetch
@@ -600,8 +587,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		Map<Locale, List<ConceptName>> localeConceptNamesMap = null;
 		
 		try {
-			pStmt = connection
-			        .prepareStatement("SELECT concept_name_id, name, concept_name_type, locale, locale_preferred FROM concept_name WHERE voided = '0' AND concept_id = ?");
+			pStmt = connection.prepareStatement(
+			    "SELECT concept_name_id, name, concept_name_type, locale, locale_preferred FROM concept_name WHERE voided = '0' AND concept_id = ?");
 			pStmt.setInt(1, conceptId);
 			ResultSet rs = pStmt.executeQuery();
 			
@@ -626,8 +613,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					conceptName.setConceptNameType(conceptNameType);
 				}
 				String localeString = rs.getString("locale");
-				conceptName.setLocale(!StringUtils.isBlank(localeString) ? LocaleUtility.fromSpecification(localeString)
-				        : null);
+				conceptName.setLocale(
+				    !StringUtils.isBlank(localeString) ? LocaleUtility.fromSpecification(localeString) : null);
 				conceptName.setLocalePreferred(rs.getBoolean("locale_preferred"));
 				conceptName.setVoided(false);
 				
@@ -668,8 +655,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		
 		try {
 			connection.setAutoCommit(false);
-			pStmt = connection
-			        .prepareStatement("UPDATE concept_name SET locale = ?, concept_name_type = ?, locale_preferred = ?, voided = ?, date_voided = ?, void_reason = ?, voided_by = ? WHERE concept_name_id = ?");
+			pStmt = connection.prepareStatement(
+			    "UPDATE concept_name SET locale = ?, concept_name_type = ?, locale_preferred = ?, voided = ?, date_voided = ?, void_reason = ?, voided_by = ? WHERE concept_name_id = ?");
 			
 			Integer userId = DatabaseUpdater.getAuthenticatedUserId();
 			//is we have no authenticated user(for API users), set as Daemon
@@ -683,8 +670,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			
 			for (ConceptName conceptName : updatedConceptNames) {
 				pStmt.setString(1, conceptName.getLocale().toString());
-				pStmt.setString(2, (conceptName.getConceptNameType() != null) ? conceptName.getConceptNameType().toString()
-				        : null);
+				pStmt.setString(2,
+				    (conceptName.getConceptNameType() != null) ? conceptName.getConceptNameType().toString() : null);
 				pStmt.setBoolean(3, conceptName.getLocalePreferred());
 				pStmt.setBoolean(4, conceptName.getVoided());
 				pStmt.setDate(5, conceptName.getVoided() ? new Date(System.currentTimeMillis()) : null);

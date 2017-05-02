@@ -185,15 +185,13 @@ public class WebModuleUtil {
 								parentDir.mkdirs();
 							}
 							
-							//if (outFile.getName().endsWith(".jsp") == false)
-							//	outFile = new File(absPath.replace("/", File.separator) + MODULE_NON_JSP_EXTENSION);
-							
 							// copy the contents over to the webapp for non directories
 							outStream = new FileOutputStream(outFile, false);
 							inStream = jarFile.getInputStream(entry);
 							OpenmrsUtil.copyFile(inStream, outStream);
 						}
-					} else if ("moduleApplicationContext.xml".equals(name) || "webModuleApplicationContext.xml".equals(name)) {
+					} else if ("moduleApplicationContext.xml".equals(name)
+					        || "webModuleApplicationContext.xml".equals(name)) {
 						moduleNeedsContextRefresh = true;
 					} else if (name.equals(mod.getModuleId() + "Context.xml")) {
 						String msg = "DEPRECATED: '" + name
@@ -362,7 +360,9 @@ public class WebModuleUtil {
 		return false;
 	}
 	
-	/** Stops all tasks started by given module
+	/**
+	 * Stops all tasks started by given module
+	 * 
 	 * @param mod
 	 */
 	private static void stopTasks(Module mod) {
@@ -386,6 +386,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * Checks if module package name is in task class name
+	 * 
 	 * @param modulePackageName the package name of module
 	 * @param taskClass the class of given task
 	 * @return true if task and module are in the same package
@@ -536,8 +537,8 @@ public class WebModuleUtil {
 		try {
 			for (ModuleFilterDefinition def : ModuleFilterDefinition.retrieveFilterDefinitions(module)) {
 				if (moduleFiltersByName.containsKey(def.getFilterName())) {
-					throw new ModuleException("A filter with name <" + def.getFilterName()
-					        + "> has already been registered.");
+					throw new ModuleException(
+					        "A filter with name <" + def.getFilterName() + "> has already been registered.");
 				}
 				ModuleFilterConfig config = ModuleFilterConfig.getInstance(def, servletContext);
 				Filter f = (Filter) ModuleFactory.getModuleClassLoader(module).loadClass(def.getFilterClass()).newInstance();
@@ -592,9 +593,8 @@ public class WebModuleUtil {
 			log.debug("Module: " + module.getModuleId() + " successfully unloaded " + filters.size() + " filters.");
 			moduleFilters.remove(module);
 			
-			for (Iterator<String> i = moduleFiltersByName.keySet().iterator(); i.hasNext();) {
-				String filterName = i.next();
-				Filter filterVal = moduleFiltersByName.get(filterName);
+			for (Iterator<Filter> i = moduleFiltersByName.values().iterator(); i.hasNext();) {
+				Filter filterVal = i.next();
 				if (filters.contains(filterVal)) {
 					i.remove();
 				}
@@ -826,14 +826,6 @@ public class WebModuleUtil {
 		}
 		
 		if (!skipRefresh) {
-			//try {
-			//	if (dispatcherServlet != null)
-			//		dispatcherServlet.reInitFrameworkServlet();
-			//}
-			//catch (ServletException se) {
-			//	log.warn("Unable to reinitialize webapplicationcontext for dispatcherservlet for module: " + mod.getName(), se);
-			//}
-			
 			refreshWAC(servletContext, false, null);
 		}
 		
@@ -961,8 +953,8 @@ public class WebModuleUtil {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(realPath
-			        + "/WEB-INF/dwr-modules.xml".replace("/", File.separator)));
+			StreamResult result = new StreamResult(
+			        new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator)));
 			
 			// Output to console for testing
 			// StreamResult result = new StreamResult(System.out);
