@@ -105,10 +105,9 @@ public class Allergen {
      */
     public void setNonCodedAllergen(String nonCodedAllergen) {
 		this.nonCodedAllergen = nonCodedAllergen;
-		if (StringUtils.isNotBlank(nonCodedAllergen)) {
-			if (codedAllergen != null && !codedAllergen.getUuid().equals(getOtherNonCodedConceptUuid())) {
-				codedAllergen = null;
-			}
+		if (StringUtils.isNotBlank(nonCodedAllergen) && codedAllergen != null
+				&& !codedAllergen.getUuid().equals(getOtherNonCodedConceptUuid())) {
+			codedAllergen = null;	
 		}
     }
 

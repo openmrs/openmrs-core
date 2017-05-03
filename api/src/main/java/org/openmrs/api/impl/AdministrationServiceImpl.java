@@ -282,8 +282,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 						    new Object[] { LocaleUtility.getDefaultLocale() }, null));
 					}
 				}
-			} else if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE)) {
-				if (gp.getPropertyValue() != null) {
+			} else if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE)
+						&& gp.getPropertyValue() != null) {
+			
 					List<Locale> localeList = getAllowedLocales();
 					
 					if (!localeList.contains(LocaleUtility.fromSpecification(gp.getPropertyValue().trim()))) {
@@ -292,7 +293,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 						throw new APIException((Context.getMessageSourceService().getMessage(
 						    "general.locale.defaultNotInAllowedLocalesList", new Object[] { value }, null)));
 					}
-				}
 			}
 			
 			CustomDatatypeUtil.saveIfDirty(gp);
