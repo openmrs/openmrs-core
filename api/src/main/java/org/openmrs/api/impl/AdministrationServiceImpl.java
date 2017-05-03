@@ -282,7 +282,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 						    new Object[] { LocaleUtility.getDefaultLocale() }, null));
 					}
 				}
-			} else if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE) && gp.getPropertyValue() != null) {
+			} else if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE) 
+					&& gp.getPropertyValue() != null) {
 				
 					List<Locale> localeList = getAllowedLocales();
 					
