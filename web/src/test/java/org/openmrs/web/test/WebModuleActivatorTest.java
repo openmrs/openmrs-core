@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Paths;
 
 import org.junit.Test;
 import org.openmrs.module.BaseModuleActivatorTest;
@@ -41,8 +42,7 @@ public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 		//when run from the IDE and this folder does not exist, some tests fail with
 		//org.openmrs.module.ModuleException: Unable to load module messages from file: 
 		// /Projects/openmrs/core/web/target/test-classes/WEB-INF/module_messages_fr.properties
-		
-		File folder = new File("target" + File.separatorChar + "test-classes" + File.separatorChar + "WEB-INF");
+		File folder = Paths.get("target", "test-classes", "WEB-INF").toFile();
 		if (!folder.exists()) {
 			folder.mkdirs();
 		}

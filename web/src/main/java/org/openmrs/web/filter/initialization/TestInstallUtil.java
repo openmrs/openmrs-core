@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -67,8 +68,7 @@ public class TestInstallUtil {
 		
 		//For stand-alone, use explicit path to the mysql executable.
 		String runDirectory = System.getProperties().getProperty("user.dir");
-		File file = new File(runDirectory + File.separatorChar + "database" + File.separatorChar + "bin"
-		        + File.separatorChar + "mysql");
+		File file = Paths.get(runDirectory, "database", "bin", "mysql").toFile();
 		
 		if (file.exists()) {
 			command[0] = file.getAbsolutePath();

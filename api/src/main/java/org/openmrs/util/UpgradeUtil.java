@@ -9,6 +9,7 @@
  */
 package org.openmrs.util;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,11 +25,11 @@ import java.util.Properties;
 import org.openmrs.api.APIException;
 
 public class UpgradeUtil {
-	
+
 	/**
 	 * Returns conceptId for the given units from DatabaseUtil#ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME
 	 * located in application data directory.
-	 * 
+	 *
 	 * @param units
 	 * @return conceptId
 	 * @should return concept_id for units
@@ -38,12 +39,9 @@ public class UpgradeUtil {
 		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
 		Properties props = new Properties();
 		String conceptId = null;
-		String filePath = new StringBuilder(appDataDir)
-				.append(System.getProperty("file.separator"))
-				.append(DatabaseUtil.ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME).toString();
-
-		try (FileInputStream fis = new FileInputStream(filePath)) {
-
+		try {
+			FileInputStream fis = new FileInputStream(
+					new File(appDataDir, DatabaseUtil.ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME));
 			props.load(fis);
 			for (Map.Entry prop : props.entrySet()) {
 				if (prop.getKey().equals(units)) {
@@ -51,6 +49,7 @@ public class UpgradeUtil {
 					return Integer.valueOf(conceptId);
 				}
 			}
+			fis.close();
 		}
 		catch (NumberFormatException e) {
 			throw new APIException("upgrade.settings.file.invalid.mapping", new Object[] { units, conceptId }, e);
@@ -62,15 +61,15 @@ public class UpgradeUtil {
 				throw new APIException(e);
 			}
 		}
-		
+
 		throw new APIException("upgrade.settings.file.not.have.mapping", new Object[] { units });
 	}
-	
-	public static String getConceptUuid(Connection connection, int conceptId) throws SQLException {
 
-		try (PreparedStatement select = connection.prepareStatement("select uuid from concept where concept_id = ?")) {
+	public static String getConceptUuid(Connection connection, int conceptId) throws SQLException {
+		PreparedStatement select = connection.prepareStatement("select uuid from concept where concept_id = ?");
+		try {
 			select.setInt(1, conceptId);
-			
+
 			ResultSet resultSet = select.executeQuery();
 			if (resultSet.next()) {
 				return resultSet.getString(1);
@@ -78,14 +77,17 @@ public class UpgradeUtil {
 				throw new IllegalArgumentException("Concept not found " + conceptId);
 			}
 		}
+		finally {
+			select.close();
+		}
 	}
-	
-	public static String getGlobalProperty(Connection connection, String gp) throws SQLException {
 
-		try (PreparedStatement select = connection
-				.prepareStatement("select property_value from global_property where property = ?")) {
+	public static String getGlobalProperty(Connection connection, String gp) throws SQLException {
+		PreparedStatement select = connection
+		        .prepareStatement("select property_value from global_property where property = ?");
+		try {
 			select.setString(1, gp);
-			
+
 			ResultSet resultSet = select.executeQuery();
 			if (resultSet.next()) {
 				return resultSet.getString(1);
@@ -93,14 +95,18 @@ public class UpgradeUtil {
 				throw new IllegalArgumentException("Global property not found " + gp);
 			}
 		}
+		finally {
+			select.close();
+		}
 	}
-	
+
 	public static List<Integer> getMemberSetIds(Connection connection, String conceptUuid) throws SQLException {
 		Integer conceptSetId = null;
 
-		try (PreparedStatement select = connection.prepareStatement("select concept_id from concept where uuid = ?")) {
+		PreparedStatement select = connection.prepareStatement("select concept_id from concept where uuid = ?");
+		try {
 			select.setString(1, conceptUuid);
-			
+
 			ResultSet resultSet = select.executeQuery();
 			if (resultSet.next()) {
 				conceptSetId = resultSet.getInt(1);
@@ -108,22 +114,28 @@ public class UpgradeUtil {
 				throw new IllegalArgumentException("Concept not found " + conceptUuid);
 			}
 		}
+		finally {
+			select.close();
+		}
 
 		List<Integer> conceptIds = new ArrayList<Integer>();
-
-		try (PreparedStatement selectConceptIds = connection
-				.prepareStatement("select concept_id from concept_set where concept_set = ?")) {
+		PreparedStatement selectConceptIds = connection
+		        .prepareStatement("select concept_id from concept_set where concept_set = ?");
+		try {
 			selectConceptIds.setInt(1, conceptSetId);
-			
+
 			ResultSet resultSet = selectConceptIds.executeQuery();
 			while (resultSet.next()) {
 				conceptIds.add(resultSet.getInt(1));
 			}
 		}
+		finally {
+			selectConceptIds.close();
+		}
 
 		return conceptIds;
 	}
-	
+
 	public static Integer getOrderFrequencyIdForConceptId(Connection connection, Integer conceptIdForFrequency)
 	        throws SQLException {
 		PreparedStatement orderFrequencyIdQuery = connection
