@@ -1156,10 +1156,8 @@ public class ModuleUtil {
 				
 				packageName = packageName.replaceAll("/", ".");
 				
-				if (packagesProvided.add(packageName)) {
-					if (log.isTraceEnabled()) {
-						log.trace("Adding module's jarentry with package: " + packageName);
-					}
+				if (packagesProvided.add(packageName) && log.isTraceEnabled()) {
+					log.trace("Adding module's jarentry with package: " + packageName);
 				}
 			}
 			

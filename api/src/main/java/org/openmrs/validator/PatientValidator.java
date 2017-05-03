@@ -95,15 +95,13 @@ public class PatientValidator extends PersonValidator {
 			errors.reject("error.preferredIdentifier");
 		}
 		int index = 0;
-		if (!errors.hasErrors()) {
+		if (!errors.hasErrors() && patient.getIdentifiers() != null) {
 			// Validate PatientIdentifers
-			if (patient.getIdentifiers() != null) {
-				for (PatientIdentifier identifier : patient.getIdentifiers()) {
-					errors.pushNestedPath("identifiers[" + index + "]");
-					patientIdentifierValidator.validate(identifier, errors);
-					errors.popNestedPath();
-					index++;
-				}
+			for (PatientIdentifier identifier : patient.getIdentifiers()) {
+				errors.pushNestedPath("identifiers[" + index + "]");
+				patientIdentifierValidator.validate(identifier, errors);
+				errors.popNestedPath();
+				index++;
 			}
 		}
 		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
