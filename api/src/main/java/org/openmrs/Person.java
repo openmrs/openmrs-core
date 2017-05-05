@@ -9,17 +9,6 @@
  */
 package org.openmrs;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.UserService;
@@ -30,6 +19,17 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.load.Replace;
 import org.springframework.util.StringUtils;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Vector;
 
 /**
  * A Person in the system. This can be either a small person stub, or indicative of an actual
@@ -922,6 +922,11 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return true/false whether this person is a patient or not
 	 */
 	public boolean isPatient() {
+		return isPatient;
+	}
+	
+	// will replace isPatient in 2.x, see https://issues.openmrs.org/browse/TRUNK-5161
+	public boolean getIsPatient() {
 		return isPatient;
 	}
 	
