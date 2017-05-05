@@ -203,7 +203,6 @@ public class ORUR01Handler implements Application {
 			log.debug("Found HL7 message in inbound queue with control id = " + messageControlId);
 		}
 		
-		HL7Service hl7Service = Context.getHL7Service();
 		
 		// create the encounter
 		Patient patient = getPatient(pid);
