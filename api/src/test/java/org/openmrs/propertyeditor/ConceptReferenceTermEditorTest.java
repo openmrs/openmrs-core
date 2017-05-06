@@ -9,7 +9,6 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Test;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.api.ConceptService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +28,5 @@ public class ConceptReferenceTermEditorTest extends BasePropertyEditorTest<Conce
 	@Override
 	protected ConceptReferenceTerm getExistingObject() {
 		return conceptService.getConceptReferenceTerm(EXISTING_ID);
-	}
-	
-	@Override
-	@Test(expected = IllegalArgumentException.class)
-	public void shouldSetTheEditorValueToObjectAssociatedWithGivenUuid() {
-		
-		editor.setAsText(getExistingObject().getUuid());
 	}
 }
