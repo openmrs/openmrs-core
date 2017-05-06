@@ -9,8 +9,6 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Ignore;
-import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.api.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +28,5 @@ public class PersonEditorTest extends BasePropertyEditorTest<Person, PersonEdito
 	@Override
 	protected Person getExistingObject() {
 		return personService.getPerson(EXISTING_ID);
-	}
-	
-	@Override
-	@Ignore("to investigate, this behavior deviates from most openmrs propertyeditors")
-	@Test(expected = IllegalArgumentException.class)
-	public void shouldFailToSetTheEditorValueIfGivenUuidDoesNotExist() {
-		
-		editor.setAsText(getNonExistingObjectUuid());
 	}
 }
