@@ -9,14 +9,8 @@
  */
 package org.openmrs.propertyeditor;
 
-import java.beans.PropertyEditorSupport;
-
 import org.openmrs.Patient;
-import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 /**
  * Allows for serializing/deserializing a Patient object to a string so that Spring knows how to
@@ -26,47 +20,15 @@ import org.springframework.util.StringUtils;
  *
  * @see Patient
  */
-public class PatientEditor extends PropertyEditorSupport {
+public class PatientEditor extends OpenmrsPropertyEditor<Patient> {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
-	
-	/**
-	 * @should set using id
-	 * @should set using uuid
-	 * 
-	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
-	 */
 	@Override
-	public void setAsText(String text) throws IllegalArgumentException {
-		PatientService ps = Context.getPatientService();
-		if (StringUtils.hasText(text)) {
-			try {
-				setValue(ps.getPatient(Integer.valueOf(text)));
-			}
-			catch (Exception ex) {
-				Patient patient = ps.getPatientByUuid(text);
-				setValue(patient);
-				if (patient == null) {
-					log.error("Error setting text: " + text, ex);
-					throw new IllegalArgumentException("Patient not found: " + ex.getMessage());
-				}
-			}
-		} else {
-			setValue(null);
-		}
+	protected Patient getObjectById(Integer id) {
+		return Context.getPatientService().getPatient(id);
 	}
 	
-	/**
-	 * @see java.beans.PropertyEditorSupport#getAsText()
-	 */
 	@Override
-	public String getAsText() {
-		Patient t = (Patient) getValue();
-		if (t == null) {
-			return "";
-		} else {
-			return t.getPatientId().toString();
-		}
+	protected Patient getObjectByUuid(String uuid) {
+		return Context.getPatientService().getPatientByUuid(uuid);
 	}
-	
 }

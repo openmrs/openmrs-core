@@ -9,14 +9,8 @@
  */
 package org.openmrs.propertyeditor;
 
-import java.beans.PropertyEditorSupport;
-
 import org.openmrs.LocationTag;
-import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 /**
  * Property editor for {@link LocationTag}s In version 1.9, added ability for this to also retrieve
@@ -24,45 +18,18 @@ import org.springframework.util.StringUtils;
  * 
  * @since 1.7
  */
-public class LocationTagEditor extends PropertyEditorSupport {
-	
-	private static Logger log = LoggerFactory.getLogger(LocationTagEditor.class);
+public class LocationTagEditor extends OpenmrsPropertyEditor<LocationTag> {
 	
 	public LocationTagEditor() {
 	}
 	
-	/**
-	 * @should set using id
-	 * @should set using uuid
-	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
-	 */
 	@Override
-	public void setAsText(String text) throws IllegalArgumentException {
-		LocationService ls = Context.getLocationService();
-		if (StringUtils.hasText(text)) {
-			try {
-				setValue(ls.getLocationTag(Integer.valueOf(text)));
-			}
-			catch (Exception ex) {
-				LocationTag locationTag = ls.getLocationTagByUuid(text);
-				setValue(locationTag);
-				if (locationTag == null) {
-					log.error("Error setting text: " + text, ex);
-					throw new IllegalArgumentException("LocationTag not found: " + ex.getMessage());
-				}
-			}
-		} else {
-			setValue(null);
-		}
+	protected LocationTag getObjectById(Integer id) {
+		return Context.getLocationService().getLocationTag(id);
 	}
 	
-	/**
-	 * @see java.beans.PropertyEditorSupport#getAsText()
-	 */
 	@Override
-	public String getAsText() {
-		LocationTag t = (LocationTag) getValue();
-		return t == null ? "" : t.getLocationTagId().toString();
+	protected LocationTag getObjectByUuid(String uuid) {
+		return Context.getLocationService().getLocationTagByUuid(uuid);
 	}
-	
 }

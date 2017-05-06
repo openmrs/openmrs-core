@@ -9,13 +9,8 @@
  */
 package org.openmrs.propertyeditor;
 
-import java.beans.PropertyEditorSupport;
-
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 /**
  * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
@@ -25,44 +20,18 @@ import org.springframework.util.StringUtils;
  * 
  * @see Cohort
  */
-public class CohortEditor extends PropertyEditorSupport {
-	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+public class CohortEditor extends OpenmrsPropertyEditor<Cohort> {
 	
 	public CohortEditor() {
 	}
 	
-	/**
-	 * @should set using id
-	 * @should set using uuid
-	 */
 	@Override
-	public void setAsText(String text) throws IllegalArgumentException {
-		if (StringUtils.hasText(text)) {
-			try {
-				setValue(Context.getCohortService().getCohort(Integer.valueOf(text)));
-			}
-			catch (Exception ex) {
-				Cohort cohort = Context.getCohortService().getCohortByUuid(text);
-				setValue(cohort);
-				if (cohort == null) {
-					log.error("Error setting text: " + text, ex);
-					throw new IllegalArgumentException("Cohort not found: " + ex.getMessage());
-				}
-			}
-		} else {
-			setValue(null);
-		}
+	protected Cohort getObjectById(Integer id) {
+		return Context.getCohortService().getCohort(id);
 	}
 	
 	@Override
-	public String getAsText() {
-		Cohort c = (Cohort) getValue();
-		if (c == null) {
-			return "";
-		} else {
-			return c.getCohortId().toString();
-		}
+	protected Cohort getObjectByUuid(String uuid) {
+		return Context.getCohortService().getCohortByUuid(uuid);
 	}
-	
 }

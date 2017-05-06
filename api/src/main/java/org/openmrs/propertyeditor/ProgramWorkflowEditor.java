@@ -9,62 +9,29 @@
  */
 package org.openmrs.propertyeditor;
 
-import java.beans.PropertyEditorSupport;
-
 import org.openmrs.ProgramWorkflow;
-import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 /**
- * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
- * an object back and forth through an html form or other medium. <br>
+ * Allows for serializing/deserializing an object to a string so that Spring knows how to pass an
+ * object back and forth through an html form or other medium. <br>
  * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
  * 
  * @see ProgramWorkflow
  */
-public class ProgramWorkflowEditor extends PropertyEditorSupport {
-	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+public class ProgramWorkflowEditor extends OpenmrsPropertyEditor<ProgramWorkflow> {
 	
 	public ProgramWorkflowEditor() {
 	}
 	
-	/**
-	 * @should set using id
-	 * @should set using uuid
-	 */
 	@Override
-	public void setAsText(String text) throws IllegalArgumentException {
-		ProgramWorkflowService pws = Context.getProgramWorkflowService();
-		if (StringUtils.hasText(text)) {
-			try {
-				setValue(pws.getWorkflow(Integer.valueOf(text)));
-			}
-			catch (Exception ex) {
-				ProgramWorkflow pw = pws.getWorkflowByUuid(text);
-				setValue(pw);
-				if (pw == null) {
-					log.error("Error setting text" + text, ex);
-					throw new IllegalArgumentException("Program Workflow not found: " + ex.getMessage());
-				}
-			}
-		} else {
-			setValue(null);
-		}
+	protected ProgramWorkflow getObjectById(Integer id) {
+		return Context.getProgramWorkflowService().getWorkflow(id);
 	}
 	
 	@Override
-	public String getAsText() {
-		ProgramWorkflow pw = (ProgramWorkflow) getValue();
-		if (pw == null) {
-			return "";
-		} else {
-			return pw.getProgramWorkflowId().toString();
-		}
+	protected ProgramWorkflow getObjectByUuid(String uuid) {
+		return Context.getProgramWorkflowService().getWorkflowByUuid(uuid);
 	}
-	
 }

@@ -9,59 +9,26 @@
  */
 package org.openmrs.propertyeditor;
 
-import java.beans.PropertyEditorSupport;
-
 import org.openmrs.PersonAttribute;
-import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 /**
- * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
- * an object back and forth through an html form or other medium. <br>
+ * Allows for serializing/deserializing an object to a string so that Spring knows how to pass an
+ * object back and forth through an html form or other medium. <br>
  * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
  * 
  * @see PersonAttribute
  */
-public class PersonAttributeEditor extends PropertyEditorSupport {
+public class PersonAttributeEditor extends OpenmrsPropertyEditor<PersonAttribute> {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
-	
-	/**
-	 * @should set using id
-	 * @should set using uuid
-	 */
 	@Override
-	public void setAsText(String text) throws IllegalArgumentException {
-		PersonService ps = Context.getPersonService();
-		if (StringUtils.hasText(text)) {
-			try {
-				setValue(ps.getPersonAttribute(Integer.valueOf(text)));
-			}
-			catch (Exception ex) {
-				PersonAttribute personAttribute = ps.getPersonAttributeByUuid(text);
-				setValue(personAttribute);
-				if (personAttribute == null) {
-					log.error("Error setting text: " + text, ex);
-					throw new IllegalArgumentException("Person Attribute Type not found: " + ex.getMessage());
-				}
-			}
-		} else {
-			setValue(null);
-		}
+	protected PersonAttribute getObjectById(Integer id) {
+		return Context.getPersonService().getPersonAttribute(id);
 	}
 	
 	@Override
-	public String getAsText() {
-		PersonAttribute t = (PersonAttribute) getValue();
-		if (t == null) {
-			return "";
-		} else {
-			return t.getPersonAttributeId().toString();
-		}
+	protected PersonAttribute getObjectByUuid(String uuid) {
+		return Context.getPersonService().getPersonAttributeByUuid(uuid);
 	}
-	
 }
