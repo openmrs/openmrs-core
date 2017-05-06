@@ -9,7 +9,6 @@
  */
 package org.openmrs.propertyeditor;
 
-import org.junit.Test;
 import org.openmrs.ConceptMapType;
 import org.openmrs.api.ConceptService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +28,5 @@ public class ConceptMapTypeEditorTest extends BasePropertyEditorTest<ConceptMapT
 	@Override
 	protected ConceptMapType getExistingObject() {
 		return conceptService.getConceptMapType(EXISTING_ID);
-	}
-	
-	@Override
-	@Test(expected = IllegalArgumentException.class)
-	public void shouldSetTheEditorValueToObjectAssociatedWithGivenUuid() {
-		
-		editor.setAsText(getExistingObject().getUuid());
 	}
 }
