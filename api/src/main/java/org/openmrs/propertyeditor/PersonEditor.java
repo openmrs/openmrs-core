@@ -45,11 +45,10 @@ public class PersonEditor extends PropertyEditorSupport {
 				setValue(ps.getPerson(personId));
 			}
 			catch (NumberFormatException e) {
-				// assume text entered is a uuid
 				Person person = ps.getPersonByUuid(text);
 				setValue(person);
 				if (person == null) {
-					log.trace("Unable to get Person by primary key or uuid using input: " + text);
+					throw new IllegalArgumentException("Failed to find person for value [" + text + "]");
 				}
 			}
 		} else {
