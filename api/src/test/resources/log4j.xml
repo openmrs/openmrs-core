@@ -31,7 +31,7 @@
 
 	<!-- Hide unnecessary errors logged by Hibernate during unit testing -->
 	<logger name="org.hibernate.tool.hbm2ddl.SchemaExport">
-		<level value="FATAL" />
+		<level value="OFF" />
 	</logger>
 
 	<!-- 
@@ -41,19 +41,19 @@
 		DEBUG == log all setters & getters &  execution time
 	-->
 	<logger name="org.openmrs.api">
-		<level value="WARN" />
+		<level value="OFF" />
 	</logger>
 	
 	<logger name="org.openmrs.test">
-		<level value="INFO" />
+		<level value="OFF" />
 	</logger>
 	
 	<logger name="org.hibernate.SQL">
-		<level value="WARN" />
+		<level value="OFF" />
 	</logger>
 
     <root>
-		<level value="ERROR" />
+		<level value="OFF" />
 		<appender-ref ref="CONSOLE" />
 	</root>
 
