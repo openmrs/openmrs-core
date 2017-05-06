@@ -24,7 +24,7 @@ public class ConceptAttributeTypeEditor extends PropertyEditorSupport {
 	@Override
 	public String getAsText() {
 		ConceptAttributeType conceptAttributeType = (ConceptAttributeType) getValue();
-		return conceptAttributeType == null ? null : conceptAttributeType.getId().toString();
+		return conceptAttributeType == null ? "" : conceptAttributeType.getId().toString();
 	}
 	
 	/**

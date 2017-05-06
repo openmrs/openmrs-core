@@ -9,11 +9,6 @@
  */
 package org.openmrs.propertyeditor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +28,5 @@ public class LocationEditorTest extends BasePropertyEditorTest<Location, Locatio
 	@Override
 	protected Location getExistingObject() {
 		return locationService.getLocation(EXISTING_ID);
-	}
-	
-	@Override
-	@Test
-	public void shouldReturnEmptyStringIfValueIsNull() {
-		
-		assertThat(editor.getAsText(), is(nullValue()));
 	}
 }
