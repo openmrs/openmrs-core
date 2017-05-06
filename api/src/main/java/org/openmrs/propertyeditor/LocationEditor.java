@@ -60,7 +60,7 @@ public class LocationEditor extends PropertyEditorSupport {
 	@Override
 	public String getAsText() {
 		Location t = (Location) getValue();
-		return t == null ? null : t.getLocationId().toString();
+		return t == null ? "" : t.getLocationId().toString();
 	}
 	
 }

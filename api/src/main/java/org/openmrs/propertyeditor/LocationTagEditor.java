@@ -62,7 +62,7 @@ public class LocationTagEditor extends PropertyEditorSupport {
 	@Override
 	public String getAsText() {
 		LocationTag t = (LocationTag) getValue();
-		return t == null ? null : t.getLocationTagId().toString();
+		return t == null ? "" : t.getLocationTagId().toString();
 	}
 	
 }

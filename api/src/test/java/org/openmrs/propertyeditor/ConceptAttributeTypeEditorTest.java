@@ -9,12 +9,7 @@
  */
 package org.openmrs.propertyeditor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 import org.junit.Before;
-import org.junit.Test;
 import org.openmrs.ConceptAttributeType;
 import org.openmrs.api.ConceptService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +36,5 @@ public class ConceptAttributeTypeEditorTest extends BasePropertyEditorTest<Conce
 	@Override
 	protected ConceptAttributeType getExistingObject() {
 		return conceptService.getConceptAttributeType(EXISTING_ID);
-	}
-	
-	@Override
-	@Test
-	public void shouldReturnEmptyStringIfValueIsNull() {
-		
-		assertThat(editor.getAsText(), is(nullValue()));
 	}
 }

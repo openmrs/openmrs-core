@@ -29,7 +29,7 @@ public class LocationAttributeTypeEditor extends PropertyEditorSupport {
 	@Override
 	public String getAsText() {
 		LocationAttributeType lat = (LocationAttributeType) getValue();
-		return lat == null ? null : lat.getId().toString();
+		return lat == null ? "" : lat.getId().toString();
 	}
 	
 	/**
