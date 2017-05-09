@@ -127,11 +127,11 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			}
 			
 			boolean hasFullySpecifiedName = false;
-			Set<Locale> locales = localeConceptNamesMap.keySet();
 			List<ConceptName> namesWithNoLocale = null;
 			
 			//for each locale
-			for (Locale conceptNameLocale : locales) {
+			for (Map.Entry<Locale, List<ConceptName>> e : localeConceptNamesMap.entrySet()) {
+				Locale conceptNameLocale = e.getKey();
 				boolean fullySpecifiedNameForLocaleFound = false;
 				boolean preferredNameForLocaleFound = false;
 				boolean shortNameForLocaleFound = false;
@@ -139,7 +139,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				Map<String, List<ConceptName>> nameDuplicateConceptNamesMap = new HashMap<String, List<ConceptName>>();
 				
 				//for each name in the locale
-				for (ConceptName nameInLocale : localeConceptNamesMap.get(conceptNameLocale)) {
+				for (ConceptName nameInLocale : e.getValue()) {
 					if (StringUtils.isBlank(nameInLocale.getName())) {
 						updateWarnings.add("ConceptName with id " + nameInLocale.getConceptNameId() + " ("
 						        + nameInLocale.getName() + ") is null, white space character or empty string");
