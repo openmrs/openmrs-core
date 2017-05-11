@@ -100,10 +100,13 @@ public class MailMessageSender implements MessageSender {
 		// Transport should use default mail.from value defined in properties.
 		if (message.getSender() != null) {
 			mimeMessage.setSender(new InternetAddress(message.getSender()));
+		} else {
+			String defaultFromMailAddress = Context.getAdministrationService().getGlobalProperty("mail.from");
+			mimeMessage.setSender(new InternetAddress(defaultFromMailAddress));
 		}
 		
-		mimeMessage
-		        .setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(message.getRecipients(), false));
+		mimeMessage.setRecipients(javax.mail.Message.RecipientType.TO,
+		    InternetAddress.parse(message.getRecipients(), false));
 		mimeMessage.setSubject(message.getSubject());
 		
 		if (!message.hasAttachment()) {
