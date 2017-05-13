@@ -1700,6 +1700,10 @@ public class InitializationFilter extends StartupFilter {
 						// start openmrs
 						try {
 							UpdateFilter.setUpdatesRequired(false);
+							
+							// rebuild lucene search indexes
+							Context.updateSearchIndex();
+
 							WebDaemon.startOpenmrs(filterConfig.getServletContext());
 						}
 						catch (DatabaseUpdateException updateEx) {
