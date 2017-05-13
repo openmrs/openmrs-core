@@ -1075,6 +1075,24 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(0, providersByRoles.size());
 	}
 	
+	
+	/**
+	 * @see Encounter#getProvidersByRoles()
+	 * @verifies return provider with null roles as well
+	 */
+	@Test
+	public void getProvidersByRoles_shouldReturnProvidersWithNullRole() throws Exception {
+		//given
+		Encounter encounter = new Encounter();
+		Provider provider = new Provider();
+		encounter.addProvider(null, provider);
+		//when
+		Map<EncounterRole, Set<Provider>> providersByRoles = encounter.getProvidersByRoles();
+		
+		//then
+		Assert.assertEquals(1, providersByRoles.size());
+	}
+	
 	/**
 	 * @see Encounter#setProvider(EncounterRole,Provider)
 	 */
