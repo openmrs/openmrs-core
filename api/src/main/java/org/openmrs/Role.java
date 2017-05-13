@@ -69,7 +69,7 @@ public class Role extends BaseOpenmrsMetadata {
 	 * @param privileges The privileges to set.
 	 */
 	public void setPrivileges(Set<Privilege> privileges) {
-		this.privileges = privileges;
+		this.privileges = new HashSet<Privilege>(privileges);
 	}
 	
 	@Override
@@ -175,7 +175,7 @@ public class Role extends BaseOpenmrsMetadata {
 	 * @param inheritedRoles The inheritedRoles to set.
 	 */
 	public void setInheritedRoles(Set<Role> inheritedRoles) {
-		this.inheritedRoles = inheritedRoles;
+		this.inheritedRoles = new HashSet<Role>(inheritedRoles);
 	}
 	
 	/**
@@ -268,7 +268,7 @@ public class Role extends BaseOpenmrsMetadata {
 	 * @param childRoles the immediate children to set
 	 */
 	public void setChildRoles(Set<Role> childRoles) {
-		this.childRoles = childRoles;
+		this.childRoles = new HashSet<Role>(childRoles);
 	}
 	
 	/**

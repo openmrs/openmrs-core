@@ -173,7 +173,7 @@ public class Field extends BaseOpenmrsMetadata {
 	 * @param fieldAnswers The fieldAnswers to set.
 	 */
 	public void setAnswers(Set<FieldAnswer> fieldAnswers) {
-		this.answers = fieldAnswers;
+		this.answers = new HashSet<FieldAnswer>(fieldAnswers);
 	}
 	
 	/**

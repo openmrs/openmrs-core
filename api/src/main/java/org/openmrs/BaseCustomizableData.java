@@ -40,7 +40,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 	 * @param attributes the attributes to set
 	 */
 	public void setAttributes(Set<A> attributes) {
-		this.attributes = attributes;
+		this.attributes = new LinkedHashSet<A>(attributes);
 	}
 	
 	/**

@@ -199,7 +199,7 @@ public class Drug extends BaseOpenmrsMetadata {
 	 * @since 1.10
 	 */
 	public void setIngredients(Collection<DrugIngredient> ingredients) {
-		this.ingredients = ingredients;
+		this.ingredients = new LinkedHashSet<DrugIngredient>(ingredients);
 	}
 	
 	/**
@@ -253,7 +253,7 @@ public class Drug extends BaseOpenmrsMetadata {
 	 * @since 1.10
 	 */
 	public void setDrugReferenceMaps(Set<DrugReferenceMap> drugReferenceMaps) {
-		this.drugReferenceMaps = drugReferenceMaps;
+		this.drugReferenceMaps = new LinkedHashSet<DrugReferenceMap>(drugReferenceMaps);
 	}
 	
 	/**

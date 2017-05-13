@@ -151,7 +151,7 @@ public class Patient extends Person {
 	 * @see org.openmrs.PatientIdentifier
 	 */
 	public void setIdentifiers(Set<PatientIdentifier> identifiers) {
-		this.identifiers = identifiers;
+		this.identifiers = new TreeSet<PatientIdentifier>(identifiers);
 	}
 	
 	/**
