@@ -95,6 +95,14 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 	 */
 	@SuppressWarnings("unchecked")
 	public void setAttribute(A attribute) {
+
+		Integer minOccurs = attribute.getMinOccurs();
+		Integer maxOccurs = attribute.getMaxOccurs();
+		if(minOccurs>1)
+			{ throw new ValidationException("Minimum occurrences exceed 1"); }
+		else if (maxOccurs != 1)
+			{ throw new ValidationException("Maximum occurrences do not equal to 1"); }
+
 		if (getAttributes() == null) {
 			addAttribute(attribute);
 			return;
