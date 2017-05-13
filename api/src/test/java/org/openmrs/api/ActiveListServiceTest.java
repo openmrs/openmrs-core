@@ -104,7 +104,7 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, items.size());
 		
 		Concept concept = Context.getConceptService().getConcept(88);//Aspirin
-		Allergy allergy = new Allergy(p, concept, new Date(), AllergyType.ANIMAL, null, AllergySeverity.INTOLERANCE);
+		Allergy allergy = new Allergy(p, concept, new Date(), AllergyType.OTHER, null, AllergySeverity.INTOLERANCE);
 		activeListService.saveActiveListItem(allergy);
 		
 		items = activeListService.getActiveListItems(Allergy.class, p, new ActiveListType(1));
