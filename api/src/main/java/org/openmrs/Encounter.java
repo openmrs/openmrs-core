@@ -236,7 +236,7 @@ public class Encounter extends BaseOpenmrsData {
 	 * @should only return the grouped top level obs
 	 * @should get both child and parent obs after removing child from parent grouping
 	 */
-	public Set<Obs> getObsAtTopLevel(boolean includeVoided) {
+public Set<Obs> getObsAtTopLevel(boolean includeVoided) {
 	
 		return getAllObs(includeVoided).stream()
 				.filter(o -> o.getObsGroup() == null)
