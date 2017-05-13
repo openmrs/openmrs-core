@@ -9,10 +9,13 @@
  */
 package org.openmrs.validator;
 
+import java.time.Year;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Encounter;
+import org.openmrs.Patient;
 import org.openmrs.Visit;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
@@ -63,6 +66,7 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 	 *
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
+	 * @should fail if the startDatetime is before the patient's birthdate
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -74,7 +78,7 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		        && OpenmrsUtil.compareWithNullAsLatest(visit.getStartDatetime(), visit.getStopDatetime()) > 0) {
 			errors.rejectValue("stopDatetime", "Visit.error.endDateBeforeStartDate");
 		}
-		
+
 		//If this is not a new visit, validate based on its existing encounters.
 		if (visit.getId() != null) {
 			Date startDateTime = visit.getStartDatetime();
@@ -98,7 +102,9 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		
 		// check attributes
 		super.validateAttributes(visit, errors, Context.getVisitService().getAllVisitAttributeTypes());
-		
+
+		validateStartDateTimeToBirthdate(visit, errors);
+
 		// check start and end dates
 		if (disallowOverlappingVisits()) {
 			List<Visit> otherVisitList = Context.getVisitService().getVisitsByPatient(visit.getPatient());
@@ -159,6 +165,44 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 			errors.rejectValue("stopDatetime", "Visit.visitCannotContainAnotherVisitOfTheSamePatient", messageBuilder
 			        .toString());
 		}
-		
+
+	}
+
+	private void validateStartDateTimeToBirthdate(Visit visit, Errors errors) {
+
+		Patient patient = visit.getPatient();
+
+		if (patient != null) {
+			if (visit.getStartDatetime() != null && patient.getBirthdate() != null) {
+				if (!patient.getBirthdateEstimated() && visit.getStartDatetime().before(patient.getBirthdate())) {
+					errors.rejectValue("startDatetime", "Visit.startDateCannotBeBeforeBirthdate",
+							"This visit has a start date before birth date of the patient.");
+				}
+
+				if (patient.getBirthdateEstimated()) {
+
+					Calendar calendar = Calendar.getInstance();
+					calendar.setTime(patient.getBirthdate());
+
+					long ageInMillis = Calendar.getInstance().getTimeInMillis() - calendar.getTimeInMillis();
+					long ageInYears = (ageInMillis / 86400000) / 365;
+
+					int ageInMillisInt = (int) ageInMillis;
+
+					if (ageInYears < 2) {
+						calendar.add(Calendar.YEAR, -1);
+					} else {
+						calendar.add(Calendar.MILLISECOND, -(ageInMillisInt / 2));
+					}
+
+					Date estimatedDate = calendar.getTime();
+
+					if (visit.getStartDatetime().before(estimatedDate)) {
+						errors.rejectValue("startDatetime", "Visit.startDateCannotBeBeforeBirthdate",
+								"This visit has a start date before birth date of the patient.");
+					}
+				}
+			}
+		}
 	}
 }
