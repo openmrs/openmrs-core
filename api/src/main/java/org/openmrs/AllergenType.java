@@ -12,6 +12,5 @@ package org.openmrs;
 public enum AllergenType {
 	DRUG,
 	FOOD,
-	ENVIRONMENT,
 	OTHER
 }
