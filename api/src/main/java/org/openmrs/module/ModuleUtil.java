@@ -855,11 +855,12 @@ public class ModuleUtil {
 	 * @param ctx Spring application context that needs refreshing.
 	 * @param isOpenmrsStartup if this refresh is being done at application startup.
 	 * @param startedModule the module that was just started and waiting on the context refresh.
-	 * @return AbstractRefreshableApplicationContext The newly refreshed application context.
+	 * @return AbstractRefreshableApplicationContext The newly refreshed application context or null if encounter error.
 	 */
 	public static AbstractRefreshableApplicationContext refreshApplicationContext(AbstractRefreshableApplicationContext ctx,
 	        boolean isOpenmrsStartup, Module startedModule) {
 		//notify all started modules that we are about to refresh the context
+		boolean error = false;
 		Set<Module> startedModules = new LinkedHashSet<Module>(ModuleFactory.getStartedModulesInOrder());
 		for (Module module : startedModules) {
 			try {
@@ -875,7 +876,7 @@ public class ModuleUtil {
 		OpenmrsClassLoader.saveState();
 		SchedulerUtil.shutdown();
 		ServiceContext.destroyInstance();
-		
+
 		try {
 			ctx.stop();
 			ctx.close();
@@ -893,13 +894,21 @@ public class ModuleUtil {
 		try {
 			ctx.refresh();
 		}
+		catch (Exception e){
+			//Unload the module that cause the Exception and refresh again to restore
+			log.error("Error occurs when trying to refresh context. Try to recover now...");
+			ModuleFactory.stopModule(startedModule);
+			ModuleFactory.unloadModule(startedModule);
+			ctx.refresh();
+			startedModules = new LinkedHashSet<Module>(ModuleFactory.getStartedModulesInOrder());
+			error = true;
+		}
 		finally {
 			ServiceContext.getInstance().doneRefreshingContext();
 		}
 		
 		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-		
 		OpenmrsClassLoader.restoreState();
 		SchedulerUtil.startup(Context.getRuntimeProperties());
 		
@@ -952,7 +961,8 @@ public class ModuleUtil {
 		finally {
 			Context.closeSessionWithCurrentUser();
 		}
-		
+		//Return null if has error
+		if(error) return null;
 		return ctx;
 	}
 	
