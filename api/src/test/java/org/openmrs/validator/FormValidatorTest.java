@@ -15,12 +15,33 @@ import org.openmrs.Form;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.openmrs.FormField;
+
 
 /**
  * Tests methods on the {@link FormValidator} class.
  */
-public class FormValidatorTest extends BaseContextSensitiveTest {
+public class FormValidatorTest extends BaseContextSensitiveTest{
 	
+	//ADDED TEST FOR CLASS
+	/**
+        * @see FormValidator#validate(Object,Errors) 	
+	*/
+	@Test
+	@Verifies(value = "should fail validation if all fields are null", method = "validate(object,Errors)")
+	public void validate_shouldFailValidationIfAllFieldsNull() throws Exception {
+		Form form = new Form();
+		Errors errors = new BindException(form, "form");
+		new FormValidator().validate(form, errors);
+
+		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("version"));
+	}
+
 	/**
 	 * @see FormValidator#validate(Object,Errors)
 	 */
@@ -155,5 +176,19 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors("version"));
 		Assert.assertTrue(errors.hasFieldErrors("description"));
 		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+	}
+
+	//ADDED TESTS FOR CLASS
+	/**
+	 * @see FormValidator#validate(Object,Errors)
+	 */
+	@Test
+	@Verifies(value = "should return null", method = "validate(Object,Errors)")
+	public void validate_shouldReturnNullIfGetOrderedFormFieldsEmpty() throws Exception {
+		Form form = new Form();
+		List<FormField> newList = new ArrayList<FormField>();
+		newList = form.getOrderedFormFields();
+		Assert.assertEquals(0, newList.size());
+		
 	}
 }

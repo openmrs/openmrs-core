@@ -1000,4 +1000,117 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Form duplicateForm = fs.duplicateForm(form);
 		assertEquals(form, duplicateForm);
 	}
+
+	/*
+	public List<Form> formList = new List<Form>();
+	public String fuzzyName;
+	public Boolean onlyLatestVersion;
+
+	@Test
+	public void getFormTestNameNullBoolTrue1(String fuzzyName, boolean onlyLatestVersion){
+        //Lets check if fuzzyname is null and OnlyLatestVersion is true
+
+        	Form form1 = new Form();
+			String name1 = null;
+       		String version1 = "1.0";
+        	String descript1 = "descript1";
+	        form1.setName(name1);
+	        form1.setVersion(version1);      
+	        form1.setDescription(descript1);
+	        formList.add(form1);
+	
+       		formService.saveForm(form1);
+
+	        formList.add(form2);
+	
+	        fuzzyName = null;
+	        onlyLatestVersion = true;
+		
+			formTest = formList.getForms(fuzzyName, OnlyLatestVersion);
+	
+	        assertEquals(null, formTest);
+	
+	
+	}
+	
+	@Test
+	public void getFormTestNameNullBoolFalse1(String fuzzyName, boolean OnlyLatestVersion){
+	        //Lets check if fuzzyname is null and OnlyLatestVersion is false
+	
+	        Form form1 = new Form();
+	
+	        String name1 = null;
+	        String version1 = "1.0";
+	        String descript1 = "descript1";
+	        form1.setName(name1);
+	        form1.setVersion(version1);      
+	        form1.setDescription(descript1);
+	        formList.add(form1);
+	
+	        formService.saveForm(form1);
+	
+	        formList.add(form2);
+	
+	        fuzzyName = null;
+	        onlyLatestVersion = false;
+	
+	        formTest = formList.getForms(fuzzyName, OnlyLatestVersion);
+	
+	        assertEquals(null, formTest);
+	
+	
+	}
+	
+	@Test
+	public void getFormTestNameNotNullBoolTrue1(String fuzzyName, boolean OnlyLatestVersion){
+	        //Lets check if fuzzyname is not null and OnlyLatestVersion is true
+	
+
+		   	Form form1 = new Form();
+	        String name1 = "Kyle";
+	        String version1 = "1.0";
+	        String descript1 = "descript1";
+	        form1.setName(name1);
+	        form1.setVersion(version1);      
+	        form1.setDescription(descript1);
+	        
+	        formList.add(form1);
+	
+	        formService.saveForm(form1);
+	
+	        fuzzyName = "Kyle";
+	        onlyLatestVersion = true;
+	        
+	        formTest = getForms(fuzzyName, OnlyLatestVersion);
+	
+	        //Can compare these two?
+	        assertEquals(1, formTest.length());
+	
+	}
+	
+	@Test
+	public void getFormTestNameNotNullBoolFalse(String fuzzyName, boolean OnlyLatestVersion){
+	        //Lets check if fuzzyname is not null and OnlyLatestVersion is false
+	        
+	        Form form1 = new Form();
+	        String name1 = "Kyle";
+	        String version1 = "1.0";
+	        String descript1 = "descript1";
+	        form1.setName(name1);
+	        form1.setVersion(version1);      
+	        form1.setDescription(descript1);
+	        
+	        formList.add(form1);
+	
+	        formService.saveForm(form1);
+	
+	        fuzzyName = "Kyle";
+	        onlyLatestVersion = false;
+	        
+	        formTest = getForms(fuzzyName, OnlyLatestVersion);
+	
+	        //Can compare these two?
+	        assertEquals(1, formTest.length());
+	}
+	*/
 }
