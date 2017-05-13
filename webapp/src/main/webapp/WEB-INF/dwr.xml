@@ -151,12 +151,6 @@
 			<include method="saveFormField"/>
 			<include method="deleteFormField"/>
 		</create>
-
-		<create creator="new" javascript="DWRMessageService">
-			<param name="class" value="org.openmrs.notification.web.dwr.DWRMessageService" />
-			<include method="sendFeedback"/>
-			<include method="sendMessage"/>
-		</create>
 		
 		<create creator="new" javascript="DWRAlertService">
 			<param name="class" value="org.openmrs.notification.web.dwr.DWRAlertService" />

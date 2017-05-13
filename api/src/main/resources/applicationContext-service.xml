@@ -166,9 +166,6 @@
 	<bean id="programWorkflowDAO" class="org.openmrs.api.db.hibernate.HibernateProgramWorkflowDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
-	<bean id="templateDAO" class="org.openmrs.api.db.hibernate.HibernateTemplateDAO">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
-	</bean>
 	<bean id="patientSetDAO" class="org.openmrs.api.db.hibernate.HibernatePatientSetDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
@@ -330,9 +327,6 @@
 	</bean>
 	<bean id="alertServiceTarget" class="org.openmrs.notification.impl.AlertServiceImpl">
 		<property name="alertDAO"><ref bean="alertDAO"/></property>	
-	</bean>
-	<bean id="messageServiceTarget" class="org.openmrs.notification.impl.MessageServiceImpl">
-		<property name="templateDAO"><ref bean="templateDAO"/></property>	
 	</bean>
 	<bean id="reportObjectServiceTarget" class="org.openmrs.reporting.impl.ReportObjectServiceImpl">
 		<property name="reportObjectDAO"><ref bean="reportObjectDAO"/></property>	
@@ -732,14 +726,6 @@
 	
 	<!-- Messaging Service -->
 	<!--
-    <bean id="messageService" class="org.openmrs.notification.impl.MessageServiceImpl">
-        <property name="daoContext">
-        	<ref bean="daoContext"/>
-        </property>
-
-        <property name="messagePreparator">
-			<bean id="mailMessagePreparator" class="org.openmrs.notification.mail.velocity.VelocityMessagePreparator"/>
-		</property>        
 
         <property name="messageSender">
 			<bean id="mailMessageSender" class="org.openmrs.notification.mail.MailMessageSender">

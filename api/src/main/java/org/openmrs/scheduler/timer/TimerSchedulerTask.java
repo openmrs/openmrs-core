@@ -49,7 +49,6 @@ public class TimerSchedulerTask extends TimerTask {
 			// Suppress error in order to keep the scheduler's Timer from completely failing.
 			log.error(
 			    "FATAL ERROR: Task [" + task.getClass() + "] failed due to exception [" + t.getClass().getName() + "]", t);
-			SchedulerUtil.sendSchedulerError(t);
 		}
 	}
 	
