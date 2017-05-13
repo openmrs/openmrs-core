@@ -1,0 +1,17 @@
+ 
+    public void supports(Object obj, Errors errors) {
+        ConceptClass cc = (ConceptClass) obj;
+    }
+ 
+    public void validate(Object target, Errors errors) {
+       ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+ 	ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
+
+       if (!errors.hasFieldErrors("name"))
+			{
+				List<ConceptClass> ccs = Context.getConceptService().getAllConceptClasses();
+				ValidateUtil.rejectIfDuplicateMetadataName(cc, ccs, errors, "name", "general.error.nameAlreadyInUse");
+			}
+
+    }
+ }
