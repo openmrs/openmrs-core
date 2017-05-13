@@ -45,6 +45,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	
 	
 	private final static String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	private static DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -95,28 +96,56 @@ public class OrderTest extends BaseContextSensitiveTest {
 		}
 	}
 	
-	/**
-	 * Tests the {@link Order#isDiscontinuedRightNow()} method TODO this should be split into many
-	 * different tests
+		/**
+	 * Tests the {@link Order#isDiscontinuedRightNow()} method
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldIsDiscontinued() throws Exception {
-		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
+	public void orderWithoutDates_shouldIsDiscontinued() throws Exception {
 		
 		Order o = new Order();
 		assertFalse("order without dates shouldn't be discontinued", o.isDiscontinued(ymd.parse("2007-10-26")));
+	}
+	
+	/**
+	 * Tests the {@link Order#isDiscontinuedRightNow()} method
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void orderDateActivated_shouldIsDiscontinued() throws Exception {
 		
+		Order o = new Order();
 		o.setDateActivated(ymd.parse("2007-01-01"));
 		assertFalse("shouldn't be discontinued before date activated", o.isDiscontinued(ymd.parse("2006-10-26")));
 		assertFalse("order without no end dates shouldn't be discontinued", o.isDiscontinued(ymd.parse("2007-10-26")));
+	}
+	
+	/**
+	 * Tests the {@link Order#isDiscontinuedRightNow()} method
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void orderAutoExpireDate_shouldIsDiscontinued() throws Exception {
 		
+		Order o = new Order();
 		o.setAutoExpireDate(ymd.parse("2007-12-31"));
 		assertFalse("shouldn't be discontinued before date activated", o.isDiscontinued(ymd.parse("2006-10-26")));
 		assertFalse("shouldn't be discontinued before autoExpireDate", o.isDiscontinued(ymd.parse("2007-10-26")));
 		assertFalse("shouldn't be discontinued after autoExpireDate", o.isDiscontinued(ymd.parse("2008-10-26")));
+	}
+	
+	/**
+	 * Tests the {@link Order#isDiscontinuedRightNow()} method
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void orderDateStopped_shouldIsDiscontinued() throws Exception {
 		
+		Order o = new Order();
 		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
 		assertFalse("shouldn't be discontinued before date activated", o.isDiscontinued(ymd.parse("2006-10-26")));
 		assertFalse("shouldn't be discontinued before dateStopped", o.isDiscontinued(ymd.parse("2007-10-26")));
@@ -125,13 +154,12 @@ public class OrderTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Tests the {@link Order#isActive()} method TODO this should be split into many different tests
+	 * Tests the {@link Order#isActive()} method
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldCheckIfOrderIsActive() throws Exception {
-		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
+	public void orderDateActivated_shouldCheckIfOrderIsActive() throws Exception {
 		
 		Order o = new Order();
 		//assertTrue("dateActivated==null && no end date should always be current", o.isActive(ymd.parse("2007-10-26")));
@@ -139,17 +167,32 @@ public class OrderTest extends BaseContextSensitiveTest {
 		o.setDateActivated(ymd.parse("2007-01-01"));
 		assertFalse("shouldn't be current before dateActivated", o.isActive(ymd.parse("2006-10-26")));
 		assertTrue("should be current after dateActivated", o.isActive(ymd.parse("2007-10-26")));
+	}
+	
+	/**
+	 * Tests the {@link Order#isActive()} method
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void orderAutoExpiryDate_shouldCheckIfOrderIsActive() throws Exception {
 		
+		Order o = new Order();
 		o.setAutoExpireDate(ymd.parse("2007-12-31"));
 		assertFalse("shouldn't be current before dateActivated", o.isActive(ymd.parse("2006-10-26")));
 		assertTrue("should be current between dateActivated and autoExpireDate", o.isActive(ymd.parse("2007-10-26")));
 		assertFalse("shouldn't be current after autoExpireDate", o.isActive(ymd.parse("2008-10-26")));
+	}
+	
+	/**
+	 * Tests the {@link Order#isActive()} method
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void orderDateStopped_shouldCheckIfOrderIsActive() throws Exception {
 		
-		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
-		assertFalse("shouldn't be current before dateActivated", o.isActive(ymd.parse("2006-10-26")));
-		assertTrue("should be current between dateActivated and dateStopped", o.isActive(ymd.parse("2007-10-26")));
-		assertFalse("shouldn't be current after dateStopped", o.isActive(ymd.parse("2007-11-26")));
-		
+		Order o = new Order();
 		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
 		assertFalse("shouldn't be current before dateActivated", o.isActive(ymd.parse("2006-10-26")));
 		assertTrue("should be current between dateActivated and dateStopped", o.isActive(ymd.parse("2007-10-26")));
