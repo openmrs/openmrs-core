@@ -191,7 +191,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param answers The answers to set.
 	 */
 	public void setAnswers(Collection<ConceptAnswer> answers) {
-		this.answers = answers;
+		this.answers = new HashSet<ConceptAnswer>(answers);
 	}
 	
 	/**
@@ -1002,7 +1002,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param names The names to set.
 	 */
 	public void setNames(Collection<ConceptName> names) {
-		this.names = names;
+		this.names = new HashSet<ConceptName>(names);
 	}
 	
 	/**
@@ -1206,7 +1206,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param descriptions the collection of descriptions
 	 */
 	public void setDescriptions(Collection<ConceptDescription> descriptions) {
-		this.descriptions = descriptions;
+		this.descriptions = new HashSet<ConceptDescription>(descriptions);
 	}
 	
 	/**
@@ -1331,7 +1331,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param conceptSets The conceptSets to set.
 	 */
 	public void setConceptSets(Collection<ConceptSet> conceptSets) {
-		this.conceptSets = conceptSets;
+		this.conceptSets = new TreeSet<ConceptSet>(conceptSets);
 	}
 	
 	/**
@@ -1358,7 +1358,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param conceptMappings the conceptMappings to set
 	 */
 	public void setConceptMappings(Collection<ConceptMap> conceptMappings) {
-		this.conceptMappings = conceptMappings;
+		this.conceptMappings = new HashSet<ConceptMap>(conceptMappings);
 	}
 	
 	/**

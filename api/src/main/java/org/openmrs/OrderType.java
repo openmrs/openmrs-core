@@ -141,7 +141,7 @@ public class OrderType extends BaseOpenmrsMetadata {
 	 * @param conceptClasses the collection containing the {@link org.openmrs.ConceptClass}es
 	 */
 	public void setConceptClasses(Collection<ConceptClass> conceptClasses) {
-		this.conceptClasses = conceptClasses;
+		this.conceptClasses = new LinkedHashSet<ConceptClass>(conceptClasses);
 	}
 	
 	/**

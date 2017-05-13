@@ -247,7 +247,7 @@ public class Encounter extends BaseOpenmrsData {
 	 * @param obs The obs to set.
 	 */
 	public void setObs(Set<Obs> obs) {
-		this.obs = obs;
+		this.obs = new HashSet<Obs>(obs);
 	}
 	
 	/**
@@ -338,7 +338,7 @@ public class Encounter extends BaseOpenmrsData {
 	 * @param orders The orders to set.
 	 */
 	public void setOrders(Set<Order> orders) {
-		this.orders = orders;
+		this.orders = new LinkedHashSet<Order>(orders);
 	}
 	
 	/**
@@ -413,7 +413,7 @@ public class Encounter extends BaseOpenmrsData {
 	 * @since 1.9.1
 	 */
 	public void setEncounterProviders(Set<EncounterProvider> encounterProviders) {
-		this.encounterProviders = encounterProviders;
+		this.encounterProviders = new LinkedHashSet<EncounterProvider>(encounterProviders);
 	}
 
     /**

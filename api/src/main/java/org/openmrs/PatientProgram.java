@@ -353,7 +353,7 @@ public class PatientProgram extends BaseOpenmrsData {
 	}
 	
 	public void setStates(Set<PatientState> states) {
-		this.states = states;
+		this.states = new HashSet<PatientState>(states);
 	}
 	
 	/**
