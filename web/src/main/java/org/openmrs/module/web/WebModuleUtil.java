@@ -696,7 +696,7 @@ public class WebModuleUtil {
 		String messagesPath = realPath + "/WEB-INF/";
 		File folder = new File(messagesPath.replace("/", File.separator));
 		
-		if (folder.exists()) {
+		if ((folder.exists()) && (folder.list().length > 0)) {
 			Properties emptyProperties = new Properties();
 			for (File f : folder.listFiles()) {
 				if (f.getName().startsWith("module_messages")) {
