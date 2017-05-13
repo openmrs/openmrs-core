@@ -129,7 +129,7 @@
 						<c:if test="${token.isToken == model.layoutTemplate.layoutToken}">
 							<td>
 								<spring:bind path="${token.codeName}">
-									<c:out value="${status.value}"/>
+									${status.value}
 								</spring:bind>
 							</td>
 						</c:if>
@@ -146,7 +146,7 @@
 								<c:forEach items="${line}" var="token">
 									<c:if test="${token.isToken == model.layoutTemplate.layoutToken}">
 										<spring:bind path="${token.codeName}">
-											<c:out value="${status.value}"/>
+											${status.value}
 										</spring:bind>
 									</c:if>
 									<c:if test="${token.isToken == model.layoutTemplate.nonLayoutToken}">
@@ -171,7 +171,7 @@
 											<c:if test="${token.isToken == model.layoutTemplate.layoutToken}">
 												<openmrs:message code="${token.displayText}" />:
 												<spring:bind path="${token.codeName}">
-													<c:out value="${status.value}"/>
+													${status.value}
 												</spring:bind>
 											</c:if>
 											<c:if test="${token.isToken == model.layoutTemplate.nonLayoutToken}">
@@ -265,7 +265,7 @@
 									<tr>
 										<td><openmrs:message code="general.createdBy" /></td>
 										<td colspan="4">
-											<c:out value="${status.value.personName}" /> -
+											${status.value.personName}  -
 											<openmrs:formatDate path="dateCreated" type="long" />
 										</td>
 									</tr>
@@ -276,7 +276,7 @@
 									<tr>
 										<td><openmrs:message code="general.changedBy" /></td>
 										<td colspan="4">
-											<c:out value="${status.value.personName}" /> -
+											${status.value.personName}  -
 											<openmrs:formatDate path="dateChanged" type="long" />
 										</td>
 									</tr>
@@ -310,7 +310,7 @@
 										<tr>
 											<td><openmrs:message code="general.voidedBy" /></td>
 											<td colspan="4">
-												<c:out value="${status.value.personName}" /> -
+												${status.value.personName} -
 												<openmrs:formatDate path="dateVoided" type="long" />
 											</td>
 										</tr>
