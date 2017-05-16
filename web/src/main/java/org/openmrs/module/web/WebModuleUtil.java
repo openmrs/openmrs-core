@@ -592,9 +592,8 @@ public class WebModuleUtil {
 			log.debug("Module: " + module.getModuleId() + " successfully unloaded " + filters.size() + " filters.");
 			moduleFilters.remove(module);
 			
-			for (Iterator<String> i = moduleFiltersByName.keySet().iterator(); i.hasNext();) {
-				String filterName = i.next();
-				Filter filterVal = moduleFiltersByName.get(filterName);
+			for (Iterator<Filter> i = moduleFiltersByName.values().iterator(); i.hasNext();) {
+				Filter filterVal = i.next();
 				if (filters.contains(filterVal)) {
 					i.remove();
 				}
