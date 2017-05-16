@@ -1020,7 +1020,8 @@ public class OpenmrsUtil {
 		String filepath = null;
 		final String openmrsDir = "OpenMRS";
 		
-		String systemProperty = System.getProperty(OpenmrsConstants.KEY_OPENMRS_APPLICATION_DATA_DIRECTORY);
+		
+		String systemProperty = System.getProperty(OpenmrsConstants.GET_KEY_OPENMRS_APPLICATION_DATA_DIRECTORY());
 		//System and runtime property take precedence
 		if (StringUtils.isNotBlank(systemProperty)) {
 			filepath = systemProperty;
@@ -1071,9 +1072,10 @@ public class OpenmrsUtil {
 	 */
 	public static void setApplicationDataDirectory(String path) {
 		if (StringUtils.isBlank(path)) {
-			System.clearProperty(OpenmrsConstants.KEY_OPENMRS_APPLICATION_DATA_DIRECTORY);
+			
+			System.clearProperty(OpenmrsConstants.GET_KEY_OPENMRS_APPLICATION_DATA_DIRECTORY());
 		} else {
-			System.setProperty(OpenmrsConstants.KEY_OPENMRS_APPLICATION_DATA_DIRECTORY, path);
+			System.setProperty(OpenmrsConstants.GET_KEY_OPENMRS_APPLICATION_DATA_DIRECTORY(), path);
 		}
 	}
 	

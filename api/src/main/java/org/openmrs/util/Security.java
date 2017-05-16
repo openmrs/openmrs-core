@@ -42,7 +42,7 @@ public class Security {
 	/**
 	 * encryption settings
 	 */
-	public static Logger log = LoggerFactory.getLogger(Security.class);
+	public static final Logger log = LoggerFactory.getLogger(Security.class);
 	
 	/**
 	 * Compare the given hash and the given string-to-hash to see if they are equal. The
