@@ -386,6 +386,12 @@
 				<groupId>javax.mail</groupId>
 				<artifactId>mail</artifactId>
 				<version>1.4.1</version>
+				<exclusions>
+					<exclusion>  <!-- declare the exclusion here -->
+						<groupId>javax.activation</groupId>
+						<artifactId>activation</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>commons-beanutils</groupId>
