@@ -194,7 +194,8 @@ public class ModuleFactory {
 					try {
 						Module mod = loadModule(f, true); // last module loaded wins
 						log.debug("Loaded module: " + mod + " successfully");
-					} catch (Exception e) {
+					}
+					catch (Exception e) {
 						log.debug("Unable to load file in module directory: " + f + ". Skipping file.", e);
 					}
 				}
@@ -239,7 +240,7 @@ public class ModuleFactory {
 				String message = getCyclicDependenciesMessage(ex.getMessage());
 				log.error(message, ex);
 				notifySuperUsersAboutCyclicDependencies(ex);
-				modules = (List<Module>)ex.getExtraData();
+				modules = (List<Module>) ex.getExtraData();
 			}
 			
 			// try and start the modules that should be started
@@ -269,7 +270,7 @@ public class ModuleFactory {
 					mod.setStartupErrorMessage("Error while starting module", e);
 					notifySuperUsersAboutModuleFailure(mod);
 				}
-			}		
+			}
 		}
 	}
 	
@@ -629,7 +630,7 @@ public class ModuleFactory {
 				notifySuperUsersAboutModuleFailure(module);
 				// instead of return null, i realized that Daemon.startModule() always returns a Module
 				// object,irrespective of whether the startup succeeded
-				return module;   
+				return module;
 			}
 		}
 		return Daemon.startModule(module, isOpenmrsStartup, applicationContext);
@@ -669,7 +670,6 @@ public class ModuleFactory {
 	 */
 	public static Module startModuleInternal(Module module, boolean isOpenmrsStartup,
 	        AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
-		
 		
 		if (module != null) {
 			String moduleId = module.getModuleId();
@@ -910,7 +910,8 @@ public class ModuleFactory {
 	 * @return the message text.
 	 */
 	private static String getCyclicDependenciesMessage(String message) {
-		return Context.getMessageSourceService().getMessage("Module.error.cyclicDependencies", new Object[]{ message }, Context.getLocale());
+		return Context.getMessageSourceService().getMessage("Module.error.cyclicDependencies", new Object[] { message },
+		    Context.getLocale());
 	}
 	
 	/**
@@ -1152,7 +1153,8 @@ public class ModuleFactory {
 			List<Module> startedModulesCopy = new ArrayList<Module>();
 			startedModulesCopy.addAll(getStartedModules());
 			for (Module dependentModule : startedModulesCopy) {
-				if (dependentModule != null && !dependentModule.equals(mod) && isModuleRequiredByAnother(dependentModule, modulePackage)) {
+				if (dependentModule != null && !dependentModule.equals(mod)
+				        && isModuleRequiredByAnother(dependentModule, modulePackage)) {
 					dependentModulesStopped.add(dependentModule);
 					dependentModulesStopped.addAll(stopModule(dependentModule, skipOverStartedProperty, isFailedStartup));
 				}
@@ -1267,10 +1269,10 @@ public class ModuleFactory {
 		
 		return dependentModulesStopped;
 	}
-
+	
 	/**
 	 * Checks if a module is required by another
-     *
+	 *
 	 * @param dependentModule the module whose required modules are to be checked
 	 * @param modulePackage the package of the module to check if required by another
 	 * @return true if the module is required, else false
@@ -1278,7 +1280,7 @@ public class ModuleFactory {
 	private static boolean isModuleRequiredByAnother(Module dependentModule, String modulePackage) {
 		return dependentModule.getRequiredModules() != null && dependentModule.getRequiredModules().contains(modulePackage);
 	}
-
+	
 	private static ModuleClassLoader removeClassLoader(Module mod) {
 		getModuleClassLoaderMap(); // create map if it is null
 		if (!moduleClassLoaders.containsKey(mod)) {
@@ -1290,6 +1292,7 @@ public class ModuleFactory {
 	
 	/**
 	 * Removes module from module repository
+	 * 
 	 * @param mod module to unload
 	 */
 	public static void unloadModule(Module mod) {
@@ -1706,8 +1709,8 @@ public class ModuleFactory {
 	 * modules are shut down.
 	 * 
 	 * @param moduleId the moduleId used to identify the module being validated
-	 * @return List&lt;dependentModules&gt; the list of moduleId's which depend on the module about to be
-	 *         shutdown.
+	 * @return List&lt;dependentModules&gt; the list of moduleId's which depend on the module about
+	 *         to be shutdown.
 	 * @since 1.10
 	 */
 	public static List<String> getDependencies(String moduleId) {
