@@ -689,7 +689,7 @@ public final class Module {
 	 * @since 1.9.2, 1.10
 	 */
 	public void setPackagesWithMappedClasses(Set<String> packagesToScan) {
-		this.packagesWithMappedClasses = new HashSet<String>(packagesToScan);
+		this.packagesWithMappedClasses = packagesToScan;
 	}
 	
 	/**
