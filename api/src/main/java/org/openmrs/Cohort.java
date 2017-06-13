@@ -280,7 +280,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	}
 	
 	public void setMemberIds(Set<Integer> memberIds) {
-		this.memberIds = new TreeSet<Integer>(memberIds);
+		this.memberIds = memberIds;
 	}
 	
 	/**
