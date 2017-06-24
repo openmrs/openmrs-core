@@ -22,6 +22,22 @@ import static org.junit.Assert.fail;
 import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
 import static org.openmrs.util.AddressMatcher.containsAddress;
 import static org.openmrs.util.NameMatcher.containsFullName;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Vector;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -65,21 +81,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Vector;
-import java.util.stream.Collectors;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -217,8 +218,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// patient.removeAddress(pAddress);
 		
 		patient.setDeathDate(new Date());
-		// patient.setCauseOfDeath("air");
-		patient.setBirthdate(new Date());
+		patient.setCauseOfDeath(Context.getConceptService().getConcept(3));
+		patient.setBirthdate(new Date(0));
 		patient.setBirthdateEstimated(true);
 		patient.setGender("male");
 		patient.setDeathdateEstimated(true);
@@ -250,9 +251,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// patient.removeAddress(pAddress);
 		
 		patient.setDeathDate(new Date());
+		patient.setCauseOfDeath(Context.getConceptService().getConcept(3));
 		patient.setBirthdateEstimated(true);
-		// patient.setCauseOfDeath("air");
-		patient.setBirthdate(new Date());
+		patient.setBirthdate(new Date(0));
 		patient.setBirthdateEstimated(true);
 		patient.setGender("male");
 		
@@ -2549,6 +2550,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		cDate.setTime(new Date());
 		Patient preferred = patientService.getPatient(999);
 		preferred.setDeathDate(cDate.getTime());
+		preferred.setCauseOfDeath(Context.getConceptService().getConcept(3));
 		preferred.setDeathdateEstimated(true);
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);

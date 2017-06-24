@@ -880,4 +880,22 @@ public class PersonTest extends BaseContextSensitiveTest {
 			return personAddress;
 		}
 	}
+
+	/**
+	 * @see Person#setDeathDate(Date)
+	 * @verifies set dead flag depending on deathDate presence
+	 */
+	@Test
+	public void setDeathDate_shouldSetDeadFlagDependingOnDeathDatePresence() {
+		Calendar birthdate = Calendar.getInstance();
+		birthdate.set(1990, Calendar.JUNE, 2);
+		Calendar deathDate = Calendar.getInstance();
+		deathDate.set(2000, Calendar.JUNE, 3);
+		Person person = new Person();
+		person.setBirthdate(birthdate.getTime());
+		person.setDeathDate(deathDate.getTime());
+		assertTrue(person.getDead());
+		person.setDeathDate(null);
+		assertFalse(person.getDead());
+	}
 }
