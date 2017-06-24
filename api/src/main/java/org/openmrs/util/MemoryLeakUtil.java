@@ -15,8 +15,6 @@ import java.util.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.net.www.http.KeepAliveCache;
-
 /**
  * Utility functions to clean up causes of memory leakages.
  */
@@ -56,27 +54,6 @@ public class MemoryLeakUtil {
 		}
 		catch (IllegalAccessException iae) {
 			log.info("Failed to shut-down MySQL Statement Cancellation Timer due to an IllegalAccessException", iae);
-		}
-	}
-	
-	public static void shutdownKeepAliveTimer() {
-		try {
-			final Field kac = HttpClient.class.getDeclaredField("kac");
-			
-			kac.setAccessible(true);
-			final Field keepAliveTimer = KeepAliveCache.class.getDeclaredField("keepAliveTimer");
-			
-			keepAliveTimer.setAccessible(true);
-			
-			final Thread thread = (Thread) keepAliveTimer.get(kac.get(null));
-			
-			if (thread.getContextClassLoader() == OpenmrsClassLoader.getInstance()) {
-				//Set to system class loader such that we can be garbage collected.
-				thread.setContextClassLoader(ClassLoader.getSystemClassLoader());
-			}
-		}
-		catch (final Exception e) {
-			log.error(e.getMessage(), e);
 		}
 	}
 }

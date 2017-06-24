@@ -603,7 +603,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 		
 		MemoryLeakUtil.shutdownMysqlCancellationTimer();
-		MemoryLeakUtil.shutdownKeepAliveTimer();
 		
 		OpenmrsClassLoader.onShutdown();
 		
