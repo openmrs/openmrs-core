@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -45,7 +46,17 @@ public class OrderTest extends BaseContextSensitiveTest {
 	
 	
 	private final static String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-	
+
+	private DateFormat ymd;
+
+	private Order o;
+
+	@Before
+	public void setUp() throws Exception {
+		ymd = new SimpleDateFormat("yyyy-MM-dd");
+		o = new Order();
+	}
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	
@@ -94,68 +105,120 @@ public class OrderTest extends BaseContextSensitiveTest {
 			    copyValue);
 		}
 	}
-	
+
 	/**
-	 * Tests the {@link Order#isDiscontinuedRightNow()} method TODO this should be split into many
-	 * different tests
-	 * 
-	 * @throws Exception
+	 * @see Order#isDiscontinued(Date)
 	 */
 	@Test
-	public void shouldIsDiscontinued() throws Exception {
-		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
-		
-		Order o = new Order();
+	public void isDiscontinued_shouldNotDiscontinueGivenOrderWithoutDates() throws Exception {
 		assertFalse("order without dates shouldn't be discontinued", o.isDiscontinued(ymd.parse("2007-10-26")));
-		
-		o.setDateActivated(ymd.parse("2007-01-01"));
-		assertFalse("shouldn't be discontinued before date activated", o.isDiscontinued(ymd.parse("2006-10-26")));
-		assertFalse("order without no end dates shouldn't be discontinued", o.isDiscontinued(ymd.parse("2007-10-26")));
-		
-		o.setAutoExpireDate(ymd.parse("2007-12-31"));
-		assertFalse("shouldn't be discontinued before date activated", o.isDiscontinued(ymd.parse("2006-10-26")));
-		assertFalse("shouldn't be discontinued before autoExpireDate", o.isDiscontinued(ymd.parse("2007-10-26")));
-		assertFalse("shouldn't be discontinued after autoExpireDate", o.isDiscontinued(ymd.parse("2008-10-26")));
-		
-		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
-		assertFalse("shouldn't be discontinued before date activated", o.isDiscontinued(ymd.parse("2006-10-26")));
-		assertFalse("shouldn't be discontinued before dateStopped", o.isDiscontinued(ymd.parse("2007-10-26")));
-		assertTrue("should be discontinued after dateStopped", o.isDiscontinued(ymd.parse("2007-11-26")));
-		
 	}
-	
+
 	/**
-	 * Tests the {@link Order#isActive()} method TODO this should be split into many different tests
-	 * 
-	 * @throws Exception
+	 * @see Order#isDiscontinued(Date)
 	 */
 	@Test
-	public void shouldCheckIfOrderIsActive() throws Exception {
-		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
-		
-		Order o = new Order();
-		//assertTrue("dateActivated==null && no end date should always be current", o.isActive(ymd.parse("2007-10-26")));
-		
+	public void isDiscontinued_shouldNotDiscontinueBeforeActivationDate() throws Exception {
 		o.setDateActivated(ymd.parse("2007-01-01"));
+
+		assertFalse("shouldn't be discontinued before date activated", o.isDiscontinued(ymd.parse("2006-10-26")));
+	}
+
+	/**
+	 * @see Order#isDiscontinued(Date)
+	 */
+	@Test
+	public void isDiscontinued_shouldNotDiscontinueGivenActivatedOrderWithoutEndDate() throws Exception {
+		o.setDateActivated(ymd.parse("2007-01-01"));
+
+		assertFalse("order without no end dates shouldn't be discontinued", o.isDiscontinued(ymd.parse("2007-10-26")));
+	}
+
+	/**
+	 * @see Order#isDiscontinued(Date)
+	 */
+	@Test
+	public void isDiscontinued_shouldNotDiscontinueActivatedOrderBeforeAutoExpireDate() throws Exception {
+		o.setDateActivated(ymd.parse("2007-01-01"));
+		o.setAutoExpireDate(ymd.parse("2007-12-31"));
+
+		assertFalse("shouldn't be discontinued before autoExpireDate", o.isDiscontinued(ymd.parse("2007-10-26")));
+	}
+
+	/**
+	 * @see Order#isDiscontinued(Date)
+	 */
+	@Test
+	public void isDiscontinued_shouldNotDiscontinueActivatedOrderAfterAutoExpireDate() throws Exception {
+		o.setDateActivated(ymd.parse("2007-01-01"));
+		o.setAutoExpireDate(ymd.parse("2007-12-31"));
+
+		assertFalse("shouldn't be discontinued after autoExpireDate", o.isDiscontinued(ymd.parse("2008-10-26")));
+	}
+
+	/**
+	 * @see Order#isDiscontinued(Date)
+	 */
+	@Test
+	public void isDiscontinued_shouldNotDiscontinueActivatedOrderBeforeDateStopped() throws Exception {
+		o.setDateActivated(ymd.parse("2007-01-01"));
+		o.setAutoExpireDate(ymd.parse("2007-12-31"));
+		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
+
+		assertFalse("shouldn't be discontinued before dateStopped", o.isDiscontinued(ymd.parse("2007-10-26")));
+	}
+
+	/**
+	 * @see Order#isDiscontinued(Date)
+	 */
+	@Test
+	public void isDiscontinued_shouldDiscontinueActivatedOrderAfterDateStopped() throws Exception {
+		o.setDateActivated(ymd.parse("2007-01-01"));
+		o.setAutoExpireDate(ymd.parse("2007-12-31"));
+		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
+
+		assertTrue("should be discontinued after dateStopped", o.isDiscontinued(ymd.parse("2007-11-26")));
+	}
+
+	/**
+	 * @see Order#isActive()
+	 */
+	@Test
+	public void isActive_shouldBeCurrentAfterDateActivated() throws Exception {
+		//assertTrue("dateActivated==null && no end date should always be current", o.isActive(ymd.parse("2007-10-26")));
+		o.setDateActivated(ymd.parse("2007-01-01"));
+
 		assertFalse("shouldn't be current before dateActivated", o.isActive(ymd.parse("2006-10-26")));
 		assertTrue("should be current after dateActivated", o.isActive(ymd.parse("2007-10-26")));
-		
+	}
+
+	/**
+	 * @see Order#isActive()
+	 */
+	@Test
+	public void isActive_shouldBeCurrentBetweenDateActivatedAndAutoExpireDate() throws Exception {
+		o.setDateActivated(ymd.parse("2007-01-01"));
 		o.setAutoExpireDate(ymd.parse("2007-12-31"));
+
 		assertFalse("shouldn't be current before dateActivated", o.isActive(ymd.parse("2006-10-26")));
 		assertTrue("should be current between dateActivated and autoExpireDate", o.isActive(ymd.parse("2007-10-26")));
 		assertFalse("shouldn't be current after autoExpireDate", o.isActive(ymd.parse("2008-10-26")));
-		
+	}
+
+	/**
+	 * @see Order#isActive()
+	 */
+	@Test
+	public void isActive_shouldBeCurrentBetweenDateActivatedAndDateStopped() throws Exception {
+		o.setDateActivated(ymd.parse("2007-01-01"));
+		o.setAutoExpireDate(ymd.parse("2007-12-31"));
 		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
-		assertFalse("shouldn't be current before dateActivated", o.isActive(ymd.parse("2006-10-26")));
-		assertTrue("should be current between dateActivated and dateStopped", o.isActive(ymd.parse("2007-10-26")));
-		assertFalse("shouldn't be current after dateStopped", o.isActive(ymd.parse("2007-11-26")));
-		
-		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
+
 		assertFalse("shouldn't be current before dateActivated", o.isActive(ymd.parse("2006-10-26")));
 		assertTrue("should be current between dateActivated and dateStopped", o.isActive(ymd.parse("2007-10-26")));
 		assertFalse("shouldn't be current after dateStopped", o.isActive(ymd.parse("2007-11-26")));
 	}
-	
+
 	/**
 	 * @see Order#cloneForDiscontinuing()
 	 */
