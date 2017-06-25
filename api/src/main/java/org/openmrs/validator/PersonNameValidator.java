@@ -58,6 +58,7 @@ public class PersonNameValidator implements Validator {
 			if (personName == null) {
 				errors.reject("error.name");
 			} else if (!personName.getVoided()) {
+				// TODO - the following method should be made private in a major release
 				validatePersonName(personName, errors, false, true);
 			}
 		}
@@ -118,7 +119,9 @@ public class PersonNameValidator implements Validator {
 	 * @should pass validation if regex string is null
 	 * @should pass validation if regex string is empty
 	 * @should not validate against regex for blank names
+	 * @deprecated as of 2.2.0, use {@link #validate(Object, Errors)}
 	 */
+	@Deprecated
 	public void validatePersonName(PersonName personName, Errors errors, boolean arrayInd, boolean testInd) {
 		
 		if (personName == null) {
