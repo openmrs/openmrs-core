@@ -98,7 +98,7 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
          * @see org.openmrs.BaseCustomizableMetadata#setAttribute(org.openmrs.attribute.Attribute) 
          */
         @Test
-        public void setAttribute_shouldFailIfMinOccursIsGreaterThanOne(){
+        public void setAttribute_shouldFailIfMinOccursIsGreaterThanOne() {
                 Provider provider = new Provider();
 		provider.setIdentifier("test");
 	
@@ -116,7 +116,7 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
          * @see org.openmrs.BaseCustomizableMetadata#setAttribute(org.openmrs.attribute.Attribute) 
          */
         @Test
-        public void setAttribute_shouldFailIfMaxOccursIsNotOne(){
+        public void setAttribute_shouldFailIfMaxOccursIsNotOne() {
                 Provider provider = new Provider();
 		provider.setIdentifier("test");
 		
