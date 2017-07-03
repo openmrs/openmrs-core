@@ -14,8 +14,10 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.openmrs.api.ValidationException;
 
 import org.openmrs.attribute.Attribute;
+import org.openmrs.attribute.AttributeType;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
 
@@ -89,8 +91,6 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 	
 	/**
 	 * Convenience method that voids all existing attributes of the given type, and sets this new one.
-	 * TODO fail if minOccurs &gt; 1
-	 * TODO decide whether this should require maxOccurs=1
 	 * @should void the attribute if an attribute with same attribute type already exists and the maxOccurs is set to 1
 	 * @should work for attributes with datatypes whose values are stored in other tables
 	 *
@@ -101,8 +101,18 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 			addAttribute(attribute);
 			return;
 		}
-		
-		if (getActiveAttributes(attribute.getAttributeType()).size() == 1) {
+                
+                if (attribute.getAttributeType().getMinOccurs() > 1){
+                    throw new ValidationException("Minimum Occurence exceeds 1");
+                }
+                
+                if (attribute.getAttributeType().getMaxOccurs() != null){
+                    if (attribute.getAttributeType().getMaxOccurs() != 1){
+                          throw new ValidationException("Maximum Occurence must be equal to 1");
+                    }
+                }
+                    
+                if (getActiveAttributes(attribute.getAttributeType()).size() == 1) {
 			A existing = getActiveAttributes(attribute.getAttributeType()).get(0);
 			if (existing.getValue().equals(attribute.getValue())) {
 				// do nothing, since the value is already as-specified

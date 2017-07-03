@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.openmrs.api.ValidationException;
 
 import org.openmrs.attribute.Attribute;
 import org.openmrs.customdatatype.CustomValueDescriptor;
@@ -99,7 +100,15 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 			addAttribute(attribute);
 			return;
 		}
-		
+                
+                if (attribute.getAttributeType().getMinOccurs() > 1){
+                    throw new ValidationException("Minimum Occurence exceeds 1");
+                }
+                    
+                if (attribute.getAttributeType().getMaxOccurs() != 1){
+                      throw new ValidationException("Maximum Occurence must be equal to 1");
+                }
+                
 		if (getActiveAttributes(attribute.getAttributeType()).size() == 1) {
 			A existing = getActiveAttributes(attribute.getAttributeType()).get(0);
 			if (existing.getValue().equals(attribute.getValue())) {
