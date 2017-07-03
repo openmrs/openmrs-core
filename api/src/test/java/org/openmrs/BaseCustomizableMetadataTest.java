@@ -14,8 +14,11 @@ import java.util.TreeSet;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.api.ProviderService;
+import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
@@ -29,6 +32,9 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	
 	private ProviderService service;
 	
+        @Rule
+	public ExpectedException expectedException = ExpectedException.none();
+        
 	@Before
 	public void before() {
 		service = Context.getProviderService();
@@ -87,7 +93,43 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 		ProviderAttribute lastAttribute = (ProviderAttribute) provider.getAttributes().toArray()[0];
 		Assert.assertTrue(lastAttribute.getVoided());
 	}
+        
+        /**
+         * @see org.openmrs.BaseCustomizableMetadata#setAttribute(org.openmrs.attribute.Attribute) 
+         */
+        @Test
+        public void setAttribute_shouldFailIfMinOccursIsGreaterThanOne() {
+                Provider provider = new Provider();
+		provider.setIdentifier("test");
 	
+		provider.setPerson(newPerson("name"));
+		ProviderAttributeType place = service.getProviderAttributeType(3);
+                place.setMinOccurs(2);
+                
+                expectedException.expect(ValidationException.class);
+                expectedException.expectMessage("Minimum Occurence exceeds 1");
+                
+                provider.setAttribute(buildProviderAttribute(place, "qatar"));
+        }
+        
+        /**
+         * @see org.openmrs.BaseCustomizableMetadata#setAttribute(org.openmrs.attribute.Attribute) 
+         */
+        @Test
+        public void setAttribute_shouldFailIfMaxOccursIsNotOne() {
+                Provider provider = new Provider();
+		provider.setIdentifier("test");
+		
+		provider.setPerson(newPerson("name"));
+		ProviderAttributeType place = service.getProviderAttributeType(3);
+                place.setMaxOccurs(2);
+                
+                expectedException.expect(ValidationException.class);
+                expectedException.expectMessage("Maximum Occurence must be equal to 1");
+                
+                provider.setAttribute(buildProviderAttribute(place, "qatar"));
+        }
+        
 	private ProviderAttribute buildProviderAttribute(ProviderAttributeType providerAttributeType, Object value)
 	{
 		ProviderAttribute providerAttribute = new ProviderAttribute();
