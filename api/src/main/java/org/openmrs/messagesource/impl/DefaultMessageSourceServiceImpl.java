@@ -36,21 +36,21 @@ public class DefaultMessageSourceServiceImpl implements MessageSourceService {
 	 * storing the instance object on {@link DefaultMessageSourceServiceImpl} itself so that garbage collection
 	 * can happen correctly.
 	 */
-	private static class EmptyMessageSourceServiceImplHolder {
+	private static class DefaultMessageSourceServiceImplHolder {
 		private static DefaultMessageSourceServiceImpl INSTANCE = null;
 	}
 	
 	/**
 	 * Get the static/singular instance
 	 *
-	 * @return EmptyMessageSourceServiceImpl
+	 * @return DefaultMessageSourceServiceImpl
 	 */
 	public static DefaultMessageSourceServiceImpl getInstance() {
-		if (EmptyMessageSourceServiceImplHolder.INSTANCE == null) {
-			EmptyMessageSourceServiceImplHolder.INSTANCE = new DefaultMessageSourceServiceImpl();
+		if (DefaultMessageSourceServiceImplHolder.INSTANCE == null) {
+			DefaultMessageSourceServiceImplHolder.INSTANCE = new DefaultMessageSourceServiceImpl();
 		}
 		
-		return EmptyMessageSourceServiceImplHolder.INSTANCE;
+		return DefaultMessageSourceServiceImplHolder.INSTANCE;
 	}
 	
 	private DefaultMessageSourceServiceImpl() {
