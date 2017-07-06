@@ -41,6 +41,7 @@ import org.openmrs.api.VisitService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.messagesource.impl.DefaultMessageSourceServiceImpl;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
 import org.openmrs.scheduler.SchedulerService;
@@ -455,7 +456,13 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @return MessageSourceService
 	 */
 	public MessageSourceService getMessageSourceService() {
-		return getService(MessageSourceService.class);
+		try {
+			return getService(MessageSourceService.class);
+		}
+		catch (APIException ex) {
+			//must be a service not found exception because of spring not being started
+			return DefaultMessageSourceServiceImpl.getInstance();
+		}
 	}
 	
 	/**
