@@ -8888,5 +8888,25 @@
             AND NOT EXISTS (SELECT role, privilege FROM role_privilege rp2 WHERE rp2.privilege='Add Visits'                     AND rp2.role=rp.role);
         </sql>
     </changeSet>
-	
+
+    <changeSet id="20170707-TRUNK-5185-1" author="mogoodrich">
+        <preConditions onFail="MARK_RAN">
+            <not><indexExists indexName="concept_reference_source_uuid_idx"/></not>
+        </preConditions>
+        <comment>Adding unique index on concept_reference_source uuid column</comment>
+        <createIndex tableName="concept_reference_source" indexName="concept_reference_source_uuid_id" unique="true">
+            <column name="uuid"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="20170707-TRUNK-5185-2" author="mogoodrich">
+        <preConditions onFail="MARK_RAN">
+            <not><indexExists indexName="concept_reference_map_uuid_idx"/></not>
+        </preConditions>
+        <comment>Adding unique index on concept_reference_map uuid column</comment>
+        <createIndex tableName="concept_reference_map" indexName="concept_reference_map_uuid_id" unique="true">
+            <column name="uuid"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
