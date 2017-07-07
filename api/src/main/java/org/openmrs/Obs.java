@@ -441,7 +441,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should not mark the obs as dirty when the set is replaced with another with same members
 	 */
 	public void setGroupMembers(Set<Obs> groupMembers) {
-		this.groupMembers = new HashSet<Obs>(groupMembers); //Copy over the entire list
+		this.groupMembers = groupMembers; //Copy over the entire list
 		
 	}
 	
