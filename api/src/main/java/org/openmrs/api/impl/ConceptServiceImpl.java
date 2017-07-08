@@ -110,15 +110,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public Concept saveConcept(Concept concept) throws APIException {
-		ConceptMapType defaultConceptMapType = null;
-		for (ConceptMap map : concept.getConceptMappings()) {
-			if (map.getConceptMapType() == null) {
-				if (defaultConceptMapType == null) {
-					defaultConceptMapType = Context.getConceptService().getDefaultConceptMapType();
-				}
-				map.setConceptMapType(defaultConceptMapType);
-			}
-		}
+		ensureConceptMapTypeIsSet(concept);
 
 		CustomDatatypeUtil.saveAttributesIfNecessary(concept);
 
@@ -189,40 +181,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				concept.addName(clone);
 			}
 		}
-		
-		//Ensure if there's a name for a locale that at least one suitable name is marked preferred in that locale
-		//Order of preference is:
-		// 1) any name that concept.getPreferredName returns
-		// 2) fully specified name
-		// 3) any synonym
-		// short name and index terms are never preferred.
-		
-		Set<Locale> checkedLocales = new HashSet<Locale>();
-		for (ConceptName n : concept.getNames()) {
-			Locale locale = n.getLocale();
-			if (checkedLocales.contains(locale)) {
-				continue; //we've already checked this locale
-			}
-			
-			//getPreferredName(locale) returns any name marked preferred,
-			//or the fullySpecifiedName even if not marked preferred
-			ConceptName possiblePreferredName = concept.getPreferredName(locale);
-			
-			if (possiblePreferredName != null) {
-				//do nothing yet, but stick around to setLocalePreferred(true)
-			} else if (concept.getFullySpecifiedName(locale) != null) {
-				possiblePreferredName = concept.getFullySpecifiedName(locale);
-			} else if (!CollectionUtils.isEmpty(concept.getSynonyms(locale))) {
-				concept.getSynonyms(locale).iterator().next().setLocalePreferred(true);
-			}
-			//index terms are never used as preferred name
-			
-			if (possiblePreferredName != null) { //there may have been none
-				possiblePreferredName.setLocalePreferred(true);
-			}
-			checkedLocales.add(locale);
-		}
-		
+		ensurePreferredNameForLocale(concept);
+
 		//See TRUNK-3337 for why we set changed by and date changed every time we save a concept.
 		concept.setDateChanged(new Date());
 		concept.setChangedBy(Context.getAuthenticatedUser());
@@ -232,11 +192,56 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			concept.setSet(true);
 		}
 
-		Concept conceptToReturn = dao.saveConcept(concept);
-		
-		return conceptToReturn;
+		return dao.saveConcept(concept);
 	}
-	
+
+	private void ensureConceptMapTypeIsSet(Concept concept) {
+		ConceptMapType defaultConceptMapType = null;
+		for (ConceptMap map : concept.getConceptMappings()) {
+			if (map.getConceptMapType() == null) {
+				if (defaultConceptMapType == null) {
+					defaultConceptMapType = Context.getConceptService().getDefaultConceptMapType();
+				}
+				map.setConceptMapType(defaultConceptMapType);
+			}
+		}
+	}
+
+	private void ensurePreferredNameForLocale(Concept concept) {
+		//Ensure if there's a name for a locale that at least one suitable name is marked preferred in that locale
+		//Order of preference is:
+		// 1) any name that concept.getPreferredName returns
+		// 2) fully specified name
+		// 3) any synonym
+		// short name and index terms are never preferred.
+
+		Set<Locale> checkedLocales = new HashSet<Locale>();
+		for (ConceptName n : concept.getNames()) {
+			Locale locale = n.getLocale();
+			if (checkedLocales.contains(locale)) {
+				continue; //we've already checked this locale
+			}
+
+			//getPreferredName(locale) returns any name marked preferred,
+			//or the fullySpecifiedName even if not marked preferred
+			ConceptName possiblePreferredName = concept.getPreferredName(locale);
+
+			if (possiblePreferredName != null) {
+				//do nothing yet, but stick around to setLocalePreferred(true)
+			} else if (concept.getFullySpecifiedName(locale) != null) {
+				possiblePreferredName = concept.getFullySpecifiedName(locale);
+			} else if (!CollectionUtils.isEmpty(concept.getSynonyms(locale))) {
+				concept.getSynonyms(locale).iterator().next().setLocalePreferred(true);
+			}
+			//index terms are never used as preferred name
+
+			if (possiblePreferredName != null) { //there may have been none
+				possiblePreferredName.setLocalePreferred(true);
+			}
+			checkedLocales.add(locale);
+		}
+	}
+
 	/**
 	 * @see org.openmrs.api.ConceptService#saveDrug(org.openmrs.Drug)
 	 */

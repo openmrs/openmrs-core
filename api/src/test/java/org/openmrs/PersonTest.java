@@ -28,6 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 
+
 /**
  * This class should test all methods on the person object.<br>
  * <br>
@@ -823,6 +824,14 @@ public class PersonTest extends BaseContextSensitiveTest {
 		PersonName actualPersonName = person.getPersonName();
 		
 		assertEquals(expectedPersonAddress, actualPersonName);
+	}
+
+	@Test
+	public void shouldSetDeadToTrueIfSetDeathdate() {
+		Person p = new Person();
+		Date deathDate = new Date();
+		p.setDeathDate(deathDate);
+		assert (p.getDead());
 	}
 	
 	// helper class
