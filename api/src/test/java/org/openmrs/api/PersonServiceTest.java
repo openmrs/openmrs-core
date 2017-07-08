@@ -33,6 +33,7 @@ import java.util.Vector;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -197,6 +198,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
 		patient.setDeathDate(new Date());
+		patient.setCauseOfDeath(new Concept(1));
 		patient.setGender("male");
 		List<PatientIdentifierType> patientIdTypes = ps.getAllPatientIdentifierTypes();
 		assertNotNull(patientIdTypes);
