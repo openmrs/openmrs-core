@@ -810,6 +810,15 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		assertEquals(expectedPersonAddress, actualPersonAddress);
 	}
+
+	@Test
+	public void shouldSetDeadToTrueIfSetDeathdate() {
+
+		Person p = new Person();
+		Date deathDate = new Date();
+		p.setDeathDate(deathDate);
+		Assert.assertTrue(p.getDead());
+	}
 	
 	private void checkGetPersonNameResultForVoidedPerson(PersonName expectedPersonAddress, Set<PersonName> personAddresses) {
 		
