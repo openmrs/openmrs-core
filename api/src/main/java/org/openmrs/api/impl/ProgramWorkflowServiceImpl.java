@@ -74,32 +74,37 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 			throw new APIException("Program.concept.required", (Object[]) null);
 		}
 		
-		// ProgramWorkflow
 		for (ProgramWorkflow workflow : program.getAllWorkflows()) {
-			
 			if (workflow.getConcept() == null) {
 				throw new APIException("ProgramWorkflow.concept.required", (Object[]) null);
-			}
-			if (workflow.getProgram() == null) {
-				workflow.setProgram(program);
-			} else if (!workflow.getProgram().equals(program)) {
-				throw new APIException("Program.error.contains.ProgramWorkflow", new Object[] { workflow.getProgram() });
-			}
-			
-			// ProgramWorkflowState
+			}			
+			ensureProgramIsSet(workflow, program);						
 			for (ProgramWorkflowState state : workflow.getStates()) {
-				
 				if (state.getConcept() == null || state.getInitial() == null || state.getTerminal() == null) {
 					throw new APIException("ProgramWorkflowState.requires", (Object[]) null);
-				}
-				if (state.getProgramWorkflow() == null) {
-					state.setProgramWorkflow(workflow);
-				} else if (!state.getProgramWorkflow().equals(workflow)) {
-					throw new APIException("ProgramWorkflow.error.contains.state", new Object[] { workflow.getProgram() });
-				}
+				}				
+
+				ensureProgramWorkflowIsSet(state, workflow);
 			}
 		}
 		return dao.saveProgram(program);
+	}
+	 
+	private void ensureProgramIsSet(ProgramWorkflow workflow, Program program) {		
+		if (workflow.getProgram() == null) {
+			workflow.setProgram(program);
+		} else if (!workflow.getProgram().equals(program)) {
+			throw new APIException("Program.error.contains.ProgramWorkflow", new Object[] { workflow.getProgram() });
+		}
+	}
+	
+	private void ensureProgramWorkflowIsSet(ProgramWorkflowState state, ProgramWorkflow workflow) {
+		if (state.getProgramWorkflow() == null) {
+			state.setProgramWorkflow(workflow);
+		} else if (!state.getProgramWorkflow().equals(workflow)) {
+			throw new APIException("ProgramWorkflow.error.contains.state", new Object[] { workflow.getProgram() });
+		}
+		
 	}
 	
 	/**
@@ -275,7 +280,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Transactional(readOnly = true)
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
 	        Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided)
-	        throws APIException {
+	                throws APIException {
 		return dao.getPatientPrograms(patient, program, minEnrollmentDate, maxEnrollmentDate, minCompletionDate,
 		    maxCompletionDate, includeVoided);
 	}
@@ -510,7 +515,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept) {
 		return dao.getProgramWorkflowStatesByConcept(concept);
 	}
-		
+	
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getConceptStateConversionByUuid(java.lang.String)
 	 */
