@@ -61,8 +61,8 @@
     <!--
         Dead people with non-voided name
     -->
-    <person person_id="51" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="true" creator="1" date_created="2013-04-25 12:34:56.7" voided="false" uuid="A10595DC-B782-4F19-8693-0F6963A67DB6"/>
-    <person person_id="52" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="true"  creator="1" date_created="2013-04-25 12:34:56.7" voided="false" uuid="1A1108EB-D6F6-4676-BF33-DF7BF7B1C882"/>
+    <person person_id="51" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="true" creator="1" date_created="2013-04-25 12:34:56.7" voided="false" uuid="A10595DC-B782-4F19-8693-0F6963A67DB6" death_date="2008-09-30 12:34:56.7"/>
+    <person person_id="52" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="true"  creator="1" date_created="2013-04-25 12:34:56.7" voided="false" uuid="1A1108EB-D6F6-4676-BF33-DF7BF7B1C882" death_date="2008-09-30 12:34:56.7"/>
 
     <person_name person_name_id="51" preferred="true" person_id="51" prefix="Mr." given_name="dead-charlie" middle_name="dead-golf"  family_name="dead-kilo" family_name2="dead-papa" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" void_reason="" uuid="C9495BF5-6082-4A17-8D3C-AFD3DFA5FD65"/>
     <person_name person_name_id="52" preferred="true" person_id="52" prefix="Mr." given_name="dead-delta"   middle_name="dead-hotel" family_name="dead-lima" family_name2="dead-papa" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" void_reason="" uuid="00337604-57E0-4E75-B358-27A7A464FF62"/>
