@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentMatcher;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -217,7 +218,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// patient.removeAddress(pAddress);
 		
 		patient.setDeathDate(new Date());
-		// patient.setCauseOfDeath("air");
+		patient.setCauseOfDeath(new Concept());
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
 		patient.setGender("male");
@@ -249,10 +250,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addAddress(pAddress);
 		// patient.removeAddress(pAddress);
 		
-		patient.setDeathDate(new Date());
-		patient.setBirthdateEstimated(true);
-		// patient.setCauseOfDeath("air");
+
 		patient.setBirthdate(new Date());
+		patient.setBirthdateEstimated(true);
+		patient.setDeathDate(new Date());
+		patient.setCauseOfDeath(new Concept());
 		patient.setBirthdateEstimated(true);
 		patient.setGender("male");
 		
@@ -2550,6 +2552,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient preferred = patientService.getPatient(999);
 		preferred.setDeathDate(cDate.getTime());
 		preferred.setDeathdateEstimated(true);
+		preferred.setCauseOfDeath(Context.getConceptService().getConcept(3));
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
 		Patient notPreferred = patientService.getPatient(7);
