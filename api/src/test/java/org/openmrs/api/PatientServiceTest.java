@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentMatcher;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -216,10 +217,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addAddress(pAddress);
 		// patient.removeAddress(pAddress);
 		
-		patient.setDeathDate(new Date());
-		// patient.setCauseOfDeath("air");
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
+		patient.setDeathDate(new Date());
+		patient.setCauseOfDeath(new Concept());
 		patient.setGender("male");
 		patient.setDeathdateEstimated(true);
 		
@@ -249,11 +250,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addAddress(pAddress);
 		// patient.removeAddress(pAddress);
 		
-		patient.setDeathDate(new Date());
 		patient.setBirthdateEstimated(true);
-		// patient.setCauseOfDeath("air");
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
+		patient.setDeathDate(new Date());
+		patient.setCauseOfDeath(new Concept());
 		patient.setGender("male");
 		
 		List<PatientIdentifierType> patientIdTypes = patientService.getAllPatientIdentifierTypes();
@@ -2536,7 +2537,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		Assert.assertEquals("prior date of death was not audited", cDate.getTime(), audit.getPersonMergeLogData()
 		        .getPriorDateOfDeath());
-		
+
 	}
 	
 	/**
@@ -2550,6 +2551,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient preferred = patientService.getPatient(999);
 		preferred.setDeathDate(cDate.getTime());
 		preferred.setDeathdateEstimated(true);
+		preferred.setCauseOfDeath(Context.getConceptService().getConcept(3));
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
 		Patient notPreferred = patientService.getPatient(7);
