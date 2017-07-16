@@ -827,12 +827,11 @@ public class PersonTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void shouldSetDeadToTrueIfSetDeathdate() {
-
-				Person p = new Person();
-				Date deathDate = new Date();
-				p.setDeathDate(deathDate);
-				assertTrue ("Person must be dead(setDead(true)) inorder have a deathDate set for him", p.getDead());
-			}
+		Person p = new Person();
+		Date deathDate = new Date();
+		p.setDeathDate(deathDate);
+		assertTrue ("Person must be dead(setDead(true)) inorder have a deathDate set for him", p.getDead());
+	}
 	
 	// helper class
 	private static class PersonNameBuilder {
