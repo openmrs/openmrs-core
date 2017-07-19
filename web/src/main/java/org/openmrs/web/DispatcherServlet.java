@@ -45,9 +45,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 	protected void initFrameworkServlet() throws ServletException, BeansException {
 		// refresh the application context to look for module xml config files as well
 		
-		//XmlWebApplicationContext wac = ((XmlWebApplicationContext)getWebApplicationContext());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-		//wac.refresh();
 		
 		log.debug("Framework being initialized");
 		WebModuleUtil.setDispatcherServlet(this);

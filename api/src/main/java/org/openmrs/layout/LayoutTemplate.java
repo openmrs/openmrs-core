@@ -101,7 +101,6 @@ public abstract class LayoutTemplate {
 					currToken.put("displayText", this.getNameMappings().get(realToken));
 					currToken.put("displaySize", this.getSizeMappings().get(realToken));
 					currToken.put("codeName", realToken);
-					//numTokens++;
 					ret.add(currToken);
 				}
 				
@@ -120,7 +119,6 @@ public abstract class LayoutTemplate {
 					currToken.put("displayText", this.getNameMappings().get(realToken));
 					currToken.put("displaySize", this.getSizeMappings().get(realToken));
 					currToken.put("codeName", realToken);
-					//numTokens++;
 					ret.add(currNonToken);
 					ret.add(currToken);
 				} else {
@@ -140,7 +138,6 @@ public abstract class LayoutTemplate {
 						currToken.put("displayText", this.getNameMappings().get(realToken));
 						currToken.put("displaySize", this.getSizeMappings().get(realToken));
 						currToken.put("codeName", realToken);
-						//numTokens++;
 						ret.add(currToken);
 					}
 				}
@@ -163,7 +160,6 @@ public abstract class LayoutTemplate {
 			currToken.put("displayText", this.getNameMappings().get(realToken));
 			currToken.put("displaySize", this.getSizeMappings().get(realToken));
 			currToken.put("codeName", realToken);
-			//numTokens++;
 			
 			ret.add(currToken);
 		}

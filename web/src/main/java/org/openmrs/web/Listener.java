@@ -71,7 +71,7 @@ import org.xml.sax.SAXException;
  * Context.startup) Basic startup needs specific to the web layer: 1) Do the web startup of the
  * modules 2) Copy the custom look/images/messages over into the web layer
  */
-public final class Listener extends ContextLoader implements ServletContextListener { // extends ContextLoaderListener {
+public final class Listener extends ContextLoader implements ServletContextListener {
 	
 	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -183,9 +183,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				// found but before the database update is done
 				copyCustomizationIntoWebapp(servletContext, props);
 				
-				//super.contextInitialized(event);
-				// also see commented out line in contextDestroyed
-				
 				/**
 				 * This logic is from ContextLoader.initWebApplicationContext. Copied here instead
 				 * of calling that so that the context is not cached and hence not garbage collected
@@ -229,13 +226,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @throws ServletException
 	 */
 	public static void startOpenmrs(ServletContext servletContext) throws ServletException {
-		
-		//Ensure that we are being called from WebDaemon
-		//TODO this did not work because callerClass was org.openmrs.web.WebDaemon$1 instead of org.openmrs.web.WebDaemon
-		/*Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
-		if (!WebDaemon.class.isAssignableFrom(callerClass))
-			throw new APIException("This method can only be called from the WebDaemon class, not " + callerClass.getName());*/
-		
 		// start openmrs
 		try {
 			// load bundled modules that are packaged into the webapp
@@ -580,9 +570,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			// remove the user context that we set earlier
 			Context.closeSession();
 		}
-		
-		// commented out because we are not init'ing it in the contextInitialization anymore
-		// super.contextDestroyed(event);
 		
 		try {
 			for (Enumeration<Driver> e = DriverManager.getDrivers(); e.hasMoreElements();) {

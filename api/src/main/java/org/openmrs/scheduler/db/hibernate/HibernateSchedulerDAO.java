@@ -149,13 +149,6 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	}
 	
 	/**
-	 * Creates a new schedule.
-	 * 
-	 * @param schedule to be created
-	 * @throws DAOException
-	 */
-	//public void createSchedule(Schedule schedule) throws DAOException;
-	/**
 	 * Get schedule by internal identifier
 	 * 
 	 * @param scheduleId internal schedule identifier
@@ -172,26 +165,4 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 		}
 		return schedule;
 	}
-	
-	/**
-	 * Update a schedule.
-	 * 
-	 * @param schedule to be updated
-	 * @throws DAOException
-	 */
-	//public void updateSchedule(Schedule schedule) throws DAOException;
-	/**
-	 * Get all schedules.
-	 * 
-	 * @return set of all schedules in the database
-	 * @throws DAOException
-	 */
-	//public Set<Schedule> getAllSchedules() throws DAOException;
-	/**
-	 * Delete schedule from database.
-	 * 
-	 * @param schedule schedule to be deleted
-	 * @throws DAOException
-	 */
-	//public void deleteSchedule(Schedule schedule) throws DAOException;	
 }

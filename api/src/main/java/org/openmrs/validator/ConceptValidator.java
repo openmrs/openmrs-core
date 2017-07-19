@@ -223,11 +223,6 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 					}
 					
 				}
-				/*if (map.getConceptMapType() == null) {
-					errors.rejectValue("conceptMappings[" + index + "].conceptMapType", "Concept.map.typeRequired",
-					    "The concept map type is required for a concept map");
-					return;
-				}*/
 
 				//don't proceed to the next maps since the current one already has errors
 				if (errors.hasErrors()) {
