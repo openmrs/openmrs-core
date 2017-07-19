@@ -329,11 +329,6 @@ public class Security {
 		byte[] initVector = new byte[16];
 		new SecureRandom().nextBytes(initVector);
 		
-		// TODO get the following (better) method working
-		// Cipher cipher = Cipher.getInstance(CIPHER_CONFIGURATION);
-		// AlgorithmParameters params = cipher.getParameters();
-		// byte[] initVector = params.getParameterSpec(IvParameterSpec.class).getIV();
-		
 		return initVector;
 	}
 	

@@ -440,17 +440,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		String familyName = xcn.getFamilyName().getSurname().getValue();
 		String givenName = xcn.getGivenName().getValue();
 		
-		// unused
-		// String assigningAuthority = xcn.getAssigningAuthority()
-		// .getUniversalID().getValue();
-		
-		/*
-		 * if ("null".equals(familyName)) familyName = null; if
-		 * ("null".equals(givenName)) givenName = null; if
-		 * ("null".equals(assigningAuthority)) assigningAuthority = null;
-		 */
 		if (idNumber != null && idNumber.length() > 0) {
-			// log.debug("searching for user by id " + idNumber);
 			try {
 				Integer userId = Integer.valueOf(idNumber);
 				User user = Context.getUserService().getUser(userId);
@@ -461,7 +451,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 				return null;
 			}
 		} else {
-			// log.debug("searching for user by name");
 			try {
 				List<User> users = Context.getUserService().getUsersByName(givenName,familyName,true);
 				if (users.size() == 1) {
@@ -472,7 +461,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 					log.error(getFindingUserErrorMessage(idNumber, familyName, givenName) + ": Found " + users.size() + " ambiguous users.");
 					return null;
 				}
-				else { // size == 0
+				else {
 					// legacy behavior is looking up by username
 					StringBuilder username = new StringBuilder();
 					if (familyName != null) {
@@ -612,9 +601,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		
 		// TODO other potential identifying characteristics in PID we could use
 		// to identify the patient
-		// XPN[] patientName = pid.getPersonName();
-		// String gender = pid.getAdministrativeSex().getValue();
-		// TS dateOfBirth = pid.getDateTimeOfBirth();
 		
 		// Take the first uniquely matching identifier
 		for (CX identifier : identifiers) {

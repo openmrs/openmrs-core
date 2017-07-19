@@ -72,13 +72,6 @@ public interface SchedulerDAO {
 	public void deleteTask(Integer taskId) throws DAOException;
 	
 	/**
-	 * Creates a new schedule.
-	 * 
-	 * @param schedule to be created
-	 * @throws DAOException
-	 */
-	//public void createSchedule(Schedule schedule) throws DAOException;
-	/**
 	 * Get schedule by internal identifier
 	 * 
 	 * @param scheduleId internal schedule identifier
@@ -95,26 +88,4 @@ public interface SchedulerDAO {
 	 * @throws DAOException
 	 */
 	public TaskDefinition getTaskByName(String name) throws DAOException;
-	
-	/**
-	 * Update a schedule.
-	 * 
-	 * @param schedule to be updated
-	 * @throws DAOException
-	 */
-	//public void updateSchedule(Schedule schedule) throws DAOException;
-	/**
-	 * Get all schedules.
-	 * 
-	 * @return set of all schedules in the database
-	 * @throws DAOException
-	 */
-	//public Set<Schedule> getSchedules() throws DAOException;
-	/**
-	 * Delete schedule from database.
-	 * 
-	 * @param schedule schedule to be deleted
-	 * @throws DAOException
-	 */
-	//public void deleteSchedule(Schedule schedule) throws DAOException;
 }

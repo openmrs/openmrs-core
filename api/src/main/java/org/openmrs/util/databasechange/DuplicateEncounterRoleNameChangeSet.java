@@ -180,7 +180,6 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 				if (initialAutoCommit != null) {
 					connection.setAutoCommit(initialAutoCommit);
 				}
-				// connection.close();
 			}
 			catch (DatabaseException e) {
 				log.warn("Failed to set auto commit to ids initial state", e);

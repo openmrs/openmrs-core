@@ -863,11 +863,7 @@ public class Obs extends BaseOpenmrsData {
 	 * @since 1.5
 	 * @should return true if the concept is complex
 	 */
-	public boolean isComplex() {
-		//		if (getValueComplex() != null) {
-		//			return true;
-		//		}
-		
+	public boolean isComplex() {		
 		if (getConcept() != null) {
 			return getConcept().isComplex();
 		}

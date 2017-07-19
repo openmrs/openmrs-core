@@ -117,7 +117,6 @@ public class Daemon {
 	public static void executeScheduledTask(final Task task) throws Exception {
 		
 		// quick check to make sure we're only being called by ourselves
-		//Class<?> callerClass = Reflection.getCallerClass(0);
 		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
 		if (!TimerSchedulerTask.class.isAssignableFrom(callerClass)) {
 			throw new APIException("Scheduler.timer.task.only", new Object[] { callerClass.getName() });

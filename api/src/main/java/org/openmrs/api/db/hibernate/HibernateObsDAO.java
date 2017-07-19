@@ -249,8 +249,6 @@ public class HibernateObsDAO implements ObsDAO {
 		
 		if (personTypes.contains(PERSON_TYPE.PERSON)) {
 			// all observations are already on person's.  Limit to non-patient and non-users here?
-			//criteria.createAlias("Person", "person");
-			//criteria.add(Restrictions.eqProperty("obs.person.personId", "person.personId"));
 		}
 		
 		return criteria;
