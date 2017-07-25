@@ -10,8 +10,10 @@
 package org.openmrs.api.db.hibernate;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.sql.Time;
 import java.util.Date;
 
 import org.junit.Test;
@@ -30,6 +32,9 @@ public class DropMillisecondsHibernateInterceptorTest extends BaseContextSensiti
 
 	@Autowired
 	PersonService personService;
+	
+	@Autowired
+	DropMillisecondsHibernateInterceptor dropMillisecondsHibernateInterceptor;
 
 	@Test
 	public void shouldClearMillisecondsWhenSavingANewObject() {
@@ -59,5 +64,12 @@ public class DropMillisecondsHibernateInterceptorTest extends BaseContextSensiti
 		Context.flushSession();
 
 		assertThat(person.getBirthdate(), is(dateWithoutMillisecond));
+	}
+	
+	@Test
+	public void shouldNotChangeWhenInstanceOfTime() throws Exception {
+		Time[] time = { Time.valueOf("17:00:00") };
+		boolean anyChanges = dropMillisecondsHibernateInterceptor.onSave(null, null, time, null, null);
+		assertEquals(false, anyChanges);
 	}
 }
