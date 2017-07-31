@@ -23,10 +23,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
 
-import org.databene.benerator.Generator;
-import org.databene.benerator.factory.GeneratorFactory;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
@@ -38,15 +35,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class ConceptTest extends BaseContextSensitiveTest {
 	
-	final static String NAME_PATTERN = "[a-z]*";
-	
-	private Generator<String> nameGenerator;
-	
-	@Before
-	public void setup() {
-		nameGenerator = GeneratorFactory.getUniqueRegexStringGenerator(NAME_PATTERN, 2, 12, Locale.ENGLISH);
-	}
-	
 	/**
 	 * When asked for a collection of compatible names, the returned collection should not include
 	 * any incompatible names.
@@ -56,12 +44,12 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	@Test
 	public void getCompatibleNames_shouldExcludeIncompatibleCountryLocales() {
 		Locale primaryLocale = Locale.US;
-		Concept testConcept = createMockConcept(1, primaryLocale);
+		Concept testConcept = createConcept(1, primaryLocale);
 		
 		// concept should only have US and generic english names.
 		// add an incompatible name -- en_UK
 		int initialNameCollectionSize = testConcept.getNames().size();
-		ConceptName name_en_UK = createMockConceptName(initialNameCollectionSize + 1, Locale.UK,
+		ConceptName name_en_UK = createConceptName(initialNameCollectionSize + 1, "Labour", Locale.UK,
 		    ConceptNameType.FULLY_SPECIFIED, false);
 		testConcept.addName(name_en_UK);
 		
@@ -93,12 +81,12 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	@Test
 	public void setPreferredName_shouldOnlyAllowOnePreferredName() {
 		Locale primaryLocale = Locale.US;
-		Concept testConcept = createMockConcept(1, primaryLocale);
+		Concept testConcept = createConcept(1, primaryLocale);
 		
-		ConceptName initialPreferred = createMockConceptName(3, primaryLocale, null, true);
+		ConceptName initialPreferred = createConceptName(3, "Aspirin", primaryLocale, null, true);
 		testConcept.addName(initialPreferred);
 		Assert.assertEquals(true, initialPreferred.getLocalePreferred());
-		ConceptName newPreferredName = createMockConceptName(4, primaryLocale, null, false);
+		ConceptName newPreferredName = createConceptName(4, "Doctor", primaryLocale, null, false);
 		testConcept.setPreferredName(newPreferredName);
 		
 		assertEquals(false, initialPreferred.getLocalePreferred());
@@ -390,8 +378,8 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	@Test
 	public void setPreferredName_shouldAddTheNameToTheListOfNamesIfItNotAmongThemBefore() {
 		Locale primaryLocale = Locale.US;
-		Concept testConcept = createMockConcept(1, primaryLocale);
-		ConceptName newPreferredName = createMockConceptName(3, primaryLocale, null, false);
+		Concept testConcept = createConcept(1, primaryLocale);
+		ConceptName newPreferredName = createConceptName(3, "Aspirin", primaryLocale, null, false);
 		assertEquals(false, testConcept.getNames(primaryLocale).contains(newPreferredName));
 		testConcept.setPreferredName(newPreferredName);
 		assertEquals(true, testConcept.getNames(primaryLocale).contains(newPreferredName));
@@ -403,12 +391,13 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	@Test
 	public void getFullySpecifiedName_shouldReturnTheNameMarkedAsFullySpecifiedForTheGivenLocale() {
 		Locale primaryLocale = Locale.US;
-		Concept testConcept = createMockConcept(1, primaryLocale);
-		ConceptName fullySpecifiedName_FR = createMockConceptName(3, new Locale("fr"), ConceptNameType.FULLY_SPECIFIED, true);
+		Concept testConcept = createConcept(1, primaryLocale);
+		ConceptName fullySpecifiedName_FR = createConceptName(3, "Docteur", new Locale("fr"),
+		    ConceptNameType.FULLY_SPECIFIED, true);
 		testConcept.addName(fullySpecifiedName_FR);
 		Assert.assertEquals(primaryLocale, testConcept.getFullySpecifiedName(primaryLocale).getLocale());
-		Assert.assertEquals(ConceptNameType.FULLY_SPECIFIED, testConcept.getFullySpecifiedName(primaryLocale)
-		        .getConceptNameType());
+		Assert.assertEquals(ConceptNameType.FULLY_SPECIFIED,
+		    testConcept.getFullySpecifiedName(primaryLocale).getConceptNameType());
 	}
 	
 	/**
@@ -673,8 +662,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getAllConceptNameLocales()
 	 */
 	@Test
-	public void getAllConceptNameLocales_shouldReturnAllLocalesForConceptNamesForThisConceptWithoutDuplicates()
-	{
+	public void getAllConceptNameLocales_shouldReturnAllLocalesForConceptNamesForThisConceptWithoutDuplicates() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("name1", new Locale("en")));
 		concept.addName(new ConceptName("name2", new Locale("en", "US")));
@@ -692,15 +680,14 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 * @see Concept#getPreferredName(Locale)
 	 */
 	@Test
-	public void getPreferredName_shouldReturnTheFullySpecifiedNameIfNoNameIsExplicitlyMarkedAsLocalePreferred()
-	{
-		Concept testConcept = createMockConcept(1, Locale.US);
+	public void getPreferredName_shouldReturnTheFullySpecifiedNameIfNoNameIsExplicitlyMarkedAsLocalePreferred() {
+		Concept testConcept = createConcept(1, Locale.US);
 		//preferred name in en_US
-		ConceptName preferredNameEN_US = createMockConceptName(3, Locale.US, null, false);
+		ConceptName preferredNameEN_US = createConceptName(3, "Aspirin", Locale.US, null, false);
 		testConcept.addName(preferredNameEN_US);
 		String fullySpecName = testConcept.getFullySpecifiedName(Locale.US).getName();
 		//preferred name in en
-		ConceptName preferredNameEN = createMockConceptName(4, new Locale("en"), null, false);
+		ConceptName preferredNameEN = createConceptName(4, "Doctor", new Locale("en"), null, false);
 		testConcept.addName(preferredNameEN);
 		Assert.assertEquals(fullySpecName, testConcept.getPreferredName(Locale.US).getName());
 	}
@@ -710,12 +697,12 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPreferredName_shouldReturnTheConceptNameExplicitlyMarkedAsLocalePreferred() {
-		Concept testConcept = createMockConcept(1, Locale.US);
+		Concept testConcept = createConcept(1, Locale.US);
 		//preferred name in en_US
-		ConceptName preferredNameEN_US = createMockConceptName(3, Locale.US, null, true);
+		ConceptName preferredNameEN_US = createConceptName(3, "Aspirin", Locale.US, null, true);
 		testConcept.addName(preferredNameEN_US);
 		//preferred name in en
-		ConceptName preferredNameEN = createMockConceptName(4, new Locale("en"), null, true);
+		ConceptName preferredNameEN = createConceptName(4, "Doctor", new Locale("en"), null, true);
 		testConcept.addName(preferredNameEN);
 		Assert.assertEquals(preferredNameEN_US, testConcept.getPreferredName(Locale.US));
 		Assert.assertEquals(preferredNameEN, testConcept.getPreferredName(new Locale("en")));
@@ -752,7 +739,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void setFullySpecifiedName_shouldAddTheNameToTheListOfNamesIfItNotAmongThemBefore() {
-		Concept concept = createMockConcept(1, Context.getLocale());
+		Concept concept = createConcept(1, Context.getLocale());
 		int expectedNumberOfNames = concept.getNames().size() + 1;
 		concept.setFullySpecifiedName(new ConceptName("some name", Context.getLocale()));
 		Assert.assertEquals(expectedNumberOfNames, concept.getNames().size());
@@ -763,7 +750,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void setFullySpecifiedName_shouldConvertThePreviousFullySpecifiedNameIfAnyToASynonym() {
-		Concept concept = createMockConcept(1, Context.getLocale());
+		Concept concept = createConcept(1, Context.getLocale());
 		ConceptName oldFullySpecifiedName = concept.getFullySpecifiedName(Context.getLocale());
 		//sanity check
 		Assert.assertEquals(ConceptNameType.FULLY_SPECIFIED, oldFullySpecifiedName.getConceptNameType());
@@ -788,7 +775,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void setShortName_shouldAddTheNameToTheListOfNamesIfItNotAmongThemBefore() {
-		Concept concept = createMockConcept(1, Context.getLocale());
+		Concept concept = createConcept(1, Context.getLocale());
 		int expectedNumberOfNames = concept.getNames().size() + 1;
 		concept.setShortName(new ConceptName("some name", Context.getLocale()));
 		Assert.assertEquals(expectedNumberOfNames, concept.getNames().size());
@@ -799,7 +786,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void setShortName_shouldConvertThePreviousShortNameIfAnyToASynonym() {
-		Concept concept = createMockConcept(1, Context.getLocale());
+		Concept concept = createConcept(1, Context.getLocale());
 		ConceptName oldShortName = concept.getShortNameInLocale(Context.getLocale());
 		//sanity check
 		Assert.assertEquals(ConceptNameType.SHORT, oldShortName.getConceptNameType());
@@ -965,59 +952,55 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getPreferredName_shouldReturnTheBesLocalePreferred() {
-		Concept testConcept = createMockConcept(1, Locale.US);
-		// preferred name in en
-		ConceptName preferredNameEN = createMockConceptName(4, new Locale("en"), null, true);
-		testConcept.addName(preferredNameEN);
-		Assert.assertEquals(preferredNameEN.getName(), testConcept.getPreferredName(Locale.US).getName());
+		Concept testConcept = createConcept(1, Locale.US);
+		ConceptName preferredName = createConceptName(4, "Doctor", new Locale("en"), null, true);
+		testConcept.addName(preferredName);
+		Assert.assertEquals(preferredName.getName(), testConcept.getPreferredName(Locale.US).getName());
 	}
 	
 	/**
 	 * Convenient factory method to create a populated Concept with a one fully specified name and
 	 * one short name
 	 * 
-	 * @param conceptId the id for the concept to create
+	 * @param id the id for the concept to create
 	 * @param locale the locale of the of the conceptNames for the concept to create
 	 * @return the created concept
 	 */
-	private Concept createMockConcept(int conceptId, Locale locale) {
-		Concept mockConcept = new Concept();
-		mockConcept.setConceptId(conceptId);
+	private Concept createConcept(int id, Locale locale) {
+		Concept result = new Concept();
+		result.setConceptId(id);
 		Locale desiredLocale;
-		if (locale == null)
+		if (locale == null) {
 			desiredLocale = Context.getLocale();
-		else
+		} else {
 			desiredLocale = locale;
-		ConceptName shortName = createMockConceptName(1, desiredLocale, ConceptNameType.SHORT, false);
-		ConceptName fullySpecifiedName = createMockConceptName(2, desiredLocale, ConceptNameType.FULLY_SPECIFIED, false);
-		mockConcept.addName(fullySpecifiedName);
-		mockConcept.addName(shortName);
-		
-		return mockConcept;
+		}
+		result.addName(createConceptName(2, "intravenous", desiredLocale, ConceptNameType.FULLY_SPECIFIED, false));
+		result.addName(createConceptName(1, "IV", desiredLocale, ConceptNameType.SHORT, false));
+		return result;
 	}
 	
 	/**
 	 * Convenient factory method to create a populated Concept name.
 	 * 
-	 * @param conceptNameId id for the conceptName
-	 * @param locale for the conceptName
+	 * @param id id for the conceptName
+	 * @param locale the locale or context locale if null
 	 * @param conceptNameType the conceptNameType of the concept
 	 * @param isLocalePreferred if this name should be marked as preferred in its locale
 	 */
-	private ConceptName createMockConceptName(int conceptNameId, Locale locale, ConceptNameType conceptNameType,
+	private ConceptName createConceptName(int id, String name, Locale locale, ConceptNameType conceptNameType,
 	        Boolean isLocalePreferred) {
-		ConceptName mockConceptName = new ConceptName();
-		
-		mockConceptName.setConceptNameId(conceptNameId);
-		if (locale == null)
-			mockConceptName.setLocale(Context.getLocale());
-		else
-			mockConceptName.setLocale(locale);
-		mockConceptName.setConceptNameType(conceptNameType);
-		mockConceptName.setLocalePreferred(isLocalePreferred);
-		mockConceptName.setName(nameGenerator.generate());
-		
-		return mockConceptName;
+		ConceptName result = new ConceptName();
+		result.setConceptNameId(id);
+		result.setName(name);
+		if (locale == null) {
+			result.setLocale(Context.getLocale());
+		} else {
+			result.setLocale(locale);
+		}
+		result.setConceptNameType(conceptNameType);
+		result.setLocalePreferred(isLocalePreferred);
+		return result;
 	}
 	
 	/**
@@ -1029,9 +1012,10 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Locale localeToSearch = new Locale("en", "UK");
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("Test Concept", locale));
-		Assert.assertEquals((concept.getName(locale, false).toString()), (concept.getName(localeToSearch, false).toString()));
+		Assert.assertEquals((concept.getName(locale, false).toString()),
+		    (concept.getName(localeToSearch, false).toString()));
 	}
-
+	
 	/**
 	 * @see Concept#getName()
 	 */
@@ -1043,6 +1027,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		concept.addName(new ConceptName("Test Concept", locale));
 		Assert.assertNotNull((concept.getName(localeToSearch, false)));
 	}
+	
 	/**
 	 * @see Concept#getDescriptions()
 	 */
@@ -1053,36 +1038,33 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(c.getDescriptions().isEmpty());
 		Assert.assertNotNull(c.getDescriptions());
 	}
-
+	
 	/**
 	 * @see Concept#hasName(String, Locale)
 	 */
 	@Test
-	public void hasName_shouldReturnFalseIfNameIsNull()
-	{
+	public void hasName_shouldReturnFalseIfNameIsNull() {
 		Concept concept = new Concept();
-		concept.addName(new ConceptName("Test Concept", new Locale("en"))) ;
+		concept.addName(new ConceptName("Test Concept", new Locale("en")));
 		Locale localeToSearch = new Locale("en", "UK");
 		Assert.assertFalse(concept.hasName(null, localeToSearch));
 	}
-
+	
 	/**
 	 * @see Concept#hasName(String, Locale)
 	 */
 	@Test
-	public void hasName_shouldReturnTrueIfLocaleIsNullButNameExists()
-	{
+	public void hasName_shouldReturnTrueIfLocaleIsNullButNameExists() {
 		Concept concept = new Concept();
-		concept.addName(new ConceptName("Test Concept", new Locale("en"))) ;
+		concept.addName(new ConceptName("Test Concept", new Locale("en")));
 		Assert.assertTrue(concept.hasName("Test Concept", null));
 	}
-
+	
 	/**
 	 * @see Concept#hasName(String, Locale)
 	 */
 	@Test
-	public void hasName_shouldReturnFalseIfLocaleIsNullButNameDoesNotExist()
-	{
+	public void hasName_shouldReturnFalseIfLocaleIsNullButNameDoesNotExist() {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("Test Concept", new Locale("en")));
 		Assert.assertFalse(concept.hasName("Unknown concept", null));
@@ -1107,7 +1089,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(descriptions.contains(c2));
 		Assert.assertEquals(1, descriptions.size());
 	}
-
+	
 	/**
 	 * @see Concept#removeConceptMapping(ContentMap)
 	 */
@@ -1127,12 +1109,12 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(mappings.contains(c2));
 		Assert.assertEquals(1, mappings.size());
 	}
-
+	
 	/**
 	 * @see Concept#toString()
 	 */
 	@Test
-	public void toString_shouldReturnConceptIdIfPresentOrNull(){
+	public void toString_shouldReturnConceptIdIfPresentOrNull() {
 		Concept c = new Concept();
 		Assert.assertEquals("Concept #null", c.toString());
 		c.setId(2);
@@ -1140,13 +1122,13 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void findPossibleValues_shouldReturnListOfConceptsFromMatchingResults() throws Exception{
+	public void findPossibleValues_shouldReturnListOfConceptsFromMatchingResults() throws Exception {
 		Concept concept = new Concept(1);
 		concept.addName(new ConceptName("findPossibleValueTest", Context.getLocale()));
 		concept.addDescription(new ConceptDescription("en desc", Context.getLocale()));
 		concept.setDatatype(new ConceptDatatype(1));
 		concept.setConceptClass(new ConceptClass(1));
-
+		
 		List<Concept> expectedConcepts = new Vector<>();
 		
 		concept = Context.getConceptService().saveConcept(concept);
@@ -1177,9 +1159,9 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		concept.addSetMember(setMember2);
 		Concept setMember3 = new Concept(3);
 		concept.addSetMember(setMember3);
-		assertThat(concept.getSetMembers(),hasItem(setMember1));
-		assertThat(concept.getSetMembers(),hasItem(setMember2));
-		assertThat(concept.getSetMembers(),hasItem(setMember3));
-		assertThat(concept.getSetMembers().size(),is(3));
+		assertThat(concept.getSetMembers(), hasItem(setMember1));
+		assertThat(concept.getSetMembers(), hasItem(setMember2));
+		assertThat(concept.getSetMembers(), hasItem(setMember3));
+		assertThat(concept.getSetMembers().size(), is(3));
 	}
 }
