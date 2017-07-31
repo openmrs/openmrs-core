@@ -10,17 +10,34 @@
 package org.openmrs.messagesource;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
- *
+ * Tests {@link PresentationMessageMap}.
  */
 public class PresentationMessageMapTest {
+	
+	private static final PresentationMessage MESSAGE_EN = new PresentationMessage("uuid.not.unique", Locale.ENGLISH,
+	        "the uuid must be unique", "a uuid needs to be unique");
+	
+	private static final PresentationMessage MESSAGE_DE = new PresentationMessage("patient.name.required", Locale.GERMAN,
+	        "der patientenname ist verpflichtend", "der patientenname ist ein verpflichtendes feld");
+	
+	private static final String EXPECTED_MESSAGE_KEY = "right_locale";
+	
+	private PresentationMessageMap presentationMessages;
+	
+	@Before
+	public void setUp() {
+		presentationMessages = new PresentationMessageMap(Locale.ENGLISH);
+	}
 	
 	/**
 	 * PresentationMessageMap should not add PresentationMessages which are not from the same locale
@@ -30,11 +47,12 @@ public class PresentationMessageMapTest {
 	 */
 	@Test
 	public void put_shouldShouldIgnoreNonMatchingLocaleMessages() {
-		PresentationMessageMap testPmm = new PresentationMessageMap(Locale.ENGLISH);
-		testPmm.put("right_locale", MockPresentationMessage.createMockPresentationMessage("en"));
-		testPmm.put("wrong_locale", MockPresentationMessage.createMockPresentationMessage(Locale.GERMAN));
 		
-		assertEquals(1, testPmm.size());
+		presentationMessages.put(EXPECTED_MESSAGE_KEY, MESSAGE_EN);
+		presentationMessages.put("wrong_locale", MESSAGE_DE);
+		
+		assertEquals(1, presentationMessages.size());
+		assertTrue(presentationMessages.containsKey(EXPECTED_MESSAGE_KEY));
 	}
 	
 	/**
@@ -45,14 +63,14 @@ public class PresentationMessageMapTest {
 	 */
 	@Test
 	public void putAll_shouldFilterOutNonMatchingLocaleMessagesFromBatchAdd() {
-		Map<String, PresentationMessage> mockMessageMap = new HashMap<String, PresentationMessage>();
-		mockMessageMap.put("right_locale", MockPresentationMessage.createMockPresentationMessage("en"));
-		mockMessageMap.put("wrong_locale", MockPresentationMessage.createMockPresentationMessage(Locale.GERMAN));
+		Map<String, PresentationMessage> messageMap = new HashMap<String, PresentationMessage>();
+		messageMap.put(EXPECTED_MESSAGE_KEY, MESSAGE_EN);
+		messageMap.put("wrong_locale", MESSAGE_DE);
 		
-		PresentationMessageMap testPmm = new PresentationMessageMap(Locale.ENGLISH);
-		testPmm.putAll(mockMessageMap);
+		presentationMessages.putAll(messageMap);
 		
-		assertEquals(1, testPmm.size());
+		assertEquals(1, presentationMessages.size());
+		assertTrue(presentationMessages.containsKey(EXPECTED_MESSAGE_KEY));
 	}
 	
 }

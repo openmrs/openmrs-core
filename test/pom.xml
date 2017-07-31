@@ -35,10 +35,6 @@
          <artifactId>junit</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.databene</groupId>
-         <artifactId>databene-benerator</artifactId>
-      </dependency>
-      <dependency>
          <groupId>org.dbunit</groupId>
          <artifactId>dbunit</artifactId>
       </dependency>
