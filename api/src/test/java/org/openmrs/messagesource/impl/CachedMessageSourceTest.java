@@ -14,11 +14,10 @@ import static org.junit.Assert.assertEquals;
 import java.util.Locale;
 
 import org.junit.Test;
-import org.openmrs.messagesource.MockPresentationMessage;
 import org.openmrs.messagesource.PresentationMessage;
 
 /**
- *
+ * Tests {@link CachedMessageSource}.
  */
 public class CachedMessageSourceTest {
 	
@@ -29,12 +28,15 @@ public class CachedMessageSourceTest {
 	 */
 	@Test
 	public void getLocales_shouldShouldBeAbleToContainMultipleLocales() {
-		CachedMessageSource testPmc = new CachedMessageSource();
-		testPmc.addPresentation(MockPresentationMessage.createMockPresentationMessage("en"));
-		testPmc.addPresentation(MockPresentationMessage.createMockPresentationMessage("fr"));
-		testPmc.addPresentation(MockPresentationMessage.createMockPresentationMessage("pt"));
+		CachedMessageSource cachedMessages = new CachedMessageSource();
+		cachedMessages.addPresentation(new PresentationMessage("uuid.not.unique", Locale.ENGLISH, "the uuid must be unique",
+		        "a uuid needs to be unique"));
+		cachedMessages.addPresentation(new PresentationMessage("patient.name.required", Locale.GERMAN,
+		        "der patientenname ist verpflichtend", "der patientenname ist ein verpflichtendes feld"));
+		cachedMessages.addPresentation(new PresentationMessage("patient.address.required", Locale.FRENCH,
+		        "l'adresse du patient est obligatoire", "l'adresse du patient est obligatoire"));
 		
-		assertEquals(3, testPmc.getLocales().size());
+		assertEquals(3, cachedMessages.getLocales().size());
 	}
 	
 	/**
@@ -45,13 +47,14 @@ public class CachedMessageSourceTest {
 	 */
 	@Test
 	public void getPresentation_shouldMatchGetMessageWithPresentationMessage() {
-		CachedMessageSource testPmc = new CachedMessageSource();
+		CachedMessageSource cachedMessages = new CachedMessageSource();
 		
-		MockPresentationMessage mockPM = MockPresentationMessage.createMockPresentationMessage();
-		testPmc.addPresentation(mockPM);
+		PresentationMessage message = new PresentationMessage("uuid.not.unique", Locale.ENGLISH, "the uuid must be unique",
+		        "a uuid needs to be unique");
+		cachedMessages.addPresentation(message);
 		
-		String valueAsString = testPmc.getMessage(mockPM.getCode(), null, mockPM.getLocale());
-		PresentationMessage valueAsPM = testPmc.getPresentation(mockPM.getCode(), mockPM.getLocale());
+		String valueAsString = cachedMessages.getMessage(message.getCode(), null, message.getLocale());
+		PresentationMessage valueAsPM = cachedMessages.getPresentation(message.getCode(), message.getLocale());
 		
 		assertEquals(valueAsString, valueAsPM.getMessage());
 	}
