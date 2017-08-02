@@ -92,7 +92,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#saveEncounter(org.openmrs.Encounter)
 	 */
 
-	//Add a new private method
+	// if authenticated user is not supposed to edit encounter of certain type
 	private void failIfDeniedToEdit(Encounter encounter){
 		if (!canEditEncounter(encounter, null)) {
 			throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
@@ -100,7 +100,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 	}
 
-	//Add a new private method
+	//If new encounter, try to assign a visit using the registered visit assignment handler.
 	private void createVisitForNewEncounter(Encounter encounter){
 		if (encounter.getEncounterId() == null) {
 
@@ -119,7 +119,16 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 
 	}
 
+	private void requirePrivilege(Encounter encounter){
+		if (encounter.getEncounterId() == null) {
+			isNewEncounter = true;
+			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
+		} else {
+			Context.requirePrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+		}
 
+	}
+	boolean isNewEncounter = false;
 	@Override
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
 		
@@ -129,18 +138,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		//If new encounter, try to assign a visit using the registered visit assignment handler.
 		createVisitForNewEncounter(encounter);
 		
-		boolean isNewEncounter = false;
+		//boolean isNewEncounter = false;
 		Date newDate = encounter.getEncounterDatetime();
 		Date originalDate = null;
 		Location newLocation = encounter.getLocation();
 		Location originalLocation = null;
 		// check permissions
-		if (encounter.getEncounterId() == null) {
-			isNewEncounter = true;
-			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
-		} else {
-			Context.requirePrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
-		}
+		requirePrivilege(encounter);
 		
 		// This must be done after setting dateCreated etc on the obs because
 		// of the way the ORM tools flush things and check for nullity
