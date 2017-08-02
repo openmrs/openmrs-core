@@ -91,14 +91,20 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#saveEncounter(org.openmrs.Encounter)
 	 */
+
+	//Add a new private method
+	private void failIfDeniedToEdit(Encounter encounter){
+		if (!canEditEncounter(encounter, null)) {
+			throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
+					.getEditPrivilege() });
+		}
+	}
+
 	@Override
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
 		
 		// if authenticated user is not supposed to edit encounter of certain type
-		if (!canEditEncounter(encounter, null)) {
-			throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
-			        .getEditPrivilege() });
-		}
+		failIfDeniedToEdit(encounter);
 		
 		//If new encounter, try to assign a visit using the registered visit assignment handler.
 		if (encounter.getEncounterId() == null) {
