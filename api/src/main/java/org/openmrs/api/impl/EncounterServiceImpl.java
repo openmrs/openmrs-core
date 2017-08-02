@@ -100,6 +100,26 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 	}
 
+	//Add a new private method
+	private void createVisitForNewEncounter(Encounter encounter){
+		if (encounter.getEncounterId() == null) {
+
+			//Am using Context.getEncounterService().getActiveEncounterVisitHandler() instead of just
+			//getActiveEncounterVisitHandler() for modules which may want to AOP around this call.
+			EncounterVisitHandler encounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
+			if (encounterVisitHandler != null) {
+				encounterVisitHandler.beforeCreateEncounter(encounter);
+
+				//If we have been assigned a new visit, persist it.
+				if (encounter.getVisit() != null && encounter.getVisit().getVisitId() == null) {
+					Context.getVisitService().saveVisit(encounter.getVisit());
+				}
+			}
+		}
+
+	}
+
+
 	@Override
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
 		
@@ -107,20 +127,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		failIfDeniedToEdit(encounter);
 		
 		//If new encounter, try to assign a visit using the registered visit assignment handler.
-		if (encounter.getEncounterId() == null) {
-			
-			//Am using Context.getEncounterService().getActiveEncounterVisitHandler() instead of just
-			//getActiveEncounterVisitHandler() for modules which may want to AOP around this call.
-			EncounterVisitHandler encounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
-			if (encounterVisitHandler != null) {
-				encounterVisitHandler.beforeCreateEncounter(encounter);
-				
-				//If we have been assigned a new visit, persist it.
-				if (encounter.getVisit() != null && encounter.getVisit().getVisitId() == null) {
-					Context.getVisitService().saveVisit(encounter.getVisit());
-				}
-			}
-		}
+		createVisitForNewEncounter(encounter);
 		
 		boolean isNewEncounter = false;
 		Date newDate = encounter.getEncounterDatetime();
