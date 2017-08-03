@@ -128,6 +128,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 
 	}
+
 	boolean isNewEncounter = false;
 	@Override
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
@@ -137,12 +138,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		//If new encounter, try to assign a visit using the registered visit assignment handler.
 		createVisitForNewEncounter(encounter);
-		
-		//boolean isNewEncounter = false;
-		Date newDate = encounter.getEncounterDatetime();
-		Date originalDate = null;
-		Location newLocation = encounter.getLocation();
-		Location originalLocation = null;
+
 		// check permissions
 		requirePrivilege(encounter);
 		
@@ -152,7 +148,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		// orig date
 		// after the save
 		Patient p = encounter.getPatient();
-		
+
+		Date newDate = encounter.getEncounterDatetime();
+		Date originalDate = null;
+		Location newLocation = encounter.getLocation();
+		Location originalLocation = null;
 		if (!isNewEncounter) {
 			// fetch the datetime from the database prior to saving for this
 			// encounter
