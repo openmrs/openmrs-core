@@ -55,7 +55,9 @@ public class DefaultMessageSourceServiceImpl implements MessageSourceService {
 	
 	private DefaultMessageSourceServiceImpl() {
 		InputStream stream = OpenmrsClassLoader.getInstance().getResourceAsStream("messages.properties");
-		OpenmrsUtil.loadProperties(props, stream);
+		if (stream != null) {
+			OpenmrsUtil.loadProperties(props, stream);
+		}
 	}
 	
 	@Override
