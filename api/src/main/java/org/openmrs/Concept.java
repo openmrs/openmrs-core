@@ -1022,7 +1022,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			}
 			if (!names.contains(conceptName)) {
 				if (getNames().isEmpty()
-				        && !OpenmrsUtil.nullSafeEquals(conceptName.getConceptNameType(), ConceptNameType.FULLY_SPECIFIED)) {
+				        && !ConceptNameType.FULLY_SPECIFIED.equals(conceptName.getConceptNameType())) {
 					conceptName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 				} else {
 					if (conceptName.isPreferred() && !conceptName.isIndexTerm() && conceptName.getLocale() != null) {
