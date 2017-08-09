@@ -31,7 +31,6 @@ import org.hibernate.search.annotations.TokenFilterDef;
 import org.hibernate.search.annotations.TokenizerDef;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.db.hibernate.search.bridge.LocaleFieldBridge;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * ConceptName is the real world term used to express a Concept within the idiom of a particular
@@ -498,7 +497,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @since Version 1.7
 	 */
 	public Boolean isFullySpecifiedName() {
-		return OpenmrsUtil.nullSafeEquals(getConceptNameType(), ConceptNameType.FULLY_SPECIFIED);
+		return ConceptNameType.FULLY_SPECIFIED.equals(getConceptNameType());
 	}
 	
 	/**
@@ -507,7 +506,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @return true if the name is marked as a short name, otherwise false
 	 */
 	public Boolean isShort() {
-		return OpenmrsUtil.nullSafeEquals(getConceptNameType(), ConceptNameType.SHORT);
+		return ConceptNameType.SHORT.equals(getConceptNameType());
 	}
 	
 	/**
@@ -517,7 +516,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @since Version 1.7
 	 */
 	public Boolean isIndexTerm() {
-		return OpenmrsUtil.nullSafeEquals(getConceptNameType(), ConceptNameType.INDEX_TERM);
+		return ConceptNameType.INDEX_TERM.equals(getConceptNameType());
 	}
 	
 	/**
