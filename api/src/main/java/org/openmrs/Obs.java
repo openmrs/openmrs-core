@@ -647,11 +647,13 @@ public class Obs extends BaseOpenmrsData {
 	 * @param valueBoolean the boolean value matching the boolean coded concept to set to
 	 */
 	public void setValueBoolean(Boolean valueBoolean) {
-		if (valueBoolean != null && getConcept() != null && getConcept().getDatatype().isBoolean()) {
-			setValueCoded(valueBoolean.booleanValue() ? Context.getConceptService().getTrueConcept() : Context
-			        .getConceptService().getFalseConcept());
-		} else if (valueBoolean == null) {
-			setValueCoded(null);
+		if (getConcept() != null && getConcept().getDatatype() != null && getConcept().getDatatype().isBoolean()) {
+			if (valueBoolean != null) {
+				setValueCoded(valueBoolean.booleanValue() ? Context.getConceptService().getTrueConcept() : Context
+				        .getConceptService().getFalseConcept());
+			} else {
+				setValueCoded(null);
+			}
 		}
 	}
 	
