@@ -228,21 +228,6 @@
 				<version>${springVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>asm</groupId>
-				<artifactId>asm</artifactId>
-				<version>2.2.3</version>
-			</dependency>
-			<dependency>
-				<groupId>asm</groupId>
-				<artifactId>asm-commons</artifactId>
-				<version>2.2.3</version>
-			</dependency>
-			<dependency>
-				<groupId>asm</groupId>
-				<artifactId>asm-util</artifactId>
-				<version>2.2.3</version>
-			</dependency>
-			<dependency>
 				<groupId>cglib</groupId>
 				<artifactId>cglib-nodep</artifactId>
 				<version>2.2</version>
