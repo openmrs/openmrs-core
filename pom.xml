@@ -228,11 +228,6 @@
 				<version>${springVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>cglib</groupId>
-				<artifactId>cglib-nodep</artifactId>
-				<version>2.2</version>
-			</dependency>
-			<dependency>
 				<groupId>org.javassist</groupId>
 				<artifactId>javassist</artifactId>
 				<version>3.19.0-GA</version>
