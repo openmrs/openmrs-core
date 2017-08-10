@@ -88,10 +88,6 @@
          <artifactId>spring-context-support</artifactId>
       </dependency>
       <dependency>
-         <groupId>cglib</groupId>
-         <artifactId>cglib-nodep</artifactId>
-      </dependency>
-      <dependency>
          <groupId>ca.uhn.hapi</groupId>
          <artifactId>hapi-base</artifactId>
          <exclusions>
