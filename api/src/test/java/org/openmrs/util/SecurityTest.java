@@ -9,7 +9,9 @@
  */
 package org.openmrs.util;
 
-import org.apache.xerces.impl.dv.util.Base64;
+import java.util.Base64;
+import java.util.Base64.Decoder;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.util.StringUtils;
@@ -73,9 +75,10 @@ public class SecurityTest {
 	 */
 	@Test
 	public void decrypt_shouldDecryptShortAndLongText() {
+		final Decoder base64 = Base64.getDecoder();
 		// use specific IV and Key
-		byte[] initVector = Base64.decode("9wyBUNglFCRVSUhMfsTa3Q==");
-		byte[] secretKey = Base64.decode("dTfyELRrAICGDwzjHDjuhw==");
+		byte[] initVector = base64.decode("9wyBUNglFCRVSUhMfsTa3Q==");
+		byte[] secretKey = base64.decode("dTfyELRrAICGDwzjHDjuhw==");
 		
 		// perform decryption
 		String expected = "this is fantasmic";

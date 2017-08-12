@@ -22,6 +22,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.util.Base64;
+import java.util.Base64.Encoder;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -29,7 +31,6 @@ import java.util.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.xerces.impl.dv.util.Base64;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -252,41 +253,51 @@ public class TestInstallUtil {
 	}
 	
 	/**
-	 * @param urlString
+	 * @param url
 	 * @param openmrsUsername
 	 * @param openmrsPassword
 	 * @return input stream
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	protected static InputStream getResourceInputStream(String urlString, String openmrsUsername, String openmrsPassword)
+	protected static InputStream getResourceInputStream(String url, String openmrsUsername, String openmrsPassword)
 	        throws MalformedURLException, IOException, APIException {
 		
-		HttpURLConnection urlConnection = (HttpURLConnection) new URL(urlString).openConnection();
-		urlConnection.setRequestMethod("POST");
-		urlConnection.setConnectTimeout(15000);
-		urlConnection.setUseCaches(false);
-		urlConnection.setDoOutput(true);
-		
-		String requestParams = "username=" + Base64.encode(openmrsUsername.getBytes(Charset.forName("UTF-8")))
-		        + "&password=" + Base64.encode(openmrsPassword.getBytes(Charset.forName("UTF-8")));
-		
-		OutputStreamWriter out = new OutputStreamWriter(urlConnection.getOutputStream());
-		out.write(requestParams);
+		HttpURLConnection connection = createConnection(url);
+		OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
+		out.write(encodeCredentials(openmrsUsername, openmrsPassword));
 		out.flush();
 		out.close();
 		
-		if (log.isInfoEnabled()) {
-			log.info("Http response message:" + urlConnection.getResponseMessage() + ", Code:"
-			        + urlConnection.getResponseCode());
-		}
+		log.info("Http response message: {}, Code: {}", connection.getResponseMessage(), connection.getResponseCode());
 		
-		if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+		if (connection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
 			throw new APIAuthenticationException("Invalid username or password");
-		} else if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
+		} else if (connection.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
 			throw new APIException("error.occurred.on.remote.server", (Object[]) null);
 		}
 		
-		return urlConnection.getInputStream();
+		return connection.getInputStream();
+	}
+
+	private static HttpURLConnection createConnection(String url)
+	        throws IOException, MalformedURLException {
+		final HttpURLConnection result = (HttpURLConnection) new URL(url).openConnection();
+		result.setRequestMethod("POST");
+		result.setConnectTimeout(15000);
+		result.setUseCaches(false);
+		result.setDoOutput(true);
+		return result;
+	}
+
+	private static String encodeCredentials(String openmrsUsername, String openmrsPassword) {
+		final StringBuilder result = new StringBuilder();
+		result.append("username=");
+		final Encoder encoder = Base64.getEncoder();
+		final Charset utf8 = Charset.forName("UTF-8");
+		result.append(new String(encoder.encode(openmrsUsername.getBytes(utf8)), utf8));
+		result.append("&password=");
+		result.append(new String(encoder.encode(openmrsPassword.getBytes(utf8)), utf8));
+		return result.toString();
 	}
 }
