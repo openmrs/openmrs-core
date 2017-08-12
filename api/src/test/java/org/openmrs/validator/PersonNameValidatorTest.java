@@ -35,6 +35,12 @@ import org.springframework.validation.MapBindingResult;
  */
 public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	
+	private static String STRING_OF_50 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+	
+	private static String STRING_OF_51 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+	
+	private static String STRING_OF_256 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+	
 	private PersonNameValidator validator;
 	
 	private PersonName personName;
@@ -198,8 +204,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		personName.setGivenName("givenName");
 		personName.setFamilyName("familyName");
-		personName
-		        .setPrefix("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"); // 100 characters long
+		personName.setPrefix(STRING_OF_51);
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
@@ -238,8 +243,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfPersonNameGivenNameIsTooLong() {
 		
-		personName
-		        .setGivenName("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"); // 100 characters long
+		personName.setGivenName(STRING_OF_51);
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
@@ -252,7 +256,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldPassValidationIfPersonNameGivenNameIsExactlyMaxLength() {
 		
-		personName.setGivenName("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"); // exactly 50 characters long
+		personName.setGivenName(STRING_OF_50);
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
@@ -278,8 +282,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfPersonNameMiddleNameIsTooLong() {
 		
-		personName
-		        .setMiddleName("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"); // 100 characters long
+		personName.setMiddleName(STRING_OF_51);
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
@@ -320,8 +323,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		personName.setGivenName("givenName");
 		personName.setFamilyName("familyName");
-		personName
-		        .setFamilyNamePrefix("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"); // 100 characters long
+		personName.setFamilyNamePrefix(STRING_OF_51);
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
@@ -360,8 +362,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfPersonNameFamilyNameIsTooLong() {
 		
-		personName
-		        .setFamilyName("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"); // 100 characters long
+		personName.setFamilyName(STRING_OF_51);
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
@@ -400,8 +401,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfPersonNameFamilyName2IsTooLong() {
 		
-		personName
-		        .setFamilyName2("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"); // 100 characters long
+		personName.setFamilyName2(STRING_OF_51);
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
@@ -442,8 +442,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		personName.setGivenName("givenName");
 		personName.setFamilyName("familyName");
-		personName
-		        .setFamilyNameSuffix("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"); // 100 characters long
+		personName.setFamilyNameSuffix(STRING_OF_51);
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
@@ -456,7 +455,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyNameSuffixIsExactlyMaxLength() {
 		
-		personName.setFamilyNameSuffix("12345678901234567890123456789012345678901234567890"); // exactly 50 characters long
+		personName.setFamilyNameSuffix(STRING_OF_50);
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
@@ -484,8 +483,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		
 		personName.setGivenName("givenName");
 		personName.setFamilyName("familyName");
-		personName
-		        .setDegree("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"); // 100 characters long
+		personName.setDegree(STRING_OF_51);
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
@@ -498,7 +496,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldPassValidationIfPersonNameDegreeIsExactlyMaxLength() {
 		
-		personName.setDegree("12345678901234567890123456789012345678901234567890"); // exactly 50 characters long
+		personName.setDegree(STRING_OF_50);
 		
 		validator.validatePersonName(personName, errors, false, true);
 		
@@ -709,17 +707,16 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		
-		personName.setPrefix("too long text too long text too long text too long text");
-		personName.setGivenName("too long text too long text too long text too long text");
-		personName.setMiddleName("too long text too long text too long text too long text");
-		personName.setFamilyName("too long text too long text too long text too long text");
-		personName.setFamilyNamePrefix("too long text too long text too long text too long text");
-		personName.setFamilyName("too long text too long text too long text too long text");
-		personName.setFamilyName2("too long text too long text too long text too long text");
-		personName.setFamilyNameSuffix("too long text too long text too long text too long text");
-		personName.setDegree("too long text too long text too long text too long text");
-		personName
-		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		personName.setPrefix(STRING_OF_51);
+		personName.setGivenName(STRING_OF_51);
+		personName.setMiddleName(STRING_OF_51);
+		personName.setFamilyName(STRING_OF_51);
+		personName.setFamilyNamePrefix(STRING_OF_51);
+		personName.setFamilyName(STRING_OF_51);
+		personName.setFamilyName2(STRING_OF_51);
+		personName.setFamilyNameSuffix(STRING_OF_51);
+		personName.setDegree(STRING_OF_51);
+		personName.setVoidReason(STRING_OF_256);
 		
 		validator.validate(personName, errors);
 		
