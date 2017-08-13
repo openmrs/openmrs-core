@@ -14,6 +14,7 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Random;
 
 import javax.crypto.Cipher;
@@ -22,7 +23,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.xerces.impl.dv.util.Base64;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
@@ -227,11 +227,13 @@ public class Security {
 		IvParameterSpec initVectorSpec = new IvParameterSpec(initVector);
 		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
 		byte[] encrypted;
+		String result;
 		
 		try {
 			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
 			cipher.init(Cipher.ENCRYPT_MODE, secret, initVectorSpec);
 			encrypted = cipher.doFinal(text.getBytes(encoding));
+			result = new String(Base64.getEncoder().encode(encrypted), encoding);
 		}
 		catch (GeneralSecurityException e) {
 			throw new APIException("could.not.encrypt.text", null, e);
@@ -240,7 +242,7 @@ public class Security {
 			throw new APIException("system.cannot.find.encoding", new Object[] { encoding }, e);
 		}
 		
-		return Base64.encode(encrypted);
+		return result;
 	}
 	
 	/**
@@ -275,7 +277,7 @@ public class Security {
 		try {
 			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
 			cipher.init(Cipher.DECRYPT_MODE, secret, initVectorSpec);
-			byte[] original = cipher.doFinal(Base64.decode(text));
+			byte[] original = cipher.doFinal(Base64.getDecoder().decode(text));
 			decrypted = new String(original, encoding);
 		}
 		catch (GeneralSecurityException e) {
@@ -311,7 +313,7 @@ public class Security {
 		    OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY, OpenmrsConstants.ENCRYPTION_VECTOR_DEFAULT);
 		
 		if (StringUtils.hasText(initVectorText)) {
-			return Base64.decode(initVectorText);
+			return Base64.getDecoder().decode(initVectorText);
 		}
 		
 		throw new APIException("no.encryption.initialization.vector.found", (Object[]) null);
@@ -343,7 +345,7 @@ public class Security {
 		    OpenmrsConstants.ENCRYPTION_KEY_DEFAULT);
 		
 		if (StringUtils.hasText(keyText)) {
-			return Base64.decode(keyText);
+			return Base64.getDecoder().decode(keyText);
 		}
 		
 		throw new APIException("no.encryption.secret.key.found", (Object[]) null);
