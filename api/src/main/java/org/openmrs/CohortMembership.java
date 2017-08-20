@@ -9,11 +9,12 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
 
 /**
  * @since 2.1.0
@@ -44,7 +45,7 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 	}
 	
 	public CohortMembership(Integer patientId) {
-		this(patientId, new Date());
+		this(patientId, null);
 	}
 	
 	/**
@@ -54,7 +55,7 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 	 */
 	public boolean isActive(Date asOfDate) {
 		Date date = asOfDate == null ? new Date() : asOfDate;
-		return !this.getVoided() && OpenmrsUtil.compare(startDate, date) <= 0
+		return !this.getVoided() && OpenmrsUtil.compareWithNullAsEarliest(startDate, date) <= 0
 				&& OpenmrsUtil.compareWithNullAsLatest(date, endDate) <= 0;
 	}
 	
@@ -143,9 +144,27 @@ public class CohortMembership extends BaseOpenmrsData implements Comparable<Coho
 		if (ret == 0) {
 			ret = this.getPatientId().compareTo(o.getPatientId());
 		}
-		if (ret == 0) {
-			ret = this.getUuid().compareTo(o.getUuid());
-		}
 		return ret;
 	}
+
+    @Override
+    public int hashCode() {
+	    HashCodeBuilder b = new HashCodeBuilder();
+        b.append(getPatientId());
+	    b.append(getStartDate());
+	    b.append(getEndDate());
+	    return b.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean ret = (obj instanceof CohortMembership);
+        if (ret) {
+            CohortMembership that = (CohortMembership) obj;
+            ret = ret && OpenmrsUtil.nullSafeEquals(this.getPatientId(), that.getPatientId());
+            ret = ret && OpenmrsUtil.nullSafeEquals(this.getStartDate(), that.getStartDate());
+            ret = ret && OpenmrsUtil.nullSafeEquals(this.getEndDate(), that.getEndDate());
+        }
+        return ret;
+    }
 }

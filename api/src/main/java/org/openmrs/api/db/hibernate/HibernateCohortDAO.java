@@ -63,15 +63,18 @@ public class HibernateCohortDAO implements CohortDAO {
 	@SuppressWarnings("unchecked")
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId, boolean includeVoided,
 	                                                  Date asOfDate) throws DAOException {
-		Disjunction orEndDate = Restrictions.disjunction();
-		orEndDate.add(Restrictions.isNull("m.endDate"));
-		orEndDate.add(Restrictions.gt("m.endDate", asOfDate));
 
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
 		criteria.createAlias("memberships", "m");
 		if (asOfDate != null) {
-			criteria.add(Restrictions.le("m.startDate", asOfDate));
-			criteria.add(orEndDate);
+            Disjunction orStartDate = Restrictions.disjunction();
+            orStartDate.add(Restrictions.isNull("m.startDate"));
+            orStartDate.add(Restrictions.le("m.startDate", asOfDate));
+			criteria.add(orStartDate);
+            Disjunction orEndDate = Restrictions.disjunction();
+            orEndDate.add(Restrictions.isNull("m.endDate"));
+            orEndDate.add(Restrictions.gt("m.endDate", asOfDate));
+            criteria.add(orEndDate);
 		}
 		criteria.add(Restrictions.eq("m.patientId", patientId));
 		criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);

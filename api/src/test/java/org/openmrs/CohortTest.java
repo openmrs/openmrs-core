@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -147,4 +148,19 @@ public class CohortTest {
 			assertTrue(m.getVoided() && m.getEndDate() != null);
 		});
 	}
+
+    @Test
+    public void intersect_shouldRetainMembershipsForTheSamePatient() throws Exception {
+        Cohort cohortOne = new Cohort();
+        cohortOne.addMember(7);
+        cohortOne.addMember(8);
+        cohortOne.addMember(9);
+
+        Cohort cohortTwo = new Cohort();
+        cohortTwo.addMember(7);
+
+        Cohort cohortIntersect = Cohort.intersect(cohortOne, cohortTwo);
+        Assert.assertEquals(1, cohortIntersect.size());
+        assertTrue(cohortIntersect.contains(7));
+    }
 }
