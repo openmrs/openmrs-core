@@ -468,13 +468,14 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ImageIO.write(image, "gif", createdFile);
 		// end create gif file
 		ObsService os = Context.getObsService();
-		
-		Obs complexObs = os.getComplexObs(44, ComplexObsHandler.RAW_VIEW);
+
+		Obs complexObs = os.getObs(44);
 		
 		Assert.assertNotNull(complexObs);
 		Assert.assertTrue(complexObs.isComplex());
 		Assert.assertNotNull(complexObs.getValueComplex());
 		Assert.assertNotNull(complexObs.getComplexData());
+		Assert.assertEquals(complexObs, os.getObsByUuid(complexObs.getUuid()));
 		// delete gif file
 		// we always have to delete this inside the same unit test because it is
 		// outside the
