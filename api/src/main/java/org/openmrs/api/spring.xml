@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="service_context" class="org.openmrs.api.context.ServiceContext">
+
+    </bean>
+
+    <bean id="Daemon" class="org.openmrs.api.context.Daemon">
+
+    </bean>
+
+
+</beans>

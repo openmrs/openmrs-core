@@ -78,6 +78,8 @@ import org.openmrs.validator.ValidateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.Advisor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to authenticate to the database and
@@ -104,10 +106,9 @@ import org.springframework.aop.Advisor;
  * </ol>
  * <br>
  * Example usage:
- *
- * <pre>
+
  * 	public static void main(String[] args) {
- * 		Context.startup("jdbc:mysql://localhost:3306/db-name?autoReconnect=true", "openmrs-db-user", "3jknfjkn33ijt", new Properties());
+ * 		Context.startup("jdbc:mysql://localhost:8080/db-name?autoReconnect=true", "openmrs-db-user", "3jknfjkn33ijt", new Properties());
  * 		try {
  * 			Context.openSession();
  * 			Context.authenticate("admin", "test");
@@ -244,6 +245,7 @@ public class Context {
 	 *
 	 * @return the current ServiceContext
 	 */
+	/*
 	static ServiceContext getServiceContext() {
 		if (serviceContext == null) {
 			log.error("serviceContext is null.  Creating new ServiceContext()");
@@ -255,7 +257,7 @@ public class Context {
 		}
 
 		return ServiceContext.getInstance();
-	}
+	}*/
 
 	/**
 	 * Sets the service context.
@@ -562,6 +564,24 @@ public class Context {
 	 *
 	 * @return the ServiceContext
 	 */
+
+	private static   ServiceContext getServiceContext(){
+		ApplicationContext s_context = new ClassPathXmlApplicationContext("spring.xml");
+		ServiceContext obj = null;
+
+		if (serviceContext == null) {
+			log.error("serviceContext is null.  Creating new ServiceContext()");
+			obj = (ServiceContext) s_context.getBean("service_context");
+		}
+
+		if (log.isTraceEnabled()) {
+			log.trace("serviceContext: " + serviceContext);
+		}
+
+		return obj;  // return the ServiceContext object using the dependency injection
+	}
+
+
 	private static MessageSender getMessageSender() {
 		return new MailMessageSender(getMailSession());
 	}
