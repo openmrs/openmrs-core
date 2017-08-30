@@ -11,6 +11,7 @@
 
 -->
 <dataset>
+    <global_property property="obs.complex_obs_dir" property_value="complex_obs"  uuid="192a1db0-114a-42a8-91e5-705613b0fe46"/>
     <concept concept_id="3000" retired="false" datatype_id="13" class_id="11" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="19ee3170-68ab-4444-bd76-0810271c1b76"/>
     <concept_name concept_id="3000" name="Consultation Image" locale="en_GB" creator="1" date_created="2015-01-16 13:52:53.0" concept_name_id="2139" concept_name_type="SHORT" locale_preferred="0" voided="false" uuid="ef7ac658-3136-443c-2924-4617aa535673"/>
     <concept_complex concept_id="3000" handler="ImageHandler" />

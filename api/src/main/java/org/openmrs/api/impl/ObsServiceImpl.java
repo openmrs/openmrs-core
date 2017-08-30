@@ -249,7 +249,11 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Transactional(readOnly = true)
 	public Obs getObs(Integer obsId) throws APIException {
-		return dao.getObs(obsId);
+		Obs obs = dao.getObs(obsId);
+		if (obs != null && obs.isComplex()) {
+			return getHandler(obs).getObs(obs,ComplexObsHandler.RAW_VIEW);
+		}
+		return obs;
 	}
 	
 	/**
@@ -458,7 +462,11 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Transactional(readOnly = true)
 	public Obs getObsByUuid(String uuid) throws APIException {
-		return dao.getObsByUuid(uuid);
+		Obs obsByUuid = dao.getObsByUuid(uuid);
+		if (obsByUuid != null && obsByUuid.isComplex()) {
+			return getHandler(obsByUuid).getObs(obsByUuid,ComplexObsHandler.RAW_VIEW);
+		}
+		return obsByUuid;
 	}
 	
 	/**
