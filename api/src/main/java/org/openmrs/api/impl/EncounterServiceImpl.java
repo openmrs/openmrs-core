@@ -65,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class EncounterServiceImpl extends BaseOpenmrsService implements EncounterService {
 	
 	private EncounterDAO dao;
-	
+	boolean isNewEncounter = false;
 	/**
 	 * @see org.openmrs.api.EncounterService#setEncounterDAO(org.openmrs.api.db.EncounterDAO)
 	 */
@@ -94,7 +94,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 
 	// if authenticated user is not supposed to edit encounter of certain type
 	private void failIfDeniedToEdit(Encounter encounter){
-		if (!canEditEncounter(encounter, null)) {
+		if (!canEditEncounter(encounter, null)){
 			throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
 					.getEditPrivilege() });
 		}
@@ -102,12 +102,12 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 
 	//If new encounter, try to assign a visit using the registered visit assignment handler.
 	private void createVisitForNewEncounter(Encounter encounter){
-		if (encounter.getEncounterId() == null) {
+		if (encounter.getEncounterId() == null){
 
 			//Am using Context.getEncounterService().getActiveEncounterVisitHandler() instead of just
 			//getActiveEncounterVisitHandler() for modules which may want to AOP around this call.
 			EncounterVisitHandler encounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
-			if (encounterVisitHandler != null) {
+			if (encounterVisitHandler != null){
 				encounterVisitHandler.beforeCreateEncounter(encounter);
 
 				//If we have been assigned a new visit, persist it.
@@ -120,7 +120,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 
 	private void requirePrivilege(Encounter encounter){
-		if (encounter.getEncounterId() == null) {
+		if (encounter.getEncounterId() == null){
 			isNewEncounter = true;
 			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
 		} else {
@@ -129,7 +129,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 
 	}
 
-	boolean isNewEncounter = false;
+	
 	@Override
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
 		
