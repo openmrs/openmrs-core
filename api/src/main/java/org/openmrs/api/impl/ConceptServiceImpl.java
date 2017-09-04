@@ -98,7 +98,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public void setConceptDAO(ConceptDAO dao) {
 		this.dao = dao;
 	}
-		
+
 	/**
 	 * @see org.openmrs.api.ConceptService#saveConcept(org.openmrs.Concept)
 	 * @should return the concept with new conceptID if creating new concept
@@ -161,16 +161,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				nameInDB.setDateVoided(new Date());
 				nameInDB.setVoidedBy(Context.getAuthenticatedUser());
 				nameInDB.setVoidReason(Context.getMessageSourceService().getMessage("Concept.name.voidReason.nameChanged"));
-				
-				// Make the voided name a synonym, this would help to avoid
-				// having multiple fully specified or preferred
-				// names in a locale in case the name is unvoided
-				if (!nameInDB.isSynonym()) {
-					nameInDB.setConceptNameType(null);
-				}
-				if (nameInDB.getLocalePreferred()) {
-					nameInDB.setLocalePreferred(false);
-				}
+
+				makeVoidedNameSynonym(nameInDB);
+				makeLocaleNotPreferred(nameInDB);
 				
 				// create a new concept name from the matching cloned
 				// conceptName
@@ -182,10 +175,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			}
 		}
 		ensurePreferredNameForLocale(concept);
-
-		//See TRUNK-3337 for why we set changed by and date changed every time we save a concept.
-		concept.setDateChanged(new Date());
-		concept.setChangedBy(Context.getAuthenticatedUser());
+		logConceptChangedData(concept);
 		
 		// force isSet when concept has members
 		if (!concept.getSet() && (!concept.getSetMembers().isEmpty())) {
@@ -204,6 +194,21 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				}
 				map.setConceptMapType(defaultConceptMapType);
 			}
+		}
+	}
+
+	private void makeVoidedNameSynonym(ConceptName conceptName) {
+		// Helps to avoid having  multiple fully
+		// specified or preferred names in a locale
+		// in case the name is unvoided
+		if (!conceptName.isSynonym()) {
+			conceptName.setConceptNameType(null);
+		}
+	}
+
+	private void makeLocaleNotPreferred(ConceptName conceptName) {
+		if (conceptName.getLocalePreferred()) {
+			conceptName.setLocalePreferred(false);
 		}
 	}
 
@@ -240,6 +245,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			}
 			checkedLocales.add(locale);
 		}
+	}
+
+	private void logConceptChangedData(Concept concept) {
+		concept.setDateChanged(new Date());
+		concept.setChangedBy(Context.getAuthenticatedUser());
 	}
 
 	/**
@@ -676,7 +686,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptsInSet(org.openmrs.Concept)
+	 * @see org.openmrs.api.ConceptService#getConceptsByConceptSet(Concept)
 	 */
 	@Override
 	@Transactional(readOnly = true)
