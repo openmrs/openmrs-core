@@ -9,9 +9,6 @@
  */
 package org.openmrs.web;
 
-import java.text.NumberFormat;
-import java.util.Date;
-
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -38,6 +35,7 @@ import org.openmrs.Privilege;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.Provider;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.Visit;
@@ -71,6 +69,7 @@ import org.openmrs.propertyeditor.PrivilegeEditor;
 import org.openmrs.propertyeditor.ProgramEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
+import org.openmrs.propertyeditor.ProviderEditor;
 import org.openmrs.propertyeditor.ReportDefinitionEditor;
 import org.openmrs.propertyeditor.ReportSchemaXmlEditor;
 import org.openmrs.propertyeditor.RoleEditor;
@@ -84,6 +83,9 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.support.WebBindingInitializer;
 import org.springframework.web.context.request.WebRequest;
+
+import java.text.NumberFormat;
+import java.util.Date;
 
 /**
  * Shared WebBindingInitializer that allows all OpenMRS annotated controllers to use our custom
@@ -122,6 +124,7 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 		wdb.registerCustomEditor(Program.class, new ProgramEditor());
 		wdb.registerCustomEditor(ProgramWorkflow.class, new ProgramWorkflowEditor());
 		wdb.registerCustomEditor(ProgramWorkflowState.class, new ProgramWorkflowStateEditor());
+		wdb.registerCustomEditor(Provider.class, new ProviderEditor());
 		wdb.registerCustomEditor(ReportDefinition.class, new ReportDefinitionEditor());
 		wdb.registerCustomEditor(ReportSchemaXml.class, new ReportSchemaXmlEditor());
 		wdb.registerCustomEditor(Role.class, new RoleEditor());
