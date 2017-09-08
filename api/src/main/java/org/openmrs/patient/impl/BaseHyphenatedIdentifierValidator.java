@@ -58,9 +58,10 @@ public abstract class BaseHyphenatedIdentifierValidator implements IdentifierVal
 			throw new UnallowedIdentifierException(
 					"Identifier \"" + identifier + "\" must contain a hyphen followed by a check digit character (A-J).");
 		}
-		if (identifier.endsWith("-")){
+		if (identifier.endsWith("-")) {
 			throw new UnallowedIdentifierException(
-					"Identifier \"" + identifier + "\" must not end with a hyphen, a check digit character (A-J) must follow.");
+					"Identifier \"" + identifier +
+							"\" must not end with a hyphen, a check digit character (A-J) must follow.");
 		}
 		
 		String idWithoutCheckDigit = identifier.substring(0, identifier.indexOf("-"));
