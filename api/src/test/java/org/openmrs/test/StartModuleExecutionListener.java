@@ -94,19 +94,6 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 				while (list.hasMoreElements()) {
 					xmlReader.loadBeanDefinitions(new UrlResource(list.nextElement()));
 				}
-				
-				//ensure that when refreshing, we use the openmrs class loader for the started modules.
-				boolean useSystemClassLoader = Context.isUseSystemClassLoader();
-				Context.setUseSystemClassLoader(false);
-				try {
-					ctx.refresh();
-				}
-				finally {
-					Context.setUseSystemClassLoader(useSystemClassLoader);
-				}
-				
-				// session is closed by the test framework
-				//Context.closeSession();
 			}
 		}
 	}
