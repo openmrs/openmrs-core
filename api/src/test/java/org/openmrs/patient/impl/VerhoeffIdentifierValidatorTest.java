@@ -33,87 +33,138 @@ public class VerhoeffIdentifierValidatorTest {
 	
 	private String[] invalidIdentifiers = { "", " ", "-", "adsfalasdf-adfasdf", "ABC DEF", "!234*", "++", " ABC", "def ",
 	        "ab32kcdak3", "chaseisreallycoolyay", "1", "moose", "MOOSE", "MooSE", "adD3Eddf429daD999" };
-	
+
+	private static final int EXPECTED_RAW_IDENTIFIER_LENGTH = 8;
+
 	/**
 	 * @see VerhoeffIdentifierValidator#getValidIdentifier(String)
 	 */
 	@Test
 	public void getValidIdentifier_shouldGetValidIdentifier() {
-		
+
 		//Make sure valid identifiers come back with the right check digit
-		
+
 		for (int i = 0; i < allowedIdentifiers.length; i++) {
 			assertEquals(validator.getValidIdentifier(allowedIdentifiers[i]), allowedIdentifiers[i] + "-"
-			        + allowedIdentifiersCheckDigits[i]);
-		}
-		
-		//Make sure invalid identifiers throw an exception
-		
-		for (int j = 0; j < invalidIdentifiers.length; j++) {
-			try {
-				validator.getValidIdentifier(invalidIdentifiers[j]);
-				fail("Identifier " + invalidIdentifiers[j] + " should have failed.");
-			}
-			catch (Exception e) {}
+					+ allowedIdentifiersCheckDigits[i]);
 		}
 	}
-	
-	/**
-	 * Test the is valid method. TODO split this into multiple tests.
-	 */
+
 	@Test
-	public void shouldIsValid() {
+	public void getValidIdentifier_shouldFailWithInvalidIdentifiers() {
 		//Make sure invalid identifiers throw an exception
-		
-		for (int j = 0; j < invalidIdentifiers.length; j++) {
+		for (String invalidIdentifier: invalidIdentifiers) {
 			try {
-				validator.isValid(invalidIdentifiers[j]);
-				fail("Identifier " + invalidIdentifiers[j] + " should have failed.");
+				validator.getValidIdentifier(invalidIdentifier);
+				fail("Identifier " + invalidIdentifier + " should have failed.");
+			} catch (Exception e) {
+				if (invalidIdentifier.length() == 0){
+					assertTrue(e.getMessage().matches("Identifier must contain at least one character\\."));
+				} else if (invalidIdentifier.indexOf(' ') > -1) {
+					assertTrue(e.getMessage().matches("Identifier may not contain white space\\."));
+				} else if (invalidIdentifier.matches(".*[^\\d].*")) {
+					assertTrue(e.getMessage().indexOf("is an invalid character") > 0);
+				} else if (invalidIdentifier.length() != EXPECTED_RAW_IDENTIFIER_LENGTH) {
+					assertTrue(e.getMessage().matches("Undecorated identifier must be 8 digits long\\."));
+				} else {
+					fail("Unexpected message '" + e.getMessage() + "' seen for invalid identifier '" + invalidIdentifier + "'");
+				}
 			}
-			catch (Exception e) {}
 		}
-		
-		for (int j = 0; j < invalidIdentifiers.length; j++) {
+	}
+
+	@Test
+	public void isValid_shouldFailWithInvalidIdentifiers() {
+		//Make sure invalid identifiers throw an exception
+		for (String invalidIdentifier: invalidIdentifiers) {
 			try {
-				validator.isValid(invalidIdentifiers[j] + "-H");
-				fail("Identifier " + invalidIdentifiers[j] + " should have failed.");
-			}
-			catch (Exception e) {}
+				validator.isValid(invalidIdentifier);
+				fail("Identifier " + invalidIdentifier + " should have failed.");
+			} catch (Exception e) { /* Expected */ }
 		}
-		
-		for (int i = 0; i < allowedIdentifiers.length; i++) {
+	}
+
+	@Test
+	public void isValid_shouldFailWithInvalidSuffixes() {
+		for (String allowedIdentifier : allowedIdentifiers) {
 			try {
-				validator.isValid(allowedIdentifiers[i] + "-X");
-				fail("Identifier " + allowedIdentifiers[i] + " should have failed.");
-			}
-			catch (Exception e) {}
+				validator.isValid(allowedIdentifier + "-X");
+				fail("Identifier " + allowedIdentifier + " should have failed.");
+			} catch (Exception e) { /* Expected */ }
 			try {
-				validator.isValid(allowedIdentifiers[i] + "-10");
-				fail("Identifier " + allowedIdentifiers[i] + " should have failed.");
-			}
-			catch (Exception e) {}
+				validator.isValid(allowedIdentifier + "-10");
+				fail("Identifier " + allowedIdentifier + " should have failed.");
+			} catch (Exception e) { /* Expected */ }
 		}
-		
-		//Make sure check digit can't be numeric
-		for (int j = 0; j < invalidIdentifiers.length; j++) {
-			try {
-				validator.isValid(allowedIdentifiers[j] + "-" + allowedIdentifiersCheckDigitsInt[j]);
-				fail("Identifier " + allowedIdentifiers[j] + " should have failed.");
-			}
-			catch (Exception e) {}
-		}
-		
-		//Now test allowed identifiers that just have the wrong check digit.
-		for (int i = 0; i < allowedIdentifiers.length; i++) {
-			assertFalse(validator.isValid(allowedIdentifiers[i] + "-" + unusedCheckDigit));
-		}
-		
-		//Now test allowed identifiers that have the right check digit.  Test with both
-		//chars and ints.
+	}
+
+	@Test
+	public void isValid_shouldPassWithValidSuffixes() {
+		// Test allowed identifiers that have the right check digit.
 		for (int i = 0; i < allowedIdentifiers.length; i++) {
 			assertTrue(validator.isValid(allowedIdentifiers[i] + "-" + allowedIdentifiersCheckDigits[i]));
 		}
-		
 	}
-	
+
+	@Test
+	public void isValid_shouldFailWithIncorrectlyCalculatedSuffixes() {
+		// Test allowed identifiers that just have the wrong check digit.
+		for (String allowedIdentifier : allowedIdentifiers) {
+			assertFalse(validator.isValid(allowedIdentifier + "-" + unusedCheckDigit));
+		}
+	}
+
+	@Test
+	public void isValid_shouldFailWithNumericSuffixes() {
+		for (int i = 0; i < allowedIdentifiers.length; i++) {
+			try {
+				validator.isValid(allowedIdentifiers[i] + "-" + allowedIdentifiersCheckDigitsInt[i]);
+				fail("Identifier " + allowedIdentifiers[i] + " should have failed.");
+			}
+			catch (Exception e) { /* Expected */ }
+		}
+	}
+
+	@Test
+	public void checkDigit_shouldChangeWhenAdjacentCharsAreTransposed() {
+		VerhoeffIdentifierValidator validator = new VerhoeffIdentifierValidator();
+		String test;
+		int checkDigit;
+		String pre;
+		String post;
+		int failures = 0;
+		StringBuilder failureMsg = new StringBuilder();
+		char c;
+		char d;
+		final String lineSeparator = System.getProperty("line.separator");
+		for (String allowedIdentifier: allowedIdentifiers) {
+			for (int i = 0; i < allowedIdentifier.length(); i++) {
+				checkDigit = validator.getCheckDigit(allowedIdentifier);
+				for (int j = 1; j < allowedIdentifier.length(); j++) {
+					c = allowedIdentifier.charAt(j - 1);
+					d = allowedIdentifier.charAt(j);
+					// If 2 characters are not identical, shuffle them and then test that check digit is different.
+					if (c != d) {
+						pre = allowedIdentifier.substring(0, j - 1);
+						post = allowedIdentifier.substring(j + 1);
+						test = pre + d + c + post;
+						if (checkDigit == validator.getCheckDigit(test)) {
+							failureMsg.append("Check digits for '");
+							failureMsg.append(allowedIdentifier);
+							failureMsg.append("' and '");
+							failureMsg.append(test);
+							failureMsg.append("' should be different, both were ");
+							failureMsg.append(checkDigit);
+							failureMsg.append(lineSeparator);
+							failures++;
+						}
+					}
+				}
+				// Shuffle the allowed identifier string around so that first character becomes last.
+				allowedIdentifier = allowedIdentifier.substring(1, allowedIdentifier.length()) + allowedIdentifier.charAt(0);
+			}
+		}
+		assertTrue(failures + " transposed digits were not detected:\n" + failureMsg, failures == 0);
+	}
+
 }
