@@ -25,7 +25,7 @@ import java.util.Map;
  * Prevents creating a bean if profile is not matched. It returns true if a bean should not be created.
  */
 public class OpenmrsProfileExcludeFilter implements TypeFilter {
-	
+
 	/**
 	 * @param metadataReader
 	 * @param metadataReaderFactory
@@ -40,47 +40,54 @@ public class OpenmrsProfileExcludeFilter implements TypeFilter {
 	@Override
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
 		Map<String, Object> openmrsProfileAttributes = metadataReader.getAnnotationMetadata().getAnnotationAttributes(
-		    "org.openmrs.annotation.OpenmrsProfile");
+				"org.openmrs.annotation.OpenmrsProfile");
 		if (openmrsProfileAttributes != null) {
 			return !matchOpenmrsProfileAttributes(openmrsProfileAttributes);
 		} else {
 			return false; //do not exclude
 		}
 	}
-	
+
 	public boolean matchOpenmrsProfileAttributes(Map<String, Object> openmrsProfile) {
 		Object openmrsPlatformVersion = openmrsProfile.get("openmrsPlatformVersion");
 		if (StringUtils.isBlank((String) openmrsPlatformVersion)) {
 			//Left for backwards compatibility
 			openmrsPlatformVersion = openmrsProfile.get("openmrsVersion");
 		}
-		
+
 		if (StringUtils.isNotBlank((String) openmrsPlatformVersion)
-		        && !ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, (String) openmrsPlatformVersion)) {
+				&& !ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, (String) openmrsPlatformVersion)) {
 			return false;
 		}
-		
+
 		String[] modules = (String[]) openmrsProfile.get("modules");
-		
+
 		for (String moduleAndVersion : modules) {
-			String[] splitModuleAndVersion = moduleAndVersion.split(":");
-			String moduleId = splitModuleAndVersion[0];
-			String moduleVersion = splitModuleAndVersion[1];
-			
-			boolean moduleMatched = false;
-			for (Module module : ModuleFactory.getStartedModules()) {
-				if (module.getModuleId().equals(moduleId)
-				        && ModuleUtil.matchRequiredVersions(module.getVersion(), moduleVersion)) {
-					moduleMatched = true;
-					break;
+			if ("!".equals(moduleAndVersion.substring(0, 1))) {
+				if (ModuleFactory.isModuleStarted(moduleAndVersion.substring(1, moduleAndVersion.length()))) {
+					return false;
 				}
 			}
-			
-			if (!moduleMatched) {
-				return false;
+			else {
+				String[] splitModuleAndVersion = moduleAndVersion.split(":");
+				String moduleId = splitModuleAndVersion[0];
+				String moduleVersion = splitModuleAndVersion[1];
+
+				boolean moduleMatched = false;
+				for (Module module : ModuleFactory.getStartedModules()) {
+					if (module.getModuleId().equals(moduleId)
+							&& ModuleUtil.matchRequiredVersions(module.getVersion(), moduleVersion)) {
+						moduleMatched = true;
+						break;
+					}
+				}
+
+				if (!moduleMatched) {
+					return false;
+				}
 			}
 		}
-		
+
 		return true;
 	}
 }
