@@ -101,44 +101,44 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 
 	//If new encounter, try to assign a visit using the registered visit assignment handler.
-	private void createVisitForNewEncounter(Encounter encounter){
-		if (encounter.getEncounterId() == null){
+// 	private void createVisitForNewEncounter(Encounter encounter){
+// 		if (encounter.getEncounterId() == null){
 
-			//Am using Context.getEncounterService().getActiveEncounterVisitHandler() instead of just
-			//getActiveEncounterVisitHandler() for modules which may want to AOP around this call.
-			EncounterVisitHandler encounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
-			if (encounterVisitHandler != null){
-				encounterVisitHandler.beforeCreateEncounter(encounter);
+// 			//Am using Context.getEncounterService().getActiveEncounterVisitHandler() instead of just
+// 			//getActiveEncounterVisitHandler() for modules which may want to AOP around this call.
+// 			EncounterVisitHandler encounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
+// 			if (encounterVisitHandler != null){
+// 				encounterVisitHandler.beforeCreateEncounter(encounter);
 
-				//If we have been assigned a new visit, persist it.
-				if (encounter.getVisit() != null && encounter.getVisit().getVisitId() == null) {
-					Context.getVisitService().saveVisit(encounter.getVisit());
-				}
-			}
-		}
+// 				//If we have been assigned a new visit, persist it.
+// 				if (encounter.getVisit() != null && encounter.getVisit().getVisitId() == null) {
+// 					Context.getVisitService().saveVisit(encounter.getVisit());
+// 				}
+// 			}
+// 		}
 
-	}
+// 	}
 
-	private void requirePrivilege(Encounter encounter){
-		if (encounter.getEncounterId() == null){
-			isNewEncounter = true;
-			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
-		} else {
-			Context.requirePrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
-		}
+// 	private void requirePrivilege(Encounter encounter){
+// 		if (encounter.getEncounterId() == null){
+// 			isNewEncounter = true;
+// 			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
+// 		} else {
+// 			Context.requirePrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+// 		}
 
-	}
+// 	}
 
 	
 	@Override
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
 		
 		// if authenticated user is not supposed to edit encounter of certain type
-		//failIfDeniedToEdit(encounter);
-		if (!canEditEncounter(encounter, null)){
-			throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
-					.getEditPrivilege() });
-		}
+		failIfDeniedToEdit(encounter);
+// 		if (!canEditEncounter(encounter, null)){
+// 			throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
+// 					.getEditPrivilege() });
+// 		}
 		
 		//If new encounter, try to assign a visit using the registered visit assignment handler.
 		//createVisitForNewEncounter(encounter);
