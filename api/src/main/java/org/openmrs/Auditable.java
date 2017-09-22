@@ -9,8 +9,6 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 /**
  * In OpenMRS, the convention is to track basic audit information for each object related to who
  * initially created the object and when, and who last changed the object and when. This allows us
@@ -19,49 +17,9 @@ import java.util.Date;
  * this interface.
  * 
  * @since 1.5
- * @see OpenmrsData
- * @see OpenmrsMetadata
+ * @see MutableOpenmrsData
+ * @see MutableOpenmrsMetadata
  */
-public interface Auditable extends OpenmrsObject {
-	
-	/**
-	 * @return User - the user who created the object
-	 */
-	public User getCreator();
-	
-	/**
-	 * @param creator - the user who created the object
-	 */
-	public void setCreator(User creator);
-	
-	/**
-	 * @return Date - the date the object was created
-	 */
-	public Date getDateCreated();
-	
-	/**
-	 * @param dateCreated - the date the object was created
-	 */
-	public void setDateCreated(Date dateCreated);
-	
-	/**
-	 * @return User - the user who last changed the object
-	 */
-	public User getChangedBy();
-	
-	/**
-	 * @param changedBy - the user who last changed the object
-	 */
-	public void setChangedBy(User changedBy);
-	
-	/**
-	 * @return Date - the date the object was last changed
-	 */
-	public Date getDateChanged();
-	
-	/**
-	 * @param dateChanged - the date the object was last changed
-	 */
-	public void setDateChanged(Date dateChanged);
-	
+public interface Auditable extends Creatable, Changeable {
+
 }

@@ -9,16 +9,18 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 /**
  * In OpenMRS, we distinguish between data and metadata within our data model. Metadata represent
  * system and descriptive data such as data types &mdash; a relationship type or encounter type.
  * Metadata are generally referenced by clinical data but don't represent patient-specific data
- * themselves. OpenMRS objects that represent metadata should implement this interface. 
+ * themselves. OpenMRS objects that represent metadata should implement this interface.
  * 
  * @see OpenmrsData
  * @since 1.5
  */
-public interface OpenmrsMetadata extends OpenmrsObject, Auditable, Retireable {
+public interface OpenmrsMetadata extends Auditable, Retireable {
 	
 	/**
 	 * @return the name
@@ -39,4 +41,44 @@ public interface OpenmrsMetadata extends OpenmrsObject, Auditable, Retireable {
 	 * @param description the description to set
 	 */
 	public void setDescription(String description);
+	
+	/**
+	 * @deprecated As of version 2.2 OpenmrsMetadata is immutable by default, it's up to the
+	 *             subclasses to make themselves mutable by implementing the MutableOpenmrsMetadata
+	 *             interface, this method will be removed in 2.3
+	 * @see MutableOpenmrsMetadata
+	 */
+	@Override
+	@Deprecated
+	User getChangedBy();
+	
+	/**
+	 * @deprecated As of version 2.2 OpenmrsMetadata is immutable by default, it's up to the
+	 *             subclasses to make themselves mutable by implementing the MutableOpenmrsMetadata
+	 *             interface, this method will be removed in 2.3
+	 * @see MutableOpenmrsMetadata
+	 */
+	@Override
+	@Deprecated
+	void setChangedBy(User changedBy);
+	
+	/**
+	 * @deprecated As of version 2.2 OpenmrsMetadata is immutable by default, it's up to the
+	 *             subclasses to make themselves mutable by implementing the MutableOpenmrsMetadata
+	 *             interface, this method will be removed in 2.3
+	 * @see MutableOpenmrsMetadata
+	 */
+	@Override
+	@Deprecated
+	Date getDateChanged();
+	
+	/**
+	 * @deprecated As of version 2.2 OpenmrsMetadata is immutable by default, it's up to the
+	 *             subclasses to make themselves mutable by implementing the MutableOpenmrsMetadata
+	 *             interface, this method will be removed in 2.3
+	 * @see MutableOpenmrsMetadata
+	 */
+	@Override
+	@Deprecated
+	void setDateChanged(Date dateChanged);
 }

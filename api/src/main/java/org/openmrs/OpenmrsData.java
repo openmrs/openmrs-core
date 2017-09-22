@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 /**
  * In OpenMRS, we distinguish between data and metadata within our data model. Data (as opposed to
  * metadata) generally represent person- or patient-specific data. OpenMRS objects that represent
@@ -17,6 +19,45 @@ package org.openmrs;
  * @see OpenmrsMetadata
  * @since 1.5
  */
-public interface OpenmrsData extends OpenmrsObject, Auditable, Voidable {
-
+public interface OpenmrsData extends Auditable, Voidable {
+	
+	/**
+	 * @deprecated As of version 2.2 OpenmrsData is immutable by default, it's up to the subclasses
+	 *             to make themselves mutable by implementing the MutableOpenmrsData interface, this
+	 *             method will be removed in 2.3
+	 * @see MutableOpenmrsData
+	 */
+	@Override
+	@Deprecated
+	User getChangedBy();
+	
+	/**
+	 * @deprecated As of version 2.2 OpenmrsData is immutable by default, it's up to the subclasses
+	 *             to make themselves mutable by implementing the MutableOpenmrsData interface, this
+	 *             method will be removed in 2.3
+	 * @see MutableOpenmrsData
+	 */
+	@Override
+	@Deprecated
+	void setChangedBy(User changedBy);
+	
+	/**
+	 * @deprecated As of version 2.2 OpenmrsData is immutable by default, it's up to the subclasses
+	 *             to make themselves mutable by implementing the MutableOpenmrsData interface, this
+	 *             method will be removed in 2.3
+	 * @see MutableOpenmrsData
+	 */
+	@Override
+	@Deprecated
+	Date getDateChanged();
+	
+	/**
+	 * @deprecated As of version 2.2 OpenmrsData is immutable by default, it's up to the subclasses
+	 *             to make themselves mutable by implementing the MutableOpenmrsData interface, this
+	 *             method will be removed in 2.3
+	 * @see MutableOpenmrsData
+	 */
+	@Override
+	@Deprecated
+	void setDateChanged(Date dateChanged);
 }
