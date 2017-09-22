@@ -134,13 +134,37 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
 		
 		// if authenticated user is not supposed to edit encounter of certain type
-		failIfDeniedToEdit(encounter);
+		//failIfDeniedToEdit(encounter);
+		if (!canEditEncounter(encounter, null)){
+			throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
+					.getEditPrivilege() });
+		}
 		
 		//If new encounter, try to assign a visit using the registered visit assignment handler.
-		createVisitForNewEncounter(encounter);
+		//createVisitForNewEncounter(encounter);
+		if (encounter.getEncounterId() == null){
+
+			//Am using Context.getEncounterService().getActiveEncounterVisitHandler() instead of just
+			//getActiveEncounterVisitHandler() for modules which may want to AOP around this call.
+			EncounterVisitHandler encounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
+			if (encounterVisitHandler != null){
+				encounterVisitHandler.beforeCreateEncounter(encounter);
+
+				//If we have been assigned a new visit, persist it.
+				if (encounter.getVisit() != null && encounter.getVisit().getVisitId() == null) {
+					Context.getVisitService().saveVisit(encounter.getVisit());
+				}
+			}
+		}
 
 		// check permissions
-		requirePrivilege(encounter);
+		//requirePrivilege(encounter);
+		if (encounter.getEncounterId() == null){
+			isNewEncounter = true;
+			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
+		} else {
+			Context.requirePrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+		}
 		
 		// This must be done after setting dateCreated etc on the obs because
 		// of the way the ORM tools flush things and check for nullity
