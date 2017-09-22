@@ -119,15 +119,15 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 
 // 	}
 
-// 	private void requirePrivilege(Encounter encounter){
-// 		if (encounter.getEncounterId() == null){
-// 			isNewEncounter = true;
-// 			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
-// 		} else {
-// 			Context.requirePrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
-// 		}
+	private void requirePrivilege(Encounter encounter){
+		if (encounter.getEncounterId() == null){
+			isNewEncounter = true;
+			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
+		} else {
+			Context.requirePrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+		}
 
-// 	}
+	}
 
 	
 	@Override
@@ -158,13 +158,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 
 		// check permissions
-		//requirePrivilege(encounter);
-		if (encounter.getEncounterId() == null){
-			isNewEncounter = true;
-			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
-		} else {
-			Context.requirePrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
-		}
+		requirePrivilege(encounter);
+// 		if (encounter.getEncounterId() == null){
+// 			isNewEncounter = true;
+// 			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
+// 		} else {
+// 			Context.requirePrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+// 		}
 		
 		// This must be done after setting dateCreated etc on the obs because
 		// of the way the ORM tools flush things and check for nullity
