@@ -12,35 +12,41 @@ package org.openmrs;
 import java.util.Date;
 
 /**
- * Super interface for all mutable OpenmrsData, OpenmrsData is immutable by default therefore
- * subclasses should implement this interface in order for their instances to be mutable.
+ * Base superclass for all mutable OpenmrsMetadata.
  * 
- * @see MutableOpenmrsMetadata
  * @since 2.2
  */
-public interface MutableOpenmrsData extends OpenmrsData {
+public abstract class BaseChangeableOpenmrsMetadata extends BaseOpenmrsMetadata {
 	
 	/**
-	 * @see Changeable#getChangedBy()
+	 * @see Auditable#getChangedBy()
 	 */
 	@Override
-	User getChangedBy();
+	public User getChangedBy() {
+		return super.getChangedBy();
+	}
 	
 	/**
-	 * @see Changeable#setChangedBy(User)
+	 * @see Auditable#setChangedBy(User)
 	 */
 	@Override
-	void setChangedBy(User changedBy);
+	public void setChangedBy(User changedBy) {
+		super.setChangedBy(changedBy);
+	}
 	
 	/**
-	 * @see Changeable#getDateChanged()
+	 * @see Auditable#getDateChanged()
 	 */
 	@Override
-	Date getDateChanged();
+	public Date getDateChanged() {
+		return super.getDateChanged();
+	}
 	
 	/**
-	 * @see Changeable#setDateChanged(Date)
+	 * @see Auditable#setDateChanged(Date)
 	 */
 	@Override
-	void setDateChanged(Date dateChanged);
+	public void setDateChanged(Date dateChanged) {
+		super.setDateChanged(dateChanged);
+	}
 }

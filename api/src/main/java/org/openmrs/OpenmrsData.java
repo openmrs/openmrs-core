@@ -17,45 +17,42 @@ import java.util.Date;
  * person- or patient-specific data should implement this interface.
  * 
  * @see OpenmrsMetadata
+ * @see BaseChangeableOpenmrsData
  * @since 1.5
  */
 public interface OpenmrsData extends Auditable, Voidable {
 	
 	/**
-	 * @deprecated As of version 2.2 OpenmrsData is immutable by default, it's up to the subclasses
-	 *             to make themselves mutable by implementing the MutableOpenmrsData interface, this
-	 *             method will be removed in 2.3
-	 * @see MutableOpenmrsData
+	 * @deprecated As of version 2.2, OpenmrsData is immutable by default, it's up to the subclasses
+	 *             to make themselves mutable by extending BaseChangeableOpenmrsData, this method
+	 *             will be removed in 2.3
 	 */
 	@Override
 	@Deprecated
 	User getChangedBy();
 	
 	/**
-	 * @deprecated As of version 2.2 OpenmrsData is immutable by default, it's up to the subclasses
-	 *             to make themselves mutable by implementing the MutableOpenmrsData interface, this
-	 *             method will be removed in 2.3
-	 * @see MutableOpenmrsData
+	 * @deprecated As of version 2.2, OpenmrsData is immutable by default, it's up to the subclasses
+	 *             to make themselves mutable by extending BaseChangeableOpenmrsData, this method
+	 *             will be removed in 2.3
 	 */
 	@Override
 	@Deprecated
 	void setChangedBy(User changedBy);
 	
 	/**
-	 * @deprecated As of version 2.2 OpenmrsData is immutable by default, it's up to the subclasses
-	 *             to make themselves mutable by implementing the MutableOpenmrsData interface, this
-	 *             method will be removed in 2.3
-	 * @see MutableOpenmrsData
+	 * @deprecated As of version 2.2, OpenmrsData is immutable by default, it's up to the subclasses
+	 *             to make themselves mutable by extending BaseChangeableOpenmrsData, this method
+	 *             will be removed in 2.3
 	 */
 	@Override
 	@Deprecated
 	Date getDateChanged();
 	
 	/**
-	 * @deprecated As of version 2.2 OpenmrsData is immutable by default, it's up to the subclasses
-	 *             to make themselves mutable by implementing the MutableOpenmrsData interface, this
-	 *             method will be removed in 2.3
-	 * @see MutableOpenmrsData
+	 * @deprecated As of version 2.2, OpenmrsData is immutable by default, it's up to the subclasses
+	 *             to make themselves mutable by extending BaseChangeableOpenmrsData, this method
+	 *             will be removed in 2.3
 	 */
 	@Override
 	@Deprecated

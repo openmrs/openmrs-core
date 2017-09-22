@@ -18,6 +18,7 @@ import java.util.Date;
  * themselves. OpenMRS objects that represent metadata should implement this interface.
  * 
  * @see OpenmrsData
+ * @see BaseChangeableOpenmrsMetadata
  * @since 1.5
  */
 public interface OpenmrsMetadata extends Auditable, Retireable {
@@ -44,9 +45,8 @@ public interface OpenmrsMetadata extends Auditable, Retireable {
 	
 	/**
 	 * @deprecated As of version 2.2 OpenmrsMetadata is immutable by default, it's up to the
-	 *             subclasses to make themselves mutable by implementing the MutableOpenmrsMetadata
-	 *             interface, this method will be removed in 2.3
-	 * @see MutableOpenmrsMetadata
+	 *             subclasses to make themselves mutable by extending BaseChangeableOpenmrsMetadata,
+	 *             this method will be removed in 2.3
 	 */
 	@Override
 	@Deprecated
@@ -54,9 +54,8 @@ public interface OpenmrsMetadata extends Auditable, Retireable {
 	
 	/**
 	 * @deprecated As of version 2.2 OpenmrsMetadata is immutable by default, it's up to the
-	 *             subclasses to make themselves mutable by implementing the MutableOpenmrsMetadata
-	 *             interface, this method will be removed in 2.3
-	 * @see MutableOpenmrsMetadata
+	 *             subclasses to make themselves mutable by extending BaseChangeableOpenmrsMetadata,
+	 *             this method will be removed in 2.3
 	 */
 	@Override
 	@Deprecated
@@ -64,9 +63,8 @@ public interface OpenmrsMetadata extends Auditable, Retireable {
 	
 	/**
 	 * @deprecated As of version 2.2 OpenmrsMetadata is immutable by default, it's up to the
-	 *             subclasses to make themselves mutable by implementing the MutableOpenmrsMetadata
-	 *             interface, this method will be removed in 2.3
-	 * @see MutableOpenmrsMetadata
+	 *             subclasses to make themselves mutable by extending BaseChangeableOpenmrsMetadata,
+	 *             this method will be removed in 2.3
 	 */
 	@Override
 	@Deprecated
@@ -74,9 +72,8 @@ public interface OpenmrsMetadata extends Auditable, Retireable {
 	
 	/**
 	 * @deprecated As of version 2.2 OpenmrsMetadata is immutable by default, it's up to the
-	 *             subclasses to make themselves mutable by implementing the MutableOpenmrsMetadata
-	 *             interface, this method will be removed in 2.3
-	 * @see MutableOpenmrsMetadata
+	 *             subclasses to make themselves mutable by extending BaseChangeableOpenmrsMetadata,
+	 *             this method will be removed in 2.3
 	 */
 	@Override
 	@Deprecated

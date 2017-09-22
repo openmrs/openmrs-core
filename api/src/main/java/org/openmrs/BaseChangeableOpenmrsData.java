@@ -16,10 +16,10 @@ import java.util.Date;
  * 
  * @since 2.2
  */
-public abstract class BaseMutableOpenmrsData extends BaseOpenmrsData implements MutableOpenmrsData {
+public abstract class BaseChangeableOpenmrsData extends BaseOpenmrsData {
 	
 	/**
-	 * @see BaseOpenmrsData#getChangedBy()
+	 * @see Auditable#getChangedBy()
 	 */
 	@Override
 	public User getChangedBy() {
@@ -27,7 +27,7 @@ public abstract class BaseMutableOpenmrsData extends BaseOpenmrsData implements 
 	}
 	
 	/**
-	 * @see BaseOpenmrsData#setChangedBy(User)
+	 * @see Auditable#setChangedBy(User)
 	 */
 	@Override
 	public void setChangedBy(User changedBy) {
@@ -35,7 +35,7 @@ public abstract class BaseMutableOpenmrsData extends BaseOpenmrsData implements 
 	}
 	
 	/**
-	 * @see BaseOpenmrsData#getDateChanged()
+	 * @see Auditable#getDateChanged()
 	 */
 	@Override
 	public Date getDateChanged() {
@@ -43,7 +43,7 @@ public abstract class BaseMutableOpenmrsData extends BaseOpenmrsData implements 
 	}
 	
 	/**
-	 * @see BaseOpenmrsData#setDateChanged(Date)
+	 * @see Auditable#setDateChanged(Date)
 	 */
 	@Override
 	public void setDateChanged(Date dateChanged) {
