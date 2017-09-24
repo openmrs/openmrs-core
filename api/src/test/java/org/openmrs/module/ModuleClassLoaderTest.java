@@ -9,17 +9,17 @@
  */
 package org.openmrs.module;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.Before;
+import org.junit.Test;
+import org.openmrs.test.BaseContextSensitiveTest;
 
 public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 	
@@ -109,6 +109,55 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 		    "file://module/mockmodule/lib/mockmodule-api-1.10.jar").toURL(), "1.10.0-SNAPSHOT", mockModules);
 		
 		assertThat(result, is(true));
+	}
+	
+	/**
+	 * @throws MalformedURLException
+	 * @see ModuleClassLoader#shouldResourceBeIncluded(Module, java.net.URL, String, java.util.Map)
+	 */
+	@Test
+	public void shouldResourceBeIncluded_shouldReturnTrueIfFileMatchesAndModuleIsMissing() throws MalformedURLException {
+		ModuleConditionalResource resource = new ModuleConditionalResource();
+		resource.setPath("lib/mockmodule-api-1.10.jar");
+		
+		ModuleConditionalResource.ModuleAndVersion module = new ModuleConditionalResource.ModuleAndVersion();
+		module.setModuleId("module");
+		module.setVersion("!");
+		resource.getModules().add(module);
+		
+		mockModule.getConditionalResources().add(resource);
+		
+		boolean result = ModuleClassLoader.shouldResourceBeIncluded(mockModule, URI.create(
+		    "file://module/mockmodule/lib/mockmodule-api-1.10.jar").toURL(), "1.10.0-SNAPSHOT", mockModules);
+		
+		assertThat(result, is(true));
+	}
+	
+	/**
+	 * @throws MalformedURLException
+	 * @see ModuleClassLoader#shouldResourceBeIncluded(Module, java.net.URL, String, java.util.Map)
+	 */
+	@Test
+	public void shouldResourceBeIncluded_shouldReturnFalseIfFileMatchesAndModuleIsNotMissing() throws MalformedURLException {
+		ModuleConditionalResource resource = new ModuleConditionalResource();
+		resource.setPath("lib/mockmodule-api-1.10.jar");
+		
+		ModuleConditionalResource.ModuleAndVersion module = new ModuleConditionalResource.ModuleAndVersion();
+		module.setModuleId("module");
+		module.setVersion("!");
+		resource.getModules().add(module);
+		
+		mockModule.getConditionalResources().add(resource);
+		
+		ModuleFactory.getStartedModulesMap().put("module", new Module("", "module", "", "", "", "3.0"));
+		mockModules.put("module", "3.0");
+		
+		boolean result = ModuleClassLoader.shouldResourceBeIncluded(mockModule, URI.create(
+		    "file://module/mockmodule/lib/mockmodule-api-1.10.jar").toURL(), "1.10.0-SNAPSHOT", mockModules);
+		
+		assertThat(result, is(false));
+		
+		ModuleFactory.getStartedModulesMap().clear();
 	}
 	
 	/**
