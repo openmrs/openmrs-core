@@ -36,6 +36,7 @@ import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
 
@@ -44,6 +45,7 @@ import org.openmrs.test.TestUtil;
  * PatientService class
  */
 public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
+	private ProgramWorkflowDAO dao = null;
 	
 	protected static final String CREATE_PATIENT_PROGRAMS_XML = "org/openmrs/api/include/ProgramWorkflowServiceTest-createPatientProgram.xml";
 	
@@ -67,8 +69,48 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			encounterService = Context.getEncounterService();
 			cs = Context.getConceptService();
 		}
+
+		// fetch the dao from the spring application context
+		// this bean name matches the name in /metadata/spring/applicationContext-service.xml
+		dao = (ProgramWorkflowDAO) applicationContext.getBean("programWorkflowDAO");
 	}
-	
+
+	@Test
+	public void getProgramsByConceptTest(){
+
+		List<Program> actualProgramList = new ArrayList<Program>();
+		List<Program> expectedProgramList= new ArrayList<Program>();
+
+		Program program1 = new Program();
+
+		program1.setName("TEST PROGRAM1");
+		program1.setDescription("TEST PROGRAM DESCRIPTION1");
+		program1.setConcept(cs.getConcept(3));
+
+		Program program2 = new Program();
+
+		program2.setName("TEST PROGRAM2");
+		program2.setDescription("TEST PROGRAM DESCRIPTION2");
+		program2.setConcept(cs.getConcept(3));
+
+		Program program3 = new Program();
+
+		program3.setName("TEST PROGRAM3");
+		program3.setDescription("TEST PROGRAM DESCRIPTION3");
+		program3.setConcept(cs.getConcept(4));
+
+		expectedProgramList.add(0,program1);
+		expectedProgramList.add(1,program2);
+
+		dao.saveProgram(program1);
+		dao.saveProgram(program2);
+		dao.saveProgram(program3);
+
+		actualProgramList = dao.getProgramsByConcept(cs.getConcept(3));
+		assertEquals(expectedProgramList,actualProgramList);
+	}
+
+
 	/**
 	 * Tests fetching a PatientProgram, updating and saving it, and subsequently fetching the
 	 * updated value. To use in MySQL database: Uncomment method useInMemoryDatabase() and comment
