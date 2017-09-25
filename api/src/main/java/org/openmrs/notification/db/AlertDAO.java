@@ -13,39 +13,38 @@ import java.util.List;
 
 import org.openmrs.User;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.notification.Alert;
+import org.openmrs.notification.SentMessage;
 
 /**
- * Database methods for the AlertService
+ * Database methods for the SentMessageService
  * 
  * @see org.openmrs.api.context.Context
- * @see org.openmrs.notification.AlertService
+ * @see org.openmrs.notification.SentMessageService
  */
-public interface AlertDAO {
+public interface SentMessageDAO {
+
+	/**
+	 * @see org.openmrs.notification.SentMessageService#saveSentMessage(org.openmrs.notification.SentMessage)
+	 */
+	public SentMessage saveSentMessage(SentMessage sentMessage) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.notification.AlertService#saveAlert(org.openmrs.notification.Alert)
+	 * @see org.openmrs.notification.SentMessageService#getSentMessage(Integer)
 	 */
-	public Alert saveAlert(Alert alert) throws DAOException;
+	public SentMessage getSentMessage(Integer messageId) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.notification.AlertService#getAlert(Integer)
+	 * @see org.openmrs.notification.SentMessageService#getSentMessages(org.openmrs.User)
 	 */
-	public Alert getAlert(Integer alertId) throws DAOException;
+	public List<SentMessage> getSentMessages(User user) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.notification.AlertService#getAlerts(org.openmrs.User, boolean, boolean)
+	 * @see org.openmrs.notification.SentMessageService#purgeSentMessage(org.openmrs.notification.SentMessage)
 	 */
-	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeVoided) throws DAOException;
+	public void deleteSentMessage(SentMessage sentMessage) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.notification.AlertService#purgeAlert(org.openmrs.notification.Alert)
+	 * @see org.openmrs.notification.SentMessageService#getAllSentMessages()
 	 */
-	public void deleteAlert(Alert alert) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.notification.AlertService#getAllAlerts(boolean)
-	 */
-	public List<Alert> getAllAlerts(boolean includeExpired);
-	
+	public List<SentMessage> getAllSentMessages() throws DAOException;
 }
