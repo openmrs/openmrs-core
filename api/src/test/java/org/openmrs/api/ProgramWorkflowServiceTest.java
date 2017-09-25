@@ -76,7 +76,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void getProgramsByConceptTest(){
+	public void getProgramsByConceptTest_shouldReturnProgramsByConcept(){
 
 		List<Program> actualProgramList = new ArrayList<Program>();
 		List<Program> expectedProgramList= new ArrayList<Program>();
