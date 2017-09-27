@@ -36,6 +36,7 @@ import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
 
@@ -44,6 +45,7 @@ import org.openmrs.test.TestUtil;
  * PatientService class
  */
 public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
+	private ProgramWorkflowDAO dao = null;
 	
 	protected static final String CREATE_PATIENT_PROGRAMS_XML = "org/openmrs/api/include/ProgramWorkflowServiceTest-createPatientProgram.xml";
 	
@@ -67,8 +69,12 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			encounterService = Context.getEncounterService();
 			cs = Context.getConceptService();
 		}
+
+		
 	}
-	
+
+
+
 	/**
 	 * Tests fetching a PatientProgram, updating and saving it, and subsequently fetching the
 	 * updated value. To use in MySQL database: Uncomment method useInMemoryDatabase() and comment
