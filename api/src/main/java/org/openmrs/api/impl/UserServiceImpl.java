@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.PrivilegeListener;
@@ -560,7 +561,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Transactional(readOnly = true)
 	public Integer getCountOfUsers(String name, List<Role> roles, boolean includeRetired) {
 		if (name != null) {
-			name = name.replace(", ", " ");
+			name = StringUtils.replace(name,", ", " ");
 		}
 		
 		// if the authenticated role is in the list of searched roles, then all
@@ -581,7 +582,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
 	        throws APIException {
 		if (name != null) {
-			name = name.replace(", ", " ");
+			name = StringUtils.replace(name,", ", " ");
 		}
 		
 		if (roles == null) {
