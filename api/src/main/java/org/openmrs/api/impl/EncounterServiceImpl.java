@@ -960,3 +960,4 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		return saveEncounter(encounterCopy);
 	}
 }
+
