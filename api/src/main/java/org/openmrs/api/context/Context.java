@@ -78,6 +78,9 @@ import org.openmrs.validator.ValidateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.Advisor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.*;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to authenticate to the database and
@@ -104,10 +107,8 @@ import org.springframework.aop.Advisor;
  * </ol>
  * <br>
  * Example usage:
- *
- * <pre>
  * 	public static void main(String[] args) {
- * 		Context.startup("jdbc:mysql://localhost:3306/db-name?autoReconnect=true", "openmrs-db-user", "3jknfjkn33ijt", new Properties());
+ * 		Context.startup("jdbc:mysql://localhost:8080/db-name?autoReconnect=true", "openmrs-db-user", "3jknfjkn33ijt", new Properties());
  * 		try {
  * 			Context.openSession();
  * 			Context.authenticate("admin", "test");
@@ -138,11 +139,11 @@ public class Context {
 	// bug in Java 1.5
 	private static final ThreadLocal<Object[] /* UserContext */> userContextHolder = new ThreadLocal<Object[] /* UserContext */>();
 
-	private static ServiceContext serviceContext;
-
 	private static Properties runtimeProperties = new Properties();
 
 	private static Properties configProperties = new Properties();
+
+	private static ServiceContext serviceContext;
 
 	/**
 	 * Default public constructor
@@ -233,10 +234,11 @@ public class Context {
 		if (arr == null) {
 			log.trace("userContext is null.");
 			throw new APIException(
-			        "A user context must first be passed to setUserContext()...use Context.openSession() (and closeSession() to prevent memory leaks!) before using the API");
+					"A user context must first be passed to setUserContext()...use Context.openSession() (and closeSession() to prevent memory leaks!) before using the API");
 		}
 		return (UserContext) userContextHolder.get()[0];
 	}
+
 
 	/**
 	 * Gets the currently defined service context. If one is not defined, one will be created and
@@ -244,18 +246,17 @@ public class Context {
 	 *
 	 * @return the current ServiceContext
 	 */
+	/*
 	static ServiceContext getServiceContext() {
 		if (serviceContext == null) {
 			log.error("serviceContext is null.  Creating new ServiceContext()");
 			serviceContext = ServiceContext.getInstance();
 		}
-
 		if (log.isTraceEnabled()) {
 			log.trace("serviceContext: " + serviceContext);
 		}
-
 		return ServiceContext.getInstance();
-	}
+	}*/
 
 	/**
 	 * Sets the service context.
@@ -547,7 +548,7 @@ public class Context {
 				@Override
 				public PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(getAdministrationService().getGlobalProperty("mail.user"),
-					        getAdministrationService().getGlobalProperty("mail.password"));
+							getAdministrationService().getGlobalProperty("mail.password"));
 				}
 			};
 
@@ -562,6 +563,62 @@ public class Context {
 	 *
 	 * @return the ServiceContext
 	 */
+
+	public static   ServiceContext getserviceObject(){
+		ApplicationContext s_context = new ClassPathXmlApplicationContext("spring.xml");
+		ServiceContext obj = (ServiceContext) s_context.getBean("service_context");
+
+		return obj;  // return the ServiceContext object using the dependency injection
+	}
+
+
+	static ServiceContext getServiceContext() {
+		if (serviceContext == null) {
+			log.error("serviceContext is null.  Creating new ServiceContext()");
+			serviceContext = getserviceObject();
+		}
+		if (log.isTraceEnabled()) {
+			log.trace("serviceContext: " + serviceContext);
+		}
+		return getserviceObject();
+	}
+
+	/**
+	 * Used to define a unit of work. All "units of work" should be surrounded by openSession and
+	 * closeSession calls.
+	 */
+	public static void openSession() {
+		log.trace("opening session");
+		UserContext user = getNewUser();
+		setUserContext(user); // must be cleared out in
+		// closeSession()
+		getContextDAO().openSession();
+	}
+
+	/**
+	 * get the UserContext object using the dependency injection method
+	 */
+
+	public static UserContext getNewUser(){
+		ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+		UserContext newUser = (UserContext)context.getBean("user");
+
+		return newUser;
+	}
+
+	/**
+	 * Used to define a unit of work. All "units of work" should be surrounded by openSession and
+	 * closeSession calls.
+	 */
+	public static void closeSession() {
+		log.trace("closing session");
+		clearUserContext(); // because we set a UserContext on the current
+		// thread in openSession()
+		getContextDAO().closeSession();
+	}
+
+
+
 	private static MessageSender getMessageSender() {
 		return new MailMessageSender(getMailSession());
 	}
@@ -653,7 +710,7 @@ public class Context {
 			String errorMessage = null;
 			if (StringUtils.isNotBlank(privilege)) {
 				errorMessage = Context.getMessageSourceService().getMessage("error.privilegesRequired",
-				    new Object[] { privilege }, null);
+						new Object[] { privilege }, null);
 			} else {
 				//Should we even be here if the privilege is blank?
 				errorMessage = Context.getMessageSourceService().getMessage("error.privilegesRequiredNoArgs");
@@ -699,28 +756,6 @@ public class Context {
 	}
 
 	/**
-	 * Used to define a unit of work. All "units of work" should be surrounded by openSession and
-	 * closeSession calls.
-	 */
-	public static void openSession() {
-		log.trace("opening session");
-		setUserContext(new UserContext()); // must be cleared out in
-		// closeSession()
-		getContextDAO().openSession();
-	}
-
-	/**
-	 * Used to define a unit of work. All "units of work" should be surrounded by openSession and
-	 * closeSession calls.
-	 */
-	public static void closeSession() {
-		log.trace("closing session");
-		clearUserContext(); // because we set a UserContext on the current
-		// thread in openSession()
-		getContextDAO().closeSession();
-	}
-
-	/**
 	 * Used to define a unit of work which does not require clearing out the currently authenticated
 	 * user. Remember to call closeSessionWithCurrentUser in a, preferably, finally block after this
 	 * work.
@@ -739,7 +774,7 @@ public class Context {
 	 */
 	public static void closeSessionWithCurrentUser() {
 		getContextDAO().closeSession();
-    }
+	}
 
 	/**
 	 * Clears cached changes made so far during this unit of work without writing them to the
@@ -808,7 +843,7 @@ public class Context {
 	 *      the required question/datatypes
 	 */
 	public synchronized static void startup(Properties props) throws DatabaseUpdateException, InputRequiredException,
-	        ModuleMustStartException {
+			ModuleMustStartException {
 		// do any context database specific startup
 		getContextDAO().startup(props);
 
@@ -852,7 +887,7 @@ public class Context {
 	 *      the required question/datatypes
 	 */
 	public synchronized static void startup(String url, String username, String password, Properties properties)
-	        throws DatabaseUpdateException, InputRequiredException, ModuleMustStartException {
+			throws DatabaseUpdateException, InputRequiredException, ModuleMustStartException {
 		if (properties == null) {
 			properties = new Properties();
 		}
@@ -1079,10 +1114,10 @@ public class Context {
 		ValidateUtil.setDisableValidation(disableValidation);
 
 		PersonName.setFormat(Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT));
+				OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT));
 
 		Allergen.setOtherNonCodedConceptUuid(Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GP_ALLERGEN_OTHER_NON_CODED_UUID));
+				OpenmrsConstants.GP_ALLERGEN_OTHER_NON_CODED_UUID));
 	}
 
 	/**
@@ -1113,7 +1148,7 @@ public class Context {
 				DatabaseUpdater.executeChangelog();
 			} else {
 				throw new DatabaseUpdateException(
-				        "Database updates are required.  Call Context.updateDatabase() before .startup() to continue.");
+						"Database updates are required.  Call Context.updateDatabase() before .startup() to continue.");
 			}
 		}
 	}
