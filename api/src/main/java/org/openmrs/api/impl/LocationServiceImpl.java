@@ -121,10 +121,10 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		}
 		
 		//Try to look up 'Unknown Location' in case the global property is something else
-		setLocationToGivenLocationOrDefault ( location, locationGP,"Unknown Location");
+		setLocationToGivenLocationOrDefault(location, locationGP,"Unknown Location");
 		
 		// If Unknown Location does not exist, try Unknown if the global property was different
-		setLocationToGivenLocationOrDefault ( location, locationGP,"Unknown");
+		setLocationToGivenLocationOrDefault(location, locationGP,"Unknown");
 
 		// If neither exist, get the first available location
 		if (location == null) {
