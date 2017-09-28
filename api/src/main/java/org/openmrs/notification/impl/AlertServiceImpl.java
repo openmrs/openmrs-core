@@ -198,7 +198,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		//If there is not user creator for the alert ( because it is being created at start-up )create a user
 		//TODO switch this to use the daemon user when ticket TRUNK-120 is complete
 		if (alert.getCreator() == null) {
-			alert.setCreator(new User(1));
+			alert.setCreator(new DAOUser(1));
 		}
 		
 		// save the alert to send it to all administrators
