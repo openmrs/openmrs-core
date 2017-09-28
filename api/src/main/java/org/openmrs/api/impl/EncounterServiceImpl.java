@@ -207,7 +207,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	// if authenticated user is not supposed to edit encounter of certain type
-	private void failIfDeniedToEdit(Encounter encounter) { 
+	private void failIfDeniedToEdit(Encounter encounter)  throws APIException { 
 		if (!canEditEncounter(encounter, null)) {
 			throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
 					.getEditPrivilege() });
@@ -215,7 +215,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 
 	//If new encounter, try to assign a visit using the registered visit assignment handler.
-	private void createVisitForNewEncounter(Encounter encounter) { 
+	private void createVisitForNewEncounter(Encounter encounter)  throws APIException { 
 		if (encounter.getEncounterId() == null) {
 
 			//Am using Context.getEncounterService().getActiveEncounterVisitHandler() instead of just
