@@ -65,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class EncounterServiceImpl extends BaseOpenmrsService implements EncounterService {
 	
 	private EncounterDAO dao;
-	
+
 	/**
 	 * @see org.openmrs.api.EncounterService#setEncounterDAO(org.openmrs.api.db.EncounterDAO)
 	 */
@@ -95,32 +95,17 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
 		
 		// if authenticated user is not supposed to edit encounter of certain type
-		if (!canEditEncounter(encounter, null)) {
-			throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
-			        .getEditPrivilege() });
-		}
+		failIfDeniedToEdit(encounter);
 		
 		//If new encounter, try to assign a visit using the registered visit assignment handler.
-		if (encounter.getEncounterId() == null) {
-			
-			//Am using Context.getEncounterService().getActiveEncounterVisitHandler() instead of just
-			//getActiveEncounterVisitHandler() for modules which may want to AOP around this call.
-			EncounterVisitHandler encounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
-			if (encounterVisitHandler != null) {
-				encounterVisitHandler.beforeCreateEncounter(encounter);
-				
-				//If we have been assigned a new visit, persist it.
-				if (encounter.getVisit() != null && encounter.getVisit().getVisitId() == null) {
-					Context.getVisitService().saveVisit(encounter.getVisit());
-				}
-			}
-		}
+		createVisitForNewEncounter(encounter);
 		
 		boolean isNewEncounter = false;
 		Date newDate = encounter.getEncounterDatetime();
 		Date originalDate = null;
 		Location newLocation = encounter.getLocation();
 		Location originalLocation = null;
+		
 		// check permissions
 		if (encounter.getEncounterId() == null) {
 			isNewEncounter = true;
@@ -221,7 +206,34 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		addGivenObsAndTheirGroupMembersToEncounter(obsToAdd, encounter);
 		return encounter;
 	}
+	
+	// if authenticated user is not supposed to edit encounter of certain type
+	private void failIfDeniedToEdit(Encounter encounter)  throws APIException { 
+		if (!canEditEncounter(encounter, null)) {
+			throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
+					.getEditPrivilege() });
+		}
+	}
 
+	//If new encounter, try to assign a visit using the registered visit assignment handler.
+	private void createVisitForNewEncounter(Encounter encounter)  throws APIException { 
+		if (encounter.getEncounterId() == null) {
+
+			//Am using Context.getEncounterService().getActiveEncounterVisitHandler() instead of just
+			//getActiveEncounterVisitHandler() for modules which may want to AOP around this call.
+			EncounterVisitHandler encounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
+			if (encounterVisitHandler != null) {
+				encounterVisitHandler.beforeCreateEncounter(encounter);
+
+				//If we have been assigned a new visit, persist it.
+				if (encounter.getVisit() != null && encounter.getVisit().getVisitId() == null) {
+					Context.getVisitService().saveVisit(encounter.getVisit());
+				}
+			}
+		}
+
+	}
+	
 	/**
 	 * This method will remove given Collection of obs and their group members from encounter
 	 *
