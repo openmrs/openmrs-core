@@ -65,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class EncounterServiceImpl extends BaseOpenmrsService implements EncounterService {
 	
 	private EncounterDAO dao;
-	
+	boolean isNewEncounter = false;
 	/**
 	 * @see org.openmrs.api.EncounterService#setEncounterDAO(org.openmrs.api.db.EncounterDAO)
 	 */
@@ -99,19 +99,14 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		//If new encounter, try to assign a visit using the registered visit assignment handler.
 		createVisitForNewEncounter(encounter);
-		
-		boolean isNewEncounter = false;
+
 		Date newDate = encounter.getEncounterDatetime();
 		Date originalDate = null;
 		Location newLocation = encounter.getLocation();
 		Location originalLocation = null;
+		
 		// check permissions
-		if (encounter.getEncounterId() == null) {
-			isNewEncounter = true;
-			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
-		} else {
-			Context.requirePrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
-		}
+		requirePrivilege(encounter);
 		
 		// This must be done after setting dateCreated etc on the obs because
 		// of the way the ORM tools flush things and check for nullity
@@ -229,6 +224,17 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 					Context.getVisitService().saveVisit(encounter.getVisit());
 				}
 			}
+		}
+
+	}
+	
+	// check permissions
+	private void requirePrivilege(Encounter encounter) throws APIException {
+		if (encounter.getEncounterId() == null) {
+			isNewEncounter = true;
+			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
+		} else {
+			Context.requirePrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
 		}
 
 	}
