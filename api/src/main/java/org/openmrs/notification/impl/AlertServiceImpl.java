@@ -27,6 +27,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+
+import liquibase.change.custom.CustomTaskChange;
+import liquibase.database.Database;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.CustomChangeException;
+import liquibase.exception.DatabaseException;
+import liquibase.exception.SetupException;
+import liquibase.exception.ValidationErrors;
+import liquibase.resource.ResourceAccessor;
+
+import org.openmrs.util.DatabaseUpdater;
+
 /**
  * This class should not be instantiated by itself.
  *
@@ -162,6 +178,45 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		return dao.getAllAlerts(includeExpired);
 	}
 	
+	private int getInt(JdbcConnection connection, String sql) {
+		Statement stmt = null;
+		int result = 0;
+		try {
+			stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			if (rs.next()) {
+				result = rs.getInt(1);
+			} else {
+				log.warn("No row returned by getInt() method");
+			}
+			
+			if (rs.next()) {
+				log.warn("Multiple rows returned by getInt() method");
+			}
+			
+			return result;
+		}
+		catch (DatabaseException e) {
+			log.warn("Error generated", e);
+		}
+		catch (SQLException e) {
+			log.warn("Error generated", e);
+		}
+		finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				}
+				catch (SQLException e) {
+					log.warn("Failed to close the statement object");
+				}
+			}
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#notifySuperUsers(String, Exception, Object...)
 	 */
@@ -198,9 +253,22 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		//If there is not user creator for the alert ( because it is being created at start-up )create a user
 		//TODO switch this to use the daemon user when ticket TRUNK-120 is complete
 		if (alert.getCreator() == null) {
-			alert.setCreator(new User(1));
+			
+			try{
+				JdbcConnection connection = (JdbcConnection) DatabaseUpdater.getConnection();
+
+				Integer userId = getInt(connection, "SELECT min(user_id) FROM users");
+				//leave it as null rather than setting it to 0
+				if (userId >= 1) {
+					alert.setCreator(new User(userId));
+				}
+
+			}
+			catch(Exception e){
+			}
+			
 		}
-		
+			
 		// save the alert to send it to all administrators
 		Context.getAlertService().saveAlert(alert);
 		
