@@ -136,7 +136,8 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	
 	private Location setToGivenLocOrDefault(Location loc, String locationgp, String defaultLoc) throws APIException {
 		if (loc == null && (!StringUtils.hasText(locationgp) || !defaultLoc.equalsIgnoreCase(locationgp))) {
-			loc = Context.getLocationService().getLocation(defaultLoc);
+			Location location = Context.getLocationService().getLocation(defaultLoc);
+			return location;
 
 		}
 		
