@@ -139,7 +139,7 @@ public class HibernateContextDAO implements ContextDAO {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
 					        .currentTimeMillis()));
 					throw new ContextAuthenticationException(
-					        Context.getMessageSourceService().getMessage("You have entered false passwords for all attempts"));
+					        Context.getMessageSourceService().getMessage("Entered false passwords for all attempts"));
 				}
 			}
 			
