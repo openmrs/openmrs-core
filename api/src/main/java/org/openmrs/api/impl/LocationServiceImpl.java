@@ -121,10 +121,10 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		}
 		
 		//Try to look up 'Unknown Location' in case the global property is something else
-		setLocationToGivenLocationOrDefault(location, locationGP,"Unknown Location");
+		location=setLocationToGivenLocationOrDefault(location, locationGP,"Unknown Location");
 				
 		// If Unknown Location does not exist, try Unknown if the global property was different
-		setLocationToGivenLocationOrDefault(location, locationGP,"Unknown");
+		location=setLocationToGivenLocationOrDefault(location, locationGP,"Unknown");
 				
 		// If neither exist, get the first available location
 		if (location == null) {
@@ -134,11 +134,13 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		return location;
 	}
 	
-	private void setLocationToGivenLocationOrDefault(Location location, String locationGP, String defaultLocation) throws APIException {
+	private Location setLocationToGivenLocationOrDefault(Location location, String locationGP, String defaultLocation) throws APIException {
 		if (location == null && (!StringUtils.hasText(locationGP) || !defaultLocation.equalsIgnoreCase(locationGP))) {
 			location = Context.getLocationService().getLocation(defaultLocation);
 
 		}
+		
+		return location;
 
 	}
 	
