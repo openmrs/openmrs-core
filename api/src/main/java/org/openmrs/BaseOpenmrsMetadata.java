@@ -143,7 +143,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	/**
 	 * @see org.openmrs.OpenmrsMetadata#getChangedBy()
-	 * @deprecated as of version 2.2
+	 * @deprecated
 	 */
 	@Override
 	@Deprecated
@@ -153,7 +153,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	/**
 	 * @see org.openmrs.OpenmrsMetadata#setChangedBy(User)
-	 * @deprecated as of version 2.2
+	 * @deprecated
 	 */
 	@Override
 	@Deprecated
@@ -163,7 +163,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	/**
 	 * @see org.openmrs.OpenmrsMetadata#getDateChanged()
-	 * @deprecated as of version 2.2
+	 * @deprecated
 	 */
 	@Override
 	@Deprecated
@@ -173,7 +173,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	/**
 	 * @see org.openmrs.OpenmrsMetadata#setDateChanged(Date)
-	 * @deprecated as of version 2.2
+	 * @deprecated
 	 */
 	@Override
 	@Deprecated
