@@ -65,7 +65,7 @@ public class PersonEditor extends PropertyEditorSupport {
 		if (t == null) {
 			return "";
 		} else {
-			return t.getPersonId().toString();
+			return (t.getPersonId() == null) ? "" : t.getPersonId().toString();
 		}
 	}
 	
