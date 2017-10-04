@@ -21,8 +21,10 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientProgramAttribute;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
+import org.openmrs.ProgramAttributeType;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.APIException;
@@ -125,7 +127,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#getProgram(java.lang.String)
+	 * @see org.openmrs.api.ProgramWorkflowService#getProgramByName(java.lang.String)
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -584,5 +586,60 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	public ProgramWorkflow getWorkflowByUuid(String uuid) {
 		return dao.getWorkflowByUuid(uuid);
 	}
-	
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getAllProgramAttributeTypes()
+	 */
+	@Override
+	public List<ProgramAttributeType> getAllProgramAttributeTypes() {
+		return dao.getAllProgramAttributeTypes(false);
+	}
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getProgramAttributeType(Integer)
+	 */
+	@Override
+	public ProgramAttributeType getProgramAttributeType(Integer id) {
+		return dao.getProgramAttributeType(id);
+	}
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getProgramAttributeTypeByUuid(String)
+	 */
+	@Override
+	public ProgramAttributeType getProgramAttributeTypeByUuid(String uuid) {
+		return dao.getProgramAttributeTypeByUuid(uuid);
+	}
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#saveProgramAttributeType(ProgramAttributeType)
+	 */
+	@Override
+	public ProgramAttributeType saveProgramAttributeType(ProgramAttributeType type) {
+		return dao.saveProgramAttributeType(type);
+	}
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#purgeProgramAttributeType(ProgramAttributeType)
+	 */
+	@Override
+	public void purgeProgramAttributeType(ProgramAttributeType type) {
+		dao.purgeProgramAttributeType(type);
+	}
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getProgramAttributeType(Integer)
+	 */
+	@Override
+	public PatientProgramAttribute getPatientProgramAttributeByUuid(String uuid) {
+		return dao.getPatientProgramAttributeByUuid(uuid);
+	}
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getAllProgramAttributeTypes(boolean)
+	 */
+	@Override
+	public List<ProgramAttributeType> getAllProgramAttributeTypes(boolean retired) {
+		return dao.getAllProgramAttributeTypes(retired);
+	}
 }

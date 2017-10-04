@@ -18,8 +18,10 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientProgramAttribute;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
+import org.openmrs.ProgramAttributeType;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 
@@ -277,4 +279,51 @@ public interface ProgramWorkflowDAO {
 	 * @return - A List of ProgramWorkflowStates
 	 */
 	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept);
+
+	/**
+	 * Fetches a List of ProgramAttributeTypes
+	 *
+	 * @param retired boolean value to indicated whether to include retired ProgramAttributeType's
+	 * @return List of ProgramAttributeType objects
+	 */
+	List getAllProgramAttributeTypes(boolean retired);
+
+	/**
+	 * Fetches a ProgramAttributeType by its primary key (id)
+	 *
+	 * @param id the primary key used to retrieve program attribute type
+	 * @return ProgramAttributeType object
+	 */
+	ProgramAttributeType getProgramAttributeType(Integer id);
+
+	/**
+	 *Fetches a ProgramAttributeType by its uuid
+	 *
+	 * @param uuid Universally Unique Identifier
+	 * @return ProgramAttributeType object
+	 */
+    ProgramAttributeType getProgramAttributeTypeByUuid(String uuid);
+
+	/**
+	 *Saves a ProgramAttributeType object to the database
+	 *
+	 * @param programAttributeType the object to be saves
+	 * @return the saved ProgramAttributeType Object
+	 */
+	ProgramAttributeType saveProgramAttributeType(ProgramAttributeType programAttributeType);
+
+	/**
+	 * Fetches a PatientProgramAttribute by its uuid
+	 *
+	 * @param uuid Universally Unique Identifier
+	 * @return PatientProgramAttribute object
+	 */
+    PatientProgramAttribute getPatientProgramAttributeByUuid(String uuid);
+
+	/**
+	 *Completely delete the ProgramAttributeType from the database
+	 *
+	 * @param programAttributeType the ProgramAttributeType to be deleted
+	 */
+	void purgeProgramAttributeType(ProgramAttributeType programAttributeType);
 }

@@ -25,16 +25,7 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openmrs.Concept;
-import org.openmrs.ConceptName;
-import org.openmrs.ConceptStateConversion;
-import org.openmrs.Patient;
-import org.openmrs.PatientProgram;
-import org.openmrs.PatientState;
-import org.openmrs.Program;
-import org.openmrs.ProgramWorkflow;
-import org.openmrs.ProgramWorkflowState;
-import org.openmrs.User;
+import org.openmrs.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
@@ -48,7 +39,9 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	protected static final String CREATE_PATIENT_PROGRAMS_XML = "org/openmrs/api/include/ProgramWorkflowServiceTest-createPatientProgram.xml";
 	
 	protected static final String PROGRAM_WITH_OUTCOMES_XML = "org/openmrs/api/include/ProgramWorkflowServiceTest-initialData.xml";
-	
+
+	protected static final String PROGRAM_ATTRIBUTES_XML = "org/openmrs/api/include/ProgramAttributesDataset.xml";
+
 	protected ProgramWorkflowService pws = null;
 	
 	protected AdministrationService adminService = null;
@@ -60,7 +53,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	@Before
 	public void runBeforeEachTest() {
 		executeDataSet(CREATE_PATIENT_PROGRAMS_XML);
-		
+		executeDataSet(PROGRAM_ATTRIBUTES_XML);
 		if (pws == null) {
 			pws = Context.getProgramWorkflowService();
 			adminService = Context.getAdministrationService();
@@ -490,5 +483,38 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	//
 	//    	return props;
 	//    }
-	
+
+	@Test
+	public void shouldTestGetAllProgramAttributeTypes() throws Exception {
+	assertEquals(1, pws.getAllProgramAttributeTypes().size());
+	}
+
+	@Test
+	public void shouldTestGetProgramAttributeType() throws Exception {
+
+		ProgramAttributeType programAttributeType  = pws.getProgramAttributeType(1);
+		assertEquals("d7477c21-bfc3-4922-9591-e89d8b9c8efb",programAttributeType.getUuid());
+	}
+
+	@Test
+	public void shouldTestGetProgramAttributeTypeByUuid() throws Exception {
+		ProgramAttributeType p = pws.getProgramAttributeTypeByUuid("d7477c21-bfc3-4922-9591-e89d8b9c8efb");
+		assertEquals("ProgramId",p.getName());
+	}
+
+	@Test
+	public void shouldTestSaveProgramAttributeType() throws Exception {
+		assertEquals(1,pws.getAllProgramAttributeTypes().size());
+		ProgramAttributeType programAttributeType = new ProgramAttributeType();
+		programAttributeType.setName("test");
+		pws.saveProgramAttributeType(programAttributeType);
+		assertEquals(2,pws.getAllProgramAttributeTypes().size());
+	}
+
+	@Test
+	public void shouldTestPurgeProgramAttributeType() throws Exception {
+		ProgramAttributeType programAttributeType = pws.getProgramAttributeType(1);
+		pws.purgeProgramAttributeType(programAttributeType);
+		assertEquals(0,pws.getAllProgramAttributeTypes().size());
+	}
 }

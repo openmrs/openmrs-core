@@ -13,15 +13,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
+import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * PatientProgram
  */
-public class PatientProgram extends BaseOpenmrsData {
+public class PatientProgram extends BaseCustomizableData<PatientProgramAttribute> {
 	
 	public static final long serialVersionUID = 0L;
 	
@@ -44,6 +45,8 @@ public class PatientProgram extends BaseOpenmrsData {
 	private Concept outcome;
 	
 	private Set<PatientState> states = new HashSet<PatientState>();
+
+	private Set<PatientProgramAttribute> attributes = new LinkedHashSet();
 	
 	// ******************
 	// Constructors
@@ -57,7 +60,7 @@ public class PatientProgram extends BaseOpenmrsData {
 	public PatientProgram(Integer patientProgramId) {
 		setPatientProgramId(patientProgramId);
 	}
-	
+
 	/**
 	 * Does a mostly-shallow copy of this PatientProgram. Does not copy patientProgramId. The
 	 * 'states' property will be deep-copied.
@@ -178,24 +181,24 @@ public class PatientProgram extends BaseOpenmrsData {
 		if (lastState != null) {
 			lastState.setEndDate(onDate);
 		}
-		
+
 		PatientState newState = new PatientState();
 		newState.setPatientProgram(this);
 		newState.setState(programWorkflowState);
 		newState.setStartDate(onDate);
-		
+
 		if (programWorkflowState.getTerminal()) {
 			setDateCompleted(onDate);
 		}
-		
+
 		getStates().add(newState);
 	}
-	
+
 	/**
 	 * Attempts to void the latest {@link PatientState} in the {@link PatientProgram} If earlier
 	 * PatientStates exist, it will try to reset the endDate to null so that the next latest state
 	 * becomes the current {@link PatientState}
-	 * 
+	 *
 	 * @param workflow - The {@link ProgramWorkflow} whose last {@link PatientState} within the
 	 *            current {@link PatientProgram} we want to void
 	 * @param voidBy - The user who is voiding the {@link PatientState}
@@ -228,11 +231,11 @@ public class PatientProgram extends BaseOpenmrsData {
 			nextToLast.setChangedBy(voidBy);
 		}
 	}
-	
+
 	/**
 	 * Returns the current {@link PatientState} for the passed {@link ProgramWorkflow} within this
 	 * {@link PatientProgram}.
-	 * 
+	 *
 	 * @param programWorkflow The ProgramWorkflow whose current {@link PatientState} we want to
 	 *            retrieve
 	 * @return PatientState The current {@link PatientState} for the passed {@link ProgramWorkflow}
@@ -241,7 +244,7 @@ public class PatientProgram extends BaseOpenmrsData {
 	public PatientState getCurrentState(ProgramWorkflow programWorkflow) {
 		Date now = new Date();
 		PatientState currentState = null;
-		
+
 		for (PatientState state : getSortedStates()) {
 			//states are sorted with the most current state at the last position
 			if ((programWorkflow == null || state.getState().getProgramWorkflow().equals(programWorkflow))
@@ -251,11 +254,11 @@ public class PatientProgram extends BaseOpenmrsData {
 		}
 		return currentState;
 	}
-	
+
 	/**
 	 * Returns a Set&lt;PatientState&gt; of all current {@link PatientState}s for the
 	 * {@link PatientProgram}
-	 * 
+	 *
 	 * @return Set&lt;PatientState&gt; of all current {@link PatientState}s for the {@link PatientProgram}
 	 */
 	public Set<PatientState> getCurrentStates() {
@@ -268,11 +271,11 @@ public class PatientProgram extends BaseOpenmrsData {
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Returns a List&lt;PatientState&gt; of all {@link PatientState}s in the passed
 	 * {@link ProgramWorkflow} for the {@link PatientProgram}
-	 * 
+	 *
 	 * @param programWorkflow - The {@link ProgramWorkflow} to check
 	 * @param includeVoided - If true, return voided {@link PatientState}s in the returned
 	 *            {@link List}
@@ -288,74 +291,74 @@ public class PatientProgram extends BaseOpenmrsData {
 		}
 		return ret;
 	}
-	
+
 	/** @see Object#toString() */
 	@Override
 	public String toString() {
 		return "PatientProgram(id=" + getPatientProgramId() + ", patient=" + getPatient() + ", program=" + getProgram()
 		        + ")";
 	}
-	
+
 	// ******************
 	// Property Access
 	// ******************
-	
+
 	public Concept getOutcome() {
 		return outcome;
 	}
-	
+
 	public void setOutcome(Concept concept) {
 		this.outcome = concept;
 	}
-	
+
 	public Date getDateCompleted() {
 		return dateCompleted;
 	}
-	
+
 	public void setDateCompleted(Date dateCompleted) {
 		this.dateCompleted = dateCompleted;
 	}
-	
+
 	public Date getDateEnrolled() {
 		return dateEnrolled;
 	}
-	
+
 	public void setDateEnrolled(Date dateEnrolled) {
 		this.dateEnrolled = dateEnrolled;
 	}
-	
+
 	public Patient getPatient() {
 		return patient;
 	}
-	
+
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
-	
+
 	public Integer getPatientProgramId() {
 		return patientProgramId;
 	}
-	
+
 	public void setPatientProgramId(Integer patientProgramId) {
 		this.patientProgramId = patientProgramId;
 	}
-	
+
 	public Program getProgram() {
 		return program;
 	}
-	
+
 	public void setProgram(Program program) {
 		this.program = program;
 	}
-	
+
 	public Set<PatientState> getStates() {
 		return states;
 	}
-	
+
 	public void setStates(Set<PatientState> states) {
 		this.states = states;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -364,7 +367,7 @@ public class PatientProgram extends BaseOpenmrsData {
 	public Integer getId() {
 		return getPatientProgramId();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -373,7 +376,7 @@ public class PatientProgram extends BaseOpenmrsData {
 	public void setId(Integer id) {
 		setPatientProgramId(id);
 	}
-	
+
 	/**
 	 * @since 1.8
 	 * @return the location
@@ -381,7 +384,7 @@ public class PatientProgram extends BaseOpenmrsData {
 	public Location getLocation() {
 		return location;
 	}
-	
+
 	/**
 	 * @since 1.8
 	 * @param location the location to set
@@ -389,7 +392,7 @@ public class PatientProgram extends BaseOpenmrsData {
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-	
+
 	/**
 	 * @return states sorted by {@link PatientState#compareTo(PatientState)}
 	 */
@@ -397,5 +400,35 @@ public class PatientProgram extends BaseOpenmrsData {
 		List<PatientState> sortedStates = new ArrayList<PatientState>(getStates());
 		Collections.sort(sortedStates);
 		return sortedStates;
+	}
+
+	@Override
+	public Set<PatientProgramAttribute> getAttributes() {
+		return super.getAttributes();
+	}
+
+	@Override
+	public Collection<PatientProgramAttribute> getActiveAttributes() {
+		return super.getActiveAttributes();
+	}
+
+	@Override
+	public List<PatientProgramAttribute> getActiveAttributes(CustomValueDescriptor ofType) {
+		return super.getActiveAttributes(ofType);
+	}
+
+	@Override
+	public void addAttribute(PatientProgramAttribute attribute) {
+		super.addAttribute(attribute);
+	}
+
+	@Override
+	public void setAttributes(Set<PatientProgramAttribute> attributes) {
+		super.setAttributes(attributes);
+	}
+
+	@Override
+	public void setAttribute(PatientProgramAttribute attribute) {
+		super.setAttribute(attribute);
 	}
 }
