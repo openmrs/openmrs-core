@@ -204,7 +204,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * This method safely checks if authenticated user is not supposed to edit encounter of certain type
 	 * 
 	 * @param encounter encounter which is to be edited
-	 * @throws APIException
+	 * @throws APIException if not allowed to edit encounter
 	 */
 	private void failIfDeniedToEdit(Encounter encounter) throws APIException {
 		if (!canEditEncounter(encounter, null)) {
