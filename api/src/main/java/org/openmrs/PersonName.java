@@ -7,6 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
+
 package org.openmrs;
 
 import static org.apache.commons.lang.StringUtils.defaultString;
@@ -145,22 +146,28 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 		}
 		PersonName newName = new PersonName(Integer.valueOf(pn.getPersonNameId()));
 		if (pn.getGivenName() != null) {
-			newName.setGivenName(String.valueOf(pn.getGivenName()));
+			String givenNameAftreTrim = pn.getGivenName().trim();
+			newName.setGivenName(String.valueOf(givenNameAftreTrim));
 		}
 		if (pn.getMiddleName() != null) {
-			newName.setMiddleName(String.valueOf(pn.getMiddleName()));
+			String middlenNameAftreTrim = pn.getMiddleName().trim();
+			newName.setMiddleName(String.valueOf(middlenNameAftreTrim));
 		}
 		if (pn.getFamilyName() != null) {
-			newName.setFamilyName(String.valueOf(pn.getFamilyName()));
+			String familyNameAftreTrim = pn.getFamilyName().trim();
+			newName.setFamilyName(String.valueOf(familyNameAftreTrim));
 		}
 		if (pn.getFamilyName2() != null) {
-			newName.setFamilyName2(String.valueOf(pn.getFamilyName2()));
+			String familynName2AftreTrim = pn.getFamilyName2().trim();
+			newName.setFamilyName2(String.valueOf(familynName2AftreTrim));
 		}
 		if (pn.getFamilyNamePrefix() != null) {
-			newName.setFamilyNamePrefix(String.valueOf(pn.getFamilyNamePrefix()));
+			String familyNamePrefixAftreTrim = pn.getFamilyNamePrefix().trim();
+			newName.setFamilyNamePrefix(String.valueOf(familyNamePrefixAftreTrim));
 		}
 		if (pn.getFamilyNameSuffix() != null) {
-			newName.setFamilyNameSuffix(String.valueOf(pn.getFamilyNameSuffix()));
+			String familyNameSuffixAftreTrim = pn.getFamilyNameSuffix().trim();
+			newName.setFamilyNameSuffix(String.valueOf(familyNameSuffixAftreTrim));
 		}
 		if (pn.getPrefix() != null) {
 			newName.setPrefix(String.valueOf(pn.getPrefix()));
@@ -500,7 +507,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	public static String getFormat() {
 		return PersonName.format;
 	}
-	
+
+
 	/**
 	 Provides a default comparator.
 	 @since 1.12
