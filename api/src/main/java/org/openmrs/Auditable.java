@@ -17,9 +17,7 @@ package org.openmrs;
  * this interface.
  * 
  * @since 1.5
- * @see MutableOpenmrsData
- * @see MutableOpenmrsMetadata
  */
 public interface Auditable extends Creatable, Changeable {
-
+	
 }
