@@ -26,21 +26,11 @@ import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-
-import liquibase.change.custom.CustomTaskChange;
-import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.CustomChangeException;
-import liquibase.exception.DatabaseException;
-import liquibase.exception.SetupException;
-import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
-
 import org.openmrs.util.DatabaseUpdater;
 
 /**
@@ -252,8 +242,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		
 		//If there is not user creator for the alert ( because it is being created at start-up )create a user
 		//TODO switch this to use the daemon user when ticket TRUNK-120 is complete
-		if (alert.getCreator() == null) {
-			
+		if (alert.getCreator() == null) {	
 			try{
 				JdbcConnection connection = (JdbcConnection) DatabaseUpdater.getConnection();
 
@@ -262,11 +251,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 				if (userId >= 1) {
 					alert.setCreator(new User(userId));
 				}
-
-			}
-			catch(Exception e){
-			}
-			
+			}	
 		}
 			
 		// save the alert to send it to all administrators
