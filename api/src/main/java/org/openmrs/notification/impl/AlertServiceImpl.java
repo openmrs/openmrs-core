@@ -12,6 +12,9 @@ package org.openmrs.notification.impl;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -23,15 +26,13 @@ import org.openmrs.notification.AlertRecipient;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.db.AlertDAO;
 import org.openmrs.util.RoleConstants;
+import org.openmrs.util.DatabaseUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+
 import liquibase.database.jvm.JdbcConnection;
-import liquibase.resource.ResourceAccessor;
-import org.openmrs.util.DatabaseUpdater;
+
 
 /**
  * This class should not be instantiated by itself.
@@ -245,7 +246,6 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		if (alert.getCreator() == null) {	
 			try{
 				JdbcConnection connection = (JdbcConnection) DatabaseUpdater.getConnection();
-
 				Integer userId = getInt(connection, "SELECT min(user_id) FROM users");
 				//leave it as null rather than setting it to 0
 				if (userId >= 1) {
