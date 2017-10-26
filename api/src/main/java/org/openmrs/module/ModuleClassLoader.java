@@ -377,13 +377,21 @@ public class ModuleClassLoader extends URLClassLoader {
 				if (conditionalResource.getModules() != null) { //modules are optional
 					for (ModuleConditionalResource.ModuleAndVersion conditionalModuleResource : conditionalResource
 					        .getModules()) {
-						String moduleVersion = startedRelatedModules.get(conditionalModuleResource.getModuleId());
-						if (moduleVersion != null) {
-							include = ModuleUtil
-							        .matchRequiredVersions(moduleVersion, conditionalModuleResource.getVersion());
-							
+						if ("!".equals(conditionalModuleResource.getVersion())) {
+							include = !ModuleFactory.isModuleStarted(conditionalModuleResource.getModuleId());
 							if (!include) {
 								return false;
+							}
+						}
+						else {
+							String moduleVersion = startedRelatedModules.get(conditionalModuleResource.getModuleId());
+							if (moduleVersion != null) {
+								include = ModuleUtil
+								        .matchRequiredVersions(moduleVersion, conditionalModuleResource.getVersion());
+								
+								if (!include) {
+									return false;
+								}
 							}
 						}
 					}
