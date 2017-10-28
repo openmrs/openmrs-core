@@ -46,7 +46,7 @@ public class ConceptReferenceTermEditor extends PropertyEditorSupport {
 	@Override
 	public String getAsText() {
 		ConceptReferenceTerm term = (ConceptReferenceTerm) getValue();
-		if (term == null) {
+		if (term == null || term.getConceptReferenceTermId() == null) {
 			return "";
 		}
 		
