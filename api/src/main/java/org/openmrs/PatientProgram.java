@@ -9,16 +9,14 @@
  */
 package org.openmrs;
 
+import org.openmrs.util.OpenmrsUtil;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * PatientProgram
@@ -186,6 +184,10 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 		newState.setState(programWorkflowState);
 		newState.setStartDate(onDate);
 		
+		if (newState.getPatientProgram() != null && newState.getPatientProgram().getDateCompleted() != null) {
+			newState.setEndDate(newState.getPatientProgram().getDateCompleted());
+		}
+		
 		if (programWorkflowState.getTerminal() == Boolean.TRUE) {
 			setDateCompleted(onDate);
 		}
@@ -225,7 +227,9 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 			last.setVoidReason(voidReason);
 		}
 		if (nextToLast != null && nextToLast.getEndDate() != null) {
-			nextToLast.setEndDate(null);
+			nextToLast.setEndDate(nextToLast.getPatientProgram() != null
+			        && nextToLast.getPatientProgram().getDateCompleted() != null ? nextToLast.getPatientProgram()
+			        .getDateCompleted() : null);
 			nextToLast.setDateChanged(voidDate);
 			nextToLast.setChangedBy(voidBy);
 		}
