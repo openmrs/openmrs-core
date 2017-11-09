@@ -10,6 +10,7 @@
 package org.openmrs.notification.mail.velocity;
 
 import java.io.StringWriter;
+import java.util.Properties;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -40,7 +41,12 @@ public class VelocityMessagePreparator implements MessagePreparator {
 	public VelocityMessagePreparator() throws MessageException {
 		try {
 			engine = new VelocityEngine();
-			engine.init();
+			Properties prop=new Properties();
+			//This property changes the default uberspect to Secure Uberspector which is used to restrict srbitary object from users
+			//This will prevent any Server template side injections
+			prop.setProperty("runtime.introspector.uberspect","org.apache.velocity.util.introspection.SecureUberspector");
+			engine.init(prop);
+		
 		}
 		catch (Exception e) {
 			log.error("Failed to create velocity engine " + e.getMessage(), e);
@@ -54,7 +60,6 @@ public class VelocityMessagePreparator implements MessagePreparator {
 		
 		VelocityContext context = new VelocityContext(template.getData());
 		StringWriter writer = new StringWriter();
-		
 		try {
 			engine.evaluate(context, writer, "template", // I have no idea what this is used for
 			    template.getTemplate());
