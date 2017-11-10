@@ -110,7 +110,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	}
 	
 	/**
-	 * @see org.openmrs.Auditable#getCreator()
+	 * @see org.openmrs.OpenmrsMetadata#getCreator()
 	 */
 	@Override
 	public User getCreator() {
@@ -118,7 +118,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	}
 	
 	/**
-	 * @see org.openmrs.Auditable#setCreator(org.openmrs.User)
+	 * @see org.openmrs.OpenmrsMetadata#setCreator(org.openmrs.User)
 	 */
 	@Override
 	public void setCreator(User creator) {
@@ -126,7 +126,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	}
 	
 	/**
-	 * @see org.openmrs.Auditable#getDateCreated()
+	 * @see org.openmrs.OpenmrsMetadata#getDateCreated()
 	 */
 	@Override
 	public Date getDateCreated() {
@@ -134,7 +134,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	}
 	
 	/**
-	 * @see org.openmrs.Auditable#setDateCreated(java.util.Date)
+	 * @see org.openmrs.OpenmrsMetadata#setDateCreated(java.util.Date)
 	 */
 	@Override
 	public void setDateCreated(Date dateCreated) {
@@ -142,40 +142,47 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	}
 	
 	/**
-	 * @see org.openmrs.Auditable#getChangedBy()
+	 * @see org.openmrs.OpenmrsMetadata#getChangedBy()
+	 * @deprecated as of version 2.2
 	 */
 	@Override
+	@Deprecated
 	public User getChangedBy() {
 		return changedBy;
 	}
 	
 	/**
-	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
+	 * @see org.openmrs.OpenmrsMetadata#setChangedBy(User)
+	 * @deprecated as of version 2.2
 	 */
 	@Override
+	@Deprecated
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
 	
 	/**
-	 * @see org.openmrs.Auditable#getDateChanged()
+	 * @see org.openmrs.OpenmrsMetadata#getDateChanged()
+	 * @deprecated as of version 2.2
 	 */
 	@Override
+	@Deprecated
 	public Date getDateChanged() {
 		return dateChanged;
 	}
 	
 	/**
-	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
+	 * @see org.openmrs.OpenmrsMetadata#setDateChanged(Date)
+	 * @deprecated as of version 2.2
 	 */
 	@Override
+	@Deprecated
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
 	
 	/**
 	 * @deprecated as of 2.0, use {@link #getRetired()}
-	 * 
 	 * @see org.openmrs.Retireable#isRetired()
 	 */
 	@Override
