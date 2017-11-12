@@ -157,15 +157,11 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 	private Integer getConceptByGlobalProperty(Database database, String globalPropertyName) throws Exception {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
 		Statement stmt = connection.createStatement();
-                // add openmrs security bug fix for sql injection attack
-                PreparedStatement globalPropertyQuery = connection.prepareStatement("SELECT property_value FROM global_property WHERE property = ?");
-                globalPropertyQuery.setString(1, globalPropertyName);
-		ResultSet rs = globalPropertyQuery.executeQuery();
+		ResultSet rs = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '" + globalPropertyName + "'");
 		if (rs.next()) {
 			String uuid = rs.getString("property_value");
-			PreparedStatement getUIDQuery = connection.prepareStatement("SELECT concept_id FROM concept WHERE uuid = ?");
-                        getUIDQuery.setString(1, uuid);
-			rs = getUIDQuery.executeQuery();
+			
+			rs = stmt.executeQuery("SELECT concept_id FROM concept WHERE uuid = '" + uuid + "'");
 			if (rs.next()) {
 				return rs.getInt("concept_id");
 			}
