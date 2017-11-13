@@ -15,7 +15,7 @@
     "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">   
 <hibernate-mapping package="org.openmrs">
 
-<class name="org.openmrs.PatientProgram" table="patient_program">
+<class name="PatientProgram" table="patient_program">
 
 	<id name="patientProgramId" type="java.lang.Integer" column="patient_program_id">
 		<generator class="native">
@@ -34,7 +34,7 @@
 	<property name="voided" type="java.lang.Boolean" column="voided" length="1" not-null="true" />
 	<property name="dateVoided" type="java.util.Date" column="date_voided" length="19" />
 	<property name="voidReason" type="java.lang.String" column="void_reason" length="255" />
-	<many-to-one name="voidedBy" class="org.openmrs.User" column="voided_by" />
+	<many-to-one name="voidedBy" class="User" column="voided_by" />
 	<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
 
     <!-- Associations -->
@@ -45,35 +45,41 @@
     </many-to-one>
 
     <!-- bi-directional many-to-one association to Program -->
-    <many-to-one name="program" class="org.openmrs.Program" not-null="true">
+    <many-to-one name="program" class="Program" not-null="true">
         <column name="program_id" />
     </many-to-one>
 
 	<!-- bi-directional many-to-one association to Patient -->
-    <many-to-one name="patient" class="org.openmrs.Patient" not-null="true">
+    <many-to-one name="patient" class="Patient" not-null="true">
         <column name="patient_id" />
     </many-to-one>
 		
     <!-- bi-directional many-to-one association to User -->
-    <many-to-one name="creator" class="org.openmrs.User" not-null="true">
+    <many-to-one name="creator" class="User" not-null="true">
         <column name="creator" />
     </many-to-one>
     
     <!-- bi-directional many-to-one association to User -->
-    <many-to-one name="changedBy" class="org.openmrs.User">
+    <many-to-one name="changedBy" class="User">
         <column name="changed_by" />
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Location -->
-    <many-to-one name="location" class="org.openmrs.Location" lazy="false">
+    <many-to-one name="location" class="Location" lazy="false">
         <column name="location_id" />
     </many-to-one>
 
 	<!-- bi-directional one-to-many association to PatientProgram -->
 	<set name="states" inverse="true" lazy="false" cascade="all-delete-orphan">
 		<key column="patient_program_id" not-null="true"/>
-		<one-to-many class="org.openmrs.PatientState" />
+		<one-to-many class="PatientState" />
 	</set>
+
+    <set name="attributes" lazy="true" inverse="true" batch-size="100"
+         cascade="all-delete-orphan" order-by="voided asc">
+        <key column="patient_program_id" />
+        <one-to-many class="PatientProgramAttribute" />
+    </set>
 	
 </class>
 </hibernate-mapping>

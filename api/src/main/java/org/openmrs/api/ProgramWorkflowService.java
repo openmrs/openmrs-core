@@ -18,13 +18,16 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientProgramAttribute;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.ProgramAttributeType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Contains methods pertaining to management of Programs, ProgramWorkflows, ProgramWorkflowStates,
@@ -280,8 +283,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_PATIENT_PROGRAMS })
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
-	        Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided)
-	        throws APIException;
+												   Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate,
+												   boolean includeVoided) throws APIException;
 	
 	/**
 	 * Completely remove a patientProgram from the database (not reversible) This method delegates
@@ -530,4 +533,75 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should throw an error when multiple program states with same uuid are found
 	 */
 	public ConceptStateConversion getConceptStateConversionByUuid(String uuid);
+
+	/**
+	 * Fetches a list of all ProgramAttributeTypes
+	 *
+	 * @return list of ProgramAttributeType objects
+	 * @since 2.2.0
+	 */
+	@Transactional(readOnly = true)
+    @Authorized({"View PatientProgram Attribute Types"})
+    List<ProgramAttributeType> getAllProgramAttributeTypes();
+
+	/**
+	 * Fetches a list of all ProgramAttributeTypes
+	 *
+	 * @return list of ProgramAttributeType objects
+	 * @since 2.2.0
+	 */
+	@Transactional(readOnly = true)
+	@Authorized({"View PatientProgram Attribute Types"})
+	List<ProgramAttributeType> getAllProgramAttributeTypes(boolean retired);
+
+	/**
+	 * Gets a ProgramAttributeType by internal identifier
+	 *
+	 * @param id the primary key of the ProgramAttributeType
+	 * @return ProgramAttributeType object with given id
+	 */
+    @Transactional(readOnly = true)
+    @Authorized({"View PatientProgram Attribute Types"})
+    ProgramAttributeType getProgramAttributeType(Integer id);
+
+	/**
+	 * Gets a ProgramAttributeType by its uuid
+	 *
+	 * @param uuid the Universally Unique Identifier
+	 * @return ProgramAttributeType object with given uuid
+	 * @since 2.2.0
+	 */
+	@Transactional(readOnly = true)
+    @Authorized({"View PatientProgram Attribute Types"})
+    ProgramAttributeType getProgramAttributeTypeByUuid(String uuid);
+
+	/**
+	 * Save ProgramAttributeType to database
+	 *
+	 * @param programAttributeType the ProgramAttributeType to be saved
+	 * @return the save ProgramAttributeType object
+	 * @since 2.2.0
+	 */
+    @Authorized({"Manage PatientProgram Attribute Types"})
+    ProgramAttributeType saveProgramAttributeType(ProgramAttributeType programAttributeType);
+
+	/**
+	 * Permanently deletes the given ProgramAttributeType from the database
+	 *
+	 * @param programAttributeType the ProgramAttributeType to be deleted
+	 * @since 2.2.0
+	 */
+	@Authorized({"Purge PatientProgram Attribute Types"})
+    void purgeProgramAttributeType(ProgramAttributeType programAttributeType);
+
+	/**
+	 * Gets a PatientProgramAttribute by its uuid
+	 *
+	 * @param uuid the Universally Unique Identifier
+	 * @return PatientProgramAttribute object with given uuid
+	 * @since 2.2.0
+	 */
+	@Transactional(readOnly = true)
+    @Authorized({"View PatientPrograms"})
+    PatientProgramAttribute getPatientProgramAttributeByUuid(String uuid);
 }

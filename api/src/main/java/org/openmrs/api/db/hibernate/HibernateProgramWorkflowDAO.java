@@ -24,12 +24,15 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientProgramAttribute;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
+import org.openmrs.ProgramAttributeType;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ProgramWorkflowDAO;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,6 +143,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public PatientProgram savePatientProgram(PatientProgram patientProgram) throws DAOException {
+		CustomDatatypeUtil.saveAttributesIfNecessary(patientProgram);
 		if (patientProgram.getPatientProgramId() == null) {
 			sessionFactory.getCurrentSession().save(patientProgram);
 		} else {
@@ -295,16 +299,13 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		return (ConceptStateConversion) sessionFactory.getCurrentSession().createQuery(
 		    "from ConceptStateConversion csc where csc.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
-	
-	/**
-	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getPatientProgramByUuid(java.lang.String)
-	 */
+
 	@Override
 	public PatientProgram getPatientProgramByUuid(String uuid) {
 		return (PatientProgram) sessionFactory.getCurrentSession().createQuery(
-		    "from PatientProgram pp where pp.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+				"from PatientProgram pp where pp.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getProgramByUuid(java.lang.String)
 	 */
@@ -385,5 +386,62 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		Query squery = sessionFactory.getCurrentSession().createQuery(sq);
 		squery.setEntity("concept", concept);
 		return squery.list();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getAllProgramAttributeTypes(boolean)
+	 */
+	@Override
+	public List<ProgramAttributeType> getAllProgramAttributeTypes(boolean retired) {
+		if (retired){
+			return sessionFactory.getCurrentSession().createCriteria(ProgramAttributeType.class)
+					.add(Restrictions.eq("retired",retired)).list();
+		}else {
+			return sessionFactory.getCurrentSession().createCriteria(ProgramAttributeType.class).list();
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getProgramAttributeType(Integer)
+	 */
+	@Override
+	public ProgramAttributeType getProgramAttributeType(Integer id) {
+		return (ProgramAttributeType) sessionFactory.getCurrentSession().get(ProgramAttributeType.class, id);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getProgramAttributeTypeByUuid(String)
+	 */
+	@Override
+	public ProgramAttributeType getProgramAttributeTypeByUuid(String uuid) {
+		return (ProgramAttributeType) sessionFactory.getCurrentSession().createCriteria(ProgramAttributeType.class).add(
+				Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#saveProgramAttributeType(ProgramAttributeType)
+	 */
+	@Override
+	public ProgramAttributeType saveProgramAttributeType(ProgramAttributeType programAttributeType) {
+		sessionFactory.getCurrentSession().saveOrUpdate(programAttributeType);
+		return programAttributeType;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getPatientProgramAttributeByUuid(String)
+	 */
+	@Override
+	public PatientProgramAttribute getPatientProgramAttributeByUuid(String uuid) {
+		return (PatientProgramAttribute) sessionFactory.getCurrentSession()
+				.createCriteria(PatientProgramAttribute.class)
+				.add(Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#purgeProgramAttributeType(ProgramAttributeType)
+	 */
+	@Override
+	public void purgeProgramAttributeType(ProgramAttributeType type) {
+		sessionFactory.getCurrentSession().delete(type);
 	}
 }
