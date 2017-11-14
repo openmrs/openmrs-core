@@ -18,7 +18,7 @@ import org.openmrs.annotation.AllowDirectAccess;
 /**
  * Program
  */
-public class Program extends BaseOpenmrsMetadata {
+public class Program extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 3214567L;
 	

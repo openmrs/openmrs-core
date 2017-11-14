@@ -23,7 +23,7 @@ import org.hibernate.search.annotations.Field;
  *
  * @since 1.9
  */
-public class ConceptReferenceTerm extends BaseOpenmrsMetadata {
+public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
 	

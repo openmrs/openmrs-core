@@ -15,7 +15,7 @@ package org.openmrs;
  *
  * @since 1.9
  */
-public class EncounterRole extends BaseOpenmrsMetadata {
+public class EncounterRole extends BaseChangeableOpenmrsMetadata {
 	
 	public static final String UNKNOWN_ENCOUNTER_ROLE_UUID = "a0b03050-c99b-11e0-9572-0800200c9a66";
 	

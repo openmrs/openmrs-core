@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see Privilege
  */
-public class Role extends BaseOpenmrsMetadata {
+public class Role extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 1234233L;
 	

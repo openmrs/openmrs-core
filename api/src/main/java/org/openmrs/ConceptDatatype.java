@@ -14,7 +14,7 @@ import org.hibernate.search.annotations.DocumentId;
 /**
  * ConceptDatatype
  */
-public class ConceptDatatype extends BaseOpenmrsMetadata {
+public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 473L;
 	

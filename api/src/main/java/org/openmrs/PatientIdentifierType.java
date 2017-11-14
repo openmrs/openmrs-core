@@ -15,7 +15,7 @@ import org.hibernate.search.annotations.Field;
 /**
  * PatientIdentifierType
  */
-public class PatientIdentifierType extends BaseOpenmrsMetadata {
+public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 211231L;
 	

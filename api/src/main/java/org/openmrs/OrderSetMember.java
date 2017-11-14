@@ -13,7 +13,7 @@ package org.openmrs;
  * @since 1.12
  * OrderSetMember
  */
-public class OrderSetMember extends BaseOpenmrsMetadata {
+public class OrderSetMember extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 72232L;
 	

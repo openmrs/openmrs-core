@@ -25,7 +25,7 @@ import org.openmrs.api.context.Context;
  * Drug
  */
 @Indexed
-public class Drug extends BaseOpenmrsMetadata {
+public class Drug extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 285L;
 	

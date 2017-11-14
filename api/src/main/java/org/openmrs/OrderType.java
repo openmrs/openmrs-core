@@ -22,7 +22,7 @@ import org.openmrs.api.context.Context;
  * Radiology TestOrders
  *
  */
-public class OrderType extends BaseOpenmrsMetadata {
+public class OrderType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 23232L;
 	

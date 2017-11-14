@@ -12,7 +12,7 @@ package org.openmrs.attribute;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
-import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.BaseChangeableOpenmrsMetadata;
 import org.openmrs.customdatatype.Customizable;
 
 /**
@@ -21,7 +21,7 @@ import org.openmrs.customdatatype.Customizable;
  * @since 1.9
  */
 @MappedSuperclass
-public abstract class BaseAttributeType<OwningType extends Customizable<?>> extends BaseOpenmrsMetadata implements AttributeType<OwningType> {
+public abstract class BaseAttributeType<OwningType extends Customizable<?>> extends BaseChangeableOpenmrsMetadata implements AttributeType<OwningType> {
 	
 	@Column(name = "min_occurs", nullable = false, length = 11)
 	private Integer minOccurs = 0;

@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @see Encounter
  */
-public class Obs extends BaseOpenmrsData {
+public class Obs extends BaseChangeableOpenmrsData {
 	
 	/**
 	 * @since 2.1.0

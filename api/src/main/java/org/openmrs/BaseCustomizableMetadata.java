@@ -24,7 +24,7 @@ import org.openmrs.customdatatype.Customizable;
  * @param <A> the type of attribute held
  * @since 1.9
  */
-public abstract class BaseCustomizableMetadata<A extends Attribute> extends BaseOpenmrsMetadata implements Customizable<A> {
+public abstract class BaseCustomizableMetadata<A extends Attribute> extends BaseChangeableOpenmrsMetadata implements Customizable<A> {
 	
 	private Set<A> attributes = new LinkedHashSet<A>();
 	

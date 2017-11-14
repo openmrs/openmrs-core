@@ -24,7 +24,7 @@ package org.openmrs;
  * 
  * @since 1.10
  */
-public class CareSetting extends BaseOpenmrsMetadata {
+public class CareSetting extends BaseChangeableOpenmrsMetadata {
 	
 	public enum CareSettingType {
 		OUTPATIENT,

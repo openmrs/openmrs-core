@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * key-value pairs for either quick info or display specific info that needs to be persisted (like
  * locale preferences, search options, etc)
  */
-public class User extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<User> {
+public class User extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Attributable<User> {
 	
 	public static final long serialVersionUID = 2L;
 	
