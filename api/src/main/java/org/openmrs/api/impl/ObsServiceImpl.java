@@ -10,11 +10,7 @@
 package org.openmrs.api.impl;
 
 import java.io.File;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -109,8 +105,16 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			setPersonFromEncounter(obs);
 			return saveObsNotDirty(obs, changeMessage);
 		} else {
-			setPersonFromEncounter(obs);
-			return saveExistingObs(obs,changeMessage);
+
+			if(Objects.equals(obs.getPersonId(), obs.getEncounter().getId())){
+				setPersonFromEncounter(obs);
+				return saveExistingObs(obs,changeMessage);
+			}
+			else{
+				throw new APIException("Obs.error.PatientId.mismatch", (Object[]) null);
+			}
+
+
 		}
 	}
 
