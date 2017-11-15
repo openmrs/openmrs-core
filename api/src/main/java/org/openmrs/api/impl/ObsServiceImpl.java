@@ -113,8 +113,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			else{
 				throw new APIException("Obs.error.PatientId.mismatch", (Object[]) null);
 			}
-
-
 		}
 	}
 
