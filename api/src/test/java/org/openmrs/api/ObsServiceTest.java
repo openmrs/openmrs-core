@@ -61,6 +61,7 @@ import org.openmrs.obs.handler.BinaryDataHandler;
 import org.openmrs.obs.handler.ImageHandler;
 import org.openmrs.obs.handler.TextHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
@@ -1972,5 +1973,30 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertThat(existing.getStatus(), is(Obs.Status.FINAL));
 		assertThat(existing.getVoided(), is(true));
 		assertThat(newObs.getStatus(), is(Obs.Status.FINAL));
+	}
+
+	@Test
+	//@Verifies(value = "should add person with encounter patient for a new obs", method = "saveObs(Obs,String)")
+	public void saveObs_shouldUpdateObsPersonValueWithEncounterPatientForNewObs() throws Exception {
+		executeDataSet(ENCOUNTER_OBS_XML);
+
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+		EncounterService es = Context.getEncounterService();
+		PersonService ps = Context.getPersonService();
+
+		Obs o = new Obs();
+		o.setConcept(cs.getConcept(3));
+		o.setDateCreated(new Date());
+		o.setCreator(Context.getAuthenticatedUser());
+		o.setLocation(new Location(1));
+		o.setObsDatetime(new Date());
+		o.setValueText("Testing");
+		o.setPerson(ps.getPerson(2)); // Setting this person (2) as different from that of encounter person (7)
+		o.setEncounter(es.getEncounter(2));
+		Obs o1 = os.saveObs(o,null);
+		assertNotNull(o1);
+		assertNotNull(o1.getPerson());
+		assertTrue(o1.getPerson().getId().equals(2)); //This fails with the value of person=2
 	}
 }
