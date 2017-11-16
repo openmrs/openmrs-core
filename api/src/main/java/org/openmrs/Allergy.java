@@ -21,7 +21,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Represent allergy
  */
-public class Allergy extends BaseOpenmrsData {
+public class Allergy extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 1;
 	

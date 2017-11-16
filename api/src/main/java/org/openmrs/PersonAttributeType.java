@@ -18,7 +18,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * PersonAttributeType
  */
-public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.Serializable, Comparable<PersonAttributeType> {
+public class PersonAttributeType extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Comparable<PersonAttributeType> {
 	
 	public static final long serialVersionUID = 2112313431211L;
 	

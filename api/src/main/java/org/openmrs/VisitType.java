@@ -15,7 +15,7 @@ package org.openmrs;
  * 
  * @since 1.9
  */
-public class VisitType extends BaseOpenmrsMetadata{
+public class VisitType extends BaseChangeableOpenmrsMetadata{
 	
 	private static final long serialVersionUID = 1L;
 	

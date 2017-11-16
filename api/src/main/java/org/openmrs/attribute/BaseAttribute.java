@@ -9,6 +9,7 @@
  */
 package org.openmrs.attribute;
 
+import org.openmrs.BaseChangeableOpenmrsData;
 import org.openmrs.BaseOpenmrsData;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.Customizable;
@@ -24,7 +25,7 @@ import org.openmrs.util.OpenmrsUtil;
  * @since 1.9
  */
 @SuppressWarnings("rawtypes")
-public abstract class BaseAttribute<AT extends AttributeType, OwningType extends Customizable<?>> extends BaseOpenmrsData implements Attribute<AT, OwningType>, Comparable<Attribute> {
+public abstract class BaseAttribute<AT extends AttributeType, OwningType extends Customizable<?>> extends BaseChangeableOpenmrsData implements Attribute<AT, OwningType>, Comparable<Attribute> {
 	
 	private OwningType owner;
 	

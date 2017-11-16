@@ -35,7 +35,7 @@ import org.openmrs.api.handler.VoidHandler;
  * @see Obs
  * @see Order
  */
-public class Encounter extends BaseOpenmrsData {
+public class Encounter extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
 	

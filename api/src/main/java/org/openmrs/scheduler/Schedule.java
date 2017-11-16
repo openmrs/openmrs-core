@@ -189,7 +189,7 @@ public class Schedule {
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
-
+	
 	/**
 	 * Gets the number of seconds until task is executed again.
 	 * 

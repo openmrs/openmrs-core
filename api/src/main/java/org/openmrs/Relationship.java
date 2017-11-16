@@ -14,7 +14,7 @@ import java.util.Date;
 /**
  * Relationship
  */
-public class Relationship extends BaseOpenmrsData {
+public class Relationship extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 323423L;
 	

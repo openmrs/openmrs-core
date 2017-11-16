@@ -9,13 +9,13 @@
  */
 package org.openmrs.hl7;
 
-import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.BaseChangeableOpenmrsMetadata;
 
 /**
  * Names a unique location that hl7 messages could be coming from.
  */
-public class HL7Source extends BaseOpenmrsMetadata {
-	
+public class HL7Source extends BaseChangeableOpenmrsMetadata {
+	                                  
 	private static final long serialVersionUID = 3062136520728193223L;
 	
 	private Integer hl7SourceId;

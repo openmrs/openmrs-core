@@ -15,7 +15,7 @@ package org.openmrs;
  * @see Location
  * @since 1.5
  */
-public class LocationTag extends BaseOpenmrsMetadata {
+public class LocationTag extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 7654L;
 	

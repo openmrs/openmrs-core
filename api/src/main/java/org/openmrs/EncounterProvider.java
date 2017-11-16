@@ -14,7 +14,7 @@ package org.openmrs;
  * 
  * @since 1.9
  */
-public class EncounterProvider extends BaseOpenmrsData {
+public class EncounterProvider extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 1L;
 	

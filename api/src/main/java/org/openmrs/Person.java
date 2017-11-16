@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
  * 
  * @see org.openmrs.Patient
  */
-public class Person extends BaseOpenmrsData {
+public class Person extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
 	

@@ -21,7 +21,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * PatientProgram
  */
-public class PatientProgram extends BaseOpenmrsData {
+public class PatientProgram extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 0L;
 	

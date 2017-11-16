@@ -20,7 +20,7 @@ import org.openmrs.api.APIException;
  * 
  * @since 1.12
  */
-public class OrderSet extends BaseOpenmrsMetadata {
+public class OrderSet extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 72232L;
 	
