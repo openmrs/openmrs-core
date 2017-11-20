@@ -45,7 +45,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.ADD_USERS })
-	@Logging(ignoredArgumentIndexes = { 1 })
+	@Logging(ignoredArgumentIndexes = { 0, 1 })
 	public User createUser(User user, String password) throws APIException;
 	
 	/**
