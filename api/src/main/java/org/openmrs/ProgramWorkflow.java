@@ -22,7 +22,7 @@ import org.openmrs.util.NaturalStrings;
 /**
  * ProgramWorkflow
  */
-public class ProgramWorkflow extends BaseOpenmrsMetadata {
+public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
 	

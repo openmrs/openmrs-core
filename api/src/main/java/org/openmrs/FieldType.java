@@ -12,7 +12,7 @@ package org.openmrs;
 /**
  * FieldType
  */
-public class FieldType extends BaseOpenmrsMetadata {
+public class FieldType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 35467L;
 	

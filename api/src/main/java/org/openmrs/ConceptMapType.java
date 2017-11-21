@@ -17,7 +17,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  *
  * @since 1.9
  */
-public class ConceptMapType extends BaseOpenmrsMetadata {
+public class ConceptMapType extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
 	

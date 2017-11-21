@@ -9,13 +9,13 @@
  */
 package org.openmrs.api.db;
 
-import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.BaseChangeableOpenmrsMetadata;
 import org.openmrs.serialization.OpenmrsSerializer;
 
 /**
  * Object representation of a Serialized Object as stored in the database.
  */
-public class SerializedObject extends BaseOpenmrsMetadata {
+public class SerializedObject extends BaseChangeableOpenmrsMetadata {
 	
 	private Integer id;
 	

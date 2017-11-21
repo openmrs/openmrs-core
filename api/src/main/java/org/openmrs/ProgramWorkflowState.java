@@ -12,7 +12,7 @@ package org.openmrs;
 /**
  * ProgramWorkflowState
  */
-public class ProgramWorkflowState extends BaseOpenmrsMetadata {
+public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
 	

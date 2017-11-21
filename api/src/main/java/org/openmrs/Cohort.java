@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * This class represents a list of patientIds.
  */
-public class Cohort extends BaseOpenmrsData {
+public class Cohort extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 0L;
 	

@@ -16,7 +16,7 @@ package org.openmrs;
  * 
  * @since 1.10
  */
-public class OrderFrequency extends BaseOpenmrsMetadata {
+public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
 	

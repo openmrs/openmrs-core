@@ -11,6 +11,7 @@ package org.openmrs.validator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
@@ -68,6 +69,7 @@ public class ObsValidator implements Validator {
 	 * @should not validate if obs is voided
 	 * @should not validate a voided child obs
 	 * @should fail for a null object
+	 * @should fail for a differece in obs.getPerson and obs.getEncounter().getPatient()
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -221,6 +223,12 @@ public class ObsValidator implements Validator {
 				}
 			} else { // dt is null
 				errors.rejectValue("concept", "must have a datatype");
+			}
+		}
+
+		if (obs.getPerson() != null && obs.getEncounter() != null && obs.getEncounter().getPatient() != null) {
+			if (Objects.equals( obs.getPerson(), obs.getEncounter().getPatient() )) {
+				errors.rejectValue( "person", "error.mismatch" );
 			}
 		}
 		

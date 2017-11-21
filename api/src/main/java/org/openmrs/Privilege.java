@@ -14,7 +14,7 @@ package org.openmrs;
  * 
  * @version 1.0
  */
-public class Privilege extends BaseOpenmrsMetadata {
+public class Privilege extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 312L;
 	
