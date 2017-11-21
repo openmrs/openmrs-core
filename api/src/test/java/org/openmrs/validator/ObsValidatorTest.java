@@ -27,6 +27,8 @@ import org.openmrs.Drug;
 import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
+import org.openmrs.api.EncounterService;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -512,5 +514,21 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(errors.hasFieldErrors("concept"));
 		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
 		Assert.assertFalse(errors.hasFieldErrors("valueText"));
+	}
+
+	@Test
+	public void validate_shouldPassValidationForEqualObsPersonValueWithEncounterPatient() {
+		EncounterService es = Context.getEncounterService();
+		PersonService ps = Context.getPersonService();
+
+		Obs obs = new Obs();
+		obs.setPerson(ps.getPerson(2)); // Setting this person (2) as different from that of encounter person (7)
+		obs.setEncounter(es.getEncounter(2));
+
+		Errors errors = new BindException(obs, "obs");
+		new ObsValidator().validate(obs, errors);
+
+		assertFalse(errors.hasFieldErrors("person"));
+
 	}
 }
