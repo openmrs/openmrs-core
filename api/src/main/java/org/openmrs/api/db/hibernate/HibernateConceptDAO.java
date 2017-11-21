@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -536,14 +537,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 		    false, false, classes, null, datatypes, null, null);
 		
 		List<ConceptName> names = conceptNameQuery.list();
-		
-		List<Concept> concepts = transformNamesToConcepts(names);
-		
-		return concepts;
+
+		return new ArrayList<>(transformNamesToConcepts(names));
 	}
 	
-	private List<Concept> transformNamesToConcepts(List<ConceptName> names) {
-		List<Concept> concepts = new ArrayList<Concept>();
+	private LinkedHashSet<Concept> transformNamesToConcepts(List<ConceptName> names) {
+		LinkedHashSet<Concept> concepts = new LinkedHashSet<>();
 		
 		for (ConceptName name : names) {
 			concepts.add(name.getConcept());
@@ -1703,7 +1702,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		List<ConceptName> names = conceptNameQuery.list();
 		
-		final List<Concept> concepts = transformNamesToConcepts(names);
+		final List<Concept> concepts = new ArrayList<>(transformNamesToConcepts(names));
 		
 		return concepts;
 	}
@@ -1732,15 +1731,15 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		@SuppressWarnings("unchecked")
 		List<ConceptName> list = criteria.list();
-		
-		if (list.size() == 1) {
-			return list.get(0).getConcept();
+		LinkedHashSet<Concept> concepts = transformNamesToConcepts(list);
+
+		if (concepts.size() == 1) {
+			return concepts.iterator().next();
 		} else if (list.size() == 0) {
 			log.warn("No concept found for '" + name + "'");
 		} else {
 			log.warn("Multiple concepts found for '" + name + "'");
 			
-			List<Concept> concepts = transformNamesToConcepts(list);
 			for (Concept concept : concepts) {
 				for (ConceptName conceptName : concept.getNames(locale)) {
 					if (conceptName.getName().equalsIgnoreCase(name)) {
