@@ -155,6 +155,23 @@ public class MigrateDataSet {
 	 */
 	private static String execMysqlCmd(String cmd, String sourceFile, boolean includeDB) throws Exception {
 		
+		//add safe commands here - whitelist
+				String[] safecmd = {"cat","ls","echo"};
+				int i=0;
+				for(i=0;i<safecmd.length;i++) {
+					if(cmd.equals(safecmd[i])) {
+						break;
+					}
+				}
+				
+			  if(i==safecmd.length) {
+				  throw new Exception("Not a safe command!");
+
+			  }
+			
+
+		
+		
 		if (sourceFile == null && cmd == null)
 			throw new Exception("wha...?");
 		
