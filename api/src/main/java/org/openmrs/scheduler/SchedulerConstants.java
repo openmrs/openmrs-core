@@ -9,7 +9,26 @@
  */
 package org.openmrs.scheduler;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class SchedulerConstants {
+	
+	static {
+		Properties prop = new Properties();
+		InputStream input = null;
+		
+		try {
+			input = new FileInputStream("/passwords.properties");
+			prop.load(input);
+			SCHEDULER_DEFAULT_PASSWORD = prop.getProperty("dbpassword");
+		}
+		catch (Exception e) {
+			System.out.println("Not able to fetch password from property file");
+		}
+		
+	}
 	
 	// Number of milliseconds per second (used for readability)
 	public static int SCHEDULER_MILLIS_PER_SECOND = 1000;
@@ -19,7 +38,7 @@ public class SchedulerConstants {
 	
 	public static String SCHEDULER_DEFAULT_USERNAME = "admin";
 	
-	public static String SCHEDULER_DEFAULT_PASSWORD = "test";
+	public static String SCHEDULER_DEFAULT_PASSWORD = "";
 	
 	/** The default 'from' address for emails send by the schedule */
 	public final static String SCHEDULER_DEFAULT_FROM = "scheduler@openmrs.org";
