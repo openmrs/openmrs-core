@@ -9,6 +9,12 @@
  */
 package org.openmrs.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -26,16 +32,11 @@ import org.openmrs.PersonName;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * This test class (should) contain tests for all of the ProviderService
@@ -558,4 +559,16 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	public void getCountOfProviders_shouldIncludeRetiredProvidersIfIncludeRetiredIsSetToTrue() throws Exception {
 		assertEquals(4, service.getCountOfProviders("provider").intValue());
 	}
+	
+	@Test
+	public void createProviderFromUser_shouldGetUserAndCreateProvider() {
+		User u = Context.getUserService().getUser(19901);
+		
+		Assert.assertNotNull(Context.getPersonService().getPerson(19901));
+		Assert.assertNotNull(Context.getPersonService().getPersonName(19901));
+		Assert.assertNotNull(u);
+		Assert.assertNotNull(Context.getProviderService().createProviderFromUser(u));
+		Assert.assertNull(Context.getProviderService().createProviderFromUser(u));
+	}
+	
 }

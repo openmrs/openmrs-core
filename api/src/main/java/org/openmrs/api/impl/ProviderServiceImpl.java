@@ -18,8 +18,10 @@ import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProviderService;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsUtil;
@@ -256,5 +258,18 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Override
 	public Provider getProviderByIdentifier(String identifier) {
 		return dao.getProviderByIdentifier(identifier);
+	}
+	
+	@Override
+	public Provider createProviderFromUser(User user) {
+		if (user != null) {
+			Provider p = new Provider();
+			
+			p.setPerson(user.getPerson());
+			p.setIdentifier(user.getUsername());
+			if (Context.getProviderService().getProvidersByPerson(user.getPerson()).isEmpty())
+				return Context.getProviderService().saveProvider(p);
+		}
+		return null;
 	}
 }
