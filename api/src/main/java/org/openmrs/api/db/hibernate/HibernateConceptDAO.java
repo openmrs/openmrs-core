@@ -570,12 +570,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 		    false, false, classes, null, datatypes, null, null);
 		
 		List<ConceptName> names = conceptNameQuery.list();
-
+		
 		return new ArrayList<Concept>(transformNamesToConcepts(names));
 	}
 	
 	private LinkedHashSet<Concept> transformNamesToConcepts(List<ConceptName> names) {
-		LinkedHashSet<Concept> concepts = new LinkedHashSet<>();
+		LinkedHashSet<Concept> concepts = new LinkedHashSet<Concept>();
 		
 		for (ConceptName name : names) {
 			concepts.add(name.getConcept());
@@ -1705,7 +1705,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		List<ConceptName> names = conceptNameQuery.list();
 		
-		final List<Concept> concepts = new ArrayList<>(transformNamesToConcepts(names));
+		final List<Concept> concepts = new ArrayList<Concept>(transformNamesToConcepts(names));
 		
 		return concepts;
 	}
@@ -1735,7 +1735,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		@SuppressWarnings("unchecked")
 		List<ConceptName> list = criteria.list();
 		LinkedHashSet<Concept> concepts = transformNamesToConcepts(list);
-
+		
 		if (concepts.size() == 1) {
 			return concepts.iterator().next();
 		} else if (list.size() == 0) {
