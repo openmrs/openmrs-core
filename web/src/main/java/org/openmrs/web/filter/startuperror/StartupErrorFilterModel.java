@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StartupErrorFilterModel {
 	
-	protected static final Logger log = LoggerFactory.getLogger(StartupErrorFilterModel.class);
+	private static final Logger log = LoggerFactory.getLogger(StartupErrorFilterModel.class);
 	
 	// automatically given to the .vm files and used there
 	public String headerTemplate = "org/openmrs/web/filter/startuperror/header.vm";
