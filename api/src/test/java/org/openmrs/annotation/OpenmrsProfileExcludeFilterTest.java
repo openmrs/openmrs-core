@@ -80,7 +80,7 @@ public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void match_shouldIncludeBeanIfModuleMissing() {
-		OpenmrsProfileWithoutTest1Module bean = applicationContext.getBean(OpenmrsProfileWithoutTest1Module.class);
+		OpenmrsProfileWithoutMissingModule bean = applicationContext.getBean(OpenmrsProfileWithoutMissingModule.class);
 		
 		assertThat(bean, is(notNullValue()));
 	}
