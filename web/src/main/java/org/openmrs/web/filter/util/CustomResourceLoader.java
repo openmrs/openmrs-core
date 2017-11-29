@@ -92,6 +92,7 @@ public class CustomResourceLoader {
 		Locale result = null;
 		
 		if (filename.startsWith(basename)) {
+			filename = filename.substring(basename.length());
 			String tempfilename = filename.substring(basename.length());
 			filename = tempfilename;
 		}
