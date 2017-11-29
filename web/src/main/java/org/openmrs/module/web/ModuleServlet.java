@@ -28,7 +28,7 @@ public class ModuleServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1239820102030303L;
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(ModuleServlet.class);
 	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
