@@ -93,7 +93,8 @@ public class CustomResourceLoader {
 		
 		if (filename.startsWith(basename)) {
 			
-			String tempfilename = filename.substring(basename.length());
+			String tempfilename = filename;
+			tempfilename = tempfilename.substring(basename.length());
 			filename = tempfilename;
 		}
 		
