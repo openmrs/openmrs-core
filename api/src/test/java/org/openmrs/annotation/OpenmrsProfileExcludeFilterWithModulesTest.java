@@ -21,6 +21,6 @@ public class OpenmrsProfileExcludeFilterWithModulesTest extends BaseContextSensi
 	 */
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void match_shouldNotIncludeBeanIfModuleIsStarted() {
-		applicationContext.getBean(OpenmrsProfileWithoutMissingModule.class);
+		applicationContext.getBean(OpenmrsProfileWithoutTest1Module.class);
 	}
 }
