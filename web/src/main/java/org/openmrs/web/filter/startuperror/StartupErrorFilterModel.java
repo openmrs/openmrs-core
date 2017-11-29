@@ -24,12 +24,6 @@ public class StartupErrorFilterModel {
 	
 	protected static final Logger log = LoggerFactory.getLogger(StartupErrorFilterModel.class);
 	
-	// automatically given to the .vm files and used there
-	public String headerTemplate = "org/openmrs/web/filter/startuperror/header.vm";
-	
-	// automatically given to the .vm files and used there
-	public String footerTemplate = "org/openmrs/web/filter/startuperror/footer.vm";
-	
 	public Throwable errorAtStartup = null;
 	
 	public String stacktrace = null;
