@@ -530,7 +530,7 @@ public final class Module {
 	private boolean extensionsMatchNames() {
 		if (extensionNames != null && extensionNames.size() != 0) {
 			for (Extension ext : extensions) {
-				if (extensionNames.get(ext.getPointId()) != ext.getClass().getName()) {
+				if (!extensionNames.get(ext.getPointId()).equals(ext.getClass().getName())) {
 					return false;
 				}
 			}
