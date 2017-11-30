@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
-import java.lang.*;
+import java.lang.String;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.openmrs.GlobalProperty;
