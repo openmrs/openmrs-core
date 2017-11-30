@@ -226,9 +226,9 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		ClassMetadata metadata = sessionFactory.getClassMetadata(entityClass);
 		if (metadata != null) {
 			String[] propNames = metadata.getPropertyNames();
-			Object IdentifierTpye = metadata.getIdentifierType();
+			Object identifierType = metadata.getIdentifierType();
 			String identifierName = metadata.getIdentifierPropertyName();
-			if (IdentifierTpye instanceof StringType || IdentifierTpye instanceof TextType) {
+			if (identifierType instanceof StringType || identifierType instanceof TextType) {
 				int maxLength = getMaximumPropertyLength(entityClass, identifierName);
 				String identifierValue = (String) metadata.getIdentifier(object,
 				    (SessionImplementor) sessionFactory.getCurrentSession());
