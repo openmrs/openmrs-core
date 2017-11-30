@@ -271,7 +271,7 @@ public abstract class StartupFilter implements Filter {
 			    new InputStreamReader(templateInputStream));
 		}
 		catch (Exception e) {
-			throw new RuntimeException("Unable to process template: " + fullTemplatePath, e);
+			throw new APIException("Unable to process template: " + fullTemplatePath, e);
 		}
 	}
 	
