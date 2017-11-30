@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
+import java.lang.String;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.openmrs.GlobalProperty;
@@ -530,7 +531,7 @@ public final class Module {
 	private boolean extensionsMatchNames() {
 		if (extensionNames != null && extensionNames.size() != 0) {
 			for (Extension ext : extensions) {
-				if (extensionNames.get(ext.getPointId()) != ext.getClass().getName()) {
+				if (!extensionNames.get(ext.getPointId()).equals(ext.getClass().getName())) {
 					return false;
 				}
 			}
