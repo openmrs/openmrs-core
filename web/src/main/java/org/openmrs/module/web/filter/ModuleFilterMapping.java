@@ -30,7 +30,7 @@ public class ModuleFilterMapping implements Serializable {
 	
 	public static final long serialVersionUID = 1;
 	
-	private static Logger log = LoggerFactory.getLogger(WebModuleUtil.class);
+	private static Logger log = LoggerFactory.getLogger(ModuleFilterMapping.class);
 	
 	// Properties
 	private Module module;
