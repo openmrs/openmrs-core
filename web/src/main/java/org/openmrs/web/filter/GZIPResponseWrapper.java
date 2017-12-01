@@ -78,7 +78,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 			stream = createOutputStream();
 		}
 		
-		return (stream);
+		return stream;
 	}
 	
 	@Override
@@ -90,7 +90,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 		}
 		
 		if (writer != null) {
-			return (writer);
+			return writer;
 		}
 		
 		if (stream != null) {
@@ -100,7 +100,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 		stream = createOutputStream();
 		writer = new PrintWriter(new OutputStreamWriter(stream, origResponse.getCharacterEncoding()));
 		
-		return (writer);
+		return writer;
 	}
 	
 	@Override
