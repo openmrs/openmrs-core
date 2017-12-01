@@ -43,7 +43,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	}
 	
 	public ServletOutputStream createOutputStream() throws IOException {
-		return (new GZIPResponseStream(origResponse));
+		return new GZIPResponseStream(origResponse);
 	}
 	
 	public void finishResponse() {
