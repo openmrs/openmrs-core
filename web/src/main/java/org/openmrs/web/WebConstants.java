@@ -11,6 +11,12 @@ package org.openmrs.web;
 
 public class WebConstants {
 	
+	/**
+	 * Private constructor to prevent accidental instantiation of this utility class
+	 */
+	private WebConstants() {
+	}
+	
 	public static final String INIT_REQ_UNIQUE_ID = "__INIT_REQ_UNIQUE_ID__";
 	
 	public static final String OPENMRS_CONTEXT_HTTPSESSION_ATTR = "__openmrs_context";
