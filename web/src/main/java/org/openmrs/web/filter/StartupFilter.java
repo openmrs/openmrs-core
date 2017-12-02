@@ -268,7 +268,7 @@ public abstract class StartupFilter implements Filter {
 		
 		try {
 			velocityEngine.evaluate(velocityContext, httpResponse.getWriter(), this.getClass().getName(),
-			    new InputStreamReader(templateInputStream));
+			    new InputStreamReader(templateInputStream,"UTF-8"));
 		}
 		catch (Exception e) {
 			throw new APIException("Unable to process template: " + fullTemplatePath, e);
