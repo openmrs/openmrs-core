@@ -272,7 +272,7 @@ public class ModuleFilterMapping implements Serializable {
 	 * @return - a List of {@link ModuleFilterMapping}s that are defined for the passed
 	 *         {@link Module}
 	 */
-	public static List<ModuleFilterMapping> retrieveFilterMappings(Module module) throws ModuleException {
+	public static List<ModuleFilterMapping> retrieveFilterMappings(Module module){
 		
 		List<ModuleFilterMapping> mappings = new ArrayList<ModuleFilterMapping>();
 		
