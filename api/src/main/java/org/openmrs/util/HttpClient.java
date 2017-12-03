@@ -75,7 +75,7 @@ public class HttpClient {
 			wr.close();
 			
 			// Get the response
-			rd = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+			rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			String line;
 			while ((line = rd.readLine()) != null) {
 				response = String.format("%s%s%n", response, line);
