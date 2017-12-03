@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class FilterUtil {
 	
 	private static final Logger log = LoggerFactory.getLogger(FilterUtil.class);
-
+	
 	private static final String DATABASE_CLOSING_ERROR = "Error while closing the database";
 	
 	public static final String LOCALE_ATTRIBUTE = "locale";

@@ -349,7 +349,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			throw new IllegalArgumentException("The 'identifier' parameter is required and cannot be null");
 		}
 		
-		List<Encounter> encs = new Vector<Encounter>();
+		List<Encounter> encs = new ArrayList<Encounter>();
 		for (Patient p : Context.getPatientService().getPatients(identifier, null, null, false)) {
 			encs.addAll(Context.getEncounterService().getEncountersByPatientId(p.getPatientId()));
 		}
@@ -499,7 +499,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			ObsService obsService = Context.getObsService();
 			List<Encounter> justThisEncounter = new ArrayList<Encounter>();
 			justThisEncounter.add(encounter);
-			List<Obs> observations = new Vector<Obs>();
+			List<Obs> observations = new ArrayList<Obs>();
 			observations.addAll(obsService.getObservations(null, justThisEncounter, null, null, null, null, null, null,
 			    null, null, null, true));
 			for (Obs o : observations) {

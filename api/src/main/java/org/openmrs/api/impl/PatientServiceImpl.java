@@ -1594,7 +1594,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException {
-		List<Patient> patients = new Vector<Patient>();
+		List<Patient> patients = new ArrayList<Patient>();
 		if (StringUtils.isBlank(query)) {
 			return patients;
 		}

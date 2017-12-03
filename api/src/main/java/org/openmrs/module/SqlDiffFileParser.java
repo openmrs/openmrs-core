@@ -13,9 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Vector;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -175,7 +175,7 @@ public class SqlDiffFileParser {
 	 * @return
 	 */
 	private static List<String> validConfigVersions() {
-		List<String> versions = new Vector<String>();
+		List<String> versions = new ArrayList<String>();
 		versions.add("1.0");
 		return versions;
 	}

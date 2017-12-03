@@ -130,7 +130,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<User> getUsersByRole(Role role) throws APIException {
-		List<Role> roles = new Vector<Role>();
+		List<Role> roles = new ArrayList<Role>();
 		roles.add(role);
 		
 		return Context.getUserService().getUsers(null, roles, false);
@@ -377,7 +377,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	private void checkPrivileges(User user) {
 		Collection<Role> roles = user.getAllRoles();
-		List<String> requiredPrivs = new Vector<String>();
+		List<String> requiredPrivs = new ArrayList<String>();
 		
 		for (Role r : roles) {
 			if (r.getRole().equals(RoleConstants.SUPERUSER)
