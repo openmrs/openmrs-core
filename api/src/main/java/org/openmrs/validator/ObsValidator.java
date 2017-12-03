@@ -225,7 +225,7 @@ public class ObsValidator implements Validator {
 			}
 		}
 
-		if (obs.getPerson() != null && obs.getEncounter() != null && obs.getEncounter().getPatient() != null && Objects.equals( obs.getPerson(), obs.getEncounter().getPatient() )) {
+		if (obs.getPerson() != null && obs.getEncounter() != null && obs.getEncounter().getPatient() != null && !Objects.equals( obs.getPerson(), obs.getEncounter().getPatient() )) {
 				errors.rejectValue( "person", "error.obs.encounter.mismatch" );
 		}
 		

@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.hamcrest.CoreMatchers;
@@ -26,6 +27,7 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.Drug;
 import org.openmrs.Obs;
 import org.openmrs.Person;
+import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PersonService;
@@ -522,13 +524,16 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		PersonService ps = Context.getPersonService();
 
 		Obs obs = new Obs();
-		obs.setPerson(ps.getPerson(2)); // Setting this person (2) as different from that of encounter person (7)
-		obs.setEncounter(es.getEncounter(2));
+		obs.setPerson(ps.getPerson(2)); // Setting this person (2) as different from that of encounter person
+		obs.setEncounter(es.getEncounter( 3 ));
+		obs.getEncounter().setPatient(new Patient( 3 ) ); //Setting encounter person(3) as different from that of obs person
 
+		assertFalse( Objects.equals(obs.getPerson(),obs.getEncounter().getPatient()) ); //checking whether the two person objects are different
+		
 		Errors errors = new BindException(obs, "obs");
 		new ObsValidator().validate(obs, errors);
 
-		assertFalse(errors.hasFieldErrors("person"));
+		assertTrue(errors.hasFieldErrors("person"));
 
 	}
 }
