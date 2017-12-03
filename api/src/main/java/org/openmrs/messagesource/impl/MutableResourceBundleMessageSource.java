@@ -13,17 +13,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.PresentationMessage;
 import org.openmrs.module.Module;
+import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsClassLoader;
@@ -272,19 +275,26 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * @return an array of property file names
 	 */
 	private Resource[] findPropertiesFiles() {
-		Resource[] propertiesFiles = new Resource[]{};
+		Set<Resource> resourceSet = new HashSet<>();
 		try {
 			String pattern = "classpath*:messages*.properties";
 			ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver(OpenmrsClassLoader.getInstance());
-			propertiesFiles = resourceResolver.getResources(pattern);
+			Resource[] propertiesFiles = resourceResolver.getResources(pattern);
+			Collections.addAll(resourceSet, propertiesFiles);
+			
+			for (ModuleClassLoader moduleClassLoader : ModuleFactory.getModuleClassLoaders()) {
+				resourceResolver = new PathMatchingResourcePatternResolver(moduleClassLoader);
+				propertiesFiles = resourceResolver.getResources(pattern);
+				Collections.addAll(resourceSet, propertiesFiles);
+			}
 		}
 		catch (IOException e) {
 			log.error("Error generated", e);
 		}
-		if (log.isWarnEnabled() && (propertiesFiles.length == 0)) {
+		if (log.isWarnEnabled() && (resourceSet.isEmpty())) {
 			log.warn("No properties files found.");
 		}
-		return propertiesFiles;
+		return resourceSet.toArray(new Resource[resourceSet.size()]);
 	}
 	
 	/**

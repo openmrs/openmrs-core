@@ -35,7 +35,7 @@ import org.springframework.web.servlet.mvc.LastModified;
  */
 public class PseudoStaticContentController implements Controller, LastModified, GlobalPropertyListener {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(PseudoStaticContentController.class);
 	
 	private Boolean interpretJstl = false;
 	
