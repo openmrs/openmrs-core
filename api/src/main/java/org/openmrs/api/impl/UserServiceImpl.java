@@ -577,34 +577,32 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see UserService#getUsers(String, List, boolean, Integer, Integer)
 	 */
-	@Override
-	@Transactional(readOnly = true)
-	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
-	        throws APIException {
-		if (name != null) {
-			name = StringUtils.replace(name,", ", " ");
-		}
-		
-		if (roles == null) {
-			roles = new Vector<Role>();
-		}
-		
-		// add the requested roles and all child roles for consideration
-		Set<Role> allRoles = new HashSet<Role>();
-		for (Role r : roles) {
-			allRoles.add(r);
-			allRoles.addAll(r.getAllChildRoles());
-		}
-		
-		// if the authenticated role is in the list of searched roles, then all
-		// persons should be searched
-		Role auth_role = getRole(RoleConstants.AUTHENTICATED);
-		if (roles.contains(auth_role)) {
-			return dao.getUsers(name, new Vector<Role>(), includeRetired, start, length);
-		}
-		
-		return dao.getUsers(name, new ArrayList<Role>(allRoles), includeRetired, start, length);
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
+            throws APIException {
+        if (name != null) {
+            name = StringUtils.replace(name,", ", " ");
+        }
+
+        if (roles == null) roles = new ArrayList<>();
+
+        // if the authenticated role is in the list of searched roles, then all
+        // persons should be searched
+        Role auth_role = getRole(RoleConstants.AUTHENTICATED);
+        if (roles.contains(auth_role)) {
+            return dao.getUsers(name, new Vector<Role>(), includeRetired, start, length);
+        }
+
+        // add the requested roles and all child roles for consideration
+        Set<Role> allRoles = new HashSet<Role>();
+        for (Role r : roles) {
+            allRoles.add(r);
+            allRoles.addAll(r.getAllChildRoles());
+        }
+
+        return dao.getUsers(name, new ArrayList<Role>(allRoles), includeRetired, start, length);
+    }
 	
 	/**
 	 * @see UserService#notifyPrivilegeListeners(User, String, boolean)
