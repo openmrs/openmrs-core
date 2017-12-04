@@ -31,7 +31,11 @@ public class ConceptMapTypeEditor extends PropertyEditorSupport {
 				setValue(Context.getConceptService().getConceptMapType(Integer.valueOf(text)));
 			}
 			catch (Exception ex) {
-				throw new IllegalArgumentException("ConceptMapType not found: " + text, ex);
+				ConceptMapType value = Context.getConceptService().getConceptMapTypeByUuid(text);
+				setValue(value);
+				if (value == null) {
+					throw new IllegalArgumentException("ConceptMapType not found: " + text, ex);
+				}
 			}
 		} else {
 			setValue(null);
