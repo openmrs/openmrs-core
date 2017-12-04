@@ -28,6 +28,9 @@ import org.slf4j.LoggerFactory;
  */
 public class FilterUtil {
 	
+	private FilterUtil() {
+}
+	
 	private static final Logger log = LoggerFactory.getLogger(FilterUtil.class);
 	
 	public static final String LOCALE_ATTRIBUTE = "locale";
