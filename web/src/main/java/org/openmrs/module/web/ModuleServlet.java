@@ -43,7 +43,7 @@ public class ModuleServlet extends HttpServlet {
 		
 		log.debug("ModuleId: " + moduleId);
 		Module mod = ModuleFactory.getModuleById(moduleId);
-		
+		 
 		// where in the path to start trimming
 		int start = 1;
 		if (mod != null) {
