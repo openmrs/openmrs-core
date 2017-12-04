@@ -80,7 +80,7 @@ public class ModuleUtil {
 			log.debug("Starting all modules in this list: " + moduleListString);
 			
 			String[] moduleArray = moduleListString.split(" ");
-			List<File> modulesToLoad = new Vector<File>();
+			List<File> modulesToLoad = new ArrayList<File>();
 			
 			for (String modulePath : moduleArray) {
 				if (modulePath != null && modulePath.length() > 0) {
@@ -150,7 +150,7 @@ public class ModuleUtil {
 	 */
 	public static void shutdown() {
 		
-		List<Module> modules = new Vector<Module>();
+		List<Module> modules = new ArrayList<Module>();
 		modules.addAll(ModuleFactory.getStartedModules());
 		
 		for (Module mod : modules) {
@@ -423,8 +423,8 @@ public class ModuleUtil {
 				return 0;
 			}
 			
-			List<String> versions = new Vector<String>();
-			List<String> values = new Vector<String>();
+			List<String> versions = new ArrayList<String>();
+			List<String> values = new ArrayList<String>();
 			String separator = "-";
 			
 			// strip off any qualifier e.g. "-SNAPSHOT"

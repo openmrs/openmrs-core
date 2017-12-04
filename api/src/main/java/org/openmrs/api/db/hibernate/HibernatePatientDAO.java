@@ -388,7 +388,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	@SuppressWarnings("unchecked")
         @Override
 	public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) {
-		List<Patient> patients = new Vector<Patient>();
+		List<Patient> patients = new ArrayList<Patient>();
 		List<Integer> patientIds = new Vector<Integer>();
 
 		if (!attributes.isEmpty()) {

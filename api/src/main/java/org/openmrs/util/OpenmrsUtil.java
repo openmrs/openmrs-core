@@ -136,7 +136,7 @@ public class OpenmrsUtil {
 	public static <E extends Object> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {
 		// TODO finish function
 		
-		Collection<Collection<E>> returnList = new Vector<Collection<E>>();
+		Collection<Collection<E>> returnList = new ArrayList<Collection<E>>();
 		
 		Collection<E> toAdd = new LinkedList<E>();
 		Collection<E> toDel = new LinkedList<E>();

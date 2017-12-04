@@ -15,10 +15,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.ContainedIn;
@@ -389,7 +389,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @should not fail with null attributes
 	 */
 	public List<PersonAttribute> getActiveAttributes() {
-		List<PersonAttribute> attrs = new Vector<PersonAttribute>();
+		List<PersonAttribute> attrs = new ArrayList<PersonAttribute>();
 		for (PersonAttribute attr : getAttributes()) {
 			if (!attr.getVoided()) {
 				attrs.add(attr);
@@ -559,7 +559,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @should return all PersonAttributes with matching attributeType names
 	 */
 	public List<PersonAttribute> getAttributes(String attributeName) {
-		List<PersonAttribute> ret = new Vector<PersonAttribute>();
+		List<PersonAttribute> ret = new ArrayList<PersonAttribute>();
 		
 		for (PersonAttribute attribute : getActiveAttributes()) {
 			PersonAttributeType type = attribute.getAttributeType();
@@ -580,7 +580,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @should return list of person attributes based on AttributeTypeId
 	 */
 	public List<PersonAttribute> getAttributes(Integer attributeTypeId) {
-		List<PersonAttribute> ret = new Vector<PersonAttribute>();
+		List<PersonAttribute> ret = new ArrayList<PersonAttribute>();
 		
 		for (PersonAttribute attribute : getActiveAttributes()) {
 			if (attributeTypeId.equals(attribute.getAttributeType().getPersonAttributeTypeId())) {
@@ -598,7 +598,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @param personAttributeType
 	 */
 	public List<PersonAttribute> getAttributes(PersonAttributeType personAttributeType) {
-		List<PersonAttribute> ret = new Vector<PersonAttribute>();
+		List<PersonAttribute> ret = new ArrayList<PersonAttribute>();
 		for (PersonAttribute attribute : getAttributes()) {
 			if (personAttributeType.equals(attribute.getAttributeType()) && !attribute.getVoided()) {
 				ret.add(attribute);

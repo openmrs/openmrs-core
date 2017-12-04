@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -125,7 +125,7 @@ public class FormUtil {
 	 * @return unique XML tag name from given string (guaranteed not to duplicate any tag names
 	 *         already within <code>tagList</code>)
 	 */
-	public static String getNewTag(String s, Vector<String> tagList) {
+	public static String getNewTag(String s, ArrayList<String> tagList) {
 		String token = getXmlToken(s);
 		if (tagList.contains(token)) {
 			int i = 1;

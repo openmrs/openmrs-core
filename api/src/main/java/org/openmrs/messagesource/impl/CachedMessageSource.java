@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.PresentationMessage;
@@ -57,7 +57,7 @@ public class CachedMessageSource extends AbstractMessageSource implements Mutabl
 	 */
 	@Override
 	public Collection<PresentationMessage> getPresentations() {
-		Collection<PresentationMessage> allMessages = new Vector<PresentationMessage>();
+		Collection<PresentationMessage> allMessages = new ArrayList<PresentationMessage>();
 		
 		for (PresentationMessageMap codeMessageMap : localizedMap.values()) {
 			allMessages.addAll(codeMessageMap.values());

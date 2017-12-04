@@ -12,9 +12,9 @@ package org.openmrs;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import org.hibernate.search.annotations.ContainedIn;
 
@@ -313,7 +313,7 @@ public class Patient extends Person {
 	 * @should return preferred identifiers first in the list
 	 */
 	public List<PatientIdentifier> getActiveIdentifiers() {
-		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();
+		List<PatientIdentifier> ids = new ArrayList<PatientIdentifier>();
 		List<PatientIdentifier> nonPreferred = new LinkedList<PatientIdentifier>();
 		for (PatientIdentifier pi : getIdentifiers()) {
 			if (!pi.getVoided()) {
@@ -339,7 +339,7 @@ public class Patient extends Person {
 	 * @see #getIdentifiers()
 	 */
 	public List<PatientIdentifier> getPatientIdentifiers(PatientIdentifierType pit) {
-		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();
+		List<PatientIdentifier> ids = new ArrayList<PatientIdentifier>();
 		for (PatientIdentifier pi : getIdentifiers()) {
 			if (!pi.getVoided() && pit.equals(pi.getIdentifierType())) {
 				ids.add(pi);
