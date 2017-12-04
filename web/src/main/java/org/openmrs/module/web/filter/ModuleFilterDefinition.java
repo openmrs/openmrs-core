@@ -13,7 +13,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
@@ -154,7 +154,7 @@ public class ModuleFilterDefinition implements Serializable {
 	 */
 	public static List<ModuleFilterDefinition> retrieveFilterDefinitions(Module module)  {
 		
-		List<ModuleFilterDefinition> filters = new Vector<ModuleFilterDefinition>();
+		List<ModuleFilterDefinition> filters = new ArrayList<ModuleFilterDefinition>();
 		
 		try {
 			Element rootNode = module.getConfig().getDocumentElement();

@@ -566,8 +566,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		// if the authenticated role is in the list of searched roles, then all
 		// persons should be searched
-		Role auth_role = getRole(RoleConstants.AUTHENTICATED);
-		if (roles.contains(auth_role)) {
+		Role authRole = getRole(RoleConstants.AUTHENTICATED);
+		if (roles.contains(authRole)) {
 			return dao.getCountOfUsers(name, new Vector<Role>(), includeRetired);
 		}
 		
@@ -598,8 +598,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		// if the authenticated role is in the list of searched roles, then all
 		// persons should be searched
-		Role auth_role = getRole(RoleConstants.AUTHENTICATED);
-		if (roles.contains(auth_role)) {
+		Role authRole = getRole(RoleConstants.AUTHENTICATED);
+		if (roles.contains(authRole)) {
 			return dao.getUsers(name, new Vector<Role>(), includeRetired, start, length);
 		}
 		

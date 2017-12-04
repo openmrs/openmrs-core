@@ -69,7 +69,7 @@ public class HttpClient {
 			connection.setRequestProperty("Content-Length", String.valueOf(data.length()));
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 			
-			wr = new OutputStreamWriter(connection.getOutputStream());
+			wr = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
 			wr.write(data.toString());
 			wr.flush();
 			wr.close();
