@@ -309,6 +309,9 @@ public class Person extends BaseOpenmrsData {
 	 */
 	public void setDeathDate(Date deathDate) {
 		this.deathDate = deathDate;
+		if (deathDate != null) {
+			setDead(true);
+		}
 	}
 	
 	/**
