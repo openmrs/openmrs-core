@@ -31,7 +31,11 @@ public class ConceptReferenceTermEditor extends PropertyEditorSupport {
 				setValue(Context.getConceptService().getConceptReferenceTerm(Integer.valueOf(text)));
 			}
 			catch (Exception ex) {
-				throw new IllegalArgumentException("ConceptReferenceTerm not found: " + text, ex);
+				ConceptReferenceTerm value = Context.getConceptService().getConceptReferenceTermByUuid(text);
+				setValue(value);
+				if (value == null) {
+					throw new IllegalArgumentException("ConceptReferenceTerm not found: " + text, ex);
+				}
 			}
 		} else {
 			setValue(null);
