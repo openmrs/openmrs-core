@@ -317,7 +317,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients) {
-		Map<Integer, List<Encounter>> encountersBypatient = new HashMap<Integer, List<Encounter>>();
+		Map<Integer, List<Encounter>> encountersBypatient = new HashMap<>();
 		
 		@SuppressWarnings("unchecked")
 		List<Encounter> allEncounters = createEncounterCriteria(patients).list();
@@ -328,7 +328,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			List<Encounter> encounters = encountersBypatient.get(patientId);
 			
 			if (encounters == null) {
-				encounters = new ArrayList<Encounter>();
+				encounters = new ArrayList<>();
 			}
 			
 			encounters.add(encounter);
@@ -351,7 +351,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		
 		// only include this where clause if patients were passed in
 		if (patients != null) {
-            ArrayList<Integer> patientIds = new ArrayList<Integer>();
+            ArrayList<Integer> patientIds = new ArrayList<>();
 			patients.getMemberships().forEach(m -> patientIds.add(m.getPatientId()));
 			criteria.add(Restrictions.in("patient.personId", patientIds));
 		}
@@ -446,7 +446,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			String name = query;
 			String identifier = query;
 			criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
-			    new ArrayList<PatientIdentifierType>(), true, orderByNames, true);	
+					new ArrayList<>(), true, orderByNames, true);
 		}
 		
 		return criteria;

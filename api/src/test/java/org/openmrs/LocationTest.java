@@ -56,8 +56,8 @@ public class LocationTest {
 		locationOne.setChildLocations(new HashSet<>(Arrays.asList(childOflocationOne)));
 		locationTwo.setChildLocations(new HashSet<>(Arrays.asList(childOnfLocationTwo)));
 		
-		childOflocationOne.setChildLocations(new HashSet<Location>());
-		childOnfLocationTwo.setChildLocations(new HashSet<Location>());
+		childOflocationOne.setChildLocations(new HashSet<>());
+		childOnfLocationTwo.setChildLocations(new HashSet<>());
 		
 		Set<Location> descendantLocations = rootLocation.getDescendantLocations(true);
 		
@@ -88,10 +88,10 @@ public class LocationTest {
 		    secondChildOfNonRetiredLocation)));
 		retiredLocation.setChildLocations(new HashSet<>(Arrays.asList(firstChildOfRetiredLocation)));
 		
-		firstChildOfNonRetiredLocation.setChildLocations(new HashSet<Location>());
-		secondChildOfNonRetiredLocation.setChildLocations(new HashSet<Location>());
+		firstChildOfNonRetiredLocation.setChildLocations(new HashSet<>());
+		secondChildOfNonRetiredLocation.setChildLocations(new HashSet<>());
 		
-		firstChildOfRetiredLocation.setChildLocations(new HashSet<Location>());
+		firstChildOfRetiredLocation.setChildLocations(new HashSet<>());
 		
 		//action
 		Set<Location> descendantLocations = rootLocation.getDescendantLocations(false);

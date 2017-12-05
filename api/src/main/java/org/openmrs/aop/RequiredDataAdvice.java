@@ -250,7 +250,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		Class<? extends OpenmrsObject> openmrsObjectClass = openmrsObject.getClass();
 		
 		if (alreadyHandled == null) {
-			alreadyHandled = new ArrayList<OpenmrsObject>();
+			alreadyHandled = new ArrayList<>();
 		}
 		
 		// fetch all handlers for the object being saved

@@ -57,10 +57,7 @@ public class UpdateLayoutAddressFormatChangeSet implements CustomTaskChange {
 				pStmt.executeBatch();
 			}
 		}
-		catch (DatabaseException e) {
-			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
 		}
 		finally {

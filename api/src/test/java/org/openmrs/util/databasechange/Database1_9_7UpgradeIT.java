@@ -67,7 +67,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	public ExpectedException expectedException = ExpectedException.none();
 	
 	private Map<String, String> row(String... values) {
-		Map<String, String> row = new HashMap<String, String>();
+		Map<String, String> row = new HashMap<>();
 		for (int i = 0; i < values.length; i += 2) {
 			row.put(values[i], values[i + 1]);
 		}
@@ -200,7 +200,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		    "order_frequency_id", "concept_id");
 		Assert.assertThat(orderFrequencySelect.size(), Matchers.is(2));
 		
-		Map<String, String> conceptsToFrequencies = new HashMap<String, String>();
+		Map<String, String> conceptsToFrequencies = new HashMap<>();
 		conceptsToFrequencies.put(orderFrequencySelect.get(0).get("concept_id"),
 		    orderFrequencySelect.get(0).get("order_frequency_id"));
 		conceptsToFrequencies.put(orderFrequencySelect.get(1).get("concept_id"),
@@ -292,7 +292,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		//Sanity check that we have orders with orderer column set
 		rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 		    "select order_id, orderer from orders where orderer is not null", true);
-		List<OrderAndPerson> ordersAndOrderersWithAProviderAccount = new ArrayList<OrderAndPerson>();
+		List<OrderAndPerson> ordersAndOrderersWithAProviderAccount = new ArrayList<>();
 		for (List<Object> row : rows) {
 			ordersAndOrderersWithAProviderAccount.add(new OrderAndPerson((Integer) row.get(0), (Integer) row.get(1)));
 		}

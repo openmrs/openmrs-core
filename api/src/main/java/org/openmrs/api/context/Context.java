@@ -136,7 +136,7 @@ public class Context {
 
 	// Using "wrapper" (Object array) around UserContext to avoid ThreadLocal
 	// bug in Java 1.5
-	private static final ThreadLocal<Object[] /* UserContext */> userContextHolder = new ThreadLocal<Object[] /* UserContext */>();
+	private static final ThreadLocal<Object[] /* UserContext */> userContextHolder = new ThreadLocal<>();
 
 	private static ServiceContext serviceContext;
 
@@ -975,7 +975,7 @@ public class Context {
 		// setting core roles
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
-			Set<String> currentRoleNames = new HashSet<String>();
+			Set<String> currentRoleNames = new HashSet<>();
 			for (Role role : Context.getUserService().getAllRoles()) {
 				currentRoleNames.add(role.getRole().toUpperCase());
 			}
@@ -1000,7 +1000,7 @@ public class Context {
 		// setting core privileges
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_PRIVILEGES);
-			Set<String> currentPrivilegeNames = new HashSet<String>();
+			Set<String> currentPrivilegeNames = new HashSet<>();
 			for (Privilege privilege : Context.getUserService().getAllPrivileges()) {
 				currentPrivilegeNames.add(privilege.getPrivilege().toUpperCase());
 			}
@@ -1026,9 +1026,9 @@ public class Context {
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			Set<String> currentPropNames = new HashSet<String>();
-			Map<String, GlobalProperty> propsMissingDescription = new HashMap<String, GlobalProperty>();
-			Map<String, GlobalProperty> propsMissingDatatype = new HashMap<String, GlobalProperty>();
+			Set<String> currentPropNames = new HashSet<>();
+			Map<String, GlobalProperty> propsMissingDescription = new HashMap<>();
+			Map<String, GlobalProperty> propsMissingDatatype = new HashMap<>();
 			for (GlobalProperty prop : Context.getAdministrationService().getAllGlobalProperties()) {
 				currentPropNames.add(prop.getProperty().toUpperCase());
 				if (prop.getDescription() == null) {

@@ -37,9 +37,9 @@ public class Daemon {
 	 */
 	protected static final String DAEMON_USER_UUID = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB";
 	
-	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<Boolean>();
+	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<>();
 	
-	protected static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<User>();
+	protected static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
 	
 	/**
 	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext)

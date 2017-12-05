@@ -68,7 +68,7 @@ public class ModuleFilterConfig implements FilterConfig {
 	 */
 	@Override
 	public Enumeration<String> getInitParameterNames() {
-		Vector<String> v = new Vector<String>(filterDefinition.getInitParameters().keySet());
+		Vector<String> v = new Vector<>(filterDefinition.getInitParameters().keySet());
 		return v.elements();
 	}
 	

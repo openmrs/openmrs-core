@@ -667,13 +667,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 					
 					reader.close();
 				}
-				catch (FileNotFoundException e) {
-					throw new DatabaseUnitRuntimeException(e);
-				}
-				catch (DataSetException e) {
-					throw new DatabaseUnitRuntimeException(e);
-				}
-				catch (IOException e) {
+				catch (DataSetException | IOException e) {
 					throw new DatabaseUnitRuntimeException(e);
 				}
 			}

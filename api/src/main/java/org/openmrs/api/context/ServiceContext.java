@@ -86,13 +86,13 @@ public class ServiceContext implements ApplicationContextAware {
 	private boolean useSystemClassLoader = false;
 	
 	// Cached service objects
-	Map<Class, Object> services = new HashMap<Class, Object>();
+	Map<Class, Object> services = new HashMap<>();
 	
 	// Advisors added to services by this service
-	Map<Class, Set<Advisor>> addedAdvisors = new HashMap<Class, Set<Advisor>>();
+	Map<Class, Set<Advisor>> addedAdvisors = new HashMap<>();
 	
 	// Advice added to services by this service
-	Map<Class, Set<Advice>> addedAdvice = new HashMap<Class, Set<Advice>>();
+	Map<Class, Set<Advice>> addedAdvice = new HashMap<>();
 	
 	/**
 	 * Services implementing the OpenmrsService interface for each module. The map is keyed by the
@@ -100,7 +100,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 *
 	 * @since 1.9
 	 */
-	Map<String, OpenmrsService> moduleOpenmrsServices = new HashMap<String, OpenmrsService>();
+	Map<String, OpenmrsService> moduleOpenmrsServices = new HashMap<>();
 	
 	/**
 	 * The default constructor is private so as to keep only one instance per java vm.

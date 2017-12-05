@@ -160,7 +160,7 @@ public class UpdateFileParser {
 	 * @return
 	 */
 	private static List<String> validConfigVersions() {
-		List<String> versions = new ArrayList<String>();
+		List<String> versions = new ArrayList<>();
 		versions.add("1.0");
 		versions.add("1.1");
 		return versions;

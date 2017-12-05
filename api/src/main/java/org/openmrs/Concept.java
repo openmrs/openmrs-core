@@ -132,11 +132,11 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 
 	/** default constructor */
 	public Concept() {
-		names = new HashSet<ConceptName>();
-		answers = new HashSet<ConceptAnswer>();
-		conceptSets = new TreeSet<ConceptSet>();
-		descriptions = new HashSet<ConceptDescription>();
-		conceptMappings = new HashSet<ConceptMap>();
+		names = new HashSet<>();
+		answers = new HashSet<>();
+		conceptSets = new TreeSet<>();
+		descriptions = new HashSet<>();
+		conceptMappings = new HashSet<>();
 	}
 	
 	/**
@@ -160,7 +160,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public Collection<ConceptAnswer> getAnswers() {
 		if (answers == null) {
-			answers = new HashSet<ConceptAnswer>();
+			answers = new HashSet<>();
 		}
 		return answers;
 	}
@@ -543,7 +543,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public ConceptName getName(Locale locale, ConceptNameType ofType, ConceptNameTag havingTag) {
 		Collection<ConceptName> namesInLocale = getNames(locale);
 		if (!namesInLocale.isEmpty()) {
-			List<ConceptName> matches = new ArrayList<ConceptName>();
+			List<ConceptName> matches = new ArrayList<>();
 			
 			for (ConceptName candidate : namesInLocale) {
 				if ((ofType == null || ofType.equals(candidate.getConceptNameType()))
@@ -773,13 +773,13 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		// lazy create the cache
 		List<ConceptName> compatibleNames = null;
 		if (compatibleCache == null) {
-			compatibleCache = new HashMap<Locale, List<ConceptName>>();
+			compatibleCache = new HashMap<>();
 		} else {
 			compatibleNames = compatibleCache.get(desiredLocale);
 		}
 		
 		if (compatibleNames == null) {
-			compatibleNames = new Vector<ConceptName>();
+			compatibleNames = new Vector<>();
 			for (ConceptName possibleName : getNames()) {
 				if (LocaleUtility.areCompatible(possibleName.getLocale(), desiredLocale)) {
 					compatibleNames.add(possibleName);
@@ -879,7 +879,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return a collection of all short names for this concept
 	 */
 	public Collection<ConceptName> getShortNames() {
-		List<ConceptName> shortNames = new ArrayList<ConceptName>();
+		List<ConceptName> shortNames = new ArrayList<>();
 		if (getNames().isEmpty()) {
 			if (log.isDebugEnabled()) {
 				log.debug("The Concept with id: " + conceptId + " has no names");

@@ -51,7 +51,7 @@ public class InitializationWizardModel {
 	/**
 	 * Records completed tasks and are displayed at the top of the page upon error
 	 */
-	public List<String> workLog = new ArrayList<String>();
+	public List<String> workLog = new ArrayList<>();
 	
 	/**
 	 * Whether the runtime properties file could possible be created. (only read by the velocity

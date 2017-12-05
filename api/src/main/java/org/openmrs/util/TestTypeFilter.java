@@ -37,7 +37,7 @@ public class TestTypeFilter implements TypeFilter {
 	/**
 	 * Any class with a super class in this list will not be loaded (scanned) by Spring
 	 */
-	private static List<String> superClassNamesToExclude = new ArrayList<String>();
+	private static List<String> superClassNamesToExclude = new ArrayList<>();
 	
 	static {
 		superClassNamesToExclude.add("org.openmrs.test.BaseContextSensitiveTest");

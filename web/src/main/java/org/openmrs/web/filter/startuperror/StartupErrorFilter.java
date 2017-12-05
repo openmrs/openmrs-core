@@ -58,9 +58,9 @@ public class StartupErrorFilter extends StartupFilter {
 	        ServletException {
 		
 		if (getModel().errorAtStartup instanceof OpenmrsCoreModuleException) {
-			renderTemplate("coremoduleerror.vm", new HashMap<String, Object>(), httpResponse);
+			renderTemplate("coremoduleerror.vm", new HashMap<>(), httpResponse);
 		} else {
-			renderTemplate(DEFAULT_PAGE, new HashMap<String, Object>(), httpResponse);
+			renderTemplate(DEFAULT_PAGE, new HashMap<>(), httpResponse);
 		}
 	}
 	
@@ -95,7 +95,7 @@ public class StartupErrorFilter extends StartupFilter {
 				Context.closeSession();
 			}
 			
-			Map<String, Object> map = new HashMap<String, Object>();
+			Map<String, Object> map = new HashMap<>();
 			map.put("success", Boolean.TRUE);
 			renderTemplate("coremoduleerror.vm", map, httpResponse);
 			

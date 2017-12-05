@@ -59,13 +59,13 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	private static boolean libCacheFolderInitialized = false;
 	
 	// placeholder to hold mementos to restore
-	private static Map<String, OpenmrsMemento> mementos = new WeakHashMap<String, OpenmrsMemento>();
+	private static Map<String, OpenmrsMemento> mementos = new WeakHashMap<>();
 	
 	/**
 	 * Holds all classes that has been requested from this class loader. We use weak references so that
 	 * module classes can be garbage collected when modules are unloaded.
 	 */
-	private Map<String, WeakReference<Class<?>>> cachedClasses = new ConcurrentHashMap<String, WeakReference<Class<?>>>();
+	private Map<String, WeakReference<Class<?>>> cachedClasses = new ConcurrentHashMap<>();
 	
 	// suffix of the OpenMRS required library cache folder
 	private static final String LIBCACHESUFFIX = ".openmrs-lib-cache";
@@ -199,7 +199,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	private void cacheClass(String name, Class<?> clazz) {
-		cachedClasses.put(name, new WeakReference<Class<?>>(clazz));
+		cachedClasses.put(name, new WeakReference<>(clazz));
 	}
 	
 	/**
@@ -235,7 +235,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	@Override
 	public Enumeration<URL> findResources(final String name) throws IOException {
-		Set<URI> results = new HashSet<URI>();
+		Set<URI> results = new HashSet<>();
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			Enumeration<URL> urls = classLoader.findResources(name);
 			while (urls.hasMoreElements()) {
@@ -261,7 +261,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			}
 		}
 		
-		List<URL> resources = new ArrayList<URL>(results.size());
+		List<URL> resources = new ArrayList<>(results.size());
 		for (URI result : results) {
 			resources.add(result.toURL());
 		}
@@ -297,7 +297,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	@Override
 	public Enumeration<URL> getResources(String packageName) throws IOException {
-		Set<URI> results = new HashSet<URI>();
+		Set<URI> results = new HashSet<>();
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			Enumeration<URL> urls = classLoader.getResources(packageName);
 			while (urls.hasMoreElements()) {
@@ -323,7 +323,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			}
 		}
 		
-		List<URL> resources = new ArrayList<URL>(results.size());
+		List<URL> resources = new ArrayList<>(results.size());
 		for (URI result : results) {
 			resources.add(result.toURL());
 		}
@@ -417,7 +417,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	
 	// List all threads and recursively list all subgroup
 	private static List<Thread> listThreads(ThreadGroup group, String indent) {
-		List<Thread> threadToReturn = new ArrayList<Thread>();
+		List<Thread> threadToReturn = new ArrayList<>();
 		
 		log.error(indent + "Group[" + group.getName() + ":" + group.getClass() + "]");
 		int nt = group.activeCount();

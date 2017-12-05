@@ -60,7 +60,7 @@ public class HibernateProviderDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProvidersByPerson_shouldListRetiredProvidersAtTheEnd() {
-		List<Provider> providers = new ArrayList<Provider>();
+		List<Provider> providers = new ArrayList<>();
 		providers = (List<Provider>) service.getProvidersByPerson(personDao.getPerson(2), true);
 		
 		Assert.assertEquals(true, providers.get(1).getRetired());

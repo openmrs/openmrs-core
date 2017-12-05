@@ -589,7 +589,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		query.append(nameQuery);
 		query.append(")^0.2)");
 		
-		List<String> localeQueries = new ArrayList<String>();
+		List<String> localeQueries = new ArrayList<>();
 		for (Locale locale : locales) {
 			if (searchExactLocale) {
 				localeQueries.add(locale.toString());
@@ -644,15 +644,15 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	private List<String> tokenizeConceptName(final String escapedName, final Set<Locale> locales) {
-		List<String> words = new ArrayList<String>();
+		List<String> words = new ArrayList<>();
 		words.addAll(Arrays.asList(escapedName.trim().split(" ")));
 		
-		Set<String> stopWords = new HashSet<String>();
+		Set<String> stopWords = new HashSet<>();
 		for (Locale locale : locales) {
 			stopWords.addAll(Context.getConceptService().getConceptStopWords(locale));
 		}
 		
-		List<String> tokenizedName = new ArrayList<String>();
+		List<String> tokenizedName = new ArrayList<>();
 		
 		for (String word : words) {
 			word = word.trim();
@@ -830,7 +830,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	private List<Concept> getParents(Concept current) throws DAOException {
-		List<Concept> parents = new ArrayList<Concept>();
+		List<Concept> parents = new ArrayList<>();
 		if (current != null) {
 			Query query = sessionFactory.getCurrentSession().createQuery(
 			    "from Concept c join c.conceptSets sets where sets.concept = ?").setEntity(0, current);
@@ -854,7 +854,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public Set<Locale> getLocalesOfConceptNames() {
-		Set<Locale> locales = new HashSet<Locale>();
+		Set<Locale> locales = new HashSet<>();
 		
 		Query query = sessionFactory.getCurrentSession().createQuery("select distinct locale from ConceptName");
 		
@@ -1160,7 +1160,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public Map<Integer, String> getConceptUuids() {
-		Map<Integer, String> ret = new HashMap<Integer, String>();
+		Map<Integer, String> ret = new HashMap<>();
 		Query q = sessionFactory.getCurrentSession().createQuery("select conceptId, uuid from Concept");
 		List<Object[]> list = q.list();
 		for (Object[] o : list) {

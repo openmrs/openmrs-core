@@ -36,7 +36,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	
 	private Concept concept;
 	
-	private Set<ProgramWorkflowState> states = new HashSet<ProgramWorkflowState>();
+	private Set<ProgramWorkflowState> states = new HashSet<>();
 	
 	// ******************
 	// Constructors
@@ -162,7 +162,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	 * @return Set&lt;ProgramWorkflowState&gt; - all ProgramWorkflowStates matching input parameters
 	 */
 	public Set<ProgramWorkflowState> getStates(boolean includeRetired) {
-		Set<ProgramWorkflowState> ret = new HashSet<ProgramWorkflowState>();
+		Set<ProgramWorkflowState> ret = new HashSet<>();
 		for (ProgramWorkflowState s : getStates()) {
 			if (includeRetired || !s.getRetired()) {
 				ret.add(s);

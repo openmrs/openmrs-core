@@ -207,7 +207,7 @@ public class ADTA28Handler implements Application {
 			throw new HL7Exception("Missing patient identifier in PID segment");
 		}
 		
-		List<PatientIdentifier> goodIdentifiers = new ArrayList<PatientIdentifier>();
+		List<PatientIdentifier> goodIdentifiers = new ArrayList<>();
 		for (CX id : idList) {
 			
 			String assigningAuthority = id.getAssigningAuthority().getNamespaceID().getValue();

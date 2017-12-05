@@ -452,7 +452,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 			//Empty set so return null
 			return null;
 		}
-		Set<Obs> nonVoided = new LinkedHashSet<Obs>(groupMembers);
+		Set<Obs> nonVoided = new LinkedHashSet<>(groupMembers);
 		Iterator<Obs> i = nonVoided.iterator();
 		while (i.hasNext()) {
 			Obs obs = i.next();

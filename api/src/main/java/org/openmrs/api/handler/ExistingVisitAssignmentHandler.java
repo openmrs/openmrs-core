@@ -53,7 +53,7 @@ public class ExistingVisitAssignmentHandler extends BaseEncounterVisitHandler {
 			return;
 		}
 		
-		List<Patient> patients = new ArrayList<Patient>();
+		List<Patient> patients = new ArrayList<>();
 		patients.add(encounter.getPatient());
 		
 		//Fetch visits for this patient that haven't ended by the encounter date.

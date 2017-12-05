@@ -388,8 +388,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	@SuppressWarnings("unchecked")
         @Override
 	public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) {
-		List<Patient> patients = new ArrayList<Patient>();
-		List<Integer> patientIds = new Vector<Integer>();
+		List<Patient> patients = new ArrayList<>();
+		List<Integer> patientIds = new Vector<>();
 
 		if (!attributes.isEmpty()) {
 
@@ -785,7 +785,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see PatientSearchCriteria
 	 */
 	private List<String> tokenizeIdentifierQuery(String query) {
-		List<String> searchPatterns = new ArrayList<String>();
+		List<String> searchPatterns = new ArrayList<>();
 
 		String patternSearch = Context.getAdministrationService().getGlobalProperty(
 				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN, "");

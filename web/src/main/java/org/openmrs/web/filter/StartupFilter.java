@@ -81,12 +81,12 @@ public abstract class StartupFilter implements Filter {
 	/**
 	 * Records errors that will be displayed to the user
 	 */
-	protected Map<String, Object[]> errors = new HashMap<String, Object[]>();
+	protected Map<String, Object[]> errors = new HashMap<>();
 	
 	/**
 	 * Messages that will be displayed to the user
 	 */
-	protected Map<String, Object[]> msgs = new HashMap<String, Object[]>();
+	protected Map<String, Object[]> msgs = new HashMap<>();
 	
 	/**
 	 * Used for configuring tools within velocity toolbox
@@ -246,10 +246,7 @@ public abstract class StartupFilter implements Filter {
 				field.setAccessible(true);
 				velocityContext.put(field.getName(), field.get(model));
 			}
-			catch (IllegalArgumentException e) {
-				log.error("Error generated while getting field value: " + field.getName(), e);
-			}
-			catch (IllegalAccessException e) {
+			catch (IllegalArgumentException | IllegalAccessException e) {
 				log.error("Error generated while getting field value: " + field.getName(), e);
 			}
 		}
