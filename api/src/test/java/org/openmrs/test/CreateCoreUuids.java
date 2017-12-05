@@ -31,7 +31,7 @@ public class CreateCoreUuids extends BaseContextSensitiveTest {
 	
 	//@Test
 	@SkipBaseSetup
-	public void getUUIDs() throws Exception {
+	public void getUUIDs() {
 		Context.authenticate("admin", "test");
 		System.out.println("db: " + OpenmrsConstants.DATABASE_NAME);
 		

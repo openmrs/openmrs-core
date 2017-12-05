@@ -141,7 +141,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Override
 	public Message createMessage(String recipients, String sender, String subject, String content, String attachment,
-	        String attachmentContentType, String attachmentFileName) throws MessageException {
+	        String attachmentContentType, String attachmentFileName) {
 		Message message = new Message();
 		message.setRecipients(recipients);
 		message.setSender(sender);
@@ -274,7 +274,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List getAllTemplates() throws MessageException {
+	public List getAllTemplates() {
 		return templateDAO.getTemplates();
 	}
 	
@@ -286,7 +286,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Template getTemplate(Integer id) throws MessageException {
+	public Template getTemplate(Integer id) {
 		return templateDAO.getTemplate(id);
 	}
 	
@@ -298,7 +298,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List getTemplatesByName(String name) throws MessageException {
+	public List getTemplatesByName(String name) {
 		return templateDAO.getTemplatesByName(name);
 	}	
 }

@@ -73,7 +73,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 * @see CustomTaskChange#execute(Database)
 	 */
 	@Override
-	public void execute(Database database) throws CustomChangeException {
+	public void execute(Database database) {
 		
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
 		//In the liquibase changelog file, there is a precondition that checks if this is a fresh installation
@@ -809,7 +809,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
 	@Override
-	public void setUp() throws SetupException {
+	public void setUp() {
 	}
 	
 	/**

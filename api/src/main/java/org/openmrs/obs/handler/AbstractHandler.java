@@ -58,7 +58,7 @@ public class AbstractHandler {
 	 * @param obs the Obs with a non-null complex data on it
 	 * @return File that the complex data should be written to
 	 */
-	public File getOutputFileToWrite(Obs obs) throws IOException {
+	public File getOutputFileToWrite(Obs obs) {
 		// Get the title and remove the extension.
 		String t = obs.getComplexData().getTitle();
 		

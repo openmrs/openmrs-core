@@ -74,7 +74,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@After
-	public void cleanUp() throws Exception {
+	public void cleanUp() {
 		// Temporary logger level changes to debug TRUNK-4212
 		LogManager.getLogger("org.hibernate.SQL").setLevel(Level.WARN);
 		LogManager.getLogger("org.hibernate.type").setLevel(Level.WARN);
@@ -270,7 +270,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void saveTask_shouldSaveTaskToTheDatabase() throws Exception {
+	public void saveTask_shouldSaveTaskToTheDatabase() {
 		log.debug("saveTask_shouldSaveTaskToTheDatabase start");
 		SchedulerService service = Context.getSchedulerService();
 		

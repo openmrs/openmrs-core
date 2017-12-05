@@ -59,7 +59,7 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 	}
 	
 	@Override
-	public void setUp() throws SetupException {
+	public void setUp() {
 		// No setup actions
 	}
 	

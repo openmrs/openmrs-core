@@ -286,7 +286,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * @see org.openmrs.scheduler.SchedulerService#shutdownTask(TaskDefinition)
 	 */
 	@Override
-	public void shutdownTask(TaskDefinition taskDefinition) throws SchedulerException {
+	public void shutdownTask(TaskDefinition taskDefinition) {
 		if (taskDefinition != null) {
 			
 			// Remove the task from the scheduled tasks and shutdown the timer
@@ -306,7 +306,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * classloader has been changed (e.g. during module start/stop)
 	 */
 	@Override
-	public void rescheduleAllTasks() throws SchedulerException {
+	public void rescheduleAllTasks() {
 		for (TaskDefinition task : getScheduledTasks()) {
 			try {
 				rescheduleTask(task);

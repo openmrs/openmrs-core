@@ -347,7 +347,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
 	@Override
-	public void setUp() throws SetupException {
+	public void setUp() {
 	}
 	
 	/**

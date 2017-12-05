@@ -93,7 +93,7 @@ public class PatientServiceImplTest {
     }
 
     @Test
-    public void checkPatientIdentifiers_shouldThrowMissingRequiredIdentifierGivenRequiredIdentifierTypeMissing() throws Exception {
+    public void checkPatientIdentifiers_shouldThrowMissingRequiredIdentifierGivenRequiredIdentifierTypeMissing() {
         // given
         final PatientIdentifierType requiredIdentifierType = new PatientIdentifierType(12345);
         requiredIdentifierType.setUuid("some type uuid");
@@ -125,7 +125,7 @@ public class PatientServiceImplTest {
     }
 
     @Test
-    public void checkPatientIdentifiers_shouldNotThrowMissingRequiredIdentifierGivenRequiredIdentifierTypesArePresent() throws Exception {
+    public void checkPatientIdentifiers_shouldNotThrowMissingRequiredIdentifierGivenRequiredIdentifierTypesArePresent() {
         // given
         final String typeUuid = "equal type uuid";
         final PatientIdentifierType requiredIdentifierType = new PatientIdentifierType(12345);
@@ -151,7 +151,7 @@ public class PatientServiceImplTest {
     }
 
     @Test
-    public void checkPatientIdentifiers_shouldThrowDuplicateIdentifierGivenDuplicateIdentifiers() throws Exception {
+    public void checkPatientIdentifiers_shouldThrowDuplicateIdentifierGivenDuplicateIdentifiers() {
         // given
         final Integer equalIdentifierTypeId = 12345;
         final String equalIdentifierTypeName = "TypeName";
@@ -187,7 +187,7 @@ public class PatientServiceImplTest {
     }
 
     @Test(expected = InsufficientIdentifiersException.class)
-    public void checkPatientIdentifiers_shouldThrowInsufficientIdentifiersErrorGivenPatientHasNoActiveIdentifiers() throws Exception {
+    public void checkPatientIdentifiers_shouldThrowInsufficientIdentifiersErrorGivenPatientHasNoActiveIdentifiers() {
         // given
         Patient patient = new Patient();
         patient.setVoided(false);
@@ -200,7 +200,7 @@ public class PatientServiceImplTest {
     }
 
     @Test
-    public void checkPatientIdentifiers_shouldIgnoreAbsenceOfActiveIdentifiersGivenPatientIsVoided() throws Exception {
+    public void checkPatientIdentifiers_shouldIgnoreAbsenceOfActiveIdentifiersGivenPatientIsVoided() {
         // given
         Patient patient = new Patient();
         patient.setVoided(true);
@@ -213,17 +213,17 @@ public class PatientServiceImplTest {
     }
 
     @Test(expected = APIException.class)
-    public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenEmptyAttributes() throws Exception {
+    public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenEmptyAttributes() {
         patientService.getDuplicatePatientsByAttributes(Arrays.asList());
     }
 
     @Test(expected = APIException.class)
-    public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenNoAttributes() throws Exception {
+    public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenNoAttributes() {
         patientService.getDuplicatePatientsByAttributes(null);
     }
 
     @Test
-    public void getDuplicatePatientsByAttributes_shouldCallDaoGivenAttributes() throws Exception {
+    public void getDuplicatePatientsByAttributes_shouldCallDaoGivenAttributes() {
         when(patientDaoMock.getDuplicatePatientsByAttributes(anyList())).thenReturn(Arrays.asList(mock(Patient.class)));
         final List<Patient> duplicatePatients = patientService.getDuplicatePatientsByAttributes(Arrays.asList("some attribute", "another attribute"));
         verify(patientDaoMock, times(1)).getDuplicatePatientsByAttributes(anyList());
@@ -264,22 +264,22 @@ public class PatientServiceImplTest {
 
 
     @Test(expected = APIException.class)
-    public void processDeath_shouldThrowAPIExceptionIfPatientIsNull() throws Exception{
+    public void processDeath_shouldThrowAPIExceptionIfPatientIsNull() {
         patientService.processDeath(null, new Date(), new Concept(), "unknown");
     }
 
     @Test(expected = APIException.class)
-    public void processDeath_shouldThrowAPIExceptionIfDateDiedIsNull() throws Exception{
+    public void processDeath_shouldThrowAPIExceptionIfDateDiedIsNull() {
         patientService.processDeath(new Patient(), null, new Concept(), "unknown");
     }
 
     @Test(expected = APIException.class)
-    public void processDeath_shouldThrowAPIExceptionIfCauseOfDeathIsNull() throws Exception{
+    public void processDeath_shouldThrowAPIExceptionIfCauseOfDeathIsNull() {
         patientService.processDeath(new Patient(), new Date(), null, "unknown");
     }
 
     @Test
-    public void processDeath_shouldMapValuesAndSavePatient() throws Exception{
+    public void processDeath_shouldMapValuesAndSavePatient() {
         // given
         final Date dateDied = new Date();
         final Concept causeOfDeath = new Concept(2);

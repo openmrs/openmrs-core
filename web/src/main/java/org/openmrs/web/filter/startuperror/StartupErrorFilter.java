@@ -54,8 +54,7 @@ public class StartupErrorFilter extends StartupFilter {
 	 * @param httpResponse
 	 */
 	@Override
-	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	        ServletException {
+	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
 		
 		if (getModel().errorAtStartup instanceof OpenmrsCoreModuleException) {
 			renderTemplate("coremoduleerror.vm", new HashMap<String, Object>(), httpResponse);

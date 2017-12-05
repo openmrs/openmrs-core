@@ -98,7 +98,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	/**
 	 * Starts up a thread to process all existing HL7InQueue entries
 	 */
-	public void processHL7InQueue() throws HL7Exception {
+	public void processHL7InQueue() {
 		synchronized (isRunning) {
 			if (isRunning) {
 				log.warn("HL7 processor aborting (another processor already running)");

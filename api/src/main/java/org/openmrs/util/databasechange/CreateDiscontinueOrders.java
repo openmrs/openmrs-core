@@ -152,7 +152,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 	}
 	
 	@Override
-	public void setUp() throws SetupException {
+	public void setUp() {
 	}
 	
 	@Override

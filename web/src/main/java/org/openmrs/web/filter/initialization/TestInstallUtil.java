@@ -261,7 +261,7 @@ public class TestInstallUtil {
 	 * @throws IOException
 	 */
 	protected static InputStream getResourceInputStream(String url, String openmrsUsername, String openmrsPassword)
-	        throws MalformedURLException, IOException, APIException {
+	        throws IOException, APIException {
 		
 		HttpURLConnection connection = createConnection(url);
 		OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
@@ -281,7 +281,7 @@ public class TestInstallUtil {
 	}
 
 	private static HttpURLConnection createConnection(String url)
-	        throws IOException, MalformedURLException {
+	        throws IOException {
 		final HttpURLConnection result = (HttpURLConnection) new URL(url).openConnection();
 		result.setRequestMethod("POST");
 		result.setConnectTimeout(15000);

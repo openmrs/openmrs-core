@@ -273,7 +273,7 @@ public class UserContext implements Serializable {
 	 * @should add authenticated role to all authenticated users
 	 * @should return same roles as user getAllRoles method
 	 */
-	public Set<Role> getAllRoles(User user) throws Exception {
+	public Set<Role> getAllRoles(User user) {
 		Set<Role> roles = new HashSet<Role>();
 		
 		// add the Anonymous Role

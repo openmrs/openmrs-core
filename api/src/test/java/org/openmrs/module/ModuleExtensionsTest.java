@@ -33,7 +33,7 @@ public class ModuleExtensionsTest {
 	private Module mockModule;
 
 	@Before
-	public void before() throws Exception {
+	public void before() {
 		mockModule = spy(new Module("mockmodule"));
 	}
 

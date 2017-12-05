@@ -225,7 +225,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfDateActivatedAfterDateStopped() throws Exception {
+	public void validate_shouldFailValidationIfDateActivatedAfterDateStopped() {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));

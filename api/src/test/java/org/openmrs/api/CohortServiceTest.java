@@ -635,7 +635,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see Cohort#getMemberships(boolean)
 	 */
 	@Test
-	public void getMemberships_shouldReturnVoidedMemberships() throws Exception {
+	public void getMemberships_shouldReturnVoidedMemberships() {
 		executeDataSet(COHORT_XML);
 		
 		CohortMembership voidedMembership = new CohortMembership(7);
@@ -659,7 +659,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	 * @see Cohort#getMemberships(boolean)
 	 */
 	@Test
-	public void getMemberships_shouldReturnUnvoidedMemberships() throws Exception {
+	public void getMemberships_shouldReturnUnvoidedMemberships() {
 		executeDataSet(COHORT_XML);
 		
 		Cohort cohort = Context.getCohortService().getCohort(1);
@@ -705,7 +705,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getCohortMemberships_shouldGetMembershipsContainingPatient() throws Exception {
+	public void getCohortMemberships_shouldGetMembershipsContainingPatient() {
 		executeDataSet(COHORT_XML);
 		List<CohortMembership> memberships = service.getCohortMemberships(6, null, false);
 		assertThat(memberships.size(), is(2));
@@ -714,7 +714,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getCohortMemberships_shouldGetMembershipsContainingPatientInDateRange() throws Exception {
+	public void getCohortMemberships_shouldGetMembershipsContainingPatientInDateRange() {
 		executeDataSet(COHORT_XML);
 		List<CohortMembership> memberships = service.getCohortMemberships(6, new Date(), false);
 		assertThat(memberships.size(), is(1));

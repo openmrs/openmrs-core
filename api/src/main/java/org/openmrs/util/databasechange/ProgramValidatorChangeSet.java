@@ -40,7 +40,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 	 * @see CustomTaskChange#execute(Database)
 	 */
 	@Override
-	public void execute(Database database) throws CustomChangeException {
+	public void execute(Database database) {
 		Connection conn = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
 		List<String> messages = new ArrayList<String>();
 		
@@ -124,7 +124,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
 	@Override
-	public void setUp() throws SetupException {
+	public void setUp() {
 	}
 	
 	/**

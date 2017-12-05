@@ -34,7 +34,7 @@ public class ModuleFilter implements Filter {
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
 	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
+	public void init(FilterConfig filterConfig) {
 		log.debug("Initializating ModuleFilter");
 	}
 	

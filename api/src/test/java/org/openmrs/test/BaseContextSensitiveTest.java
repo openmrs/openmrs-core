@@ -220,7 +220,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @throws Exception
 	 */
 	@Before
-	public void checkNotModule() throws Exception {
+	public void checkNotModule() {
 		if (this.getClass().getPackage().toString().contains("org.openmrs.module.")
 		        && !(this instanceof BaseModuleContextSensitiveTest)) {
 			throw new RuntimeException(
@@ -559,7 +559,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		return sessionFactory.getCurrentSession().doReturningWork(new ReturningWork<Connection>() {
 			
 			@Override
-			public Connection execute(Connection connection) throws SQLException {
+			public Connection execute(Connection connection) {
 				return connection;
 			}
 		});
@@ -963,7 +963,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @throws Exception
 	 */
 	@AfterClass
-	public static void closeSessionAfterEachClass() throws Exception {
+	public static void closeSessionAfterEachClass() {
 		//Some tests add data via executeDataset()
 		//We need to delete it in order not to interfere with others
 		if (instance != null) {
@@ -1011,7 +1011,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @see SkipBaseSetupAnnotationExecutionListener
 	 * @see #baseSetupWithStandardDataAndAuthentication()
 	 */
-	public void skipBaseSetup() throws Exception {
+	public void skipBaseSetup() {
 		skipBaseSetup = true;
 	}
 	

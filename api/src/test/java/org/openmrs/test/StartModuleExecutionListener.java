@@ -143,7 +143,7 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 	}
 	
 	@Override
-	public void afterTestClass(TestContext testContext) throws Exception {
+	public void afterTestClass(TestContext testContext) {
 		StartModule startModuleAnnotation = testContext.getTestClass().getAnnotation(StartModule.class);
 		
 		if (startModuleAnnotation != null) {

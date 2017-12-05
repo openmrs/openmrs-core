@@ -85,7 +85,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public void before(Method method, Object[] args, Object target) throws Throwable {
+	public void before(Method method, Object[] args, Object target) {
 		String methodName = method.getName();
 		
 		// skip out early if there are no arguments

@@ -67,7 +67,7 @@ public class DropMillisecondsHibernateInterceptorTest extends BaseContextSensiti
 	}
 	
 	@Test
-	public void shouldNotChangeWhenInstanceOfTime() throws Exception {
+	public void shouldNotChangeWhenInstanceOfTime() {
 		Time[] time = { Time.valueOf("17:00:00") };
 		boolean anyChanges = dropMillisecondsHibernateInterceptor.onSave(null, null, time, null, null);
 		assertEquals(false, anyChanges);

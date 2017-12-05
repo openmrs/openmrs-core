@@ -38,7 +38,7 @@ public class OpenmrsProfileExcludeFilter implements TypeFilter {
 	 * @should include bean for openmrs 1_8 and later
 	 */
 	@Override
-	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) {
 		Map<String, Object> openmrsProfileAttributes = metadataReader.getAnnotationMetadata().getAnnotationAttributes(
 				"org.openmrs.annotation.OpenmrsProfile");
 		if (openmrsProfileAttributes != null) {

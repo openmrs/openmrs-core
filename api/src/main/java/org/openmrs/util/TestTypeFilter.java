@@ -54,7 +54,7 @@ public class TestTypeFilter implements TypeFilter {
 	 *      org.springframework.core.type.classreading.MetadataReaderFactory)
 	 */
 	@Override
-	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) {
 		String superClassName = metadataReader.getClassMetadata().getSuperClassName();
 		if (superClassName != null) {
 			return superClassNamesToExclude.contains(superClassName);

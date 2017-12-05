@@ -321,7 +321,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	 * @throws InvocationTargetException
 	 * @throws IllegalAccessException
 	 */
-	public void copy(Allergy allergy) throws InvocationTargetException, IllegalAccessException {
+	public void copy(Allergy allergy) {
 		setAllergyId(null);
 		setUuid(UUID.randomUUID().toString());
 		setPatient(allergy.getPatient());

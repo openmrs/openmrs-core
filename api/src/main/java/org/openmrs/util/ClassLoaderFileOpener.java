@@ -36,7 +36,7 @@ public class ClassLoaderFileOpener implements ResourceAccessor {
 	}
 	
 	@Override
-	public InputStream getResourceAsStream(String file) throws IOException {
+	public InputStream getResourceAsStream(String file) {
 		return cl.getResourceAsStream(file);
 	}
 	

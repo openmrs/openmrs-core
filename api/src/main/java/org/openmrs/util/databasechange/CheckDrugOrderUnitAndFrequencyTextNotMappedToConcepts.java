@@ -31,7 +31,7 @@ import liquibase.precondition.CustomPrecondition;
 public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements CustomPrecondition {
 	
 	@Override
-	public void check(Database database) throws CustomPreconditionFailedException, CustomPreconditionErrorException {
+	public void check(Database database) throws CustomPreconditionErrorException {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
 		try {
 			Set<String> doseUnits = DatabaseUtil.getUniqueNonNullColumnValues("units", "drug_order", String.class,

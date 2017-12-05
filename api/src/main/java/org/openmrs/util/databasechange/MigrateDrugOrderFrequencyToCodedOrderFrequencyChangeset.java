@@ -107,7 +107,7 @@ public class MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset implements 
 	}
 	
 	@Override
-	public void setUp() throws SetupException {
+	public void setUp() {
 	}
 	
 	@Override

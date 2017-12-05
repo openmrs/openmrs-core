@@ -485,7 +485,7 @@ public class ORUR01Handler implements Application {
 	 * @param message
 	 * @throws HL7Exception
 	 */
-	private void validate(Message message) throws HL7Exception {
+	private void validate(Message message) {
 		// TODO: check version, etc.
 	}
 	
@@ -506,7 +506,7 @@ public class ORUR01Handler implements Application {
 	 * @return list of not-null NK1 segments
 	 * @throws HL7Exception
 	 */
-	public List<NK1> getNK1List(ORU_R01 oru) throws HL7Exception {
+	public List<NK1> getNK1List(ORU_R01 oru) {
 		List<NK1> res = new ArrayList<NK1>();
 		// there will always be at least one NK1, even if the original message does not contain one
 		for (int i = 0; i < oru.getPATIENT_RESULT().getPATIENT().getNK1Reps(); i++) {
@@ -885,7 +885,7 @@ public class ORUR01Handler implements Application {
 	 * @return ConceptName from the database
 	 * @throws HL7Exception
 	 */
-	private ConceptName getConceptName(String hl7ConceptNameId) throws HL7Exception {
+	private ConceptName getConceptName(String hl7ConceptNameId) {
 		ConceptName specifiedConceptName = null;
 		if (hl7ConceptNameId != null) {
 			// get the exact concept name specified by the id
@@ -1190,7 +1190,7 @@ public class ORUR01Handler implements Application {
 	}
 	
 	//TODO: Debug (and use) methods in HL7Util instead
-	private Date tsToDate(TS ts) throws HL7Exception {
+	private Date tsToDate(TS ts) {
 		// need to handle timezone
 		String dtm = ts.getTime().getValue();
 		int year = Integer.parseInt(dtm.substring(0, 4));

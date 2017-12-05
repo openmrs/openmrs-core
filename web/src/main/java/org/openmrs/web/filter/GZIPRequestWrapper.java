@@ -29,7 +29,7 @@ public class GZIPRequestWrapper extends HttpServletRequestWrapper {
 	}
 	
 	@Override
-	public ServletInputStream getInputStream() throws IOException {
+	public ServletInputStream getInputStream() {
 		return stream;
 	}
 	

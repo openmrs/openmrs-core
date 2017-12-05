@@ -158,16 +158,16 @@ public class MappingJacksonHttpMessageConverter extends AbstractHttpMessageConve
 	}
 	
 	@Override
-	protected Object readInternal(Class<?> clazz, HttpInputMessage inputMessage) throws IOException,
-	        HttpMessageNotReadableException {
+	protected Object readInternal(Class<?> clazz, HttpInputMessage inputMessage) throws
+			HttpMessageNotReadableException {
 		
 		JavaType javaType = getJavaType(clazz, null);
 		return readJavaType(javaType, inputMessage);
 	}
 	
 	@Override
-	public Object read(Type type, Class<?> contextClass, HttpInputMessage inputMessage) throws IOException,
-	        HttpMessageNotReadableException {
+	public Object read(Type type, Class<?> contextClass, HttpInputMessage inputMessage) throws
+			HttpMessageNotReadableException {
 		
 		JavaType javaType = getJavaType(type, contextClass);
 		return readJavaType(javaType, inputMessage);

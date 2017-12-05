@@ -286,7 +286,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	 * @see RequiredDataAdvice#isOpenmrsObjectCollection(Class<*>,Object)
 	 */
 	@Test
-	public void isOpenmrsObjectCollection_shouldReturnTrueIfClassIsOpenmrsObjectList() throws Exception {
+	public void isOpenmrsObjectCollection_shouldReturnTrueIfClassIsOpenmrsObjectList() {
 		List<Location> locations = new ArrayList<Location>();
 		Location location = new Location();
 		locations.add(location);
@@ -297,7 +297,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	 * @see RequiredDataAdvice#isOpenmrsObjectCollection(Class<*>,Object)
 	 */
 	@Test
-	public void isOpenmrsObjectCollection_shouldReturnTrueIfClassIsOpenmrsObjectSet() throws Exception {
+	public void isOpenmrsObjectCollection_shouldReturnTrueIfClassIsOpenmrsObjectSet() {
 		Set<Location> locations = new HashSet<Location>();
 		Location location = new Location();
 		locations.add(location);
@@ -308,7 +308,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	 * @see RequiredDataAdvice#isOpenmrsObjectCollection(Class<*>,Object)
 	 */
 	@Test
-	public void isOpenmrsObjectCollection_shouldReturnFalseIfCollectionIsEmptyRegardlessOfTypeHeld() throws Exception {
+	public void isOpenmrsObjectCollection_shouldReturnFalseIfCollectionIsEmptyRegardlessOfTypeHeld() {
 		Set<Location> locations = new HashSet<Location>();
 		Assert.assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(locations));
 	}

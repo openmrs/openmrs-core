@@ -3383,7 +3383,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see ConceptService#getConceptAttributeTypes(String)
 	 */
 	@Test
-	public void getConceptAttributeTypes_shouldSearchConceptAttributesByName() throws Exception{
+	public void getConceptAttributeTypes_shouldSearchConceptAttributesByName() {
 		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
 		ConceptService conceptService = Context.getConceptService();
 		Assert.assertEquals(1, conceptService.getConceptAttributeTypes("we").size());
@@ -3394,7 +3394,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see ConceptService#getConceptAttributeTypeByName(String)
 	 */
 	@Test
-	public void getConceptAttributeTypes_shouldGetConceptAttributeByExactName() throws Exception{
+	public void getConceptAttributeTypes_shouldGetConceptAttributeByExactName() {
 		executeDataSet(CONCEPT_ATTRIBUTE_TYPE_XML);
 		ConceptService conceptService = Context.getConceptService();
 		Assert.assertNotNull(conceptService.getConceptAttributeTypeByName("Audit Date"));

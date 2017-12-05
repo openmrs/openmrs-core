@@ -133,7 +133,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeAllTests() throws Exception {
+	public void runBeforeAllTests() {
 		patientService = Context.getPatientService();
 		personService = Context.getPersonService();
 		adminService = Context.getAdministrationService();
@@ -175,7 +175,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getAllIdentifierValidators()
 	 */
 	@Test
-	public void getAllIdentifierValidators_shouldReturnAllRegisteredIdentifierValidators() throws Exception {
+	public void getAllIdentifierValidators_shouldReturnAllRegisteredIdentifierValidators() {
 		Collection<IdentifierValidator> expectedValidators = new HashSet<IdentifierValidator>();
 		expectedValidators.add(patientService.getIdentifierValidator("org.openmrs.patient.impl.LuhnIdentifierValidator"));
 		expectedValidators
@@ -188,7 +188,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getIdentifierValidator(String)
 	 */
 	@Test
-	public void getAllIdentifierValidators_shouldTreatEmptyStringsLikeANullEntry() throws Exception {
+	public void getAllIdentifierValidators_shouldTreatEmptyStringsLikeANullEntry() {
 		Assert.assertEquals(null, patientService.getIdentifierValidator(""));
 	}
 	
@@ -228,7 +228,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldCreatePatient() throws Exception {
+	public void shouldCreatePatient() {
 		executeDataSet(CREATE_PATIENT_XML);
 		
 		Patient patient = new Patient();
@@ -287,7 +287,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldCreatePatientWithValidatedIdentifier() throws Exception {
+	public void shouldCreatePatientWithValidatedIdentifier() {
 		executeDataSet(CREATE_PATIENT_VALID_IDENT_XML);
 		Patient patient = createBasicPatient();
 		Patient patient2 = createBasicPatient();
@@ -356,7 +356,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldGetPatientsByIdentifier() throws Exception {
+	public void shouldGetPatientsByIdentifier() {
 		
 		executeDataSet(CREATE_PATIENT_XML);
 		updateSearchIndex();
@@ -405,7 +405,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldGetPatientsByNameShouldLimitSize() throws Exception {
+	public void shouldGetPatientsByNameShouldLimitSize() {
 		executeDataSet(JOHN_PATIENTS_XML);
 		updateSearchIndex();
 		
@@ -479,7 +479,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#purgePatientIdentifierType(PatientIdentifierType)
 	 */
 	@Test
-	public void purgePatientIdentifierType_shouldDeleteTypeFromDatabase() throws Exception {
+	public void purgePatientIdentifierType_shouldDeleteTypeFromDatabase() {
 		PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
 		
 		patientIdentifierType.setName("testing");
@@ -498,7 +498,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#savePatientIdentifierType(PatientIdentifierType)
 	 */
 	@Test
-	public void savePatientIdentifierType_shouldCreateNewType() throws Exception {
+	public void savePatientIdentifierType_shouldCreateNewType() {
 		PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
 		
 		patientIdentifierType.setName("testing");
@@ -516,7 +516,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#savePatientIdentifierType(PatientIdentifierType)
 	 */
 	@Test
-	public void savePatientIdentifierType_shouldUpdateExistingType() throws Exception {
+	public void savePatientIdentifierType_shouldUpdateExistingType() {
 		
 		PatientIdentifierType type = patientService.getPatientIdentifierType(1);
 		type.setName("SOME NEW NAME");
@@ -533,7 +533,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldAllowGettingPatientsThatWereCreatedByUsersWhoArePatients() throws Exception {
+	public void shouldAllowGettingPatientsThatWereCreatedByUsersWhoArePatients() {
 		executeDataSet(USERS_WHO_ARE_PATIENTS_XML);
 		
 		// we must fetch this person first, because this person is
@@ -557,7 +557,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatients(String)
 	 */
 	@Test
-	public void getPatients_shouldForceSearchStringToBeGreaterThanMinsearchcharactersGlobalProperty() throws Exception {
+	public void getPatients_shouldForceSearchStringToBeGreaterThanMinsearchcharactersGlobalProperty() {
 		// make sure we can get patients with the default of 3
 		assertEquals(1, Context.getPatientService().getPatients("Colle").size());
 		
@@ -593,7 +593,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 *      getPatient_shouldReturnNullObjectIfPatientIdDoesntExist()?
 	 */
 	@Test
-	public void getPatient_shouldReturnNullObjectIfPatientIdDoesntExist() throws Exception {
+	public void getPatient_shouldReturnNullObjectIfPatientIdDoesntExist() {
 		Assert.assertNull(Context.getPatientService().getPatient(1234512093));
 	}
 	
@@ -711,7 +711,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#savePatient(Patient)
 	 */
 	@Test
-	public void savePatient_shouldCreateNewPatientFromExistingPersonPlusUserObject() throws Exception {
+	public void savePatient_shouldCreateNewPatientFromExistingPersonPlusUserObject() {
 		// sanity check, make sure there isn't a 501 patient already
 		Patient oldPatient = patientService.getPatient(501);
 		Assert.assertNull(oldPatient);
@@ -738,7 +738,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatients(String,String,List<QPatientIdentifierType ;>,null)
 	 */
 	@Test
-	public void getPatients_shouldSearchFamilyName2WithName() throws Exception {
+	public void getPatients_shouldSearchFamilyName2WithName() {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
 		updateSearchIndex();
 		
@@ -780,7 +780,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldFetchNamesForPersonsThatWereFirstFetchedAsPatients() throws Exception {
+	public void shouldFetchNamesForPersonsThatWereFirstFetchedAsPatients() {
 		Person person = Context.getPersonService().getPerson(2);
 		Patient patient = Context.getPatientService().getPatient(2);
 		
@@ -797,7 +797,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldFetchAddressesForPersonsThatWereFirstFetchedAsPatients() throws Exception {
+	public void shouldFetchAddressesForPersonsThatWereFirstFetchedAsPatients() {
 		Person person = Context.getPersonService().getPerson(2);
 		Patient patient = Context.getPatientService().getPatient(2);
 		
@@ -814,7 +814,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldFetchPersonAttributesForPersonsThatWereFirstFetchedAsPatients() throws Exception {
+	public void shouldFetchPersonAttributesForPersonsThatWereFirstFetchedAsPatients() {
 		Person person = Context.getPersonService().getPerson(2);
 		Patient patient = Context.getPatientService().getPatient(2);
 		
@@ -828,7 +828,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#savePatient(Patient)
 	 */
 	@Test
-	public void savePatient_shouldNotThrowANonUniqueObjectExceptionWhenCalledWithAHandConstructedPatient() throws Exception {
+	public void savePatient_shouldNotThrowANonUniqueObjectExceptionWhenCalledWithAHandConstructedPatient() {
 		Patient patient = new Patient();
 		patient.setGender("M");
 		patient.setPatientId(2);
@@ -846,7 +846,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)
 	 */
 	@Test
-	public void isIdentifierInUseByAnotherPatient_shouldIgnoreVoidedPatientIdentifiers() throws Exception {
+	public void isIdentifierInUseByAnotherPatient_shouldIgnoreVoidedPatientIdentifiers() {
 		PatientIdentifierType pit = patientService.getPatientIdentifierType(2);
 		PatientIdentifier patientIdentifier = new PatientIdentifier("ABC123", pit, null);
 		Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
@@ -858,7 +858,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)
 	 */
 	@Test
-	public void isIdentifierInUseByAnotherPatient_shouldIgnoreVoidedPatients() throws Exception {
+	public void isIdentifierInUseByAnotherPatient_shouldIgnoreVoidedPatients() {
 		{
 			// patient 999 should be voided and have a non-voided identifier of
 			// XYZ
@@ -883,8 +883,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)
 	 */
 	@Test
-	public void isIdentifierInUseByAnotherPatient_shouldReturnFalseWhenPatientIdentifierContainsAPatientAndNoOtherPatientHasThisId()
-	    throws Exception {
+	public void isIdentifierInUseByAnotherPatient_shouldReturnFalseWhenPatientIdentifierContainsAPatientAndNoOtherPatientHasThisId() {
 		PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
 		PatientIdentifier patientIdentifier = new PatientIdentifier("Nobody could possibly have this identifier", pit, null);
 		patientIdentifier.setPatient(patientService.getPatient(2));
@@ -895,8 +894,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)
 	 */
 	@Test
-	public void isIdentifierInUseByAnotherPatient_shouldReturnFalseWhenPatientIdentifierDoesNotContainAPatientAndNoPatientHasThisId()
-	    throws Exception {
+	public void isIdentifierInUseByAnotherPatient_shouldReturnFalseWhenPatientIdentifierDoesNotContainAPatientAndNoPatientHasThisId() {
 		PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
 		PatientIdentifier patientIdentifier = new PatientIdentifier("Nobody could possibly have this identifier", pit, null);
 		Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
@@ -906,8 +904,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)
 	 */
 	@Test
-	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueWhenPatientIdentifierContainsAPatientAndAnotherPatientHasThisId()
-	    throws Exception {
+	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueWhenPatientIdentifierContainsAPatientAndAnotherPatientHasThisId() {
 		PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
 		PatientIdentifier patientIdentifier = new PatientIdentifier("7TU-8", pit, null);
 		patientIdentifier.setPatient(patientService.getPatient(2));
@@ -918,8 +915,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)
 	 */
 	@Test
-	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueWhenPatientIdentifierDoesNotContainAPatientAndAPatientHasThisId()
-	    throws Exception {
+	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueWhenPatientIdentifierDoesNotContainAPatientAndAPatientHasThisId() {
 		PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
 		PatientIdentifier patientIdentifier = new PatientIdentifier("7TU-8", pit, null);
 		Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
@@ -929,7 +925,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#checkPatientIdentifiers(Patient)
 	 */
 	@Test
-	public void checkPatientIdentifiers_shouldIgnoreVoidedPatientIdentifier() throws Exception {
+	public void checkPatientIdentifiers_shouldIgnoreVoidedPatientIdentifier() {
 
 		Patient patient = new Patient();
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
@@ -961,8 +957,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#checkPatientIdentifiers(Patient)
 	 */
 	@Test(expected = BlankIdentifierException.class)
-	public void checkPatientIdentifiers_shouldRemoveIdentifierAndThrowErrorWhenPatientHasBlankPatientIdentifier()
-	    throws Exception {
+	public void checkPatientIdentifiers_shouldRemoveIdentifierAndThrowErrorWhenPatientHasBlankPatientIdentifier() {
 		
 		Patient patient = new Patient();
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
@@ -978,8 +973,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#checkPatientIdentifiers(Patient)
 	 */
 	@Test
-	public void checkPatientIdentifiers_shouldThrowErrorGivenPatientIdentifierIsInvalid()
-			throws Exception {
+	public void checkPatientIdentifiers_shouldThrowErrorGivenPatientIdentifierIsInvalid() {
 
 		// given
 		Patient patient = new Patient();
@@ -1012,8 +1006,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#checkPatientIdentifiers(Patient)
 	 */
 	@Test
-	public void checkPatientIdentifiers_shouldRemovePatientIdentifierGivenItIsBlank()
-			throws Exception {
+	public void checkPatientIdentifiers_shouldRemovePatientIdentifierGivenItIsBlank() {
 
 		// given
 		Patient patient = new Patient();
@@ -1041,7 +1034,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#checkPatientIdentifiers(Patient)
 	 */
 	@Test(expected = InsufficientIdentifiersException.class)
-	public void checkPatientIdentifiers_shouldThrowErrorWhenPatientHasNullPatientIdentifiers() throws Exception {
+	public void checkPatientIdentifiers_shouldThrowErrorWhenPatientHasNullPatientIdentifiers() {
 		Patient patient = new Patient();
 		patient.setIdentifiers(null);
 		Context.getPatientService().checkPatientIdentifiers(patient);
@@ -1054,7 +1047,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#checkPatientIdentifiers(Patient)
 	 */
 	@Test(expected = InsufficientIdentifiersException.class)
-	public void checkPatientIdentifiers_shouldThrowErrorWhenPatientHasEmptyPatientIdentifiers() throws Exception {
+	public void checkPatientIdentifiers_shouldThrowErrorWhenPatientHasEmptyPatientIdentifiers() {
 		Patient patient = new Patient();
 		patient.setIdentifiers(new HashSet<PatientIdentifier>());
 		Context.getPatientService().checkPatientIdentifiers(patient);
@@ -1064,7 +1057,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#checkPatientIdentifiers(Patient)
 	 */
 	@Test(expected = DuplicateIdentifierException.class)
-	public void checkPatientIdentifiers_shouldThrowErrorWhenPatientHasIdenticalIdentifiers() throws Exception {
+	public void checkPatientIdentifiers_shouldThrowErrorWhenPatientHasIdenticalIdentifiers() {
 		
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
 		
@@ -1091,7 +1084,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getAllIdentifierValidators()
 	 */
 	@Test
-	public void getAllIdentifierValidators_shouldReturnAllRegisteredPatientIdentifierValidators() throws Exception {
+	public void getAllIdentifierValidators_shouldReturnAllRegisteredPatientIdentifierValidators() {
 		
 		Collection<IdentifierValidator> expectedValidators = new HashSet<IdentifierValidator>();
 		expectedValidators.add(patientService.getIdentifierValidator("org.openmrs.patient.impl.LuhnIdentifierValidator"));
@@ -1109,7 +1102,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getAllPatientIdentifierTypes()
 	 */
 	@Test
-	public void getAllPatientIdentifierTypes_shouldFetchAllNonRetiredPatientIdentifierTypes() throws Exception {
+	public void getAllPatientIdentifierTypes_shouldFetchAllNonRetiredPatientIdentifierTypes() {
 		Collection<PatientIdentifierType> types = Context.getPatientService().getAllPatientIdentifierTypes();
 		Assert.assertNotNull("Should not return null", types);
 		
@@ -1126,8 +1119,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getAllPatientIdentifierTypes(null)
 	 */
 	@Test
-	public void getAllPatientIdentifierTypes_shouldFetchPatientIdentifierTypesIncludingRetiredWhenIncludeRetiredIsTrue()
-	    throws Exception {
+	public void getAllPatientIdentifierTypes_shouldFetchPatientIdentifierTypesIncludingRetiredWhenIncludeRetiredIsTrue() {
 		
 		Collection<PatientIdentifierType> types = Context.getPatientService().getAllPatientIdentifierTypes(true);
 		
@@ -1146,8 +1138,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getAllPatientIdentifierTypes(null)
 	 */
 	@Test
-	public void getAllPatientIdentifierTypes_shouldFetchPatientIdentifierTypesExcludingRetiredWhenIncludeRetiredIsFalse()
-	    throws Exception {
+	public void getAllPatientIdentifierTypes_shouldFetchPatientIdentifierTypesExcludingRetiredWhenIncludeRetiredIsFalse() {
 		
 		Collection<PatientIdentifierType> types = Context.getPatientService().getAllPatientIdentifierTypes(false);
 		
@@ -1164,7 +1155,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getIdentifierValidator(String)
 	 */
 	@Test
-	public void getIdentifierValidator_shouldReturnPatientIdentifierValidatorGivenClassName() throws Exception {
+	public void getIdentifierValidator_shouldReturnPatientIdentifierValidatorGivenClassName() {
 		IdentifierValidator identifierValidator = Context.getPatientService().getIdentifierValidator(
 		    "org.openmrs.patient.impl.LuhnIdentifierValidator");
 		Assert.assertNotNull(identifierValidator);
@@ -1180,7 +1171,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatient(Integer)
 	 */
 	@Test
-	public void getPatient_shouldFetchPatientWithGivenPatientId() throws Exception {
+	public void getPatient_shouldFetchPatientWithGivenPatientId() {
 		Patient patient = Context.getPatientService().getPatient(2);
 		Assert.assertNotNull(patient);
 		Assert.assertTrue(patient.getClass().isAssignableFrom(Patient.class));
@@ -1190,7 +1181,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatient(Integer)
 	 */
 	@Test
-	public void getPatient_shouldReturnNullWhenPatientWithGivenPatientIdDoesNotExist() throws Exception {
+	public void getPatient_shouldReturnNullWhenPatientWithGivenPatientIdDoesNotExist() {
 		Patient patient = Context.getPatientService().getPatient(10000);
 		Assert.assertNull(patient);
 	}
@@ -1199,7 +1190,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientByExample(Patient)
 	 */
 	@Test
-	public void getPatientByExample_shouldFetchPatientMatchingPatientIdOfGivenPatient() throws Exception {
+	public void getPatientByExample_shouldFetchPatientMatchingPatientIdOfGivenPatient() {
 		Patient examplePatient = Context.getPatientService().getPatient(6);
 		examplePatient.setId(2);
 		
@@ -1213,7 +1204,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientByExample(Patient)
 	 */
 	@Test
-	public void getPatientByExample_shouldNotFetchPatientMatchingAnyOtherPatientInformation() throws Exception {
+	public void getPatientByExample_shouldNotFetchPatientMatchingAnyOtherPatientInformation() {
 		Patient examplePatient = Context.getPatientService().getPatient(6);
 		// TODO Test this - it shouldn't matter what the identifier is
 		examplePatient.setId(null);
@@ -1226,7 +1217,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientByExample(Patient)
 	 */
 	@Test
-	public void getPatientByExample_shouldReturnNullWhenNoPatientMatchesGivenPatientToMatch() throws Exception {
+	public void getPatientByExample_shouldReturnNullWhenNoPatientMatchesGivenPatientToMatch() {
 		Patient examplePatient = Context.getPatientService().getPatient(6);
 		examplePatient.setId(3);
 		
@@ -1240,7 +1231,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierType(Integer)
 	 */
 	@Test
-	public void getPatientIdentifierType_shouldFetchPatientIdentifierWithGivenPatientIdentifierTypeId() throws Exception {
+	public void getPatientIdentifierType_shouldFetchPatientIdentifierWithGivenPatientIdentifierTypeId() {
 		PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierType(1);
 		Assert.assertNotNull(identifierType);
 		Assert.assertTrue(identifierType.getClass().isAssignableFrom(PatientIdentifierType.class));
@@ -1250,7 +1241,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierType(Integer)
 	 */
 	@Test
-	public void getPatientIdentifierType_shouldReturnNullWhenPatientIdentifierIdentifierDoesNotExist() throws Exception {
+	public void getPatientIdentifierType_shouldReturnNullWhenPatientIdentifierIdentifierDoesNotExist() {
 		PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierType(10000);
 		Assert.assertNull(identifierType);
 	}
@@ -1259,8 +1250,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierTypeByName(String)
 	 */
 	@Test
-	public void getPatientIdentifierTypeByName_shouldFetchPatientIdentifierTypeThatExactlyMatchesGivenName()
-	    throws Exception {
+	public void getPatientIdentifierTypeByName_shouldFetchPatientIdentifierTypeThatExactlyMatchesGivenName() {
 		
 		String identifierTypeName = "OpenMRS Identification Number";
 		PatientIdentifierType identifierType = Context.getPatientService()
@@ -1274,8 +1264,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierTypeByName(String)
 	 */
 	@Test
-	public void getPatientIdentifierTypeByName_shouldNotReturnPatientIdentifierTypeThatPartiallyMatchesGivenName()
-	    throws Exception {
+	public void getPatientIdentifierTypeByName_shouldNotReturnPatientIdentifierTypeThatPartiallyMatchesGivenName() {
 		PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByName("OpenMRS");
 		Assert.assertNull(identifierType);
 	}
@@ -1284,8 +1273,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierTypeByName(String)
 	 */
 	@Test
-	public void getPatientIdentifierTypeByName_shouldReturnNullWhenPatientIdentifierTypeWithGivenNameDoesNotExist()
-	    throws Exception {
+	public void getPatientIdentifierTypeByName_shouldReturnNullWhenPatientIdentifierTypeWithGivenNameDoesNotExist() {
 		PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByName(
 		    "Invalid Identifier Example");
 		Assert.assertNull(identifierType);
@@ -1295,7 +1283,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierTypeByUuid(String)
 	 */
 	@Test
-	public void getPatientIdentifierTypeByUuid_shouldFetchPatientIdentifierTypeWithGivenUuid() throws Exception {
+	public void getPatientIdentifierTypeByUuid_shouldFetchPatientIdentifierTypeWithGivenUuid() {
 		PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
 		    "1a339fe9-38bc-4ab3-b180-320988c0b968");
 		Assert.assertNotNull(identifierType);
@@ -1306,8 +1294,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierTypeByUuid(String)
 	 */
 	@Test
-	public void getPatientIdentifierTypeByUuid_shouldReturnNullWhenPatientIdentifierTypeWithGivenUuidDoesNotExist()
-	    throws Exception {
+	public void getPatientIdentifierTypeByUuid_shouldReturnNullWhenPatientIdentifierTypeWithGivenUuidDoesNotExist() {
 		PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(
 		    "thisuuiddoesnotexist");
 		Assert.assertNull(identifierType);
@@ -1317,8 +1304,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierTypes(String,String,Boolean,Boolean)
 	 */
 	@Test
-	public void getPatientIdentifierTypes_shouldFetchPatientIdentifierTypesThatMatchGivenNameWithGivenFormat()
-	    throws Exception {
+	public void getPatientIdentifierTypes_shouldFetchPatientIdentifierTypesThatMatchGivenNameWithGivenFormat() {
 		executeDataSet("org/openmrs/api/include/PatientServiceTest-createPatientIdentifierType.xml");
 		List<PatientIdentifierType> patientIdentifierTypes = Context.getPatientService().getPatientIdentifierTypes(
 		    "Test OpenMRS Identification Number", "java.lang.Integer", null, null);
@@ -1335,8 +1321,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierTypes(String,String,Boolean,Boolean)
 	 */
 	@Test
-	public void getPatientIdentifierTypes_shouldFetchRequiredPatientIdentifierTypesWhenGivenRequiredIsTrue()
-	    throws Exception {
+	public void getPatientIdentifierTypes_shouldFetchRequiredPatientIdentifierTypesWhenGivenRequiredIsTrue() {
 		executeDataSet("org/openmrs/api/include/PatientServiceTest-createPatientIdentifierType.xml");
 		List<PatientIdentifierType> patientIdentifierTypes = Context.getPatientService().getPatientIdentifierTypes(null,
 		    null, true, null);
@@ -1352,8 +1337,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierTypes(String,String,Boolean,Boolean)
 	 */
 	@Test
-	public void getPatientIdentifierTypes_shouldFetchNonRequiredPatientIdentifierTypesWhenGivenRequiredIsFalse()
-	    throws Exception {
+	public void getPatientIdentifierTypes_shouldFetchNonRequiredPatientIdentifierTypesWhenGivenRequiredIsFalse() {
 		executeDataSet("org/openmrs/api/include/PatientServiceTest-createPatientIdentifierType.xml");
 		List<PatientIdentifierType> patientIdentifierTypes = Context.getPatientService().getPatientIdentifierTypes(null,
 		    null, false, null);
@@ -1369,7 +1353,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierTypes(String,String,Boolean,Boolean)
 	 */
 	@Test
-	public void getPatientIdentifierTypes_shouldFetchAnyPatientIdentifierTypesWhenGivenRequiredIsNull() throws Exception {
+	public void getPatientIdentifierTypes_shouldFetchAnyPatientIdentifierTypesWhenGivenRequiredIsNull() {
 		executeDataSet("org/openmrs/api/include/PatientServiceTest-createPatientIdentifierType.xml");
 		List<PatientIdentifierType> patientIdentifierTypes = Context.getPatientService().getPatientIdentifierTypes(null,
 		    null, null, null);
@@ -1383,8 +1367,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierTypes(String,String,Boolean,Boolean)
 	 */
 	@Test
-	public void getPatientIdentifierTypes_shouldFetchAnyPatientIdentifierTypesWhenGivenHasCheckDigitIsNull()
-	    throws Exception {
+	public void getPatientIdentifierTypes_shouldFetchAnyPatientIdentifierTypesWhenGivenHasCheckDigitIsNull() {
 		executeDataSet("org/openmrs/api/include/PatientServiceTest-createPatientIdentifierType.xml");
 		List<PatientIdentifierType> patientIdentifierTypes = Context.getPatientService().getPatientIdentifierTypes(null,
 		    null, null, null);
@@ -1398,7 +1381,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#savePatientIdentifierType(PatientIdentifierType)
 	 */
 	@Test
-	public void savePatientIdentifierType_shouldCreateNewPatientIdentifierType() throws Exception {
+	public void savePatientIdentifierType_shouldCreateNewPatientIdentifierType() {
 		PatientIdentifierType identifierType = new PatientIdentifierType();
 		
 		identifierType.setName("test");
@@ -1419,7 +1402,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#savePatientIdentifierType(PatientIdentifierType)
 	 */
 	@Test
-	public void savePatientIdentifierType_shouldUpdateExistingPatientIdentifierType() throws Exception {
+	public void savePatientIdentifierType_shouldUpdateExistingPatientIdentifierType() {
 		
 		PatientIdentifierType identifierType = Context.getPatientService().getAllPatientIdentifierTypes().get(0);
 		
@@ -1447,7 +1430,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#unretirePatientIdentifierType(PatientIdentifierType)
 	 */
 	@Test
-	public void unretirePatientIdentifierType_shouldUnretirePatientIdentifierType() throws Exception {
+	public void unretirePatientIdentifierType_shouldUnretirePatientIdentifierType() {
 		PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierType(4);
 		Assert.assertTrue(identifierType.getRetired());
 		Assert.assertNotNull(identifierType.getRetiredBy());
@@ -1466,7 +1449,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#unretirePatientIdentifierType(PatientIdentifierType)
 	 */
 	@Test
-	public void unretirePatientIdentifierType_shouldReturnUnretiredPatientIdentifierType() throws Exception {
+	public void unretirePatientIdentifierType_shouldReturnUnretiredPatientIdentifierType() {
 		PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierType(4);
 		Assert.assertTrue(identifierType.getRetired());
 		Assert.assertNotNull(identifierType.getRetiredBy());
@@ -1486,7 +1469,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#unvoidPatient(Patient)
 	 */
 	@Test
-	public void unvoidPatient_shouldUnvoidGivenPatient() throws Exception {
+	public void unvoidPatient_shouldUnvoidGivenPatient() {
 		Patient patient = Context.getPatientService().getPatient(2);
 		
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
@@ -1506,7 +1489,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#unvoidPatient(Patient)
 	 */
 	@Test
-	public void unvoidPatient_shouldReturnUnvoidedPatient() throws Exception {
+	public void unvoidPatient_shouldReturnUnvoidedPatient() {
 		Patient patient = Context.getPatientService().getPatient(2);
 		
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
@@ -1526,7 +1509,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#voidPatient(Patient,String)
 	 */
 	@Test
-	public void voidPatient_shouldVoidGivenPatientWithGivenReason() throws Exception {
+	public void voidPatient_shouldVoidGivenPatientWithGivenReason() {
 		Patient patient = Context.getPatientService().getPatient(2);
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
 		
@@ -1538,7 +1521,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#voidPatient(Patient,String)
 	 */
 	@Test
-	public void voidPatient_shouldVoidAllPatientIdentifiersAssociatedWithGivenPatient() throws Exception {
+	public void voidPatient_shouldVoidAllPatientIdentifiersAssociatedWithGivenPatient() {
 		Patient patient = Context.getPatientService().getPatient(2);
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
 		for (PatientIdentifier patientIdentifier : voidedPatient.getIdentifiers()) {
@@ -1554,7 +1537,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#voidPatient(Patient,String)
 	 */
 	@Test
-	public void voidPatient_shouldReturnVoidedPatientWithGivenReason() throws Exception {
+	public void voidPatient_shouldReturnVoidedPatientWithGivenReason() {
 		Patient patient = Context.getPatientService().getPatient(2);
 		Patient voidedPatient = Context.getPatientService().voidPatient(patient, "Void for testing");
 		
@@ -1571,7 +1554,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Ignore
 	// TODO fix: NullPointerException in RequiredDataAdvice
-	public void voidPatient_shouldReturnNullWhenPatientIsNull() throws Exception {
+	public void voidPatient_shouldReturnNullWhenPatientIsNull() {
 		PatientService patientService = Context.getPatientService();
 		Patient voidedPatient = patientService.voidPatient(null, "No null patient should be voided");
 		Assert.assertNull(voidedPatient);
@@ -1581,7 +1564,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientByUuid(String)
 	 */
 	@Test
-	public void getPatientByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getPatientByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "da7f524f-27ce-4bb2-86d6-6d1d05312bd5";
 		Patient patient = Context.getPatientService().getPatientByUuid(uuid);
 		Assert.assertEquals(2, (int) patient.getPatientId());
@@ -1591,7 +1574,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientByUuid(String)
 	 */
 	@Test
-	public void getPatientByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getPatientByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getPatientService().getPatientByUuid("some invalid uuid"));
 	}
 	
@@ -1599,7 +1582,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierByUuid(String)
 	 */
 	@Test
-	public void getPatientIdentifierByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getPatientIdentifierByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "ff41928c-3bca-48d9-a4dc-9198f6b2873b";
 		PatientIdentifier patientIdentifier = Context.getPatientService().getPatientIdentifierByUuid(uuid);
 		Assert.assertEquals(1, (int) patientIdentifier.getPatientIdentifierId());
@@ -1609,7 +1592,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierByUuid(String)
 	 */
 	@Test
-	public void getPatientIdentifierByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getPatientIdentifierByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getPatientService().getPatientIdentifierByUuid("some invalid uuid"));
 	}
 	
@@ -1617,7 +1600,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierTypeByUuid(String)
 	 */
 	@Test
-	public void getPatientIdentifierTypeByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+	public void getPatientIdentifierTypeByUuid_shouldFindObjectGivenValidUuid() {
 		String uuid = "1a339fe9-38bc-4ab3-b180-320988c0b968";
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(uuid);
 		Assert.assertEquals(1, (int) patientIdentifierType.getPatientIdentifierTypeId());
@@ -1627,7 +1610,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierTypeByUuid(String)
 	 */
 	@Test
-	public void getPatientIdentifierTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+	public void getPatientIdentifierTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getPatientService().getPatientIdentifierTypeByUuid("some invalid uuid"));
 	}
 	
@@ -1743,7 +1726,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientByUuid(String)
 	 */
 	@Test
-	public void getPatientByUuid_shouldFetchPatientWithGivenUuid() throws Exception {
+	public void getPatientByUuid_shouldFetchPatientWithGivenUuid() {
 		String uuid = "da7f524f-27ce-4bb2-86d6-6d1d05312bd5";
 		Patient patient = Context.getPatientService().getPatientByUuid(uuid);
 		Assert.assertEquals(2, (int) patient.getPatientId());
@@ -1753,7 +1736,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientByUuid(String)
 	 */
 	@Test
-	public void getPatientByUuid_shouldReturnNullIfPatientNotFoundWithGivenUuid() throws Exception {
+	public void getPatientByUuid_shouldReturnNullIfPatientNotFoundWithGivenUuid() {
 		Assert.assertNull(Context.getPatientService().getPatientByUuid("some invalid uuid"));
 	}
 	
@@ -1761,7 +1744,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierByUuid(String)
 	 */
 	@Test
-	public void getPatientIdentifierByUuid_shouldFetchPatientIdentifierWithGivenUuid() throws Exception {
+	public void getPatientIdentifierByUuid_shouldFetchPatientIdentifierWithGivenUuid() {
 		String uuid = "ff41928c-3bca-48d9-a4dc-9198f6b2873b";
 		PatientIdentifier patientIdentifier = Context.getPatientService().getPatientIdentifierByUuid(uuid);
 		Assert.assertEquals(1, (int) patientIdentifier.getPatientIdentifierId());
@@ -1771,7 +1754,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierByUuid(String)
 	 */
 	@Test
-	public void getPatientIdentifierByUuid_shouldReturnNullIfPatientIdentifierNotFoundWithGivenUuid() throws Exception {
+	public void getPatientIdentifierByUuid_shouldReturnNullIfPatientIdentifierNotFoundWithGivenUuid() {
 		Assert.assertNull(Context.getPatientService().getPatientIdentifierByUuid("some invalid uuid"));
 	}
 	
@@ -1794,7 +1777,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifiers(String,List,List,List,Boolean)
 	 */
 	@Test
-	public void getPatientIdentifiers_shouldReturnOnlyNonVoidedPatientsAndPatientIdentifiers() throws Exception {
+	public void getPatientIdentifiers_shouldReturnOnlyNonVoidedPatientsAndPatientIdentifiers() {
 		// sanity check. make sure there is at least one voided patient
 		Patient patient = patientService.getPatient(999);
 		Assert.assertTrue("This patient should be voided", patient.getVoided());
@@ -1814,7 +1797,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatients(String, String, java.util.List, boolean)
 	 */
 	@Test
-	public void getPatients_shouldSupportSimpleRegex() throws Exception {
+	public void getPatients_shouldSupportSimpleRegex() {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "^0*@SEARCH@([A-Z]+-[0-9])?$"));
 		PatientIdentifier identifier = new PatientIdentifier("1234-4", new PatientIdentifierType(1), new Location(1));
@@ -1841,7 +1824,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void savePatient_shouldUpdateAnExistingPatient() throws Exception {
+	public void savePatient_shouldUpdateAnExistingPatient() {
 		
 		Patient patient = patientService.getPatient(2);
 		// just some sanity checks
@@ -1857,7 +1840,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void savePatient_shouldFailWhenPatientDoesNotHaveAnyPatientIdentifiers() throws Exception {
+	public void savePatient_shouldFailWhenPatientDoesNotHaveAnyPatientIdentifiers() {
 		Patient patient = new Patient();
 		// a sanity check first
 		assertTrue(patient.getIdentifiers().isEmpty());
@@ -1869,7 +1852,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getAllPatients_shouldFetchAllNonVoidedPatients() throws Exception {
+	public void getAllPatients_shouldFetchAllNonVoidedPatients() {
 		List<Patient> allPatients = patientService.getAllPatients();
 		// there are 1 voided and 4 nonvoided patients in
 		// standardTestDataset.xml
@@ -1877,7 +1860,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getAllPatients_shouldFetchNonVoidedPatientsWhenGivenIncludeVoidedIsFalse() throws Exception {
+	public void getAllPatients_shouldFetchNonVoidedPatientsWhenGivenIncludeVoidedIsFalse() {
 		List<Patient> allPatients = patientService.getAllPatients(false);
 		// there are 1 voided and 4 nonvoided patients in
 		// standardTestDataset.xml
@@ -1885,7 +1868,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getAllPatients_shouldFetchVoidedPatientsWhenGivenIncludeVoidedIsTrue() throws Exception {
+	public void getAllPatients_shouldFetchVoidedPatientsWhenGivenIncludeVoidedIsTrue() {
 		List<Patient> allPatients = patientService.getAllPatients(true);
 		// there are 1 voided and 4 nonvoided patients in
 		// standardTestDataset.xml
@@ -1969,7 +1952,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatients(String, String, java.util.List, boolean)
 	 */
 	@Test
-	public void getPatients_shouldSupportPatternUsingLastDigitAsCheckDigit() throws Exception {
+	public void getPatients_shouldSupportPatternUsingLastDigitAsCheckDigit() {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN,
 		            "@SEARCH@,0@SEARCH@,@SEARCH-1@-@CHECKDIGIT@,0@SEARCH-1@-@CHECKDIGIT@"));
@@ -1991,7 +1974,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifier(Integer patientId)
 	 */
 	@Test
-	public void getPatientIdentifier_shouldReturnThePatientsIdentifier() throws Exception {
+	public void getPatientIdentifier_shouldReturnThePatientsIdentifier() {
 		
 		Assert.assertEquals("101-6", patientService.getPatientIdentifier(2).getIdentifier());
 		Assert.assertEquals(1, patientService.getPatientIdentifier(2).getIdentifierType().getPatientIdentifierTypeId()
@@ -2003,7 +1986,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	
 	@Test
-	public void voidPatientIdentifier_shouldVoidGivenPatientIdentifierWithGivenReason() throws Exception {
+	public void voidPatientIdentifier_shouldVoidGivenPatientIdentifierWithGivenReason() {
 		Patient patient = patientService.getPatientIdentifier(3).getPatient();
 		int oldActiveIdentifierSize = patient.getActiveIdentifiers().size();
 		PatientIdentifier patientIdentifierToVoid = patientService.getPatientIdentifier(3);
@@ -2017,7 +2000,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void savePatientIdentifier_shouldCreateNewPatientIndentifier() throws Exception {
+	public void savePatientIdentifier_shouldCreateNewPatientIndentifier() {
 		PatientIdentifier patientIdentifier = new PatientIdentifier("677-56-6666", new PatientIdentifierType(4),
 		        new Location(1));
 		Patient associatedPatient = patientService.getPatient(2);
@@ -2028,7 +2011,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void savePatientIdentifier_shouldUpdateAnExistingPatientIdentifier() throws Exception {
+	public void savePatientIdentifier_shouldUpdateAnExistingPatientIdentifier() {
 		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
 		patientIdentifier.setIdentifier("NEW-ID");
 		PatientIdentifier updatedPatientIdentifier = patientService.savePatientIdentifier(patientIdentifier);
@@ -2037,7 +2020,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void purgePatientIdentifier_shouldDeletePatientIdentifierFromDatabase() throws Exception {
+	public void purgePatientIdentifier_shouldDeletePatientIdentifierFromDatabase() {
 		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
 		patientService.purgePatientIdentifier(patientIdentifier);
 		Assert.assertNull(patientService.getPatientIdentifier(7));
@@ -2045,7 +2028,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = APIException.class)
-	public void savePatientIdentifier_shouldThrowAnAPIExceptionWhenOneOfTheRequiredFieldsIsNull() throws Exception {
+	public void savePatientIdentifier_shouldThrowAnAPIExceptionWhenOneOfTheRequiredFieldsIsNull() {
 		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
 		patientIdentifier.setIdentifier(null);
 		patientService.savePatientIdentifier(patientIdentifier);
@@ -2053,15 +2036,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = APIException.class)
-	public void savePatientIdentifier_shouldThrowAnAPIExceptionIfThePatientIdentifierStringIsAWhiteSpace() throws Exception {
+	public void savePatientIdentifier_shouldThrowAnAPIExceptionIfThePatientIdentifierStringIsAWhiteSpace() {
 		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
 		patientIdentifier.setIdentifier(" ");
 		patientService.savePatientIdentifier(patientIdentifier);
 	}
 	
 	@Test(expected = APIException.class)
-	public void savePatientIdentifier_shouldThrowAnAPIExceptionIfThePatientIdentifierStringIsAnEmptyString()
-	    throws Exception {
+	public void savePatientIdentifier_shouldThrowAnAPIExceptionIfThePatientIdentifierStringIsAnEmptyString() {
 		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
 		patientIdentifier.setIdentifier("");
 		patientService.savePatientIdentifier(patientIdentifier);
@@ -2090,19 +2072,19 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = APIException.class)
-	public void voidPatientIdentifier_shouldThrowAnAPIExceptionIfTheReasonIsNull() throws Exception {
+	public void voidPatientIdentifier_shouldThrowAnAPIExceptionIfTheReasonIsNull() {
 		PatientIdentifier patientIdentifierToVoid = patientService.getPatientIdentifier(3);
 		patientService.voidPatientIdentifier(patientIdentifierToVoid, null);
 	}
 	
 	@Test(expected = APIException.class)
-	public void voidPatientIdentifier_shouldThrowAnAPIExceptionIfTheReasonIsAnEmptyString() throws Exception {
+	public void voidPatientIdentifier_shouldThrowAnAPIExceptionIfTheReasonIsAnEmptyString() {
 		PatientIdentifier patientIdentifierToVoid = patientService.getPatientIdentifier(3);
 		patientService.voidPatientIdentifier(patientIdentifierToVoid, "");
 	}
 	
 	@Test(expected = APIException.class)
-	public void voidPatientIdentifier_shouldThrowAnAPIExceptionIfTheReasonIsAWhiteSpaceCharacter() throws Exception {
+	public void voidPatientIdentifier_shouldThrowAnAPIExceptionIfTheReasonIsAWhiteSpaceCharacter() {
 		PatientIdentifier patientIdentifierToVoid = patientService.getPatientIdentifier(3);
 		patientService.voidPatientIdentifier(patientIdentifierToVoid, " ");
 	}
@@ -2661,7 +2643,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void savePatient_shouldUpdateTheDateChangedAndChangedByOnUpdateOfThePersonAddress() throws Exception {
+	public void savePatient_shouldUpdateTheDateChangedAndChangedByOnUpdateOfThePersonAddress() {
 		
 		Patient patient = patientService.getPatient(2);
 		PersonAddress address = patient.getAddresses().iterator().next();
@@ -2681,7 +2663,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getCountOfPatients(String)
 	 */
 	@Test
-	public void getCountOfPatients_shouldReturnTheRightCountWhenAPatientHasMultipleMatchingPersonNames() throws Exception {
+	public void getCountOfPatients_shouldReturnTheRightCountWhenAPatientHasMultipleMatchingPersonNames() {
 		// TODO H2 cannot execute the generated SQL because it requires all
 		// fetched columns to be included in the group by clause
 		Patient patient = patientService.getPatient(2);
@@ -2694,7 +2676,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getPatient_shouldCreatePatientFromPerson() throws Exception {
+	public void getPatient_shouldCreatePatientFromPerson() {
 		executeDataSet(USER_WHO_IS_NOT_PATIENT_XML);
 		Patient patient = patientService.getPatientOrPromotePerson(202);
 		Assert.assertNotNull(patient);
@@ -2702,7 +2684,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getPatient_shouldReturnNullWhenPersonDoesNotExist() throws Exception {
+	public void getPatient_shouldReturnNullWhenPersonDoesNotExist() {
 		executeDataSet(USER_WHO_IS_NOT_PATIENT_XML);
 		Patient patient = patientService.getPatientOrPromotePerson(-1);
 		Assert.assertNull(patient);
@@ -2712,7 +2694,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#voidPatient(Patient,String)
 	 */
 	@Test
-	public void voidPatient_shouldVoidPerson() throws Exception {
+	public void voidPatient_shouldVoidPerson() {
 		//given
 		Patient patient = patientService.getPatient(2);
 		
@@ -2727,7 +2709,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#voidPatient(Patient,String)
 	 */
 	@Test
-	public void voidPatient_shouldRetireUsers() throws Exception {
+	public void voidPatient_shouldRetireUsers() {
 		//given
 		Patient patient = patientService.getPatient(2);
 		User user = new User(patient);
@@ -2745,7 +2727,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#unvoidPatient(Patient)
 	 */
 	@Test
-	public void unvoidPatient_shouldUnvoidPerson() throws Exception {
+	public void unvoidPatient_shouldUnvoidPerson() {
 		//given
 		Patient patient = patientService.getPatient(2);
 		patientService.voidPatient(patient, "reason");
@@ -2762,7 +2744,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#unvoidPatient(Patient)
 	 */
 	@Test
-	public void unvoidPatient_shouldNotUnretireUsers() throws Exception {
+	public void unvoidPatient_shouldNotUnretireUsers() {
 		//given
 		Patient patient = patientService.getPatient(2);
 		User user = new User(patient);
@@ -2780,7 +2762,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatients(String,String,List,boolean)
 	 */
 	@Test
-	public void getPatients_shouldReturnEmptyListIfNameAndIdentifierIsEmpty() throws Exception {
+	public void getPatients_shouldReturnEmptyListIfNameAndIdentifierIsEmpty() {
 		//given
 		
 		//when
@@ -2794,7 +2776,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)
 	 */
 	@Test
-	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueIfInUseAndIdTypeUniquenessIsNull() throws Exception {
+	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueIfInUseAndIdTypeUniquenessIsNull() {
 		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
 		Assert.assertNotNull(duplicateId.getLocation());
 		
@@ -2809,7 +2791,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)
 	 */
 	@Test
-	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueIfInUseAndIdTypeUniquenessIsSetToUnique() throws Exception {
+	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueIfInUseAndIdTypeUniquenessIsSetToUnique() {
 		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
 		Assert.assertNotNull(duplicateId.getLocation());
 		
@@ -2825,8 +2807,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)
 	 */
 	@Test
-	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueIfInUseForALocationAndIdTypeUniquenessIsSetToLocation()
-	    throws Exception {
+	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueIfInUseForALocationAndIdTypeUniquenessIsSetToLocation() {
 		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
 		Assert.assertNotNull(duplicateId.getLocation());
 		
@@ -2842,8 +2823,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)
 	 */
 	@Test
-	public void isIdentifierInUseByAnotherPatient_shouldReturnFalseIfInUseForAnotherLocationAndIdUniquenessIsSetToLocation()
-	    throws Exception {
+	public void isIdentifierInUseByAnotherPatient_shouldReturnFalseIfInUseForAnotherLocationAndIdUniquenessIsSetToLocation() {
 		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
 		Assert.assertNotNull(duplicateId.getLocation());
 		
@@ -2861,7 +2841,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getAllPatientIdentifierTypes(boolean)
 	 */
 	@Test
-	public void getAllPatientIdentifierTypes_shouldOrderAsDefaultComparator() throws Exception {
+	public void getAllPatientIdentifierTypes_shouldOrderAsDefaultComparator() {
 		List<PatientIdentifierType> list = patientService.getAllPatientIdentifierTypes();
 		List<PatientIdentifierType> sortedList = new ArrayList<PatientIdentifierType>(list);
 		Collections.sort(sortedList, new PatientIdentifierTypeDefaultComparator());
@@ -2872,7 +2852,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatientIdentifierTypes(String,String,Boolean,Boolean)
 	 */
 	@Test
-	public void getPatientIdentifierTypes_shouldOrderAsDefaultComparator() throws Exception {
+	public void getPatientIdentifierTypes_shouldOrderAsDefaultComparator() {
 		List<PatientIdentifierType> list = patientService.getPatientIdentifierTypes(null, null, false, null);
 		List<PatientIdentifierType> sortedList = new ArrayList<PatientIdentifierType>(list);
 		Collections.sort(sortedList, new PatientIdentifierTypeDefaultComparator());
@@ -2929,7 +2909,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#savePatient(Patient)
 	 */
 	@Test
-	public void savePatient_shouldSetThePreferredNameAddressAndIdentifierIfNoneIsSpecified() throws Exception {
+	public void savePatient_shouldSetThePreferredNameAddressAndIdentifierIfNoneIsSpecified() {
 		Patient patient = new Patient();
 		patient.setGender("M");
 		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(2),
@@ -2951,7 +2931,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#savePatient(Patient)
 	 */
 	@Test
-	public void savePatient_shouldNotSetThePreferredNameAddressAndIdentifierIfTheyAlreadyExist() throws Exception {
+	public void savePatient_shouldNotSetThePreferredNameAddressAndIdentifierIfTheyAlreadyExist() {
 		Patient patient = new Patient();
 		patient.setGender("M");
 		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(5),
@@ -2989,7 +2969,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#savePatient(Patient)
 	 */
 	@Test
-	public void savePatient_shouldNotSetAVoidedNameOrAddressOrIdentifierAsPreferred() throws Exception {
+	public void savePatient_shouldNotSetAVoidedNameOrAddressOrIdentifierAsPreferred() {
 		Patient patient = new Patient();
 		patient.setGender("M");
 		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(2),
@@ -3032,7 +3012,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#savePatient(Patient)
 	 */
 	@Test
-	public void savePatient_shouldNotThrowNonUniqueObjectExceptionWhenCalledWithPersonPromotedToPatient() throws Exception {
+	public void savePatient_shouldNotThrowNonUniqueObjectExceptionWhenCalledWithPersonPromotedToPatient() {
 		Person person = personService.getPerson(1);
 		Patient patient = patientService.getPatientOrPromotePerson(person.getPersonId());
 		PatientIdentifier patientIdentifier = new PatientIdentifier("some identifier", new PatientIdentifierType(2),
@@ -3047,7 +3027,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getPatients(String,Integer,Integer)
 	 */
 	@Test
-	public void getPatients_shouldFindAPatientsWithAMatchingIdentifierWithNoDigits() throws Exception {
+	public void getPatients_shouldFindAPatientsWithAMatchingIdentifierWithNoDigits() {
 		final String identifier = "XYZ";
 		Patient patient = patientService.getPatient(2);
 		Assert.assertEquals(0, patientService.getPatients(identifier, (Integer) null, (Integer) null).size());
@@ -3065,7 +3045,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#getCountOfPatients(String)
 	 */
 	@Test
-	public void getCountOfPatients_shouldReturnTheRightCountOfPatientsWithAMatchingIdentifierWithNoDigits() throws Exception {
+	public void getCountOfPatients_shouldReturnTheRightCountOfPatientsWithAMatchingIdentifierWithNoDigits() {
 		final String identifier = "XYZ";
 		Patient patient = patientService.getPatient(2);
 		Assert.assertEquals(0, patientService.getCountOfPatients(identifier).intValue());
@@ -3083,7 +3063,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 *           an APIException when a null argument is passed
 	 */
 	@Test(expected = APIException.class)
-	public void savePatientIdentifier_shouldThrowAnAPIExceptionWhenANullArgumentIsPassed() throws Exception {
+	public void savePatientIdentifier_shouldThrowAnAPIExceptionWhenANullArgumentIsPassed() {
 		patientService.savePatientIdentifier(null);
 	}
 	
@@ -3099,8 +3079,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = PatientIdentifierTypeLockedException.class)
-	public void savePatientIdentifierType_shouldThrowErrorWhenTryingToSaveAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
-	    throws Exception {
+	public void savePatientIdentifierType_shouldThrowErrorWhenTryingToSaveAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked() {
 		PatientService ps = Context.getPatientService();
 		createPatientIdentifierTypeLockedGPAndSetValue("true");
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
@@ -3109,8 +3088,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = PatientIdentifierTypeLockedException.class)
-	public void retirePatientIdentifierType_shouldThrowErrorWhenTryingToRetireAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
-	    throws Exception {
+	public void retirePatientIdentifierType_shouldThrowErrorWhenTryingToRetireAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked() {
 		PatientService ps = Context.getPatientService();
 		createPatientIdentifierTypeLockedGPAndSetValue("true");
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
@@ -3118,7 +3096,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = APIException.class)
-	public void retirePatientIdentifierType_shouldThrowAPIExceptionWhenNullReasonIsPassed() throws Exception {
+	public void retirePatientIdentifierType_shouldThrowAPIExceptionWhenNullReasonIsPassed() {
 		PatientService ps = Context.getPatientService();
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
 		ps.retirePatientIdentifierType(pit, null);
@@ -3142,8 +3120,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = PatientIdentifierTypeLockedException.class)
-	public void unretirePatientIdentifierType_shouldThrowErrorWhenTryingToUnretireAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
-	    throws Exception {
+	public void unretirePatientIdentifierType_shouldThrowErrorWhenTryingToUnretireAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked() {
 		PatientService ps = Context.getPatientService();
 		createPatientIdentifierTypeLockedGPAndSetValue("true");
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
@@ -3151,8 +3128,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = PatientIdentifierTypeLockedException.class)
-	public void purgePatientIdentifierType_shouldThrowErrorWhenTryingToDeleteAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
-	    throws Exception {
+	public void purgePatientIdentifierType_shouldThrowErrorWhenTryingToDeleteAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked() {
 		PatientService ps = Context.getPatientService();
 		createPatientIdentifierTypeLockedGPAndSetValue("true");
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);

@@ -28,7 +28,7 @@ public class TestContextLoader extends AbstractContextLoader {
 	}
 	
 	@Override
-	public final ConfigurableApplicationContext loadContext(String... locations) throws Exception {
+	public final ConfigurableApplicationContext loadContext(String... locations) {
 		XmlWebApplicationContext context = new XmlWebApplicationContext();
 		context.setConfigLocations(locations);
 		MockServletContext sc = new MockServletContext();
@@ -47,7 +47,7 @@ public class TestContextLoader extends AbstractContextLoader {
 	 * @see org.springframework.test.context.SmartContextLoader#loadContext(org.springframework.test.context.MergedContextConfiguration)
 	 */
 	@Override
-	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
+	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) {
 		return null;
 	}
 }

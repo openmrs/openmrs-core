@@ -42,7 +42,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @should notify listeners about checked privileges
 	 */
 	@Override
-	public void before(Method method, Object[] args, Object target) throws Throwable {
+	public void before(Method method, Object[] args, Object target) {
 		
 		if (log.isDebugEnabled()) {
 			log.debug("Calling authorization advice before " + method.getName());

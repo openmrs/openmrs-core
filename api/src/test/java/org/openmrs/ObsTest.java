@@ -145,7 +145,7 @@ public class ObsTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldAddandRemoveObsToGroup() throws Exception {
+	public void shouldAddandRemoveObsToGroup() {
 		
 		Obs obs = new Obs(1);
 		
@@ -194,7 +194,7 @@ public class ObsTest {
 	 * tests the getRelatedObservations method:
 	 */
 	@Test
-	public void shouldGetRelatedObservations() throws Exception {
+	public void shouldGetRelatedObservations() {
 		// create a child Obs
 		Obs o = new Obs();
 		o.setDateCreated(new Date());
@@ -300,7 +300,7 @@ public class ObsTest {
 	 * @see Obs#isComplex()
 	 */
 	@Test
-	public void isComplex_shouldReturnTrueIfTheConceptIsComplex() throws Exception {
+	public void isComplex_shouldReturnTrueIfTheConceptIsComplex() {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd.setName("Complex");
 		cd.setHl7Abbreviation("ED");
@@ -336,7 +336,7 @@ public class ObsTest {
 	 * @see Obs#getValueAsBoolean()
 	 */
 	@Test
-	public void getValueAsBoolean_shouldReturnFalseForValue_numericConceptsIfValueIs0() throws Exception {
+	public void getValueAsBoolean_shouldReturnFalseForValue_numericConceptsIfValueIs0() {
 		Obs obs = new Obs();
 		obs.setValueNumeric(0.0);
 		Assert.assertEquals(false, obs.getValueAsBoolean());
@@ -346,14 +346,14 @@ public class ObsTest {
 	 * @see Obs#getValueAsBoolean()
 	 */
 	@Test
-	public void getValueAsBoolean_shouldReturnNullForValue_numericConceptsIfValueIsNeither1Nor0() throws Exception {
+	public void getValueAsBoolean_shouldReturnNullForValue_numericConceptsIfValueIsNeither1Nor0() {
 		Obs obs = new Obs();
 		obs.setValueNumeric(24.8);
 		Assert.assertNull(obs.getValueAsBoolean());
 	}
 	
 	@Test
-	public void getValueAsString_shouldReturnNonPreciseValuesForNumericConcepts() throws Exception {
+	public void getValueAsString_shouldReturnNonPreciseValuesForNumericConcepts() {
 		Obs obs = new Obs();
 		obs.setValueNumeric(25.125);
 		ConceptNumeric cn = new ConceptNumeric();
@@ -367,7 +367,7 @@ public class ObsTest {
 	}
 	
 	@Test
-	public void getValueAsString_shouldNotReturnLongDecimalNumbersAsScientificNotation() throws Exception {
+	public void getValueAsString_shouldNotReturnLongDecimalNumbersAsScientificNotation() {
 		Obs obs = new Obs();
 		obs.setValueNumeric(123456789.0);
 		String str = "123456789.0";
@@ -375,7 +375,7 @@ public class ObsTest {
 	}
 	
 	@Test
-	public void getValueAsString_shouldReturnDateInCorrectFormat() throws Exception {
+	public void getValueAsString_shouldReturnDateInCorrectFormat() {
 		Obs obs = new Obs();
 		obs.setValueDatetime(new Date());
 		Concept cn = new Concept();
@@ -394,7 +394,7 @@ public class ObsTest {
 	 * @see Obs#getValueAsBoolean()
 	 */
 	@Test
-	public void getValueAsBoolean_shouldReturnTrueForValue_numericConceptsIfValueIs1() throws Exception {
+	public void getValueAsBoolean_shouldReturnTrueForValue_numericConceptsIfValueIs1() {
 		Obs obs = new Obs();
 		obs.setValueNumeric(1.0);
 		Assert.assertEquals(true, obs.getValueAsBoolean());
@@ -404,7 +404,7 @@ public class ObsTest {
 	 * @see Obs#getGroupMembers(boolean)
 	 */
 	@Test
-	public void getGroupMembers_shouldGetAllGroupMembersIfPassedTrueAndNonvoidedIfPassedFalse() throws Exception {
+	public void getGroupMembers_shouldGetAllGroupMembersIfPassedTrueAndNonvoidedIfPassedFalse() {
 		Obs parent = new Obs(1);
 		Set<Obs> members = new HashSet<>();
 		members.add(new Obs(101));
@@ -425,7 +425,7 @@ public class ObsTest {
 	 * @see Obs#hasGroupMembers(boolean)
 	 */
 	@Test
-	public void hasGroupMembers_shouldReturnTrueIfThisObsHasGroupMembersBasedOnParameter() throws Exception {
+	public void hasGroupMembers_shouldReturnTrueIfThisObsHasGroupMembersBasedOnParameter() {
 		Obs parent = new Obs(5);
 		Obs child = new Obs(33);
 		child.setVoided(true);
@@ -439,7 +439,7 @@ public class ObsTest {
 	 * @see Obs#isObsGrouping()
 	 */
 	@Test
-	public void isObsGrouping_shouldIncludeVoidedObs() throws Exception {
+	public void isObsGrouping_shouldIncludeVoidedObs() {
 		Obs parent = new Obs(5);
 		Obs child = new Obs(33);
 		child.setVoided(true);
@@ -451,7 +451,7 @@ public class ObsTest {
 	 * @see Obs#getValueAsString(Locale)
 	 */
 	@Test
-	public void getValueAsString_shouldUseCommasOrDecimalPlacesDependingOnLocale() throws Exception {
+	public void getValueAsString_shouldUseCommasOrDecimalPlacesDependingOnLocale() {
 		Obs obs = new Obs();
 		obs.setValueNumeric(123456789.3);
 		String str = "123456789,3";
@@ -462,7 +462,7 @@ public class ObsTest {
 	 * @see Obs#getValueAsString(Locale)
 	 */
 	@Test
-	public void getValueAsString_shouldNotUseThousandSeparator() throws Exception {
+	public void getValueAsString_shouldNotUseThousandSeparator() {
 		Obs obs = new Obs();
 		obs.setValueNumeric(123456789.0);
 		String str = "123456789.0";
@@ -473,7 +473,7 @@ public class ObsTest {
 	 * @see Obs#getValueAsString(Locale)
 	 */
 	@Test
-	public void getValueAsString_shouldReturnRegularNumberForSizeOfZeroToOrGreaterThanTenDigits() throws Exception {
+	public void getValueAsString_shouldReturnRegularNumberForSizeOfZeroToOrGreaterThanTenDigits() {
 		Obs obs = new Obs();
 		obs.setValueNumeric(1234567890.0);
 		String str = "1234567890.0";
@@ -484,7 +484,7 @@ public class ObsTest {
 	 * @see Obs#getValueAsString(Locale)
 	 */
 	@Test
-	public void getValueAsString_shouldReturnRegularNumberIfDecimalPlacesAreAsHighAsSix() throws Exception {
+	public void getValueAsString_shouldReturnRegularNumberIfDecimalPlacesAreAsHighAsSix() {
 		Obs obs = new Obs();
 		obs.setValueNumeric(123456789.012345);
 		String str = "123456789.012345";
@@ -492,7 +492,7 @@ public class ObsTest {
 	}
 	
 	@Test
-	public void getValueAsString_shouldReturnLocalizedCodedConcept() throws Exception {
+	public void getValueAsString_shouldReturnLocalizedCodedConcept() {
 		ConceptDatatype cdt = new ConceptDatatype();
 		cdt.setHl7Abbreviation("CWE");
 		
@@ -526,7 +526,7 @@ public class ObsTest {
 	 * @see Obs#getFormFieldNamespace()
 	 */
 	@Test
-	public void getFormFieldNamespace_shouldReturnNullIfTheNamespaceIsNotSpecified() throws Exception {
+	public void getFormFieldNamespace_shouldReturnNullIfTheNamespaceIsNotSpecified() {
 		Obs obs = new Obs();
 		obs.setFormField("", "my path");
 		Assert.assertNull(obs.getFormFieldNamespace());
@@ -536,7 +536,7 @@ public class ObsTest {
 	 * @see Obs#getFormFieldNamespace()
 	 */
 	@Test
-	public void getFormFieldNamespace_shouldReturnTheCorrectNamespaceForAFormFieldWithAPath() throws Exception {
+	public void getFormFieldNamespace_shouldReturnTheCorrectNamespaceForAFormFieldWithAPath() {
 		final String ns = "my ns";
 		final String path = "my path";
 		Obs obs = new Obs();
@@ -548,7 +548,7 @@ public class ObsTest {
 	 * @see Obs#getFormFieldNamespace()
 	 */
 	@Test
-	public void getFormFieldNamespace_shouldReturnTheNamespaceForAFormFieldThatHasNoPath() throws Exception {
+	public void getFormFieldNamespace_shouldReturnTheNamespaceForAFormFieldThatHasNoPath() {
 		final String ns = "my ns";
 		Obs obs = new Obs();
 		obs.setFormField(ns, null);
@@ -559,7 +559,7 @@ public class ObsTest {
 	 * @see Obs#getFormFieldPath()
 	 */
 	@Test
-	public void getFormFieldPath_shouldReturnNullIfThePathIsNotSpecified() throws Exception {
+	public void getFormFieldPath_shouldReturnNullIfThePathIsNotSpecified() {
 		Obs obs = new Obs();
 		obs.setFormField("my ns", "");
 		Assert.assertNull(obs.getFormFieldPath());
@@ -569,7 +569,7 @@ public class ObsTest {
 	 * @see Obs#getFormFieldPath()
 	 */
 	@Test
-	public void getFormFieldPath_shouldReturnTheCorrectPathForAFormFieldWithANamespace() throws Exception {
+	public void getFormFieldPath_shouldReturnTheCorrectPathForAFormFieldWithANamespace() {
 		final String ns = "my ns";
 		final String path = "my path";
 		Obs obs = new Obs();
@@ -581,7 +581,7 @@ public class ObsTest {
 	 * @see Obs#getFormFieldPath()
 	 */
 	@Test
-	public void getFormFieldPath_shouldReturnThePathForAFormFieldThatHasNoNamespace() throws Exception {
+	public void getFormFieldPath_shouldReturnThePathForAFormFieldThatHasNoNamespace() {
 		final String path = "my path";
 		Obs obs = new Obs();
 		obs.setFormField("", path);
@@ -592,7 +592,7 @@ public class ObsTest {
 	 * @see Obs#setFormField(String,String)
 	 */
 	@Test(expected = APIException.class)
-	public void setFormField_shouldRejectANamepaceAndPathCombinationLongerThanTheMaxLength() throws Exception {
+	public void setFormField_shouldRejectANamepaceAndPathCombinationLongerThanTheMaxLength() {
 		StringBuffer nsBuffer = new StringBuffer(125);
 		for (int i = 0; i < 125; i++) {
 			nsBuffer.append("n");
@@ -612,7 +612,7 @@ public class ObsTest {
 	 * @see Obs#setFormField(String,String)
 	 */
 	@Test(expected = APIException.class)
-	public void setFormField_shouldRejectANamepaceContainingTheSeparator() throws Exception {
+	public void setFormField_shouldRejectANamepaceContainingTheSeparator() {
 		final String ns = "my ns" + FORM_NAMESPACE_PATH_SEPARATOR;
 		Obs obs = new Obs();
 		obs.setFormField(ns, "");
@@ -622,7 +622,7 @@ public class ObsTest {
 	 * @see Obs#setFormField(String,String)
 	 */
 	@Test(expected = APIException.class)
-	public void setFormField_shouldRejectAPathContainingTheSeparator() throws Exception {
+	public void setFormField_shouldRejectAPathContainingTheSeparator() {
 		final String path = FORM_NAMESPACE_PATH_SEPARATOR + "my path";
 		Obs obs = new Obs();
 		obs.setFormField("", path);
@@ -705,7 +705,7 @@ public class ObsTest {
 	 * @see Obs#isDirty()
 	 */
 	@Test
-	public void isDirty_shouldReturnFalseWhenOnlyMutableFieldsAreChanged() throws Exception {
+	public void isDirty_shouldReturnFalseWhenOnlyMutableFieldsAreChanged() {
 		Obs obs = new Obs();
 		obs.setVoided(true);
 		obs.setVoidedBy(new User(1000));
@@ -748,7 +748,7 @@ public class ObsTest {
 	 * @see Obs#isDirty()
 	 */
 	@Test
-	public void isDirty_shouldReturnTrueWhenAnImmutableFieldIsChangedFromANullToANonNullValueInExistingObs() throws Exception {
+	public void isDirty_shouldReturnTrueWhenAnImmutableFieldIsChangedFromANullToANonNullValueInExistingObs() {
 		Obs obs = new Obs(5);
 		assertNull(obs.getComment());
 		obs.setComment("some non null value");
@@ -759,7 +759,7 @@ public class ObsTest {
 	 * @see Obs#isDirty()
 	 */
 	@Test
-	public void isDirty_shouldReturnFalseWhenAnImmutableFieldIsChangedFromANullToANonNullValueInNewObs() throws Exception {
+	public void isDirty_shouldReturnFalseWhenAnImmutableFieldIsChangedFromANullToANonNullValueInNewObs() {
 		Obs obs = new Obs();
 		assertNull(obs.getComment());
 		obs.setComment("some non null value");
@@ -809,7 +809,7 @@ public class ObsTest {
 	 * @see Obs#setFormField(String,String)
 	 */
 	@Test
-	public void setFormField_shouldMarkTheObsAsDirtyWhenTheValueIsChangedFromANullToANonNullValue() throws Exception {
+	public void setFormField_shouldMarkTheObsAsDirtyWhenTheValueIsChangedFromANullToANonNullValue() {
 		Obs obs = new Obs(5);
 		assertNull(obs.getFormFieldNamespace());
 		assertNull(obs.getFormFieldPath());
@@ -864,7 +864,7 @@ public class ObsTest {
 	 * @see Obs#removeGroupMember(Obs)
 	 */
 	@Test
-	public void removeGroupMember_shouldReturnFalseWhenANonExistentObsIsRemoved() throws Exception {
+	public void removeGroupMember_shouldReturnFalseWhenANonExistentObsIsRemoved() {
 		Obs obs = new Obs();
 		obs.removeGroupMember(new Obs());
 		assertFalse(obs.isDirty());
@@ -945,8 +945,7 @@ public class ObsTest {
 	 * @see Obs#setGroupMembers(Set)
 	 */
 	@Test
-	public void setGroupMembers_shouldNotMarkTheNewObsAsDirtyWhenTheSetIsReplacedWithAnotherWithDifferentMembers()
-			throws Exception {
+	public void setGroupMembers_shouldNotMarkTheNewObsAsDirtyWhenTheSetIsReplacedWithAnotherWithDifferentMembers() {
 		Obs obs = new Obs();
 		Set<Obs> members1 = new HashSet<>();
 		members1.add(new Obs());
@@ -1004,13 +1003,13 @@ public class ObsTest {
 	}
 	
 	@Test
-	public void shouldSetFinalStatusOnNewObsByDefault() throws Exception {
+	public void shouldSetFinalStatusOnNewObsByDefault() {
 		Obs obs = new Obs();
 		assertThat(obs.getStatus(), is(Obs.Status.FINAL));
 	}
 	
 	@Test
-	public void newInstance_shouldCopyMostFields() throws Exception {
+	public void newInstance_shouldCopyMostFields() {
 		Obs obs = new Obs();
 		obs.setStatus(Obs.Status.PRELIMINARY);
 		obs.setInterpretation(Obs.Interpretation.LOW);
@@ -1032,7 +1031,7 @@ public class ObsTest {
 	}
 	
 	@Test
-	public void shouldSupportInterpretationProperty() throws Exception {
+	public void shouldSupportInterpretationProperty() {
 		Obs obs = new Obs();
 		assertThat(obs.getInterpretation(), nullValue());
 

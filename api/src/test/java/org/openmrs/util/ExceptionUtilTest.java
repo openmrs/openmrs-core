@@ -22,7 +22,7 @@ public class ExceptionUtilTest {
 	 * @see ExceptionUtil#rethrowIfCause(Throwable,Class)
 	 */
 	@Test
-	public void rethrowIfCause_shouldAllowAnIntermediateExceptionToBeRethrown() throws Exception {
+	public void rethrowIfCause_shouldAllowAnIntermediateExceptionToBeRethrown() {
 		try {
 			List<Class<? extends RuntimeException>> chain = Arrays.asList(NullPointerException.class,
 			    IllegalArgumentException.class, IllegalStateException.class);

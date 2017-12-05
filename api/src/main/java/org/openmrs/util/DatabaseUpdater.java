@@ -137,7 +137,7 @@ public class DatabaseUpdater {
 	 *             error object will list of the user prompts and type of data for each prompt
 	 */
 	public static List<String> executeChangelog(String changelog, Map<String, Object> userInput,
-	        ChangeSetExecutorCallback callback) throws DatabaseUpdateException, InputRequiredException {
+	        ChangeSetExecutorCallback callback) throws DatabaseUpdateException {
 		log.debug("installing the tables into the database");
 		
 		if (changelog == null) {
@@ -271,7 +271,7 @@ public class DatabaseUpdater {
 	 * @return true/false whether database updates are required
 	 * @should always have a valid update to latest file
 	 */
-	public static boolean updatesRequired(String... changeLogFilenames) throws Exception {
+	public static boolean updatesRequired(String... changeLogFilenames) {
 		log.debug("checking for updates");
 		
 		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges(changeLogFilenames);

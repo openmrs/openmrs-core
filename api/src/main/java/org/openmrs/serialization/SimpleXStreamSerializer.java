@@ -59,7 +59,7 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	 * @param customXstream
 	 * @throws SerializationException
 	 */
-	public SimpleXStreamSerializer(XStream customXstream) throws SerializationException {
+	public SimpleXStreamSerializer(XStream customXstream) {
 		if (customXstream == null) {
 			
 			xstream = new XStream();
@@ -89,7 +89,7 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	 * @should not serialize proxies
 	 */
 	@Override
-	public String serialize(Object o) throws SerializationException {
+	public String serialize(Object o) {
 		
 		return xstream.toXML(o);
 	}

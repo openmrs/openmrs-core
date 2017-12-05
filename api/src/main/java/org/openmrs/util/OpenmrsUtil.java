@@ -239,7 +239,7 @@ public class OpenmrsUtil {
 	 * @return byte[] file contents
 	 * @throws IOException
 	 */
-	public static byte[] getFileAsBytes(File file) throws IOException {
+	public static byte[] getFileAsBytes(File file) {
 		FileInputStream fileInputStream = null;
 		try {
 			fileInputStream = new FileInputStream(file);

@@ -311,7 +311,7 @@ public class ADTA28Handler implements Application {
 	
 	// TODO:  Move these to hl7 handler utilities
 	// Check version, etc.
-	private void validate(Message message) throws HL7Exception {
+	private void validate(Message message) {
 		message.getVersion().toString();
 	}
 	
@@ -324,7 +324,7 @@ public class ADTA28Handler implements Application {
 	}
 	
 	//TODO: Debug (and use) methods in HL7Util instead
-	private Date tsToDate(TS ts) throws HL7Exception {
+	private Date tsToDate(TS ts) {
 		// need to handle timezone
 		String dtm = ts.getTime().getValue();
 		int year = Integer.parseInt(dtm.substring(0, 4));

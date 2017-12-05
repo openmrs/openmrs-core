@@ -201,8 +201,7 @@ public abstract class StartupFilter implements Filter {
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
-	protected abstract void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	    ServletException;
+	protected abstract void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException;
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on POST requests

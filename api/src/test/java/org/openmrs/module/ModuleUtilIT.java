@@ -76,7 +76,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#checkMandatoryModulesStarted()
 	 */
 	@Test(expected = MandatoryModuleException.class)
-	public void checkMandatoryModulesStarted_shouldThrowModuleExceptionIfAMandatoryModuleIsNotStarted() throws Exception {
+	public void checkMandatoryModulesStarted_shouldThrowModuleExceptionIfAMandatoryModuleIsNotStarted() {
 		executeDataSet("org/openmrs/module/include/mandatoryModulesGlobalProperties.xml");
 		ModuleUtil.checkMandatoryModulesStarted();
 	}
@@ -85,7 +85,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#getMandatoryModules()
 	 */
 	@Test
-	public void getMandatoryModules_shouldReturnMandatoryModuleIds() throws Exception {
+	public void getMandatoryModules_shouldReturnMandatoryModuleIds() {
 		executeDataSet("org/openmrs/module/include/mandatoryModulesGlobalProperties.xml");
 		Assert.assertEquals(1, ModuleUtil.getMandatoryModules().size());
 		Assert.assertEquals("firstmodule", ModuleUtil.getMandatoryModules().get(0));
@@ -95,7 +95,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldAllowRangedRequiredVersion() throws Exception {
+	public void matchRequiredVersions_shouldAllowRangedRequiredVersion() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.2.3 - 1.4.4";
 		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -105,7 +105,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldAllowRangedRequiredVersionWithWildCard() throws Exception {
+	public void matchRequiredVersions_shouldAllowRangedRequiredVersionWithWildCard() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.2.* - 1.4.*";
 		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -115,7 +115,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldAllowRangedRequiredVersionWithWildCardOnOneEnd() throws Exception {
+	public void matchRequiredVersions_shouldAllowRangedRequiredVersionWithWildCardOnOneEnd() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.2.3 - 1.4.*";
 		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -127,7 +127,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldAllowSingleEntryForRequiredVersion() throws Exception {
+	public void matchRequiredVersions_shouldAllowSingleEntryForRequiredVersion() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.4.2";
 		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -137,7 +137,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldAllowRequiredVersionWithWildCard() throws Exception {
+	public void matchRequiredVersions_shouldAllowRequiredVersionWithWildCard() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.4.*";
 		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -147,7 +147,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldAllowNonNumericCharacterRequiredVersion() throws Exception {
+	public void matchRequiredVersions_shouldAllowNonNumericCharacterRequiredVersion() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.4.3a";
 		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -157,7 +157,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldAllowRangedNonNumericCharacterRequiredVersion() throws Exception {
+	public void matchRequiredVersions_shouldAllowRangedNonNumericCharacterRequiredVersion() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.4.1a - 1.4.3a";
 		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -167,7 +167,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldAllowRangedNonNumericCharacterWithWildCard() throws Exception {
+	public void matchRequiredVersions_shouldAllowRangedNonNumericCharacterWithWildCard() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.3.*a - 1.4.*a";
 		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -177,7 +177,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldAllowRangedNonNumericCharacterWithWildCardOnOneEnd() throws Exception {
+	public void matchRequiredVersions_shouldAllowRangedNonNumericCharacterWithWildCardOnOneEnd() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.2.3 - 1.4.*a";
 		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -189,7 +189,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldReturnFalseWhenOpenmrsVersionBeyondWildCardRange() throws Exception {
+	public void matchRequiredVersions_shouldReturnFalseWhenOpenmrsVersionBeyondWildCardRange() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.3.*";
 		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -201,7 +201,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldReturnFalseWhenRequiredVersionBeyondOpenmrsVersion() throws Exception {
+	public void matchRequiredVersions_shouldReturnFalseWhenRequiredVersionBeyondOpenmrsVersion() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.5.*";
 		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -211,8 +211,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldReturnFalseWhenRequiredVersionWithWildCardBeyondOpenmrsVersion()
-	        throws Exception {
+	public void matchRequiredVersions_shouldReturnFalseWhenRequiredVersionWithWildCardBeyondOpenmrsVersion() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.5.* - 1.6.*";
 		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -222,8 +221,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldReturnFalseWhenRequiredVersionWithWildCardOnOneEndBeyondOpenmrsVersion()
-	        throws Exception {
+	public void matchRequiredVersions_shouldReturnFalseWhenRequiredVersionWithWildCardOnOneEndBeyondOpenmrsVersion() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.4.5 - 1.5.*";
 		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -235,7 +233,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldReturnFalseWhenSingleEntryRequiredVersionBeyondOpenmrsVersion() throws Exception {
+	public void matchRequiredVersions_shouldReturnFalseWhenSingleEntryRequiredVersionBeyondOpenmrsVersion() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.5.0";
 		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -245,7 +243,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
-	public void matchRequiredVersions_shouldAllowReleaseTypeInTheVersion() throws Exception {
+	public void matchRequiredVersions_shouldAllowReleaseTypeInTheVersion() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.4.1-dev - 1.5.*-alpha";
 		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
@@ -257,7 +255,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#getPathForResource(Module,String)
 	 */
 	@Test
-	public void getPathForResource_shouldHandleUiSpringmvcCssUiDotCssExample() throws Exception {
+	public void getPathForResource_shouldHandleUiSpringmvcCssUiDotCssExample() {
 		Module module = new Module("Unit test");
 		module.setModuleId("ui.springmvc");
 		String path = "/ui/springmvc/css/ui.css";
@@ -268,7 +266,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#getModuleForPath(String)
 	 */
 	@Test
-	public void getModuleForPath_shouldHandleUiSpringmvcCssUiDotCssWhenUiDotSpringmvcModuleIsRunning() throws Exception {
+	public void getModuleForPath_shouldHandleUiSpringmvcCssUiDotCssWhenUiDotSpringmvcModuleIsRunning() {
 		ModuleFactory.getStartedModulesMap().clear();
 		Module module = new Module("For Unit Test");
 		module.setModuleId("ui.springmvc");
@@ -283,7 +281,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#getModuleForPath(String)
 	 */
 	@Test
-	public void getModuleForPath_shouldHandleUiSpringmvcCssUiDotCssWhenUiModuleIsRunning() throws Exception {
+	public void getModuleForPath_shouldHandleUiSpringmvcCssUiDotCssWhenUiModuleIsRunning() {
 		ModuleFactory.getStartedModulesMap().clear();
 		Module module = new Module("For Unit Test");
 		module.setModuleId("ui");
@@ -298,7 +296,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#getModuleForPath(String)
 	 */
 	@Test
-	public void getModuleForPath_shouldReturnNullForUiSpringmvcCssUiDotCssWhenNoRelevantModuleIsRunning() throws Exception {
+	public void getModuleForPath_shouldReturnNullForUiSpringmvcCssUiDotCssWhenNoRelevantModuleIsRunning() {
 		ModuleFactory.getStartedModulesMap().clear();
 		String path = "/ui/springmvc/css/ui.css";
 		Assert.assertNull(ModuleUtil.getModuleForPath(path));
@@ -308,7 +306,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
-	public void checkRequiredVersion_shouldThrowModuleExceptionIfOpenmrsVersionBeyondWildCardRange() throws Exception {
+	public void checkRequiredVersion_shouldThrowModuleExceptionIfOpenmrsVersionBeyondWildCardRange() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.3.*";
 		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
@@ -318,7 +316,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
-	public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionBeyondOpenmrsVersion() throws Exception {
+	public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionBeyondOpenmrsVersion() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.5.*";
 		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
@@ -328,8 +326,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
-	public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionWithWildCardBeyondOpenmrsVersion()
-	        throws Exception {
+	public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionWithWildCardBeyondOpenmrsVersion() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.5.* - 1.6.*";
 		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
@@ -339,8 +336,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
-	public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionWithWildCardOnOneEndBeyondOpenmrsVersion()
-	        throws Exception {
+	public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionWithWildCardOnOneEndBeyondOpenmrsVersion() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.4.5 - 1.5.*";
 		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
@@ -350,8 +346,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
-	public void checkRequiredVersion_shouldThrowModuleExceptionIfSingleEntryRequiredVersionBeyondOpenmrsVersion()
-	        throws Exception {
+	public void checkRequiredVersion_shouldThrowModuleExceptionIfSingleEntryRequiredVersionBeyondOpenmrsVersion() {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.5.0";
 		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
@@ -361,7 +356,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#compareVersion(String,String)
 	 */
 	@Test
-	public void compareVersion_shouldCorrectlyComparingTwoVersionNumbers() throws Exception {
+	public void compareVersion_shouldCorrectlyComparingTwoVersionNumbers() {
 		String olderVersion = "2.1.1";
 		String newerVersion = "2.1.10";
 		Assert.assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
@@ -371,7 +366,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#compareVersion(String,String)
 	 */
 	@Test
-	public void compareVersion_shouldTreatSNAPSHOTAsEarliestVersion() throws Exception {
+	public void compareVersion_shouldTreatSNAPSHOTAsEarliestVersion() {
 		String olderVersion = "1.8.3";
 		String newerVersion = "1.8.4-SNAPSHOT";
 		Assert.assertTrue(ModuleUtil.compareVersion(newerVersion, olderVersion) > 0);
@@ -383,7 +378,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#getModuleRepository()
 	 */
 	@Test
-	public void getModuleRepository_shouldUseTheRuntimePropertyAsTheFirstChoiceIfSpecified() throws Exception {
+	public void getModuleRepository_shouldUseTheRuntimePropertyAsTheFirstChoiceIfSpecified() {
 		final String folderName = "test_folder";
 		File testFolder = null;
 		runtimeProperties.setProperty(ModuleConstants.REPOSITORY_FOLDER_RUNTIME_PROPERTY, folderName);
@@ -404,7 +399,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	 * @see ModuleUtil#getModuleRepository()
 	 */
 	@Test
-	public void getModuleRepository_shouldReturnTheCorrectFileIfTheRuntimePropertyIsAnAbsolutePath() throws Exception {
+	public void getModuleRepository_shouldReturnTheCorrectFileIfTheRuntimePropertyIsAnAbsolutePath() {
 		final File expectedModuleRepo = new File(System.getProperty("java.io.tmpdir"), "test_folder");
 		expectedModuleRepo.mkdirs();
 		

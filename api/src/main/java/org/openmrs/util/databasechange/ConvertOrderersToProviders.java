@@ -44,7 +44,7 @@ public class ConvertOrderersToProviders implements CustomTaskChange {
 		}
 	}
 	
-	private List<List<Object>> getUsersAndProviders(JdbcConnection connection) throws CustomChangeException, SQLException {
+	private List<List<Object>> getUsersAndProviders(JdbcConnection connection) {
 		//Should only match on current users that are orderers
 		final String query = "SELECT u.user_id AS userId, p.provider_id AS providerId FROM users u, provider p"
 		        + " WHERE u.person_id = p.person_id AND u.user_id IN (select orderer from orders)";
@@ -115,7 +115,7 @@ public class ConvertOrderersToProviders implements CustomTaskChange {
 	}
 	
 	@Override
-	public void setUp() throws SetupException {
+	public void setUp() {
 	}
 	
 	@Override

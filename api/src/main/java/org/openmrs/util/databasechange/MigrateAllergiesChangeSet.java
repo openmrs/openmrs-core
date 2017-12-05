@@ -40,7 +40,7 @@ public class MigrateAllergiesChangeSet implements CustomTaskChange {
 	}
 	
 	@Override
-	public void setUp() throws SetupException {
+	public void setUp() {
 		
 	}
 	

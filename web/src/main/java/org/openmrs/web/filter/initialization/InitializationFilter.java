@@ -195,8 +195,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @param httpResponse
 	 */
 	@Override
-	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	        ServletException {
+	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
 		loadInstallationScriptIfPresent();
 		
 		// we need to save current user language in references map since it will be used when template
@@ -379,8 +378,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @param httpResponse
 	 */
 	@Override
-	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	        ServletException {
+	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
 		// we need to save current user language in references map since it will be used when template

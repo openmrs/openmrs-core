@@ -699,7 +699,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @param requestor ModuleClassLoader to check against
 	 * @throws ClassNotFoundException
 	 */
-	protected void checkClassVisibility(final Class<?> cls, final ModuleClassLoader requestor) throws ClassNotFoundException {
+	protected void checkClassVisibility(final Class<?> cls, final ModuleClassLoader requestor) {
 		
 		if (this == requestor) {
 			return;

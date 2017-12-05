@@ -435,7 +435,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Integer resolveUserId(XCN xcn) throws HL7Exception {
+	public Integer resolveUserId(XCN xcn) {
 		String idNumber = xcn.getIDNumber().getValue();
 		String familyName = xcn.getFamilyName().getSurname().getValue();
 		String givenName = xcn.getGivenName().getValue();
@@ -494,7 +494,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Integer resolvePersonId(XCN xcn) throws HL7Exception {
+	public Integer resolvePersonId(XCN xcn) {
 		String idNumber = xcn.getIDNumber().getValue();
 		String familyName = xcn.getFamilyName().getSurname().getValue();
 		String givenName = xcn.getGivenName().getValue();

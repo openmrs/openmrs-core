@@ -51,7 +51,7 @@ public class StaticDispatcherServlet extends org.springframework.web.servlet.Dis
 	 * 
 	 * @throws ServletException
 	 */
-	public void refreshApplicationContext() throws ServletException {
+	public void refreshApplicationContext() {
 		log.info("Application context for the static content dispatcher servlet is being refreshed");
 		
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());

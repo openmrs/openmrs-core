@@ -86,5 +86,5 @@ public interface MessageService {
 	
 	public Template getTemplate(Integer id) throws MessageException;
 	
-	public List getTemplatesByName(String name) throws MessageException;
+	public List getTemplatesByName(String name);
 }

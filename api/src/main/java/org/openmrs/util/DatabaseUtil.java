@@ -180,7 +180,7 @@ public class DatabaseUtil {
 	 * @throws Exception
 	 */
 	public static <T> Set<T> getUniqueNonNullColumnValues(String columnName, String tableName, Class<T> type,
-	        Connection connection) throws Exception {
+	        Connection connection) {
 		Set<T> uniqueValues = new HashSet<T>();
 		final String alias = "unique_values";
 		String select = "SELECT DISTINCT " + columnName + " AS " + alias + " FROM " + tableName + " WHERE " + columnName

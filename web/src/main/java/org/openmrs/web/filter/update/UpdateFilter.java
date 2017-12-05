@@ -117,8 +117,7 @@ public class UpdateFilter extends StartupFilter {
 	 * @param httpResponse
 	 */
 	@Override
-	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	        ServletException {
+	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
 		
 		Map<String, Object> referenceMap = new HashMap<>();
 		checkLocaleAttributesForFirstTime(httpRequest);
@@ -328,7 +327,7 @@ public class UpdateFilter extends StartupFilter {
 	 * @should not authorize retired superusers
 	 * @should authenticate with systemId
 	 */
-	protected boolean authenticateAsSuperUser(String usernameOrSystemId, String password) throws ServletException {
+	protected boolean authenticateAsSuperUser(String usernameOrSystemId, String password) {
 		Connection connection = null;
 		try {
 			connection = DatabaseUpdater.getConnection();

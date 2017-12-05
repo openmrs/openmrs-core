@@ -809,7 +809,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		}
 		
 		@Override
-		public void connect() throws IOException {
+		public void connect() {
 			
 		}
 		

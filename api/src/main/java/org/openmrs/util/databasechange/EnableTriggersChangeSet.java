@@ -58,7 +58,7 @@ public class EnableTriggersChangeSet implements CustomTaskChange {
 	}
 	
 	@Override
-	public void setUp() throws SetupException {
+	public void setUp() {
 	}
 	
 	@Override

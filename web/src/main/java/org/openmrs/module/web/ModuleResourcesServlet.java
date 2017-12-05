@@ -49,7 +49,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 	}
 	
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		log.debug("In service method for module servlet: " + request.getPathInfo());
 		

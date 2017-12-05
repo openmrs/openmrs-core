@@ -1929,7 +1929,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void saveObs_shouldSetStatusToAmendedWhenModifyingAnObsWithFinalStatus() throws Exception {
+	public void saveObs_shouldSetStatusToAmendedWhenModifyingAnObsWithFinalStatus() {
 		Obs existing = obsService.getObs(7);
 		existing.setValueNumeric(60.0);
 		Obs amended = obsService.saveObs(existing, "testing");
@@ -1939,7 +1939,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void saveObs_shouldNotChangeStatusOfPreliminaryWhenModifyingAnObs() throws Exception {
+	public void saveObs_shouldNotChangeStatusOfPreliminaryWhenModifyingAnObs() {
 		Obs existing = obsService.getObs(9);
 		existing.setValueNumeric(175.0);
 		Obs newObs = obsService.saveObs(existing, "testing");
@@ -1948,7 +1948,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void saveObs_shouldLetYouChangeStatusFromPreliminaryToFinalWhenModifyingAnObs() throws Exception {
+	public void saveObs_shouldLetYouChangeStatusFromPreliminaryToFinalWhenModifyingAnObs() {
 		Obs existing = obsService.getObs(9);
 		existing.setValueNumeric(175.0);
 		existing.setStatus(Obs.Status.FINAL);
@@ -1961,7 +1961,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * Tests that we support a manual workaround in case you need to modify a FINAL obs and leave its status as FINAL
 	 */
 	@Test
-	public void shouldNotAutomaticallySetStatusWhenManuallyCopyingAnObs() throws Exception {
+	public void shouldNotAutomaticallySetStatusWhenManuallyCopyingAnObs() {
 		Obs existing = obsService.getObs(7);
 		Obs newObs = Obs.newInstance(existing);
 		newObs.setValueNumeric(60.0);

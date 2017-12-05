@@ -64,7 +64,7 @@ public class SerializationServiceImplTest {
 		 *      java.lang.Class)
 		 */
 		@Override
-		public <T> T deserialize(String serializedObject, Class<? extends T> clazz) throws SerializationException {
+		public <T> T deserialize(String serializedObject, Class<? extends T> clazz) {
 			return null;
 		}
 		
@@ -72,7 +72,7 @@ public class SerializationServiceImplTest {
 		 * @see org.openmrs.serialization.OpenmrsSerializer#serialize(java.lang.Object)
 		 */
 		@Override
-		public String serialize(Object o) throws SerializationException {
+		public String serialize(Object o) {
 			return null;
 		}
 		
@@ -88,7 +88,7 @@ public class SerializationServiceImplTest {
 		 *      java.lang.Class)
 		 */
 		@Override
-		public <T> T deserialize(String serializedObject, Class<? extends T> clazz) throws SerializationException {
+		public <T> T deserialize(String serializedObject, Class<? extends T> clazz) {
 			return null;
 		}
 		
@@ -96,7 +96,7 @@ public class SerializationServiceImplTest {
 		 * @see org.openmrs.serialization.OpenmrsSerializer#serialize(java.lang.Object)
 		 */
 		@Override
-		public String serialize(Object o) throws SerializationException {
+		public String serialize(Object o) {
 			return null;
 		}
 		

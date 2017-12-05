@@ -60,7 +60,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 	 * 
 	 * @throws ServletException
 	 */
-	public void reInitFrameworkServlet() throws ServletException {
+	public void reInitFrameworkServlet() {
 		log.debug("Framework being REinitialized");
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		((XmlWebApplicationContext) getWebApplicationContext()).setClassLoader(OpenmrsClassLoader.getInstance());

@@ -352,7 +352,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			db.setEntityResolver(new EntityResolver() {
 				
 				@Override
-				public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+				public InputSource resolveEntity(String publicId, String systemId) {
 					// When asked to resolve external entities (such as a DTD) we return an InputSource
 					// with no data at the end, causing the parser to ignore the DTD.
 					return new InputSource(new StringReader(""));
@@ -618,14 +618,13 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @throws ModuleMustStartException if the context cannot restart due to a
 	 *             {@link MandatoryModuleException} or {@link OpenmrsCoreModuleException}
 	 */
-	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Exception {
+	public static void performWebStartOfModules(ServletContext servletContext) throws Exception {
 		List<Module> startedModules = new ArrayList<Module>();
 		startedModules.addAll(ModuleFactory.getStartedModules());
 		performWebStartOfModules(startedModules, servletContext);
 	}
 	
-	public static void performWebStartOfModules(Collection<Module> startedModules, ServletContext servletContext)
-	        throws ModuleMustStartException, Exception {
+	public static void performWebStartOfModules(Collection<Module> startedModules, ServletContext servletContext) {
 		final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
 		
 		boolean someModuleNeedsARefresh = false;

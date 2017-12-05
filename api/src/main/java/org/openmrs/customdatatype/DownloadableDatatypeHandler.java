@@ -44,6 +44,6 @@ public interface DownloadableDatatypeHandler<T> extends CustomDatatypeHandler<Cu
 	 * @param os the output stream to be written to
 	 * @throws IOException if there is an IO error writing to the stream 
 	 */
-	void writeToStream(CustomDatatype<T> dt, String valueReference, OutputStream os) throws IOException;
+	void writeToStream(CustomDatatype<T> dt, String valueReference, OutputStream os);
 	
 }

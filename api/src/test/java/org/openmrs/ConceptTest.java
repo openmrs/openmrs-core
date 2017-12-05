@@ -1122,7 +1122,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void findPossibleValues_shouldReturnListOfConceptsFromMatchingResults() throws Exception {
+	public void findPossibleValues_shouldReturnListOfConceptsFromMatchingResults() {
 		Concept concept = new Concept(1);
 		concept.addName(new ConceptName("findPossibleValueTest", Context.getLocale()));
 		concept.addDescription(new ConceptDescription("en desc", Context.getLocale()));

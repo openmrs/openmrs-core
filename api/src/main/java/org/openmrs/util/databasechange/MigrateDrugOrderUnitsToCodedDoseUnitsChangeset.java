@@ -114,7 +114,7 @@ public class MigrateDrugOrderUnitsToCodedDoseUnitsChangeset implements CustomTas
 	}
 	
 	@Override
-	public void setUp() throws SetupException {
+	public void setUp() {
 	}
 	
 	@Override

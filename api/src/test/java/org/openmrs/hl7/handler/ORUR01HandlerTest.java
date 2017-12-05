@@ -81,7 +81,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
+	public void runBeforeEachTest() {
 		executeDataSet(ORU_INITIAL_DATA_XML);
 	}
 	

@@ -113,7 +113,7 @@ public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 	 * @see CustomChange#setUp()
 	 */
 	@Override
-	public void setUp() throws SetupException {
+	public void setUp() {
 	}
 	
 	/**

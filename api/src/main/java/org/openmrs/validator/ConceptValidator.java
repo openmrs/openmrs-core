@@ -89,7 +89,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 	 * @should fail if the concept class is null
 	 */
 	@Override
-	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
+	public void validate(Object obj, Errors errors) throws APIException {
 		
 		if (obj == null || !(obj instanceof Concept)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type" + Concept.class);

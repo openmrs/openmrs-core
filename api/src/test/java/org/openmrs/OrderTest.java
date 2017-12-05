@@ -52,7 +52,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	private Order o;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		ymd = new SimpleDateFormat("yyyy-MM-dd");
 		o = new Order();
 	}
@@ -223,7 +223,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	 * @see Order#cloneForDiscontinuing()
 	 */
 	@Test
-	public void cloneForDiscontinuing_shouldSetAllTheRelevantFields() throws Exception {
+	public void cloneForDiscontinuing_shouldSetAllTheRelevantFields() {
 		
 		Order anOrder = new Order();
 		anOrder.setPatient(new Patient());
@@ -280,7 +280,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	 * @see Order#isType(OrderType)
 	 */
 	@Test
-	public void isType_shouldTrueIfItIsTheSameOrIsASubtype() throws Exception {
+	public void isType_shouldTrueIfItIsTheSameOrIsASubtype() {
 		Order order = new Order();
 		OrderType orderType = new OrderType();
 		OrderType subType1 = new OrderType();
@@ -298,7 +298,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	 * @see Order#isType(OrderType)
 	 */
 	@Test
-	public void isType_shouldFalseIfItNeitherTheSameNorASubtype() throws Exception {
+	public void isType_shouldFalseIfItNeitherTheSameNorASubtype() {
 		Order order = new Order();
 		order.setOrderType(new OrderType());
 		
@@ -309,7 +309,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	 * @see Order#cloneForRevision()
 	 */
 	@Test
-	public void cloneForRevision_shouldSetTheRelevantFieldsForADCOrder() throws Exception {
+	public void cloneForRevision_shouldSetTheRelevantFieldsForADCOrder() {
 		Order order = new Order();
 		order.setAction(Order.Action.DISCONTINUE);
 		Date date = new Date();
@@ -332,7 +332,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	 * @see Order#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnFalseIfOtherOrderIsNull() throws Exception {
+	public void hasSameOrderableAs_shouldReturnFalseIfOtherOrderIsNull() {
 		Order order = new Order();
 		order.setConcept(new Concept());
 		
@@ -343,7 +343,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	 * @see Order#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptOfTheOrdersDoNotMatch() throws Exception {
+	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptOfTheOrdersDoNotMatch() {
 		Order order = new Order();
 		order.setConcept(new Concept());
 		
@@ -357,7 +357,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	 * @see Order#hasSameOrderableAs(Order)
 	 */
 	@Test
-	public void hasSameOrderableAs_shouldReturnTrueIfTheOrdersHaveTheSameConcept() throws Exception {
+	public void hasSameOrderableAs_shouldReturnTrueIfTheOrdersHaveTheSameConcept() {
 		Order order = new Order();
 		Concept concept = new Concept();
 		order.setConcept(concept);
@@ -371,7 +371,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	 * @see Order#getEffectiveStartDate()
 	 */
 	@Test
-	public void getEffectiveStartDate_shouldReturnScheduledDateIfUrgencyIsScheduled() throws Exception {
+	public void getEffectiveStartDate_shouldReturnScheduledDateIfUrgencyIsScheduled() {
 		Order order = new Order();
 		Date date = DateUtils.addDays(new Date(), 2);
 		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
@@ -385,7 +385,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	 * @see Order#getEffectiveStartDate()
 	 */
 	@Test
-	public void getEffectiveStartDate_shouldReturnDateActivatedIfUrgencyIsNotScheduled() throws Exception {
+	public void getEffectiveStartDate_shouldReturnDateActivatedIfUrgencyIsNotScheduled() {
 		Order order = new Order();
 		Date date = new Date();
 		order.setScheduledDate(DateUtils.addDays(date, 2));
@@ -398,7 +398,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	 * @see Order#getEffectiveStopDate()
 	 */
 	@Test
-	public void getEffectiveStopDate_shouldReturnDateStoppedIfDateStoppedIsNotNull() throws Exception {
+	public void getEffectiveStopDate_shouldReturnDateStoppedIfDateStoppedIsNotNull() {
 		Order order = new Order();
 		Date dateStopped = DateUtils.addDays(new Date(), 4);
 		OrderUtilTest.setDateStopped(order, dateStopped);
@@ -411,7 +411,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	 * @see Order#getEffectiveStopDate()
 	 */
 	@Test
-	public void getEffectiveStopDate_shouldReturnAutoExpireDateIfDateStoppedIsNull() throws Exception {
+	public void getEffectiveStopDate_shouldReturnAutoExpireDateIfDateStoppedIsNull() {
 		Order order = new Order();
 		Date date = DateUtils.addDays(new Date(), 4);
 		order.setAutoExpireDate(date);
@@ -556,8 +556,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 	 * @see Order#isDiscontinued(Date)
 	 */
 	@Test
-	public void isDiscontinued_shouldReturnTrueIfTheOrderIsScheduledForTheFutureAndActivatedOnCheckDateButTheCheckDateIsAfterDateStopped()
-	        throws Exception {
+	public void isDiscontinued_shouldReturnTrueIfTheOrderIsScheduledForTheFutureAndActivatedOnCheckDateButTheCheckDateIsAfterDateStopped() {
 		// tests the case when a scheduled order is revised:
 		// in that case its original order is stopped.
 		// the stopped date of the original order is set to a moment before the activated date of the revised order.

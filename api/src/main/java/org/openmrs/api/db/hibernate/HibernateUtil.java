@@ -90,7 +90,7 @@ public class HibernateUtil {
 		return sessionFactory.getCurrentSession().doReturningWork(new ReturningWork<String>() {
 			
 			@Override
-			public String execute(Connection connection) throws SQLException {
+			public String execute(Connection connection) {
 				return escapeSqlWildcards(oldString, connection);
 			}
 		});
