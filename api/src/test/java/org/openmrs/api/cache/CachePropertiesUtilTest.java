@@ -9,15 +9,13 @@
  */
 package org.openmrs.api.cache;
 
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
 
-import org.junit.Test;
-
 import net.sf.ehcache.config.CacheConfiguration;
+import org.junit.Test;
 
 public class CachePropertiesUtilTest {
 

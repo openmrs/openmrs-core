@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernatePersonDAO implements PersonDAO {
 	
-	protected final static Logger log = LoggerFactory.getLogger(HibernatePersonDAO.class);
+	private static final Logger log = LoggerFactory.getLogger(HibernatePersonDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -84,83 +84,88 @@ public class HibernatePersonDAO implements PersonDAO {
 		if (birthyear == null) {
 			birthyear = 0;
 		}
-		
-		Set<Person> people = new LinkedHashSet<Person>();
-		
+
 		name = name.replaceAll("  ", " ");
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
 		
 		StringBuilder q = new StringBuilder(
 		        "select p from Person p left join p.names as pname where p.personVoided = false and pname.voided = false and ");
-		
-		if (names.length == 1) {
-			q.append("(").append(" soundex(pname.givenName) = soundex(:n1)").append(
-			    " or soundex(pname.middleName) = soundex(:n1)").append(" or soundex(pname.familyName) = soundex(:n1) ")
-			        .append(" or soundex(pname.familyName2) = soundex(:n1) ").append(")");
-		} else if (names.length == 2) {
-			q.append("(").append(" case").append("  when pname.givenName is null then 1").append(
-			    "  when pname.givenName = '' then 1").append("  when soundex(pname.givenName) = soundex(:n1) then 4")
-			        .append("  when soundex(pname.givenName) = soundex(:n2) then 3").append("  else 0 ").append(" end")
-			        .append(" + ").append(" case").append("  when pname.middleName is null then 1").append(
-			            "  when pname.middleName = '' then 1").append(
-			            "  when soundex(pname.middleName) = soundex(:n1) then 3").append(
-			            "  when soundex(pname.middleName) = soundex(:n2) then 4").append("  else 0 ").append(" end").append(
-			            " + ").append(" case").append("  when pname.familyName is null then 1").append(
-			            "  when pname.familyName = '' then 1").append(
-			            "  when soundex(pname.familyName) = soundex(:n1) then 3").append(
-			            "  when soundex(pname.familyName) = soundex(:n2) then 4").append("  else 0 ").append(" end").append(
-			            " +").append(" case").append("  when pname.familyName2 is null then 1").append(
-			            "  when pname.familyName2 = '' then 1").append(
-			            "  when soundex(pname.familyName2) = soundex(:n1) then 3").append(
-			            "  when soundex(pname.familyName2) = soundex(:n2) then 4").append("  else 0 ").append(" end")
-			        .append(") > 6");
-		} else if (names.length == 3) {
-			q.append("(").append(" case").append("  when pname.givenName is null then 0").append(
-			    "  when soundex(pname.givenName) = soundex(:n1) then 3").append(
-			    "  when soundex(pname.givenName) = soundex(:n2) then 2").append(
-			    "  when soundex(pname.givenName) = soundex(:n3) then 1").append("  else 0 ").append(" end").append(" + ")
-			        .append(" case").append("  when pname.middleName is null then 0").append(
-			            "  when soundex(pname.middleName) = soundex(:n1) then 2").append(
-			            "  when soundex(pname.middleName) = soundex(:n2) then 3").append(
-			            "  when soundex(pname.middleName) = soundex(:n3) then 1").append("  else 0").append(" end").append(
-			            " + ").append(" case").append("  when pname.familyName is null then 0").append(
-			            "  when soundex(pname.familyName) = soundex(:n1) then 1").append(
-			            "  when soundex(pname.familyName) = soundex(:n2) then 2").append(
-			            "  when soundex(pname.familyName) = soundex(:n3) then 3").append("  else 0").append(" end").append(
-			            " +").append(" case").append("  when pname.familyName2 is null then 0").append(
-			            "  when soundex(pname.familyName2) = soundex(:n1) then 1").append(
-			            "  when soundex(pname.familyName2) = soundex(:n2) then 2").append(
-			            "  when soundex(pname.familyName2) = soundex(:n3) then 3").append("  else 0").append(" end").append(
-			            ") >= 5");
-		} else {
-			
-			// This is simply an alternative method of name matching which scales better
-			// for large names, although it is hard to imagine getting names with more than
-			// six or so tokens.  This can be easily updated to attain more desirable
-			// results; it is just a working alternative to throwing an exception.
-			
-			q.append("(").append(" case").append("  when pname.givenName is null then 0");
-			for (int i = 0; i < names.length; i++) {
-				q.append("  when soundex(pname.givenName) = soundex(:n").append(i + 1).append(") then 1");
-			}
-			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
-			    "  when pname.middleName is null then 0");
-			for (int i = 0; i < names.length; i++) {
-				q.append("  when soundex(pname.middleName) = soundex(:n").append(i + 1).append(") then 1");
-			}
-			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
-			    "  when pname.familyName is null then 0");
-			for (int i = 0; i < names.length; i++) {
-				q.append("  when soundex(pname.familyName) = soundex(:n").append(i + 1).append(") then 1");
-			}
-			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
-			    "  when pname.familyName2 is null then 0");
-			for (int i = 0; i < names.length; i++) {
-				q.append("  when soundex(pname.familyName2) = soundex(:n").append(i + 1).append(") then 1");
-			}
-			// if most of the names have at least a hit somewhere
-			q.append("  else 0").append(" end").append(") >= ").append((int) (names.length * .75)); 
+
+		switch (names.length) {
+			case 1:
+				q.append("(").append(" soundex(pname.givenName) = soundex(:n1)").append(
+						" or soundex(pname.middleName) = soundex(:n1)")
+						.append(" or soundex(pname.familyName) = soundex(:n1) ")
+						.append(" or soundex(pname.familyName2) = soundex(:n1) ").append(")");
+				break;
+			case 2:
+				q.append("(").append(" case").append("  when pname.givenName is null then 1").append(
+						"  when pname.givenName = '' then 1").append("  when soundex(pname.givenName) = soundex(:n1) then 4")
+						.append("  when soundex(pname.givenName) = soundex(:n2) then 3").append("  else 0 ").append(" end")
+						.append(" + ").append(" case").append("  when pname.middleName is null then 1").append(
+						"  when pname.middleName = '' then 1").append(
+						"  when soundex(pname.middleName) = soundex(:n1) then 3").append(
+						"  when soundex(pname.middleName) = soundex(:n2) then 4").append("  else 0 ").append(" end").append(
+						" + ").append(" case").append("  when pname.familyName is null then 1").append(
+						"  when pname.familyName = '' then 1").append(
+						"  when soundex(pname.familyName) = soundex(:n1) then 3").append(
+						"  when soundex(pname.familyName) = soundex(:n2) then 4").append("  else 0 ").append(" end").append(
+						" +").append(" case").append("  when pname.familyName2 is null then 1").append(
+						"  when pname.familyName2 = '' then 1").append(
+						"  when soundex(pname.familyName2) = soundex(:n1) then 3").append(
+						"  when soundex(pname.familyName2) = soundex(:n2) then 4").append("  else 0 ").append(" end")
+						.append(") > 6");
+				break;
+			case 3:
+				q.append("(").append(" case").append("  when pname.givenName is null then 0").append(
+						"  when soundex(pname.givenName) = soundex(:n1) then 3").append(
+						"  when soundex(pname.givenName) = soundex(:n2) then 2").append(
+						"  when soundex(pname.givenName) = soundex(:n3) then 1").append("  else 0 ").append(" end")
+						.append(" + ")
+						.append(" case").append("  when pname.middleName is null then 0").append(
+						"  when soundex(pname.middleName) = soundex(:n1) then 2").append(
+						"  when soundex(pname.middleName) = soundex(:n2) then 3").append(
+						"  when soundex(pname.middleName) = soundex(:n3) then 1").append("  else 0").append(" end").append(
+						" + ").append(" case").append("  when pname.familyName is null then 0").append(
+						"  when soundex(pname.familyName) = soundex(:n1) then 1").append(
+						"  when soundex(pname.familyName) = soundex(:n2) then 2").append(
+						"  when soundex(pname.familyName) = soundex(:n3) then 3").append("  else 0").append(" end").append(
+						" +").append(" case").append("  when pname.familyName2 is null then 0").append(
+						"  when soundex(pname.familyName2) = soundex(:n1) then 1").append(
+						"  when soundex(pname.familyName2) = soundex(:n2) then 2").append(
+						"  when soundex(pname.familyName2) = soundex(:n3) then 3").append("  else 0").append(" end").append(
+						") >= 5");
+				break;
+			default:
+
+				// This is simply an alternative method of name matching which scales better
+				// for large names, although it is hard to imagine getting names with more than
+				// six or so tokens.  This can be easily updated to attain more desirable
+				// results; it is just a working alternative to throwing an exception.
+
+				q.append("(").append(" case").append("  when pname.givenName is null then 0");
+				for (int i = 0; i < names.length; i++) {
+					q.append("  when soundex(pname.givenName) = soundex(:n").append(i + 1).append(") then 1");
+				}
+				q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
+						"  when pname.middleName is null then 0");
+				for (int i = 0; i < names.length; i++) {
+					q.append("  when soundex(pname.middleName) = soundex(:n").append(i + 1).append(") then 1");
+				}
+				q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
+						"  when pname.familyName is null then 0");
+				for (int i = 0; i < names.length; i++) {
+					q.append("  when soundex(pname.familyName) = soundex(:n").append(i + 1).append(") then 1");
+				}
+				q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
+						"  when pname.familyName2 is null then 0");
+				for (int i = 0; i < names.length; i++) {
+					q.append("  when soundex(pname.familyName2) = soundex(:n").append(i + 1).append(") then 1");
+				}
+				// if most of the names have at least a hit somewhere
+				q.append("  else 0").append(" end").append(") >= ").append((int) (names.length * .75));
+				break;
 		}
 		
 		String birthdayMatch = " (year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1)
@@ -169,11 +174,11 @@ public class HibernatePersonDAO implements PersonDAO {
 		String genderMatch = " (p.gender = :gender or p.gender = '') ";
 		
 		if (birthyear != 0 && gender != null) {
-			q.append(" and (" + birthdayMatch + "and " + genderMatch + ") ");
+			q.append(" and (").append(birthdayMatch).append("and ").append(genderMatch).append(") ");
 		} else if (birthyear != 0) {
-			q.append(" and " + birthdayMatch);
+			q.append(" and ").append(birthdayMatch);
 		} else if (gender != null) {
-			q.append(" and " + genderMatch);
+			q.append(" and ").append(genderMatch);
 		}
 		
 		q.append(" order by pname.givenName asc,").append(" pname.middleName asc,").append(" pname.familyName asc,").append(
@@ -189,10 +194,8 @@ public class HibernatePersonDAO implements PersonDAO {
 		if (qStr.contains(":gender")) {
 			query.setString("gender", gender);
 		}
-		
-		people.addAll(query.list());
-		
-		return people;
+
+		return new LinkedHashSet<>(query.list());
 	}
 	
 	/**

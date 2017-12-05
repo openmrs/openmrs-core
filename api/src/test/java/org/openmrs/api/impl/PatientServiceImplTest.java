@@ -20,6 +20,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,11 +54,6 @@ import org.openmrs.validator.PatientIdentifierValidator;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 /**
  * This class tests org.openmrs.{@link PatientServiceImpl}
@@ -214,7 +216,7 @@ public class PatientServiceImplTest {
 
     @Test(expected = APIException.class)
     public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenEmptyAttributes() throws Exception {
-        patientService.getDuplicatePatientsByAttributes(Arrays.asList());
+        patientService.getDuplicatePatientsByAttributes(Collections.emptyList());
     }
 
     @Test(expected = APIException.class)
@@ -224,7 +226,8 @@ public class PatientServiceImplTest {
 
     @Test
     public void getDuplicatePatientsByAttributes_shouldCallDaoGivenAttributes() throws Exception {
-        when(patientDaoMock.getDuplicatePatientsByAttributes(anyList())).thenReturn(Arrays.asList(mock(Patient.class)));
+        when(patientDaoMock.getDuplicatePatientsByAttributes(anyList())).thenReturn(
+		        Collections.singletonList(mock(Patient.class)));
         final List<Patient> duplicatePatients = patientService.getDuplicatePatientsByAttributes(Arrays.asList("some attribute", "another attribute"));
         verify(patientDaoMock, times(1)).getDuplicatePatientsByAttributes(anyList());
         Assert.assertEquals(duplicatePatients.size(), 1);

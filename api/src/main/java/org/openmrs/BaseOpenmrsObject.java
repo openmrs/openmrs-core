@@ -9,11 +9,10 @@
  */
 package org.openmrs;
 
-import java.io.Serializable;
-import java.util.UUID;
-
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import java.io.Serializable;
+import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -137,7 +136,7 @@ public abstract class BaseOpenmrsObject implements Serializable, OpenmrsObject {
 		//In case of hibernate proxy objects we need to get real classes
 		Class<?> thisClass = Hibernate.getClass(this);
 		Class<?> objClass = Hibernate.getClass(obj);
-		if (!(thisClass.isAssignableFrom(objClass) || objClass.isAssignableFrom(thisClass))){
+		if (!(thisClass.isAssignableFrom(objClass) || objClass.isAssignableFrom(thisClass))) {
 			return false;
 		}
 		return getUuid().equals(other.getUuid());

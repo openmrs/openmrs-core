@@ -29,8 +29,6 @@ import org.openmrs.hl7.HL7InQueue;
 import org.openmrs.hl7.HL7Source;
 import org.openmrs.hl7.Hl7InArchivesMigrateThread;
 import org.openmrs.hl7.db.HL7DAO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * OpenMRS HL7 API database default hibernate implementation This class shouldn't be instantiated by
@@ -40,8 +38,6 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.hl7.db.HL7DAO
  */
 public class HibernateHL7DAO implements HL7DAO {
-	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * Hibernate session factory

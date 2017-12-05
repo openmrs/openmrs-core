@@ -108,7 +108,7 @@ public class ObsTest {
 	private Object generateValue(Field field, boolean setAlternateValue) throws Exception {
 		Object fieldValue;
 		if (field.getType().equals(Boolean.class)) {
-			fieldValue = setAlternateValue ? true : false;
+			fieldValue = setAlternateValue;
 		} else if (field.getType().equals(Integer.class)) {
 			fieldValue = setAlternateValue ? 10 : 17;
 		} else if (field.getType().equals(Double.class)) {
@@ -593,17 +593,16 @@ public class ObsTest {
 	 */
 	@Test(expected = APIException.class)
 	public void setFormField_shouldRejectANamepaceAndPathCombinationLongerThanTheMaxLength() throws Exception {
-		StringBuffer nsBuffer = new StringBuffer(125);
+		StringBuilder nsBuffer = new StringBuilder(125);
 		for (int i = 0; i < 125; i++) {
 			nsBuffer.append("n");
 		}
-		StringBuffer pathBuffer = new StringBuffer(130);
 		for (int i = 0; i < 130; i++) {
 			nsBuffer.append("p");
 		}
 		
 		final String ns = nsBuffer.toString();
-		final String path = pathBuffer.toString();
+		final String path = "";
 		Obs obs = new Obs();
 		obs.setFormField(ns, path);
 	}

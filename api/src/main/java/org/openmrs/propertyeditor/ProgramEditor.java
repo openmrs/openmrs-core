@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
  */
 public class ProgramEditor extends PropertyEditorSupport {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(ProgramEditor.class);
 	
 	public ProgramEditor() {
 	}

@@ -30,8 +30,6 @@ import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ProgramWorkflowDAO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Hibernate specific ProgramWorkflow related functions.<br>
@@ -43,8 +41,6 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.api.ProgramWorkflowService
  */
 public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
-	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private SessionFactory sessionFactory;
 	

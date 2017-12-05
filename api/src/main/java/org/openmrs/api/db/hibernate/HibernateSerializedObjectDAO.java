@@ -28,15 +28,11 @@ import org.openmrs.api.db.SerializedObjectDAO;
 import org.openmrs.serialization.OpenmrsSerializer;
 import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.ExceptionUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Hibernate specific database access methods for serialized objects
  */
 public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
-	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private static HibernateSerializedObjectDAO instance;
 	
@@ -133,7 +129,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	@Override
 	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, String name, boolean exactMatchOnly)
 	        throws DAOException {
-		List<T> ret = new ArrayList<T>();
+		List<T> ret = new ArrayList<>();
 		List<SerializedObject> objects = getAllSerializedObjectsByName(type, name, exactMatchOnly);
 		for (SerializedObject serializedObject : objects) {
 			ret.add(convertSerializedObject(type, serializedObject));
@@ -160,7 +156,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	 */
 	@Override
 	public <T extends OpenmrsObject> List<T> getAllObjects(Class<T> type, boolean includeRetired) throws DAOException {
-		List<T> ret = new ArrayList<T>();
+		List<T> ret = new ArrayList<>();
 		List<SerializedObject> objects = getAllSerializedObjects(type, includeRetired);
 		for (SerializedObject serializedObject : objects) {
 			ret.add(convertSerializedObject(type, serializedObject));
@@ -355,7 +351,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	@Override
 	public List<Class<? extends OpenmrsObject>> getSupportedTypes() {
 		if (supportedTypes == null) {
-			supportedTypes = new ArrayList<Class<? extends OpenmrsObject>>();
+			supportedTypes = new ArrayList<>();
 		}
 		return supportedTypes;
 	}
@@ -365,12 +361,10 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	 */
 	public void setSupportedTypes(List<Class<? extends OpenmrsObject>> supportedTypes) {
 		if (this.supportedTypes == null) {
-			this.supportedTypes = new ArrayList<Class<? extends OpenmrsObject>>();
+			this.supportedTypes = new ArrayList<>();
 		}
 		if (supportedTypes != null) {
-			for (Class<? extends OpenmrsObject> clazz : supportedTypes) {
-				this.supportedTypes.add(clazz);
-			}
+			this.supportedTypes.addAll(supportedTypes);
 		}
 		
 	}

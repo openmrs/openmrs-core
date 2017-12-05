@@ -14,6 +14,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.app.Application;
+import ca.uhn.hl7v2.app.ApplicationException;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
+import ca.uhn.hl7v2.model.v25.datatype.ID;
+import ca.uhn.hl7v2.model.v25.datatype.TS;
+import ca.uhn.hl7v2.model.v25.datatype.XPN;
+import ca.uhn.hl7v2.model.v25.message.ADT_A05;
+import ca.uhn.hl7v2.model.v25.segment.MSH;
+import ca.uhn.hl7v2.model.v25.segment.PID;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -26,18 +37,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.Application;
-import ca.uhn.hl7v2.app.ApplicationException;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v25.datatype.CX;
-import ca.uhn.hl7v2.model.v25.datatype.ID;
-import ca.uhn.hl7v2.model.v25.datatype.TS;
-import ca.uhn.hl7v2.model.v25.datatype.XPN;
-import ca.uhn.hl7v2.model.v25.message.ADT_A05;
-import ca.uhn.hl7v2.model.v25.segment.MSH;
-import ca.uhn.hl7v2.model.v25.segment.PID;
 
 /* HL7 using HAPI to handle ADT A28 Messages
  * 
@@ -94,7 +93,7 @@ import ca.uhn.hl7v2.model.v25.segment.PID;
  */
 public class ADTA28Handler implements Application {
 	
-	private Logger log = LoggerFactory.getLogger(ADTA28Handler.class);
+	private static final Logger log = LoggerFactory.getLogger(ADTA28Handler.class);
 	
 	/**
 	 * Always returns true, assuming that the router calling this handler will only call this
@@ -123,12 +122,10 @@ public class ADTA28Handler implements Application {
 		try {
 			ADT_A05 adt = (ADT_A05) message;
 			response = processADT_A28(adt);
-		}
-		catch (ClassCastException e) {
+		} catch (ClassCastException e) {
 			log.error("Error casting " + message.getClass().getName() + " to ADT_A28", e);
 			throw new ApplicationException("Invalid message type for handler");
-		}
-		catch (HL7Exception e) {
+		} catch (HL7Exception e) {
 			log.error("Error while processing ADT_A28 message", e);
 			throw new ApplicationException(e);
 		}
@@ -207,7 +204,7 @@ public class ADTA28Handler implements Application {
 			throw new HL7Exception("Missing patient identifier in PID segment");
 		}
 		
-		List<PatientIdentifier> goodIdentifiers = new ArrayList<PatientIdentifier>();
+		List<PatientIdentifier> goodIdentifiers = new ArrayList<>();
 		for (CX id : idList) {
 			
 			String assigningAuthority = id.getAssigningAuthority().getNamespaceID().getValue();
@@ -241,19 +238,16 @@ public class ADTA28Handler implements Application {
 					try {
 						PatientIdentifierValidator.validateIdentifier(pi);
 						goodIdentifiers.add(pi);
-					}
-					catch (PatientIdentifierException ex) {
+					} catch (PatientIdentifierException ex) {
 						log.warn("Patient identifier in PID is invalid: " + pi, ex);
 					}
 					
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					log.error("Uncaught error parsing/creating patient identifier '" + hl7PatientId
 					        + "' for assigning authority '" + assigningAuthority + "'", e);
 				}
 			} else {
 				log.error("PID contains identifier with no assigning authority");
-				continue;
 			}
 		}
 		if (goodIdentifiers.isEmpty()) {
@@ -312,7 +306,7 @@ public class ADTA28Handler implements Application {
 	// TODO:  Move these to hl7 handler utilities
 	// Check version, etc.
 	private void validate(Message message) throws HL7Exception {
-		message.getVersion().toString();
+		message.getVersion();
 	}
 	
 	private MSH getMSH(ADT_A05 adt) {

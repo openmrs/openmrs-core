@@ -9,6 +9,14 @@
  */
 package org.openmrs.web.filter.update;
 
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,15 +30,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import liquibase.changelog.ChangeSet;
+import liquibase.exception.LockException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Appender;
@@ -38,7 +39,6 @@ import org.apache.log4j.Logger;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
-import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.MemoryAppender;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -53,9 +53,6 @@ import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoader;
-
-import liquibase.changelog.ChangeSet;
-import liquibase.exception.LockException;
 
 /**
  * This is the second filter that is processed. It is only active when OpenMRS has some liquibase
@@ -257,7 +254,7 @@ public class UpdateFilter extends StartupFilter {
 					StringBuilder sb = new StringBuilder("<ul>");
 					
 					for (String warning : updateJob.getUpdateWarnings()) {
-						sb.append("<li>" + warning + "</li>");
+						sb.append("<li>").append(warning).append("</li>");
 					}
 					
 					sb.append("</ul>");
@@ -731,17 +728,8 @@ public class UpdateFilter extends StartupFilter {
 							
 							if (CollectionUtils.isNotEmpty(warnings)) {
 								reportWarnings(warnings);
-								warnings = null;
 							}
-						}
-						catch (InputRequiredException inputRequired) {
-							// the user would be stepped through the questions returned here.
-							log.error("Not implemented", inputRequired);
-							model.updateChanges();
-							reportError(ErrorMessageConstants.UPDATE_ERROR_INPUT_NOT_IMPLEMENTED, inputRequired.getMessage());
-							return;
-						}
-						catch (DatabaseUpdateException e) {
+						} catch (DatabaseUpdateException e) {
 							log.error("Unable to update the database", e);
 							Map<String, Object[]> errors = new HashMap<>();
 							errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE, null);
@@ -756,8 +744,7 @@ public class UpdateFilter extends StartupFilter {
 						setMessage("Starting OpenMRS");
 						try {
 							startOpenmrs(filterConfig.getServletContext());
-						}
-						catch (Exception e) {
+						} catch (Exception e) {
 							log.error("Unable to complete the startup.", e);
 							reportError(ErrorMessageConstants.UPDATE_ERROR_COMPLETE_STARTUP, e.getMessage());
 							return;
@@ -765,8 +752,7 @@ public class UpdateFilter extends StartupFilter {
 						
 						// set this so that the wizard isn't run again on next page load
 						setUpdatesRequired(false);
-					}
-					finally {
+					} finally {
 						if (!hasErrors()) {
 							setUpdatesRequired(false);
 						}

@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public class TaskThreadedInitializationWrapper implements Task {
 	
 	// Logger 
-	private Logger log = LoggerFactory.getLogger(TaskThreadedInitializationWrapper.class);
+	private static final Logger log = LoggerFactory.getLogger(TaskThreadedInitializationWrapper.class);
 	
 	private Task task;
 	
@@ -75,19 +75,15 @@ public class TaskThreadedInitializationWrapper implements Task {
 	 */
 	@Override
 	public void initialize(final TaskDefinition config) {
-		Runnable r = new Runnable() {
-			
-			@Override
-			public void run() {
-				lock.lock();
-				try {
-					task.initialize(config);
-					initialized = true;
-					initializedCond.signalAll();
-				}
-				finally {
-					lock.unlock();
-				}
+		Runnable r = () -> {
+			lock.lock();
+			try {
+				task.initialize(config);
+				initialized = true;
+				initializedCond.signalAll();
+			}
+			finally {
+				lock.unlock();
 			}
 		};
 		

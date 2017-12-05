@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 public class WebUtil implements GlobalPropertyListener {
 	
-	private static Logger log = LoggerFactory.getLogger(WebUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(WebUtil.class);
 	
 	private static String defaultDateCache = null;
 

@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class AlertReminderTask extends AbstractTask {
 	
 	// Logger 
-	private Logger log = LoggerFactory.getLogger(AlertReminderTask.class);
+	private static final Logger log = LoggerFactory.getLogger(AlertReminderTask.class);
 	
 	/**
 	 * Send alert reminder email to user(s) associated with the alert.
@@ -42,8 +42,7 @@ public class AlertReminderTask extends AbstractTask {
 			// Send alert notifications to users who have unread alerts
 			sendAlertNotifications(alerts);
 			
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Failed to send alert notifications", e);
 		}
 	}
@@ -67,8 +66,7 @@ public class AlertReminderTask extends AbstractTask {
 			// Send a message to each person only once
 			Context.getMessageService().sendMessage(message, users);
 			
-		}
-		catch (MessageException e) {
+		} catch (MessageException e) {
 			log.error("Failed to send message", e);
 		}
 	}
@@ -80,7 +78,7 @@ public class AlertReminderTask extends AbstractTask {
 	 * @return
 	 */
 	private Collection<User> getRecipients(Collection<Alert> alerts) {
-		Collection<User> users = new HashSet<User>();
+		Collection<User> users = new HashSet<>();
 		for (Alert alert : alerts) {
 			log.debug("Send email to alert recipient(s) ...");
 			if (!alert.isAlertRead() && alert.getRecipients() != null) {

@@ -344,12 +344,16 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Set<ProgramWorkflowState> sortedStates = program.getSortedStates();
 		int x = 1;
 		for (ProgramWorkflowState state : sortedStates) {
-			if (x == 1) {
-				Assert.assertEquals("Group 2", state.getConcept().getName(Context.getLocale()).getName());
-			} else if (x == 2) {
-				Assert.assertEquals("Group 10", state.getConcept().getName(Context.getLocale()).getName());
-			} else {
-				Assert.fail("Wha?!");
+			switch (x) {
+				case 1:
+					Assert.assertEquals("Group 2", state.getConcept().getName(Context.getLocale()).getName());
+					break;
+				case 2:
+					Assert.assertEquals("Group 10", state.getConcept().getName(Context.getLocale()).getName());
+					break;
+				default:
+					Assert.fail("Wha?!");
+					break;
 			}
 			x++;
 		}

@@ -20,6 +20,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -626,7 +627,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		PersonName expectedPersonName = voidedName;
 		
-		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<>(Arrays.asList(voidedName)));
+		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<>(Collections.singletonList(voidedName)));
 		
 	}
 	

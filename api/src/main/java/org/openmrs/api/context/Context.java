@@ -9,6 +9,9 @@
  */
 package org.openmrs.api.context;
 
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,10 +22,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Future;
-
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
 
 import org.aopalliance.aop.Advice;
 import org.apache.commons.lang.StringUtils;
@@ -136,7 +135,7 @@ public class Context {
 
 	// Using "wrapper" (Object array) around UserContext to avoid ThreadLocal
 	// bug in Java 1.5
-	private static final ThreadLocal<Object[] /* UserContext */> userContextHolder = new ThreadLocal<Object[] /* UserContext */>();
+	private static final ThreadLocal<Object[] /* UserContext */> userContextHolder = new ThreadLocal<>();
 
 	private static ServiceContext serviceContext;
 
@@ -210,7 +209,7 @@ public class Context {
 	 */
 	public static void clearUserContext() {
 		if (log.isTraceEnabled()) {
-			log.trace("Clearing user context " + userContextHolder.get());
+			log.trace("Clearing user context " + Arrays.toString(userContextHolder.get()));
 		}
 
 		userContextHolder.remove();
@@ -517,8 +516,7 @@ public class Context {
 				ms.setMessageSender(getMessageSender());
 			}
 
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Unable to create message service due", e);
 		}
 		return ms;
@@ -779,7 +777,7 @@ public class Context {
 	 * @param obj The object to refresh from the database in the session
 	 */
 	public static void refreshEntity(Object obj) {
-		log.trace("refreshing object: "+obj);
+		log.trace("refreshing object: " + obj);
 		getContextDAO().refreshEntity(obj);
 	}
 
@@ -881,16 +879,14 @@ public class Context {
 		try {
 			// Needs to be shutdown before Hibernate
 			SchedulerUtil.shutdown();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.warn("Error while shutting down scheduler service", e);
 		}
 
 		log.debug("Shutting down the modules");
 		try {
 			ModuleUtil.shutdown();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.warn("Error while shutting down module system", e);
 		}
 
@@ -899,15 +895,13 @@ public class Context {
 			ContextDAO dao = null;
 			try {
 				dao = getContextDAO();
-			}
-			catch (APIException e) {
+			} catch (APIException e) {
 				// pass
 			}
 			if (dao != null) {
 				dao.shutdown();
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.warn("Error while shutting down context dao", e);
 		}
 	}
@@ -975,7 +969,7 @@ public class Context {
 		// setting core roles
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
-			Set<String> currentRoleNames = new HashSet<String>();
+			Set<String> currentRoleNames = new HashSet<>();
 			for (Role role : Context.getUserService().getAllRoles()) {
 				currentRoleNames.add(role.getRole().toUpperCase());
 			}
@@ -989,18 +983,16 @@ public class Context {
 					Context.getUserService().saveRole(role);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Error while setting core roles for openmrs system", e);
-		}
-		finally {
+		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
 		}
 
 		// setting core privileges
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_PRIVILEGES);
-			Set<String> currentPrivilegeNames = new HashSet<String>();
+			Set<String> currentPrivilegeNames = new HashSet<>();
 			for (Privilege privilege : Context.getUserService().getAllPrivileges()) {
 				currentPrivilegeNames.add(privilege.getPrivilege().toUpperCase());
 			}
@@ -1014,11 +1006,9 @@ public class Context {
 					Context.getUserService().savePrivilege(p);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Error while setting core privileges", e);
-		}
-		finally {
+		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_PRIVILEGES);
 		}
 
@@ -1026,9 +1016,9 @@ public class Context {
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			Set<String> currentPropNames = new HashSet<String>();
-			Map<String, GlobalProperty> propsMissingDescription = new HashMap<String, GlobalProperty>();
-			Map<String, GlobalProperty> propsMissingDatatype = new HashMap<String, GlobalProperty>();
+			Set<String> currentPropNames = new HashSet<>();
+			Map<String, GlobalProperty> propsMissingDescription = new HashMap<>();
+			Map<String, GlobalProperty> propsMissingDatatype = new HashMap<>();
 			for (GlobalProperty prop : Context.getAdministrationService().getAllGlobalProperties()) {
 				currentPropNames.add(prop.getProperty().toUpperCase());
 				if (prop.getDescription() == null) {
@@ -1064,11 +1054,9 @@ public class Context {
 					}
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Error while setting core global properties", e);
-		}
-		finally {
+		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
@@ -1099,11 +1087,10 @@ public class Context {
 	 *      the required question/datatypes
 	 */
 	private static void checkForDatabaseUpdates(Properties props) throws DatabaseUpdateException, InputRequiredException {
-		boolean updatesRequired = true;
+		boolean updatesRequired;
 		try {
 			updatesRequired = DatabaseUpdater.updatesRequired();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new DatabaseUpdateException("Unable to check if database updates are required", e);
 		}
 

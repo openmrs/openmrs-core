@@ -20,7 +20,8 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 1.9.2 - first generally useful version
 -->
 
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:xdt="http://www.w3.org/2005/xpath-datatypes">
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
 	<xsl:output method="text" version="1.0" encoding="UTF-8" indent="no"/>
 
 <xsl:variable name="SENDING-APPLICATION">FORMENTRY</xsl:variable>

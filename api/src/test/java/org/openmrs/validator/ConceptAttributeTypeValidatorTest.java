@@ -138,7 +138,7 @@ public class ConceptAttributeTypeValidatorTest extends BaseContextSensitiveTest 
 		
 		List<String> errorFields = Arrays.asList("name", "datatypeClassname", "description", "preferredHandlerClassname",
 		    "retireReason");
-		errorFields.stream().forEach(f -> assertThatFieldExceedsMaxLength(f));
+		errorFields.stream().forEach(this::assertThatFieldExceedsMaxLength);
 	}
 	
 	@Test

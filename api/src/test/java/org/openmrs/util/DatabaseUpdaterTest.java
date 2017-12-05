@@ -9,12 +9,11 @@
  */
 package org.openmrs.util;
 
+import liquibase.exception.LockException;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import liquibase.exception.LockException;
 
 /**
  * Tests methods on the {@link DatabaseUpdater} class. This class expects /metadata/model to be on
@@ -22,7 +21,7 @@ import liquibase.exception.LockException;
  */
 public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 	
-	private static Logger log = LoggerFactory.getLogger(DatabaseUpdaterTest.class);
+	private static final Logger log = LoggerFactory.getLogger(DatabaseUpdaterTest.class);
 	
 	/**
 	 * @throws LockException

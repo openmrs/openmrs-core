@@ -18,36 +18,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.openmrs.Concept;
-import org.openmrs.ConceptAnswer;
-import org.openmrs.ConceptName;
-import org.openmrs.ConceptProposal;
-import org.openmrs.Drug;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterRole;
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
-import org.openmrs.Location;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
-import org.openmrs.Person;
-import org.openmrs.PersonAttribute;
-import org.openmrs.PersonAttributeType;
-import org.openmrs.Provider;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
-import org.openmrs.User;
-import org.openmrs.api.context.Context;
-import org.openmrs.hl7.HL7Constants;
-import org.openmrs.hl7.HL7InQueueProcessor;
-import org.openmrs.hl7.HL7Service;
-import org.openmrs.obs.ComplexData;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
 import ca.uhn.hl7v2.app.ApplicationException;
@@ -85,6 +55,34 @@ import ca.uhn.hl7v2.model.v25.segment.PID;
 import ca.uhn.hl7v2.model.v25.segment.PV1;
 import ca.uhn.hl7v2.parser.EncodingCharacters;
 import ca.uhn.hl7v2.parser.PipeParser;
+import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptName;
+import org.openmrs.ConceptProposal;
+import org.openmrs.Drug;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
+import org.openmrs.EncounterType;
+import org.openmrs.Form;
+import org.openmrs.Location;
+import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.Provider;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
+import org.openmrs.User;
+import org.openmrs.api.context.Context;
+import org.openmrs.hl7.HL7Constants;
+import org.openmrs.hl7.HL7InQueueProcessor;
+import org.openmrs.obs.ComplexData;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 /**
  * Parses ORUR01 messages into openmrs Encounter objects Usage: GenericParser parser = new
@@ -96,7 +94,7 @@ import ca.uhn.hl7v2.parser.PipeParser;
  */
 public class ORUR01Handler implements Application {
 	
-	private Logger log = LoggerFactory.getLogger(ORUR01Handler.class);
+	private static final Logger log = LoggerFactory.getLogger(ORUR01Handler.class);
 	
 	private static EncounterRole unknownRole = null;
 	
@@ -225,7 +223,7 @@ public class ORUR01Handler implements Application {
 		// list of concepts proposed in the obs of this encounter.
 		// these proposals need to be created after the encounter
 		// has been created
-		List<ConceptProposal> conceptProposals = new ArrayList<ConceptProposal>();
+		List<ConceptProposal> conceptProposals = new ArrayList<>();
 		
 		// create observations
 		if (log.isDebugEnabled()) {
@@ -233,7 +231,7 @@ public class ORUR01Handler implements Application {
 		}
 		// we ignore all MEDICAL_RECORD_OBSERVATIONS that are OBRs.  We do not
 		// create obs_groups for them
-		List<Integer> ignoredConceptIds = new ArrayList<Integer>();
+		List<Integer> ignoredConceptIds = new ArrayList<>();
 		
 		String obrConceptId = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, "1238");
@@ -443,7 +441,7 @@ public class ORUR01Handler implements Application {
 		boolean patientCanBeEitherPerson = relType.getbIsToA().equals(relType.getaIsToB());
 		
 		// look at existing relationships to determine if a new one is needed
-		Set<Relationship> rels = new HashSet<Relationship>();
+		Set<Relationship> rels = new HashSet<>();
 		if (relative != null) {
 			if (patientCanBeEitherPerson || patientIsPersonA) {
 				rels.addAll(Context.getPersonService().getRelationships(patient, relative, relType));
@@ -507,7 +505,7 @@ public class ORUR01Handler implements Application {
 	 * @throws HL7Exception
 	 */
 	public List<NK1> getNK1List(ORU_R01 oru) throws HL7Exception {
-		List<NK1> res = new ArrayList<NK1>();
+		List<NK1> res = new ArrayList<>();
 		// there will always be at least one NK1, even if the original message does not contain one
 		for (int i = 0; i < oru.getPATIENT_RESULT().getPATIENT().getNK1Reps(); i++) {
 			// if the setIDNK1 value is null, this NK1 is blank
@@ -661,174 +659,191 @@ public class ORUR01Handler implements Application {
 		}
 		
 		Type obx5 = values[0].getData();
-		if ("NM".equals(hl7Datatype)) {
-			String value = ((NM) obx5).getValue();
-			if (value == null || value.length() == 0) {
-				log.warn("Not creating null valued obs for concept " + concept);
-				return null;
-			} else if ("0".equals(value) || "1".equals(value)) {
-				concept = concept.hydrate(concept.getConceptId().toString());
-				obs.setConcept(concept);
-				if (concept.getDatatype().isBoolean()) {
-					obs.setValueBoolean("1".equals(value));
-				} else if (concept.getDatatype().isNumeric()) {
+		switch (hl7Datatype) {
+			case "NM": {
+				String value = ((NM) obx5).getValue();
+				if (value == null || value.length() == 0) {
+					log.warn("Not creating null valued obs for concept " + concept);
+					return null;
+				} else if ("0".equals(value) || "1".equals(value)) {
+					concept = concept.hydrate(concept.getConceptId().toString());
+					obs.setConcept(concept);
+					if (concept.getDatatype().isBoolean()) {
+						obs.setValueBoolean("1".equals(value));
+					} else if (concept.getDatatype().isNumeric()) {
+						try {
+							obs.setValueNumeric(Double.valueOf(value));
+						}
+						catch (NumberFormatException e) {
+							throw new HL7Exception(Context.getMessageSourceService().getMessage(
+									"ORUR01.error.notnumericConcept",
+									new Object[] { value, concept.getConceptId(), conceptName.getName(), uid }, null), e);
+						}
+					} else if (concept.getDatatype().isCoded()) {
+						Concept answer = "1".equals(value) ? Context.getConceptService().getTrueConcept() : Context
+								.getConceptService().getFalseConcept();
+						boolean isValidAnswer = false;
+						Collection<ConceptAnswer> conceptAnswers = concept.getAnswers();
+						if (conceptAnswers != null && !conceptAnswers.isEmpty()) {
+							for (ConceptAnswer conceptAnswer : conceptAnswers) {
+								if (conceptAnswer.getAnswerConcept().getId().equals(answer.getId())) {
+									obs.setValueCoded(answer);
+									isValidAnswer = true;
+									break;
+								}
+							}
+						}
+						//answer the boolean answer concept was't found
+						if (!isValidAnswer) {
+							throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.invalidAnswer",
+									new Object[] { answer.toString(), uid }, null));
+						}
+					} else {
+						//throw this exception to make sure that the handler doesn't silently ignore bad hl7 message
+						throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.CannotSetBoolean",
+								new Object[] { obs.getConcept().getConceptId() }, null));
+					}
+				} else {
 					try {
 						obs.setValueNumeric(Double.valueOf(value));
 					}
 					catch (NumberFormatException e) {
-						throw new HL7Exception(Context.getMessageSourceService().getMessage(
-						    "ORUR01.error.notnumericConcept",
-						    new Object[] { value, concept.getConceptId(), conceptName.getName(), uid }, null), e);
+						throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.notnumericConcept",
+								new Object[] { value, concept.getConceptId(), conceptName.getName(), uid }, null), e);
 					}
-				} else if (concept.getDatatype().isCoded()) {
-					Concept answer = "1".equals(value) ? Context.getConceptService().getTrueConcept() : Context
-					        .getConceptService().getFalseConcept();
-					boolean isValidAnswer = false;
-					Collection<ConceptAnswer> conceptAnswers = concept.getAnswers();
-					if (conceptAnswers != null && !conceptAnswers.isEmpty()) {
-						for (ConceptAnswer conceptAnswer : conceptAnswers) {
-							if (conceptAnswer.getAnswerConcept().getId().equals(answer.getId())) {
-								obs.setValueCoded(answer);
-								isValidAnswer = true;
-								break;
-							}
-						}
+				}
+				break;
+			}
+			case "CWE": {
+				log.debug("  CWE observation");
+				CWE value = (CWE) obx5;
+				String valueIdentifier = value.getIdentifier().getValue();
+				log.debug("    value id = " + valueIdentifier);
+				String valueName = value.getText().getValue();
+				log.debug("    value name = " + valueName);
+				if (isConceptProposal(valueIdentifier)) {
+					if (log.isDebugEnabled()) {
+						log.debug("Proposing concept");
 					}
-					//answer the boolean answer concept was't found
-					if (!isValidAnswer) {
-						throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.invalidAnswer",
-						    new Object[] { answer.toString(), uid }, null));
-					}
+					throw new ProposingConceptException(concept, valueName);
 				} else {
-					//throw this exception to make sure that the handler doesn't silently ignore bad hl7 message
-					throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.CannotSetBoolean",
-					    new Object[] { obs.getConcept().getConceptId() }, null));
-				}
-			} else {
-				try {
-					obs.setValueNumeric(Double.valueOf(value));
-				}
-				catch (NumberFormatException e) {
-					throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.notnumericConcept",
-					    new Object[] { value, concept.getConceptId(), conceptName.getName(), uid }, null), e);
-				}
-			}
-		} else if ("CWE".equals(hl7Datatype)) {
-			log.debug("  CWE observation");
-			CWE value = (CWE) obx5;
-			String valueIdentifier = value.getIdentifier().getValue();
-			log.debug("    value id = " + valueIdentifier);
-			String valueName = value.getText().getValue();
-			log.debug("    value name = " + valueName);
-			if (isConceptProposal(valueIdentifier)) {
-				if (log.isDebugEnabled()) {
-					log.debug("Proposing concept");
-				}
-				throw new ProposingConceptException(concept, valueName);
-			} else {
-				log.debug("    not proposal");
-				try {
-					Concept valueConcept = getConcept(value, uid);
-					obs.setValueCoded(valueConcept);
-					if (HL7Constants.HL7_LOCAL_DRUG.equals(value.getNameOfAlternateCodingSystem().getValue())) {
-						Drug valueDrug = new Drug();
-						valueDrug.setDrugId(Integer.valueOf(value.getAlternateIdentifier().getValue()));
-						obs.setValueDrug(valueDrug);
-					} else {
-						ConceptName valueConceptName = getConceptName(value);
-						if (valueConceptName != null) {
-							if (log.isDebugEnabled()) {
-								log.debug("    value concept-name-id = " + valueConceptName.getConceptNameId());
-								log.debug("    value concept-name = " + valueConceptName.getName());
+					log.debug("    not proposal");
+					try {
+						Concept valueConcept = getConcept(value, uid);
+						obs.setValueCoded(valueConcept);
+						if (HL7Constants.HL7_LOCAL_DRUG.equals(value.getNameOfAlternateCodingSystem().getValue())) {
+							Drug valueDrug = new Drug();
+							valueDrug.setDrugId(Integer.valueOf(value.getAlternateIdentifier().getValue()));
+							obs.setValueDrug(valueDrug);
+						} else {
+							ConceptName valueConceptName = getConceptName(value);
+							if (valueConceptName != null) {
+								if (log.isDebugEnabled()) {
+									log.debug("    value concept-name-id = " + valueConceptName.getConceptNameId());
+									log.debug("    value concept-name = " + valueConceptName.getName());
+								}
+								obs.setValueCodedName(valueConceptName);
 							}
-							obs.setValueCodedName(valueConceptName);
 						}
 					}
+					catch (NumberFormatException e) {
+						throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.InvalidConceptId",
+								new Object[] { valueIdentifier, valueName }, null));
+					}
 				}
-				catch (NumberFormatException e) {
-					throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.InvalidConceptId",
-					    new Object[] { valueIdentifier, valueName }, null));
+				if (log.isDebugEnabled()) {
+					log.debug("  Done with CWE");
 				}
+				break;
 			}
-			if (log.isDebugEnabled()) {
-				log.debug("  Done with CWE");
-			}
-		} else if ("CE".equals(hl7Datatype)) {
-			CE value = (CE) obx5;
-			String valueIdentifier = value.getIdentifier().getValue();
-			String valueName = value.getText().getValue();
-			if (isConceptProposal(valueIdentifier)) {
-				throw new ProposingConceptException(concept, valueName);
-			} else {
-				try {
-					obs.setValueCoded(getConcept(value, uid));
-					obs.setValueCodedName(getConceptName(value));
+			case "CE": {
+				CE value = (CE) obx5;
+				String valueIdentifier = value.getIdentifier().getValue();
+				String valueName = value.getText().getValue();
+				if (isConceptProposal(valueIdentifier)) {
+					throw new ProposingConceptException(concept, valueName);
+				} else {
+					try {
+						obs.setValueCoded(getConcept(value, uid));
+						obs.setValueCodedName(getConceptName(value));
+					}
+					catch (NumberFormatException e) {
+						throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.InvalidConceptId",
+								new Object[] { valueIdentifier, valueName }, null));
+					}
 				}
-				catch (NumberFormatException e) {
-					throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.InvalidConceptId",
-					    new Object[] { valueIdentifier, valueName }, null));
+				break;
+			}
+			case "DT": {
+				DT value = (DT) obx5;
+				if (value != null) {
+					Date valueDate = getDate(value.getYear(), value.getMonth(), value.getDay(), 0, 0, 0);
+					obs.setValueDatetime(valueDate);
+				} else {
+					log.warn("Not creating null valued obs for concept " + concept);
+					return null;
 				}
+				break;
 			}
-		} else if ("DT".equals(hl7Datatype)) {
-			DT value = (DT) obx5;
-			if (value != null) {
-				Date valueDate = getDate(value.getYear(), value.getMonth(), value.getDay(), 0, 0, 0);
-				obs.setValueDatetime(valueDate);
-			} else {
-				log.warn("Not creating null valued obs for concept " + concept);
-				return null;
+			case "TS": {
+				DTM value = ((TS) obx5).getTime();
+				if (value != null) {
+					Date valueDate = getDate(value.getYear(), value.getMonth(), value.getDay(), value.getHour(), value
+							.getMinute(), value.getSecond());
+
+					obs.setValueDatetime(valueDate);
+				} else {
+					log.warn("Not creating null valued obs for concept " + concept);
+					return null;
+				}
+				break;
 			}
-		} else if ("TS".equals(hl7Datatype)) {
-			DTM value = ((TS) obx5).getTime();
-			if (value != null) {
-				Date valueDate = getDate(value.getYear(), value.getMonth(), value.getDay(), value.getHour(), value
-				        .getMinute(), value.getSecond());
-				
-				obs.setValueDatetime(valueDate);
-			} else {
-				log.warn("Not creating null valued obs for concept " + concept);
-				return null;
+			case "TM": {
+				TM value = (TM) obx5;
+				if (value != null) {
+					Date valueTime = getDate(0, 0, 0, value.getHour(), value.getMinute(), value.getSecond());
+					obs.setValueDatetime(valueTime);
+				} else {
+					log.warn("Not creating null valued obs for concept " + concept);
+					return null;
+				}
+				break;
 			}
-		} else if ("TM".equals(hl7Datatype)) {
-			TM value = (TM) obx5;
-			if (value != null) {
-				Date valueTime = getDate(0, 0, 0, value.getHour(), value.getMinute(), value.getSecond());
-				obs.setValueDatetime(valueTime);
-			} else {
-				log.warn("Not creating null valued obs for concept " + concept);
-				return null;
+			case "ST": {
+				ST value = (ST) obx5;
+				if (value == null || value.getValue() == null || value.getValue().trim().length() == 0) {
+					log.warn("Not creating null valued obs for concept " + concept);
+					return null;
+				}
+				obs.setValueText(value.getValue());
+				break;
 			}
-		} else if ("ST".equals(hl7Datatype)) {
-			ST value = (ST) obx5;
-			if (value == null || value.getValue() == null || value.getValue().trim().length() == 0) {
-				log.warn("Not creating null valued obs for concept " + concept);
-				return null;
+			case "ED": {
+				ED value = (ED) obx5;
+				if (value == null || value.getData() == null || !StringUtils.hasText(value.getData().getValue())) {
+					log.warn("Not creating null valued obs for concept " + concept);
+					return null;
+				}
+				//we need to hydrate the concept so that the EncounterSaveHandler
+				//doesn't fail since it needs to check if it is a concept numeric
+				Concept c = Context.getConceptService().getConcept(obs.getConcept().getConceptId());
+				obs.setConcept(c);
+				String title = null;
+				if (obs.getValueCodedName() != null) {
+					title = obs.getValueCodedName().getName();
+				}
+				if (!StringUtils.hasText(title)) {
+					title = c.getName().getName();
+				}
+				obs.setComplexData(new ComplexData(title, value.getData().getValue()));
+				break;
 			}
-			obs.setValueText(value.getValue());
-		} else if ("ED".equals(hl7Datatype)) {
-			ED value = (ED) obx5;
-			if (value == null || value.getData() == null || !StringUtils.hasText(value.getData().getValue())) {
-				log.warn("Not creating null valued obs for concept " + concept);
-				return null;
-			}
-			//we need to hydrate the concept so that the EncounterSaveHandler
-			//doesn't fail since it needs to check if it is a concept numeric
-			Concept c = Context.getConceptService().getConcept(obs.getConcept().getConceptId());
-			obs.setConcept(c);
-			String title = null;
-			if (obs.getValueCodedName() != null) {
-				title = obs.getValueCodedName().getName();
-			}
-			if (!StringUtils.hasText(title)) {
-				title = c.getName().getName();
-			}
-			obs.setComplexData(new ComplexData(title, value.getData().getValue()));
-		} else {
-			// unsupported data type
-			// TODO: support RP (report), SN (structured numeric)
-			// do we need to support BIT just in case it slips thru?
-			throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.UpsupportedObsType",
-			    new Object[] { hl7Datatype }, null));
+			default:
+				// unsupported data type
+				// TODO: support RP (report), SN (structured numeric)
+				// do we need to support BIT just in case it slips thru?
+				throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.UpsupportedObsType",
+						new Object[] { hl7Datatype }, null));
 		}
 		
 		return obs;

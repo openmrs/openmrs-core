@@ -61,8 +61,7 @@ public abstract class BaseCustomizableValidator implements Validator {
 		for (Attribute attr : customizable.getActiveAttributes()) {
 			try {
 				ValidateUtil.validate(attr);
-			}
-			catch (APIException ex) {
+			} catch (APIException ex) {
 				errorsInAttributes = true;
 				break;
 			}

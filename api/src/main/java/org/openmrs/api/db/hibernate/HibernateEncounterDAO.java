@@ -11,7 +11,6 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,15 +35,12 @@ import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Patient;
-import org.openmrs.PatientIdentifierType;
 import org.openmrs.Visit;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.parameter.EncounterSearchCriteria;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Hibernate specific dao for the {@link EncounterService} All calls should be made on the
@@ -54,8 +50,6 @@ import org.slf4j.LoggerFactory;
  * @see EncounterService
  */
 public class HibernateEncounterDAO implements EncounterDAO {
-	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * Hibernate session factory
@@ -317,7 +311,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients) {
-		Map<Integer, List<Encounter>> encountersBypatient = new HashMap<Integer, List<Encounter>>();
+		Map<Integer, List<Encounter>> encountersBypatient = new HashMap<>();
 		
 		@SuppressWarnings("unchecked")
 		List<Encounter> allEncounters = createEncounterCriteria(patients).list();
@@ -328,7 +322,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			List<Encounter> encounters = encountersBypatient.get(patientId);
 			
 			if (encounters == null) {
-				encounters = new ArrayList<Encounter>();
+				encounters = new ArrayList<>();
 			}
 			
 			encounters.add(encounter);
@@ -351,7 +345,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		
 		// only include this where clause if patients were passed in
 		if (patients != null) {
-            ArrayList<Integer> patientIds = new ArrayList<Integer>();
+            ArrayList<Integer> patientIds = new ArrayList<>();
 			patients.getMemberships().forEach(m -> patientIds.add(m.getPatientId()));
 			criteria.add(Restrictions.in("patient.personId", patientIds));
 		}
@@ -446,7 +440,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			String name = query;
 			String identifier = query;
 			criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
-			    new ArrayList<PatientIdentifierType>(), true, orderByNames, true);	
+					new ArrayList<>(), true, orderByNames, true);
 		}
 		
 		return criteria;
@@ -567,14 +561,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 				encounters.add(mockEncounter);
 			}
 			
-			Collections.sort(encounters, new Comparator<Encounter>() {
-				
-				@Override
-				public int compare(Encounter o1, Encounter o2) {
-					Date o1Date = (o1.getVisit() != null) ? o1.getVisit().getStartDatetime() : o1.getEncounterDatetime();
-					Date o2Date = (o2.getVisit() != null) ? o2.getVisit().getStartDatetime() : o2.getEncounterDatetime();
-					return o2Date.compareTo(o1Date);
-				}
+			encounters.sort((o1, o2) -> {
+				Date o1Date = (o1.getVisit() != null) ? o1.getVisit().getStartDatetime() : o1.getEncounterDatetime();
+				Date o2Date = (o2.getVisit() != null) ? o2.getVisit().getStartDatetime() : o2.getEncounterDatetime();
+				return o2Date.compareTo(o1Date);
 			});
 		}
 		

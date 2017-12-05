@@ -11,8 +11,6 @@ package org.openmrs.validator;
 
 import org.openmrs.annotation.Handler;
 import org.openmrs.person.PersonMergeLog;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -24,9 +22,6 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { PersonMergeLog.class }, order = 50)
 public class PersonMergeLogValidator implements Validator {
-	
-	/** Logger for this class and subclasses */
-	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * Determines if the command object being submitted is a valid type

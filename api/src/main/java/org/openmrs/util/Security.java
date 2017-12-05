@@ -9,6 +9,11 @@
  */
 package org.openmrs.util;
 
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -16,12 +21,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Random;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -42,7 +41,7 @@ public class Security {
 	/**
 	 * encryption settings
 	 */
-	public static Logger log = LoggerFactory.getLogger(Security.class);
+	private static final Logger log = LoggerFactory.getLogger(Security.class);
 	
 	/**
 	 * Compare the given hash and the given string-to-hash to see if they are equal. The
@@ -95,13 +94,11 @@ public class Security {
 		try {
 			md = MessageDigest.getInstance(algorithm);
 			input = strToEncode.getBytes(encoding);
-		}
-		catch (NoSuchAlgorithmException e) {
+		} catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
 			log.error(getPasswordEncodeFailMessage(algorithm), e);
 			throw new APIException("system.cannot.find.password.encryption.algorithm", null, e);
-		}
-		catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException e) {
 			throw new APIException("system.cannot.find.encoding", new Object[] { encoding }, e);
 		}
 		return hexString(md.digest(input));
@@ -120,13 +117,11 @@ public class Security {
 		try {
 			md = MessageDigest.getInstance(algorithm);
 			input = strToEncode.getBytes(encoding);
-		}
-		catch (NoSuchAlgorithmException e) {
+		} catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
 			log.error(getPasswordEncodeFailMessage(algorithm), e);
 			throw new APIException("system.cannot.find.encryption.algorithm", null, e);
-		}
-		catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException e) {
 			throw new APIException("system.cannot.find.encoding", new Object[] { encoding }, e);
 		}
 		return hexString(md.digest(input));
@@ -141,12 +136,11 @@ public class Security {
 	private static String hexString(byte[] block) {
 		StringBuilder buf = new StringBuilder();
 		char[] hexChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-		int len = block.length;
-		int high = 0;
-		int low = 0;
-		for (int i = 0; i < len; i++) {
-			high = ((block[i] & 0xf0) >> 4);
-			low = (block[i] & 0x0f);
+		int high;
+		int low;
+		for (byte aBlock : block) {
+			high = ((aBlock & 0xf0) >> 4);
+			low = (aBlock & 0x0f);
 			buf.append(hexChars[high]);
 			buf.append(hexChars[low]);
 		}
@@ -195,8 +189,8 @@ public class Security {
 			return "";
 		}
 		StringBuilder s = new StringBuilder();
-		for (int i = 0; i < b.length; i++) {
-			s.append(Integer.toHexString(b[i] & 0xFF));
+		for (byte aB : b) {
+			s.append(Integer.toHexString(aB & 0xFF));
 		}
 		return new String(s);
 	}

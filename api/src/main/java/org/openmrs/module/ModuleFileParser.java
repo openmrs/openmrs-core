@@ -9,9 +9,10 @@
  */
 package org.openmrs.module;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,12 +25,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.GlobalProperty;
@@ -44,16 +41,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * This class will parse a file into an org.openmrs.module.Module object
  */
 public class ModuleFileParser {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(ModuleFileParser.class);
 	
 	private File moduleFile = null;
 	
@@ -61,7 +56,7 @@ public class ModuleFileParser {
 	 * List out all of the possible version numbers for config files that openmrs has DTDs for.
 	 * These are usually stored at http://resources.openmrs.org/doctype/config-x.x.dt
 	 */
-	private static List<String> validConfigVersions = new ArrayList<String>();
+	private static List<String> validConfigVersions = new ArrayList<>();
 	
 	static {
 		validConfigVersions.add("1.0");
@@ -104,9 +99,6 @@ public class ModuleFileParser {
 			moduleFile = File.createTempFile("moduleUpgrade", "omod");
 			outputStream = new FileOutputStream(moduleFile);
 			OpenmrsUtil.copyFile(inputStream, outputStream);
-		}
-		catch (FileNotFoundException e) {
-			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.cannotCreateFile"), e);
 		}
 		catch (IOException e) {
 			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.cannotCreateFile"), e);
@@ -167,16 +159,12 @@ public class ModuleFileParser {
 			try {
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
-				db.setEntityResolver(new EntityResolver() {
-					
-					@Override
-					public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-						// When asked to resolve external entities (such as a
-						// DTD) we return an InputSource
-						// with no data at the end, causing the parser to ignore
-						// the DTD.
-						return new InputSource(new StringReader(""));
-					}
+				db.setEntityResolver((publicId, systemId) -> {
+					// When asked to resolve external entities (such as a
+					// DTD) we return an InputSource
+					// with no data at the end, causing the parser to ignore
+					// the DTD.
+					return new InputSource(new StringReader(""));
 				});
 				
 				configDoc = db.parse(configStream);
@@ -303,12 +291,12 @@ public class ModuleFileParser {
 	 * @should throw exception if path is blank
 	 */
 	List<ModuleConditionalResource> getConditionalResources(Element rootNode) {
-		List<ModuleConditionalResource> conditionalResources = new ArrayList<ModuleConditionalResource>();
+		List<ModuleConditionalResource> conditionalResources = new ArrayList<>();
 		
 		NodeList parentConditionalResources = rootNode.getElementsByTagName("conditionalResources");
 		
 		if (parentConditionalResources.getLength() == 0) {
-			return new ArrayList<ModuleConditionalResource>();
+			return new ArrayList<>();
 		} else if (parentConditionalResources.getLength() > 1) {
 			throw new IllegalArgumentException("Found multiple conditionalResources tags. There can be only one.");
 		}
@@ -334,30 +322,34 @@ public class ModuleFileParser {
 			
 			for (int j = 0; j < resourceElements.getLength(); j++) {
 				Node resourceElement = resourceElements.item(j);
-				
-				if ("path".equals(resourceElement.getNodeName())) {
+
+				String s = resourceElement.getNodeName();
+				if ("path".equals(s)) {
 					if (StringUtils.isBlank(resourceElement.getTextContent())) {
 						throw new IllegalArgumentException("The path of a conditional resource must not be blank");
 					}
 					resource.setPath(resourceElement.getTextContent());
-				} else if ("openmrsVersion".equals(resourceElement.getNodeName())) {
+
+				} else if ("openmrsVersion".equals(s)) {
 					if (StringUtils.isBlank(resource.getOpenmrsPlatformVersion())) {
 						resource.setOpenmrsPlatformVersion(resourceElement.getTextContent());
 					}
-				} else if ("openmrsPlatformVersion".equals(resourceElement.getNodeName())) {
+
+				} else if ("openmrsPlatformVersion".equals(s)) {
 					resource.setOpenmrsPlatformVersion(resourceElement.getTextContent());
-				} else if ("modules".equals(resourceElement.getNodeName())) {
+
+				} else if ("modules".equals(s)) {
 					NodeList modulesNode = resourceElement.getChildNodes();
 					for (int k = 0; k < modulesNode.getLength(); k++) {
 						Node moduleNode = modulesNode.item(k);
 						if ("module".equals(moduleNode.getNodeName())) {
 							NodeList moduleElements = moduleNode.getChildNodes();
-							
+
 							ModuleConditionalResource.ModuleAndVersion module = new ModuleConditionalResource.ModuleAndVersion();
 							resource.getModules().add(module);
 							for (int m = 0; m < moduleElements.getLength(); m++) {
 								Node moduleElement = moduleElements.item(m);
-								
+
 								if ("moduleId".equals(moduleElement.getNodeName())) {
 									module.setModuleId(moduleElement.getTextContent());
 								} else if ("version".equals(moduleElement.getNodeName())) {
@@ -366,6 +358,7 @@ public class ModuleFileParser {
 							}
 						}
 					}
+
 				}
 			}
 		}
@@ -419,7 +412,7 @@ public class ModuleFileParser {
 		
 		NodeList modulesParents = root.getElementsByTagName(elementParentName);
 		
-		Map<String, String> packageNamesToVersion = new HashMap<String, String>();
+		Map<String, String> packageNamesToVersion = new HashMap<>();
 		
 		if (modulesParents.getLength() > 0) {
 			Node modulesParent = modulesParents.item(0);
@@ -450,7 +443,7 @@ public class ModuleFileParser {
 	 */
 	private List<AdvicePoint> getAdvice(Element root, String version, Module mod) {
 		
-		List<AdvicePoint> advicePoints = new ArrayList<AdvicePoint>();
+		List<AdvicePoint> advicePoints = new ArrayList<>();
 		
 		NodeList advice = root.getElementsByTagName("advice");
 		if (advice.getLength() > 0) {
@@ -495,7 +488,7 @@ public class ModuleFileParser {
 	 */
 	private IdentityHashMap<String, String> getExtensions(Element root, String configVersion) {
 		
-		IdentityHashMap<String, String> extensions = new IdentityHashMap<String, String>();
+		IdentityHashMap<String, String> extensions = new IdentityHashMap<>();
 		
 		NodeList extensionNodes = root.getElementsByTagName("extension");
 		if (extensionNodes.getLength() > 0) {
@@ -519,7 +512,7 @@ public class ModuleFileParser {
 				
 				// point and class are required
 				if (point.length() > 0 && extClass.length() > 0) {
-					if (point.indexOf(Extension.extensionIdSeparator) != -1) {
+					if (point.contains(Extension.extensionIdSeparator)) {
 						log.warn("Point id contains illegal character: '" + Extension.extensionIdSeparator + "'");
 					} else {
 						extensions.put(point, extClass);
@@ -546,7 +539,7 @@ public class ModuleFileParser {
 	 */
 	private List<Privilege> getPrivileges(Element root, String version) {
 		
-		List<Privilege> privileges = new ArrayList<Privilege>();
+		List<Privilege> privileges = new ArrayList<>();
 		
 		NodeList privNodes = root.getElementsByTagName("privilege");
 		if (privNodes.getLength() > 0) {
@@ -592,7 +585,7 @@ public class ModuleFileParser {
 	 */
 	private List<GlobalProperty> getGlobalProperties(Element root, String version) {
 		
-		List<GlobalProperty> properties = new ArrayList<GlobalProperty>();
+		List<GlobalProperty> properties = new ArrayList<>();
 		
 		NodeList propNodes = root.getElementsByTagName("globalProperty");
 		if (propNodes.getLength() > 0) {
@@ -602,19 +595,29 @@ public class ModuleFileParser {
 				Node node = propNodes.item(i);
 				NodeList nodes = node.getChildNodes();
 				int x = 0;
-				String property = "", defaultValue = "", description = "", datatypeClassname = "", datatypeConfig = "";
+				String property = "";
+				String defaultValue = "";
+				String description = "";
+				String datatypeClassname = "";
+				String datatypeConfig = "";
 				while (x < nodes.getLength()) {
 					Node childNode = nodes.item(x);
-					if ("property".equals(childNode.getNodeName())) {
+					String s = childNode.getNodeName();
+					if ("property".equals(s)) {
 						property = childNode.getTextContent().trim();
-					} else if ("defaultValue".equals(childNode.getNodeName())) {
+
+					} else if ("defaultValue".equals(s)) {
 						defaultValue = childNode.getTextContent();
-					} else if ("description".equals(childNode.getNodeName())) {
+
+					} else if ("description".equals(s)) {
 						description = childNode.getTextContent().trim();
-					} else if ("datatypeClassname".equals(childNode.getNodeName())) {
+
+					} else if ("datatypeClassname".equals(s)) {
 						datatypeClassname = childNode.getTextContent().trim();
-					} else if ("datatypeConfig".equals(childNode.getNodeName())) {
+
+					} else if ("datatypeConfig".equals(s)) {
 						datatypeConfig = childNode.getTextContent().trim();
+
 					}
 					
 					x++;
@@ -634,12 +637,10 @@ public class ModuleFileParser {
 						        .asSubclass(CustomDatatype.class);
 						properties
 						        .add(new GlobalProperty(property, defaultValue, description, datatypeClazz, datatypeConfig));
-					}
-					catch (ClassCastException ex) {
+					} catch (ClassCastException ex) {
 						log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
 						        + ") must be a subtype of 'org.openmrs.customdatatype.CustomDatatype<?>'.", ex);
-					}
-					catch (ClassNotFoundException ex) {
+					} catch (ClassNotFoundException ex) {
 						log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
 						        + ") could not be found.", ex);
 					}
@@ -666,7 +667,7 @@ public class ModuleFileParser {
 	 */
 	private List<String> getMappingFiles(Element rootNode, String configVersion, JarFile jarfile) {
 		String mappingString = getElement(rootNode, configVersion, "mappingFiles");
-		List<String> mappings = new ArrayList<String>();
+		List<String> mappings = new ArrayList<>();
 		for (String s : mappingString.split("\\s")) {
 			String s2 = s.trim();
 			if (s2.length() > 0) {
@@ -678,7 +679,7 @@ public class ModuleFileParser {
 	
 	private Set<String> getPackagesWithMappedClasses(Element rootNode, String configVersion) {
 		String element = getElement(rootNode, configVersion, "packagesWithMappedClasses");
-		Set<String> packages = new HashSet<String>();
+		Set<String> packages = new HashSet<>();
 		for (String s : element.split("\\s")) {
 			String s2 = s.trim();
 			if (s2.length() > 0) {

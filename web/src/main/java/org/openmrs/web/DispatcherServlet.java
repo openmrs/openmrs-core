@@ -60,7 +60,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 	 * 
 	 * @throws ServletException
 	 */
-	public void reInitFrameworkServlet() throws ServletException {
+	public void reInitFrameworkServlet() {
 		log.debug("Framework being REinitialized");
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		((XmlWebApplicationContext) getWebApplicationContext()).setClassLoader(OpenmrsClassLoader.getInstance());
@@ -98,8 +98,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 			XmlWebApplicationContext ctx = (XmlWebApplicationContext) getWebApplicationContext();
 			ctx.stop();
 			ctx.close();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Exception while stopping and closing dispatcherServlet context: ", e);
 		}
 	}

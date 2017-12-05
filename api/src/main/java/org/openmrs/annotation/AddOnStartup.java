@@ -37,13 +37,13 @@ import java.lang.annotation.Target;
  * @see org.openmrs.util.PrivilegeConstants
  * @see org.openmrs.util.OpenmrsConstants
  */
-@Target( { ElementType.FIELD })
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
 public @interface AddOnStartup {
 	
-	public String description() default "";
+	String description() default "";
 	
-	public boolean core() default true;
+	boolean core() default true;
 }

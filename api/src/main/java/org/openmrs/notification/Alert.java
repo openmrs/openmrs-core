@@ -257,7 +257,7 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	 */
 	public void addRecipient(AlertRecipient r) {
 		if (this.recipients == null) {
-			this.recipients = new HashSet<AlertRecipient>();
+			this.recipients = new HashSet<>();
 		}
 		r.setAlert(this);
 		// duplicates are avoided by depending on the .equals and .hashcode

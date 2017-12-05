@@ -17,10 +17,9 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
 
+import javax.annotation.Resource;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import javax.annotation.Resource;
 
 import org.junit.Test;
 import org.openmrs.Concept;

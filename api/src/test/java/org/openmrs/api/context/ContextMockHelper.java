@@ -92,7 +92,7 @@ public class ContextMockHelper {
 	
 	ContextDAO contextDAO;
 	
-	Map<Class<?>, Object> realServices = new HashMap<Class<?>, Object>();
+	Map<Class<?>, Object> realServices = new HashMap<>();
 	
 	UserContext realUserContext;
 	
@@ -123,7 +123,7 @@ public class ContextMockHelper {
 		person.setId(1);
 		person.addName(new PersonName("Bob", "", "Smith"));
 		Calendar calendar = Calendar.getInstance();
-		calendar.set(1980, 01, 01);
+		calendar.set(1980, 1, 1);
 		person.setBirthdate(calendar.getTime());
 		person.setGender("M");
 		user.setPerson(person);

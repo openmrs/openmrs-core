@@ -15,7 +15,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Represent allergy reactions
  */
-public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serializable{
+public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 1;
 
@@ -136,8 +136,7 @@ public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serial
 				if (!OpenmrsUtil.nullSafeEquals(getReaction().getConceptId(), reaction.getReaction().getConceptId())) {
 					return false;
 				}
-			}
-			else {
+			} else {
 				return false;
 			}
 		}

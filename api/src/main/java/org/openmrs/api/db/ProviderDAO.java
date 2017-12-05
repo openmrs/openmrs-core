@@ -36,30 +36,30 @@ public interface ProviderDAO {
 	/**
 	 * Saves/Updates a given Provider
 	 */
-	public Provider saveProvider(Provider provider);
+	Provider saveProvider(Provider provider);
 	
 	/**
 	 * deletes an exisiting Provider
 	 */
-	public void deleteProvider(Provider provider);
+	void deleteProvider(Provider provider);
 	
 	/**
 	 * @param id
 	 * @return Provider gets the Provider based on id
 	 */
-	public Provider getProvider(Integer id);
+	Provider getProvider(Integer id);
 	
 	/**
 	 * @param uuid
 	 * @return Provider gets the Provider based on uuid
 	 */
-	
-	public Provider getProviderByUuid(String uuid);
+
+	Provider getProviderByUuid(String uuid);
 	
 	/**
 	 * @see ProviderService#getProvidersByPerson( Person, boolean )
 	 */
-	public Collection<Provider> getProvidersByPerson(Person person, boolean includeRetired);
+	Collection<Provider> getProvidersByPerson(Person person, boolean includeRetired);
 	
 	/**
 	 * @param name
@@ -69,15 +69,15 @@ public interface ProviderDAO {
 	 * @param includeRetired
 	 * @return List of Providers
 	 */
-	public List<Provider> getProviders(String name, Map<ProviderAttributeType, String> serializedAttributeValues,
-	        Integer start, Integer length, boolean includeRetired);
+	List<Provider> getProviders(String name, Map<ProviderAttributeType, String> serializedAttributeValues,
+			Integer start, Integer length, boolean includeRetired);
 	
 	/**
 	 * @param name
 	 * @param includeRetired
 	 * @return Count of providers satisfying the given query
 	 */
-	public Long getCountOfProviders(String name, boolean includeRetired);
+	Long getCountOfProviders(String name, boolean includeRetired);
 	
 	/**
 	 * @see ProviderService#getAllProviderAttributeTypes(boolean)
@@ -119,10 +119,10 @@ public interface ProviderDAO {
 	/**
 	 * @see ProviderService#isProviderIdentifierUnique(Provider)
 	 */
-	public boolean isProviderIdentifierUnique(Provider provider) throws DAOException;
+	boolean isProviderIdentifierUnique(Provider provider) throws DAOException;
 	
 	/**
 	 * @see ProviderService#getProviderByIdentifier(String)
 	 */
-	public Provider getProviderByIdentifier(String identifier);
+	Provider getProviderByIdentifier(String identifier);
 }

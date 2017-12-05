@@ -39,7 +39,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	private static final String[] supportedViews = { ComplexObsHandler.TEXT_VIEW, ComplexObsHandler.RAW_VIEW,
 	        ComplexObsHandler.URI_VIEW };
 	
-	public static final Logger log = LoggerFactory.getLogger(TextHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(TextHandler.class);
 	
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally
@@ -60,27 +60,31 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 		log.debug("value complex: " + obs.getValueComplex());
 		log.debug("file path: " + file.getAbsolutePath());
 		ComplexData complexData = null;
-		
-		if (ComplexObsHandler.TEXT_VIEW.equals(view) || ComplexObsHandler.RAW_VIEW.equals(view)) {
-			// to handle problem with downloading/saving files with blank spaces or commas in their names
-			// also need to remove the "file" text appended to the end of the file name
-			String[] names = obs.getValueComplex().split("\\|");
-			String originalFilename = names[0];
-			originalFilename = originalFilename.replaceAll(",", "").replaceAll(" ", "").replaceAll("file$", "");
-			
-			try {
-				complexData = ComplexObsHandler.RAW_VIEW.equals(view) ? new ComplexData(originalFilename, OpenmrsUtil
-				        .getFileAsBytes(file)) : new ComplexData(originalFilename, OpenmrsUtil.getFileAsString(file));
-			}
-			catch (IOException e) {
-				log.error("Trying to read file: " + file.getAbsolutePath(), e);
-			}
-		} else if (ComplexObsHandler.URI_VIEW.equals(view)) {
-			complexData = new ComplexData(file.getName(), file.getPath());
-		} else {
-			// No other view supported
-			// NOTE: if adding support for another view, don't forget to update supportedViews list above
-			return null;
+
+		switch (view) {
+			case ComplexObsHandler.TEXT_VIEW:
+			case ComplexObsHandler.RAW_VIEW:
+				// to handle problem with downloading/saving files with blank spaces or commas in their names
+				// also need to remove the "file" text appended to the end of the file name
+				String[] names = obs.getValueComplex().split("\\|");
+				String originalFilename = names[0];
+				originalFilename = originalFilename.replaceAll(",", "").replaceAll(" ", "").replaceAll("file$", "");
+
+				try {
+					complexData = ComplexObsHandler.RAW_VIEW.equals(view) ? new ComplexData(originalFilename, OpenmrsUtil
+							.getFileAsBytes(file)) : new ComplexData(originalFilename, OpenmrsUtil.getFileAsString(file));
+				}
+				catch (IOException e) {
+					log.error("Trying to read file: " + file.getAbsolutePath(), e);
+				}
+				break;
+			case ComplexObsHandler.URI_VIEW:
+				complexData = new ComplexData(file.getName(), file.getPath());
+				break;
+			default:
+				// No other view supported
+				// NOTE: if adding support for another view, don't forget to update supportedViews list above
+				return null;
 		}
 		
 		Assert.notNull(complexData, "Complex data must not be null");

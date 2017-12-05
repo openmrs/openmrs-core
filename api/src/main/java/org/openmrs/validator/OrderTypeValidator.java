@@ -14,8 +14,6 @@ import org.openmrs.OrderType;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -27,9 +25,6 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { OrderType.class })
 public class OrderTypeValidator implements Validator {
-	
-	// Logger for this class
-	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * Determines if the command object being submitted is a valid type

@@ -45,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements ProgramWorkflowService {
 	
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(ProgramWorkflowServiceImpl.class);
 	
 	protected ProgramWorkflowDAO dao;
 	
@@ -355,7 +355,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Override
 	@Transactional(readOnly = true)
 	public List<Concept> getPossibleOutcomes(Integer programId) {
-		List<Concept> possibleOutcomes = new ArrayList<Concept>();
+		List<Concept> possibleOutcomes = new ArrayList<>();
 		Program program = Context.getProgramWorkflowService().getProgram(programId);
 		if (program == null) {
 			return possibleOutcomes;

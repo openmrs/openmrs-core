@@ -11,7 +11,6 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
@@ -52,7 +51,7 @@ import org.springframework.validation.Validator;
  */
 public class HibernateAdministrationDAO implements AdministrationDAO, ApplicationContextAware {
 	
-	protected Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(HibernateAdministrationDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -242,16 +241,16 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 					}
 				}
 			}
-			for (int i = 0; i < propNames.length; i++) {
-				Type propType = metadata.getPropertyType(propNames[i]);
+			for (String propName : propNames) {
+				Type propType = metadata.getPropertyType(propName);
 				if (propType instanceof StringType || propType instanceof TextType) {
-					String propertyValue = (String) metadata.getPropertyValue(object, propNames[i]);
+					String propertyValue = (String) metadata.getPropertyValue(object, propName);
 					if (propertyValue != null) {
-						int maxLength = getMaximumPropertyLength(entityClass, propNames[i]);
+						int maxLength = getMaximumPropertyLength(entityClass, propName);
 						int propertyValueLength = propertyValue.length();
 						if (propertyValueLength > maxLength) {
-							errors.rejectValue(propNames[i], "error.exceededMaxLengthOfField", new Object[] { maxLength },
-							    null);
+							errors.rejectValue(propName, "error.exceededMaxLengthOfField", new Object[] { maxLength },
+									null);
 						}
 					}
 				}
@@ -279,7 +278,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 * @return list of compatible validators
 	 */
 	protected List<Validator> getValidators(Object obj) {
-		List<Validator> matchingValidators = new ArrayList<Validator>();
+		List<Validator> matchingValidators = new ArrayList<>();
 
 		List<Validator> validators = HandlerUtil.getHandlersForType(Validator.class, obj.getClass());
 		

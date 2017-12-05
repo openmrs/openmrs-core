@@ -23,12 +23,12 @@ import static org.openmrs.test.TestUtil.containsId;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -220,7 +220,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 */
 	private List<Relationship> createTestDatedRelationships(Person personA, Person personB, RelationshipType rt)
 	        throws Exception {
-		List<Relationship> rels = new Vector<>();
+		List<Relationship> rels = new ArrayList<>();
 		
 		// Start & end dates
 		Relationship r = new Relationship(); // 0

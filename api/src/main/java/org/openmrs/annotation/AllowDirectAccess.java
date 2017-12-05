@@ -26,7 +26,7 @@ import org.openmrs.aop.RequiredDataAdvice;
  * @since 1.10
  * @see RequiredDataAdvice
  */
-@Target( { ElementType.FIELD })
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented

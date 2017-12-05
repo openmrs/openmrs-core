@@ -11,7 +11,7 @@
       <option name="JAVA_DECLARATION" value="true" />
     </context>
   </template>
-  <template name="logger" value="$ACCESS$ static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger($CLASS$.class);" description="declare static Logger field using slf4j" toReformat="true" toShortenFQNames="true" useStaticImport="true">
+  <template name="logger" value="$ACCESS$ static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger($CLASS$.class);" description="declare private static final Logger Logger field using slf4j" toReformat="true" toShortenFQNames="true" useStaticImport="true">
     <variable name="ACCESS" expression="" defaultValue="&quot;private&quot;" alwaysStopAt="true" />
     <variable name="CLASS" expression="className()" defaultValue="" alwaysStopAt="false" />
     <context>

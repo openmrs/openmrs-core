@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -40,7 +39,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	
 	public static final long serialVersionUID = 2L;
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(User.class);
 	
 	// Fields
 	
@@ -107,8 +106,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 		Set<Role> tmproles = getAllRoles();
 		
 		// loop over the roles and check each for the privilege
-		for (Iterator<Role> i = tmproles.iterator(); i.hasNext();) {
-			if (i.next().hasPrivilege(privilege)) {
+		for (Role tmprole : tmproles) {
+			if (tmprole.hasPrivilege(privilege)) {
 				return true;
 			}
 		}
@@ -177,12 +176,12 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 * @return Collection of complete Privileges this user has
 	 */
 	public Collection<Privilege> getPrivileges() {
-		Set<Privilege> privileges = new HashSet<Privilege>();
+		Set<Privilege> privileges = new HashSet<>();
 		Set<Role> tmproles = getAllRoles();
 		
 		Role role;
-		for (Iterator<Role> i = tmproles.iterator(); i.hasNext();) {
-			role = i.next();
+		for (Role tmprole : tmproles) {
+			role = tmprole;
 			Collection<Privilege> privs = role.getPrivileges();
 			if (privs != null) {
 				privileges.addAll(privs);
@@ -202,11 +201,11 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 */
 	public Set<Role> getAllRoles() {
 		// the user's immediate roles
-		Set<Role> baseRoles = new HashSet<Role>();
+		Set<Role> baseRoles = new HashSet<>();
 		
 		// the user's complete list of roles including
 		// the parent roles of their immediate roles
-		Set<Role> totalRoles = new HashSet<Role>();
+		Set<Role> totalRoles = new HashSet<>();
 		if (getRoles() != null) {
 			baseRoles.addAll(getRoles());
 			totalRoles.addAll(getRoles());
@@ -225,9 +224,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 			log.error("Error converting roles for user: " + this);
 			log.error("baseRoles.class: " + baseRoles.getClass().getName());
 			log.error("baseRoles: " + baseRoles.toString());
-			Iterator<Role> iter = baseRoles.iterator();
-			while (iter.hasNext()) {
-				log.error("baseRole: '" + iter.next() + "'");
+			for (Role baseRole : baseRoles) {
+				log.error("baseRole: '" + baseRole + "'");
 			}
 		}
 		return totalRoles;
@@ -255,7 +253,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 */
 	public User addRole(Role role) {
 		if (roles == null) {
-			roles = new HashSet<Role>();
+			roles = new HashSet<>();
 		}
 		if (!roles.contains(role) && role != null) {
 			roles.add(role);
@@ -422,7 +420,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 */
 	public Map<String, String> getUserProperties() {
 		if (userProperties == null) {
-			userProperties = new HashMap<String, String>();
+			userProperties = new HashMap<>();
 		}
 		return userProperties;
 	}
@@ -532,7 +530,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 		if ((proficientLocales == null)
 		        || (!OpenmrsUtil.nullSafeEquals(parsedProficientLocalesProperty, proficientLocalesProperty))) {
 			parsedProficientLocalesProperty = proficientLocalesProperty;
-			proficientLocales = new ArrayList<Locale>();
+			proficientLocales = new ArrayList<>();
 			if (proficientLocalesProperty != null) {
 				String[] proficientLocalesArray = proficientLocalesProperty.split(",");
 				for (String proficientLocaleSpec : proficientLocalesArray) {
@@ -554,7 +552,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 		}
 		
 		// return a copy so that the list isn't changed by other processes
-		return new ArrayList<Locale>(proficientLocales);
+		return new ArrayList<>(proficientLocales);
 	}
 	
 	/**

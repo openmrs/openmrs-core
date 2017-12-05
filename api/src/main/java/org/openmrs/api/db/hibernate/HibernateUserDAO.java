@@ -10,13 +10,11 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateUserDAO implements UserDAO {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(HibernateUserDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -404,7 +402,7 @@ public class HibernateUserDAO implements UserDAO {
 		List<User> returnList = query.list();
 		
 		if (!CollectionUtils.isEmpty(returnList)) {
-			Collections.sort(returnList, new UserByNameComparator());
+			returnList.sort(new UserByNameComparator());
 		}
 		
 		return returnList;
@@ -439,7 +437,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public List<User> getUsersByName(String givenName, String familyName, boolean includeRetired) {
-		List<User> users = new ArrayList<User>();
+		List<User> users = new ArrayList<>();
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(User.class);
 		crit.createAlias("person", "person");
 		crit.createAlias("person.names", "names");
@@ -449,9 +447,7 @@ public class HibernateUserDAO implements UserDAO {
 		if (!includeRetired) {
 			crit.add(Restrictions.eq("retired", false));
 		}
-		for (User u : (List<User>) crit.list()) {
-			users.add(u);
-		}
+		users.addAll((List<User>) crit.list());
 		return users;
 	}
 	
@@ -570,9 +566,9 @@ public class HibernateUserDAO implements UserDAO {
 		//	 and role in :roleList 
 		//   and user.retired = false
 		// order by username asc
-		List<String> criteria = new ArrayList<String>();
+		List<String> criteria = new ArrayList<>();
 		int counter = 0;
-		Map<String, String> namesMap = new HashMap<String, String>();
+		Map<String, String> namesMap = new HashMap<>();
 		if (name != null) {
 			name = name.replace(", ", " ");
 			String[] names = name.split(" ");

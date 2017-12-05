@@ -15,8 +15,6 @@ import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -27,9 +25,6 @@ import org.springframework.validation.Validator;
  * @since 1.9
  */
 public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> implements Validator {
-	
-	/** Logger for this class and subclasses */
-	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
@@ -78,8 +73,7 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 					        && StringUtils.isBlank(attributeType.getDatatypeConfig())) {
 						errors.rejectValue("datatypeConfig", "error.null");
 					}
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					errors.rejectValue("datatypeConfig", "AttributeType.datatypeConfig.invalid", new Object[] { ex
 					        .getMessage() }, "Invalid");
 				}
@@ -94,8 +88,7 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 						errors.rejectValue("preferredHandlerClassname",
 						    "AttributeType.preferredHandlerClassname.wrongDatatype");
 					}
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					errors.rejectValue("handlerConfig", "AttributeType.handlerConfig.invalid", new Object[] { ex
 					        .getMessage() }, "Invalid");
 				}

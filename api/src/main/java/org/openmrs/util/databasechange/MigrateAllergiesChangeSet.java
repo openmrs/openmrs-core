@@ -14,8 +14,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.UUID;
 
-import org.openmrs.AllergySeverity;
-
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
@@ -23,6 +21,7 @@ import liquibase.exception.CustomChangeException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+import org.openmrs.AllergySeverity;
 
 /**
  * Moves un voided allergies from the old active_list and active_list_allergy tables to the new

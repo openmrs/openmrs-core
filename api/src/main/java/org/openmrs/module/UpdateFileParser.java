@@ -9,13 +9,12 @@
  */
 package org.openmrs.module;
 
+import java.util.ArrayList;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
@@ -23,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
 /**
@@ -33,7 +31,7 @@ import org.xml.sax.InputSource;
  */
 public class UpdateFileParser {
 	
-	private static Logger log = LoggerFactory.getLogger(UpdateFileParser.class);
+	private static final Logger log = LoggerFactory.getLogger(UpdateFileParser.class);
 	
 	private String content;
 	
@@ -74,13 +72,7 @@ public class UpdateFileParser {
 				DocumentBuilder db = dbf.newDocumentBuilder();
 				
 				// Disable resolution of external entities. See TRUNK-3942 
-				db.setEntityResolver(new EntityResolver() {
-					
-					@Override
-					public InputSource resolveEntity(String publicId, String systemId) {
-						return new InputSource(new StringReader(""));
-					}
-				});
+				db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
 				
 				updateDoc = db.parse(inputSource);
 			}
@@ -160,7 +152,7 @@ public class UpdateFileParser {
 	 * @return
 	 */
 	private static List<String> validConfigVersions() {
-		List<String> versions = new ArrayList<String>();
+		List<String> versions = new ArrayList<>();
 		versions.add("1.0");
 		versions.add("1.1");
 		return versions;

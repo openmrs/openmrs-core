@@ -55,7 +55,7 @@ import org.springframework.util.Assert;
 @Transactional
 public class PersonServiceImpl extends BaseOpenmrsService implements PersonService {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(PersonServiceImpl.class);
 	
 	private PersonDAO dao;
 	
@@ -160,7 +160,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			String newTypeName = type.getName();
 			
 			if (!oldTypeName.equals(newTypeName)) {
-				List<GlobalProperty> props = new ArrayList<GlobalProperty>();
+				List<GlobalProperty> props = new ArrayList<>();
 				
 				AdministrationService as = Context.getAdministrationService();
 				
@@ -171,7 +171,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 				for (GlobalProperty prop : props) {
 					if (prop != null) {
 						String propVal = prop.getPropertyValue();
-						if (propVal != null && propVal.indexOf(oldTypeName) != -1) {
+						if (propVal != null && propVal.contains(oldTypeName)) {
 							prop.setPropertyValue(propVal.replaceFirst(oldTypeName, newTypeName));
 							as.saveGlobalProperty(prop);
 						}
@@ -592,15 +592,23 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 
 	private List<String> getAttributeTypesFromGlobalProperties(ATTR_VIEW_TYPE viewType, PERSON_TYPE personType) {
 		List<String> result = new ArrayList<>();
-		
-		if (viewType == ATTR_VIEW_TYPE.LISTING) {
-			result = combineAttributes(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, personType);
-		} else if (viewType == ATTR_VIEW_TYPE.VIEWING) {
-			result = combineAttributes(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, personType);
-		} else if (viewType == ATTR_VIEW_TYPE.HEADER) {
-			result = combineAttributes(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, personType);
-		} else {
-			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
+
+		switch (viewType) {
+			case LISTING:
+				result = combineAttributes(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES,
+						OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, personType);
+				break;
+			case VIEWING:
+				result = combineAttributes(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES,
+						OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, personType);
+				break;
+			case HEADER:
+				result = combineAttributes(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES,
+						OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, personType);
+				break;
+			default:
+				log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
+				break;
 		}
 		return result;
 	}
@@ -672,21 +680,25 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			}
 		} else if (name.contains(" ")) {
 			String[] names = name.split(" ");
-			if (names.length == 4) {
-				// user entered "John Adam Smith"
-				firstName = names[0];
-				middleName = names[1];
-				lastName = names[2];
-				lastName2 = names[3];
-			} else if (names.length == 3) {
-				// user entered "John Adam Smith"
-				firstName = names[0];
-				middleName = names[1];
-				lastName = names[2];
-			} else {
-				// user entered "John Smith"
-				firstName = names[0];
-				lastName = names[1];
+			switch (names.length) {
+				case 4:
+					// user entered "John Adam Smith"
+					firstName = names[0];
+					middleName = names[1];
+					lastName = names[2];
+					lastName2 = names[3];
+					break;
+				case 3:
+					// user entered "John Adam Smith"
+					firstName = names[0];
+					middleName = names[1];
+					lastName = names[2];
+					break;
+				default:
+					// user entered "John Smith"
+					firstName = names[0];
+					lastName = names[1];
+					break;
 			}
 		}
 		
@@ -733,7 +745,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		List<Relationship> relationships = Context.getPersonService().getRelationships(null, null, relType);
 		
 		// the map to return
-		Map<Person, List<Person>> ret = new HashMap<Person, List<Person>>();
+		Map<Person, List<Person>> ret = new HashMap<>();
 		
 		if (relationships != null) {
 			for (Relationship rel : relationships) {
@@ -742,7 +754,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 				
 				List<Person> relList = ret.get(from);
 				if (relList == null) {
-					relList = new ArrayList<Person>();
+					relList = new ArrayList<>();
 				}
 				relList.add(to);
 				

@@ -13,12 +13,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Vector;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.app.ApplicationException;
+import ca.uhn.hl7v2.app.MessageTypeRouter;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.message.ORU_R01;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
+import ca.uhn.hl7v2.model.v25.segment.OBR;
+import ca.uhn.hl7v2.model.v25.segment.OBX;
+import ca.uhn.hl7v2.model.v26.segment.MSH;
+import ca.uhn.hl7v2.parser.GenericParser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,17 +56,6 @@ import org.openmrs.hl7.HL7Constants;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
-
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.ApplicationException;
-import ca.uhn.hl7v2.app.MessageTypeRouter;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v25.message.ORU_R01;
-import ca.uhn.hl7v2.model.v25.segment.NK1;
-import ca.uhn.hl7v2.model.v25.segment.OBR;
-import ca.uhn.hl7v2.model.v25.segment.OBX;
-import ca.uhn.hl7v2.model.v26.segment.MSH;
-import ca.uhn.hl7v2.parser.GenericParser;
 
 /**
  * TODO finish testing all methods ORUR01Handler
@@ -192,7 +191,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertNotNull("Their should be an associated encounter", firstContactMethodObs.getEncounter());
 		
 		// check that the obs that are grouped have the same group id
-		List<Integer> groupedConceptIds = new Vector<Integer>();
+		List<Integer> groupedConceptIds = new ArrayList<>();
 		groupedConceptIds.add(1558);
 		groupedConceptIds.add(1553);
 		groupedConceptIds.add(1554);

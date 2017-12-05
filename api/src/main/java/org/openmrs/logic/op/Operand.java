@@ -23,6 +23,6 @@ public interface Operand {
 	 * @param operator The operator to test against this Operand
 	 * @return true/false about whether this Operand supports this {@link ComparisonOperator}
 	 */
-	public boolean supports(ComparisonOperator operator);
+	boolean supports(ComparisonOperator operator);
 	
 }

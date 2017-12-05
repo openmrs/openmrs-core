@@ -36,7 +36,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	
 	private Concept concept;
 	
-	private Set<ProgramWorkflowState> states = new HashSet<ProgramWorkflowState>();
+	private Set<ProgramWorkflowState> states = new HashSet<>();
 	
 	// ******************
 	// Constructors
@@ -162,7 +162,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	 * @return Set&lt;ProgramWorkflowState&gt; - all ProgramWorkflowStates matching input parameters
 	 */
 	public Set<ProgramWorkflowState> getStates(boolean includeRetired) {
-		Set<ProgramWorkflowState> ret = new HashSet<ProgramWorkflowState>();
+		Set<ProgramWorkflowState> ret = new HashSet<>();
 		for (ProgramWorkflowState s : getStates()) {
 			if (includeRetired || !s.getRetired()) {
 				ret.add(s);
@@ -181,16 +181,9 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	public Set<ProgramWorkflowState> getSortedStates() {
 		final Comparator<String> naturalComparator = NaturalStrings.getNaturalComparator();
 		
-		Comparator<ProgramWorkflowState> stateComparator = new Comparator<ProgramWorkflowState>() {
-			
-			@Override
-			public int compare(ProgramWorkflowState o1, ProgramWorkflowState o2) {
-				return naturalComparator.compare(o1.getConcept().getName().getName(), o2.getConcept().getName().getName());
-			}
-			
-		};
+		Comparator<ProgramWorkflowState> stateComparator = (o1, o2) -> naturalComparator.compare(o1.getConcept().getName().getName(), o2.getConcept().getName().getName());
 		
-		Set<ProgramWorkflowState> sorted = new TreeSet<ProgramWorkflowState>(stateComparator);
+		Set<ProgramWorkflowState> sorted = new TreeSet<>(stateComparator);
 		if (getStates() != null) {
 			sorted.addAll(getStates());
 		}
@@ -206,7 +199,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	 *         {@link PatientProgram} ordered by {@link ConceptName}
 	 */
 	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram) {
-		List<ProgramWorkflowState> ret = new ArrayList<ProgramWorkflowState>();
+		List<ProgramWorkflowState> ret = new ArrayList<>();
 		PatientState currentState = patientProgram.getCurrentState(this);
 		for (ProgramWorkflowState st : getSortedStates()) {
 			if (isLegalTransition(currentState == null ? null : currentState.getState(), st)) {

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class Extension {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(Extension.class);
 	
 	// point which this extension is extending
 	private String pointId;
@@ -180,9 +180,9 @@ public abstract class Extension {
 	 * @param mediaType
 	 * @return string extension id
 	 */
-	public static final String toExtensionId(String pointId, MEDIA_TYPE mediaType) {
+	public static String toExtensionId(String pointId, MEDIA_TYPE mediaType) {
 		if (mediaType != null) {
-			return new StringBuffer(pointId).append(Extension.extensionIdSeparator).append(mediaType).toString();
+			return pointId + Extension.extensionIdSeparator + mediaType;
 		} else {
 			return pointId;
 		}

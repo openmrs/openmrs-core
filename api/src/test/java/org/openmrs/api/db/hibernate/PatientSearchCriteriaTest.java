@@ -170,10 +170,10 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 		    null, false));
 		
 		Assert.assertEquals(PatientSearchMode.PATIENT_SEARCH_BY_NAME, patientSearchCriteria.getSearchMode("name", null,
-		    new ArrayList<PatientIdentifierType>(), false));
+				new ArrayList<>(), false));
 		
 		Assert.assertEquals(PatientSearchMode.PATIENT_SEARCH_BY_NAME, patientSearchCriteria.getSearchMode("name", "",
-		    new ArrayList<PatientIdentifierType>(), false));
+				new ArrayList<>(), false));
 	}
 	
 	/**
@@ -263,10 +263,10 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 		    "name", "  \n\t", null, true));
 		
 		Assert.assertEquals(PatientSearchMode.PATIENT_SEARCH_BY_NAME_OR_IDENTIFIER, patientSearchCriteria.getSearchMode(
-		    "name", null, new ArrayList<PatientIdentifierType>(), true));
+		    "name", null, new ArrayList<>(), true));
 		
 		Assert.assertEquals(PatientSearchMode.PATIENT_SEARCH_BY_NAME_OR_IDENTIFIER, patientSearchCriteria.getSearchMode(
-		    "name", "", new ArrayList<PatientIdentifierType>(), true));
+		    "name", "", new ArrayList<>(), true));
 		
 		// test cases where "identifier" is the only parameter that is non-empty and non-blank
 		//
@@ -331,7 +331,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(PatientSearchMode.PATIENT_SEARCH_BY_NAME_AND_IDENTIFIER, patientSearchCriteria.getSearchMode(
 		    "name", "identifier", null, false));
 		Assert.assertEquals(PatientSearchMode.PATIENT_SEARCH_BY_NAME_AND_IDENTIFIER, patientSearchCriteria.getSearchMode(
-		    "name", "identifier", new ArrayList<PatientIdentifierType>(), false));
+		    "name", "identifier", new ArrayList<>(), false));
 		
 		// test cases where "name" and 'identifierTypeList' are the only parameters that are non-empty and non-blank
 		//

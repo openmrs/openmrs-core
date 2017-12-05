@@ -9,12 +9,8 @@
  */
 package org.openmrs.test;
 
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Window;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,7 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,20 +30,11 @@ import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.DatabaseUnitRuntimeException;
-import org.dbunit.database.AmbiguousTableNameException;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -65,7 +52,6 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.H2Dialect;
-import org.hibernate.jdbc.ReturningWork;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assume;
@@ -112,7 +98,7 @@ import org.xml.sax.InputSource;
 @TransactionConfiguration(defaultRollback = true)
 public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringContextTests {
 	
-	private static Logger log = LoggerFactory.getLogger(BaseContextSensitiveTest.class);
+	private static final Logger log = LoggerFactory.getLogger(BaseContextSensitiveTest.class);
 	
 	/**
 	 * Only the classpath/package path and filename of the initial dataset
@@ -308,7 +294,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// if we're using the in-memory hypersonic database, add those
 		// connection properties here to override what is in the runtime
 		// properties
-		if (useInMemoryDatabase() == true) {
+		if (useInMemoryDatabase()) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
 			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000";
 			runtimeProperties.setProperty(Environment.URL, url);
@@ -556,13 +542,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	public Connection getConnection() {
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		
-		return sessionFactory.getCurrentSession().doReturningWork(new ReturningWork<Connection>() {
-			
-			@Override
-			public Connection execute(Connection connection) throws SQLException {
-				return connection;
-			}
-		});
+		return sessionFactory.getCurrentSession().doReturningWork(connection -> connection);
 	}
 	
 	/**
@@ -581,7 +561,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		 * Hbm2ddl used in tests creates primary key columns, which are not auto incremented, if
 		 * NativeIfNotAssignedIdentityGenerator is used. We need to alter those columns in tests.
 		 */
-		List<String> tables = Arrays.asList("concept");
+		List<String> tables = Collections.singletonList("concept");
 		for (String table : tables) {
 			getConnection().prepareStatement("ALTER TABLE " + table + " ALTER COLUMN " + table + "_id INT AUTO_INCREMENT")
 			        .execute();
@@ -667,13 +647,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 					
 					reader.close();
 				}
-				catch (FileNotFoundException e) {
-					throw new DatabaseUnitRuntimeException(e);
-				}
-				catch (DataSetException e) {
-					throw new DatabaseUnitRuntimeException(e);
-				}
-				catch (IOException e) {
+				catch (DataSetException | IOException e) {
 					throw new DatabaseUnitRuntimeException(e);
 				}
 			}
@@ -794,10 +768,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			//insert new rows, update existing rows, and leave others alone
 			DatabaseOperation.REFRESH.execute(dbUnitConn, dataset);
 		}
-		catch (DatabaseUnitException e) {
-			throw new DatabaseUnitRuntimeException(e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseUnitException | SQLException e) {
 			throw new DatabaseUnitRuntimeException(e);
 		}
 	}
@@ -850,13 +821,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			
 			isBaseSetup = false;
 		}
-		catch (AmbiguousTableNameException e) {
-			throw new DatabaseUnitRuntimeException(e);
-		}
-		catch (SQLException e) {
-			throw new DatabaseUnitRuntimeException(e);
-		}
-		catch (DatabaseUnitException e) {
+		catch (SQLException | DatabaseUnitException e) {
 			throw new DatabaseUnitRuntimeException(e);
 		}
 	}

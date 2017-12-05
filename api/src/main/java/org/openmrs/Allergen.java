@@ -112,10 +112,7 @@ public class Allergen {
     }
 
 	public boolean isCoded(){
-		if (codedAllergen == null || codedAllergen.getUuid().equals(getOtherNonCodedConceptUuid())) {
-			return false;
-		}
-		return true;
+		return codedAllergen != null && !codedAllergen.getUuid().equals(getOtherNonCodedConceptUuid());
 	}
 
 	@Override
@@ -146,8 +143,7 @@ public class Allergen {
 			if (!codedAllergen.equals(allergen.getCodedAllergen())) {
 				return false;
 			}
-		}
-		else {
+		} else {
 			if (nonCodedAllergen == null || allergen.getNonCodedAllergen() == null) {
 				return false;
 			}
@@ -155,7 +151,7 @@ public class Allergen {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 }

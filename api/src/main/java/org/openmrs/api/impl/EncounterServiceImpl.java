@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -349,7 +348,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			throw new IllegalArgumentException("The 'identifier' parameter is required and cannot be null");
 		}
 		
-		List<Encounter> encs = new ArrayList<Encounter>();
+		List<Encounter> encs = new ArrayList<>();
 		for (Patient p : Context.getPatientService().getPatients(identifier, null, null, false)) {
 			encs.addAll(Context.getEncounterService().getEncountersByPatientId(p.getPatientId()));
 		}
@@ -497,11 +496,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		if (cascade) {
 			ObsService obsService = Context.getObsService();
-			List<Encounter> justThisEncounter = new ArrayList<Encounter>();
+			List<Encounter> justThisEncounter = new ArrayList<>();
 			justThisEncounter.add(encounter);
-			List<Obs> observations = new ArrayList<Obs>();
-			observations.addAll(obsService.getObservations(null, justThisEncounter, null, null, null, null, null, null,
-			    null, null, null, true));
+			List<Obs> observations = new ArrayList<>(
+					obsService.getObservations(null, justThisEncounter, null, null, null, null, null, null,
+							null, null, null, true));
 			for (Obs o : observations) {
 				obsService.purgeObs(o);
 			}

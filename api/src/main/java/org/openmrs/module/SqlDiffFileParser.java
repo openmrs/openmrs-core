@@ -9,9 +9,12 @@
  */
 package org.openmrs.module;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.SortedMap;
@@ -19,17 +22,12 @@ import java.util.TreeMap;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * This class will parse an xml sql diff file
@@ -38,7 +36,7 @@ import org.xml.sax.SAXException;
  */
 public class SqlDiffFileParser {
 	
-	private static Logger log = LoggerFactory.getLogger(SqlDiffFileParser.class);
+	private static final Logger log = LoggerFactory.getLogger(SqlDiffFileParser.class);
 	
 	private static final String SQLDIFF_CHANGELOG_FILENAME = "sqldiff.xml";
 	
@@ -53,7 +51,7 @@ public class SqlDiffFileParser {
 			throw new ModuleException("Module cannot be null");
 		}
 		
-		SortedMap<String, String> map = new TreeMap<String, String>(new VersionComparator());
+		SortedMap<String, String> map = new TreeMap<>(new VersionComparator());
 		
 		InputStream diffStream = null;
 		
@@ -91,14 +89,10 @@ public class SqlDiffFileParser {
 				try {
 					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 					DocumentBuilder db = dbf.newDocumentBuilder();
-					db.setEntityResolver(new EntityResolver() {
-						
-						@Override
-						public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-							// When asked to resolve external entities (such as a DTD) we return an InputSource
-							// with no data at the end, causing the parser to ignore the DTD.
-							return new InputSource(new StringReader(""));
-						}
+					db.setEntityResolver((publicId, systemId) -> {
+						// When asked to resolve external entities (such as a DTD) we return an InputSource
+						// with no data at the end, causing the parser to ignore the DTD.
+						return new InputSource(new StringReader(""));
 					});
 					diffDoc = db.parse(diffStream);
 				}
@@ -175,7 +169,7 @@ public class SqlDiffFileParser {
 	 * @return
 	 */
 	private static List<String> validConfigVersions() {
-		List<String> versions = new ArrayList<String>();
+		List<String> versions = new ArrayList<>();
 		versions.add("1.0");
 		return versions;
 	}

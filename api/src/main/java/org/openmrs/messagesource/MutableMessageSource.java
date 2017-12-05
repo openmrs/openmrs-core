@@ -26,14 +26,14 @@ public interface MutableMessageSource extends MessageSource, HierarchicalMessage
 	 * 
 	 * @return available message locales
 	 */
-	public Collection<Locale> getLocales();
+	Collection<Locale> getLocales();
 		
 	/**
 	 * Gets all of the available messages, packaged as PresentationMessages.
 	 * 
 	 * @return collection of presentation messages
 	 */
-	public Collection<PresentationMessage> getPresentations();
+	Collection<PresentationMessage> getPresentations();
 	
 	/**
 	 * Gets alll the available messages in a particular locale, packaged as PresentationMessages.
@@ -41,7 +41,7 @@ public interface MutableMessageSource extends MessageSource, HierarchicalMessage
 	 * @param locale locale for which to get the messages
 	 * @return collection of PresentationMessages in the locale
 	 */
-	public Collection<PresentationMessage> getPresentationsInLocale(Locale locale);
+	Collection<PresentationMessage> getPresentationsInLocale(Locale locale);
 	
 	/**
 	 * Adds a presentation message to the source. This operation should overwrite any existing
@@ -49,7 +49,7 @@ public interface MutableMessageSource extends MessageSource, HierarchicalMessage
 	 * 
 	 * @param message message to add to the source
 	 */
-	public void addPresentation(PresentationMessage message);
+	void addPresentation(PresentationMessage message);
 	
 	/**
 	 * Gets the PresentationMessage for a particular locale.
@@ -58,14 +58,14 @@ public interface MutableMessageSource extends MessageSource, HierarchicalMessage
 	 * @param forLocale locale for which to get the message
 	 * @return corresponding PresentationMessage, or null if not available
 	 */
-	public PresentationMessage getPresentation(String key, Locale forLocale);
+	PresentationMessage getPresentation(String key, Locale forLocale);
 	
 	/**
 	 * Removes a presentation message from the source.
 	 * 
 	 * @param message the message to remove
 	 */
-	public void removePresentation(PresentationMessage message);
+	void removePresentation(PresentationMessage message);
 	
 	/**
 	 * Merge messages from another source into this source.
@@ -73,6 +73,6 @@ public interface MutableMessageSource extends MessageSource, HierarchicalMessage
 	 * @param fromSource message source from which messages should be merge
 	 * @param overwrite whether to overwrite existing messages
 	 */
-	public void merge(MutableMessageSource fromSource, boolean overwrite);
+	void merge(MutableMessageSource fromSource, boolean overwrite);
 	
 }

@@ -17,10 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
@@ -29,6 +25,9 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Creates concept reference terms from existing rows in the concept_reference_map table.
@@ -37,7 +36,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(MigrateConceptReferenceTermChangeSet.class);
 	
 	public static final String DEFAULT_CONCEPT_MAP_TYPE = "NARROWER-THAN";
 	
@@ -61,7 +60,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 			connection.setAutoCommit(false);
 			
 			//Prepare a list of types and their ids.
-			Map<String, Integer> typesToIds = new HashMap<String, Integer>();
+			Map<String, Integer> typesToIds = new HashMap<>();
 			
 			selectTypes = connection.prepareStatement("select * from concept_map_type");
 			selectTypes.execute();

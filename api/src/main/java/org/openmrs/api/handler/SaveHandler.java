@@ -39,6 +39,6 @@ public interface SaveHandler<O extends OpenmrsObject> extends RequiredDataHandle
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
 	 */
 	@Override
-	public void handle(O object, User creator, Date dateCreated, String other);
+	void handle(O object, User creator, Date dateCreated, String other);
 	
 }

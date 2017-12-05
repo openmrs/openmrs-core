@@ -36,7 +36,7 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
 	
-	public static final Logger log = LoggerFactory.getLogger(MediaHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(MediaHandler.class);
 	
 	public MediaHandler() {
 		super();

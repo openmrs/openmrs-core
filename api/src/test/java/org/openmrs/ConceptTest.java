@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.Vector;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -1129,7 +1128,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		concept.setDatatype(new ConceptDatatype(1));
 		concept.setConceptClass(new ConceptClass(1));
 		
-		List<Concept> expectedConcepts = new Vector<>();
+		List<Concept> expectedConcepts = new ArrayList<>();
 		
 		concept = Context.getConceptService().saveConcept(concept);
 		expectedConcepts.add(concept);

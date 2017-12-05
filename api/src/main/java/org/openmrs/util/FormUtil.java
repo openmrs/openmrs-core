@@ -65,7 +65,7 @@ public class FormUtil {
 		
 		// special characters that should be replaced with valid text
 		// all other invalid characters will be removed
-		Map<String, String> swapChars = new HashMap<String, String>();
+		Map<String, String> swapChars = new HashMap<>();
 		swapChars.put("!", "bang");
 		swapChars.put("#", "pound");
 		swapChars.put("\\*", "star");
@@ -155,9 +155,9 @@ public class FormUtil {
 	 *         zero and all other leaves are stored under their parent <code>FormField</code>'s id.
 	 */
 	public static Map<Integer, TreeSet<FormField>> getFormStructure(Form form) {
-		Map<Integer, TreeSet<FormField>> formStructure = new TreeMap<Integer, TreeSet<FormField>>();
+		Map<Integer, TreeSet<FormField>> formStructure = new TreeMap<>();
 		Integer base = Integer.valueOf(0);
-		formStructure.put(base, new TreeSet<FormField>());
+		formStructure.put(base, new TreeSet<>());
 		
 		for (FormField formField : form.getFormFields()) {
 			FormField parent = formField.getParent();
@@ -167,7 +167,7 @@ public class FormUtil {
 			} else {
 				// child branches/leaves are added to their parent's branch
 				if (!formStructure.containsKey(parent.getFormFieldId())) {
-					formStructure.put(parent.getFormFieldId(), new TreeSet<FormField>());
+					formStructure.put(parent.getFormFieldId(), new TreeSet<>());
 				}
 				formStructure.get(parent.getFormFieldId()).add(formField);
 			}

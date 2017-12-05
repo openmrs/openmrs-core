@@ -20,7 +20,7 @@ import org.openmrs.logic.op.Operand;
  */
 public class Duration implements Operand {
 	
-	public static enum Units {
+	public enum Units {
 		SECONDS,
 		MINUTES,
 		HOURS,

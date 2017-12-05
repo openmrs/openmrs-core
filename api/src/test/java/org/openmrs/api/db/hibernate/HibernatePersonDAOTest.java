@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	
-	private final static Logger log = LoggerFactory.getLogger(HibernatePersonDAOTest.class);
+	private static final Logger log = LoggerFactory.getLogger(HibernatePersonDAOTest.class);
 	
 	private final static String PEOPLE_FROM_THE_SHIRE_XML = "org/openmrs/api/db/hibernate/include/HibernatePersonDAOTest-people.xml";
 	
@@ -59,13 +59,11 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	private void logPerson(Person person) {
-		StringBuilder builder = new StringBuilder();
-		
-		builder.append("class=").append(person.getClass().getCanonicalName()).append(", person=").append(person.toString())
-		        .append(", person.names=").append(person.getNames().toString()).append(", person.attributes=").append(
-		            person.getAttributes().toString());
-		
-		log.debug(builder.toString());
+		String builder = "class=" + person.getClass().getCanonicalName() + ", person=" + person.toString()
+				+ ", person.names=" + person.getNames().toString() + ", person.attributes="
+				+ person.getAttributes().toString();
+
+		log.debug(builder);
 	}
 	
 	/**

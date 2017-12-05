@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
-import org.hibernate.jdbc.Work;
 import org.openmrs.api.db.DAOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,7 @@ import org.springframework.util.StringUtils;
  */
 public class DatabaseUtil {
 	
-	private final static Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
 
 	public final static String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
 
@@ -86,18 +85,12 @@ public class DatabaseUtil {
 		sql = sql.trim();
 		boolean dataManipulation = checkQueryForManipulationCommands(sql, selectOnly);
 		
-		final List<List<Object>> result = new ArrayList<List<Object>>();
+		final List<List<Object>> result = new ArrayList<>();
 		final String query = sql;
 		final boolean sessionDataManipulation = dataManipulation;
 		
 		//todo replace with lambdas after moving on to Java 8
-		session.doWork(new Work() {
-			
-			@Override
-			public void execute(Connection conn) {
-				populateResultsFromSQLQuery(conn, query, sessionDataManipulation, result);
-			}
-		});
+		session.doWork(conn -> populateResultsFromSQLQuery(conn, query, sessionDataManipulation, result));
 		
 		return result;
 	}
@@ -108,7 +101,7 @@ public class DatabaseUtil {
 	public static List<List<Object>> executeSQL(Connection conn, String sql, boolean selectOnly) throws DAOException {
 		sql = sql.trim();
 		boolean dataManipulation = checkQueryForManipulationCommands(sql, selectOnly);
-		List<List<Object>> result = new ArrayList<List<Object>>();
+		List<List<Object>> result = new ArrayList<>();
 		populateResultsFromSQLQuery(conn, sql, dataManipulation, result);
 		return result;
 	}
@@ -132,38 +125,44 @@ public class DatabaseUtil {
 	private static void populateResultsFromSQLQuery(Connection conn, String sql, boolean dataManipulation,
 	        List<List<Object>> results) {
 		PreparedStatement ps = null;
+		ResultSet resultSet = null;
 		try {
 			ps = conn.prepareStatement(sql);
 			if (dataManipulation) {
 				Integer i = ps.executeUpdate();
-				List<Object> row = new ArrayList<Object>();
+				List<Object> row = new ArrayList<>();
 				row.add(i);
 				results.add(row);
 			} else {
-				ResultSet resultSet = ps.executeQuery();
+				resultSet = ps.executeQuery();
 				
 				ResultSetMetaData rmd = resultSet.getMetaData();
 				int columnCount = rmd.getColumnCount();
 				
 				while (resultSet.next()) {
-					List<Object> rowObjects = new ArrayList<Object>();
+					List<Object> rowObjects = new ArrayList<>();
 					for (int x = 1; x <= columnCount; x++) {
 						rowObjects.add(resultSet.getObject(x));
 					}
 					results.add(rowObjects);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.debug("Error while running sql: " + sql, e);
 			throw new DAOException("Error while running sql: " + sql + " . Message: " + e.getMessage(), e);
-		}
-		finally {
+		} finally {
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					log.error("Error generated while closing statement", e);
+				}
+			}
+
 			if (ps != null) {
 				try {
 					ps.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.error("Error generated while closing statement", e);
 				}
 			}
@@ -181,7 +180,7 @@ public class DatabaseUtil {
 	 */
 	public static <T> Set<T> getUniqueNonNullColumnValues(String columnName, String tableName, Class<T> type,
 	        Connection connection) throws Exception {
-		Set<T> uniqueValues = new HashSet<T>();
+		Set<T> uniqueValues = new HashSet<>();
 		final String alias = "unique_values";
 		String select = "SELECT DISTINCT " + columnName + " AS " + alias + " FROM " + tableName + " WHERE " + columnName
 		        + " IS NOT NULL";

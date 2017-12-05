@@ -15,10 +15,6 @@ import java.sql.SQLException;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
-import org.openmrs.util.DatabaseUtil;
-import org.openmrs.util.UpgradeUtil;
-
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
@@ -27,6 +23,9 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+import org.apache.commons.lang3.StringUtils;
+import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.UpgradeUtil;
 
 public class CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset implements CustomTaskChange {
 	
@@ -38,8 +37,7 @@ public class CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset implements 
 			Set<String> uniqueFrequencies = DatabaseUtil.getUniqueNonNullColumnValues("frequency_text", "drug_order",
 			    String.class, connection.getUnderlyingConnection());
 			insertUniqueFrequencies(connection, uniqueFrequencies);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new CustomChangeException(e);
 		}
 	}
@@ -88,14 +86,9 @@ public class CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset implements 
 				insertOrderFrequencyStatement.clearParameters();
 			}
 			connection.commit();
-		}
-		catch (DatabaseException e) {
+		} catch (DatabaseException | SQLException e) {
 			handleError(connection, e);
-		}
-		catch (SQLException e) {
-			handleError(connection, e);
-		}
-		finally {
+		} finally {
 			if (autoCommit != null) {
 				connection.setAutoCommit(autoCommit);
 			}

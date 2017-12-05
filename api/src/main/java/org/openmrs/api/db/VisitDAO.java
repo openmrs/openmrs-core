@@ -39,7 +39,7 @@ public interface VisitDAO {
 	/**
 	 * @see org.openmrs.api.VisitService#getAllVisitTypes(boolean)
 	 */
-	public List<VisitType> getAllVisitTypes(boolean includeRetired) throws DAOException;
+	List<VisitType> getAllVisitTypes(boolean includeRetired) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.VisitService#getVisitType(java.lang.Integer)
@@ -70,25 +70,25 @@ public interface VisitDAO {
 	 * @see VisitService#getVisit(Integer)
 	 * @throws DAOException
 	 */
-	public Visit getVisit(Integer visitId) throws DAOException;
+	Visit getVisit(Integer visitId) throws DAOException;
 	
 	/**
 	 * @see VisitService#getVisitByUuid(String)
 	 * @throws DAOException
 	 */
-	public Visit getVisitByUuid(String uuid) throws DAOException;
+	Visit getVisitByUuid(String uuid) throws DAOException;
 	
 	/**
 	 * @see VisitService#saveVisit(Visit)
 	 * @throws DAOException
 	 */
-	public Visit saveVisit(Visit visit) throws DAOException;
+	Visit saveVisit(Visit visit) throws DAOException;
 	
 	/**
 	 * @see VisitService#purgeVisit(Visit)
 	 * @throws DAOException
 	 */
-	public void deleteVisit(Visit visit) throws DAOException;
+	void deleteVisit(Visit visit) throws DAOException;
 	
 	/**
 	 * Gets the visits matching the specified arguments
@@ -108,10 +108,10 @@ public interface VisitDAO {
 	 * @should return all unvoided visits if includeEnded is set to true
 	 * @should return only active visits if includeEnded is set to false
 	 */
-	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
-	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
-	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, String> serializedAttributeValues,
-	        boolean includeInactive, boolean includeVoided) throws DAOException;
+	List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
+			Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
+			Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, String> serializedAttributeValues,
+			boolean includeInactive, boolean includeVoided) throws DAOException;
 	
 	/**
 	 * @see VisitService#getAllVisitAttributeTypes()
@@ -154,6 +154,6 @@ public interface VisitDAO {
 	 * @return a {@link Visit}
 	 * @should return the next unvoided active visit matching the specified types and startDate
 	 */
-	public Visit getNextVisit(Visit previousVisit, Collection<VisitType> visitTypes, Date maximumStartDate);
+	Visit getNextVisit(Visit previousVisit, Collection<VisitType> visitTypes, Date maximumStartDate);
 	
 }

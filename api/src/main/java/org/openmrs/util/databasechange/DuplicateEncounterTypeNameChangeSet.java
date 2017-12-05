@@ -22,11 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.openmrs.util.DatabaseUpdater;
-import org.openmrs.util.DatabaseUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
@@ -35,6 +30,10 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.DatabaseUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Liquibase custom changeset used to identify and resolve duplicate EncounterType names. If a
@@ -73,7 +72,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
-		Map<String, HashSet<Integer>> duplicates = new HashMap<String, HashSet<Integer>>();
+		Map<String, HashSet<Integer>> duplicates = new HashMap<>();
 		Statement stmt = null;
 		PreparedStatement pStmt = null;
 		ResultSet rs = null;
@@ -97,7 +96,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 				name = rs.getString("name");
 				
 				if (duplicates.get(name) == null) {
-					HashSet<Integer> results = new HashSet<Integer>();
+					HashSet<Integer> results = new HashSet<>();
 					results.add(id);
 					duplicates.put(name, results);
 				} else {
@@ -143,39 +142,33 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 					pStmt.executeUpdate();
 				}
 			}
-		}
-		catch (BatchUpdateException e) {
+		} catch (BatchUpdateException e) {
 			log.warn("Error generated while processsing batch insert", e);
 			
 			try {
 				log.debug("Rolling back batch", e);
 				connection.rollback();
-			}
-			catch (Exception rbe) {
+			} catch (Exception rbe) {
 				log.warn("Error generated while rolling back batch insert", e);
 			}
 			
 			// marks the changeset as a failed one
 			throw new CustomChangeException("Failed to update one or more duplicate EncounterType names", e);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new CustomChangeException(e);
-		}
-		finally {
+		} finally {
 			// set auto commit to its initial state
 			try {
 				if (initialAutoCommit != null) {
 					connection.setAutoCommit(initialAutoCommit);
 				}
-			}
-			catch (DatabaseException e) {
+			} catch (DatabaseException e) {
 				log.warn("Failed to set auto commit to ids initial state", e);
 			}
 			if (rs != null) {
 				try {
 					rs.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the resultset object");
 				}
 			}
@@ -183,8 +176,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 			if (stmt != null) {
 				try {
 					stmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the select statement used to identify duplicate EncounterType object names");
 				}
 			}
@@ -192,8 +184,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 			if (pStmt != null) {
 				try {
 					pStmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the prepared statement used to update duplicate EncounterType object names");
 				}
 			}

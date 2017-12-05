@@ -9,12 +9,11 @@
  */
 package org.openmrs.web.controller;
 
-import java.io.IOException;
-import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Map;
 
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.GlobalPropertyListener;
@@ -36,7 +35,7 @@ import org.springframework.web.servlet.mvc.LastModified;
 public class PseudoStaticContentController implements Controller, LastModified, GlobalPropertyListener {
 	
 	private static final Logger log = LoggerFactory.getLogger(PseudoStaticContentController.class);
-	
+
 	private Boolean interpretJstl = false;
 	
 	private Map<String, String> rewrites;

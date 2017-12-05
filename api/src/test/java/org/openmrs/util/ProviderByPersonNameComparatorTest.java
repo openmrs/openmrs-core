@@ -87,7 +87,6 @@ public class ProviderByPersonNameComparatorTest {
 		
 		int actualValue = new ProviderByPersonNameComparator().compare(provider1, provider2);
 		Assert.assertTrue("Expected a positive value but it was: " + actualValue, actualValue > 0);
-		;
 	}
 	
 	@Test

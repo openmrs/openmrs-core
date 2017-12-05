@@ -14,9 +14,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import org.openmrs.util.DatabaseUtil;
-import org.openmrs.util.OpenmrsConstants;
-
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
@@ -25,6 +22,8 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This changeset creates provider accounts for orderers that have no providers accounts, and then
@@ -38,8 +37,7 @@ public class ConvertOrderersToProviders implements CustomTaskChange {
 		try {
 			List<List<Object>> usersAndProviders = getUsersAndProviders(connection);
 			convertOrdererToProvider(connection, usersAndProviders);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new CustomChangeException(e);
 		}
 	}
@@ -89,14 +87,9 @@ public class ConvertOrderersToProviders implements CustomTaskChange {
 			        + OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID + "')) " + "WHERE orderer IS NULL");
 			
 			connection.commit();
-		}
-		catch (DatabaseException e) {
+		} catch (DatabaseException | SQLException e) {
 			handleError(connection, e);
-		}
-		catch (SQLException e) {
-			handleError(connection, e);
-		}
-		finally {
+		} finally {
 			if (autoCommit != null) {
 				connection.setAutoCommit(autoCommit);
 			}

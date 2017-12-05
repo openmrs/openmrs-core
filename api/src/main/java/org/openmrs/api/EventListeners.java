@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EventListeners {
 	
-	private static Logger log = LoggerFactory.getLogger(EventListeners.class);
+	private static final Logger log = LoggerFactory.getLogger(EventListeners.class);
 	
 	private static List<GlobalPropertyListener> globalPropertyListeners = null;
 	

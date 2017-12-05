@@ -9,14 +9,13 @@
  */
 package org.openmrs.module.web.filter;
 
-import java.io.IOException;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import java.io.IOException;
 
 import org.openmrs.module.web.WebModuleUtil;
 import org.slf4j.Logger;
@@ -28,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ModuleFilter implements Filter {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(ModuleFilter.class);
 	
 	/**
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)

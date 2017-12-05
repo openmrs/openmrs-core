@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -64,7 +65,7 @@ import org.springframework.validation.Errors;
 @Transactional
 public class AdministrationServiceImpl extends BaseOpenmrsService implements AdministrationService, GlobalPropertyListener {
 	
-	protected Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(AdministrationServiceImpl.class);
 	
 	protected AdministrationDAO dao;
 	
@@ -115,13 +116,12 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Transactional(readOnly = true)
 	public SortedMap<String, String> getSystemVariables() throws APIException {
 		if (systemVariables == null) {
-			systemVariables = new TreeMap<String, String>();
+			systemVariables = new TreeMap<>();
 			
 			// Added the server's fully qualified domain name
 			try {
 				systemVariables.put("OPENMRS_HOSTNAME", InetAddress.getLocalHost().getCanonicalHostName());
-			}
-			catch (UnknownHostException e) {
+			} catch (UnknownHostException e) {
 				systemVariables.put("OPENMRS_HOSTNAME", "Unknown host: " + e.getMessage());
 			}
 			
@@ -270,7 +270,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (gp.getProperty() != null && gp.getProperty().length() > 0) {
 			if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST)) {
 				if (gp.getPropertyValue() != null) {
-					List<Locale> localeList = new ArrayList<Locale>();
+					List<Locale> localeList = new ArrayList<>();
 					
 					for (String localeString : gp.getPropertyValue().split(",")) {
 						localeList.add(LocaleUtility.fromSpecification(localeString.trim()));
@@ -310,7 +310,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException {
 		if (sql == null || "".equals(sql.trim())) {
-			return null;
+			return Collections.emptyList();
 		}
 		
 		return dao.executeSQL(sql, selectOnly);
@@ -373,10 +373,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		try {
-			ImplementationId implId = Context.getSerializationService().getDefaultSerializer().deserialize(property, ImplementationId.class);
-			return implId;
-		}
-		catch (Exception e) {
+			return Context.getSerializationService().getDefaultSerializer()
+					.deserialize(property, ImplementationId.class);
+		} catch (Exception e) {
 			log.debug("Error while getting implementation id", e);
 		}
 		
@@ -432,16 +431,11 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			String value = Context.getSerializationService().getDefaultSerializer().serialize(implementationId);
 			Context.getAdministrationService().saveGlobalProperty(
 			    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID, value));
-		}
-		catch (APIException e) {
+		} catch (APIException e) {
 			throw e;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// pass any other exceptions on up the train
 			throw new APIException(e);
-		}
-		finally {
-			// save an empty concept source to the database when something fails?
 		}
 	}
 	
@@ -472,7 +466,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		// set up the data map to post to the openmrs server
-		Map<String, String> data = new HashMap<String, String>();
+		Map<String, String> data = new HashMap<>();
 		data.put("implementationId", implementationId);
 		data.put("description", description);
 		data.put("passphrase", passphrase);
@@ -526,7 +520,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		// allowedLocales is guaranteed to not be null at this point
-		return new ArrayList<Locale>(allowedLocales);
+		return new ArrayList<>(allowedLocales);
 	}
 	
 	/**
@@ -546,14 +540,14 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Transactional(readOnly = true)
 	public Set<Locale> getPresentationLocales() {
 		if (presentationLocales == null) {
-			presentationLocales = new LinkedHashSet<Locale>();
+			presentationLocales = new LinkedHashSet<>();
 			Collection<Locale> messageLocales = Context.getMessageSourceService().getLocales();
 			List<Locale> allowedLocales = getAllowedLocales();
 			
 			for (Locale locale : allowedLocales) {
 				// if no country is specified all countries with this language will be added
 				if (StringUtils.isEmpty(locale.getCountry())) {
-					List<Locale> localsWithSameLanguage = new ArrayList<Locale>();
+					List<Locale> localsWithSameLanguage = new ArrayList<>();
 					for (Locale possibleLocale : messageLocales) {
 						if (locale.getLanguage().equals(possibleLocale.getLanguage())
 						        && !StringUtils.isEmpty(possibleLocale.getCountry())) {
@@ -646,15 +640,12 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		
 		try {
 			return (T) defaultValue.getClass().getDeclaredConstructor(String.class).newInstance(propVal);
-		}
-		catch (InstantiationException e) {
+		} catch (InstantiationException e) {
 			throw new APIException("is.not.able.instantiated", new Object[] { defaultValue.getClass().getName(), propVal },
 			        e);
-		}
-		catch (NoSuchMethodException e) {
+		} catch (NoSuchMethodException e) {
 			throw new APIException("does.not.have.string.constructor", new Object[] { defaultValue.getClass().getName() }, e);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Unable to turn value '" + propVal + "' into type " + defaultValue.getClass().getName(), e);
 			return defaultValue;
 		}
@@ -666,7 +657,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	@Transactional(readOnly = true)
 	public Map<String, Map<String, String>> getSystemInformation() throws APIException {
-		Map<String, Map<String, String>> systemInfoMap = new LinkedHashMap<String, Map<String, String>>();
+		Map<String, Map<String, String>> systemInfoMap = new LinkedHashMap<>();
 		
 		systemInfoMap.put("SystemInfo.title.openmrsInformation", new LinkedHashMap<String, String>() {
 			
@@ -680,8 +671,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 				put("SystemInfo.OpenMRSInstallation.openmrsVersion", OpenmrsConstants.OPENMRS_VERSION);
 				try {
 					put("SystemInfo.hostname", InetAddress.getLocalHost().getCanonicalHostName());
-				}
-				catch (UnknownHostException e) {
+				} catch (UnknownHostException e) {
 					put("SystemInfo.hostname", "Unknown host: " + e.getMessage());
 				}
 			}
@@ -804,7 +794,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	@Cacheable(value = "userSearchLocales")
 	public List<Locale> getSearchLocales(Locale currentLocale, User user) throws APIException {
-		Set<Locale> locales = new LinkedHashSet<Locale>();
+		Set<Locale> locales = new LinkedHashSet<>();
 		locales.add(currentLocale); //the currently used full locale
 		locales.add(new Locale(currentLocale.getLanguage()));
 
@@ -818,7 +808,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		//limit locales to only allowed locales
 		List<Locale> allowedLocales = Context.getAdministrationService().getAllowedLocales();
 		if (allowedLocales != null) {
-			Set<Locale> retainLocales = new HashSet<Locale>();
+			Set<Locale> retainLocales = new HashSet<>();
 			
 			for (Locale allowedLocale : allowedLocales) {
 				retainLocales.add(allowedLocale);
@@ -828,7 +818,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			locales.retainAll(retainLocales);
 		}
 		
-		return new ArrayList<Locale>(locales);
+		return new ArrayList<>(locales);
 	}
 
 	/**

@@ -9,10 +9,9 @@
  */
 package org.openmrs.web.test;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 import org.junit.Assert;
 import org.openmrs.api.context.Context;

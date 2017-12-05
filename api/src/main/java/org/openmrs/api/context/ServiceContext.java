@@ -86,13 +86,13 @@ public class ServiceContext implements ApplicationContextAware {
 	private boolean useSystemClassLoader = false;
 	
 	// Cached service objects
-	Map<Class, Object> services = new HashMap<Class, Object>();
+	Map<Class, Object> services = new HashMap<>();
 	
 	// Advisors added to services by this service
-	Map<Class, Set<Advisor>> addedAdvisors = new HashMap<Class, Set<Advisor>>();
+	Map<Class, Set<Advisor>> addedAdvisors = new HashMap<>();
 	
 	// Advice added to services by this service
-	Map<Class, Set<Advice>> addedAdvice = new HashMap<Class, Set<Advice>>();
+	Map<Class, Set<Advice>> addedAdvice = new HashMap<>();
 	
 	/**
 	 * Services implementing the OpenmrsService interface for each module. The map is keyed by the
@@ -100,7 +100,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 *
 	 * @since 1.9
 	 */
-	Map<String, OpenmrsService> moduleOpenmrsServices = new HashMap<String, OpenmrsService>();
+	Map<String, OpenmrsService> moduleOpenmrsServices = new HashMap<>();
 	
 	/**
 	 * The default constructor is private so as to keep only one instance per java vm.
@@ -483,9 +483,7 @@ public class ServiceContext implements ApplicationContextAware {
 		if (advisedService.indexOf(advisor) < 0) {
 			advisedService.addAdvisor(advisor);
 		}
-		if (addedAdvisors.get(cls) == null) {
-			addedAdvisors.put(cls, new HashSet<Advisor>());
-		}
+		addedAdvisors.computeIfAbsent(cls, k -> new HashSet<Advisor>());
 		getAddedAdvisors(cls).add(advisor);
 	}
 	
@@ -498,9 +496,7 @@ public class ServiceContext implements ApplicationContextAware {
 		if (advisedService.indexOf(advice) < 0) {
 			advisedService.addAdvice(advice);
 		}
-		if (addedAdvice.get(cls) == null) {
-			addedAdvice.put(cls, new HashSet<Advice>());
-		}
+		addedAdvice.computeIfAbsent(cls, k -> new HashSet<Advice>());
 		getAddedAdvice(cls).add(advice);
 	}
 	
@@ -843,7 +839,7 @@ public class ServiceContext implements ApplicationContextAware {
 		if (log.isTraceEnabled()) {
 			log.trace("getRegisteredComponents(" + type + ") = " + m);
 		}
-		return new ArrayList<T>(m.values());
+		return new ArrayList<>(m.values());
 	}
 	
 	/**
@@ -874,7 +870,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	@SuppressWarnings("unchecked")
 	private <T> Map<String, T> getRegisteredComponents(ApplicationContext context, Class<T> type) {
-		Map<String, T> components = new HashMap<String, T>();
+		Map<String, T> components = new HashMap<>();
 		Map registeredComponents = context.getBeansOfType(type);
 		if (log.isTraceEnabled()) {
 			log.trace("getRegisteredComponents(" + context + ", " + type + ") = " + registeredComponents);
@@ -909,36 +905,32 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @since 1.9
 	 */
 	private void runOpenmrsServiceOnStartup(final OpenmrsService openmrsService, final String classString) {
-		new Thread() {
-			
-			@Override
-			public void run() {
-				try {
-					synchronized (refreshingContextLock) {
-						//Need to wait for application context to finish refreshing otherwise we get into trouble.
-						while (refreshingContext) {
-							if (log.isDebugEnabled()) {
-								log.debug("Waiting to get service: " + classString + " while the context"
-								        + " is being refreshed");
-							}
-							
-							refreshingContextLock.wait();
-							
-							if (log.isDebugEnabled()) {
-								log.debug("Finished waiting to get service " + classString
-								        + " while the context was being refreshed");
-							}
+		new Thread(() -> {
+			try {
+				synchronized (refreshingContextLock) {
+					//Need to wait for application context to finish refreshing otherwise we get into trouble.
+					while (refreshingContext) {
+						if (log.isDebugEnabled()) {
+							log.debug("Waiting to get service: " + classString + " while the context"
+							        + " is being refreshed");
+						}
+
+						refreshingContextLock.wait();
+
+						if (log.isDebugEnabled()) {
+							log.debug("Finished waiting to get service " + classString
+							        + " while the context was being refreshed");
 						}
 					}
-					
-					Daemon.runStartupForService(openmrsService);
 				}
-				catch (InterruptedException e) {
-					log.warn("Refresh lock was interrupted while waiting to run OpenmrsService.onStartup() for "
-					        + classString, e);
-				}
+
+				Daemon.runStartupForService(openmrsService);
 			}
-		}.start();
+			catch (InterruptedException e) {
+				log.warn("Refresh lock was interrupted while waiting to run OpenmrsService.onStartup() for "
+				        + classString, e);
+			}
+		}).start();
 	}
 	
 	/**
@@ -950,7 +942,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @since 1.9
 	 */
 	public List<OpenmrsService> getModuleOpenmrsServices(String modulePackage) {
-		List<OpenmrsService> services = new ArrayList<OpenmrsService>();
+		List<OpenmrsService> services = new ArrayList<>();
 		
 		for (Entry<String, OpenmrsService> entry : moduleOpenmrsServices.entrySet()) {
 			if (entry.getKey().startsWith(modulePackage)) {

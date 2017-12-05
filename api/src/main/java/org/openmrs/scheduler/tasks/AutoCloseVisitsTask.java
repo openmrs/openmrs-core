@@ -40,11 +40,9 @@ public class AutoCloseVisitsTask extends AbstractTask {
 			startExecuting();
 			try {
 				Context.getVisitService().stopVisits(new Date());
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				log.error("Error while auto closing visits:", e);
-			}
-			finally {
+			} finally {
 				stopExecuting();
 			}
 		}

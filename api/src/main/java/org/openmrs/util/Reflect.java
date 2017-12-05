@@ -73,7 +73,7 @@ public class Reflect {
 	 */
 	public static List<Field> getAllFields(Class<?> fieldClass) {
 		List<Field> fields = ClassDataCacher.getInstance().getClassData(fieldClass).getFields();
-		return new ArrayList<Field>(fields);
+		return new ArrayList<>(fields);
 	}
 	
 	/**

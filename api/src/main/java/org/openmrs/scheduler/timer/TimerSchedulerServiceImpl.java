@@ -47,17 +47,17 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	/**
 	 * Logger
 	 */
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(TimerSchedulerServiceImpl.class);
 	
 	/**
 	 * Registered task list
 	 */
-	private Set<TaskDefinition> registeredTasks = new HashSet<TaskDefinition>();
+	private Set<TaskDefinition> registeredTasks = new HashSet<>();
 	
 	/**
 	 * Scheduled Task Map
 	 */
-	private static Map<Integer, TimerSchedulerTask> scheduledTasks = new WeakHashMap<Integer, TimerSchedulerTask>();
+	private static Map<Integer, TimerSchedulerTask> scheduledTasks = new WeakHashMap<>();
 	
 	/**
 	 * A single timer used to keep track of all scheduled tasks. The Timer's associated thread
@@ -67,7 +67,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 *
 	 * @see java.util.Timer#Timer(boolean)
 	 */
-	private Map<TaskDefinition, Timer> taskDefinitionTimerMap = new HashMap<TaskDefinition, Timer>();
+	private Map<TaskDefinition, Timer> taskDefinitionTimerMap = new HashMap<>();
 	
 	/**
 	 * Global data access object context
@@ -120,7 +120,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 		if (scheduledTasks != null) {
 			TimerSchedulerServiceImpl.scheduledTasks = scheduledTasks;
 		} else {
-			TimerSchedulerServiceImpl.scheduledTasks = new WeakHashMap<Integer, TimerSchedulerTask>();
+			TimerSchedulerServiceImpl.scheduledTasks = new WeakHashMap<>();
 		}
 	}
 	
@@ -344,7 +344,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	public Collection<TaskDefinition> getScheduledTasks() {
 		// The real list of scheduled tasks is kept up-to-date in the scheduledTasks map
 		// TODO change the index for the scheduledTasks map to be the TaskDefinition rather than the ID
-		List<TaskDefinition> list = new ArrayList<TaskDefinition>();
+		List<TaskDefinition> list = new ArrayList<>();
 		if (scheduledTasks != null) {
 			Set<Integer> taskIds = scheduledTasks.keySet();
 			for (Integer id : taskIds) {
@@ -439,7 +439,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 */
 	@Override
 	public SortedMap<String, String> getSystemVariables() {
-		SortedMap<String, String> systemVariables = new TreeMap<String, String>();
+		SortedMap<String, String> systemVariables = new TreeMap<>();
 		// scheduler username and password can be found in the global properties
 		// TODO Look into java.util.concurrent.TimeUnit class.  
 		// TODO Remove this from global properties.  This is a constant value that should never change.  
@@ -455,7 +455,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	@Override
 	public OpenmrsMemento saveToMemento() {
 		
-		Set<Integer> tasks = new HashSet<Integer>();
+		Set<Integer> tasks = new HashSet<>();
 		
 		for (TaskDefinition task : getScheduledTasks()) {
 			tasks.add(task.getId());

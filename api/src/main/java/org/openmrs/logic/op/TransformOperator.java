@@ -14,18 +14,18 @@ package org.openmrs.logic.op;
  */
 public interface TransformOperator extends Operator {
 	
-	public static final TransformOperator LAST = new Last();
+	TransformOperator LAST = new Last();
 	
-	public static final TransformOperator FIRST = new First();
+	TransformOperator FIRST = new First();
 	
-	public static final TransformOperator DISTINCT = new Distinct();
+	TransformOperator DISTINCT = new Distinct();
 	
-	public static final TransformOperator EXISTS = new Exists();
+	TransformOperator EXISTS = new Exists();
 	
-	public static final TransformOperator NOT_EXISTS = new NotExists();
+	TransformOperator NOT_EXISTS = new NotExists();
 	
-	public static final TransformOperator COUNT = new Count();
+	TransformOperator COUNT = new Count();
 	
-	public static final TransformOperator AVERAGE = new Average();
+	TransformOperator AVERAGE = new Average();
 	
 }

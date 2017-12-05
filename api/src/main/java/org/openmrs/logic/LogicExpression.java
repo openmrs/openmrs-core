@@ -29,7 +29,7 @@ public interface LogicExpression extends Operand {
 	 * 
 	 * @return current operator of the LogicExpression
 	 */
-	public Operator getOperator();
+	Operator getOperator();
 	
 	/**
 	 * Method to get the root token of the current LogicCriteria.
@@ -37,7 +37,7 @@ public interface LogicExpression extends Operand {
 	 * @return the root token of the LogicExpression
 	 * @see LogicCriteria#getRootToken()
 	 */
-	public String getRootToken();
+	String getRootToken();
 	
 	/**
 	 * Get the right operand of the LogicExpression. Both LogicExpressionBinary and
@@ -45,7 +45,7 @@ public interface LogicExpression extends Operand {
 	 * 
 	 * @return right operand of the LogicExpression
 	 */
-	public Operand getRightOperand();
+	Operand getRightOperand();
 	
 	/**
 	 * Get the transformation expression applied to the LogicExpression
@@ -53,12 +53,12 @@ public interface LogicExpression extends Operand {
 	 * @return transformation expression of the LogicExpression
 	 * @see TransformOperator
 	 */
-	public LogicTransform getTransform();
+	LogicTransform getTransform();
 	
 	/**
 	 * Set the transformation expression applied to the LogicExpression
 	 * 
 	 * @see TransformOperator
 	 */
-	public void setTransform(LogicTransform transform);
+	void setTransform(LogicTransform transform);
 }

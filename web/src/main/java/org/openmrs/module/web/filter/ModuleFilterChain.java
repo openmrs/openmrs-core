@@ -9,15 +9,14 @@
  */
 package org.openmrs.module.web.filter;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * This class is an implementation of FilterChain for use in using Filters defined within Modules.
