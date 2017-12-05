@@ -20,8 +20,8 @@ public class DateUtilTest {
 
 	@Test
 	public void truncateToSeconds_shouldDropMilliseconds() {
-		Date withMilliseconds = new Date(123l);
-		Date withoutMilliseconds = new Date(0l);
+		Date withMilliseconds = new Date(123L);
+		Date withoutMilliseconds = new Date(0L);
 		assertThat(DateUtil.truncateToSeconds(withMilliseconds), is(withoutMilliseconds));
 		assertThat(DateUtil.truncateToSeconds(withoutMilliseconds), is(withoutMilliseconds));
 	}

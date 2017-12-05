@@ -10,7 +10,6 @@
 package org.openmrs.attribute;
 
 import org.openmrs.BaseChangeableOpenmrsData;
-import org.openmrs.BaseOpenmrsData;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.Customizable;
 import org.openmrs.customdatatype.InvalidCustomValueException;

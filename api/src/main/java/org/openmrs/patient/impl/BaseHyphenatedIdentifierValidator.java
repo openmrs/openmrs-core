@@ -112,8 +112,7 @@ public abstract class BaseHyphenatedIdentifierValidator implements IdentifierVal
 		
 		try {
 			givenCheckDigit = Integer.valueOf(checkDigit);
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			throw new UnallowedIdentifierException(
 			        "Check digit must either be a character from A to J or a single digit integer.");
 		}

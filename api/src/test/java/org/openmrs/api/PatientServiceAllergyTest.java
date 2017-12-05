@@ -94,7 +94,7 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//save some allergies for this patient
 		Allergen allergen = new Allergen(AllergenType.DRUG, new Concept(3), null);
 		Concept severity = new Concept(4);
-		Allergy allergy = new Allergy(patient, allergen, severity, "some comment", new ArrayList<AllergyReaction>());
+		Allergy allergy = new Allergy(patient, allergen, severity, "some comment", new ArrayList<>());
 		AllergyReaction reaction = new AllergyReaction(allergy, new Concept(21), null);
 		allergy.addReaction(reaction);
 		allergies = new Allergies();

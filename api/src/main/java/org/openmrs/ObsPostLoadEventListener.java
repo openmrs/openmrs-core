@@ -9,9 +9,8 @@
  */
 package org.openmrs;
 
-import java.lang.reflect.Field;
-
 import javax.annotation.PostConstruct;
+import java.lang.reflect.Field;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.event.service.spi.EventListenerRegistry;

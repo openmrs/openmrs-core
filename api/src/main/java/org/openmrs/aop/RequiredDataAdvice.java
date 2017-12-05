@@ -85,7 +85,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public void before(Method method, Object[] args, Object target) throws Throwable {
+	public void before(Method method, Object[] args, Object target) {
 		String methodName = method.getName();
 		
 		// skip out early if there are no arguments
@@ -125,8 +125,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				ValidateUtil.validate(mainArgument);
 				
 				recursivelyHandle(SaveHandler.class, (OpenmrsObject) mainArgument, other);
-			}
-			// if the first argument is a list of openmrs objects, handle them all now
+			} // if the first argument is a list of openmrs objects, handle them all now
 			else if (Reflect.isCollection(mainArgument) && isOpenmrsObjectCollection(mainArgument)) {
 				// ideally we would fail early if the method name is not like savePluralOfXyz(Collection<Xyz>)
 				// but this only occurs once in the API (AdministrationService.saveGlobalProperties
@@ -250,7 +249,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		Class<? extends OpenmrsObject> openmrsObjectClass = openmrsObject.getClass();
 		
 		if (alreadyHandled == null) {
-			alreadyHandled = new ArrayList<OpenmrsObject>();
+			alreadyHandled = new ArrayList<>();
 		}
 		
 		// fetch all handlers for the object being saved

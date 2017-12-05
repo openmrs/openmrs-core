@@ -217,8 +217,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 						errors.pushNestedPath("conceptMappings[" + index + "].conceptReferenceTerm");
 						ValidationUtils.invokeValidator(new ConceptReferenceTermValidator(), map.getConceptReferenceTerm(),
 						    errors);
-					}
-					finally {
+					} finally {
 						errors.popNestedPath();
 					}
 					

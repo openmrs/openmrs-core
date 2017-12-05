@@ -9,10 +9,9 @@
  */
 package org.openmrs.web.filter.update;
 
+import javax.servlet.ServletException;
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import javax.servlet.ServletException;
 
 import org.junit.Assert;
 import org.junit.Test;

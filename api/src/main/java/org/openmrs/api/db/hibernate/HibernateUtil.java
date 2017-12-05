@@ -25,7 +25,6 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.hibernate.jdbc.ReturningWork;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.Location;
 import org.openmrs.attribute.AttributeType;
@@ -37,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateUtil {
 	
-	private static Logger log = LoggerFactory.getLogger(HibernateUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(HibernateUtil.class);
 	
 	private static Dialect dialect = null;
 	
@@ -87,13 +86,7 @@ public class HibernateUtil {
 	 * @see HibernateUtil#escapeSqlWildcards(String, Connection)
 	 */
 	public static String escapeSqlWildcards(final String oldString, SessionFactory sessionFactory) {
-		return sessionFactory.getCurrentSession().doReturningWork(new ReturningWork<String>() {
-			
-			@Override
-			public String execute(Connection connection) throws SQLException {
-				return escapeSqlWildcards(oldString, connection);
-			}
-		});
+		return sessionFactory.getCurrentSession().doReturningWork(connection -> escapeSqlWildcards(oldString, connection));
 		
 	}
 	

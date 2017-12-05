@@ -55,7 +55,7 @@ public class AllergenTest extends BaseContextSensitiveTest {
 	
 	private void assertNonCoded() {
 		Assert.assertNull(allergen.getCodedAllergen());
-		Assert.assertEquals(allergen.getNonCodedAllergen(), "Non coded allergen");
+		Assert.assertEquals("Non coded allergen", allergen.getNonCodedAllergen());
 		Assert.assertFalse(allergen.isCoded());
 	}
 	

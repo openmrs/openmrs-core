@@ -12,15 +12,14 @@ package org.openmrs.util.databasechange;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.openmrs.util.DatabaseUtil;
-import org.openmrs.util.UpgradeUtil;
-
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.CustomPreconditionErrorException;
 import liquibase.exception.CustomPreconditionFailedException;
 import liquibase.precondition.CustomPrecondition;
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.UpgradeUtil;
 
 /**
  * This changesets finds all free text drug order dose units and frequencies and checks that they
@@ -57,20 +56,19 @@ public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements Cu
 				                + "frequencies via the global property named orderEntry.unitsToConceptsMappings"
 				                + " or use 1.10 upgrade helper module to map them");
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new CustomPreconditionErrorException("An error occurred while checking for unmapped free text drug "
 			        + "order dose units and frequencies", e);
 		}
 	}
 	
 	private Set<String> getUnMappedText(Set<String> textList, JdbcConnection connection) {
-		Set<String> unmappedText = new HashSet<String>(textList.size());
+		Set<String> unmappedText = new HashSet<>(textList.size());
 		for (String text : textList) {
 			if (StringUtils.isBlank(text) || UpgradeUtil.getConceptIdForUnits(text) != null) {
 				continue;
 			}
-			
+
 			unmappedText.add(text);
 		}
 		return unmappedText;

@@ -35,42 +35,42 @@ public interface Retireable extends OpenmrsObject {
 	 */
 	@Deprecated
 	@JsonIgnore
-	public Boolean isRetired();
+	Boolean isRetired();
 	
-	public Boolean getRetired();
+	Boolean getRetired();
 	
 	/**
 	 * @param retired - whether of not this object is retired
 	 */
-	public void setRetired(Boolean retired);
+	void setRetired(Boolean retired);
 	
 	/**
 	 * @return User - the user who retired the object
 	 */
-	public User getRetiredBy();
+	User getRetiredBy();
 	
 	/**
 	 * @param retiredBy - the user who retired the object
 	 */
-	public void setRetiredBy(User retiredBy);
+	void setRetiredBy(User retiredBy);
 	
 	/**
 	 * @return Date - the date the object was retired
 	 */
-	public Date getDateRetired();
+	Date getDateRetired();
 	
 	/**
 	 * @param dateRetired - the date the object was retired
 	 */
-	public void setDateRetired(Date dateRetired);
+	void setDateRetired(Date dateRetired);
 	
 	/**
 	 * @return String - the reason the object was retired
 	 */
-	public String getRetireReason();
+	String getRetireReason();
 	
 	/**
 	 * @param retireReason - the reason the object was retired
 	 */
-	public void setRetireReason(String retireReason);
+	void setRetireReason(String retireReason);
 }

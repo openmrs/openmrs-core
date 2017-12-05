@@ -9,9 +9,6 @@
  */
 package org.openmrs.serialization;
 
-import org.openmrs.ImplementationId;
-import org.openmrs.Patient;
-
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -19,6 +16,8 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.extended.DynamicProxyConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import org.openmrs.ImplementationId;
+import org.openmrs.Patient;
 
 /**
  * This serializer uses the xstream library to serialize and deserialize objects.

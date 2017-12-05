@@ -9,6 +9,13 @@
  */
 package org.openmrs.util;
 
+import javax.activation.MimetypesFileTypeMap;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -46,25 +53,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
-
-import javax.activation.MimetypesFileTypeMap;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -120,11 +119,11 @@ import org.w3c.dom.DocumentType;
  */
 public class OpenmrsUtil {
 	
-	private static org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsUtil.class);
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsUtil.class);
 	
-	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<Locale, SimpleDateFormat>();
+	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<>();
 	
-	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<Locale, SimpleDateFormat>();
+	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<>();
 	
 	/**
 	 * Compares origList to newList returning map of differences
@@ -136,10 +135,10 @@ public class OpenmrsUtil {
 	public static <E extends Object> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {
 		// TODO finish function
 		
-		Collection<Collection<E>> returnList = new ArrayList<Collection<E>>();
+		Collection<Collection<E>> returnList = new ArrayList<>();
 		
-		Collection<E> toAdd = new LinkedList<E>();
-		Collection<E> toDel = new LinkedList<E>();
+		Collection<E> toAdd = new LinkedList<>();
+		Collection<E> toDel = new LinkedList<>();
 		
 		// loop over the new list.
 		for (E currentNewListObj : newList) {
@@ -174,8 +173,8 @@ public class OpenmrsUtil {
 		boolean retVal = false;
 		
 		if (str != null && arr != null) {
-			for (int i = 0; i < arr.length; i++) {
-				if (str.equals(arr[i])) {
+			for (String anArr : arr) {
+				if (str.equals(anArr)) {
 					retVal = true;
 				}
 			}
@@ -239,29 +238,16 @@ public class OpenmrsUtil {
 	 * @return byte[] file contents
 	 * @throws IOException
 	 */
-	public static byte[] getFileAsBytes(File file) throws IOException {
-		FileInputStream fileInputStream = null;
-		try {
-			fileInputStream = new FileInputStream(file);
+	public static byte[] getFileAsBytes(File file) {
+		try (FileInputStream fileInputStream = new FileInputStream(file)) {
 			byte[] b = new byte[fileInputStream.available()];
 			fileInputStream.read(b);
 			return b;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Unable to get file as byte array", e);
 		}
-		finally {
-			if (fileInputStream != null) {
-				try {
-					fileInputStream.close();
-				}
-				catch (IOException io) {
-					log.warn("Couldn't close fileInputStream: " + io);
-				}
-			}
-		}
 		
-		return null;
+		return new byte[]{};
 	}
 	
 	/**
@@ -286,8 +272,7 @@ public class OpenmrsUtil {
 		
 		try {
 			IOUtils.copy(inputStream, outputStream);
-		}
-		finally {
+		} finally {
 			IOUtils.closeQuietly(outputStream);
 		}
 		
@@ -319,7 +304,7 @@ public class OpenmrsUtil {
 			return false;
 		}
 		
-		for (File f : folder.listFiles()) {
+		for (File f : Objects.requireNonNull(folder.listFiles())) {
 			if (f.getName().equals(filename)) {
 				return true;
 			}
@@ -338,7 +323,7 @@ public class OpenmrsUtil {
 	 * @see Context#checkCoreDataset()
 	 */
 	public static Map<String, String> getCorePrivileges() {
-		Map<String, String> corePrivileges = new HashMap<String, String>();
+		Map<String, String> corePrivileges = new HashMap<>();
 		
 		// TODO getCorePrivileges() is called so so many times that getClassesWithAnnotation() better do some catching.
 		Set<Class<?>> classes = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(HasAddOnStartupPrivileges.class);
@@ -358,8 +343,7 @@ public class OpenmrsUtil {
 				
 				try {
 					fieldValue = (String) fld.get(null);
-				}
-				catch (IllegalAccessException e) {
+				} catch (IllegalAccessException e) {
 					log.error("Field is inaccessible.", e);
 				}
 				corePrivileges.put(fieldValue, privilegeAnnotation.description());
@@ -381,7 +365,7 @@ public class OpenmrsUtil {
 	 * @return roles that are core to the system
 	 */
 	public static Map<String, String> getCoreRoles() {
-		Map<String, String> roles = new HashMap<String, String>();
+		Map<String, String> roles = new HashMap<>();
 		
 		Field[] flds = RoleConstants.class.getDeclaredFields();
 		for (Field fld : flds) {
@@ -397,8 +381,7 @@ public class OpenmrsUtil {
 			
 			try {
 				fieldValue = (String) fld.get(null);
-			}
-			catch (IllegalAccessException e) {
+			} catch (IllegalAccessException e) {
 				log.error("Field is inaccessible.", e);
 			}
 			roles.put(fieldValue, roleAnnotation.description());
@@ -446,15 +429,14 @@ public class OpenmrsUtil {
 			
 			if (val != null) {
 				try {
-					int endIndex = val.lastIndexOf("?");
+					int endIndex = val.lastIndexOf('?');
 					if (endIndex == -1) {
 						endIndex = val.length();
 					}
-					int startIndex = val.lastIndexOf("/", endIndex);
+					int startIndex = val.lastIndexOf('/', endIndex);
 					val = val.substring(startIndex + 1, endIndex);
 					OpenmrsConstants.DATABASE_NAME = val;
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					log.error(MarkerFactory.getMarker("FATAL"), "Database name cannot be configured from 'connection.url' ."
 					        + "Either supply 'connection.database_name' or correct the url",
 					    e);
@@ -530,8 +512,7 @@ public class OpenmrsUtil {
 				fileAppender.setLayout(patternLayout);
 			}
 			fileAppender.activateOptions();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.error("Error while setting an OpenMRS log file to " + logLocation, e);
 		}
 	}
@@ -555,21 +536,29 @@ public class OpenmrsUtil {
 			Logger logger = Logger.getLogger(logClass);
 			
 			logLevel = logLevel.toLowerCase();
-			if (OpenmrsConstants.LOG_LEVEL_TRACE.equals(logLevel)) {
-				logger.setLevel(Level.TRACE);
-			} else if (OpenmrsConstants.LOG_LEVEL_DEBUG.equals(logLevel)) {
-				logger.setLevel(Level.DEBUG);
-			} else if (OpenmrsConstants.LOG_LEVEL_INFO.equals(logLevel)) {
-				logger.setLevel(Level.INFO);
-			} else if (OpenmrsConstants.LOG_LEVEL_WARN.equals(logLevel)) {
-				logger.setLevel(Level.WARN);
-			} else if (OpenmrsConstants.LOG_LEVEL_ERROR.equals(logLevel)) {
-				logger.setLevel(Level.ERROR);
-			} else if (OpenmrsConstants.LOG_LEVEL_FATAL.equals(logLevel)) {
-				logger.setLevel(Level.FATAL);
-			} else {
-				log.warn("Global property " + logLevel + " is invalid. "
-				        + "Valid values are trace, debug, info, warn, error or fatal");
+			switch (logLevel) {
+				case OpenmrsConstants.LOG_LEVEL_TRACE:
+					logger.setLevel(Level.TRACE);
+					break;
+				case OpenmrsConstants.LOG_LEVEL_DEBUG:
+					logger.setLevel(Level.DEBUG);
+					break;
+				case OpenmrsConstants.LOG_LEVEL_INFO:
+					logger.setLevel(Level.INFO);
+					break;
+				case OpenmrsConstants.LOG_LEVEL_WARN:
+					logger.setLevel(Level.WARN);
+					break;
+				case OpenmrsConstants.LOG_LEVEL_ERROR:
+					logger.setLevel(Level.ERROR);
+					break;
+				case OpenmrsConstants.LOG_LEVEL_FATAL:
+					logger.setLevel(Level.FATAL);
+					break;
+				default:
+					log.warn("Global property " + logLevel + " is invalid. "
+							+ "Valid values are trace, debug, info, warn, error or fatal");
+					break;
 			}
 		}
 	}
@@ -582,7 +571,7 @@ public class OpenmrsUtil {
 	 * @return Map&lt;String, String&gt; of the parameters passed
 	 */
 	public static Map<String, String> parseParameterList(String paramList) {
-		Map<String, String> ret = new HashMap<String, String>();
+		Map<String, String> ret = new HashMap<>();
 		if (paramList != null && paramList.length() > 0) {
 			String[] args = paramList.split("\\|");
 			for (String s : args) {
@@ -617,10 +606,10 @@ public class OpenmrsUtil {
 			return d1.compareTo(d2);
 		}
 		if (d1 instanceof Timestamp) {
-			d1 = new Date(((Timestamp) d1).getTime());
+			d1 = new Date(d1.getTime());
 		}
 		if (d2 instanceof Timestamp) {
-			d2 = new Date(((Timestamp) d2).getTime());
+			d2 = new Date(d2.getTime());
 		}
 		return d1.compareTo(d2);
 	}
@@ -706,7 +695,7 @@ public class OpenmrsUtil {
 	}
 	
 	public static Set<Concept> conceptSetHelper(String descriptor) {
-		Set<Concept> ret = new HashSet<Concept>();
+		Set<Concept> ret = new HashSet<>();
 		if (descriptor == null || descriptor.length() == 0) {
 			return ret;
 		}
@@ -725,8 +714,7 @@ public class OpenmrsUtil {
 			} else {
 				try {
 					c = cs.getConcept(Integer.valueOf(s.trim()));
-				}
-				catch (Exception ex) {}
+				} catch (Exception ex) {}
 			}
 			if (c != null) {
 				if (isSet) {
@@ -754,16 +742,15 @@ public class OpenmrsUtil {
 		if (delimitedString != null) {
 			String[] tokens = delimitedString.split(delimiter);
 			for (String token : tokens) {
-				Integer conceptId = null;
+				Integer conceptId;
 				
 				try {
 					conceptId = Integer.valueOf(token);
-				}
-				catch (NumberFormatException nfe) {
+				} catch (NumberFormatException nfe) {
 					conceptId = null;
 				}
 				
-				Concept c = null;
+				Concept c;
 				
 				if (conceptId != null) {
 					c = Context.getConceptService().getConcept(conceptId);
@@ -773,7 +760,7 @@ public class OpenmrsUtil {
 				
 				if (c != null) {
 					if (ret == null) {
-						ret = new ArrayList<Concept>();
+						ret = new ArrayList<>();
 					}
 					ret.add(c);
 				}
@@ -793,7 +780,7 @@ public class OpenmrsUtil {
 				
 				if (c != null) {
 					if (ret == null) {
-						ret = new HashMap<String, Concept>();
+						ret = new HashMap<>();
 					}
 					ret.put(token, c);
 				}
@@ -805,7 +792,7 @@ public class OpenmrsUtil {
 	
 	// TODO: properly handle duplicates
 	public static List<Concept> conceptListHelper(String descriptor) {
-		List<Concept> ret = new ArrayList<Concept>();
+		List<Concept> ret = new ArrayList<>();
 		if (descriptor == null || descriptor.length() == 0) {
 			return ret;
 		}
@@ -824,8 +811,9 @@ public class OpenmrsUtil {
 			} else {
 				try {
 					c = cs.getConcept(Integer.valueOf(s.trim()));
+				} catch (Exception ex) {
+
 				}
-				catch (Exception ex) {}
 			}
 			if (c != null) {
 				if (isSet) {
@@ -901,7 +889,7 @@ public class OpenmrsUtil {
 		}
 		
 		File[] fileList = dir.listFiles();
-		for (File f : fileList) {
+		for (File f : Objects.requireNonNull(fileList)) {
 			if (f.isDirectory()) {
 				deleteDirectory(f);
 			}
@@ -979,27 +967,19 @@ public class OpenmrsUtil {
 		}
 		String path = urlStr.substring(p + 2);
 		file = url2file(new URL(urlStr.substring(4, p)));
-		if (file == null) {// non-local JAR file URL
+		if (file == null) { // non-local JAR file URL
 			return url.openStream();
 		}
-		JarFile jarFile = new JarFile(file);
-		try {
+		try (JarFile jarFile = new JarFile(file)) {
 			ZipEntry entry = jarFile.getEntry(path);
 			if (entry == null) {
 				throw new FileNotFoundException(url.toExternalForm());
 			}
-			InputStream in = jarFile.getInputStream(entry);
-			try {
+			try (InputStream in = jarFile.getInputStream(entry)) {
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				copyFile(in, out);
 				return new ByteArrayInputStream(out.toByteArray());
 			}
-			finally {
-				in.close();
-			}
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 	
@@ -1165,9 +1145,7 @@ public class OpenmrsUtil {
 	 * @param outFile file pointer to the location the xml file is to be saved to
 	 */
 	public static void saveDocument(Document doc, File outFile) {
-		OutputStream outStream = null;
-		try {
-			outStream = new FileOutputStream(outFile);
+		try (OutputStream outStream = new FileOutputStream(outFile)) {
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			Transformer transformer = tFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -1181,33 +1159,21 @@ public class OpenmrsUtil {
 			DOMSource source = new DOMSource(doc);
 			StreamResult result = new StreamResult(outStream);
 			transformer.transform(source, result);
-		}
-		catch (TransformerException e) {
+		}catch (TransformerException e) {
 			throw new ModuleException("Error while saving dwrmodulexml back to dwr-modules.xml", e);
-		}
-		catch (FileNotFoundException e) {
+		}catch (FileNotFoundException e) {
 			throw new ModuleException(outFile.getAbsolutePath() + " file doesn't exist.", e);
-		}
-		finally {
-			try {
-				if (outStream != null) {
-					outStream.close();
-				}
-			}
-			catch (Exception e) {
-				log.warn("Unable to close outstream", e);
-			}
+		}catch (IOException e) {
+			log.warn("Unable to close outstream", e);
 		}
 	}
 	
 	public static List<Integer> delimitedStringToIntegerList(String delimitedString, String delimiter) {
-		List<Integer> ret = new ArrayList<Integer>();
+		List<Integer> ret = new ArrayList<>();
 		String[] tokens = delimitedString.split(delimiter);
 		for (String token : tokens) {
 			token = token.trim();
-			if (token.length() == 0) {
-				continue;
-			} else {
+			if (token.length() != 0) {
 				ret.add(Integer.valueOf(token));
 			}
 		}
@@ -1305,20 +1271,12 @@ public class OpenmrsUtil {
 	 * Allows easy manipulation of a Map&lt;?, Set&gt;
 	 */
 	public static <K, V> void addToSetMap(Map<K, Set<V>> map, K key, V obj) {
-		Set<V> set = map.get(key);
-		if (set == null) {
-			set = new HashSet<V>();
-			map.put(key, set);
-		}
+		Set<V> set = map.computeIfAbsent(key, k -> new HashSet<>());
 		set.add(obj);
 	}
 	
 	public static <K, V> void addToListMap(Map<K, List<V>> map, K key, V obj) {
-		List<V> list = map.get(key);
-		if (list == null) {
-			list = new ArrayList<V>();
-			map.put(key, list);
-		}
+		List<V> list = map.computeIfAbsent(key, k -> new ArrayList<>());
 		list.add(obj);
 	}
 	
@@ -1426,8 +1384,7 @@ public class OpenmrsUtil {
 			Method valueOfMethod = null;
 			try {
 				valueOfMethod = clazz.getMethod("valueOf", String.class);
-			}
-			catch (NoSuchMethodException ex) {}
+			} catch (NoSuchMethodException ex) {}
 			if (valueOfMethod != null) {
 				return valueOfMethod.invoke(null, string);
 			} else if (clazz.isEnum()) {
@@ -1443,12 +1400,10 @@ public class OpenmrsUtil {
 				return string;
 			} else if (Location.class.equals(clazz)) {
 				try {
-					Integer.parseInt(string);
 					LocationEditor ed = new LocationEditor();
 					ed.setAsText(string);
 					return ed.getValue();
-				}
-				catch (NumberFormatException ex) {
+				} catch (NumberFormatException ex) {
 					return Context.getLocationService().getLocation(string);
 				}
 			} else if (Concept.class.equals(clazz)) {
@@ -1497,8 +1452,7 @@ public class OpenmrsUtil {
 			} else {
 				throw new IllegalArgumentException("Don't know how to handle class: " + clazz);
 			}
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			log.error("error converting \"" + string + "\" to " + clazz, ex);
 			throw new IllegalArgumentException(ex);
 		}
@@ -1620,23 +1574,10 @@ public class OpenmrsUtil {
 	 * @param comment
 	 */
 	public static void storeProperties(Properties properties, File file, String comment) {
-		OutputStream outStream = null;
-		try {
-			outStream = new FileOutputStream(file, true);
+		try (OutputStream outStream = new FileOutputStream(file, true)) {
 			storeProperties(properties, outStream, comment);
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			log.error("Unable to create file " + file.getAbsolutePath() + " in storeProperties routine.");
-		}
-		finally {
-			try {
-				if (outStream != null) {
-					outStream.close();
-				}
-			}
-			catch (IOException ioe) {
-				// pass
-			}
 		}
 	}
 	
@@ -1653,14 +1594,11 @@ public class OpenmrsUtil {
 		try {
 			Charset utf8 = Charset.forName("UTF-8");
 			properties.store(new OutputStreamWriter(outStream, utf8), comment);
-		}
-		catch (FileNotFoundException fnfe) {
+		} catch (FileNotFoundException fnfe) {
 			log.error("target file not found" + fnfe);
-		}
-		catch (UnsupportedEncodingException ex) { // pass
+		} catch (UnsupportedEncodingException ex) { // pass
 			log.error("unsupported encoding error hit" + ex);
-		}
-		catch (IOException ioex) {
+		} catch (IOException ioex) {
 			log.error("IO exception encountered trying to append to properties file" + ioex);
 		}
 		
@@ -1677,29 +1615,14 @@ public class OpenmrsUtil {
 	 * @param input the input stream to read from
 	 */
 	public static void loadProperties(Properties props, InputStream inputStream) {
-		InputStreamReader reader = null;
-		try {
-			reader = new InputStreamReader(inputStream, "UTF-8");
+		try (InputStreamReader reader = new InputStreamReader(inputStream, "UTF-8")) {
 			props.load(reader);
-		}
-		catch (FileNotFoundException fnfe) {
+		} catch (FileNotFoundException fnfe) {
 			log.error("Unable to find properties file" + fnfe);
-		}
-		catch (UnsupportedEncodingException uee) {
+		} catch (UnsupportedEncodingException uee) {
 			log.error("Unsupported encoding used in properties file" + uee);
-		}
-		catch (IOException ioe) {
+		} catch (IOException ioe) {
 			log.error("Unable to read properties from properties file" + ioe);
-		}
-		finally {
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			}
-			catch (IOException ioe) {
-				log.error("Unable to close properties file " + ioe);
-			}
 		}
 	}
 	
@@ -1712,8 +1635,7 @@ public class OpenmrsUtil {
 	public static void loadProperties(Properties props, File propertyFile) {
 		try {
 			loadProperties(props, new FileInputStream(propertyFile));
-		}
-		catch (FileNotFoundException fnfe) {
+		} catch (FileNotFoundException fnfe) {
 			log.error("Unable to find properties file" + fnfe);
 		}
 	}
@@ -1732,11 +1654,9 @@ public class OpenmrsUtil {
 			if (translation != null) {
 				return translation;
 			}
-		}
-		catch (NoSuchMessageException e) {
+		} catch (NoSuchMessageException e) {
 			log.warn("Message code <" + code + "> not found for locale " + l);
-		}
-		catch (APIException apiEx) {
+		} catch (APIException apiEx) {
 			// in case the services aren't set up yet
 			log.debug("Unable to get code: " + code, apiEx);
 			return code;
@@ -1827,8 +1747,7 @@ public class OpenmrsUtil {
 		
 		try {
 			svc = Context.getAdministrationService();
-		}
-		catch (APIException apiEx) {
+		} catch (APIException apiEx) {
 			// if a service isn't available, fail quietly and just do the
 			// defaults
 			log.debug("Unable to get global properties", apiEx);
@@ -1859,8 +1778,7 @@ public class OpenmrsUtil {
 				if (password.length() < minLength) {
 					throw new ShortPasswordException(getMessage("error.password.length", lengthGp));
 				}
-			}
-			catch (NumberFormatException nfe) {
+			} catch (NumberFormatException nfe) {
 				log.warn(
 				    "Error in global property <" + OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH + "> must be an Integer");
 			}
@@ -1885,8 +1803,7 @@ public class OpenmrsUtil {
 				if (!matcher.matches()) {
 					throw new InvalidCharactersPasswordException(getMessage("error.password.different"));
 				}
-			}
-			catch (PatternSyntaxException pse) {
+			} catch (PatternSyntaxException pse) {
 				log.warn("Invalid regex of " + regexGp + " defined in global property <"
 				        + OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX + ">.");
 			}
@@ -1952,8 +1869,7 @@ public class OpenmrsUtil {
 		if (closableStream != null) {
 			try {
 				closableStream.close();
-			}
-			catch (IOException io) {
+			} catch (IOException io) {
 				log.trace("Error occurred while closing stream", io);
 			}
 		}
@@ -1975,7 +1891,7 @@ public class OpenmrsUtil {
 			return null;
 		}
 		
-		List<String> results = new ArrayList<String>();
+		List<String> results = new ArrayList<>();
 		final Pattern exclude = Pattern.compile("(org.springframework.|java.lang.reflect.Method.invoke|sun.reflect.)");
 		boolean found = false;
 		
@@ -2015,16 +1931,23 @@ public class OpenmrsUtil {
 		if (applicationName == null) {
 			applicationName = "openmrs";
 		}
-		String pathName = "";
+		String pathName;
 		pathName = getRuntimePropertiesFilePathName(applicationName);
 		FileInputStream propertyStream = null;
 		try {
 			if (pathName != null) {
 				propertyStream = new FileInputStream(pathName);
 			}
-		}
-		catch (FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			log.warn("Unable to find a runtime properties file at " + new File(pathName).getAbsolutePath());
+		} finally {
+			if (propertyStream != null) {
+				try {
+					propertyStream.close();
+				} catch (IOException e) {
+					log.warn("Couldn't close property stream");
+				}
+			}
 		}
 		
 		try {
@@ -2038,8 +1961,7 @@ public class OpenmrsUtil {
 			propertyStream.close();
 			log.info("Using runtime properties file: " + pathName);
 			return props;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			log.info("Got an error while attempting to load the runtime properties", ex);
 			log.warn(
 			    "Unable to find a runtime properties file. Initial setup is needed. View the webapp to run the setup wizard.");
@@ -2197,7 +2119,7 @@ public class OpenmrsUtil {
 	 * @return
 	 */
 	public static Set<String> getDeclaredFields(Class<?> clazz) {
-		return Arrays.asList(clazz.getDeclaredFields()).stream().map(f -> f.getName()).collect(Collectors.toSet());
+		return Arrays.stream(clazz.getDeclaredFields()).map(Field::getName).collect(Collectors.toSet());
 	}
 	
 }

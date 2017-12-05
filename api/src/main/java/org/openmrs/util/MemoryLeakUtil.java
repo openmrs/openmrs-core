@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MemoryLeakUtil {
 	
-	private final static Logger log = LoggerFactory.getLogger(MemoryLeakUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(MemoryLeakUtil.class);
 	
 	//http://bugs.mysql.com/bug.php?id=36565
 	public static void shutdownMysqlCancellationTimer() {
@@ -41,13 +41,9 @@ public class MemoryLeakUtil {
 			timer.cancel();
 			log.info("completed timer cancellation");
 		}
-		catch (ClassNotFoundException cnfe) {
+		catch (ClassNotFoundException | NoSuchFieldException cnfe) {
 			// Ignore
 			log.error("Cannot cancel", cnfe);
-		}
-		catch (NoSuchFieldException nsfe) {
-			// Ignore
-			log.error("Cannot cancel", nsfe);
 		}
 		catch (SecurityException se) {
 			log.info("Failed to shut-down MySQL Statement Cancellation Timer due to a SecurityException", se);

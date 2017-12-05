@@ -136,9 +136,8 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 	 */
 	public List<FormField> getOrderedFormFields() {
 		if (this.formFields != null) {
-			List<FormField> fieldList = new ArrayList<FormField>();
-			Set<FormField> fieldSet = new HashSet<FormField>();
-			fieldSet.addAll(this.formFields);
+			List<FormField> fieldList = new ArrayList<>();
+			Set<FormField> fieldSet = new HashSet<>(this.formFields);
 			
 			int fieldSize = fieldSet.size();
 			
@@ -148,8 +147,8 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 				
 				for (FormField ff : fieldSet) {
 					if (ff.getFieldNumber() != null) {
-						if (ff.getFieldNumber().intValue() < fieldNum || fieldNum == 0) {
-							fieldNum = ff.getFieldNumber().intValue();
+						if (ff.getFieldNumber() < fieldNum || fieldNum == 0) {
+							fieldNum = ff.getFieldNumber();
 							next = ff;
 						}
 					} else {
@@ -183,7 +182,7 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 	 */
 	public void addFormField(FormField formField) {
 		if (formFields == null) {
-			formFields = new HashSet<FormField>();
+			formFields = new HashSet<>();
 		}
 		if (!formFields.contains(formField) && formField != null) {
 			formField.setForm(this);

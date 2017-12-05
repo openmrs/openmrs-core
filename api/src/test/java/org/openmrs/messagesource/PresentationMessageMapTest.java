@@ -63,7 +63,7 @@ public class PresentationMessageMapTest {
 	 */
 	@Test
 	public void putAll_shouldFilterOutNonMatchingLocaleMessagesFromBatchAdd() {
-		Map<String, PresentationMessage> messageMap = new HashMap<String, PresentationMessage>();
+		Map<String, PresentationMessage> messageMap = new HashMap<>();
 		messageMap.put(EXPECTED_MESSAGE_KEY, MESSAGE_EN);
 		messageMap.put("wrong_locale", MESSAGE_DE);
 		

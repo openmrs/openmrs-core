@@ -19,7 +19,7 @@ import org.springframework.util.StringUtils;
 
 public class ConceptReferenceTermEditor extends PropertyEditorSupport {
 	
-	private final static Logger log = LoggerFactory.getLogger(ConceptReferenceTermEditor.class);
+	private static final Logger log = LoggerFactory.getLogger(ConceptReferenceTermEditor.class);
 	
 	public ConceptReferenceTermEditor() {
 	}
@@ -30,8 +30,7 @@ public class ConceptReferenceTermEditor extends PropertyEditorSupport {
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(Context.getConceptService().getConceptReferenceTerm(Integer.valueOf(text)));
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				ConceptReferenceTerm value = Context.getConceptService().getConceptReferenceTermByUuid(text);
 				setValue(value);
 				if (value == null) {

@@ -35,7 +35,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	
 	private String comment;
 	
-	private List<AllergyReaction> reactions = new ArrayList<AllergyReaction>();
+	private List<AllergyReaction> reactions = new ArrayList<>();
 	
 	/**
 	 * Default constructor
@@ -183,8 +183,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 		//we do not allow to be in a state where reactions is null
 		if (reactions != null) {
 			this.reactions = reactions;
-		}
-		else {
+		} else {
 			this.reactions.clear();
 		}
 	}
@@ -196,7 +195,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	 * @return true if the reaction was added, else false
 	 */
 	public boolean addReaction(AllergyReaction reaction) {
-        if(getReactionConcepts().contains(reaction.getReaction())){
+        if (getReactionConcepts().contains(reaction.getReaction())) {
             return false;
         }
 		reaction.setAllergy(this);
@@ -236,8 +235,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 				if (!OpenmrsUtil.nullSafeEquals(getPatient().getPatientId(), allergy.getPatient().getPatientId())) {
 					return false;
 				}
-			}
-			else {
+			} else {
 				return false;
 			}
 		}
@@ -247,8 +245,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 				if (!OpenmrsUtil.nullSafeEquals(getAllergen().getCodedAllergen().getConceptId(), allergy.getAllergen().getCodedAllergen().getConceptId())) {
 					return false;
 				}
-			}
-			else {
+			} else {
 				return false;
 			}
 		}
@@ -261,8 +258,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 				if (!OpenmrsUtil.nullSafeEquals(getSeverity().getConceptId(), allergy.getSeverity().getConceptId())) {
 					return false;
 				}
-			}
-			else {
+			} else {
 				return false;
 			}
 		}
@@ -321,14 +317,14 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	 * @throws InvocationTargetException
 	 * @throws IllegalAccessException
 	 */
-	public void copy(Allergy allergy) throws InvocationTargetException, IllegalAccessException {
+	public void copy(Allergy allergy) {
 		setAllergyId(null);
 		setUuid(UUID.randomUUID().toString());
 		setPatient(allergy.getPatient());
 		setAllergen(allergy.getAllergen());
 		setSeverity(allergy.getSeverity());
 		setComment(allergy.getComment());
-		setReactions(new ArrayList<AllergyReaction>());
+		setReactions(new ArrayList<>());
 		
 		for (AllergyReaction reaction : allergy.getReactions()) {
 			reactions.add(reaction);
@@ -338,7 +334,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	}
 
     private List<Concept> getReactionConcepts(){
-        List<Concept> reactionConcepts = new ArrayList<Concept>(getReactions().size());
+        List<Concept> reactionConcepts = new ArrayList<>(getReactions().size());
         for (AllergyReaction ar : getReactions()) {
             reactionConcepts.add(ar.getReaction());
         }

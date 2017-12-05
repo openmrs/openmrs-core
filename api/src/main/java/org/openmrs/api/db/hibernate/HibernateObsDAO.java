@@ -36,8 +36,6 @@ import org.openmrs.User;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Hibernate specific Observation related functions This class should not be used directly. All
@@ -47,9 +45,7 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.api.ObsService
  */
 public class HibernateObsDAO implements ObsDAO {
-	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
-	
+
 	protected SessionFactory sessionFactory;
 	
 	/**
@@ -286,8 +282,7 @@ public class HibernateObsDAO implements ObsDAO {
 			SQLQuery sql = session.createSQLQuery("select status from obs where obs_id = :obsId");
 			sql.setInteger("obsId", obs.getObsId());
 			return Obs.Status.valueOf((String) sql.uniqueResult());
-		}
-		finally {
+		} finally {
 			session.setFlushMode(flushMode);
 		}
 	}

@@ -11,7 +11,6 @@ package org.openmrs.layout.address;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.GlobalPropertyListener;
@@ -31,7 +30,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	
 	private boolean initialized = false;
 	
-	static Logger log = LoggerFactory.getLogger(AddressSupport.class);
+	private static final Logger log = LoggerFactory.getLogger(AddressSupport.class);
 	
 	private AddressSupport() {
 		if (singleton == null) {
@@ -59,7 +58,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 			    OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE);
 			setAddressTemplate(layoutTemplateXml);
 			
-			List<String> specialTokens = new ArrayList<String>();
+			List<String> specialTokens = new ArrayList<>();
 			specialTokens.add("address1");
 			specialTokens.add("address2");
 			specialTokens.add("address3");
@@ -108,8 +107,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 				String xml = Context.getAdministrationService().getGlobalProperty(
 				    OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE);
 				setAddressTemplate(xml);
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				//The old AddressTemplate prevails
 			}
 		}
@@ -134,10 +132,9 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 		}
 		try {
 			setAddressTemplate(newValue.getPropertyValue());
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			log.error("Error in new xml global property value", ex);
-			setAddressTemplate(new Vector<AddressTemplate>());
+			setAddressTemplate(new ArrayList<>());
 		}
 	}
 	
@@ -147,13 +144,12 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 			
 			addressTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(xml,
 			    AddressTemplate.class);
-		}
-		catch (SerializationException e) {
+		} catch (SerializationException e) {
 			log.error("Error in deserializing address template", e);
 			addressTemplate = new AddressTemplate("Error while deserializing address layout template.");
 		}
 		
-		List<AddressTemplate> list = new ArrayList<AddressTemplate>();
+		List<AddressTemplate> list = new ArrayList<>();
 		list.add(addressTemplate);
 		setAddressTemplate(list);
 	}
@@ -166,7 +162,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 		if (!OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE.equals(propertyName)) {
 			return;
 		}
-		setAddressTemplate(new Vector<AddressTemplate>());
+		setAddressTemplate(new ArrayList<>());
 	}
 	
 }

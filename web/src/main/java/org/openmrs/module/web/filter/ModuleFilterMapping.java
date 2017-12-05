@@ -15,7 +15,6 @@ import java.util.List;
 
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
-import org.openmrs.module.web.WebModuleUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;

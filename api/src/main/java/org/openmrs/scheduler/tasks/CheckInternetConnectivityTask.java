@@ -30,7 +30,7 @@ public class CheckInternetConnectivityTask extends AbstractTask {
 	/**
 	 * Logger
 	 */
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(CheckInternetConnectivityTask.class);
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
@@ -43,8 +43,7 @@ public class CheckInternetConnectivityTask extends AbstractTask {
 		try {
 			URLConnection connection = new URL(url).openConnection();
 			connection.connect();
-		}
-		catch (IOException ioe) {
+		} catch (IOException ioe) {
 			try {
 				String text = "At " + new Date() + " there was an error reported connecting to the internet address " + url
 				        + ": " + ioe;
@@ -52,8 +51,7 @@ public class CheckInternetConnectivityTask extends AbstractTask {
 				Role role = Context.getUserService().getRole("System Developer");
 				Collection<User> users = Context.getUserService().getUsersByRole(role);
 				Context.getAlertService().saveAlert(new Alert(text, users));
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				// Uh oh, just log it.
 				log.error("Failed to check internet connectivity", e);
 			}

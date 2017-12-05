@@ -9,6 +9,7 @@
  */
 package org.openmrs.web.filter.util;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -18,8 +19,6 @@ import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.util.LocaleUtility;
 import org.slf4j.Logger;
@@ -49,8 +48,8 @@ public class CustomResourceLoader {
 	 * default constructor that initializes inner map of resources
 	 */
 	private CustomResourceLoader(HttpServletRequest httpRequest) {
-		this.resources = new HashMap<Locale, ResourceBundle>();
-		this.availablelocales = new HashSet<Locale>();
+		this.resources = new HashMap<>();
+		this.availablelocales = new HashSet<>();
 		
 		try {
 			PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
@@ -61,8 +60,7 @@ public class CustomResourceLoader {
 				getResource().put(locale, rb);
 				getAvailablelocales().add(locale);
 			}
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			log.error(ex.getMessage(), ex);
 		}
 	}
@@ -89,7 +87,7 @@ public class CustomResourceLoader {
 	 * @return Locale derived from the given string
 	 */
 	private Locale parseLocaleFrom(String filename, String basename) {
-		Locale result = null;
+		Locale result;
 		
 		if (filename.startsWith(basename)) {
 			filename = filename.substring(basename.length());

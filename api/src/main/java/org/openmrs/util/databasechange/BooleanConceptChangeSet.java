@@ -17,10 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.openmrs.util.OpenmrsConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
@@ -29,22 +25,25 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+import org.openmrs.util.OpenmrsConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Adds yes/no boolean concepts and changes all boolean obs values to match these concepts
  */
 public class BooleanConceptChangeSet implements CustomTaskChange {
 	
-	private static Logger log = LoggerFactory.getLogger(BooleanConceptChangeSet.class);
+	private static final Logger log = LoggerFactory.getLogger(BooleanConceptChangeSet.class);
 	
 	private Integer trueConceptId;
 	
 	private Integer falseConceptId;
 	
 	//string values for boolean concepts
-	private static Map<String, String[]> trueNames = new HashMap<String, String[]>();
+	private static Map<String, String[]> trueNames = new HashMap<>();
 	
-	private static Map<String, String[]> falseNames = new HashMap<String, String[]>();
+	private static Map<String, String[]> falseNames = new HashMap<>();
 	
 	// how to say True and Yes in OpenMRS core languages
 	static {
@@ -177,19 +176,14 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			}
 			
 			return conceptId;
-		}
-		catch (DatabaseException e) {
+		} catch (DatabaseException | SQLException e) {
 			throw new CustomChangeException("Unable to create concept with names " + names, e);
-		}
-		catch (SQLException e) {
-			throw new CustomChangeException("Unable to create concept with names " + names, e);
-		}
-		finally {
+		} finally {
 			if (updateStatement != null) {
 				try {
 					updateStatement.close();
+				} catch (SQLException ignored) {
 				}
-				catch (SQLException e) {}
 			}
 		}
 	}
@@ -219,19 +213,14 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			        .prepareStatement("UPDATE obs SET value_coded = ?, value_numeric = NULL WHERE value_numeric = 0 AND concept_id IN (SELECT concept_id FROM concept WHERE datatype_id = 10)");
 			updateStatement.setInt(1, falseConceptId);
 			updateStatement.executeUpdate();
-		}
-		catch (DatabaseException e) {
+		} catch (DatabaseException | SQLException e) {
 			throw new CustomChangeException("Unable to change obs", e);
-		}
-		catch (SQLException e) {
-			throw new CustomChangeException("Unable to change obs", e);
-		}
-		finally {
+		} finally {
 			if (updateStatement != null) {
 				try {
 					updateStatement.close();
+				} catch (SQLException ignored) {
 				}
-				catch (SQLException e) {}
 			}
 		}
 	}
@@ -265,21 +254,15 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			updateStatement.setString(3, "Concept id of the concept defining the FALSE boolean concept");
 			updateStatement.setString(4, UUID.randomUUID().toString());
 			updateStatement.executeUpdate();
-		}
-		catch (DatabaseException e) {
+		} catch (DatabaseException | SQLException e) {
 			throw new CustomChangeException("Unable to create global properties for concept ids defining boolean concepts",
 			        e);
-		}
-		catch (SQLException e) {
-			throw new CustomChangeException("Unable to create global properties for concept ids defining boolean concepts",
-			        e);
-		}
-		finally {
+		} finally {
 			if (updateStatement != null) {
 				try {
 					updateStatement.close();
+				} catch (SQLException ignored) {
 				}
-				catch (SQLException e) {}
 			}
 		}
 	}
@@ -294,9 +277,10 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 */
 	private Integer getInt(JdbcConnection connection, String sql) throws CustomChangeException {
 		Statement stmt = null;
+		ResultSet rs = null;
 		try {
 			stmt = connection.createStatement();
-			ResultSet rs = stmt.executeQuery(sql);
+			rs = stmt.executeQuery(sql);
 			Integer result = null;
 			
 			if (rs.next()) {
@@ -311,19 +295,21 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			}
 			
 			return result;
-		}
-		catch (DatabaseException e) {
+		} catch (DatabaseException | SQLException e) {
 			throw new CustomChangeException("Unable to get int", e);
-		}
-		catch (SQLException e) {
-			throw new CustomChangeException("Unable to get int", e);
-		}
-		finally {
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException ignored) {
+				}
+			}
+
 			if (stmt != null) {
 				try {
 					stmt.close();
+				} catch (SQLException ignored) {
 				}
-				catch (SQLException e) {}
 			}
 		}
 	}

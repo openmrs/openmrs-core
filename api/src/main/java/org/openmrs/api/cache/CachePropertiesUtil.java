@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.cache;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -20,12 +19,11 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import net.sf.ehcache.config.CacheConfiguration;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
-
-import net.sf.ehcache.config.CacheConfiguration;
 
 public class CachePropertiesUtil {
 
@@ -33,7 +31,7 @@ public class CachePropertiesUtil {
      * This method looks for all apiCacheConfig.properties file located in cacheConfig folder in classpath
      * @return list of CacheConfiguration objects
      */
-    public static List<CacheConfiguration> getCacheConfigurations(){
+    public static List<CacheConfiguration> getCacheConfigurations() {
         List<CacheConfiguration> openmrsCacheConfigurationList = new ArrayList<>();
         Resource[] resourceFromClassPath = getResourceFromClassPath();
         Arrays.stream(resourceFromClassPath)
@@ -67,7 +65,7 @@ public class CachePropertiesUtil {
                             .forEach(key -> {
                                 String s = key.toString();
                                 openmrsCacheConfiguration.addProperty(
-                                        s.replace(cacheName+".", ""),
+                                        s.replace(cacheName + ".", ""),
                                         cacheProperties.getProperty(key.toString()));
                             });
                     openmrsCacheConfigurationList.add(createCacheConfiguration(openmrsCacheConfiguration));
@@ -85,7 +83,7 @@ public class CachePropertiesUtil {
 
     private static Properties getPropertiesFromResource(Resource resource) {
         Properties properties = new Properties();
-        try (InputStream inputStream = resource.getInputStream()){
+        try (InputStream inputStream = resource.getInputStream()) {
             properties.load(inputStream);
             return properties;
         } catch (IOException e) {

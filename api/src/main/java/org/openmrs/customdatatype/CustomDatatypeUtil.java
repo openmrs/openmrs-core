@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CustomDatatypeUtil {
 	
-	private static Logger log = LoggerFactory.getLogger(CustomDatatypeUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(CustomDatatypeUtil.class);
 	
 	/**
 	 * @param descriptor
@@ -55,8 +55,7 @@ public class CustomDatatypeUtil {
 				throw new CustomDatatypeException("Can't find datatype: " + datatypeClassname);
 			}
 			return ret;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new CustomDatatypeException("Error loading " + datatypeClassname + " and configuring it with "
 			        + datatypeConfig, ex);
 		}
@@ -69,8 +68,7 @@ public class CustomDatatypeUtil {
 	public static CustomDatatype<?> getDatatypeOrDefault(CustomValueDescriptor descriptor) {
 		try {
 			return getDatatype(descriptor);
-		}
-		catch (CustomDatatypeException ex) {
+		} catch (CustomDatatypeException ex) {
 			return getDatatype(OpenmrsConstants.DEFAULT_CUSTOM_DATATYPE, null);
 		}
 	}
@@ -101,8 +99,7 @@ public class CustomDatatypeUtil {
 					handler.setHandlerConfiguration(handlerConfig);
 				}
 				return handler;
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				log.warn("Failed to instantiate and configure preferred handler with class " + preferredHandlerClassname
 				        + " and config " + handlerConfig, ex);
 			}
@@ -125,8 +122,7 @@ public class CustomDatatypeUtil {
 		}
 		try {
 			return Context.getSerializationService().getDefaultSerializer().serialize(simpleConfig);
-		}
-		catch (SerializationException ex) {
+		} catch (SerializationException ex) {
 			throw new APIException(ex);
 		}
 	}
@@ -147,8 +143,7 @@ public class CustomDatatypeUtil {
 		}
 		try {
 			return Context.getSerializationService().getDefaultSerializer().deserialize(serializedConfig, Map.class);
-		}
-		catch (SerializationException ex) {
+		} catch (SerializationException ex) {
 			throw new APIException(ex);
 		}
 	}
@@ -163,15 +158,14 @@ public class CustomDatatypeUtil {
 	public static <T extends AttributeType<?>, U> Map<T, String> getValueReferences(Map<T, U> datatypeValues) {
 		Map<T, String> serializedAttributeValues = null;
 		if (datatypeValues != null) {
-			serializedAttributeValues = new HashMap<T, String>();
+			serializedAttributeValues = new HashMap<>();
 			for (Map.Entry<T, U> e : datatypeValues.entrySet()) {
 				T vat = e.getKey();
 				CustomDatatype<U> customDatatype = (CustomDatatype<U>) getDatatype(vat);
 				String valueReference;
 				try {
 					valueReference = customDatatype.getReferenceStringForValue(e.getValue());
-				}
-				catch (UnsupportedOperationException ex) {
+				} catch (UnsupportedOperationException ex) {
 					throw new APIException("CustomDatatype.error.cannot.search", new Object[] { customDatatype.getClass() });
 				}
 				serializedAttributeValues.put(vat, valueReference);
@@ -184,7 +178,7 @@ public class CustomDatatypeUtil {
 	 * @return fully-qualified classnames of all registered datatypes
 	 */
 	public static List<String> getDatatypeClassnames() {
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 		for (Class<?> c : Context.getDatatypeService().getAllDatatypeClasses()) {
 			ret.add(c.getName());
 		}
@@ -195,7 +189,7 @@ public class CustomDatatypeUtil {
 	 * @return full-qualified classnames of all registered handlers
 	 */
 	public static List<String> getHandlerClassnames() {
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 		for (Class<?> c : Context.getDatatypeService().getAllHandlerClasses()) {
 			ret.add(c.getName());
 		}
@@ -241,8 +235,7 @@ public class CustomDatatypeUtil {
 			String existingValueReference = null;
 			try {
 				existingValueReference = value.getValueReference();
-			}
-			catch (NotYetPersistedException ex) {
+			} catch (NotYetPersistedException ex) {
 				// this is expected
 			}
 			String newValueReference = datatype.save(value.getValue(), existingValueReference);
@@ -263,8 +256,7 @@ public class CustomDatatypeUtil {
 			CustomDatatype<T> datatype = (CustomDatatype<T>) getDatatype(value.getDescriptor());
 			datatype.validate((T) value.getValue());
 			return true;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			return false;
 		}
 	}

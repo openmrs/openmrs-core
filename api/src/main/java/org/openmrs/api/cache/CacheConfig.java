@@ -25,7 +25,7 @@ import org.springframework.core.io.ClassPathResource;
 public class CacheConfig {
 
     @Bean(name = "apiCacheManagerFactoryBean")
-    public EhCacheManagerFactoryBean apiCacheManagerFactoryBean(){
+    public EhCacheManagerFactoryBean apiCacheManagerFactoryBean() {
         OpenmrsCacheManagerFactoryBean cacheManagerFactoryBean = new OpenmrsCacheManagerFactoryBean();
         cacheManagerFactoryBean.setConfigLocation(new ClassPathResource("ehcache-api.xml"));
         cacheManagerFactoryBean.setShared(false);

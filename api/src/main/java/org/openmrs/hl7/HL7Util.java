@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import ca.uhn.hl7v2.HL7Exception;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -23,8 +24,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uhn.hl7v2.HL7Exception;
-
 /**
  * HL7-related utilities
  *
@@ -32,7 +31,7 @@ import ca.uhn.hl7v2.HL7Exception;
  */
 public class HL7Util {
 	
-	private static Logger log = LoggerFactory.getLogger(HL7Util.class);
+	private static final Logger log = LoggerFactory.getLogger(HL7Util.class);
 	
 	// Date and time format parsers
 	private static final String TIMESTAMP_FORMAT = "yyyyMMddHHmmss.SSSZ";

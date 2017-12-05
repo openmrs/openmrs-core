@@ -20,7 +20,7 @@ public interface IdentifierValidator {
 	/**
 	 * @return The name of this validator. E.g. "Luhn Algorithm"
 	 */
-	public String getName();
+	String getName();
 	
 	/**
 	 * @param identifier The Identifier to check.
@@ -28,7 +28,7 @@ public interface IdentifierValidator {
 	 * @throws UnallowedIdentifierException if the identifier contains unallowed characters or is
 	 *             otherwise not appropriate for this validator.
 	 */
-	public boolean isValid(String identifier) throws UnallowedIdentifierException;
+	boolean isValid(String identifier) throws UnallowedIdentifierException;
 	
 	/**
 	 * @param undecoratedIdentifier The identifier prior to being given a check digit or other form
@@ -37,10 +37,10 @@ public interface IdentifierValidator {
 	 * @throws UnallowedIdentifierException if the identifier contains unallowed characters or is
 	 *             otherwise not appropriate for this validator.
 	 */
-	public String getValidIdentifier(String undecoratedIdentifier) throws UnallowedIdentifierException;
+	String getValidIdentifier(String undecoratedIdentifier) throws UnallowedIdentifierException;
 	
 	/**
 	 * @return A string containing all the characters allowed in this type of identifier validation.
 	 */
-	public String getAllowedCharacters();
+	String getAllowedCharacters();
 }

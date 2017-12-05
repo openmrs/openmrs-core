@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
  */
 public class PrivilegeEditor extends PropertyEditorSupport {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(PrivilegeEditor.class);
 	
 	public PrivilegeEditor() {
 	}

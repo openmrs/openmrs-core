@@ -20,6 +20,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.app.Application;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
+import ca.uhn.hl7v2.model.v25.datatype.PL;
+import ca.uhn.hl7v2.model.v25.datatype.XCN;
+import ca.uhn.hl7v2.model.v25.message.ORU_R01;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
+import ca.uhn.hl7v2.model.v25.segment.ORC;
+import ca.uhn.hl7v2.model.v25.segment.PV1;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -39,23 +49,12 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.Application;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v25.datatype.CX;
-import ca.uhn.hl7v2.model.v25.datatype.PL;
-import ca.uhn.hl7v2.model.v25.datatype.XCN;
-import ca.uhn.hl7v2.model.v25.message.ORU_R01;
-import ca.uhn.hl7v2.model.v25.segment.NK1;
-import ca.uhn.hl7v2.model.v25.segment.ORC;
-import ca.uhn.hl7v2.model.v25.segment.PV1;
-
 /**
  * Tests methods in the {@link HL7Service}
  */
 public class HL7ServiceTest extends BaseContextSensitiveTest {
 	
-	private Logger log = LoggerFactory.getLogger(HL7ServiceTest.class);
+	private static final Logger log = LoggerFactory.getLogger(HL7ServiceTest.class);
 	
 	/**
 	 * @see HL7Service#saveHL7InQueue(HL7InQueue)

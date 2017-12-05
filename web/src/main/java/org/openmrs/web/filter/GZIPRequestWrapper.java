@@ -9,11 +9,10 @@
  */
 package org.openmrs.web.filter;
 
-import java.io.IOException;
-
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import java.io.IOException;
 
 /**
  * Wraps Request for GZipFilter

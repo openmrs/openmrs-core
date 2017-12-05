@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -207,8 +206,8 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		Set<Obs> ret = new LinkedHashSet<>();
 		
 		if (this.obs != null) {
-			ret = this.obs.stream().
-					filter(o -> includeVoided || !o.getVoided())
+			ret = this.obs.stream()
+					.filter(o -> includeVoided || !o.getVoided())
 					.collect(Collectors.toSet());
 		}
 		return ret;
@@ -562,7 +561,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		
 		return encounterProviders.stream()
 				.filter(ep -> ep.getEncounterRole().equals(role) && (includeVoided || !ep.getVoided()))
-				.map(ep -> ep.getProvider())
+				.map(EncounterProvider::getProvider)
 				.collect(Collectors.toSet());
 	}
 	
@@ -606,8 +605,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 */
 	public void setProvider(EncounterRole role, Provider provider) {
 		boolean hasProvider = false;
-		for (Iterator<EncounterProvider> it = encounterProviders.iterator(); it.hasNext();) {
-			EncounterProvider encounterProvider = it.next();
+		for (EncounterProvider encounterProvider : encounterProviders) {
 			if (encounterProvider.getEncounterRole().equals(role)) {
 				if (!encounterProvider.getProvider().equals(provider)) {
 					encounterProvider.setVoided(true);
@@ -700,15 +698,11 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		Map<String, OrderGroup> orderGroups = new HashMap<>();
 		for (Order order : orders) {
 			if (order.getOrderGroup() != null) {
-				if (null == orderGroups.get(order.getOrderGroup().getUuid())) {
-					orderGroups.put(order.getOrderGroup().getUuid(), order.getOrderGroup());
-				}
+				orderGroups.computeIfAbsent(order.getOrderGroup().getUuid(), k -> order.getOrderGroup());
 				order.getOrderGroup().addOrder(order, null);
 			}
 		}
-		List<OrderGroup> orderGroupList = new ArrayList<>();
-		orderGroupList.addAll(orderGroups.values());
-		return orderGroupList;
+		return new ArrayList<>(orderGroups.values());
 	}
 	
 	/**

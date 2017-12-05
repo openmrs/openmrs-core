@@ -57,7 +57,7 @@ public @interface Handler {
 	 * 
 	 * @return list of classes
 	 */
-	public Class<?>[] supports() default {};
+	Class<?>[] supports() default {};
 	
 	/**
 	 * Provides a means for specifying the relative order of this Handler against another Handler of
@@ -69,6 +69,6 @@ public @interface Handler {
 	 * 
 	 * @return an int specifying the relative order of this Handler
 	 */
-	public int order() default Integer.MAX_VALUE;
+	int order() default Integer.MAX_VALUE;
 	
 }

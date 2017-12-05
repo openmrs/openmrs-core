@@ -19,14 +19,9 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-
-import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -36,6 +31,11 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Executes (aka "source"s) the given file on the current database. <br>
@@ -48,7 +48,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	
 	public static final String CONNECTION_PASSWORD = "connection.password";
 	
-	private static Logger log = LoggerFactory.getLogger(SourceMySqldiffFile.class);
+	private static final Logger log = LoggerFactory.getLogger(SourceMySqldiffFile.class);
 	
 	/**
 	 * Absolute path and name of file to source
@@ -102,7 +102,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		}
 		
 		// build the mysql command line string
-		List<String> commands = new ArrayList<String>();
+		List<String> commands = new ArrayList<>();
 		String databaseName;
 		try {
 			commands.add("mysql");
@@ -143,7 +143,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			throw new CustomChangeException("Error while executing command: '" + commands.get(0) + "'", e);
 		}
 		
-		log.debug("Exec called: " + Arrays.asList(commands));
+		log.debug("Exec called: " + Collections.singletonList(commands));
 		
 		if (exitValue != 0) {
 			log.error("There was an error while running the " + commands.get(0) + " command.  Command output: "

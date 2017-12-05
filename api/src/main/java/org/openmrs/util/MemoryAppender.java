@@ -10,7 +10,6 @@
 package org.openmrs.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
@@ -54,10 +53,10 @@ public class MemoryAppender extends AppenderSkeleton {
 	}
 	
 	public List<String> getLogLines() {
-		List<String> logLines = new ArrayList<String>(buffer.size());
+		List<String> logLines = new ArrayList<>(buffer.size());
 		Layout layout = this.getLayout();
-		for (Iterator<?> iterBuffer = buffer.iterator(); iterBuffer.hasNext();) {
-			LoggingEvent loggingEvent = (LoggingEvent) iterBuffer.next();
+		for (Object aBuffer : buffer) {
+			LoggingEvent loggingEvent = (LoggingEvent) aBuffer;
 			logLines.add(layout.format(loggingEvent));
 		}
 		return logLines;

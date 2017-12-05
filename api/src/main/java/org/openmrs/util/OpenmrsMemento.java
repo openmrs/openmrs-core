@@ -22,7 +22,7 @@ package org.openmrs.util;
 public abstract class OpenmrsMemento {
 	
 	public OpenmrsMemento() {
-	};
+	}
 	
 	public abstract Object getState();
 	

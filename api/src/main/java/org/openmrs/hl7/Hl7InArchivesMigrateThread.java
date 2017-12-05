@@ -73,7 +73,7 @@ public class Hl7InArchivesMigrateThread extends Thread {
 	 */
 	public Hl7InArchivesMigrateThread() {
 		this.userContext = Context.getUserContext();
-		setProgressStatusMap(new HashMap<String, Integer>());
+		setProgressStatusMap(new HashMap<>());
 		progressStatusMap.put(HL7Constants.NUMBER_TRANSFERRED_KEY, 0);
 		progressStatusMap.put(HL7Constants.NUMBER_OF_FAILED_TRANSFERS_KEY, 0);
 	}

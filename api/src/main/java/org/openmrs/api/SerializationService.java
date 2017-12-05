@@ -31,7 +31,7 @@ public interface SerializationService extends OpenmrsService {
 	 * @return {@link OpenmrsSerializer} the default configured serializer
 	 * @should return a serializer
 	 */
-	public OpenmrsSerializer getDefaultSerializer();
+	OpenmrsSerializer getDefaultSerializer();
 	
 	/**
 	 * Returns the serializer that matches the passed class, or null if no such serializer exists.
@@ -40,7 +40,7 @@ public interface SerializationService extends OpenmrsService {
 	 * @return {@link OpenmrsSerializer} that matches the passed class
 	 * @should return a serializer of the given class
 	 */
-	public OpenmrsSerializer getSerializer(Class<? extends OpenmrsSerializer> serializationClass);
+	OpenmrsSerializer getSerializer(Class<? extends OpenmrsSerializer> serializationClass);
 	
 	/**
 	 * Serialize the passed object into an identifying string that can be retrieved later using the
@@ -52,7 +52,7 @@ public interface SerializationService extends OpenmrsService {
 	 * @should Serialize And Deserialize Correctly
 	 * @should Serialize And Deserialize Hibernate Objects Correctly
 	 */
-	public String serialize(Object o, Class<? extends OpenmrsSerializer> clazz) throws SerializationException;
+	String serialize(Object o, Class<? extends OpenmrsSerializer> clazz) throws SerializationException;
 	
 	/**
 	 * Deserialize the given string into a full object using the given {@link OpenmrsSerializer}
@@ -66,8 +66,8 @@ public interface SerializationService extends OpenmrsService {
 	 */
 	@Logging(ignoredArgumentIndexes = { 0 })
     @Authorized
-	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> objectClass,
-	        Class<? extends OpenmrsSerializer> serializerClass) throws SerializationException;
+	<T extends Object> T deserialize(String serializedObject, Class<? extends T> objectClass,
+			Class<? extends OpenmrsSerializer> serializerClass) throws SerializationException;
 	
 	/**
 	 * Gets the list of OpenmrsSerializers that have been registered with this service. <br>
@@ -88,5 +88,5 @@ public interface SerializationService extends OpenmrsService {
 	 * 
 	 * @return list of serializers currently loaded in openmrs
 	 */
-	public List<? extends OpenmrsSerializer> getSerializers();
+	List<? extends OpenmrsSerializer> getSerializers();
 }

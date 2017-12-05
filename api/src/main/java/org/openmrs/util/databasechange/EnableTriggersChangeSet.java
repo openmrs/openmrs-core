@@ -43,11 +43,7 @@ public class EnableTriggersChangeSet implements CustomTaskChange {
 				connection.prepareStatement("ALTER TABLE " + tableName + " ENABLE TRIGGER ALL").execute();
 			}
 			
-		}
-		catch (DatabaseException ex) {
-			throw new CustomChangeException("Error enabling trigger: " + ex);
-		}
-		catch (SQLException ex) {
+		} catch (DatabaseException | SQLException ex) {
 			throw new CustomChangeException("Error enabling trigger: " + ex);
 		}
 	}

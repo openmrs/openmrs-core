@@ -10,10 +10,10 @@
 package org.openmrs.module.web.filter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
@@ -43,7 +43,7 @@ public class ModuleFilterDefinition implements Serializable {
 	
 	public static final long serialVersionUID = 1;
 	
-	private static Logger log = LoggerFactory.getLogger(ModuleFilterDefinition.class);
+	private static final Logger log = LoggerFactory.getLogger(ModuleFilterDefinition.class);
 	
 	// Properties
 	private Module module;

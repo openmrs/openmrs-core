@@ -25,7 +25,7 @@ import org.springframework.validation.Validator;
  * Validates {@link Cohort} objects.
  * @since 2.1.0
  */
-@Handler(supports = {Cohort.class}, order=50)
+@Handler(supports = {Cohort.class}, order = 50)
 public class CohortValidator implements Validator {
 
 	@Override

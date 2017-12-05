@@ -11,6 +11,7 @@ package org.openmrs;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(Person.class);
 
 	@DocumentId
 	protected Integer personId;
@@ -333,7 +334,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 */
 	public Set<PersonAddress> getAddresses() {
 		if (addresses == null) {
-			addresses = new TreeSet<PersonAddress>();
+			addresses = new TreeSet<>();
 		}
 		return this.addresses;
 	}
@@ -354,7 +355,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 */
 	public Set<PersonName> getNames() {
 		if (names == null) {
-			names = new TreeSet<PersonName>();
+			names = new TreeSet<>();
 		}
 		return this.names;
 	}
@@ -376,7 +377,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 */
 	public Set<PersonAttribute> getAttributes() {
 		if (attributes == null) {
-			attributes = new TreeSet<PersonAttribute>();
+			attributes = new TreeSet<>();
 		}
 		return this.attributes;
 	}
@@ -389,7 +390,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @should not fail with null attributes
 	 */
 	public List<PersonAttribute> getActiveAttributes() {
-		List<PersonAttribute> attrs = new ArrayList<PersonAttribute>();
+		List<PersonAttribute> attrs = new ArrayList<>();
 		for (PersonAttribute attr : getAttributes()) {
 			if (!attr.getVoided()) {
 				attrs.add(attr);
@@ -559,7 +560,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @should return all PersonAttributes with matching attributeType names
 	 */
 	public List<PersonAttribute> getAttributes(String attributeName) {
-		List<PersonAttribute> ret = new ArrayList<PersonAttribute>();
+		List<PersonAttribute> ret = new ArrayList<>();
 		
 		for (PersonAttribute attribute : getActiveAttributes()) {
 			PersonAttributeType type = attribute.getAttributeType();
@@ -580,7 +581,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @should return list of person attributes based on AttributeTypeId
 	 */
 	public List<PersonAttribute> getAttributes(Integer attributeTypeId) {
-		List<PersonAttribute> ret = new ArrayList<PersonAttribute>();
+		List<PersonAttribute> ret = new ArrayList<>();
 		
 		for (PersonAttribute attribute : getActiveAttributes()) {
 			if (attributeTypeId.equals(attribute.getAttributeType().getPersonAttributeTypeId())) {
@@ -598,7 +599,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @param personAttributeType
 	 */
 	public List<PersonAttribute> getAttributes(PersonAttributeType personAttributeType) {
-		List<PersonAttribute> ret = new ArrayList<PersonAttribute>();
+		List<PersonAttribute> ret = new ArrayList<>();
 		for (PersonAttribute attribute : getAttributes()) {
 			if (personAttributeType.equals(attribute.getAttributeType()) && !attribute.getVoided()) {
 				ret.add(attribute);
@@ -620,7 +621,7 @@ public class Person extends BaseChangeableOpenmrsData {
 			log.debug("Current Person Attributes: \n" + printAttributes());
 		}
 		
-		attributeMap = new HashMap<String, PersonAttribute>();
+		attributeMap = new HashMap<>();
 		for (PersonAttribute attribute : getActiveAttributes()) {
 			attributeMap.put(attribute.getAttributeType().getName(), attribute);
 		}
@@ -644,7 +645,7 @@ public class Person extends BaseChangeableOpenmrsData {
 			log.debug("Current Person Attributes: \n" + printAttributes());
 		}
 		
-		allAttributeMap = new HashMap<String, PersonAttribute>();
+		allAttributeMap = new HashMap<>();
 		for (PersonAttribute attribute : getAttributes()) {
 			allAttributeMap.put(attribute.getAttributeType().getName(), attribute);
 		}
@@ -678,7 +679,7 @@ public class Person extends BaseChangeableOpenmrsData {
 		if (name != null) {
 			name.setPerson(this);
 			if (names == null) {
-				names = new TreeSet<PersonName>();
+				names = new TreeSet<>();
 			}
 			if (!OpenmrsUtil.collectionContains(names, name)) {
 				names.add(name);
@@ -709,7 +710,7 @@ public class Person extends BaseChangeableOpenmrsData {
 		if (address != null) {
 			address.setPerson(this);
 			if (addresses == null) {
-				addresses = new TreeSet<PersonAddress>();
+				addresses = new TreeSet<>();
 			}
 			if (!OpenmrsUtil.collectionContains(addresses, address) && !address.isBlank()) {
 				addresses.add(address);

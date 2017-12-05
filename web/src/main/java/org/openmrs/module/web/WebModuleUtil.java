@@ -9,28 +9,6 @@
  */
 package org.openmrs.module.web;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Vector;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.regex.Pattern;
-
 import javax.servlet.Filter;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -46,6 +24,27 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Properties;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.regex.Pattern;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
@@ -77,7 +76,7 @@ import org.xml.sax.SAXException;
 
 public class WebModuleUtil {
 	
-	private static Logger log = LoggerFactory.getLogger(WebModuleUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(WebModuleUtil.class);
 	
 	private static DispatcherServlet dispatcherServlet = null;
 	
@@ -93,7 +92,7 @@ public class WebModuleUtil {
 	private static Map<String, Filter> moduleFiltersByName = Collections.synchronizedMap(new HashMap<String, Filter>());
 	
 	private static List<ModuleFilterMapping> moduleFilterMappings = Collections
-	        .synchronizedList(new Vector<ModuleFilterMapping>());
+	        .synchronizedList(new ArrayList<ModuleFilterMapping>());
 	
 	/**
 	 * Performs the webapp specific startup needs for modules Normal startup is done in
@@ -168,7 +167,7 @@ public class WebModuleUtil {
 						
 						// if a module id has a . in it, we should treat that as a /, i.e. files in the module
 						// ui.springmvc should go in folder names like .../ui/springmvc/...
-						absPath.append(mod.getModuleIdAsPath() + "/" + filepath);
+						absPath.append(mod.getModuleIdAsPath()).append("/").append(filepath);
 						if (log.isDebugEnabled()) {
 							log.debug("Moving file from: " + name + " to " + absPath);
 						}

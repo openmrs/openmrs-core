@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.hibernate.proxy.HibernateProxy;
@@ -37,24 +36,23 @@ import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.TestOrder;
-import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AmbiguousOrderException;
 import org.openmrs.api.CannotDeleteObjectInUseException;
+import org.openmrs.api.CannotStopDiscontinuationOrderException;
+import org.openmrs.api.CannotStopInactiveOrderException;
+import org.openmrs.api.CannotUnvoidOrderException;
 import org.openmrs.api.CannotUpdateObjectInUseException;
+import org.openmrs.api.EditedOrderDoesNotMatchPreviousException;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.MissingRequiredPropertyException;
 import org.openmrs.api.OrderContext;
+import org.openmrs.api.OrderEntryException;
 import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.UnchangeableObjectException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
-import org.openmrs.api.CannotStopDiscontinuationOrderException;
-import org.openmrs.api.CannotStopInactiveOrderException;
-import org.openmrs.api.CannotUnvoidOrderException;
-import org.openmrs.api.EditedOrderDoesNotMatchPreviousException;
-import org.openmrs.api.OrderEntryException;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -75,7 +73,7 @@ import org.springframework.util.StringUtils;
 @Transactional
 public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator, GlobalPropertyListener {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 	
 	private static final String ORDER_NUMBER_PREFIX = "ORD-";
 	
@@ -508,7 +506,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		List<OrderType> orderTypes = null;
 		if (orderType != null) {
-			orderTypes = new ArrayList<OrderType>();
+			orderTypes = new ArrayList<>();
 			orderTypes.add(orderType);
 			orderTypes.addAll(getSubtypes(orderType, true));
 		}
@@ -580,13 +578,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (patient == null || concept == null) {
 			throw new IllegalArgumentException("patient and concept are required");
 		}
-		List<Concept> concepts = new ArrayList<Concept>();
+		List<Concept> concepts = new ArrayList<>();
 		concepts.add(concept);
 		
-		List<Patient> patients = new ArrayList<Patient>();
+		List<Patient> patients = new ArrayList<>();
 		patients.add(patient);
 		
-		return dao.getOrders(null, patients, concepts, new Vector<User>(), new Vector<Encounter>());
+		return dao.getOrders(null, patients, concepts, new ArrayList<>(), new ArrayList<>());
 	}
 	
 	/**
@@ -604,7 +602,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber) {
-		List<Order> orders = new ArrayList<Order>();
+		List<Order> orders = new ArrayList<>();
 		Order order = dao.getOrderByOrderNumber(orderNumber);
 		while (order != null) {
 			orders.add(order);
@@ -628,7 +626,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		List<OrderType> orderTypes = null;
 		if (orderType != null) {
-			orderTypes = new ArrayList<OrderType>();
+			orderTypes = new ArrayList<>();
 			orderTypes.add(orderType);
 			orderTypes.addAll(getSubtypes(orderType, true));
 		}
@@ -936,10 +934,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public List<OrderType> getSubtypes(OrderType orderType, boolean includeRetired) {
-		List<OrderType> allSubtypes = new ArrayList<OrderType>();
+		List<OrderType> allSubtypes = new ArrayList<>();
 		List<OrderType> immediateAncestors = dao.getOrderSubtypes(orderType, includeRetired);
 		while (!immediateAncestors.isEmpty()) {
-			List<OrderType> ancestorsAtNextLevel = new ArrayList<OrderType>();
+			List<OrderType> ancestorsAtNextLevel = new ArrayList<>();
 			for (OrderType type : immediateAncestors) {
 				allSubtypes.add(type);
 				ancestorsAtNextLevel.addAll(dao.getOrderSubtypes(type, includeRetired));

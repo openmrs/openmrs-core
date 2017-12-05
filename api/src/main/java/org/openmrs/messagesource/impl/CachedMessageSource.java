@@ -10,11 +10,11 @@
 package org.openmrs.messagesource.impl;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ArrayList;
 
 import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.PresentationMessage;
@@ -28,18 +28,15 @@ import org.springframework.context.support.AbstractMessageSource;
  */
 public class CachedMessageSource extends AbstractMessageSource implements MutableMessageSource {
 	
-	Map<Locale, PresentationMessageMap> localizedMap = new HashMap<Locale, PresentationMessageMap>();
+	Map<Locale, PresentationMessageMap> localizedMap = new HashMap<>();
 	
 	/* (non-Javadoc)
 	 * @see org.openmrs.messagesource.MutableMessageSource#addPresentation(org.openmrs.api.PresentationMessage)
 	 */
 	@Override
 	public void addPresentation(PresentationMessage message) {
-		PresentationMessageMap codeMessageMap = localizedMap.get(message.getLocale());
-		if (codeMessageMap == null) {
-			codeMessageMap = new PresentationMessageMap(message.getLocale());
-			localizedMap.put(message.getLocale(), codeMessageMap);
-		}
+		PresentationMessageMap codeMessageMap = localizedMap
+				.computeIfAbsent(message.getLocale(), k -> new PresentationMessageMap(message.getLocale()));
 		codeMessageMap.put(message.getCode(), message);
 	}
 	
@@ -57,7 +54,7 @@ public class CachedMessageSource extends AbstractMessageSource implements Mutabl
 	 */
 	@Override
 	public Collection<PresentationMessage> getPresentations() {
-		Collection<PresentationMessage> allMessages = new ArrayList<PresentationMessage>();
+		Collection<PresentationMessage> allMessages = new ArrayList<>();
 		
 		for (PresentationMessageMap codeMessageMap : localizedMap.values()) {
 			allMessages.addAll(codeMessageMap.values());

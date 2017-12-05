@@ -34,14 +34,14 @@ public interface EncounterDAO {
 	 * @param encounter to be saved
 	 * @throws DAOException
 	 */
-	public Encounter saveEncounter(Encounter encounter) throws DAOException;
+	Encounter saveEncounter(Encounter encounter) throws DAOException;
 	
 	/**
 	 * Purge an encounter from database.
 	 * 
 	 * @param encounter encounter object to be purged
 	 */
-	public void deleteEncounter(Encounter encounter) throws DAOException;
+	void deleteEncounter(Encounter encounter) throws DAOException;
 	
 	/**
 	 * Get encounter by internal identifier
@@ -50,26 +50,26 @@ public interface EncounterDAO {
 	 * @return encounter with given internal identifier
 	 * @throws DAOException
 	 */
-	public Encounter getEncounter(Integer encounterId) throws DAOException;
+	Encounter getEncounter(Integer encounterId) throws DAOException;
 	
 	/**
 	 * @param patientId
 	 * @return all encounters for the given patient identifier
 	 * @throws DAOException
 	 */
-	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException;
+	List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)
 	 */
-	public List<Encounter> getEncounters(EncounterSearchCriteria encounterSearchCriteria);
+	List<Encounter> getEncounters(EncounterSearchCriteria encounterSearchCriteria);
 	
 	/**
 	 * Save an Encounter Type
 	 * 
 	 * @param encounterType
 	 */
-	public EncounterType saveEncounterType(EncounterType encounterType);
+	EncounterType saveEncounterType(EncounterType encounterType);
 	
 	/**
 	 * Purge encounter type from database.
@@ -77,7 +77,7 @@ public interface EncounterDAO {
 	 * @param encounterType
 	 * @throws DAOException
 	 */
-	public void deleteEncounterType(EncounterType encounterType) throws DAOException;
+	void deleteEncounterType(EncounterType encounterType) throws DAOException;
 	
 	/**
 	 * Get encounterType by internal identifier
@@ -86,7 +86,7 @@ public interface EncounterDAO {
 	 * @return EncounterType with given internal identifier
 	 * @throws DAOException
 	 */
-	public EncounterType getEncounterType(Integer encounterTypeId) throws DAOException;
+	EncounterType getEncounterType(Integer encounterTypeId) throws DAOException;
 	
 	/**
 	 * Get encounterType by name
@@ -95,7 +95,7 @@ public interface EncounterDAO {
 	 * @return EncounterType
 	 * @throws DAOException
 	 */
-	public EncounterType getEncounterType(String name) throws DAOException;
+	EncounterType getEncounterType(String name) throws DAOException;
 	
 	/**
 	 * Get all encounter types
@@ -103,7 +103,7 @@ public interface EncounterDAO {
 	 * @return encounter types list
 	 * @throws DAOException
 	 */
-	public List<EncounterType> getAllEncounterTypes(Boolean includeVoided) throws DAOException;
+	List<EncounterType> getAllEncounterTypes(Boolean includeVoided) throws DAOException;
 	
 	/**
 	 * Find Encounter Types matching the given name. Search string is case insensitive, so that
@@ -113,7 +113,7 @@ public interface EncounterDAO {
 	 * @return all EncounterTypes that match
 	 * @throws DAOException
 	 */
-	public List<EncounterType> findEncounterTypes(String name) throws DAOException;
+	List<EncounterType> findEncounterTypes(String name) throws DAOException;
 	
 	/**
 	 * Gets the value of encounterDatetime currently saved in the database for the given encounter,
@@ -124,7 +124,7 @@ public interface EncounterDAO {
 	 * @return the encounterDatetime currently in the database for this encounter
 	 * @should get saved encounter datetime from database
 	 */
-	public Date getSavedEncounterDatetime(Encounter encounter);
+	Date getSavedEncounterDatetime(Encounter encounter);
 	
 	/**
 	 * Find {@link Encounter} matching a uuid
@@ -132,7 +132,7 @@ public interface EncounterDAO {
 	 * @param uuid
 	 * @return {@link Encounter}
 	 */
-	public Encounter getEncounterByUuid(String uuid);
+	Encounter getEncounterByUuid(String uuid);
 	
 	/**
 	 * Find {@link EncounterType} matching a uuid
@@ -140,7 +140,7 @@ public interface EncounterDAO {
 	 * @param uuid
 	 * @return {@link EncounterType}
 	 */
-	public EncounterType getEncounterTypeByUuid(String uuid);
+	EncounterType getEncounterTypeByUuid(String uuid);
 	
 	/**
 	 * Get a list of {@link Encounter} by Patient name or identifier based on batch settings
@@ -161,12 +161,12 @@ public interface EncounterDAO {
 	 * @param encounter to be retrieved from the database
 	 * @return {@link Location}
 	 */
-	public Location getSavedEncounterLocation(Encounter encounter);
+	Location getSavedEncounterLocation(Encounter encounter);
 	
 	/**
 	 * @see EncounterService#getAllEncounters(Cohort)
 	 */
-	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients);
+	Map<Integer, List<Encounter>> getAllEncounters(Cohort patients);
 	
 	/**
 	 * Return the number of encounters matching a patient name or patient identifier
@@ -177,12 +177,12 @@ public interface EncounterDAO {
 	 * @return the number of encounters matching the given search phrase
 	 * @see EncounterService#getCountOfEncounters(String, boolean)
 	 */
-	public Long getCountOfEncounters(String query, Integer patientId, boolean includeVoided);
+	Long getCountOfEncounters(String query, Integer patientId, boolean includeVoided);
 	
 	/**
 	 * @see EncounterService#getEncountersByVisit(Visit, boolean)
 	 */
-	public List<Encounter> getEncountersByVisit(Visit visit, boolean includeVoided);
+	List<Encounter> getEncountersByVisit(Visit visit, boolean includeVoided);
 	
 	/**
 	 * Saves an encounter role
@@ -190,14 +190,14 @@ public interface EncounterDAO {
 	 * @param encounterRole role to be saved
 	 * @throws org.openmrs.api.db.DAOException
 	 */
-	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws DAOException;
+	EncounterRole saveEncounterRole(EncounterRole encounterRole) throws DAOException;
 	
 	/**
 	 * Purge an encounter role from database.
 	 * 
 	 * @param encounterRole encounter role object to be purged
 	 */
-	public void deleteEncounterRole(EncounterRole encounterRole) throws DAOException;
+	void deleteEncounterRole(EncounterRole encounterRole) throws DAOException;
 	
 	/**
 	 * Get encounter role by internal identifier
@@ -206,7 +206,7 @@ public interface EncounterDAO {
 	 * @return encounter role with given internal identifier
 	 * @throws org.openmrs.api.db.DAOException
 	 */
-	public EncounterRole getEncounterRole(Integer encounterRoleId) throws DAOException;
+	EncounterRole getEncounterRole(Integer encounterRoleId) throws DAOException;
 	
 	/**
 	 * Find {@link org.openmrs.EncounterRole} matching a uuid
@@ -214,7 +214,7 @@ public interface EncounterDAO {
 	 * @param uuid
 	 * @return {@link org.openmrs.EncounterRole}
 	 */
-	public EncounterRole getEncounterRoleByUuid(String uuid);
+	EncounterRole getEncounterRoleByUuid(String uuid);
 	
 	/**
 	 * Get all encounter roles and optionally specify whether to include retired encountered roles
@@ -224,17 +224,17 @@ public interface EncounterDAO {
 	 * @throws org.openmrs.api.db.DAOException
 	 * @see org.openmrs.api.EncounterService#getAllEncounterRoles(boolean)
 	 */
-	public List<EncounterRole> getAllEncounterRoles(boolean includeRetired) throws DAOException;
+	List<EncounterRole> getAllEncounterRoles(boolean includeRetired) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounterRoleByName(String name)
 	 */
-	public EncounterRole getEncounterRoleByName(String name) throws DAOException;
+	EncounterRole getEncounterRoleByName(String name) throws DAOException;
 	
 	/**
 	 * @see EncounterService#getEncountersNotAssignedToAnyVisit(Patient)
 	 */
-	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws DAOException;
+	List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncountersByVisitsAndPatient(org.openmrs.Patient, boolean, java.lang.String, java.lang.Integer, java.lang.Integer)
@@ -255,6 +255,6 @@ public interface EncounterDAO {
 	 * @throws org.openmrs.api.db.DAOException
 	 * @see org.openmrs.api.EncounterService#getEncounterRolesByName(String name)
 	 */
-	
-	public List<EncounterRole> getEncounterRolesByName(String name) throws DAOException;
+
+	List<EncounterRole> getEncounterRolesByName(String name) throws DAOException;
 }

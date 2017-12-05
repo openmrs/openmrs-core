@@ -36,7 +36,7 @@ import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
  * @see AllowEmptyStrings
  * @see OpenmrsObjectSaveHandler
  */
-@Target( { ElementType.METHOD })
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented

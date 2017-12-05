@@ -9,17 +9,12 @@
  */
 package org.openmrs;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * ConceptStateConversion
  */
 public class ConceptStateConversion extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 3214511L;
-	
-	protected final Logger log = LoggerFactory.getLogger(ConceptStateConversion.class);
 	
 	// ******************
 	// Properties

@@ -36,6 +36,8 @@ import org.openmrs.api.db.LocationDAO;
 public class HibernateLocationDAO implements LocationDAO {
 	
 	private SessionFactory sessionFactory;
+
+	private static final String RETIRED = "retired";
 	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#setSessionFactory(org.hibernate.SessionFactory)
@@ -97,10 +99,10 @@ public class HibernateLocationDAO implements LocationDAO {
 	public List<Location> getAllLocations(boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
 		if (!includeRetired) {
-			criteria.add(Restrictions.eq("retired", false));
+			criteria.add(Restrictions.eq(RETIRED, false));
 		} else {
 			//push retired locations to the end of the returned list
-			criteria.addOrder(Order.asc("retired"));
+			criteria.addOrder(Order.asc(RETIRED));
 		}
 		criteria.addOrder(Order.asc("name"));
 		return criteria.list();
@@ -155,7 +157,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public List<LocationTag> getAllLocationTags(boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(LocationTag.class);
 		if (!includeRetired) {
-			criteria.add(Restrictions.like("retired", false));
+			criteria.add(Restrictions.like(RETIRED, false));
 		}
 		criteria.addOrder(Order.asc("name"));
 		return criteria.list();
@@ -205,7 +207,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public Long getCountOfLocations(String nameFragment, Boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
 		if (!includeRetired) {
-			criteria.add(Restrictions.eq("retired", false));
+			criteria.add(Restrictions.eq(RETIRED, false));
 		}
 		
 		if (StringUtils.isNotBlank(nameFragment)) {
@@ -240,7 +242,7 @@ public class HibernateLocationDAO implements LocationDAO {
 		}
 		
 		if (!includeRetired) {
-			criteria.add(Restrictions.eq("retired", false));
+			criteria.add(Restrictions.eq(RETIRED, false));
 		}
 		
 		criteria.addOrder(Order.asc("name"));
@@ -263,7 +265,7 @@ public class HibernateLocationDAO implements LocationDAO {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
 		if (!includeRetired) {
-			criteria.add(Restrictions.eq("retired", false));
+			criteria.add(Restrictions.eq(RETIRED, false));
 		}
 		
 		criteria.add(Restrictions.isNull("parentLocation"));
@@ -345,7 +347,7 @@ public class HibernateLocationDAO implements LocationDAO {
 		    Projections.rowCount()).add(Restrictions.eqProperty("alias.locationId", "outer.locationId"));
 		
 		return sessionFactory.getCurrentSession().createCriteria(Location.class, "outer").add(
-		    Restrictions.eq("retired", false)).add(Subqueries.eq(new Long(tags.size()), numberOfMatchingTags)).list();
+		    Restrictions.eq("retired", false)).add(Subqueries.eq(Long.valueOf(tags.size()), numberOfMatchingTags)).list();
 	}
 	
 	/**
@@ -355,7 +357,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	 * @return
 	 */
 	private List<Integer> getLocationTagIds(List<LocationTag> tags) {
-		List<Integer> locationTagIds = new ArrayList<Integer>();
+		List<Integer> locationTagIds = new ArrayList<>();
 		for (LocationTag tag : tags) {
 			locationTagIds.add(tag.getLocationTagId());
 		}

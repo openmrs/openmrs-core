@@ -39,14 +39,14 @@ public interface DosingInstructions {
 	 * 
 	 * @return localized drug instructions string
 	 */
-	public String getDosingInstructionsAsString(Locale locale);
+	String getDosingInstructionsAsString(Locale locale);
 	
 	/**
 	 * Serialize dosing instructions into order
 	 * 
 	 * @param order DrugOrder to set dosing instructions
 	 */
-	public void setDosingInstructions(DrugOrder order);
+	void setDosingInstructions(DrugOrder order);
 	
 	/**
 	 * Get dosing instructions from order
@@ -56,9 +56,9 @@ public interface DosingInstructions {
 	 * @throws APIException if dosing type of passing order is not matched with dosing type of
 	 *             implementing dosing instruction
 	 */
-	public DosingInstructions getDosingInstructions(DrugOrder order) throws APIException;
+	DosingInstructions getDosingInstructions(DrugOrder order) throws APIException;
 	
-	public void validate(DrugOrder order, Errors errors);
+	void validate(DrugOrder order, Errors errors);
 	
 	/**
 	 * Implementations of this interface may be able to infer the auto-expiration date from other
@@ -67,5 +67,5 @@ public interface DosingInstructions {
 	 * has non-zero refills, the auto-expiration date should <em>not</em> be set (even if it has
 	 * a known duration).
 	 */
-	public Date getAutoExpireDate(DrugOrder order);
+	Date getAutoExpireDate(DrugOrder order);
 }

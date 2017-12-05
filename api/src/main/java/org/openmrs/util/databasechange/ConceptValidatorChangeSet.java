@@ -25,6 +25,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import liquibase.change.custom.CustomTaskChange;
+import liquibase.database.Database;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.CustomChangeException;
+import liquibase.exception.DatabaseException;
+import liquibase.exception.SetupException;
+import liquibase.exception.ValidationErrors;
+import liquibase.resource.ResourceAccessor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.set.ListOrderedSet;
@@ -38,15 +46,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import liquibase.change.custom.CustomTaskChange;
-import liquibase.database.Database;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.CustomChangeException;
-import liquibase.exception.DatabaseException;
-import liquibase.exception.SetupException;
-import liquibase.exception.ValidationErrors;
-import liquibase.resource.ResourceAccessor;
-
 /**
  * This change set is run just after the conversion of core concept name tags to concept name types'
  * it runs through all the rows in the concept table and checks if all its conceptNames conform to
@@ -54,16 +53,16 @@ import liquibase.resource.ResourceAccessor;
  */
 public class ConceptValidatorChangeSet implements CustomTaskChange {
 	
-	private final static Logger log = LoggerFactory.getLogger(ConceptValidatorChangeSet.class);
+	private static final Logger log = LoggerFactory.getLogger(ConceptValidatorChangeSet.class);
 	
 	//List to store warnings
-	private List<String> updateWarnings = new LinkedList<String>();
+	private List<String> updateWarnings = new LinkedList<>();
 	
 	//List to store info messages
-	private List<String> logMessages = new LinkedList<String>();
+	private List<String> logMessages = new LinkedList<>();
 	
 	//A set to store unique concept names that have been updated and changes have to be persisted to the database
-	private Set<ConceptName> updatedConceptNames = new HashSet<ConceptName>();
+	private Set<ConceptName> updatedConceptNames = new HashSet<>();
 	
 	private Locale defaultLocale = new Locale("en");
 	
@@ -136,7 +135,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				boolean preferredNameForLocaleFound = false;
 				boolean shortNameForLocaleFound = false;
 				//map to hold a name and a list of conceptNames that are found as duplicates
-				Map<String, List<ConceptName>> nameDuplicateConceptNamesMap = new HashMap<String, List<ConceptName>>();
+				Map<String, List<ConceptName>> nameDuplicateConceptNamesMap = new HashMap<>();
 				
 				//for each name in the locale
 				for (ConceptName nameInLocale : e.getValue()) {
@@ -147,7 +146,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					//if the concept name has no locale, wonder why this would be the case but there was no not-null constraint originally
 					if (conceptNameLocale == null) {
 						if (namesWithNoLocale == null) {
-							namesWithNoLocale = new LinkedList<ConceptName>();
+							namesWithNoLocale = new LinkedList<>();
 						}
 						
 						namesWithNoLocale.add(nameInLocale);
@@ -176,8 +175,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 							} else {
 								preferredNameForLocaleFound = true;
 							}
-						}
-						//should have one preferred name per locale
+						} //should have one preferred name per locale
 						else if (nameInLocale.getLocalePreferred() && preferredNameForLocaleFound) {
 							//drop this name as locale preferred so that we have only one
 							nameInLocale.setLocalePreferred(false);
@@ -214,8 +212,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					if (nameInLocale.isShort()) {
 						if (!shortNameForLocaleFound) {
 							shortNameForLocaleFound = true;
-						}
-						//should have one short name per locale
+						} //should have one short name per locale
 						else {
 							nameInLocale.setConceptNameType(null);
 							reportUpdatedName(nameInLocale, "The name '" + nameInLocale.getName() + "' in locale '"
@@ -227,10 +224,10 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					if ((nameInLocale.isFullySpecifiedName() || nameInLocale.isPreferred())
 					        && !isNameUniqueInLocale(connection, nameInLocale, conceptId)) {
 						if (localeDuplicateNamesMap == null) {
-							localeDuplicateNamesMap = new HashMap<Locale, Set<String>>();
+							localeDuplicateNamesMap = new HashMap<>();
 						}
 						if (!localeDuplicateNamesMap.containsKey(conceptNameLocale)) {
-							localeDuplicateNamesMap.put(conceptNameLocale, new HashSet<String>());
+							localeDuplicateNamesMap.put(conceptNameLocale, new HashSet<>());
 						}
 						
 						localeDuplicateNamesMap.get(conceptNameLocale).add(nameInLocale.getName());
@@ -238,12 +235,12 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					
 					String name = nameInLocale.getName().toLowerCase();
 					if (!nameDuplicateConceptNamesMap.containsKey(name)) {
-						nameDuplicateConceptNamesMap.put(name, new ArrayList<ConceptName>());
+						nameDuplicateConceptNamesMap.put(name, new ArrayList<>());
 					}
 					
 					nameDuplicateConceptNamesMap.get(name).add(nameInLocale);
 					
-				}//close for each name
+				} //close for each name
 				
 				//No duplicate names allowed for the same locale and concept
 				for (Map.Entry<String, List<ConceptName>> entry : nameDuplicateConceptNamesMap.entrySet()) {
@@ -278,7 +275,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					}
 				}
 				
-			}//close for each locale
+			} //close for each locale
 			
 			//Make the first name found the fully specified name if none exists
 			if (!hasFullySpecifiedName) {
@@ -321,7 +318,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			
 		}
 		
-		if (!MapUtils.isEmpty(localeDuplicateNamesMap)) {
+		if (localeDuplicateNamesMap != null && !MapUtils.isEmpty(localeDuplicateNamesMap)) {
 			for (Map.Entry<Locale, Set<String>> entry : localeDuplicateNamesMap.entrySet()) {
 				//no duplicates found in the locale
 				if (CollectionUtils.isEmpty(entry.getValue())) {
@@ -437,31 +434,34 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		
 		LinkedList<Integer> conceptIds = null;
 		Statement stmt = null;
+		ResultSet rs = null;
 		
 		try {
 			stmt = connection.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT concept_id FROM concept WHERE retired = '0'");
+			rs = stmt.executeQuery("SELECT concept_id FROM concept WHERE retired = '0'");
 			
 			while (rs.next()) {
 				if (conceptIds == null) {
-					conceptIds = new LinkedList<Integer>();
+					conceptIds = new LinkedList<>();
 				}
 				
 				conceptIds.add(rs.getInt("concept_id"));
 			}
-		}
-		catch (DatabaseException e) {
+		} catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
-			log.warn("Error generated", e);
-		}
-		finally {
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					log.warn("Failed to close the resultset object");
+				}
+			}
+
 			if (stmt != null) {
 				try {
 					stmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the statement object");
 				}
 			}
@@ -502,16 +502,17 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	@SuppressWarnings("unchecked")
 	private List<Locale> getAllowedLocalesList(JdbcConnection connection) {
 		Statement stmt = null;
+		ResultSet rsDefaultLocale = null;
 		ListOrderedSet allowedLocales = new ListOrderedSet();
 		
 		try {
 			//get the default locale
 			stmt = connection.createStatement();
-			ResultSet rs_defaultLocale = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '"
+			rsDefaultLocale = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '"
 			        + OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE + "'");
 			
-			if (rs_defaultLocale.next()) {
-				String defaultLocaleStr = rs_defaultLocale.getString("property_value");
+			if (rsDefaultLocale.next()) {
+				String defaultLocaleStr = rsDefaultLocale.getString("property_value");
 				if (!StringUtils.isBlank(defaultLocaleStr) && defaultLocaleStr.length() > 1) {
 					Locale defaultLocale_GP = LocaleUtility.fromSpecification(defaultLocaleStr);
 					if (defaultLocale_GP != null) {
@@ -526,11 +527,11 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			allowedLocales.add(defaultLocale);
 			
 			//get the locale.allowed.list
-			ResultSet rs_allowedLocales = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '"
+			rsDefaultLocale = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '"
 			        + OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST + "'");
 			
-			if (rs_allowedLocales.next()) {
-				String allowedLocaleStr = rs_allowedLocales.getString("property_value");
+			if (rsDefaultLocale.next()) {
+				String allowedLocaleStr = rsDefaultLocale.getString("property_value");
 				if (!StringUtils.isBlank(allowedLocaleStr)) {
 					String[] localesArray = allowedLocaleStr.split(",");
 					for (String localeStr : localesArray) {
@@ -545,19 +546,21 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			} else {
 				log.warn("The global property '" + OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST + "' isn't set");
 			}
-		}
-		catch (DatabaseException e) {
+		} catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
-			log.warn("Error generated", e);
-		}
-		finally {
+		} finally {
+			if (rsDefaultLocale != null) {
+				try {
+					rsDefaultLocale.close();
+				} catch (SQLException e) {
+					log.warn("Failed to close the resultset object");
+				}
+			}
+
 			if (stmt != null) {
 				try {
 					stmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the statement object");
 				}
 			}
@@ -581,17 +584,18 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 */
 	private Map<Locale, List<ConceptName>> getLocaleConceptNamesMap(JdbcConnection connection, int conceptId) {
 		PreparedStatement pStmt = null;
+		ResultSet rs = null;
 		Map<Locale, List<ConceptName>> localeConceptNamesMap = null;
 		
 		try {
 			pStmt = connection
 			        .prepareStatement("SELECT concept_name_id, name, concept_name_type, locale, locale_preferred FROM concept_name WHERE voided = '0' AND concept_id = ?");
 			pStmt.setInt(1, conceptId);
-			ResultSet rs = pStmt.executeQuery();
+			rs = pStmt.executeQuery();
 			
 			while (rs.next()) {
 				if (localeConceptNamesMap == null) {
-					localeConceptNamesMap = new HashMap<Locale, List<ConceptName>>();
+					localeConceptNamesMap = new HashMap<>();
 				}
 				ConceptName conceptName = new ConceptName();
 				conceptName.setConceptNameId(rs.getInt("concept_name_id"));
@@ -616,24 +620,26 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				conceptName.setVoided(false);
 				
 				if (!localeConceptNamesMap.containsKey(conceptName.getLocale())) {
-					localeConceptNamesMap.put(conceptName.getLocale(), new LinkedList<ConceptName>());
+					localeConceptNamesMap.put(conceptName.getLocale(), new LinkedList<>());
 				}
 				
 				localeConceptNamesMap.get(conceptName.getLocale()).add(conceptName);
 			}
-		}
-		catch (DatabaseException e) {
+		} catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
-			log.warn("Error generated", e);
-		}
-		finally {
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					log.warn("Failed to close the resultset object");
+				}
+			}
+
 			if (pStmt != null) {
 				try {
 					pStmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the prepared statement object");
 				}
 			}
@@ -682,29 +688,28 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			
 			try {
 				int[] updateCounts = pStmt.executeBatch();
-				for (int i = 0; i < updateCounts.length; i++) {
-					if (updateCounts[i] > -1) {
-						log.debug("Successfully executed: updateCount=" + updateCounts[i]);
-					} else if (updateCounts[i] == Statement.SUCCESS_NO_INFO) {
+				for (int updateCount : updateCounts) {
+					if (updateCount > -1) {
+						log.debug("Successfully executed: updateCount=" + updateCount);
+					} else if (updateCount == Statement.SUCCESS_NO_INFO) {
 						log.debug("Successfully executed; No Success info");
-					} else if (updateCounts[i] == Statement.EXECUTE_FAILED) {
+					} else if (updateCount == Statement.EXECUTE_FAILED) {
 						log.warn("Failed to execute update");
 					}
 				}
 				
 				log.debug("Committing updates...");
 				connection.commit();
-			}
-			catch (BatchUpdateException be) {
+			} catch (BatchUpdateException be) {
 				log.warn("Error generated while processsing batch update", be);
 				int[] updateCounts = be.getUpdateCounts();
-				
-				for (int i = 0; i < updateCounts.length; i++) {
-					if (updateCounts[i] > -1) {
-						log.warn("Executed with exception: updateCount=" + updateCounts[i]);
-					} else if (updateCounts[i] == Statement.SUCCESS_NO_INFO) {
+
+				for (int updateCount : updateCounts) {
+					if (updateCount > -1) {
+						log.warn("Executed with exception: updateCount=" + updateCount);
+					} else if (updateCount == Statement.SUCCESS_NO_INFO) {
 						log.warn("Executed with exception; No Success info");
-					} else if (updateCounts[i] == Statement.EXECUTE_FAILED) {
+					} else if (updateCount == Statement.EXECUTE_FAILED) {
 						log.warn("Failed to execute update with exception");
 					}
 				}
@@ -712,32 +717,24 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				try {
 					log.warn("Rolling back batch", be);
 					connection.rollback();
-				}
-				catch (Exception rbe) {
+				} catch (Exception rbe) {
 					log.warn("Error generated while rolling back batch update", be);
 				}
 			}
-		}
-		catch (SQLException e) {
+		} catch (SQLException | DatabaseException e) {
 			log.warn("Error generated", e);
-		}
-		catch (DatabaseException e) {
-			log.warn("Error generated", e);
-		}
-		finally {
+		} finally {
 			//reset to auto commit mode
 			try {
 				connection.setAutoCommit(true);
-			}
-			catch (DatabaseException e) {
+			} catch (DatabaseException e) {
 				log.warn("Failed to reset auto commit back to true", e);
 			}
 			
 			if (pStmt != null) {
 				try {
 					pStmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the prepared statement object");
 				}
 			}
@@ -753,10 +750,11 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 */
 	private int getInt(JdbcConnection connection, String sql) {
 		Statement stmt = null;
+		ResultSet rs = null;
 		int result = 0;
 		try {
 			stmt = connection.createStatement();
-			ResultSet rs = stmt.executeQuery(sql);
+			rs = stmt.executeQuery(sql);
 			
 			if (rs.next()) {
 				result = rs.getInt(1);
@@ -769,19 +767,21 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			}
 			
 			return result;
-		}
-		catch (DatabaseException e) {
+		} catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
-			log.warn("Error generated", e);
-		}
-		finally {
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					log.warn("Failed to close the resultset object");
+				}
+			}
+
 			if (stmt != null) {
 				try {
 					stmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the statement object");
 				}
 			}

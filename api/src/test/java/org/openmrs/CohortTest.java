@@ -39,7 +39,7 @@ public class CohortTest {
 	@Test
 	public void constructorWithPatients_shouldAddMembersToCohort() {
 		
-		List<Patient> patients = new ArrayList<Patient>();
+		List<Patient> patients = new ArrayList<>();
 		Arrays.stream(ids).forEach(id -> patients.add(new Patient(id)));
 		
 		Cohort cohort = new Cohort("name", "description", patients);
@@ -58,7 +58,7 @@ public class CohortTest {
 	@Test
 	public void getCommaSeparatedPatientIds_shouldReturnCommaSeparatedListOfPatients() {
 		
-		List<Patient> patients = new ArrayList<Patient>();
+		List<Patient> patients = new ArrayList<>();
 		Arrays.stream(ids).forEach(id -> patients.add(new Patient(id)));
 		
 		Cohort cohort = new Cohort("name", "description", patients);

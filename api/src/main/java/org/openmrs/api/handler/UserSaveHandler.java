@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
@@ -48,7 +47,7 @@ public class UserSaveHandler implements SaveHandler<User> {
 		if (user.getPerson() != null) {
 			loadLazyHibernateCollections(user);
 			RequiredDataAdvice.recursivelyHandle(SaveHandler.class, user.getPerson(), creator, dateCreated, other,
-			    new ArrayList<OpenmrsObject>());
+					new ArrayList<>());
 		}
 	}
 	

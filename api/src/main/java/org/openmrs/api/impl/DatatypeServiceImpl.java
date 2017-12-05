@@ -78,7 +78,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	private synchronized void populateBeanListsFromContext() {
 		if (datatypeClasses == null) {
 			List<CustomDatatype> datatypeBeans = Context.getRegisteredComponents(CustomDatatype.class);
-			datatypeClasses = new ArrayList<Class<? extends CustomDatatype>>();
+			datatypeClasses = new ArrayList<>();
 			for (CustomDatatype<?> dt : datatypeBeans) {
 				datatypeClasses.add(dt.getClass());
 			}
@@ -86,7 +86,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 		}
 		if (handlerClasses == null) {
 			List<CustomDatatypeHandler> handlerBeans = Context.getRegisteredComponents(CustomDatatypeHandler.class);
-			handlerClasses = new ArrayList<Class<? extends CustomDatatypeHandler>>();
+			handlerClasses = new ArrayList<>();
 			for (CustomDatatypeHandler<?, ?> h : handlerBeans) {
 				handlerClasses.add(h.getClass());
 			}
@@ -103,8 +103,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 			T dt = clazz.newInstance();
 			dt.setConfiguration(config);
 			return dt;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new CustomDatatypeException("Failed to instantiate " + clazz + " with config " + config, ex);
 		}
 	}
@@ -115,7 +114,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	@Override
 	@Transactional(readOnly = true)
 	public List<Class<? extends CustomDatatypeHandler>> getHandlerClasses(Class<? extends CustomDatatype<?>> datatype) {
-		List<Class<? extends CustomDatatypeHandler>> ret = new ArrayList<Class<? extends CustomDatatypeHandler>>();
+		List<Class<? extends CustomDatatypeHandler>> ret = new ArrayList<>();
 		for (Class<? extends CustomDatatypeHandler<?, ?>> candidate : getAllHandlerClasses()) {
 			if (datatypeClassHandled(candidate).equals(datatype)) {
 				ret.add(candidate);
@@ -174,8 +173,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 			CustomDatatypeHandler<?, ?> ret = clazz.newInstance();
 			ret.setHandlerConfiguration(handlerConfig);
 			return ret;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new CustomDatatypeException("Failed to instantiate handler for " + datatype + " with config "
 			        + handlerConfig, ex);
 		}
@@ -187,7 +185,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 */
 	private synchronized void prioritizeHandlers() {
 		if (prioritizedHandlerClasses == null) {
-			prioritizedHandlerClasses = new LinkedHashMap<Class<? extends CustomDatatype>, Class<? extends CustomDatatypeHandler>>();
+			prioritizedHandlerClasses = new LinkedHashMap<>();
 			for (Class dt : getAllDatatypeClasses()) {
 				List<Class<? extends CustomDatatypeHandler>> handlerClasses = getHandlerClasses(dt);
 				if (handlerClasses == null || handlerClasses.isEmpty()) {

@@ -16,7 +16,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -452,14 +451,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 			//Empty set so return null
 			return null;
 		}
-		Set<Obs> nonVoided = new LinkedHashSet<Obs>(groupMembers);
-		Iterator<Obs> i = nonVoided.iterator();
-		while (i.hasNext()) {
-			Obs obs = i.next();
-			if (obs.getVoided()) {
-				i.remove();
-			}
-		}
+		Set<Obs> nonVoided = new LinkedHashSet<>(groupMembers);
+		nonVoided.removeIf(BaseOpenmrsData::getVoided);
 		return nonVoided;
 	}
 	
@@ -498,7 +491,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 		}
 		
 		if (getGroupMembers() == null) {
-			groupMembers = new HashSet<Obs>();
+			groupMembers = new HashSet<>();
 		}
 		
 		// a quick sanity check to make sure someone isn't adding
@@ -542,7 +535,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @return Set&lt;Obs&gt;
 	 */
 	public Set<Obs> getRelatedObservations() {
-		Set<Obs> ret = new HashSet<Obs>();
+		Set<Obs> ret = new HashSet<>();
 		if (this.isObsGrouping()) {
 			ret.addAll(this.getGroupMembers());
 			Obs parentObs = this;
@@ -649,7 +642,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	public void setValueBoolean(Boolean valueBoolean) {
 		if (getConcept() != null && getConcept().getDatatype() != null && getConcept().getDatatype().isBoolean()) {
 			if (valueBoolean != null) {
-				setValueCoded(valueBoolean.booleanValue() ? Context.getConceptService().getTrueConcept() : Context
+				setValueCoded(valueBoolean ? Context.getConceptService().getTrueConcept() : Context
 				        .getConceptService().getFalseConcept());
 			} else {
 				setValueCoded(null);
@@ -1026,9 +1019,9 @@ public class Obs extends BaseChangeableOpenmrsData {
 				return getValueText();
 			} else if ("ED".equals(abbrev) && getValueComplex() != null) {
 				String[] valueComplex = getValueComplex().split("\\|");
-				for (int i = 0; i < valueComplex.length; i++) {
-					if (StringUtils.isNotEmpty(valueComplex[i])) {
-						return valueComplex[i].trim();
+				for (String aValueComplex : valueComplex) {
+					if (StringUtils.isNotEmpty(aValueComplex)) {
+						return aValueComplex.trim();
 					}
 				}
 			}
@@ -1071,9 +1064,9 @@ public class Obs extends BaseChangeableOpenmrsData {
 		// which is everything before the first bar '|' character.
 		if (getValueComplex() != null) {
 			String[] valueComplex = getValueComplex().split("\\|");
-			for (int i = 0; i < valueComplex.length; i++) {
-				if (StringUtils.isNotEmpty(valueComplex[i])) {
-					return valueComplex[i].trim();
+			for (String aValueComplex : valueComplex) {
+				if (StringUtils.isNotEmpty(aValueComplex)) {
+					return aValueComplex.trim();
 				}
 			}
 		}
@@ -1096,25 +1089,33 @@ public class Obs extends BaseChangeableOpenmrsData {
 		
 		if (getConcept() != null && !StringUtils.isBlank(s)) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
-			if ("BIT".equals(abbrev)) {
-				setValueBoolean(Boolean.valueOf(s));
-			} else if ("CWE".equals(abbrev)) {
-				throw new RuntimeException("Not Yet Implemented");
-			} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
-				setValueNumeric(Double.valueOf(s));
-			} else if ("DT".equals(abbrev)) {
-				DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
-				setValueDatetime(dateFormat.parse(s));
-			} else if ("TM".equals(abbrev)) {
-				DateFormat timeFormat = new SimpleDateFormat(TIME_PATTERN);
-				setValueDatetime(timeFormat.parse(s));
-			} else if ("TS".equals(abbrev)) {
-				DateFormat datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
-				setValueDatetime(datetimeFormat.parse(s));
-			} else if ("ST".equals(abbrev)) {
-				setValueText(s);
-			} else {
-				throw new RuntimeException("Don't know how to handle " + abbrev);
+			switch (abbrev) {
+				case "BIT":
+					setValueBoolean(Boolean.valueOf(s));
+					break;
+				case "CWE":
+					throw new RuntimeException("Not Yet Implemented");
+				case "NM":
+				case "SN":
+					setValueNumeric(Double.valueOf(s));
+					break;
+				case "DT":
+					DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
+					setValueDatetime(dateFormat.parse(s));
+					break;
+				case "TM":
+					DateFormat timeFormat = new SimpleDateFormat(TIME_PATTERN);
+					setValueDatetime(timeFormat.parse(s));
+					break;
+				case "TS":
+					DateFormat datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
+					setValueDatetime(datetimeFormat.parse(s));
+					break;
+				case "ST":
+					setValueText(s);
+					break;
+				default:
+					throw new RuntimeException("Don't know how to handle " + abbrev);
 			}
 			
 		} else {

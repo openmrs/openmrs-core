@@ -225,19 +225,15 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		final Set<String> uniqueOrderNumbers = new HashSet<>(50);
 		List<Thread> threads = new ArrayList<>();
 		for (int i = 0; i < N; i++) {
-			threads.add(new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					try {
-						Context.openSession();
-						Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
-						uniqueOrderNumbers.add(((OrderNumberGenerator) orderService).getNewOrderNumber(null));
-					}
-					finally {
-						Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
-						Context.closeSession();
-					}
+			threads.add(new Thread(() -> {
+				try {
+					Context.openSession();
+					Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
+					uniqueOrderNumbers.add(((OrderNumberGenerator) orderService).getNewOrderNumber(null));
+				}
+				finally {
+					Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
+					Context.closeSession();
 				}
 			}));
 		}

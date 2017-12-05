@@ -9,14 +9,13 @@
  */
 package org.openmrs.module.web;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleUtil;
@@ -30,8 +29,8 @@ public class ModuleResourcesServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1239820102030344L;
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
-	
+	private static final Logger log = LoggerFactory.getLogger(ModuleResourcesServlet.class);
+
 	/**
 	 * Used for caching purposes
 	 *

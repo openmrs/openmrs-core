@@ -92,12 +92,10 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 		try {
 			// try to parse as the current user (
 			return new AttributableDate(((Date) Context.getDateFormat().parseObject(s)).getTime());
-		}
-		catch (ParseException e) {
+		} catch (ParseException e) {
 			try {
 				return new AttributableDate(((Date) new SimpleDateFormat(dateFormat).parseObject(s)).getTime());
-			}
-			catch (ParseException e2) {
+			} catch (ParseException e2) {
 				// if we can't parse it as the normalized string or as the current
 				// user's date format, bail out
 				throw new APIException("unable.parse.string.as.date", new Object[] { s });

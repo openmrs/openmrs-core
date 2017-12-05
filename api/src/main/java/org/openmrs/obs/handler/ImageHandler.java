@@ -9,18 +9,15 @@
  */
 package org.openmrs.obs.handler;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.FileImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.FileImageInputStream;
 
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
@@ -42,23 +39,15 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW };
-	
-	public static final Logger log = LoggerFactory.getLogger(ImageHandler.class);
-	
-	private Set<String> extensions;
-	
+
+	private static final Logger log = LoggerFactory.getLogger(ImageHandler.class);
+
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally
 	 * overwriting existing files.
 	 */
 	public ImageHandler() {
 		super();
-		
-		// Create a HashSet to quickly check for supported extensions.
-		extensions = new HashSet<String>();
-		for (String mt : ImageIO.getWriterFormatNames()) {
-			extensions.add(mt);
-		}
 	}
 	
 	/**
@@ -75,8 +64,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 			BufferedImage img = null;
 			try {
 				img = ImageIO.read(file);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				log.error("Trying to read file: " + file.getAbsolutePath(), e);
 			}
 			
@@ -92,11 +80,9 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 				} else {
 					log.warn("MIME type of " + file.getAbsolutePath() + " is not known");
 				}
-			}
-			catch (FileNotFoundException e) {
+			} catch (FileNotFoundException e) {
 				log.error("Image " + file.getAbsolutePath() + " was not found", e);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				log.error("Trying to determine MIME type of " + file.getAbsolutePath(), e);
 			}
 			
@@ -135,8 +121,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 				if (img == null) {
 					throw new IllegalArgumentException("Invalid image file");
 				}
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				throw new APIException("Obs.error.unable.convert.complex.data", new Object[] { "input stream" }, e);
 			}
 		}
@@ -162,8 +147,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 			// Remove the ComlexData from the Obs
 			obs.setComplexData(null);
 			
-		}
-		catch (IOException ioe) {
+		} catch (IOException ioe) {
 		   if (outfile != null && outfile.length() == 0) {
 		      outfile.delete(); // OpenJDK 7 & 8 may leave a 0-byte file when ImageIO.write(..) fails.
 		   }

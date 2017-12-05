@@ -9,12 +9,11 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.Field;

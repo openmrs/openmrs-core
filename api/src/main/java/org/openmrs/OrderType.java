@@ -132,7 +132,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	 */
 	public Collection<ConceptClass> getConceptClasses() {
 		if (conceptClasses == null) {
-			conceptClasses = new LinkedHashSet<ConceptClass>();
+			conceptClasses = new LinkedHashSet<>();
 		}
 		return conceptClasses;
 	}

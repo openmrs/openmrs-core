@@ -17,11 +17,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
 
-import org.apache.commons.lang.StringUtils;
-import org.openmrs.util.DatabaseUpdater;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
@@ -30,6 +25,10 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.util.DatabaseUpdater;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Inserts core concept map types into the concept map type table
@@ -73,7 +72,6 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	 */
 	private void runBatchInsert(JdbcConnection connection) throws CustomChangeException {
 		PreparedStatement pStmt = null;
-		ResultSet rs = null;
 		try {
 			connection.setAutoCommit(false);
 			
@@ -128,29 +126,28 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 			
 			try {
 				int[] updateCounts = pStmt.executeBatch();
-				for (int i = 0; i < updateCounts.length; i++) {
-					if (updateCounts[i] > -1) {
-						log.debug("Successfully executed: updateCount=" + updateCounts[i]);
-					} else if (updateCounts[i] == Statement.SUCCESS_NO_INFO) {
+				for (int updateCount : updateCounts) {
+					if (updateCount > -1) {
+						log.debug("Successfully executed: updateCount=" + updateCount);
+					} else if (updateCount == Statement.SUCCESS_NO_INFO) {
 						log.debug("Successfully executed; No Success info");
-					} else if (updateCounts[i] == Statement.EXECUTE_FAILED) {
+					} else if (updateCount == Statement.EXECUTE_FAILED) {
 						log.warn("Failed to execute insert");
 					}
 				}
 				
 				log.debug("Committing inserts...");
 				connection.commit();
-			}
-			catch (BatchUpdateException be) {
+			} catch (BatchUpdateException be) {
 				log.warn("Error generated while processsing batch insert", be);
 				int[] updateCounts = be.getUpdateCounts();
-				
-				for (int i = 0; i < updateCounts.length; i++) {
-					if (updateCounts[i] > -1) {
-						log.warn("Executed with exception: insertCount=" + updateCounts[i]);
-					} else if (updateCounts[i] == Statement.SUCCESS_NO_INFO) {
+
+				for (int updateCount : updateCounts) {
+					if (updateCount > -1) {
+						log.warn("Executed with exception: insertCount=" + updateCount);
+					} else if (updateCount == Statement.SUCCESS_NO_INFO) {
 						log.warn("Executed with exception; No Success info");
-					} else if (updateCounts[i] == Statement.EXECUTE_FAILED) {
+					} else if (updateCount == Statement.EXECUTE_FAILED) {
 						log.warn("Failed to execute insert with exception");
 					}
 				}
@@ -158,43 +155,27 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				try {
 					log.debug("Rolling back batch", be);
 					connection.rollback();
-				}
-				catch (Exception rbe) {
+				} catch (Exception rbe) {
 					log.warn("Error generated while rolling back batch insert", be);
 				}
 				
 				//marks the changeset as a failed one
 				throw new CustomChangeException("Failed to insert one or more concept map types", be);
 			}
-		}
-		catch (DatabaseException e) {
+		} catch (DatabaseException | SQLException e) {
 			throw new CustomChangeException("Failed to insert one or more concept map types:", e);
-		}
-		catch (SQLException e) {
-			throw new CustomChangeException("Failed to insert one or more concept map types:", e);
-		}
-		finally {
+		} finally {
 			//reset to auto commit mode
 			try {
 				connection.setAutoCommit(true);
-			}
-			catch (DatabaseException e) {
+			} catch (DatabaseException e) {
 				log.warn("Failed to reset auto commit back to true", e);
 			}
-			if (rs != null) {
-				try {
-					rs.close();
-				}
-				catch (SQLException e) {
-					log.warn("Failed to close the resultset object");
-				}
-			}
-			
+
 			if (pStmt != null) {
 				try {
 					pStmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the prepared statement object");
 				}
 			}
@@ -210,10 +191,11 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	 */
 	private int getInt(JdbcConnection connection, String sql) {
 		Statement stmt = null;
+		ResultSet rs = null;
 		int result = 0;
 		try {
 			stmt = connection.createStatement();
-			ResultSet rs = stmt.executeQuery(sql);
+			rs = stmt.executeQuery(sql);
 			
 			if (rs.next()) {
 				result = rs.getInt(1);
@@ -226,19 +208,21 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 			}
 			
 			return result;
-		}
-		catch (DatabaseException e) {
+		} catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
-			log.warn("Error generated", e);
-		}
-		finally {
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					log.warn("Failed to close the resultset object");
+				}
+			}
+
 			if (stmt != null) {
 				try {
 					stmt.close();
-				}
-				catch (SQLException e) {
+				} catch (SQLException e) {
 					log.warn("Failed to close the statement object");
 				}
 			}
@@ -287,6 +271,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	
 	@Override
 	public void setFileOpener(ResourceAccessor resourceAccessor) {
+		// empty
 	}
 	
 	@Override

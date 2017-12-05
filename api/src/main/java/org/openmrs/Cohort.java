@@ -34,7 +34,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	private Collection<CohortMembership> memberships;
 	
 	public Cohort() {
-		memberships = new TreeSet<CohortMembership>();
+		memberships = new TreeSet<>();
 	}
 	
 	/**
@@ -61,7 +61,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 		this.name = name;
 		this.description = description;
 		if (ids != null) {
-			Arrays.stream(ids).forEach(id -> addMember(id));
+			Arrays.stream(ids).forEach(this::addMember);
 		}
 	}
 	
@@ -191,7 +191,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 */
 	public Collection<CohortMembership> getMemberships() {
 		if (memberships == null) {
-			memberships = new TreeSet<CohortMembership>();
+			memberships = new TreeSet<>();
 		}
 		return memberships;
 	}
@@ -324,7 +324,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 */
 	@Deprecated
 	public Set<Integer> getMemberIds() {
-		Set<Integer> memberIds = new TreeSet<Integer>();
+		Set<Integer> memberIds = new TreeSet<>();
 		for (CohortMembership member : getMemberships()) {
 			memberIds.add(member.getPatientId());
 		}
@@ -337,12 +337,11 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 */
 	@Deprecated
 	public void setMemberIds(Set<Integer> memberIds) {
-		if (getMemberships().size() == 0) {
+		if (getMemberships().isEmpty()) {
 			for (Integer id : memberIds) {
 				addMembership(new CohortMembership(id));
 			}
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException("since 2.1.0 cohorts are more complex than just a set of patient ids");
 		}
 	}

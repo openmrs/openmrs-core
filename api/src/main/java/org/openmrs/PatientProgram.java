@@ -43,7 +43,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 	
 	private Concept outcome;
 	
-	private Set<PatientState> states = new HashSet<PatientState>();
+	private Set<PatientState> states = new HashSet<>();
 	
 	// ******************
 	// Constructors
@@ -81,7 +81,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 		target.setLocation(this.getLocation());
 		target.setDateEnrolled(this.getDateEnrolled());
 		target.setDateCompleted(target.getDateCompleted());
-		Set<PatientState> statesCopy = new HashSet<PatientState>();
+		Set<PatientState> statesCopy = new HashSet<>();
 		if (this.getStates() != null) {
 			for (PatientState s : this.getStates()) {
 				PatientState stateCopy = s.copy();
@@ -259,7 +259,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 	 * @return Set&lt;PatientState&gt; of all current {@link PatientState}s for the {@link PatientProgram}
 	 */
 	public Set<PatientState> getCurrentStates() {
-		Set<PatientState> ret = new HashSet<PatientState>();
+		Set<PatientState> ret = new HashSet<>();
 		Date now = new Date();
 		for (PatientState state : getStates()) {
 			if (state.getActive(now)) {
@@ -280,7 +280,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 	 *         for the {@link PatientProgram}
 	 */
 	public List<PatientState> statesInWorkflow(ProgramWorkflow programWorkflow, boolean includeVoided) {
-		List<PatientState> ret = new ArrayList<PatientState>();
+		List<PatientState> ret = new ArrayList<>();
 		for (PatientState st : getSortedStates()) {
 			if (st.getState().getProgramWorkflow().equals(programWorkflow) && (includeVoided || !st.getVoided())) {
 				ret.add(st);
@@ -394,7 +394,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 	 * @return states sorted by {@link PatientState#compareTo(PatientState)}
 	 */
 	private List<PatientState> getSortedStates() {
-		List<PatientState> sortedStates = new ArrayList<PatientState>(getStates());
+		List<PatientState> sortedStates = new ArrayList<>(getStates());
 		Collections.sort(sortedStates);
 		return sortedStates;
 	}

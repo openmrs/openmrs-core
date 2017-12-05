@@ -34,7 +34,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
 	
-	public static final Logger log = LoggerFactory.getLogger(BinaryDataHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(BinaryDataHandler.class);
 	
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally
@@ -55,7 +55,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		File file = getComplexDataFile(obs);
 		log.debug("value complex: " + obs.getValueComplex());
 		log.debug("file path: " + file.getAbsolutePath());
-		ComplexData complexData = null;
+		ComplexData complexData;
 		
 		// Raw view (i.e. the file as is)
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
@@ -64,13 +64,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			String[] names = obs.getValueComplex().split("\\|");
 			String originalFilename = names[0];
 			originalFilename = originalFilename.replaceAll(",", "").replaceAll(" ", "").replaceAll("file$", "");
-			
-			try {
-				complexData = new ComplexData(originalFilename, OpenmrsUtil.getFileAsBytes(file));
-			}
-			catch (IOException e) {
-				log.error("Trying to read file: " + file.getAbsolutePath(), e);
-			}
+			complexData = new ComplexData(originalFilename, OpenmrsUtil.getFileAsBytes(file));
 			
 			obs.setComplexData(complexData);
 		} else {
@@ -119,8 +113,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			} else if (InputStream.class.isAssignableFrom(data.getClass())) {
 				try {
 					OpenmrsUtil.copyFile((InputStream) data, fout);
-				}
-				catch (IOException e) {
+				} catch (IOException e) {
 					throw new APIException("Obs.error.unable.convert.complex.data", new Object[] { "input stream" }, e);
 				}
 			}
@@ -131,15 +124,14 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			// Remove the ComplexData from the Obs
 			obs.setComplexData(null);
 			
-		}
-		catch (IOException ioe) {
+		} catch (IOException ioe) {
 			throw new APIException("Obs.error.trying.write.complex", null, ioe);
-		}
-		finally {
+		} finally {
 			try {
-				fout.close();
-			}
-			catch (Exception e) {
+				if (fout != null) {
+					fout.close();
+				}
+			} catch (Exception e) {
 				// pass
 			}
 		}

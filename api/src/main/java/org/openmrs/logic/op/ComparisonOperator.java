@@ -17,24 +17,24 @@ package org.openmrs.logic.op;
 public interface ComparisonOperator extends Operator {
 	
 	// comparison operators
-	public static final ComparisonOperator CONTAINS = new Contains();
+	ComparisonOperator CONTAINS = new Contains();
 	
-	public static final ComparisonOperator EQUALS = new Equals();
+	ComparisonOperator EQUALS = new Equals();
 	
-	public static final ComparisonOperator WITHIN = new Within();
+	ComparisonOperator WITHIN = new Within();
 	
-	public static final ComparisonOperator GT = new GreaterThan();
+	ComparisonOperator GT = new GreaterThan();
 	
-	public static final ComparisonOperator GTE = new GreaterThanEquals();
+	ComparisonOperator GTE = new GreaterThanEquals();
 	
-	public static final ComparisonOperator LT = new LessThan();
+	ComparisonOperator LT = new LessThan();
 	
-	public static final ComparisonOperator LTE = new LessThanEquals();
+	ComparisonOperator LTE = new LessThanEquals();
 	
-	public static final ComparisonOperator BEFORE = new Before();
+	ComparisonOperator BEFORE = new Before();
 	
-	public static final ComparisonOperator AFTER = new After();
+	ComparisonOperator AFTER = new After();
 	
-	public static final ComparisonOperator IN = new In();
+	ComparisonOperator IN = new In();
 	
 }

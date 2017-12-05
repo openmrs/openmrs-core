@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class AdvicePoint {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(AdvicePoint.class);
 	
 	private String point;
 	
@@ -31,8 +31,7 @@ public class AdvicePoint {
 		this.point = point;
 		try {
 			this.classInstance = clazz.newInstance();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Unable to get instance of: " + clazz.getName(), e);
 		}
 	}
@@ -58,9 +57,8 @@ public class AdvicePoint {
 		Object o = null;
 		try {
 			Class<?> c = ModuleFactory.getModuleClassLoader(getModule()).loadClass(getClassName());
-			o = c.newInstance();
-		}
-		catch (Exception e) {
+			o = c.getDeclaredConstructor().newInstance();
+		} catch (Exception e) {
 			log.warn("Could not get instance for advice point: " + point, e);
 		}
 		classInstance = o;

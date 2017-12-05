@@ -24,6 +24,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.app.Application;
+import ca.uhn.hl7v2.app.ApplicationException;
+import ca.uhn.hl7v2.app.MessageTypeRouter;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
+import ca.uhn.hl7v2.model.v25.datatype.ID;
+import ca.uhn.hl7v2.model.v25.datatype.PL;
+import ca.uhn.hl7v2.model.v25.datatype.TS;
+import ca.uhn.hl7v2.model.v25.datatype.XCN;
+import ca.uhn.hl7v2.model.v25.datatype.XPN;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
+import ca.uhn.hl7v2.model.v25.segment.PID;
+import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
+import ca.uhn.hl7v2.parser.GenericParser;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.openmrs.Location;
@@ -57,22 +72,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.Application;
-import ca.uhn.hl7v2.app.ApplicationException;
-import ca.uhn.hl7v2.app.MessageTypeRouter;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v25.datatype.CX;
-import ca.uhn.hl7v2.model.v25.datatype.ID;
-import ca.uhn.hl7v2.model.v25.datatype.PL;
-import ca.uhn.hl7v2.model.v25.datatype.TS;
-import ca.uhn.hl7v2.model.v25.datatype.XCN;
-import ca.uhn.hl7v2.model.v25.datatype.XPN;
-import ca.uhn.hl7v2.model.v25.segment.NK1;
-import ca.uhn.hl7v2.model.v25.segment.PID;
-import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
-import ca.uhn.hl7v2.parser.GenericParser;
-
 /**
  * OpenMRS HL7 API default methods This class shouldn't be instantiated by itself. Use the
  * {@link org.openmrs.api.context.Context}
@@ -82,7 +81,7 @@ import ca.uhn.hl7v2.parser.GenericParser;
 @Transactional
 public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(HL7ServiceImpl.class);
 	
 	private static HL7ServiceImpl instance;
 	
@@ -658,7 +657,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 					if (matchingIds == null || matchingIds.isEmpty()) {
 						// no matches
 						log.warn("NO matches found for " + hl7PersonId);
-						continue; // try next identifier
 					} else if (matchingIds.size() == 1) {
 						// unique match -- we're done
 						return matchingIds.get(0).getPatient();
@@ -666,13 +664,11 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 						// ambiguous identifier
 						log.debug("Ambiguous identifier in PID. " + matchingIds.size() + " matches for identifier '"
 						        + hl7PersonId + "' of type '" + pit + "'");
-						continue; // try next identifier
 					}
 				}
 				catch (Exception e) {
 					log.error("Error resolving patient identifier '" + hl7PersonId + "' for assigning authority '"
 					        + assigningAuthority + "'", e);
-					continue;
 				}
 			} else {
 				try {
@@ -890,7 +886,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		person.setUuid(uuid);
 		
 		// Patient Identifiers
-		List<PatientIdentifier> goodIdentifiers = new ArrayList<PatientIdentifier>();
+		List<PatientIdentifier> goodIdentifiers = new ArrayList<>();
 		for (CX id : identifiers) {
 			
 			String assigningAuthority = id.getAssigningAuthority().getNamespaceID().getValue();
@@ -935,7 +931,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 				}
 			} else {
 				log.debug("NK1 contains identifier with no assigning authority");
-				continue;
 			}
 		}
 		if (!goodIdentifiers.isEmpty()) {

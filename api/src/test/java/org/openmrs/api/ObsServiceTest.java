@@ -17,6 +17,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.CharArrayReader;
@@ -36,8 +37,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -1197,7 +1196,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ObsService obsService = Context.getObsService();
 		
 		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(8)), null, null, null, null, null,
-		    new ArrayList<String>(), null, null, null, null, false, null);
+				new ArrayList<>(), null, null, null, null, false, null);
 		
 		Assert.assertEquals(8, obss.get(0).getObsId().intValue());
 		Assert.assertEquals(7, obss.get(1).getObsId().intValue());

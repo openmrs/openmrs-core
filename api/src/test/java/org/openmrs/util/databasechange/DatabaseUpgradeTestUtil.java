@@ -25,6 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.LiquibaseException;
+import liquibase.resource.ClassLoaderResourceAccessor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -39,13 +45,6 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
-
-import liquibase.Liquibase;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.LiquibaseException;
-import liquibase.resource.ClassLoaderResourceAccessor;
 
 /**
  * Allows to test database upgrade. It accepts initialDatabasePath which should point to the h2
@@ -187,9 +186,9 @@ public class DatabaseUpgradeTestUtil {
 		PreparedStatement query = connection.prepareStatement(sql);
 		ResultSet resultSet = query.executeQuery();
 		
-		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+		List<Map<String, String>> results = new ArrayList<>();
 		while (resultSet.next()) {
-			Map<String, String> columns = new HashMap<String, String>();
+			Map<String, String> columns = new HashMap<>();
 			results.add(columns);
 			
 			for (int i = 0; i < allColumnNames.length; i++) {

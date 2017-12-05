@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Person;
@@ -54,7 +53,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
-	protected final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 	
 	protected UserDAO dao;
 	
@@ -130,7 +129,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<User> getUsersByRole(Role role) throws APIException {
-		List<Role> roles = new ArrayList<Role>();
+		List<Role> roles = new ArrayList<>();
 		roles.add(role);
 		
 		return Context.getUserService().getUsers(null, roles, false);
@@ -377,7 +376,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	private void checkPrivileges(User user) {
 		Collection<Role> roles = user.getAllRoles();
-		List<String> requiredPrivs = new ArrayList<String>();
+		List<String> requiredPrivs = new ArrayList<>();
 		
 		for (Role r : roles) {
 			if (r.getRole().equals(RoleConstants.SUPERUSER)
@@ -568,7 +567,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		// persons should be searched
 		Role authRole = getRole(RoleConstants.AUTHENTICATED);
 		if (roles.contains(authRole)) {
-			return dao.getCountOfUsers(name, new Vector<Role>(), includeRetired);
+			return dao.getCountOfUsers(name, new ArrayList<>(), includeRetired);
 		}
 		
 		return dao.getCountOfUsers(name, roles, includeRetired);
@@ -586,11 +585,11 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		}
 		
 		if (roles == null) {
-			roles = new Vector<Role>();
+			roles = new ArrayList<>();
 		}
 		
 		// add the requested roles and all child roles for consideration
-		Set<Role> allRoles = new HashSet<Role>();
+		Set<Role> allRoles = new HashSet<>();
 		for (Role r : roles) {
 			allRoles.add(r);
 			allRoles.addAll(r.getAllChildRoles());
@@ -600,10 +599,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		// persons should be searched
 		Role authRole = getRole(RoleConstants.AUTHENTICATED);
 		if (roles.contains(authRole)) {
-			return dao.getUsers(name, new Vector<Role>(), includeRetired, start, length);
+			return dao.getUsers(name, new ArrayList<>(), includeRetired, start, length);
 		}
 		
-		return dao.getUsers(name, new ArrayList<Role>(allRoles), includeRetired, start, length);
+		return dao.getUsers(name, new ArrayList<>(allRoles), includeRetired, start, length);
 	}
 	
 	/**

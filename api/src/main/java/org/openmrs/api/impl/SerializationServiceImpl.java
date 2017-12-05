@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SerializationServiceImpl extends BaseOpenmrsService implements SerializationService {
 	
-	public Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(SerializationServiceImpl.class);
 	
 	//***** Properties (set by spring)
 	private static Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap;
@@ -128,9 +128,9 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	@Override
 	public List<? extends OpenmrsSerializer> getSerializers() {
 		if (serializerMap == null) {
-			serializerMap = new LinkedHashMap<Class<? extends OpenmrsSerializer>, OpenmrsSerializer>();
+			serializerMap = new LinkedHashMap<>();
 		}
-		return new ArrayList<OpenmrsSerializer>(serializerMap.values());
+		return new ArrayList<>(serializerMap.values());
 	}
 	
 	public static void setSerializerMap(Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap) {
@@ -143,7 +143,7 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	 */
 	public void setSerializers(List<? extends OpenmrsSerializer> serializers) {
 		if (serializers == null || serializerMap == null) {
-			setSerializerMap(new LinkedHashMap<Class<? extends OpenmrsSerializer>, OpenmrsSerializer>());
+			setSerializerMap(new LinkedHashMap<>());
 		}
 		if (serializers != null) {
 			for (OpenmrsSerializer s : serializers) {

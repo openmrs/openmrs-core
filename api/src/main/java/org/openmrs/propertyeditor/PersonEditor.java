@@ -14,8 +14,6 @@ import java.beans.PropertyEditorSupport;
 import org.openmrs.Person;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -27,8 +25,6 @@ import org.springframework.util.StringUtils;
  * @see Person
  */
 public class PersonEditor extends PropertyEditorSupport {
-	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	/**
 	 * @should set using id
@@ -43,8 +39,7 @@ public class PersonEditor extends PropertyEditorSupport {
 			try {
 				Integer personId = Integer.valueOf(text);
 				setValue(ps.getPerson(personId));
-			}
-			catch (NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				Person person = ps.getPersonByUuid(text);
 				setValue(person);
 				if (person == null) {

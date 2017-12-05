@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpClient {
 	
-	private static Logger log = LoggerFactory.getLogger(HttpClient.class);
+	private static final Logger log = LoggerFactory.getLogger(HttpClient.class);
 	
 	private HttpUrl url;
 	

@@ -16,11 +16,6 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
-import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
@@ -29,6 +24,10 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generates UUIDs for all rows in all tables in the tableNames
@@ -47,7 +46,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class GenerateUuid implements CustomTaskChange {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(GenerateUuid.class);
 	
 	public static final Integer TRANSACTION_BATCH_SIZE_LIMIT = 512;
 	
@@ -188,10 +187,7 @@ public class GenerateUuid implements CustomTaskChange {
 							}
 						}
 					}
-					catch (DatabaseException e) {
-						throw new CustomChangeException("Unable to set uuid on table: " + tableName, e);
-					}
-					catch (SQLException e) {
+					catch (DatabaseException | SQLException e) {
 						throw new CustomChangeException("Unable to set uuid on table: " + tableName, e);
 					}
 				}

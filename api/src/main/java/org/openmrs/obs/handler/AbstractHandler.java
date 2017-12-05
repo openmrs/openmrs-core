@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AbstractHandler {
 	
-	public static final Logger log = LoggerFactory.getLogger(AbstractHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(AbstractHandler.class);
 	
 	protected NumberFormat nf;
 	
@@ -58,7 +58,7 @@ public class AbstractHandler {
 	 * @param obs the Obs with a non-null complex data on it
 	 * @return File that the complex data should be written to
 	 */
-	public File getOutputFileToWrite(Obs obs) throws IOException {
+	public File getOutputFileToWrite(Obs obs) {
 		// Get the title and remove the extension.
 		String t = obs.getComplexData().getTitle();
 		
@@ -67,35 +67,33 @@ public class AbstractHandler {
 		
 		File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
-		File outputfile = null;
+		File outputFile;
 		
 		// Get the output stream
 		if (null == title) {
 			String now = longfmt.format(new Date());
-			outputfile = new File(dir, now);
+			outputFile = new File(dir, now);
 		} else {
 			title = title.replace("." + extension, "");
-			outputfile = new File(dir, title + "." + extension);
+			outputFile = new File(dir, title + "." + extension);
 		}
 		
 		int i = 0;
-		String tmp = null;
+		String tmp;
 		
 		// If the Obs does not exist, but the File does, append a two-digit
 		// count number to the filename and save it.
-		while (obs.getObsId() == null && outputfile.exists() && i < 100) {
-			tmp = null;
+		while (obs.getObsId() == null && outputFile.exists() && i < 100) {
 			// Remove the extension from the filename.
-			tmp = String.valueOf(outputfile.getAbsolutePath().replace("." + extension, ""));
-			outputfile = null;
+			tmp = String.valueOf(outputFile.getAbsolutePath().replace("." + extension, ""));
 			// Append two-digit count number to the filename.
 			String filename = (i < 1) ? tmp + "_" + nf.format(Integer.valueOf(++i)) : tmp.replace(nf.format(Integer
 			        .valueOf(i)), nf.format(Integer.valueOf(++i)));
 			// Append the extension to the filename.
-			outputfile = new File(filename + "." + extension);
+			outputFile = new File(filename + "." + extension);
 		}
 		
-		return outputfile;
+		return outputFile;
 		
 	}
 	
@@ -125,13 +123,7 @@ public class AbstractHandler {
 		File file = BinaryDataHandler.getComplexDataFile(obs);
 		log.debug("value complex: " + obs.getValueComplex());
 		log.debug("file path: " + file.getAbsolutePath());
-		ComplexData complexData = null;
-		try {
-			complexData = new ComplexData(file.getName(), OpenmrsUtil.getFileAsBytes(file));
-		}
-		catch (IOException e) {
-			log.error("Trying to read file: " + file.getAbsolutePath(), e);
-		}
+		ComplexData complexData = new ComplexData(file.getName(), OpenmrsUtil.getFileAsBytes(file));
 		
 		obs.setComplexData(complexData);
 		

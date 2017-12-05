@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 public class Format {
 	
-	private static Logger log = LoggerFactory.getLogger(Format.class);
+	private static final Logger log = LoggerFactory.getLogger(Format.class);
 	
 	public enum FORMAT_TYPE {
 		DATE,
@@ -42,7 +42,7 @@ public class Format {
 	}
 	
 	public static String format(double d) {
-		return "" + ((d == (int) d) ? (int) d : d);
+		return "" + (d);
 	}
 	
 	public static String format(Double d) {
@@ -87,13 +87,17 @@ public class Format {
 		log.debug("Formatting date: " + date + " with locale " + locale);
 		
 		DateFormat dateFormat = null;
-		
-		if (type == FORMAT_TYPE.TIMESTAMP) {
-			dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-		} else if (type == FORMAT_TYPE.TIME) {
-			dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
-		} else {
-			dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, locale);
+
+		switch (type) {
+			case TIMESTAMP:
+				dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
+				break;
+			case TIME:
+				dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
+				break;
+			default:
+				dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, locale);
+				break;
 		}
 		return dateFormat.format(date);
 	}

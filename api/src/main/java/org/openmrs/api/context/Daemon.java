@@ -30,16 +30,16 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  */
 public class Daemon {
 	
-	protected static final Logger log = LoggerFactory.getLogger(Daemon.class);
+	private static final Logger log = LoggerFactory.getLogger(Daemon.class);
 	
 	/**
 	 * The uuid defined for the daemon user object
 	 */
 	protected static final String DAEMON_USER_UUID = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB";
 	
-	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<Boolean>();
+	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<>();
 	
-	protected static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<User>();
+	protected static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
 	
 	/**
 	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext)
@@ -72,11 +72,9 @@ public class Daemon {
 				try {
 					Context.openSession();
 					returnedObject = ModuleFactory.startModuleInternal(module, isOpenmrsStartup, applicationContext);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					exceptionThrown = e;
-				}
-				finally {
+				} finally {
 					Context.closeSession();
 				}
 			}
@@ -87,8 +85,7 @@ public class Daemon {
 		// wait for the "startModule" thread to finish
 		try {
 			startModuleThread.join();
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			// ignore
 		}
 		
@@ -100,9 +97,7 @@ public class Daemon {
 			}
 		}
 		
-		Module startedModule = (Module) startModuleThread.returnedObject;
-		
-		return startedModule;
+		return (Module) startModuleThread.returnedObject;
 	}
 	
 	/**
@@ -132,11 +127,9 @@ public class Daemon {
 				try {
 					Context.openSession();
 					TimerSchedulerTask.execute(task);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					exceptionThrown = e;
-				}
-				finally {
+				} finally {
 					Context.closeSession();
 				}
 				
@@ -148,8 +141,7 @@ public class Daemon {
 		// wait for the "executeTaskThread" thread to finish
 		try {
 			executeTaskThread.join();
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			// ignore
 		}
 		
@@ -187,8 +179,7 @@ public class Daemon {
 					//Suppressing sonar issue "squid:S1217"
 					//We intentionally do not start a new thread yet, rather wrap the run call in a session.
 					runnable.run();
-				}
-				finally {
+				} finally {
 					Context.closeSession();
 				}
 			}
@@ -244,8 +235,7 @@ public class Daemon {
 		// wait for the "onStartup" thread to finish
 		try {
 			onStartupThread.join();
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			// ignore
 			log.error("Thread was interrupted", e);
 		}

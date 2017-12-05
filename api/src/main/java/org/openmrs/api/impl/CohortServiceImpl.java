@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class CohortServiceImpl extends BaseOpenmrsService implements CohortService {
 	
-	protected final Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(CohortServiceImpl.class);
 	
 	private CohortDAO dao;
 	

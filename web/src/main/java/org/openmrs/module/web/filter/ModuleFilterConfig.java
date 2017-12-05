@@ -9,11 +9,10 @@
  */
 package org.openmrs.module.web.filter;
 
-import java.util.Enumeration;
-import java.util.Vector;
-
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * This class is an implementation of FilterConfig for use in instantiating Filters from Modules
@@ -68,7 +67,7 @@ public class ModuleFilterConfig implements FilterConfig {
 	 */
 	@Override
 	public Enumeration<String> getInitParameterNames() {
-		Vector<String> v = new Vector<String>(filterDefinition.getInitParameters().keySet());
+		Vector<String> v = new Vector<>(filterDefinition.getInitParameters().keySet());
 		return v.elements();
 	}
 	

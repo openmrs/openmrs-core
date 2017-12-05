@@ -47,8 +47,7 @@ public class DateDatatype extends SerializingCustomDatatype<Date> {
 		}
 		try {
 			return new SimpleDateFormat(dateFormat).parse(serializedValue);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new InvalidCustomValueException("Invalid date: " + serializedValue);
 		}
 	}
