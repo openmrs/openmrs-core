@@ -75,19 +75,15 @@ public class TaskThreadedInitializationWrapper implements Task {
 	 */
 	@Override
 	public void initialize(final TaskDefinition config) {
-		Runnable r = new Runnable() {
-			
-			@Override
-			public void run() {
-				lock.lock();
-				try {
-					task.initialize(config);
-					initialized = true;
-					initializedCond.signalAll();
-				}
-				finally {
-					lock.unlock();
-				}
+		Runnable r = () -> {
+			lock.lock();
+			try {
+				task.initialize(config);
+				initialized = true;
+				initializedCond.signalAll();
+			}
+			finally {
+				lock.unlock();
 			}
 		};
 		

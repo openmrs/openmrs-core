@@ -1305,20 +1305,12 @@ public class OpenmrsUtil {
 	 * Allows easy manipulation of a Map&lt;?, Set&gt;
 	 */
 	public static <K, V> void addToSetMap(Map<K, Set<V>> map, K key, V obj) {
-		Set<V> set = map.get(key);
-		if (set == null) {
-			set = new HashSet<V>();
-			map.put(key, set);
-		}
+		Set<V> set = map.computeIfAbsent(key, k -> new HashSet<V>());
 		set.add(obj);
 	}
 	
 	public static <K, V> void addToListMap(Map<K, List<V>> map, K key, V obj) {
-		List<V> list = map.get(key);
-		if (list == null) {
-			list = new ArrayList<V>();
-			map.put(key, list);
-		}
+		List<V> list = map.computeIfAbsent(key, k -> new ArrayList<V>());
 		list.add(obj);
 	}
 	
@@ -2197,7 +2189,7 @@ public class OpenmrsUtil {
 	 * @return
 	 */
 	public static Set<String> getDeclaredFields(Class<?> clazz) {
-		return Arrays.asList(clazz.getDeclaredFields()).stream().map(f -> f.getName()).collect(Collectors.toSet());
+		return Arrays.asList(clazz.getDeclaredFields()).stream().map(Field::getName).collect(Collectors.toSet());
 	}
 	
 }

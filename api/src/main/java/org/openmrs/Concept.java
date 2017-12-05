@@ -886,7 +886,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			}
 		} else {
 			shortNames = getNames().stream()
-							.filter(n -> n.isShort())
+							.filter(ConceptName::isShort)
 							.collect(Collectors.toList());
 		}
 		return shortNames;
@@ -960,7 +960,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public Collection<ConceptName> getIndexTerms() {
 		return getNames().stream()
-				.filter(n -> n.isIndexTerm())
+				.filter(ConceptName::isIndexTerm)
 				.collect(Collectors.toSet());		
 	}
 	
@@ -1302,7 +1302,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public Collection<ConceptName> getSynonyms() {
 		return getNames().stream()
-				.filter(n -> n.isSynonym())
+				.filter(ConceptName::isSynonym)
 				.collect(Collectors.toSet());
 	}
 	
