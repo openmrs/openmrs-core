@@ -69,7 +69,7 @@ public final class Module {
 	
 	private List<AdvicePoint> advicePoints = new ArrayList<AdvicePoint>();
 	
-	private IdentityHashMap<String, String> extensionNames = new IdentityHashMap<String, String>();
+	private Map<String, String> extensionNames = new IdentityHashMap<String, String>();
 	
 	private List<Extension> extensions = new ArrayList<Extension>();
 	
@@ -511,7 +511,7 @@ public final class Module {
 	 * @param map from pointid to classname
 	 * @see ModuleFileParser
 	 */
-	public void setExtensionNames(IdentityHashMap<String, String> map) {
+	public void setExtensionNames(Map<String, String> map) {
 		if (log.isDebugEnabled()) {
 			for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
 				log.debug("Setting extension names: " + entry.getKey() + " : " + entry.getValue());
