@@ -90,7 +90,8 @@ public class CustomResourceLoader {
 	 */
 	private Locale parseLocaleFrom(String filename, String basename) {
 		Locale result = null;
-		String tmp_filename;
+		
+		String tmp_filename=filename;
 		if (filename.startsWith(basename)) {
 			tmp_filename = filename.substring(basename.length());
 		}
