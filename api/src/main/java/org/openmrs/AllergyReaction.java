@@ -141,10 +141,6 @@ public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serial
 				return false;
 			}
 		}
-		if (!OpenmrsUtil.nullSafeEquals(getReactionNonCoded(), reaction.getReactionNonCoded())) {
-			return false;
-		}
-		
-		return true;
+		return OpenmrsUtil.nullSafeEquals(getReactionNonCoded(), reaction.getReactionNonCoded());
 	}
 }

@@ -108,7 +108,7 @@ public class ObsTest {
 	private Object generateValue(Field field, boolean setAlternateValue) throws Exception {
 		Object fieldValue;
 		if (field.getType().equals(Boolean.class)) {
-			fieldValue = setAlternateValue ? true : false;
+			fieldValue = setAlternateValue;
 		} else if (field.getType().equals(Integer.class)) {
 			fieldValue = setAlternateValue ? 10 : 17;
 		} else if (field.getType().equals(Double.class)) {

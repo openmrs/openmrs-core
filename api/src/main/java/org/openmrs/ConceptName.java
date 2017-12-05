@@ -443,12 +443,9 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *         false
 	 */
 	public Boolean isPreferredInLanguage(String language) {
-		if (!StringUtils.isBlank(language) && this.locale != null && isPreferred()
-		        && this.locale.getLanguage().equals(language)) {
-			return true;
-		}
-		
-		return false;
+		return !StringUtils.isBlank(language) && this.locale != null && isPreferred()
+				&& this.locale.getLanguage().equals(language);
+
 	}
 	
 	/**
@@ -461,12 +458,9 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *         false
 	 */
 	public Boolean isPreferredInCountry(String country) {
-		if (!StringUtils.isBlank(country) && this.locale != null && isPreferred()
-		        && this.locale.getCountry().equals(country)) {
-			return true;
-		}
-		
-		return false;
+		return !StringUtils.isBlank(country) && this.locale != null && isPreferred()
+				&& this.locale.getCountry().equals(country);
+
 	}
 	
 	/**

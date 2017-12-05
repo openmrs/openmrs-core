@@ -197,11 +197,7 @@ public class ModuleFilterMapping implements Serializable {
 		if (patternToCheck.endsWith("/*")) {
 			int patternLength = patternToCheck.length() - 2;
 			if (patternToCheck.regionMatches(0, requestPath, 0, patternLength)) {
-				if (requestPath.length() == patternLength) {
-					return true;
-				} else if ('/' == requestPath.charAt(patternLength)) {
-					return true;
-				}
+				return requestPath.length() == patternLength || '/' == requestPath.charAt(patternLength);
 			}
 			return false;
 		}
@@ -243,12 +239,9 @@ public class ModuleFilterMapping implements Serializable {
 		log.debug("Checking servlet <" + servletName + "> against pattern <" + patternToCheck + ">");
 		
 		// Match exact or full wildcard
-		if (("*").equals(patternToCheck) || servletName.equals(patternToCheck)) {
-			return true;
-		}
+		return ("*").equals(patternToCheck) || servletName.equals(patternToCheck);
 		
 		// If none found, return false
-		return false;
 	}
 	
 	/**

@@ -534,9 +534,7 @@ public final class Module {
 				}
 			}
 
-			if (extensions.size() != extensionNames.size()) {
-				return false;
-			}
+			return extensions.size() == extensionNames.size();
 		}
 		
 		return true;

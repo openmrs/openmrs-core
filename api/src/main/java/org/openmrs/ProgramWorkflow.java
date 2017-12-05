@@ -232,12 +232,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 		}
 		
 		// Does not allow patient to move into the same state
-		if (fromState.equals(toState)) {
-			return false;
-		}
-		
-		// Otherwise all other state transitions are legal
-		return true;
+		return !fromState.equals(toState);
 	}
 	
 	/** @see Object#toString() */
