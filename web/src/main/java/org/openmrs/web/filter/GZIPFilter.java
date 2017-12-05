@@ -130,9 +130,8 @@ public class GZIPFilter extends OncePerRequestFilter {
 		try {
 			String gzipEnabled = Context.getAdministrationService().getGlobalProperty(
 			    OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, "");
-			
-			boolean isEnabled = Boolean.valueOf(gzipEnabled);
-			cachedGZipEnabledFlag = isEnabled;
+
+			cachedGZipEnabledFlag = Boolean.valueOf(gzipEnabled);
 			return cachedGZipEnabledFlag;
 		}
 		catch (Exception e) {

@@ -99,10 +99,8 @@ public class Daemon {
 				throw new ModuleException("Unable to start module as Daemon", startModuleThread.exceptionThrown);
 			}
 		}
-		
-		Module startedModule = (Module) startModuleThread.returnedObject;
-		
-		return startedModule;
+
+		return (Module) startModuleThread.returnedObject;
 	}
 	
 	/**

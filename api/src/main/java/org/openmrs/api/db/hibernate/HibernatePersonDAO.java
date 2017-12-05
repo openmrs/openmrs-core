@@ -405,10 +405,9 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public Relationship getRelationship(Integer relationshipId) throws DAOException {
-		Relationship relationship = (Relationship) sessionFactory.getCurrentSession()
+
+		return (Relationship) sessionFactory.getCurrentSession()
 		        .get(Relationship.class, relationshipId);
-		
-		return relationship;
 	}
 	
 	/**
@@ -501,10 +500,9 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws DAOException {
-		RelationshipType relationshipType = (RelationshipType) sessionFactory.getCurrentSession().get(
+
+		return (RelationshipType) sessionFactory.getCurrentSession().get(
 		    RelationshipType.class, relationshipTypeId);
-		
-		return relationshipType;
 	}
 	
 	/**

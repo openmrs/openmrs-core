@@ -61,7 +61,6 @@ public class DrugsByNameComparator implements Comparator<Drug> {
 	 * @return the string
 	 */
 	private String remove(String drugName) {
-		String cleanText = drugName.replaceAll("[^a-zA-Z]", "");
-		return cleanText;
+		return drugName.replaceAll("[^a-zA-Z]", "");
 	}
 }
