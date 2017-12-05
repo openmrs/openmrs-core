@@ -28,6 +28,14 @@ import org.slf4j.LoggerFactory;
  */
 public class FilterUtil {
 	
+	/*
+	Utility classes should not have public constructors.
+	That's why added private FilterUtil() {
+         }
+	*/
+	private FilterUtil() {
+         }
+	
 	private static final Logger log = LoggerFactory.getLogger(FilterUtil.class);
 	
 	private static final String DATABASE_CLOSING_ERROR = "Error while closing the database";
