@@ -450,7 +450,7 @@ public class ModuleFileParser {
 	 */
 	private List<AdvicePoint> getAdvice(Element root, String version, Module mod) {
 		
-		List<AdvicePoint> advicePoints = new Vector<AdvicePoint>();
+		List<AdvicePoint> advicePoints = new ArrayList<AdvicePoint>();
 		
 		NodeList advice = root.getElementsByTagName("advice");
 		if (advice.getLength() > 0) {
@@ -546,7 +546,7 @@ public class ModuleFileParser {
 	 */
 	private List<Privilege> getPrivileges(Element root, String version) {
 		
-		List<Privilege> privileges = new Vector<Privilege>();
+		List<Privilege> privileges = new ArrayList<Privilege>();
 		
 		NodeList privNodes = root.getElementsByTagName("privilege");
 		if (privNodes.getLength() > 0) {
@@ -592,7 +592,7 @@ public class ModuleFileParser {
 	 */
 	private List<GlobalProperty> getGlobalProperties(Element root, String version) {
 		
-		List<GlobalProperty> properties = new Vector<GlobalProperty>();
+		List<GlobalProperty> properties = new ArrayList<GlobalProperty>();
 		
 		NodeList propNodes = root.getElementsByTagName("globalProperty");
 		if (propNodes.getLength() > 0) {
@@ -666,7 +666,7 @@ public class ModuleFileParser {
 	 */
 	private List<String> getMappingFiles(Element rootNode, String configVersion, JarFile jarfile) {
 		String mappingString = getElement(rootNode, configVersion, "mappingFiles");
-		List<String> mappings = new Vector<String>();
+		List<String> mappings = new ArrayList<String>();
 		for (String s : mappingString.split("\\s")) {
 			String s2 = s.trim();
 			if (s2.length() > 0) {

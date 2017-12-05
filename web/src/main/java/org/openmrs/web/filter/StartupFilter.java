@@ -231,8 +231,8 @@ public abstract class StartupFilter implements Filter {
 		}
 		
 		Object locale = referenceMap.get(FilterUtil.LOCALE_ATTRIBUTE);
-		ToolContext toolContext = getToolContext(locale != null ? locale.toString() : Context.getLocale().toString());
-		VelocityContext velocityContext = new VelocityContext(toolContext);
+		ToolContext velocityToolContext = getToolContext(locale != null ? locale.toString() : Context.getLocale().toString());
+		VelocityContext velocityContext = new VelocityContext(velocityToolContext);
 		
 		for (Map.Entry<String, Object> entry : referenceMap.entrySet()) {
 			velocityContext.put(entry.getKey(), entry.getValue());

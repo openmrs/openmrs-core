@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.openmrs.GlobalProperty;
@@ -68,19 +67,19 @@ public final class Module {
 	
 	private Map<String, String> startBeforeModulesMap;
 	
-	private List<AdvicePoint> advicePoints = new Vector<AdvicePoint>();
+	private List<AdvicePoint> advicePoints = new ArrayList<AdvicePoint>();
 	
-	private IdentityHashMap<String, String> extensionNames = new IdentityHashMap<String, String>();
+	private Map<String, String> extensionNames = new IdentityHashMap<String, String>();
 	
-	private List<Extension> extensions = new Vector<Extension>();
+	private List<Extension> extensions = new ArrayList<Extension>();
 	
 	private Map<String, Properties> messages = new HashMap<String, Properties>();
 	
-	private List<Privilege> privileges = new Vector<Privilege>();
+	private List<Privilege> privileges = new ArrayList<Privilege>();
 	
-	private List<GlobalProperty> globalProperties = new Vector<GlobalProperty>();
+	private List<GlobalProperty> globalProperties = new ArrayList<GlobalProperty>();
 	
-	private List<String> mappingFiles = new Vector<String>();
+	private List<String> mappingFiles = new ArrayList<String>();
 	
 	private Set<String> packagesWithMappedClasses = new HashSet<String>();
 	
@@ -512,7 +511,7 @@ public final class Module {
 	 * @param map from pointid to classname
 	 * @see ModuleFileParser
 	 */
-	public void setExtensionNames(IdentityHashMap<String, String> map) {
+	public void setExtensionNames(Map<String, String> map) {
 		if (log.isDebugEnabled()) {
 			for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
 				log.debug("Setting extension names: " + entry.getKey() + " : " + entry.getValue());

@@ -13,7 +13,7 @@ import java.beans.PropertyEditorSupport;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -59,7 +59,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 		if (StringUtils.hasText(text)) {
 			ConceptService cs = Context.getConceptService();
 			String[] conceptIds = text.split(" ");
-			List<String> requestConceptIds = new Vector<String>();
+			List<String> requestConceptIds = new ArrayList<String>();
 			//set up parameter answer Set for easier add/delete functions and removal of duplicates
 			for (String id : conceptIds) {
 				id = id.trim();

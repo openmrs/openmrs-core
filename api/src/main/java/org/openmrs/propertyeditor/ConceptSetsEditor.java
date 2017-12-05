@@ -54,7 +54,7 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 		if (StringUtils.hasText(text)) {
 			ConceptService cs = Context.getConceptService();
 			String[] conceptIds = text.split(" ");
-			List<Integer> requestConceptIds = new Vector<Integer>();
+			List<Integer> requestConceptIds = new ArrayList<Integer>();
 			//set up parameter Set for easier add/delete functions
 			// and removal of duplicates
 			for (String id : conceptIds) {

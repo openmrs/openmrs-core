@@ -567,7 +567,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	@Transactional(readOnly = true)
 	public List<Concept> getConceptsByClass(ConceptClass cc) {
-		List<ConceptClass> classes = new Vector<ConceptClass>();
+		List<ConceptClass> classes = new ArrayList<ConceptClass>();
 		classes.add(cc);
 		
 		return getConcepts(null, null, false, classes, null);
@@ -1322,7 +1322,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	@Transactional(readOnly = true)
 	public boolean hasAnyObservation(Concept concept) {
-		List<Concept> concepts = new Vector<Concept>();
+		List<Concept> concepts = new ArrayList<Concept>();
 		concepts.add(concept);
 		Integer count = Context.getObsService().getObservationCount(null, null, concepts, null, null, null, null, null,
 		    null, true);
@@ -1352,7 +1352,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	@Transactional(readOnly = true)
 	public boolean hasAnyObservation(ConceptName conceptName) throws APIException {
-		List<ConceptName> conceptNames = new Vector<ConceptName>();
+		List<ConceptName> conceptNames = new ArrayList<ConceptName>();
 		conceptNames.add(conceptName);
 		Integer count = Context.getObsService().getObservationCount(conceptNames, true);
 		return count > 0;
@@ -1562,7 +1562,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	@Transactional(readOnly = true)
 	public List<ConceptSearchResult> getConcepts(String phrase, Locale locale, boolean includeRetired) throws APIException {
-		List<Locale> locales = new Vector<Locale>();
+		List<Locale> locales = new ArrayList<Locale>();
 		if (locale != null) {
 			locales.add(locale);
 		}

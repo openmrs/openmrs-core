@@ -830,7 +830,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	private List<Concept> getParents(Concept current) throws DAOException {
-		List<Concept> parents = new Vector<Concept>();
+		List<Concept> parents = new ArrayList<Concept>();
 		if (current != null) {
 			Query query = sessionFactory.getCurrentSession().createQuery(
 			    "from Concept c join c.conceptSets sets where sets.concept = ?").setEntity(0, current);
