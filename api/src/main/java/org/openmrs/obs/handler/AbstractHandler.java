@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AbstractHandler {
 	
-	public static final Logger log = LoggerFactory.getLogger(AbstractHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(AbstractHandler.class);
 	
 	protected NumberFormat nf;
 	

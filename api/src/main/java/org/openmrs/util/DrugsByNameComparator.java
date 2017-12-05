@@ -21,10 +21,7 @@ import org.slf4j.LoggerFactory;
  * A-Z.
  */
 public class DrugsByNameComparator implements Comparator<Drug> {
-	
-	/** The Constant log. */
-	private final static Logger log = LoggerFactory.getLogger(DrugsByNameComparator.class);
-	
+
 	/* (non-Jsdoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */

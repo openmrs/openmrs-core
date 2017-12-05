@@ -54,9 +54,7 @@ import org.slf4j.LoggerFactory;
  * @see EncounterService
  */
 public class HibernateEncounterDAO implements EncounterDAO {
-	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
-	
+
 	/**
 	 * Hibernate session factory
 	 */

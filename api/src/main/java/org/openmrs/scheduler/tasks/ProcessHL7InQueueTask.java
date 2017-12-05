@@ -26,7 +26,7 @@ import ca.uhn.hl7v2.HL7Exception;
 public class ProcessHL7InQueueTask extends AbstractTask {
 	
 	// Logger
-	private static Logger log = LoggerFactory.getLogger(ProcessHL7InQueueTask.class);
+	private static final Logger log = LoggerFactory.getLogger(ProcessHL7InQueueTask.class);
 	
 	// Instance of hl7 processor
 	private static HL7InQueueProcessor processor = null;

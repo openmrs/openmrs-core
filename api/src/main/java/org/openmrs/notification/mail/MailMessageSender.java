@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
 
 public class MailMessageSender implements MessageSender {
 	
-	protected static final Logger log = LoggerFactory.getLogger(MailMessageSender.class);
+	private static final Logger log = LoggerFactory.getLogger(MailMessageSender.class);
 	
 	/**
 	 * JavaMail session

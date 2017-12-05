@@ -26,8 +26,6 @@ import org.springframework.validation.Validator;
 @Handler(supports = { ImplementationId.class }, order = 50)
 public class ImplementationIdValidator implements Validator {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
-	
 	@Override
 	public boolean supports(Class<?> clazz) {
 		return clazz.equals(ImplementationId.class);

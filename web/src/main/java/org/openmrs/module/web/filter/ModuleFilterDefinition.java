@@ -43,7 +43,7 @@ public class ModuleFilterDefinition implements Serializable {
 	
 	public static final long serialVersionUID = 1;
 	
-	private static Logger log = LoggerFactory.getLogger(ModuleFilterDefinition.class);
+	private static final Logger log = LoggerFactory.getLogger(ModuleFilterDefinition.class);
 	
 	// Properties
 	private Module module;

@@ -54,7 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
-	protected final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 	
 	protected UserDAO dao;
 	

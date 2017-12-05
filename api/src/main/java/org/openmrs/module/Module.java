@@ -33,7 +33,7 @@ import org.w3c.dom.Document;
  */
 public final class Module {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(Module.class);
 	
 	private String name;
 	

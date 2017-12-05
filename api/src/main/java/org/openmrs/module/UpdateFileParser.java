@@ -33,7 +33,7 @@ import org.xml.sax.InputSource;
  */
 public class UpdateFileParser {
 	
-	private static Logger log = LoggerFactory.getLogger(UpdateFileParser.class);
+	private static final Logger log = LoggerFactory.getLogger(UpdateFileParser.class);
 	
 	private String content;
 	

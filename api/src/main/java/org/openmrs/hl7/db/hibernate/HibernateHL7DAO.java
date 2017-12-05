@@ -40,9 +40,7 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.hl7.db.HL7DAO
  */
 public class HibernateHL7DAO implements HL7DAO {
-	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
-	
+
 	/**
 	 * Hibernate session factory
 	 */

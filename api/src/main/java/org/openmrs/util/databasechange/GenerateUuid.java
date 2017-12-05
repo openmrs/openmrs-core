@@ -47,7 +47,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class GenerateUuid implements CustomTaskChange {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(GenerateUuid.class);
 	
 	public static final Integer TRANSACTION_BATCH_SIZE_LIMIT = 512;
 	

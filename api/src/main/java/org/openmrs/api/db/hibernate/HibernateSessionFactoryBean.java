@@ -36,7 +36,7 @@ import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 
 public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	
-	private static Logger log = LoggerFactory.getLogger(HibernateSessionFactoryBean.class);
+	private static final Logger log = LoggerFactory.getLogger(HibernateSessionFactoryBean.class);
 	
 	protected Set<String> mappingResources = new HashSet<String>();
 	

@@ -31,9 +31,7 @@ import liquibase.resource.ResourceAccessor;
  * This change set moves "deleted" HL7s from the archive table to the queue table
  */
 public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
-	
-	protected final static Logger log = LoggerFactory.getLogger(MoveDeletedHL7sChangeSet.class);
-	
+
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */

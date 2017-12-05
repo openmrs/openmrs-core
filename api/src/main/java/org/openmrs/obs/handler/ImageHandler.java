@@ -43,7 +43,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW };
 	
-	public static final Logger log = LoggerFactory.getLogger(ImageHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(ImageHandler.class);
 	
 	private Set<String> extensions;
 	

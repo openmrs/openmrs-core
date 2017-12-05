@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class StartupFilter implements Filter {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(StartupFilter.class);
 	
 	protected static VelocityEngine velocityEngine = null;
 	

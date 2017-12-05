@@ -51,7 +51,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	// time to wait for concurrent tasks to execute, should only wait this long if there's a test failure
 	public static final long CONCURRENT_TASK_WAIT_MS = 30000;
 	
-	public static Logger log = LogManager.getLogger(SchedulerServiceTest.class);
+	private static final Logger log = LogManager.getLogger(SchedulerServiceTest.class);
 	
 	@Before
 	public void setUp() throws Exception {

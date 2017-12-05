@@ -38,7 +38,7 @@ import org.xml.sax.SAXException;
  */
 public class SqlDiffFileParser {
 	
-	private static Logger log = LoggerFactory.getLogger(SqlDiffFileParser.class);
+	private static final Logger log = LoggerFactory.getLogger(SqlDiffFileParser.class);
 	
 	private static final String SQLDIFF_CHANGELOG_FILENAME = "sqldiff.xml";
 	

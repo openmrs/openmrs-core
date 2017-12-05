@@ -79,7 +79,7 @@ import org.springframework.util.StringUtils;
 @Transactional
 public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptService {
 	
-	private final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(ConceptServiceImpl.class);
 	
 	private ConceptDAO dao;
 	

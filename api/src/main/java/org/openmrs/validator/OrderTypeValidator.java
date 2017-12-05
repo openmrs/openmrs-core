@@ -28,9 +28,6 @@ import org.springframework.validation.Validator;
 @Handler(supports = { OrderType.class })
 public class OrderTypeValidator implements Validator {
 	
-	// Logger for this class
-	protected final Logger log = LoggerFactory.getLogger(getClass());
-	
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 * 

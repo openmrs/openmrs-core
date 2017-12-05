@@ -25,7 +25,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { ConceptStateConversion.class }, order = 50)
 public class StateConversionValidator implements Validator {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(StateConversionValidator.class);
 	
 	/**
 	 * Determines if the command object being submitted is a valid type

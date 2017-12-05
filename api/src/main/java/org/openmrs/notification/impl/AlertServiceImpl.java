@@ -37,7 +37,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	
 	private static final long serialVersionUID = 564561231321112365L;
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(AlertServiceImpl.class);
 	
 	private AlertDAO dao;
 	

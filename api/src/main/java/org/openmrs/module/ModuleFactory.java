@@ -63,7 +63,7 @@ import org.springframework.util.StringUtils;
  */
 public class ModuleFactory {
 	
-	private static Logger log = LoggerFactory.getLogger(ModuleFactory.class);
+	private static final Logger log = LoggerFactory.getLogger(ModuleFactory.class);
 	
 	protected static volatile Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
 	

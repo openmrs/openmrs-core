@@ -35,7 +35,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class BooleanConceptChangeSet implements CustomTaskChange {
 	
-	private static Logger log = LoggerFactory.getLogger(BooleanConceptChangeSet.class);
+	private static final Logger log = LoggerFactory.getLogger(BooleanConceptChangeSet.class);
 	
 	private Integer trueConceptId;
 	

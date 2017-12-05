@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateUtil {
 	
-	private static Logger log = LoggerFactory.getLogger(HibernateUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(HibernateUtil.class);
 	
 	private static Dialect dialect = null;
 	

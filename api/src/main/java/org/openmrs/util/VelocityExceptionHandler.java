@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  */
 public class VelocityExceptionHandler implements MethodExceptionEventHandler {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(VelocityExceptionHandler.class);
 	
 	/**
 	 * When a user-supplied method throws an exception, the MethodExceptionEventHandler is invoked

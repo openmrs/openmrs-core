@@ -27,9 +27,7 @@ import org.springframework.util.StringUtils;
  * @see Person
  */
 public class PersonEditor extends PropertyEditorSupport {
-	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
-	
+
 	/**
 	 * @should set using id
 	 * @should set using uuid

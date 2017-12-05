@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  */
 public class ConceptSetsEditor extends PropertyEditorSupport {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(ConceptSetsEditor.class);
 	
 	private Collection<ConceptSet> originalConceptSets = null;
 	

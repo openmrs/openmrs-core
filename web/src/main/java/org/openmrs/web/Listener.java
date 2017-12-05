@@ -73,7 +73,7 @@ import org.xml.sax.SAXException;
  */
 public final class Listener extends ContextLoader implements ServletContextListener {
 	
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	protected final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
 	
 	private static boolean runtimePropertiesFound = false;
 	

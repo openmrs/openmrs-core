@@ -22,7 +22,7 @@ import liquibase.exception.LockException;
  */
 public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 	
-	private static Logger log = LoggerFactory.getLogger(DatabaseUpdaterTest.class);
+	private static final Logger log = LoggerFactory.getLogger(DatabaseUpdaterTest.class);
 	
 	/**
 	 * @throws LockException

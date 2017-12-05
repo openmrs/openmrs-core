@@ -85,7 +85,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class PatientServiceImpl extends BaseOpenmrsService implements PatientService {
 	
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
 	
 	private PatientDAO dao;
 	

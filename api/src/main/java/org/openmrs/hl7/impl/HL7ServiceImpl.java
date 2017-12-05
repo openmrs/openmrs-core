@@ -82,7 +82,7 @@ import ca.uhn.hl7v2.parser.GenericParser;
 @Transactional
 public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(HL7ServiceImpl.class);
 	
 	private static HL7ServiceImpl instance;
 	

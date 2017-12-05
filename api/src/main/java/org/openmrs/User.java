@@ -40,7 +40,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	
 	public static final long serialVersionUID = 2L;
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(User.class);
 	
 	// Fields
 	

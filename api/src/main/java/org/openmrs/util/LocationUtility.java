@@ -23,8 +23,6 @@ import org.slf4j.LoggerFactory;
  */
 public class LocationUtility implements GlobalPropertyListener {
 	
-	private static Logger log = LoggerFactory.getLogger(LocationUtility.class);
-	
 	/**
 	 * Cached version of the system default location. This is cached so that we don't have to look
 	 * it up in the global property table every time it is requested for
