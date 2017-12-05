@@ -107,14 +107,13 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 					results.add(id);
 				}
 			}
-			
-			Iterator it2 = duplicates.entrySet().iterator();
-			while (it2.hasNext()) {
-				Map.Entry pairs = (Map.Entry) it2.next();
-				
+
+			for (Object o : duplicates.entrySet()) {
+				Map.Entry pairs = (Map.Entry) o;
+
 				HashSet values = (HashSet) pairs.getValue();
 				List<Integer> ids = new ArrayList<Integer>(values);
-				
+
 				int duplicateNameId = 1;
 				for (int i = 1; i < ids.size(); i++) {
 					String newName = pairs.getKey() + "_" + duplicateNameId;
@@ -124,9 +123,9 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 					do {
 						String sqlValidatorString = "select * from encounter_role where name = '" + newName + "'";
 						duplicateResult = DatabaseUtil.executeSQL(con, sqlValidatorString, true);
-						
+
 						if (!duplicateResult.isEmpty()) {
-							
+
 							duplicateNameId += 1;
 							newName = pairs.getKey() + "_" + duplicateNameId;
 							duplicateName = true;
@@ -134,23 +133,24 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 							duplicateName = false;
 						}
 					} while (duplicateName);
-					
+
 					pStmt = connection
-					        .prepareStatement("update encounter_role set name = ?, changed_by = ?, date_changed = ? where encounter_role_id = ?");
+							.prepareStatement(
+									"update encounter_role set name = ?, changed_by = ?, date_changed = ? where encounter_role_id = ?");
 					if (!duplicateResult.isEmpty()) {
 						pStmt.setString(1, newName);
 					}
-					
+
 					pStmt.setString(1, newName);
 					pStmt.setInt(2, DatabaseUpdater.getAuthenticatedUserId());
-					
+
 					Calendar cal = Calendar.getInstance();
 					Date date = new Date(cal.getTimeInMillis());
-					
+
 					pStmt.setDate(3, date);
 					pStmt.setInt(4, ids.get(i));
 					duplicateNameId += 1;
-					
+
 					pStmt.executeUpdate();
 				}
 			}

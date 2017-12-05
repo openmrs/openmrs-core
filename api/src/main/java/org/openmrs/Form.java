@@ -148,8 +148,8 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 				
 				for (FormField ff : fieldSet) {
 					if (ff.getFieldNumber() != null) {
-						if (ff.getFieldNumber().intValue() < fieldNum || fieldNum == 0) {
-							fieldNum = ff.getFieldNumber().intValue();
+						if (ff.getFieldNumber() < fieldNum || fieldNum == 0) {
+							fieldNum = ff.getFieldNumber();
 							next = ff;
 						}
 					} else {

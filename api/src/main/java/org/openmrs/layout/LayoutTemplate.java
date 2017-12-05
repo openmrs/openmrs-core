@@ -370,7 +370,7 @@ public abstract class LayoutTemplate {
 		List<String> strList = new ArrayList(strListArg);
 		for (String s : strList) {
 			for (String sInner : strList) {
-				if (sInner.indexOf(s) != -1 && s.length() < sInner.length() && !dup.contains(s)) {
+				if (sInner.contains(s) && s.length() < sInner.length() && !dup.contains(s)) {
 					dup.add(s);
 				}
 			}

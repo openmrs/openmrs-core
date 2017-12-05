@@ -144,9 +144,9 @@ public class Security {
 		int len = block.length;
 		int high = 0;
 		int low = 0;
-		for (int i = 0; i < len; i++) {
-			high = ((block[i] & 0xf0) >> 4);
-			low = (block[i] & 0x0f);
+		for (byte aBlock : block) {
+			high = ((aBlock & 0xf0) >> 4);
+			low = (aBlock & 0x0f);
 			buf.append(hexChars[high]);
 			buf.append(hexChars[low]);
 		}
@@ -195,8 +195,8 @@ public class Security {
 			return "";
 		}
 		StringBuilder s = new StringBuilder();
-		for (int i = 0; i < b.length; i++) {
-			s.append(Integer.toHexString(b[i] & 0xFF));
+		for (byte aB : b) {
+			s.append(Integer.toHexString(aB & 0xFF));
 		}
 		return new String(s);
 	}
