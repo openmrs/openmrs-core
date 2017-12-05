@@ -50,7 +50,7 @@ public interface VisitService extends OpenmrsService {
 	 * @should get all visit types based on include retired flag.
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_VISIT_TYPES })
-	public List<VisitType> getAllVisitTypes(boolean includeRetired);
+	List<VisitType> getAllVisitTypes(boolean includeRetired);
 	
 	/**
 	 * Gets a visit type by its visit type id.
@@ -133,7 +133,7 @@ public interface VisitService extends OpenmrsService {
 	 * @should return all unvoided visits
 	 */
 	@Authorized(PrivilegeConstants.GET_VISITS)
-	public List<Visit> getAllVisits() throws APIException;
+	List<Visit> getAllVisits() throws APIException;
 	
 	/**
 	 * Gets a visit by its visit id.
@@ -143,7 +143,7 @@ public interface VisitService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized(PrivilegeConstants.GET_VISITS)
-	public Visit getVisit(Integer visitId) throws APIException;
+	Visit getVisit(Integer visitId) throws APIException;
 	
 	/**
 	 * Gets a visit by its UUID.
@@ -154,7 +154,7 @@ public interface VisitService extends OpenmrsService {
 	 * @should return a visit matching the specified uuid
 	 */
 	@Authorized(PrivilegeConstants.GET_VISITS)
-	public Visit getVisitByUuid(String uuid) throws APIException;
+	Visit getVisitByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Creates or updates the given visit in the database.
@@ -173,7 +173,7 @@ public interface VisitService extends OpenmrsService {
 	 * @should should save new visit with encounters successfully
 	 */
 	@Authorized( { PrivilegeConstants.ADD_VISITS, PrivilegeConstants.EDIT_VISITS })
-	public Visit saveVisit(Visit visit) throws APIException;
+	Visit saveVisit(Visit visit) throws APIException;
 	
 	/**
 	 * Sets the stopDate of a given visit.
@@ -187,7 +187,7 @@ public interface VisitService extends OpenmrsService {
 	 * @should fail if validation errors are found
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_VISITS })
-	public Visit endVisit(Visit visit, Date stopDate) throws APIException;
+	Visit endVisit(Visit visit, Date stopDate) throws APIException;
 	
 	/**
 	 * Voids the given visit.
@@ -200,7 +200,7 @@ public interface VisitService extends OpenmrsService {
 	 * @should void encounters with visit
 	 */
 	@Authorized(PrivilegeConstants.DELETE_VISITS)
-	public Visit voidVisit(Visit visit, String reason) throws APIException;
+	Visit voidVisit(Visit visit, String reason) throws APIException;
 	
 	/**
 	 * Unvoids the given visit.
@@ -212,7 +212,7 @@ public interface VisitService extends OpenmrsService {
 	 * @should unvoid encounters voided with visit
 	 */
 	@Authorized(PrivilegeConstants.DELETE_VISITS)
-	public Visit unvoidVisit(Visit visit) throws APIException;
+	Visit unvoidVisit(Visit visit) throws APIException;
 	
 	/**
 	 * Completely erases a visit from the database. This is not reversible.
@@ -223,7 +223,7 @@ public interface VisitService extends OpenmrsService {
 	 * @should fail if the visit has encounters associated to it
 	 */
 	@Authorized(PrivilegeConstants.PURGE_VISITS)
-	public void purgeVisit(Visit visit) throws APIException;
+	void purgeVisit(Visit visit) throws APIException;
 	
 	/**
 	 * Gets the visits matching the specified arguments
@@ -253,10 +253,10 @@ public interface VisitService extends OpenmrsService {
 	 * @should not find any visits if none have given attribute values
 	 */
 	@Authorized(PrivilegeConstants.GET_VISITS)
-	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
-	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
-	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, Object> attributeValues,
-	        boolean includeInactive, boolean includeVoided) throws APIException;
+	List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
+			Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
+			Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, Object> attributeValues,
+			boolean includeInactive, boolean includeVoided) throws APIException;
 	
 	/**
 	 * Gets all unvoided visits for the specified patient
@@ -267,7 +267,7 @@ public interface VisitService extends OpenmrsService {
 	 * @should return all unvoided visits for the specified patient
 	 */
 	@Authorized(PrivilegeConstants.GET_VISITS)
-	public List<Visit> getVisitsByPatient(Patient patient) throws APIException;
+	List<Visit> getVisitsByPatient(Patient patient) throws APIException;
 	
 	/**
 	 * Convenience method that delegates to getVisitsByPatient(patient, false, false)
@@ -277,7 +277,7 @@ public interface VisitService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized(PrivilegeConstants.GET_VISITS)
-	public List<Visit> getActiveVisitsByPatient(Patient patient) throws APIException;
+	List<Visit> getActiveVisitsByPatient(Patient patient) throws APIException;
 	
 	/**
 	 * Gets all visits for the specified patient
@@ -292,7 +292,7 @@ public interface VisitService extends OpenmrsService {
 	 * @should return all active visits for the specified patient
 	 */
 	@Authorized(PrivilegeConstants.GET_VISITS)
-	public List<Visit> getVisitsByPatient(Patient patient, boolean includeInactive, boolean includeVoided)
+	List<Visit> getVisitsByPatient(Patient patient, boolean includeInactive, boolean includeVoided)
 	        throws APIException;
 	
 	/**
@@ -378,5 +378,5 @@ public interface VisitService extends OpenmrsService {
 	 * @should close all unvoided active visit matching the specified visit types
 	 */
 	@Authorized(PrivilegeConstants.EDIT_VISITS)
-	public void stopVisits(Date maximumStartDate);
+	void stopVisits(Date maximumStartDate);
 }

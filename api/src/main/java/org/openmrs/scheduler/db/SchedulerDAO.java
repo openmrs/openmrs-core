@@ -28,7 +28,7 @@ public interface SchedulerDAO {
 	 * @param taskDefinition task to be created
 	 * @throws DAOException
 	 */
-	public void createTask(TaskDefinition taskDefinition) throws DAOException;
+	void createTask(TaskDefinition taskDefinition) throws DAOException;
 	
 	/**
 	 * Get task by internal identifier
@@ -37,7 +37,7 @@ public interface SchedulerDAO {
 	 * @return task with given internal identifier
 	 * @throws DAOException
 	 */
-	public TaskDefinition getTask(Integer taskId) throws DAOException;
+	TaskDefinition getTask(Integer taskId) throws DAOException;
 	
 	/**
 	 * Update task
@@ -45,7 +45,7 @@ public interface SchedulerDAO {
 	 * @param task to be updated
 	 * @throws DAOException
 	 */
-	public void updateTask(TaskDefinition task) throws DAOException;
+	void updateTask(TaskDefinition task) throws DAOException;
 	
 	/**
 	 * Find all tasks in the database
@@ -53,7 +53,7 @@ public interface SchedulerDAO {
 	 * @return <code>List&lt;TaskDefinition&gt;</code> of all tasks
 	 * @throws DAOException
 	 */
-	public List<TaskDefinition> getTasks() throws DAOException;
+	List<TaskDefinition> getTasks() throws DAOException;
 	
 	/**
 	 * Delete task from database.
@@ -61,7 +61,7 @@ public interface SchedulerDAO {
 	 * @param task task to be deleted
 	 * @throws DAOException
 	 */
-	public void deleteTask(TaskDefinition task) throws DAOException;
+	void deleteTask(TaskDefinition task) throws DAOException;
 	
 	/**
 	 * Delete task from database.
@@ -69,7 +69,7 @@ public interface SchedulerDAO {
 	 * @param taskId identifier of task to be deleted
 	 * @throws DAOException
 	 */
-	public void deleteTask(Integer taskId) throws DAOException;
+	void deleteTask(Integer taskId) throws DAOException;
 	
 	/**
 	 * Get schedule by internal identifier
@@ -78,7 +78,7 @@ public interface SchedulerDAO {
 	 * @return schedule with given internal identifier
 	 * @throws DAOException
 	 */
-	public Schedule getSchedule(Integer scheduleId) throws DAOException;
+	Schedule getSchedule(Integer scheduleId) throws DAOException;
 	
 	/**
 	 * Get task by public name.
@@ -87,5 +87,5 @@ public interface SchedulerDAO {
 	 * @return task with given public name
 	 * @throws DAOException
 	 */
-	public TaskDefinition getTaskByName(String name) throws DAOException;
+	TaskDefinition getTaskByName(String name) throws DAOException;
 }

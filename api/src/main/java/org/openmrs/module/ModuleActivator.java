@@ -24,13 +24,13 @@ public interface ModuleActivator {
 	 * times i.e. whenever a new module gets started, at application startup or a developer chooses
 	 * to refresh the context.
 	 */
-	public void willRefreshContext();
+	void willRefreshContext();
 	
 	/**
 	 * Called after spring's application context is refreshed , this method is called multiple times
 	 * i.e. whenever a new module gets started and at application startup.
 	 */
-	public void contextRefreshed();
+	void contextRefreshed();
 	
 	/**
 	 * Called after a module has been loaded but before the application context is refreshed, at
@@ -38,22 +38,22 @@ public interface ModuleActivator {
 	 * <br>
 	 * This method will be authenticated as the Daemon user and have all privileges.
 	 */
-	public void willStart();
+	void willStart();
 	
 	/**
 	 * Called after a module is started, the application context has been refreshed and the module's
 	 * service methods are ready to be called.
 	 */
-	public void started();
+	void started();
 	
 	/**
 	 * Called just before a module is stopped
 	 */
-	public void willStop();
+	void willStop();
 	
 	/**
 	 * Called after a module is stopped
 	 */
-	public void stopped();
+	void stopped();
 	
 }

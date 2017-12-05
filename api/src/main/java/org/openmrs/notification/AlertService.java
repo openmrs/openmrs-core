@@ -35,7 +35,7 @@ public interface AlertService extends OpenmrsService {
 	 * 
 	 * @param dao The dao implementation to use
 	 */
-	public void setAlertDAO(AlertDAO dao);
+	void setAlertDAO(AlertDAO dao);
 	
 	/**
 	 * Save the given <code>alert</code> in the database
@@ -48,7 +48,7 @@ public interface AlertService extends OpenmrsService {
 	 * @should assign uuid to alert
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
-	public Alert saveAlert(Alert alert) throws APIException;
+	Alert saveAlert(Alert alert) throws APIException;
 	
 	/**
 	 * Get alert by internal identifier
@@ -57,7 +57,7 @@ public interface AlertService extends OpenmrsService {
 	 * @return alert with given internal identifier
 	 * @throws APIException
 	 */
-	public Alert getAlert(Integer alertId) throws APIException;
+	Alert getAlert(Integer alertId) throws APIException;
 	
 	/**
 	 * Completely delete the given alert from the database
@@ -66,7 +66,7 @@ public interface AlertService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
-	public void purgeAlert(Alert alert) throws APIException;
+	void purgeAlert(Alert alert) throws APIException;
 	
 	/**
 	 * Find all alerts for a user that have not expired
@@ -76,7 +76,7 @@ public interface AlertService extends OpenmrsService {
 	 * @see #getAlerts(User, boolean, boolean)
 	 * @throws APIException
 	 */
-	public List<Alert> getAllActiveAlerts(User user) throws APIException;
+	List<Alert> getAllActiveAlerts(User user) throws APIException;
 	
 	/**
 	 * Find the alerts that are not read and have not expired for a user This will probably be the
@@ -88,7 +88,7 @@ public interface AlertService extends OpenmrsService {
 	 * @return alerts that are unread and not expired
 	 * @throws APIException
 	 */
-	public List<Alert> getAlertsByUser(User user) throws APIException;
+	List<Alert> getAlertsByUser(User user) throws APIException;
 	
 	/**
 	 * Finds alerts for the given user with the given status
@@ -99,7 +99,7 @@ public interface AlertService extends OpenmrsService {
 	 * @return alerts for this user with these options
 	 * @throws APIException
 	 */
-	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws APIException;
+	List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws APIException;
 	
 	/**
 	 * Get all unexpired alerts for all users
@@ -107,7 +107,7 @@ public interface AlertService extends OpenmrsService {
 	 * @return list of unexpired alerts
 	 * @throws APIException
 	 */
-	public List<Alert> getAllAlerts() throws APIException;
+	List<Alert> getAllAlerts() throws APIException;
 	
 	/**
 	 * Get alerts for all users while obeying includeExpired
@@ -116,7 +116,7 @@ public interface AlertService extends OpenmrsService {
 	 * @return list of alerts
 	 * @throws APIException
 	 */
-	public List<Alert> getAllAlerts(boolean includeExpired) throws APIException;
+	List<Alert> getAllAlerts(boolean includeExpired) throws APIException;
 	
 	/**
 	 * Sends an alert to all superusers
@@ -129,5 +129,5 @@ public interface AlertService extends OpenmrsService {
 	 * @should add an alert to the database
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
-	public void notifySuperUsers(String messageCode, Exception cause, Object... messageArguments);
+	void notifySuperUsers(String messageCode, Exception cause, Object... messageArguments);
 }

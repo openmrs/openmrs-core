@@ -30,7 +30,7 @@ public interface FormDAO {
 	/**
 	 * @see FormService#saveForm(Form)
 	 */
-	public Form saveForm(Form form) throws DAOException;
+	Form saveForm(Form form) throws DAOException;
 	
 	/**
 	 * Creates new form from the given <code>Form</code>
@@ -39,7 +39,7 @@ public interface FormDAO {
 	 * @return newly duplicated <code>Form</code>
 	 * @throws DAOException
 	 */
-	public Form duplicateForm(Form form) throws DAOException;
+	Form duplicateForm(Form form) throws DAOException;
 	
 	/**
 	 * Get form by internal form identifier
@@ -48,7 +48,7 @@ public interface FormDAO {
 	 * @return requested <code>Form</code>
 	 * @throws DAOException
 	 */
-	public Form getForm(Integer formId) throws DAOException;
+	Form getForm(Integer formId) throws DAOException;
 	
 	/**
 	 * Get form by exact name and version
@@ -58,7 +58,7 @@ public interface FormDAO {
 	 * @return the form with the exact name and version given
 	 * @throws DAOException
 	 */
-	public Form getForm(String name, String version) throws DAOException;
+	Form getForm(String name, String version) throws DAOException;
 	
 	/**
 	 * Gets all forms with the given name, sorted (alphabetically) by descending version
@@ -67,7 +67,7 @@ public interface FormDAO {
 	 * @return All forms with the given name, sorted by (alphabetically) by descending version
 	 * @throws DAOException
 	 */
-	public List<Form> getFormsByName(String name) throws DAOException;
+	List<Form> getFormsByName(String name) throws DAOException;
 	
 	/**
 	 * Delete form from database. This is included for troubleshooting and low-level system
@@ -81,7 +81,7 @@ public interface FormDAO {
 	 * @param form Form to delete
 	 * @throws DAOException
 	 */
-	public void deleteForm(Form form) throws DAOException;
+	void deleteForm(Form form) throws DAOException;
 	
 	/**
 	 * Get all field types
@@ -90,7 +90,7 @@ public interface FormDAO {
 	 * @return List&lt;FieldTypes&gt; object with all FieldTypes, possibly including retired ones
 	 * @throws DAOException
 	 */
-	public List<FieldType> getAllFieldTypes(boolean includeRetired) throws DAOException;
+	List<FieldType> getAllFieldTypes(boolean includeRetired) throws DAOException;
 	
 	/**
 	 * Get fieldType by internal identifier
@@ -99,7 +99,7 @@ public interface FormDAO {
 	 * @return The FieldType with specified internal identifier
 	 * @throws DAOException
 	 */
-	public FieldType getFieldType(Integer fieldTypeId) throws DAOException;
+	FieldType getFieldType(Integer fieldTypeId) throws DAOException;
 	
 	/**
 	 * Returns all forms in the database, possibly including retired ones
@@ -108,7 +108,7 @@ public interface FormDAO {
 	 * @return List&lt;Form&gt; object of all forms, possibly including retired ones
 	 * @throws DAOException
 	 */
-	public List<Form> getAllForms(boolean includeRetired) throws DAOException;
+	List<Form> getAllForms(boolean includeRetired) throws DAOException;
 	
 	/**
 	 * Returns all FormFields in the database
@@ -116,13 +116,13 @@ public interface FormDAO {
 	 * @return List&lt;FormField&gt; object of all FormFields in the database
 	 * @throws DAOException
 	 */
-	public List<FormField> getAllFormFields() throws DAOException;
+	List<FormField> getAllFormFields() throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.FormService#getFormField(org.openmrs.Form, org.openmrs.Concept,
 	 *      java.util.Collection, boolean)
 	 */
-	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
+	FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
 	        throws DAOException;
 	
 	/**
@@ -130,7 +130,7 @@ public interface FormDAO {
 	 * @return list of fields in the database matching search phrase
 	 * @throws DAOException
 	 */
-	public List<Field> getFields(String search) throws DAOException;
+	List<Field> getFields(String search) throws DAOException;
 	
 	/**
 	 * Returns all fields in the database, possibly including retired ones
@@ -139,17 +139,17 @@ public interface FormDAO {
 	 * @return all fields in the database, possibly including retired ones
 	 * @throws DAOException
 	 */
-	public List<Field> getAllFields(boolean includeRetired) throws DAOException;
+	List<Field> getAllFields(boolean includeRetired) throws DAOException;
 	
 	/**
 	 * @see FormService#getField(Integer)
 	 */
-	public Field getField(Integer fieldId) throws DAOException;
+	Field getField(Integer fieldId) throws DAOException;
 	
 	/**
 	 * @see FormService#saveField(Field)
 	 */
-	public Field saveField(Field field) throws DAOException;
+	Field saveField(Field field) throws DAOException;
 	
 	/**
 	 * Deletes a field from the database.
@@ -159,17 +159,17 @@ public interface FormDAO {
 	 * @param field the Field to delete
 	 * @throws DAOException
 	 */
-	public void deleteField(Field field) throws DAOException;
+	void deleteField(Field field) throws DAOException;
 	
 	/**
 	 * @see FormService#getFormField(Integer)
 	 */
-	public FormField getFormField(Integer formFieldId) throws DAOException;
+	FormField getFormField(Integer formFieldId) throws DAOException;
 	
 	/**
 	 * @see FormService#saveFormField(FormField)
 	 */
-	public FormField saveFormField(FormField formField) throws DAOException;
+	FormField saveFormField(FormField formField) throws DAOException;
 	
 	/**
 	 * Deletes a FormField from the database. This will fail if any other entities reference this
@@ -178,7 +178,7 @@ public interface FormDAO {
 	 * @param formField the FormField to delete
 	 * @throws DAOException
 	 */
-	public void deleteFormField(FormField formField) throws DAOException;
+	void deleteFormField(FormField formField) throws DAOException;
 	
 	/**
 	 * Returns all fields that match a broad range of (nullable) criteria
@@ -201,9 +201,9 @@ public interface FormDAO {
 	 * @param retired <code>Boolean</code> retired status that fields must match
 	 * @return All Fields that match the criteria
 	 */
-	public List<Field> getFields(Collection<Form> forms, Collection<FieldType> fieldTypes, Collection<Concept> concepts,
-	        Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
-	        Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer, Boolean retired)
+	List<Field> getFields(Collection<Form> forms, Collection<FieldType> fieldTypes, Collection<Concept> concepts,
+			Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
+			Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer, Boolean retired)
 	        throws DAOException;
 	
 	/**
@@ -213,7 +213,7 @@ public interface FormDAO {
 	 * @param concept the <code>Concept</code> to search through form fields for
 	 * @return forms that contain a form field referencing the given concept
 	 */
-	public List<Form> getFormsContainingConcept(Concept concept) throws DAOException;
+	List<Form> getFormsContainingConcept(Concept concept) throws DAOException;
 	
 	/**
 	 * Gets all forms that match all the criteria. Expects the list objects to be non-null
@@ -232,37 +232,37 @@ public interface FormDAO {
 	 *      java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection,
 	 *      java.util.Collection)
 	 */
-	public List<Form> getForms(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
-	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
-	        Collection<Field> fields) throws DAOException;
+	List<Form> getForms(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
+			Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
+			Collection<Field> fields) throws DAOException;
 	
 	/**
 	 * @see #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)
 	 */
-	public Integer getFormCount(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
-	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
-	        Collection<Field> fields) throws DAOException;
+	Integer getFormCount(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
+			Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
+			Collection<Field> fields) throws DAOException;
 	
 	/**
 	 * Delete the given field type from the database
 	 * 
 	 * @param fieldType FieldType to delete
 	 */
-	public void deleteFieldType(FieldType fieldType) throws DAOException;
+	void deleteFieldType(FieldType fieldType) throws DAOException;
 	
 	/**
 	 * @param uuid
 	 * @return field or null
 	 */
-	public Field getFieldByUuid(String uuid);
+	Field getFieldByUuid(String uuid);
 	
-	public FieldAnswer getFieldAnswerByUuid(String uuid);
+	FieldAnswer getFieldAnswerByUuid(String uuid);
 	
 	/**
 	 * @param uuid
 	 * @return field type or null
 	 */
-	public FieldType getFieldTypeByUuid(String uuid);
+	FieldType getFieldTypeByUuid(String uuid);
 	
 	/**
 	 * Return fieldType  associated with given name
@@ -270,19 +270,19 @@ public interface FormDAO {
 	 * @param name Name of the fileType to query
 	 * @return fieldType object associate with given name
 	 */
-	public FieldType getFieldTypeByName(String name);
+	FieldType getFieldTypeByName(String name);
 	
 	/**
 	 * @param uuid
 	 * @return form or null
 	 */
-	public Form getFormByUuid(String uuid);
+	Form getFormByUuid(String uuid);
 	
 	/**
 	 * @param uuid
 	 * @return form field or null
 	 */
-	public FormField getFormFieldByUuid(String uuid);
+	FormField getFormFieldByUuid(String uuid);
 	
 	/**
 	 * Save the given field type to the database
@@ -290,7 +290,7 @@ public interface FormDAO {
 	 * @param fieldType FieldType to save to the database
 	 * @return the newly saved field type
 	 */
-	public FieldType saveFieldType(FieldType fieldType) throws DAOException;
+	FieldType saveFieldType(FieldType fieldType) throws DAOException;
 	
 	/**
 	 * Return a list of FormFields given a Field
@@ -298,42 +298,42 @@ public interface FormDAO {
 	 * @param field
 	 * @return List of FormFields
 	 */
-	public List<FormField> getFormFieldsByField(Field field);
+	List<FormField> getFormFieldsByField(Field field);
 	
 	/**
 	 * @see FormService#getFormResource(java.lang.Integer) 
 	 * @since 1.9
 	 */
-	public FormResource getFormResource(Integer formResourceId);
+	FormResource getFormResource(Integer formResourceId);
 	
 	/**
 	 * @see FormService#getFormResourceByUuid(java.lang.String) 
 	 * @since 1.9
 	 */
-	public FormResource getFormResourceByUuid(String uuid);
+	FormResource getFormResourceByUuid(String uuid);
 	
 	/**
 	 * @see FormService#getFormResource(org.openmrs.Form, java.lang.String)
 	 * @since 1.9
 	 */
-	public FormResource getFormResource(Form form, String name);
+	FormResource getFormResource(Form form, String name);
 	
 	/**
 	 * @see FormService#getFormResourcesForForm(org.openmrs.Form)
 	 * @since 1.9
 	 */
-	public Collection<FormResource> getFormResourcesForForm(Form form);
+	Collection<FormResource> getFormResourcesForForm(Form form);
 	
 	/**
 	 * @see FormService#saveFormResource(org.openmrs.FormResource)
 	 * @since 1.9
 	 */
-	public FormResource saveFormResource(FormResource formResource);
+	FormResource saveFormResource(FormResource formResource);
 	
 	/**
 	 * @see FormService#purgeFormResource(org.openmrs.FormResource)
 	 * @since 1.9
 	 */
-	public void deleteFormResource(FormResource formResource);
+	void deleteFormResource(FormResource formResource);
 	
 }

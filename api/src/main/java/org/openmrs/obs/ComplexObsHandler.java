@@ -32,17 +32,17 @@ import org.openmrs.api.APIException;
 public interface ComplexObsHandler {
 	
 	// Complex observation views
-	public static final String RAW_VIEW = "RAW_VIEW";
+	String RAW_VIEW = "RAW_VIEW";
 	
-	public static final String TITLE_VIEW = "TITLE_VIEW";
+	String TITLE_VIEW = "TITLE_VIEW";
 	
-	public static final String TEXT_VIEW = "TEXT_VIEW";
+	String TEXT_VIEW = "TEXT_VIEW";
 	
-	public static final String HTML_VIEW = "HTML_VIEW";
+	String HTML_VIEW = "HTML_VIEW";
 	
-	public static final String PREVIEW_VIEW = "PREVIEW_VIEW";
+	String PREVIEW_VIEW = "PREVIEW_VIEW";
 	
-	public static final String URI_VIEW = "URI_VIEW";
+	String URI_VIEW = "URI_VIEW";
 	
 	/**
 	 * Save a complex obs. This extracts the ComplexData from an Obs, stores it to a location
@@ -51,7 +51,7 @@ public interface ComplexObsHandler {
 	 * @param obs
 	 * @return the Obs with the ComplexData nullified
 	 */
-	public Obs saveObs(Obs obs) throws APIException;
+	Obs saveObs(Obs obs) throws APIException;
 	
 	/**
 	 * Fetches the ComplexData from the location indicated from Obs.value_complex, attaches
@@ -65,7 +65,7 @@ public interface ComplexObsHandler {
 	 * @return the obs with complex data filled in
 	 * @see org.openmrs.util.OpenmrsConstants
 	 */
-	public Obs getObs(Obs obs, String view);
+	Obs getObs(Obs obs, String view);
 	
 	/**
 	 * Completely removes the ComplexData Object from its storage location. <br>
@@ -75,7 +75,7 @@ public interface ComplexObsHandler {
 	 * 
 	 * @param obs
 	 */
-	public boolean purgeComplexData(Obs obs);
+	boolean purgeComplexData(Obs obs);
 	
 	/**
 	 * Supported views getter
@@ -83,7 +83,7 @@ public interface ComplexObsHandler {
 	 * @return all views supported by this handler
 	 * @since 1.12
 	 */
-	public String[] getSupportedViews();
+	String[] getSupportedViews();
 	
 	/**
 	 * View support check
@@ -92,5 +92,5 @@ public interface ComplexObsHandler {
 	 * @return true if given view is supported by this handler
 	 * @since 1.12
 	 */
-	public boolean supportsView(String view);
+	boolean supportsView(String view);
 }

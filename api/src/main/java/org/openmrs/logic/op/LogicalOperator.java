@@ -14,10 +14,10 @@ package org.openmrs.logic.op;
  */
 public interface LogicalOperator extends Operator {
 	
-	public static final LogicalOperator AND = new And();
+	LogicalOperator AND = new And();
 	
-	public static final LogicalOperator OR = new Or();
+	LogicalOperator OR = new Or();
 	
-	public static final LogicalOperator NOT = new Not();
+	LogicalOperator NOT = new Not();
 	
 }

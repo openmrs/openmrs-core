@@ -39,6 +39,6 @@ public interface RequiredDataHandler<O extends OpenmrsObject> {
 	 * @param other (optional) would be the second argument in the save/void/unvoid/etc method, if
 	 *            exists
 	 */
-	public void handle(O openmrsObject, User currentUser, Date currentDate, String other);
+	void handle(O openmrsObject, User currentUser, Date currentDate, String other);
 	
 }

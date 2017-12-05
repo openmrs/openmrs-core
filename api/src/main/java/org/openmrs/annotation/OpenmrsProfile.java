@@ -29,7 +29,7 @@ public @interface OpenmrsProfile {
 	/**
 	 * @since 1.11.3, 1.10.2, 1.9.9
 	 */
-	public String openmrsPlatformVersion() default "";
+	String openmrsPlatformVersion() default "";
 	
-	public String[] modules() default {};
+	String[] modules() default {};
 }

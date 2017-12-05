@@ -29,21 +29,21 @@ public interface SchedulerService extends OpenmrsService {
 	 * @return the <code>String</code> status of the task with the given identifier
 	 */
 	@Authorized( { "Manage Scheduler" })
-	public String getStatus(Integer id);
+	String getStatus(Integer id);
 	
 	/**
 	 * Start all tasks that are scheduled to run on startup.
 	 */
 	@Override
 	@Authorized( { "Manage Scheduler" })
-	public void onStartup();
+	void onStartup();
 	
 	/**
 	 * Stop all tasks and clean up the scheduler instance.
 	 */
 	@Override
 	@Authorized( { "Manage Scheduler" })
-	public void onShutdown();
+	void onShutdown();
 	
 	/**
 	 * Cancel a scheduled task.
@@ -51,7 +51,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param task the <code>TaskDefinition</code> for the task to cancel
 	 */
 	@Authorized( { "Manage Scheduler" })
-	public void shutdownTask(TaskDefinition task) throws SchedulerException;
+	void shutdownTask(TaskDefinition task) throws SchedulerException;
 	
 	/**
 	 * Start a scheduled task as specified in a TaskDefinition.
@@ -61,7 +61,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *         scheduling the task
 	 */
 	@Authorized( { "Manage Scheduler" })
-	public Task scheduleTask(TaskDefinition task) throws SchedulerException;
+	Task scheduleTask(TaskDefinition task) throws SchedulerException;
 	
 	/**
 	 * Stop and start a scheduled task.
@@ -69,14 +69,14 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param task the <code>TaskDefinition</code> to reschedule
 	 */
 	@Authorized( { "Manage Scheduler" })
-	public Task rescheduleTask(TaskDefinition task) throws SchedulerException;
+	Task rescheduleTask(TaskDefinition task) throws SchedulerException;
 	
 	/**
 	 * Loop over all currently started tasks and cycle them. This should be done after the
 	 * classloader has been changed (e.g. during module start/stop)
 	 */
 	@Authorized( { "Manage Scheduler" })
-	public void rescheduleAllTasks() throws SchedulerException;
+	void rescheduleAllTasks() throws SchedulerException;
 	
 	/**
 	 * Get scheduled tasks.
@@ -84,7 +84,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @return all scheduled tasks
 	 */
 	@Authorized( { "Manage Scheduler" })
-	public Collection<TaskDefinition> getScheduledTasks();
+	Collection<TaskDefinition> getScheduledTasks();
 	
 	/**
 	 * Get the list of tasks that are available to be scheduled. Eventually, these should go in the
@@ -93,7 +93,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @return all available tasks
 	 */
 	@Authorized( { "Manage Scheduler" })
-	public Collection<TaskDefinition> getRegisteredTasks();
+	Collection<TaskDefinition> getRegisteredTasks();
 	
 	/**
 	 * Get the task with the given identifier.
@@ -101,7 +101,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param id the identifier of the task
 	 */
 	@Authorized( { "Manage Scheduler" })
-	public TaskDefinition getTask(Integer id);
+	TaskDefinition getTask(Integer id);
 	
 	/**
 	 * Get the task with the given name.
@@ -109,7 +109,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param name name of the task
 	 */
 	@Authorized( { "Manage Scheduler" })
-	public TaskDefinition getTaskByName(String name);
+	TaskDefinition getTaskByName(String name);
 	
 	/**
 	 * Delete the task with the given identifier.
@@ -117,7 +117,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param id the identifier of the task
 	 */
 	@Authorized( { "Manage Scheduler" })
-	public void deleteTask(Integer id);
+	void deleteTask(Integer id);
 	
 	/**
 	 * Create the given task
@@ -127,34 +127,34 @@ public interface SchedulerService extends OpenmrsService {
 	 */
 	@Authorized( { "Manage Scheduler" })
 	@Logging(ignore = true)
-	public void saveTaskDefinition(TaskDefinition task);
+	void saveTaskDefinition(TaskDefinition task);
 	
 	/**
 	 * Return SchedulerConstants
 	 * 
 	 * @return SortedMap&lt;String, String&gt;
 	 */
-	public SortedMap<String, String> getSystemVariables();
+	SortedMap<String, String> getSystemVariables();
 	
 	/**
 	 * Save the state of the scheduler service to Memento
 	 * 
 	 * @return OpenmrsMemento that contains data about this serive.
 	 */
-	public OpenmrsMemento saveToMemento();
+	OpenmrsMemento saveToMemento();
 	
 	/**
 	 * Restore the scheduler service to state defined by Memento
 	 * 
 	 * @param memento
 	 */
-	public void restoreFromMemento(OpenmrsMemento memento);
+	void restoreFromMemento(OpenmrsMemento memento);
 	
 	/**
 	 * Schedules a task for execution if not already running
 	 * @param taskDef
 	 * @since 1.10
 	 */
-	public void scheduleIfNotRunning(TaskDefinition taskDef);
+	void scheduleIfNotRunning(TaskDefinition taskDef);
 	
 }

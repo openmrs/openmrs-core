@@ -23,5 +23,5 @@ public interface OrderNumberGenerator {
 	 * @should always return unique orderNumbers when called multiple times without saving orders
 	 * @param orderContext
 	 */
-	public String getNewOrderNumber(OrderContext orderContext);
+	String getNewOrderNumber(OrderContext orderContext);
 }

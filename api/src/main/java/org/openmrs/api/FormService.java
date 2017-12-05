@@ -41,7 +41,7 @@ public interface FormService extends OpenmrsService {
 	 * @should throw an error when trying to save a new form while forms are locked
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
-	public Form saveForm(Form form) throws APIException;
+	Form saveForm(Form form) throws APIException;
 	
 	/**
 	 * Get form by internal form identifier
@@ -53,7 +53,7 @@ public interface FormService extends OpenmrsService {
 	 * @should return the requested form
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public Form getForm(Integer formId) throws APIException;
+	Form getForm(Integer formId) throws APIException;
 	
 	/**
 	 * Get form by exact name match. If there are multiple forms with this name, then this returns
@@ -65,7 +65,7 @@ public interface FormService extends OpenmrsService {
 	 * @should return null if no form has the exact form name
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public Form getForm(String name) throws APIException;
+	Form getForm(String name) throws APIException;
 	
 	/**
 	 * Get Form by its UUID
@@ -75,7 +75,7 @@ public interface FormService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	public Form getFormByUuid(String uuid) throws APIException;
+	Form getFormByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Get form by exact name &amp; version match. If version is null, then this method behaves like
@@ -88,7 +88,7 @@ public interface FormService extends OpenmrsService {
 	 * @should get the specific version of the form with the given name
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public Form getForm(String name, String version) throws APIException;
+	Form getForm(String name, String version) throws APIException;
 	
 	/**
 	 * Gets all Forms, including retired ones.
@@ -98,7 +98,7 @@ public interface FormService extends OpenmrsService {
 	 * @should return all forms including retired
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public List<Form> getAllForms() throws APIException;
+	List<Form> getAllForms() throws APIException;
 	
 	/**
 	 * Gets all forms, possibly including retired ones
@@ -110,7 +110,7 @@ public interface FormService extends OpenmrsService {
 	 * @should not return retired forms if includeRetired is false
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public List<Form> getAllForms(boolean includeRetired) throws APIException;
+	List<Form> getAllForms(boolean includeRetired) throws APIException;
 	
 	/**
 	 * Gets all forms with name similar to the given name. (The precise fuzzy matching algorithm is
@@ -124,7 +124,7 @@ public interface FormService extends OpenmrsService {
 	 * @should only return one form per name if onlyLatestVersion is true
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public List<Form> getForms(String fuzzyName, boolean onlyLatestVersion);
+	List<Form> getForms(String fuzzyName, boolean onlyLatestVersion);
 	
 	/**
 	 * Gets all forms that match all the (nullable) criteria
@@ -151,9 +151,9 @@ public interface FormService extends OpenmrsService {
 	 * @should return forms that have any matching formFields in containingAnyFormField
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public List<Form> getForms(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
-	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
-	        Collection<Field> fields);
+	List<Form> getForms(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
+			Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
+			Collection<Field> fields);
 	
 	/**
 	 * Same as
@@ -163,9 +163,9 @@ public interface FormService extends OpenmrsService {
 	 * @see #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public Integer getFormCount(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
-	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
-	        Collection<Field> fields);
+	Integer getFormCount(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
+			Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
+			Collection<Field> fields);
 	
 	/**
 	 * Returns all published forms (not including retired ones)
@@ -175,7 +175,7 @@ public interface FormService extends OpenmrsService {
 	 * @should only return published forms that are not retired
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public List<Form> getPublishedForms() throws APIException;
+	List<Form> getPublishedForms() throws APIException;
 		
 	/**
 	 * Audit form, consolidate similar fields
@@ -184,7 +184,7 @@ public interface FormService extends OpenmrsService {
 	 * @should should merge fields with similar attributes
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
-	public int mergeDuplicateFields() throws APIException;
+	int mergeDuplicateFields() throws APIException;
 	
 	/**
 	 * Duplicate this form and form_fields associated with this form
@@ -198,7 +198,7 @@ public interface FormService extends OpenmrsService {
 	 * @should throw an error when trying to duplicate a form while forms are locked
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
-	public Form duplicateForm(Form form) throws APIException;
+	Form duplicateForm(Form form) throws APIException;
 	
 	/**
 	 * Retires the Form, leaving it in the database, but removing it from data entry screens
@@ -209,7 +209,7 @@ public interface FormService extends OpenmrsService {
 	 * @should set the retired bit before saving
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
-	public void retireForm(Form form, String reason) throws APIException;
+	void retireForm(Form form, String reason) throws APIException;
 	
 	/**
 	 * Unretires a Form that had previous been retired.
@@ -219,7 +219,7 @@ public interface FormService extends OpenmrsService {
 	 * @should unset the retired bit before saving
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
-	public void unretireForm(Form form) throws APIException;
+	void unretireForm(Form form) throws APIException;
 	
 	/**
 	 * Completely remove a Form from the database. This is not reversible. It will fail if this form
@@ -232,7 +232,7 @@ public interface FormService extends OpenmrsService {
 	 * @should throw an error when trying to delete a form while forms are locked
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
-	public void purgeForm(Form form) throws APIException;
+	void purgeForm(Form form) throws APIException;
 	
 	/**
 	 * Completely remove a Form from the database. This is not reversible. !! WARNING: Calling this
@@ -244,7 +244,7 @@ public interface FormService extends OpenmrsService {
 	 * @should throw APIException if cascade is true
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
-	public void purgeForm(Form form, boolean cascade) throws APIException;
+	void purgeForm(Form form, boolean cascade) throws APIException;
 		
 	/**
 	 * Get all field types in the database including the retired ones
@@ -254,7 +254,7 @@ public interface FormService extends OpenmrsService {
 	 * @should also get retired field types
 	 */
 	@Authorized(PrivilegeConstants.GET_FIELD_TYPES)
-	public List<FieldType> getAllFieldTypes() throws APIException;
+	List<FieldType> getAllFieldTypes() throws APIException;
 	
 	/**
 	 * Get all field types in the database with or without retired ones
@@ -266,7 +266,7 @@ public interface FormService extends OpenmrsService {
 	 * @should get all field types excluding retired when includeRetired equals false
 	 */
 	@Authorized(PrivilegeConstants.GET_FIELD_TYPES)
-	public List<FieldType> getAllFieldTypes(boolean includeRetired) throws APIException;
+	List<FieldType> getAllFieldTypes(boolean includeRetired) throws APIException;
 	
 	/**
 	 * Get fieldType by internal identifier
@@ -277,7 +277,7 @@ public interface FormService extends OpenmrsService {
 	 * @should return null when no field type matching given id
 	 */
 	@Authorized(PrivilegeConstants.GET_FIELD_TYPES)
-	public FieldType getFieldType(Integer fieldTypeId) throws APIException;
+	FieldType getFieldType(Integer fieldTypeId) throws APIException;
 	
 	/**
 	 * Get FieldType by its UUID
@@ -287,7 +287,7 @@ public interface FormService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	public FieldType getFieldTypeByUuid(String uuid) throws APIException;
+	FieldType getFieldTypeByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Get FieldType by its name
@@ -297,7 +297,7 @@ public interface FormService extends OpenmrsService {
 	 * @should find object given valid name
 	 * @should return null if no object found with given name
 	 */
-	public FieldType getFieldTypeByName(String name) throws APIException;
+	FieldType getFieldTypeByName(String name) throws APIException;
 	
 	/**
 	 * Returns all forms that contain the given concept as a field in their schema. (includes
@@ -310,7 +310,7 @@ public interface FormService extends OpenmrsService {
 	 * @should get all forms for concept
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public List<Form> getFormsContainingConcept(Concept concept) throws APIException;
+	List<Form> getFormsContainingConcept(Concept concept) throws APIException;
 	
 	/**
 	 * Returns all FormFields in the database
@@ -320,7 +320,7 @@ public interface FormService extends OpenmrsService {
 	 * @should get all form fields including retired
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public List<FormField> getAllFormFields() throws APIException;
+	List<FormField> getAllFormFields() throws APIException;
 	
 	/**
 	 * Find all Fields whose names are similar to or contain the given phrase. (The exact similarity
@@ -335,7 +335,7 @@ public interface FormService extends OpenmrsService {
 	 * @should return fields in alphabetical order by name
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public List<Field> getFields(String fuzzySearchPhrase) throws APIException;
+	List<Field> getFields(String fuzzySearchPhrase) throws APIException;
 	
 	/**
 	 * Finds all Fields that point to the given concept, including retired ones.
@@ -346,7 +346,7 @@ public interface FormService extends OpenmrsService {
 	 * @should get fields with concept matching given concept
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public List<Field> getFieldsByConcept(Concept concept) throws APIException;
+	List<Field> getFieldsByConcept(Concept concept) throws APIException;
 	
 	/**
 	 * Fetches all Fields in the database, including retired ones
@@ -356,7 +356,7 @@ public interface FormService extends OpenmrsService {
 	 * @should get all fields including retired
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public List<Field> getAllFields() throws APIException;
+	List<Field> getAllFields() throws APIException;
 	
 	/**
 	 * Fetches all Fields in the database, possibly including retired ones
@@ -368,7 +368,7 @@ public interface FormService extends OpenmrsService {
 	 * @should get all fields excluding retired when includeRetired is false
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public List<Field> getAllFields(boolean includeRetired) throws APIException;
+	List<Field> getAllFields(boolean includeRetired) throws APIException;
 	
 	/**
 	 * Returns all Fields that match these (nullable) criteria
@@ -392,9 +392,9 @@ public interface FormService extends OpenmrsService {
 	 * @should get fields with selectMultiple equals true when given selectMultiple equals true
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public List<Field> getFields(Collection<Form> forms, Collection<FieldType> fieldTypes, Collection<Concept> concepts,
-	        Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
-	        Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer, Boolean retired)
+	List<Field> getFields(Collection<Form> forms, Collection<FieldType> fieldTypes, Collection<Concept> concepts,
+			Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
+			Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer, Boolean retired)
 	        throws APIException;
 	
 	/**
@@ -406,7 +406,7 @@ public interface FormService extends OpenmrsService {
 	 * @should return null if no field exists with given fieldId
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public Field getField(Integer fieldId) throws APIException;
+	Field getField(Integer fieldId) throws APIException;
 	
 	/**
 	 * Get Field by its UUID
@@ -416,7 +416,7 @@ public interface FormService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	public Field getFieldByUuid(String uuid) throws APIException;
+	Field getFieldByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Get FieldAnswer by its UUID
@@ -426,7 +426,7 @@ public interface FormService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	public FieldAnswer getFieldAnswerByUuid(String uuid) throws APIException;
+	FieldAnswer getFieldAnswerByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Creates or updates the given Field
@@ -438,7 +438,7 @@ public interface FormService extends OpenmrsService {
 	 * @should update an existing field
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
-	public Field saveField(Field field) throws APIException;
+	Field saveField(Field field) throws APIException;
 	
 	/**
 	 * Completely removes a Field from the database. Not reversible.
@@ -448,7 +448,7 @@ public interface FormService extends OpenmrsService {
 	 * @should delete given field successfully
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
-	public void purgeField(Field field) throws APIException;
+	void purgeField(Field field) throws APIException;
 	
 	/**
 	 * Completely removes a Field from the database. Not reversible. !! WARNING: calling this with
@@ -460,7 +460,7 @@ public interface FormService extends OpenmrsService {
 	 * @should throw APIException if cascade is true
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
-	public void purgeField(Field field, boolean cascade) throws APIException;
+	void purgeField(Field field, boolean cascade) throws APIException;
 	
 	/**
 	 * Gets a FormField by internal database id
@@ -471,7 +471,7 @@ public interface FormService extends OpenmrsService {
 	 * @should return null if no formField exists with given id
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public FormField getFormField(Integer formFieldId) throws APIException;
+	FormField getFormField(Integer formFieldId) throws APIException;
 	
 	/**
 	 * Get FormField by its UUID
@@ -481,7 +481,7 @@ public interface FormService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	public FormField getFormFieldByUuid(String uuid) throws APIException;
+	FormField getFormFieldByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Finds the FormField defined for this form/concept combination while discounting any form
@@ -506,7 +506,7 @@ public interface FormService extends OpenmrsService {
 	 * @should ignore formFields passed to ignoreFormFields
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
+	FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
 	        throws APIException;
 	
 	/**
@@ -520,7 +520,7 @@ public interface FormService extends OpenmrsService {
 	 * @should inject form fields from serializable complex obs handlers
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
-	public FormField saveFormField(FormField formField) throws APIException;
+	FormField saveFormField(FormField formField) throws APIException;
 	
 	/**
 	 * Completely removes the given FormField from the database. This is not reversible
@@ -530,7 +530,7 @@ public interface FormService extends OpenmrsService {
 	 * @should delete the given form field successfully
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
-	public void purgeFormField(FormField formField) throws APIException;
+	void purgeFormField(FormField formField) throws APIException;
 	
 	/**
 	 * Retires field
@@ -541,7 +541,7 @@ public interface FormService extends OpenmrsService {
 	 * @should set the retired bit before saving
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
-	public Field retireField(Field field) throws APIException;
+	Field retireField(Field field) throws APIException;
 	
 	/**
 	 * Unretires field
@@ -552,7 +552,7 @@ public interface FormService extends OpenmrsService {
 	 * @should unset the retired bit before saving
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
-	public Field unretireField(Field field) throws APIException;
+	Field unretireField(Field field) throws APIException;
 	
 	/**
 	 * Saves the given field type to the database
@@ -564,7 +564,7 @@ public interface FormService extends OpenmrsService {
 	 * @should update existing field type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FIELD_TYPES)
-	public FieldType saveFieldType(FieldType fieldType) throws APIException;
+	FieldType saveFieldType(FieldType fieldType) throws APIException;
 	
 	/**
 	 * Deletes the given field type from the database. This should not be done. It is preferred to
@@ -575,7 +575,7 @@ public interface FormService extends OpenmrsService {
 	 * @should delete the given field type successfully
 	 */
 	@Authorized(PrivilegeConstants.PURGE_FIELD_TYPES)
-	public void purgeFieldType(FieldType fieldType) throws APIException;
+	void purgeFieldType(FieldType fieldType) throws APIException;
 	
 	/**
 	 * Finds a FormResource by its id
@@ -585,7 +585,7 @@ public interface FormService extends OpenmrsService {
 	 * @should return null if no FormResource found
 	 * @since 1.9
 	 */
-	public FormResource getFormResource(Integer formResourceId) throws APIException;
+	FormResource getFormResource(Integer formResourceId) throws APIException;
 	
 	/**
 	 * Finds a FormResource by its uuid
@@ -593,7 +593,7 @@ public interface FormService extends OpenmrsService {
 	 * @param uuid the uuid of the resource
 	 * @since 1.9
 	 */
-	public FormResource getFormResourceByUuid(String uuid) throws APIException;
+	FormResource getFormResourceByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Finds a FormResource based on a given Form and name
@@ -602,7 +602,7 @@ public interface FormService extends OpenmrsService {
 	 * @param name the name of the resource
 	 * @since 1.9
 	 */
-	public FormResource getFormResource(Form form, String name) throws APIException;
+	FormResource getFormResource(Form form, String name) throws APIException;
 	
 	/**
 	 * Finds all FormResources tied to a given form
@@ -612,7 +612,7 @@ public interface FormService extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.9
 	 */
-	public Collection<FormResource> getFormResourcesForForm(Form form) throws APIException;
+	Collection<FormResource> getFormResourcesForForm(Form form) throws APIException;
 	
 	/**
 	 * Saves or updates the given form resource
@@ -623,7 +623,7 @@ public interface FormService extends OpenmrsService {
 	 * @should be able to save an XSLT
 	 * @since 1.9
 	 */
-	public FormResource saveFormResource(FormResource formResource) throws APIException;
+	FormResource saveFormResource(FormResource formResource) throws APIException;
 	
 	/**
 	 * Purges a form resource
@@ -632,12 +632,12 @@ public interface FormService extends OpenmrsService {
 	 * @should delete a form resource
 	 * @since 1.9
 	 */
-	public void purgeFormResource(FormResource formResource) throws APIException;
+	void purgeFormResource(FormResource formResource) throws APIException;
 	
 	/**
 	 * Checks if the forms are locked, and if they are throws an exception when saving or deleting a form
 	 * 
 	 * @throws FormsLockedException
 	 */
-	public void checkIfFormsAreLocked() throws FormsLockedException;
+	void checkIfFormsAreLocked() throws FormsLockedException;
 }

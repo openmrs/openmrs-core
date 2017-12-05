@@ -23,30 +23,30 @@ public interface MessageSourceService extends MutableMessageSource {
 	 * @param s message code to retrieve
 	 * @return the translated message
 	 */
-	public String getMessage(String s);
+	String getMessage(String s);
 	
 	/**
 	 * Gets the message source service which is currently providing services.
 	 * 
 	 * @return the activeMessageSource
 	 */
-	public MutableMessageSource getActiveMessageSource();
+	MutableMessageSource getActiveMessageSource();
 	
 	/**
 	 * Sets the message source service which will actually provide services.
 	 * 
 	 * @param activeMessageSource the <code>MutableMessageSource</code> to set
 	 */
-	public void setActiveMessageSource(MutableMessageSource activeMessageSource);
+	void setActiveMessageSource(MutableMessageSource activeMessageSource);
 	
 	/**
 	 * @return the availableMessageSources
 	 */
-	public Set<MutableMessageSource> getMessageSources();
+	Set<MutableMessageSource> getMessageSources();
 	
 	/**
 	 * @param availableMessageSources the availableMessageSources to set
 	 */
-	public void setMessageSources(Set<MutableMessageSource> availableMessageSources);
+	void setMessageSources(Set<MutableMessageSource> availableMessageSources);
 	
 }

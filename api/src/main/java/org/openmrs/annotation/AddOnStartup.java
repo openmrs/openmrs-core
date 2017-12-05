@@ -43,7 +43,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface AddOnStartup {
 	
-	public String description() default "";
+	String description() default "";
 	
-	public boolean core() default true;
+	boolean core() default true;
 }

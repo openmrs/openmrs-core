@@ -35,12 +35,12 @@ public @interface Verifies {
 	 * 
 	 * @return the text after the "@should" on the method this unit test is testing
 	 */
-	public String value();
+	String value();
 	
 	/**
 	 * The method name within the class that this unit test is testing.
 	 * 
 	 * @return the name of the method being tested
 	 */
-	public String method();
+	String method();
 }

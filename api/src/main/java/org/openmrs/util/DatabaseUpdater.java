@@ -122,7 +122,7 @@ public class DatabaseUpdater {
 		 * @param changeSet the liquibase changeset that was just run
 		 * @param numChangeSetsToRun the total number of changesets in the current file
 		 */
-		public void executing(ChangeSet changeSet, int numChangeSetsToRun);
+		void executing(ChangeSet changeSet, int numChangeSetsToRun);
 	}
 	
 	/**

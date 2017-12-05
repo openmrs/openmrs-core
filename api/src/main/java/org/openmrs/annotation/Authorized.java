@@ -50,7 +50,7 @@ public @interface Authorized {
 	 * 
 	 * @return String[] The secure method attributes
 	 */
-	public String[] value() default {};
+	String[] value() default {};
 	
 	/**
 	 * If set to true, will require that the user have <i>all</i> privileges listed in
@@ -58,6 +58,6 @@ public @interface Authorized {
 	 * 
 	 * @return boolean true/false whether the privileges should be "and"ed together
 	 */
-	public boolean requireAll() default false;
+	boolean requireAll() default false;
 	
 }

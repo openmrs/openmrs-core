@@ -27,57 +27,57 @@ public interface AdministrationDAO {
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(String)
 	 */
-	public String getGlobalProperty(String propertyName) throws DAOException;
+	String getGlobalProperty(String propertyName) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyObject(java.lang.String)
 	 */
-	public GlobalProperty getGlobalPropertyObject(String propertyName);
+	GlobalProperty getGlobalPropertyObject(String propertyName);
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getAllGlobalProperties()
 	 */
-	public List<GlobalProperty> getAllGlobalProperties() throws DAOException;
+	List<GlobalProperty> getAllGlobalProperties() throws DAOException;
 	
-	public GlobalProperty getGlobalPropertyByUuid(String uuid) throws DAOException;
+	GlobalProperty getGlobalPropertyByUuid(String uuid) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertiesByPrefix(java.lang.String)
 	 */
-	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix);
+	List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix);
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertiesBySuffix(java.lang.String)
 	 */
-	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix);
+	List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix);
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#purgeGlobalProperty(org.openmrs.GlobalProperty)
 	 */
-	public void deleteGlobalProperty(GlobalProperty gp) throws DAOException;
+	void deleteGlobalProperty(GlobalProperty gp) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
-	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws DAOException;
+	GlobalProperty saveGlobalProperty(GlobalProperty gp) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#executeSQL(java.lang.String, boolean)
 	 */
-	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException;
+	List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getMaximumPropertyLength(Class, String)
 	 */
-	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName);
+	int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName);
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#validate(Object, Errors)
 	 */
-	public void validate(Object object, Errors errors) throws DAOException;
+	void validate(Object object, Errors errors) throws DAOException;
 	
 	/**
 	 * @see AdministrationService#isDatabaseStringComparisonCaseSensitive()
 	 */
-	public boolean isDatabaseStringComparisonCaseSensitive() throws DAOException;
+	boolean isDatabaseStringComparisonCaseSensitive() throws DAOException;
 }

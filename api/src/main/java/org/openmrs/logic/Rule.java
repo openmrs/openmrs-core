@@ -30,14 +30,14 @@ public interface Rule {
 	 * @return result of the rule for the given patient with given criteria applied
 	 * @throws LogicException TODO
 	 */
-	public Result eval(LogicContext context, Integer patientId, Map<String, Object> parameters) throws LogicException;
+	Result eval(LogicContext context, Integer patientId, Map<String, Object> parameters) throws LogicException;
 	
 	/**
 	 * Returns the list of arguments.
 	 * 
 	 * @return list of arguments or null if no arguments
 	 */
-	public Set<RuleParameterInfo> getParameterList();
+	Set<RuleParameterInfo> getParameterList();
 	
 	/**
 	 * Returns a list of dependencies (tokens for rules upon which this rule may depend).
@@ -46,7 +46,7 @@ public interface Rule {
 	 */
 	// TODO: it would be better to be able to query for dependency on both rules
 	// and/or data source keys
-	public String[] getDependencies();
+	String[] getDependencies();
 	
 	/**
 	 * Gets the time (in seconds) during which the Rule's results are considered to be valid. This
@@ -54,7 +54,7 @@ public interface Rule {
 	 * 
 	 * @return duration (in seconds) the results are considered valid for this rule
 	 */
-	public int getTTL();
+	int getTTL();
 	
 	/**
 	 * Gets the default datatype that the rule returns, when supplied with a given token. While
@@ -63,6 +63,6 @@ public interface Rule {
 	 * 
 	 * @return datatype
 	 */
-	public Datatype getDefaultDatatype();
+	Datatype getDefaultDatatype();
 	
 }
