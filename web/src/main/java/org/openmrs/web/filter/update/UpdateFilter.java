@@ -257,7 +257,7 @@ public class UpdateFilter extends StartupFilter {
 					StringBuilder sb = new StringBuilder("<ul>");
 					
 					for (String warning : updateJob.getUpdateWarnings()) {
-						sb.append("<li>" + warning + "</li>");
+						sb.append("<li>").append(warning).append("</li>");
 					}
 					
 					sb.append("</ul>");

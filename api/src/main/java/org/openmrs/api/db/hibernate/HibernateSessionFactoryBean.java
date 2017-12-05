@@ -59,9 +59,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	 */
 	@Override
 	public void setMappingResources(String... mappingResources) {
-		for (String resource : mappingResources) {
-			this.mappingResources.add(resource);
-		}
+		Collections.addAll(this.mappingResources, mappingResources);
 		
 		super.setMappingResources(this.mappingResources.toArray(new String[] {}));
 	}
@@ -80,9 +78,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	
 	public Set<String> getModuleMappingResources() {
 		for (Module mod : ModuleFactory.getStartedModules()) {
-			for (String s : mod.getMappingFiles()) {
-				mappingResources.add(s);
-			}
+			mappingResources.addAll(mod.getMappingFiles());
 		}
 		return mappingResources;
 	}
@@ -96,9 +92,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	public Set<String> getModulePackagesWithMappedClasses() {
 		Set<String> packages = new HashSet<String>();
 		for (Module module : ModuleFactory.getStartedModules()) {
-			for (String pack : module.getPackagesWithMappedClasses()) {
-				packages.add(pack);
-			}
+			packages.addAll(module.getPackagesWithMappedClasses());
 		}
 		return packages;
 	}
