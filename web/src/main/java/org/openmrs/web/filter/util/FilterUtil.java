@@ -27,6 +27,9 @@ import org.slf4j.LoggerFactory;
  * admin's user property and as default locale property for OpenMRS system
  */
 public class FilterUtil {
+
+	private FilterUtil(){
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(FilterUtil.class);
 	
