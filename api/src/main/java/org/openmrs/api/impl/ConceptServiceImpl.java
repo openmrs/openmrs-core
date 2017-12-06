@@ -1408,7 +1408,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public List<ConceptSearchResult> findConceptAnswers(String phrase, Locale locale, Concept concept) throws APIException {
 
-		return getConcepts(phrase, Arrays.asList(locale), false, null, null, null, null,
+		return getConcepts(phrase, Collections.singletonList(locale), false, null, null, null, null,
 		    concept, null, null);
 	}
 	

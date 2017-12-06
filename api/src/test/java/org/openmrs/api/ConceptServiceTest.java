@@ -3294,9 +3294,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept concept = conceptService.getConceptByMapping(code2, "SNOMED CT");
 		
 		//when
-		List<ConceptSearchResult> concepts1 = conceptService.getConcepts(code1, Arrays.asList(Context.getLocale()), false,
+		List<ConceptSearchResult> concepts1 = conceptService.getConcepts(code1,
+				Collections.singletonList(Context.getLocale()), false,
 		    null, null, null, null, null, null, null);
-		List<ConceptSearchResult> concepts2 = conceptService.getConcepts(code2, Arrays.asList(Context.getLocale()), false,
+		List<ConceptSearchResult> concepts2 = conceptService.getConcepts(code2,
+				Collections.singletonList(Context.getLocale()), false,
 		    null, null, null, null, null, null, null);
 		
 		//then

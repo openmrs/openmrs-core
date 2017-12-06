@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,8 +54,8 @@ public class LocationTest {
 		//make child-parent relations
 		rootLocation.setChildLocations(new HashSet<>(Arrays.asList(locationOne, locationTwo)));
 		
-		locationOne.setChildLocations(new HashSet<>(Arrays.asList(childOflocationOne)));
-		locationTwo.setChildLocations(new HashSet<>(Arrays.asList(childOnfLocationTwo)));
+		locationOne.setChildLocations(new HashSet<>(Collections.singletonList(childOflocationOne)));
+		locationTwo.setChildLocations(new HashSet<>(Collections.singletonList(childOnfLocationTwo)));
 		
 		childOflocationOne.setChildLocations(new HashSet<Location>());
 		childOnfLocationTwo.setChildLocations(new HashSet<Location>());
@@ -86,7 +87,7 @@ public class LocationTest {
 		
 		nonRetiredLocation.setChildLocations(new HashSet<>(Arrays.asList(firstChildOfNonRetiredLocation,
 		    secondChildOfNonRetiredLocation)));
-		retiredLocation.setChildLocations(new HashSet<>(Arrays.asList(firstChildOfRetiredLocation)));
+		retiredLocation.setChildLocations(new HashSet<>(Collections.singletonList(firstChildOfRetiredLocation)));
 		
 		firstChildOfNonRetiredLocation.setChildLocations(new HashSet<Location>());
 		secondChildOfNonRetiredLocation.setChildLocations(new HashSet<Location>());
