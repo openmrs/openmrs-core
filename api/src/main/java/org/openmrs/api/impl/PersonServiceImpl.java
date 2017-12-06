@@ -171,7 +171,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 				for (GlobalProperty prop : props) {
 					if (prop != null) {
 						String propVal = prop.getPropertyValue();
-						if (propVal != null && propVal.indexOf(oldTypeName) != -1) {
+						if (propVal != null && propVal.contains(oldTypeName)) {
 							prop.setPropertyValue(propVal.replaceFirst(oldTypeName, newTypeName));
 							as.saveGlobalProperty(prop);
 						}

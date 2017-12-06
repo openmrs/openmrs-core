@@ -526,7 +526,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 					for (int i = 0; i < fields.length; i++) {
 						Field field = fields[i];
 						int mods = field.getModifiers();
-						if (field.getType().isPrimitive() || (field.getName().indexOf("$") != -1)) {
+						if (field.getType().isPrimitive() || (field.getName().contains("$"))) {
 							continue;
 						}
 						if (Modifier.isStatic(mods)) {
@@ -585,7 +585,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		for (int i = 0; i < fields.length; i++) {
 			Field field = fields[i];
 			int mods = field.getModifiers();
-			if (field.getType().isPrimitive() || (field.getName().indexOf("$") != -1)) {
+			if (field.getType().isPrimitive() || (field.getName().contains("$"))) {
 				continue;
 			}
 			try {
