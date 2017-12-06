@@ -156,6 +156,7 @@ public class GZIPResponseStream extends ServletOutputStream {
 		bufferedOutput.write(b, off, len);
 	}
 	
+	
 	public boolean closed() {
 		return this.closed;
 	}
