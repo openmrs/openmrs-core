@@ -557,7 +557,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 			locale = loc;
 		}
 		
-		LuceneQuery<ConceptName> conceptNameQuery = newConceptNameLuceneQuery(name, !searchOnPhrase, Arrays.asList(locale),
+		LuceneQuery<ConceptName> conceptNameQuery = newConceptNameLuceneQuery(name, !searchOnPhrase,
+				Collections.singletonList(locale),
 		    false, false, classes, null, datatypes, null, null);
 		
 		List<ConceptName> names = conceptNameQuery.list();
@@ -615,7 +616,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		query.append("(");
 		if (searchKeywords) {
 			//Put exact phrase higher
-			query.append(" name:(\"" + escapedName + "\")^0.7");
+			query.append(" name:(\"").append(escapedName).append("\")^0.7");
 			
 			if (!tokenizedName.isEmpty()) {
 				query.append(" OR (");
@@ -637,7 +638,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				query.append(")^0.3");
 			}
 		} else {
-			query.append(" name:\"" + escapedName + "\"");
+			query.append(" name:\"").append(escapedName).append("\"");
 		}
 		query.append(")");
 		return query;
@@ -1375,8 +1376,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (concept != null) {
 			query.append(" OR concept.conceptId:(").append(concept.getConceptId()).append(")^0.1");
 		} else if (searchDrugConceptNames) {
-			LuceneQuery<ConceptName> conceptNameQuery = newConceptNameLuceneQuery(drugName, searchKeywords, Arrays
-			        .asList(locale), exactLocale, includeRetired, null, null, null, null, null);
+			LuceneQuery<ConceptName> conceptNameQuery = newConceptNameLuceneQuery(drugName, searchKeywords,
+					Collections.singletonList(locale), exactLocale, includeRetired, null, null, null, null, null);
 			List<Object[]> conceptIds = conceptNameQuery.listProjection("concept.conceptId");
 			if (!conceptIds.isEmpty()) {
 				CollectionUtils.transform(conceptIds, new Transformer() {
@@ -1447,7 +1448,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			final Set<Locale> searchLocales;
 			
 			if (locales == null) {
-				searchLocales = new HashSet<Locale>(Arrays.asList(Context.getLocale()));
+				searchLocales = new HashSet<Locale>(Collections.singletonList(Context.getLocale()));
 			} else {
 				searchLocales = new HashSet<Locale>(locales);
 			}

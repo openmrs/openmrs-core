@@ -312,7 +312,7 @@ public class ADTA28Handler implements Application {
 	// TODO:  Move these to hl7 handler utilities
 	// Check version, etc.
 	private void validate(Message message) throws HL7Exception {
-		message.getVersion().toString();
+		message.getVersion();
 	}
 	
 	private MSH getMSH(ADT_A05 adt) {

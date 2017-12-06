@@ -447,9 +447,7 @@ public class HibernateUserDAO implements UserDAO {
 		if (!includeRetired) {
 			crit.add(Restrictions.eq("retired", false));
 		}
-		for (User u : (List<User>) crit.list()) {
-			users.add(u);
-		}
+		users.addAll((List<User>) crit.list());
 		return users;
 	}
 	

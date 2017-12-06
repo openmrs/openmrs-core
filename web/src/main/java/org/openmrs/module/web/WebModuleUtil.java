@@ -168,7 +168,7 @@ public class WebModuleUtil {
 						
 						// if a module id has a . in it, we should treat that as a /, i.e. files in the module
 						// ui.springmvc should go in folder names like .../ui/springmvc/...
-						absPath.append(mod.getModuleIdAsPath() + "/" + filepath);
+						absPath.append(mod.getModuleIdAsPath()).append("/").append(filepath);
 						if (log.isDebugEnabled()) {
 							log.debug("Moving file from: " + name + " to " + absPath);
 						}

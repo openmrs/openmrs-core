@@ -413,7 +413,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 
 	private String getDuplicatePatientsSQLString(List<String> attributes) {
-		String outerSelect = "select distinct t1.patient_id from patient t1 ";
+		StringBuilder outerSelect = new StringBuilder("select distinct t1.patient_id from patient t1 ");
 		final String t5 = " = t5.";
 		
 		Set<String> patientFieldNames = OpenmrsUtil.getDeclaredFields(Patient.class);
@@ -425,7 +425,7 @@ public class HibernatePatientDAO implements PatientDAO {
 
 
 		List<String> innerFields = new ArrayList<>();
-		String innerSelect = " from patient p1 ";
+		StringBuilder innerSelect = new StringBuilder(" from patient p1 ");
 
 		for (String attribute : attributes) {
 			if (attribute != null) {
@@ -441,9 +441,9 @@ public class HibernatePatientDAO implements PatientDAO {
 				whereConditions.add(" t1." + attribute + t5 + attribute);
 				innerFields.add("p1." + attribute);
 			} else if (personFieldNames.contains(attribute)) {
-				if (!outerSelect.contains("person")) {
-					outerSelect += "inner join person t2 on t1.patient_id = t2.person_id ";
-					innerSelect += "inner join person person1 on p1.patient_id = person1.person_id ";
+				if (!outerSelect.toString().contains("person")) {
+					outerSelect.append("inner join person t2 on t1.patient_id = t2.person_id ");
+					innerSelect.append("inner join person person1 on p1.patient_id = person1.person_id ");
 				}
 
 				AbstractEntityPersister aep = (AbstractEntityPersister) sessionFactory.getClassMetadata(Person.class);
@@ -457,9 +457,9 @@ public class HibernatePatientDAO implements PatientDAO {
 				whereConditions.add(" t2." + attribute + t5 + attribute);
 				innerFields.add("person1." + attribute);
 			} else if (personNameFieldNames.contains(attribute)) {
-				if (!outerSelect.contains("person_name")) {
-					outerSelect += "inner join person_name t3 on t2.person_id = t3.person_id ";
-					innerSelect += "inner join person_name pn1 on person1.person_id = pn1.person_id ";
+				if (!outerSelect.toString().contains("person_name")) {
+					outerSelect.append("inner join person_name t3 on t2.person_id = t3.person_id ");
+					innerSelect.append("inner join person_name pn1 on person1.person_id = pn1.person_id ");
 				}
 
 				//Since we are firing a native query get the actual table column name from the field name of the entity
@@ -476,9 +476,9 @@ public class HibernatePatientDAO implements PatientDAO {
 				whereConditions.add(" t3." + attribute + t5 + attribute);
 				innerFields.add("pn1." + attribute);
 			} else if (identifierFieldNames.contains(attribute)) {
-				if (!outerSelect.contains("patient_identifier")) {
-					outerSelect += "inner join patient_identifier t4 on t1.patient_id = t4.patient_id ";
-					innerSelect += "inner join patient_identifier pi1 on p1.patient_id = pi1.patient_id ";
+				if (!outerSelect.toString().contains("patient_identifier")) {
+					outerSelect.append("inner join patient_identifier t4 on t1.patient_id = t4.patient_id ");
+					innerSelect.append("inner join patient_identifier pi1 on p1.patient_id = pi1.patient_id ");
 				}
 
 				AbstractEntityPersister aep = (AbstractEntityPersister) sessionFactory
