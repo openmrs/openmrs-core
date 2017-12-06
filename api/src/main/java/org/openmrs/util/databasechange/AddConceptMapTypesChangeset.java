@@ -128,12 +128,12 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 			
 			try {
 				int[] updateCounts = pStmt.executeBatch();
-				for (int i = 0; i < updateCounts.length; i++) {
-					if (updateCounts[i] > -1) {
-						log.debug("Successfully executed: updateCount=" + updateCounts[i]);
-					} else if (updateCounts[i] == Statement.SUCCESS_NO_INFO) {
+				for (int updateCount : updateCounts) {
+					if (updateCount > -1) {
+						log.debug("Successfully executed: updateCount=" + updateCount);
+					} else if (updateCount == Statement.SUCCESS_NO_INFO) {
 						log.debug("Successfully executed; No Success info");
-					} else if (updateCounts[i] == Statement.EXECUTE_FAILED) {
+					} else if (updateCount == Statement.EXECUTE_FAILED) {
 						log.warn("Failed to execute insert");
 					}
 				}
@@ -144,13 +144,13 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 			catch (BatchUpdateException be) {
 				log.warn("Error generated while processsing batch insert", be);
 				int[] updateCounts = be.getUpdateCounts();
-				
-				for (int i = 0; i < updateCounts.length; i++) {
-					if (updateCounts[i] > -1) {
-						log.warn("Executed with exception: insertCount=" + updateCounts[i]);
-					} else if (updateCounts[i] == Statement.SUCCESS_NO_INFO) {
+
+				for (int updateCount : updateCounts) {
+					if (updateCount > -1) {
+						log.warn("Executed with exception: insertCount=" + updateCount);
+					} else if (updateCount == Statement.SUCCESS_NO_INFO) {
 						log.warn("Executed with exception; No Success info");
-					} else if (updateCounts[i] == Statement.EXECUTE_FAILED) {
+					} else if (updateCount == Statement.EXECUTE_FAILED) {
 						log.warn("Failed to execute insert with exception");
 					}
 				}

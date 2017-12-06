@@ -525,9 +525,9 @@ public class ModuleClassLoader extends URLClassLoader {
 	public void dispose() {
 		if (log.isDebugEnabled())
 			log.debug("Disposing of ModuleClassLoader: " + this);
-		
-		for (Iterator<File> it = libraryCache.values().iterator(); it.hasNext();) {
-			it.next().delete();
+
+		for (File file : libraryCache.values()) {
+			file.delete();
 		}
 		
 		libraryCache.clear();

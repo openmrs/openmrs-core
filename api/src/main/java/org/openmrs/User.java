@@ -107,8 +107,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 		Set<Role> tmproles = getAllRoles();
 		
 		// loop over the roles and check each for the privilege
-		for (Iterator<Role> i = tmproles.iterator(); i.hasNext();) {
-			if (i.next().hasPrivilege(privilege)) {
+		for (Role tmprole : tmproles) {
+			if (tmprole.hasPrivilege(privilege)) {
 				return true;
 			}
 		}
@@ -181,8 +181,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 		Set<Role> tmproles = getAllRoles();
 		
 		Role role;
-		for (Iterator<Role> i = tmproles.iterator(); i.hasNext();) {
-			role = i.next();
+		for (Role tmprole : tmproles) {
+			role = tmprole;
 			Collection<Privilege> privs = role.getPrivileges();
 			if (privs != null) {
 				privileges.addAll(privs);
@@ -225,9 +225,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 			log.error("Error converting roles for user: " + this);
 			log.error("baseRoles.class: " + baseRoles.getClass().getName());
 			log.error("baseRoles: " + baseRoles.toString());
-			Iterator<Role> iter = baseRoles.iterator();
-			while (iter.hasNext()) {
-				log.error("baseRole: '" + iter.next() + "'");
+			for (Role baseRole : baseRoles) {
+				log.error("baseRole: '" + baseRole + "'");
 			}
 		}
 		return totalRoles;

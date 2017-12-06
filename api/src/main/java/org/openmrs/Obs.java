@@ -1026,9 +1026,9 @@ public class Obs extends BaseChangeableOpenmrsData {
 				return getValueText();
 			} else if ("ED".equals(abbrev) && getValueComplex() != null) {
 				String[] valueComplex = getValueComplex().split("\\|");
-				for (int i = 0; i < valueComplex.length; i++) {
-					if (StringUtils.isNotEmpty(valueComplex[i])) {
-						return valueComplex[i].trim();
+				for (String aValueComplex : valueComplex) {
+					if (StringUtils.isNotEmpty(aValueComplex)) {
+						return aValueComplex.trim();
 					}
 				}
 			}
@@ -1071,9 +1071,9 @@ public class Obs extends BaseChangeableOpenmrsData {
 		// which is everything before the first bar '|' character.
 		if (getValueComplex() != null) {
 			String[] valueComplex = getValueComplex().split("\\|");
-			for (int i = 0; i < valueComplex.length; i++) {
-				if (StringUtils.isNotEmpty(valueComplex[i])) {
-					return valueComplex[i].trim();
+			for (String aValueComplex : valueComplex) {
+				if (StringUtils.isNotEmpty(aValueComplex)) {
+					return aValueComplex.trim();
 				}
 			}
 		}
