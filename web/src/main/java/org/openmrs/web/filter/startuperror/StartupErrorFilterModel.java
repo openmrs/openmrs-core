@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StartupErrorFilterModel {
 	
-	protected static final Logger log = LoggerFactory.getLogger(StartupErrorFilterModel.class);
+	private static final Logger log = LoggerFactory.getLogger(StartupErrorFilterModel.class);
 	
 	public Throwable errorAtStartup = null;
 	
