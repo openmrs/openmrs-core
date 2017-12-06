@@ -153,13 +153,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 
 	private void voidOrdersForType(Collection<Patient> patients, OrderType ot) {
-		patients.forEach(patient -> {
-			Context.getOrderService().getAllOrdersByPatient(patient).forEach(order -> {
-				if(order.getOrderType().equals(ot)){
-					order.setVoided(true);
-				}
-			});
-		});
+		patients.forEach(patient -> Context.getOrderService().getAllOrdersByPatient(patient).forEach(order -> {
+			if(order.getOrderType().equals(ot)){
+				order.setVoided(true);
+			}
+		}));
 	}
 
 	private boolean hasActiveOrderOfType(Patient patient, String orderTypeName) {

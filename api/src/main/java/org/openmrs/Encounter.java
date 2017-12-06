@@ -562,7 +562,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		
 		return encounterProviders.stream()
 				.filter(ep -> ep.getEncounterRole().equals(role) && (includeVoided || !ep.getVoided()))
-				.map(ep -> ep.getProvider())
+				.map(EncounterProvider::getProvider)
 				.collect(Collectors.toSet());
 	}
 	

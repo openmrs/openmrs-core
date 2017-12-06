@@ -87,13 +87,7 @@ public class HibernateUtil {
 	 * @see HibernateUtil#escapeSqlWildcards(String, Connection)
 	 */
 	public static String escapeSqlWildcards(final String oldString, SessionFactory sessionFactory) {
-		return sessionFactory.getCurrentSession().doReturningWork(new ReturningWork<String>() {
-			
-			@Override
-			public String execute(Connection connection) throws SQLException {
-				return escapeSqlWildcards(oldString, connection);
-			}
-		});
+		return sessionFactory.getCurrentSession().doReturningWork(connection -> escapeSqlWildcards(oldString, connection));
 		
 	}
 	

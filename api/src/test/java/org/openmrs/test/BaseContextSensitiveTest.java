@@ -556,13 +556,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	public Connection getConnection() {
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		
-		return sessionFactory.getCurrentSession().doReturningWork(new ReturningWork<Connection>() {
-			
-			@Override
-			public Connection execute(Connection connection) throws SQLException {
-				return connection;
-			}
-		});
+		return sessionFactory.getCurrentSession().doReturningWork(connection -> connection);
 	}
 	
 	/**
