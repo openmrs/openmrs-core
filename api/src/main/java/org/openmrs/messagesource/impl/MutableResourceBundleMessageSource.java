@@ -311,11 +311,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		for (Resource propertiesFile : propertiesFiles) {
 			Properties props = new Properties();
 			Locale propsLocale = parseLocaleFrom(propertiesFile.getFilename());
-			List<Resource> propList = localeToFilesMap.get(propsLocale);
-			if (propList == null) {
-				propList = new ArrayList<Resource>();
-				localeToFilesMap.put(propsLocale, propList);
-			}
+			List<Resource> propList = localeToFilesMap.computeIfAbsent(propsLocale, k -> new ArrayList<Resource>());
 			propList.add(propertiesFile);
 			
 			try {

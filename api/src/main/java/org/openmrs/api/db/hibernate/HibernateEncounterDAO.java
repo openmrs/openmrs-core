@@ -566,14 +566,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 				encounters.add(mockEncounter);
 			}
 			
-			Collections.sort(encounters, new Comparator<Encounter>() {
-				
-				@Override
-				public int compare(Encounter o1, Encounter o2) {
-					Date o1Date = (o1.getVisit() != null) ? o1.getVisit().getStartDatetime() : o1.getEncounterDatetime();
-					Date o2Date = (o2.getVisit() != null) ? o2.getVisit().getStartDatetime() : o2.getEncounterDatetime();
-					return o2Date.compareTo(o1Date);
-				}
+			encounters.sort((o1, o2) -> {
+				Date o1Date = (o1.getVisit() != null) ? o1.getVisit().getStartDatetime() : o1.getEncounterDatetime();
+				Date o2Date = (o2.getVisit() != null) ? o2.getVisit().getStartDatetime() : o2.getEncounterDatetime();
+				return o2Date.compareTo(o1Date);
 			});
 		}
 		

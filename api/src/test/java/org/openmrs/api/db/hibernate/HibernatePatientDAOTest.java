@@ -40,7 +40,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		List<PatientIdentifierType> identifierTypes = singletonList(new PatientIdentifierType(2));
 		List<PatientIdentifier> identifiers = hibernatePatientDao
 				.getPatientIdentifiers(null, identifierTypes, emptyList(), emptyList(), null);
-		List<Integer> identifierIds = identifiers.stream().map(identifier -> identifier.getId())
+		List<Integer> identifierIds = identifiers.stream().map(PatientIdentifier::getId)
 				.collect(Collectors.toList());
 
 		Assert.assertEquals(2, identifiers.size());
@@ -55,7 +55,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		);
 		List<PatientIdentifier> identifiers = hibernatePatientDao
 				.getPatientIdentifiers(null, emptyList(), emptyList(), patients, null);
-		List<Integer> identifierIds = identifiers.stream().map(identifier -> identifier.getId())
+		List<Integer> identifierIds = identifiers.stream().map(PatientIdentifier::getId)
 				.collect(Collectors.toList());
 
 		Assert.assertEquals(2, identifiers.size());

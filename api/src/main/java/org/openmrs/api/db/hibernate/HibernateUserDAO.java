@@ -402,7 +402,7 @@ public class HibernateUserDAO implements UserDAO {
 		List<User> returnList = query.list();
 		
 		if (!CollectionUtils.isEmpty(returnList)) {
-			Collections.sort(returnList, new UserByNameComparator());
+			returnList.sort(new UserByNameComparator());
 		}
 		
 		return returnList;

@@ -153,13 +153,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 
 	private void voidOrdersForType(Collection<Patient> patients, OrderType ot) {
-		patients.forEach(patient -> {
-			Context.getOrderService().getAllOrdersByPatient(patient).forEach(order -> {
-				if(order.getOrderType().equals(ot)){
-					order.setVoided(true);
-				}
-			});
-		});
+		patients.forEach(patient -> Context.getOrderService().getAllOrdersByPatient(patient).forEach(order -> {
+			if(order.getOrderType().equals(ot)){
+				order.setVoided(true);
+			}
+		}));
 	}
 
 	private boolean hasActiveOrderOfType(Patient patient, String orderTypeName) {
@@ -2864,7 +2862,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void getAllPatientIdentifierTypes_shouldOrderAsDefaultComparator() throws Exception {
 		List<PatientIdentifierType> list = patientService.getAllPatientIdentifierTypes();
 		List<PatientIdentifierType> sortedList = new ArrayList<PatientIdentifierType>(list);
-		Collections.sort(sortedList, new PatientIdentifierTypeDefaultComparator());
+		sortedList.sort(new PatientIdentifierTypeDefaultComparator());
 		Assert.assertEquals(sortedList, list);
 	}
 	
@@ -2875,7 +2873,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void getPatientIdentifierTypes_shouldOrderAsDefaultComparator() throws Exception {
 		List<PatientIdentifierType> list = patientService.getPatientIdentifierTypes(null, null, false, null);
 		List<PatientIdentifierType> sortedList = new ArrayList<PatientIdentifierType>(list);
-		Collections.sort(sortedList, new PatientIdentifierTypeDefaultComparator());
+		sortedList.sort(new PatientIdentifierTypeDefaultComparator());
 		Assert.assertEquals(sortedList, list);
 	}
 	
