@@ -15,6 +15,9 @@ package org.openmrs.web.filter.util;
  */
 public class ErrorMessageConstants {
 	
+	private ErrorMessageConstants() {
+	}
+	
 	public static final String ERROR_DB_PSDW_REQ = "install.error.dbPasswd";
 	
 	public static final String ERROR_DB_DRIVER_CLASS_REQ = "install.error.dbDriverClass";
