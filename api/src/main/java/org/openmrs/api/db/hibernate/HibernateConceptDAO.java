@@ -1509,7 +1509,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		
 		List<ConceptMapType> conceptMapTypes = criteria.list();
-		Collections.sort(conceptMapTypes, new ConceptMapTypeComparator());
+		conceptMapTypes.sort(new ConceptMapTypeComparator());
 		
 		return conceptMapTypes;
 	}
