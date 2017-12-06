@@ -37,17 +37,17 @@ public class NameTemplateTest {
 		
 		NameTemplate nameTemplate = new NameTemplate();
 		
-		List<String> lineByLineFormat = new ArrayList<String>();
+		List<String> lineByLineFormat = new ArrayList<>();
 		lineByLineFormat.add("givenName");
 		lineByLineFormat.add("familyName");
 		nameTemplate.setLineByLineFormat(lineByLineFormat);
 		
-		Map<String, String> nameMappings = new HashMap<String, String>();
+		Map<String, String> nameMappings = new HashMap<>();
 		nameMappings.put("givenName", "givenName");
 		nameMappings.put("familyName", "familyName");
 		nameTemplate.setNameMappings(nameMappings);
 		
-		Map<String, String> sizeMappings = new HashMap<String, String>();
+		Map<String, String> sizeMappings = new HashMap<>();
 		sizeMappings.put("givenName", "30");
 		sizeMappings.put("familyName", "30");
 		nameTemplate.setSizeMappings(sizeMappings);
@@ -67,19 +67,19 @@ public class NameTemplateTest {
 		
 		NameTemplate nameTemplate = new NameTemplate();
 		
-		List<String> lineByLineFormat = new ArrayList<String>();
+		List<String> lineByLineFormat = new ArrayList<>();
 		lineByLineFormat.add("familyName,");
 		lineByLineFormat.add("givenName");
 		lineByLineFormat.add("\"middleName\"");
 		nameTemplate.setLineByLineFormat(lineByLineFormat);
 		
-		Map<String, String> nameMappings = new HashMap<String, String>();
+		Map<String, String> nameMappings = new HashMap<>();
 		nameMappings.put("familyName", "familyName");
 		nameMappings.put("givenName", "givenName");
 		nameMappings.put("middleName", "middleName");
 		nameTemplate.setNameMappings(nameMappings);
 		
-		Map<String, String> sizeMappings = new HashMap<String, String>();
+		Map<String, String> sizeMappings = new HashMap<>();
 		sizeMappings.put("familyName", "30");
 		sizeMappings.put("givenName", "30");
 		sizeMappings.put("middleName", "30");

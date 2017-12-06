@@ -58,7 +58,7 @@ public class TaskDefinition extends BaseChangeableOpenmrsMetadata {
 		this.started = Boolean.FALSE; // default
 		this.startTime = new Date(); // makes it easier during task creation
 		// as we have a default date populated
-		this.properties = new HashMap<String, String>();
+		this.properties = new HashMap<>();
 	}
 	
 	/**

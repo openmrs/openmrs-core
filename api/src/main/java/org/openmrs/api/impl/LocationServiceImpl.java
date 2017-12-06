@@ -189,7 +189,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	@Override
 	@Transactional(readOnly = true)
 	public List<Location> getLocationsByTag(LocationTag tag) throws APIException {
-		List<Location> locations = new ArrayList<Location>();
+		List<Location> locations = new ArrayList<>();
 		
 		for (Location l : dao.getAllLocations(false)) {
 			if (l.getTags().contains(tag)) {
@@ -215,7 +215,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	@Override
 	@Transactional(readOnly = true)
 	public List<Location> getLocationsHavingAnyTag(List<LocationTag> tags) throws APIException {
-		List<Location> locations = new ArrayList<Location>();
+		List<Location> locations = new ArrayList<>();
 		
 		for (Location loc : dao.getAllLocations(false)) {
 			for (LocationTag t : tags) {

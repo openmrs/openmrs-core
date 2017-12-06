@@ -80,7 +80,7 @@ public class ModuleUtil {
 			log.debug("Starting all modules in this list: " + moduleListString);
 			
 			String[] moduleArray = moduleListString.split(" ");
-			List<File> modulesToLoad = new ArrayList<File>();
+			List<File> modulesToLoad = new ArrayList<>();
 			
 			for (String modulePath : moduleArray) {
 				if (modulePath != null && modulePath.length() > 0) {
@@ -150,7 +150,7 @@ public class ModuleUtil {
 	 */
 	public static void shutdown() {
 		
-		List<Module> modules = new ArrayList<Module>();
+		List<Module> modules = new ArrayList<>();
 		modules.addAll(ModuleFactory.getStartedModules());
 		
 		for (Module mod : modules) {
@@ -192,9 +192,6 @@ public class ModuleUtil {
 		try {
 			outputStream = new FileOutputStream(file);
 			OpenmrsUtil.copyFile(inputStream, outputStream);
-		}
-		catch (FileNotFoundException e) {
-			throw new ModuleException("Can't create module file for " + filename, e);
 		}
 		catch (IOException e) {
 			throw new ModuleException("Can't create module file for " + filename, e);
@@ -423,8 +420,8 @@ public class ModuleUtil {
 				return 0;
 			}
 			
-			List<String> versions = new ArrayList<String>();
-			List<String> values = new ArrayList<String>();
+			List<String> versions = new ArrayList<>();
+			List<String> values = new ArrayList<>();
 			String separator = "-";
 			
 			// strip off any qualifier e.g. "-SNAPSHOT"
@@ -534,10 +531,7 @@ public class ModuleUtil {
 		catch (MalformedURLException mue) {
 			throw mue;
 		}
-		catch (IOException ioe) {
-			throw new MalformedURLException("Cannot convert: " + file.getName() + " to url");
-		}
-		catch (NoSuchMethodError nsme) {
+		catch (IOException | NoSuchMethodError ioe) {
 			throw new MalformedURLException("Cannot convert: " + file.getName() + " to url");
 		}
 	}
@@ -860,7 +854,7 @@ public class ModuleUtil {
 	public static AbstractRefreshableApplicationContext refreshApplicationContext(AbstractRefreshableApplicationContext ctx,
 	        boolean isOpenmrsStartup, Module startedModule) {
 		//notify all started modules that we are about to refresh the context
-		Set<Module> startedModules = new LinkedHashSet<Module>(ModuleFactory.getStartedModulesInOrder());
+		Set<Module> startedModules = new LinkedHashSet<>(ModuleFactory.getStartedModulesInOrder());
 		for (Module module : startedModules) {
 			try {
 				if (module.getModuleActivator() != null) {
@@ -992,7 +986,7 @@ public class ModuleUtil {
 		}
 		
 		// make a copy of the constant so we can modify the list
-		Map<String, String> coreModules = new HashMap<String, String>(ModuleConstants.CORE_MODULES);
+		Map<String, String> coreModules = new HashMap<>(ModuleConstants.CORE_MODULES);
 		
 		Collection<Module> startedModules = ModuleFactory.getStartedModulesMap().values();
 		
@@ -1036,7 +1030,7 @@ public class ModuleUtil {
 	 */
 	public static List<String> getMandatoryModules() {
 		
-		List<String> mandatoryModuleIds = new ArrayList<String>();
+		List<String> mandatoryModuleIds = new ArrayList<>();
 		
 		try {
 			List<GlobalProperty> props = Context.getAdministrationService().getGlobalPropertiesBySuffix(".mandatory");
@@ -1128,7 +1122,7 @@ public class ModuleUtil {
 			return Collections.<String> emptySet();
 		}
 		
-		Set<String> packagesProvided = new HashSet<String>();
+		Set<String> packagesProvided = new HashSet<>();
 		
 		JarFile jar = null;
 		try {

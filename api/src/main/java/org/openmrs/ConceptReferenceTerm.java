@@ -124,7 +124,7 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	 */
 	public Set<ConceptReferenceTermMap> getConceptReferenceTermMaps() {
 		if (conceptReferenceTermMaps == null) {
-			conceptReferenceTermMaps = new LinkedHashSet<ConceptReferenceTermMap>();
+			conceptReferenceTermMaps = new LinkedHashSet<>();
 		}
 		return conceptReferenceTermMaps;
 	}
@@ -168,7 +168,7 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 			//can't map a term to itself
 			conceptReferenceTermMap.setTermA(this);
 			if (conceptReferenceTermMaps == null) {
-				conceptReferenceTermMaps = new LinkedHashSet<ConceptReferenceTermMap>();
+				conceptReferenceTermMaps = new LinkedHashSet<>();
 			}
 			if (!conceptReferenceTermMaps.contains(conceptReferenceTermMap)) {
 				conceptReferenceTermMaps.add(conceptReferenceTermMap);

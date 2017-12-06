@@ -114,7 +114,7 @@ public class UpgradeUtil {
 			}
 		}
 
-		List<Integer> conceptIds = new ArrayList<Integer>();
+		List<Integer> conceptIds = new ArrayList<>();
 
 		try (PreparedStatement selectConceptIds = connection
 				.prepareStatement("select concept_id from concept_set where concept_set = ?")) {

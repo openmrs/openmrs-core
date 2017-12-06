@@ -61,7 +61,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 			connection.setAutoCommit(false);
 			
 			//Prepare a list of types and their ids.
-			Map<String, Integer> typesToIds = new HashMap<String, Integer>();
+			Map<String, Integer> typesToIds = new HashMap<>();
 			
 			selectTypes = connection.prepareStatement("select * from concept_map_type");
 			selectTypes.execute();

@@ -36,9 +36,9 @@ public class ModuleFilterMapping implements Serializable {
 	
 	private String filterName;
 	
-	private List<String> servletNames = new ArrayList<String>();
+	private List<String> servletNames = new ArrayList<>();
 	
-	private List<String> urlPatterns = new ArrayList<String>();
+	private List<String> urlPatterns = new ArrayList<>();
 	
 	/**
 	 * Default constructor, requires a Module
@@ -274,7 +274,7 @@ public class ModuleFilterMapping implements Serializable {
 	 */
 	public static List<ModuleFilterMapping> retrieveFilterMappings(Module module){
 		
-		List<ModuleFilterMapping> mappings = new ArrayList<ModuleFilterMapping>();
+		List<ModuleFilterMapping> mappings = new ArrayList<>();
 		
 		try {
 			Element rootNode = module.getConfig().getDocumentElement();

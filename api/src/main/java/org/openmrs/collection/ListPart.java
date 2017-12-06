@@ -44,7 +44,7 @@ public class ListPart<E> extends CollectionPart<E> {
 	
 	public static <T> ListPart<T> newListPart(List<T> list, Long firstElement, Long maxElements, Long totalElements,
 	        Boolean totalElementsExact) {
-		return new ListPart<T>(list, firstElement, maxElements, totalElements, totalElementsExact);
+		return new ListPart<>(list, firstElement, maxElements, totalElements, totalElementsExact);
 	}
 	
 }

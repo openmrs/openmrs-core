@@ -85,7 +85,7 @@ public class LoggingAdvice implements MethodInterceptor {
 				Object[] values = invocation.getArguments();
 				
 				// change the annotation array of indexes to a list of indexes to ignore
-				List<Integer> argsToIgnore = new ArrayList<Integer>();
+				List<Integer> argsToIgnore = new ArrayList<>();
 				if (loggingAnnotation != null && loggingAnnotation.ignoredArgumentIndexes().length > 0) {
 					for (int argIndexToIgnore : loggingAnnotation.ignoredArgumentIndexes()) {
 						argsToIgnore.add(argIndexToIgnore);

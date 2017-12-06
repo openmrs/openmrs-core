@@ -34,7 +34,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	private Collection<CohortMembership> memberships;
 	
 	public Cohort() {
-		memberships = new TreeSet<CohortMembership>();
+		memberships = new TreeSet<>();
 	}
 	
 	/**

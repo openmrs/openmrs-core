@@ -48,7 +48,7 @@ public class UserSaveHandler implements SaveHandler<User> {
 		if (user.getPerson() != null) {
 			loadLazyHibernateCollections(user);
 			RequiredDataAdvice.recursivelyHandle(SaveHandler.class, user.getPerson(), creator, dateCreated, other,
-			    new ArrayList<OpenmrsObject>());
+					new ArrayList<>());
 		}
 	}
 	

@@ -57,13 +57,13 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	private final static Logger log = LoggerFactory.getLogger(ConceptValidatorChangeSet.class);
 	
 	//List to store warnings
-	private List<String> updateWarnings = new LinkedList<String>();
+	private List<String> updateWarnings = new LinkedList<>();
 	
 	//List to store info messages
-	private List<String> logMessages = new LinkedList<String>();
+	private List<String> logMessages = new LinkedList<>();
 	
 	//A set to store unique concept names that have been updated and changes have to be persisted to the database
-	private Set<ConceptName> updatedConceptNames = new HashSet<ConceptName>();
+	private Set<ConceptName> updatedConceptNames = new HashSet<>();
 	
 	private Locale defaultLocale = new Locale("en");
 	
@@ -136,7 +136,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				boolean preferredNameForLocaleFound = false;
 				boolean shortNameForLocaleFound = false;
 				//map to hold a name and a list of conceptNames that are found as duplicates
-				Map<String, List<ConceptName>> nameDuplicateConceptNamesMap = new HashMap<String, List<ConceptName>>();
+				Map<String, List<ConceptName>> nameDuplicateConceptNamesMap = new HashMap<>();
 				
 				//for each name in the locale
 				for (ConceptName nameInLocale : e.getValue()) {
@@ -147,7 +147,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					//if the concept name has no locale, wonder why this would be the case but there was no not-null constraint originally
 					if (conceptNameLocale == null) {
 						if (namesWithNoLocale == null) {
-							namesWithNoLocale = new LinkedList<ConceptName>();
+							namesWithNoLocale = new LinkedList<>();
 						}
 						
 						namesWithNoLocale.add(nameInLocale);
@@ -227,10 +227,10 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					if ((nameInLocale.isFullySpecifiedName() || nameInLocale.isPreferred())
 					        && !isNameUniqueInLocale(connection, nameInLocale, conceptId)) {
 						if (localeDuplicateNamesMap == null) {
-							localeDuplicateNamesMap = new HashMap<Locale, Set<String>>();
+							localeDuplicateNamesMap = new HashMap<>();
 						}
 						if (!localeDuplicateNamesMap.containsKey(conceptNameLocale)) {
-							localeDuplicateNamesMap.put(conceptNameLocale, new HashSet<String>());
+							localeDuplicateNamesMap.put(conceptNameLocale, new HashSet<>());
 						}
 						
 						localeDuplicateNamesMap.get(conceptNameLocale).add(nameInLocale.getName());
@@ -238,7 +238,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					
 					String name = nameInLocale.getName().toLowerCase();
 					if (!nameDuplicateConceptNamesMap.containsKey(name)) {
-						nameDuplicateConceptNamesMap.put(name, new ArrayList<ConceptName>());
+						nameDuplicateConceptNamesMap.put(name, new ArrayList<>());
 					}
 					
 					nameDuplicateConceptNamesMap.get(name).add(nameInLocale);
@@ -444,16 +444,13 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			
 			while (rs.next()) {
 				if (conceptIds == null) {
-					conceptIds = new LinkedList<Integer>();
+					conceptIds = new LinkedList<>();
 				}
 				
 				conceptIds.add(rs.getInt("concept_id"));
 			}
 		}
-		catch (DatabaseException e) {
-			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
 		}
 		finally {
@@ -546,10 +543,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				log.warn("The global property '" + OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST + "' isn't set");
 			}
 		}
-		catch (DatabaseException e) {
-			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
 		}
 		finally {
@@ -591,7 +585,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			
 			while (rs.next()) {
 				if (localeConceptNamesMap == null) {
-					localeConceptNamesMap = new HashMap<Locale, List<ConceptName>>();
+					localeConceptNamesMap = new HashMap<>();
 				}
 				ConceptName conceptName = new ConceptName();
 				conceptName.setConceptNameId(rs.getInt("concept_name_id"));
@@ -616,16 +610,13 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				conceptName.setVoided(false);
 				
 				if (!localeConceptNamesMap.containsKey(conceptName.getLocale())) {
-					localeConceptNamesMap.put(conceptName.getLocale(), new LinkedList<ConceptName>());
+					localeConceptNamesMap.put(conceptName.getLocale(), new LinkedList<>());
 				}
 				
 				localeConceptNamesMap.get(conceptName.getLocale()).add(conceptName);
 			}
 		}
-		catch (DatabaseException e) {
-			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
 		}
 		finally {
@@ -718,10 +709,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				}
 			}
 		}
-		catch (SQLException e) {
-			log.warn("Error generated", e);
-		}
-		catch (DatabaseException e) {
+		catch (SQLException | DatabaseException e) {
 			log.warn("Error generated", e);
 		}
 		finally {
@@ -770,10 +758,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			
 			return result;
 		}
-		catch (DatabaseException e) {
-			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
 		}
 		finally {

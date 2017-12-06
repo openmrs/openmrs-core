@@ -38,10 +38,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			List<DiscontinuedOrder> discontinuedOrders = getDiscontinuedOrders(connection);
 			createDiscontinueOrders(connection, discontinuedOrders);
 		}
-		catch (SQLException e) {
-			throw new CustomChangeException(e);
-		}
-		catch (DatabaseException e) {
+		catch (SQLException | DatabaseException e) {
 			throw new CustomChangeException(e);
 		}
 	}
@@ -86,10 +83,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			insertStatement.executeBatch();
 			connection.commit();
 		}
-		catch (DatabaseException e) {
-			handleError(connection, e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			handleError(connection, e);
 		}
 		finally {
@@ -117,7 +111,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 	
 	private List<DiscontinuedOrder> getDiscontinuedOrders(JdbcConnection connection) throws CustomChangeException,
 	        SQLException {
-		List<DiscontinuedOrder> dcOrders = new ArrayList<DiscontinuedOrder>();
+		List<DiscontinuedOrder> dcOrders = new ArrayList<>();
 		PreparedStatement statement = null;
 		try {
 			statement = connection.prepareStatement("select order_id, concept_id, patient_id, encounter_id, date_stopped, "
@@ -132,10 +126,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 				                .getInt("order_type_id")));
 			}
 		}
-		catch (SQLException e) {
-			throw new CustomChangeException(e);
-		}
-		catch (DatabaseException e) {
+		catch (SQLException | DatabaseException e) {
 			throw new CustomChangeException(e);
 		}
 		finally {

@@ -330,8 +330,8 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getPatientIdentifiers_shouldLimitByResultsByLocation() {
 		Location location = Context.getLocationService().getLocation(3); // there is only one identifier in the test database for location 3
-		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
-		    Collections.singletonList(location), new ArrayList<Patient>(), null);
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<>(),
+		    Collections.singletonList(location), new ArrayList<>(), null);
 		Assert.assertEquals(1, patientIdentifiers.size());
 		Assert.assertEquals("12345K", patientIdentifiers.get(0).getIdentifier());
 	}
@@ -342,8 +342,8 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getPatientIdentifiers_shouldNotGetVoidedPatientIdentifiers() {
 		
-		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
-		    new ArrayList<Location>(), new ArrayList<Patient>(), null);
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<>(),
+				new ArrayList<>(), new ArrayList<>(), null);
 		
 		// standartTestDataset.xml contains 5 non-voided identifiers
 		//
@@ -365,7 +365,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		String identifier = "123"; // identifier [12345K] exist in test dataSet
 		
 		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(identifier,
-		    new ArrayList<PatientIdentifierType>(), new ArrayList<Location>(), new ArrayList<Patient>(), null);
+				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null);
 		
 		Assert.assertTrue(patientIdentifiers.isEmpty());
 	}
@@ -379,7 +379,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		String identifier = "101";
 		
 		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(identifier,
-		    new ArrayList<PatientIdentifierType>(), new ArrayList<Location>(), new ArrayList<Patient>(), null);
+				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null);
 		
 		Assert.assertEquals(1, patientIdentifiers.size());
 		Assert.assertEquals(identifier, patientIdentifiers.get(0).getIdentifier());
@@ -392,8 +392,8 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatientIdentifiers_shouldReturnAllMatchingNonVoidedPatientIdentifiersIfIsPreferredIsSetToFalse()
 	{
 		
-		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
-		    new ArrayList<Location>(), new ArrayList<Patient>(), Boolean.FALSE);
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<>(),
+				new ArrayList<>(), new ArrayList<>(), Boolean.FALSE);
 		
 		Assert.assertEquals(6, patientIdentifiers.size());
 	}
@@ -405,8 +405,8 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatientIdentifiers_shouldReturnAllMatchingNonVoidedPatientIdentifiersIfIsPreferredIsSetToNull()
 	{
 		
-		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
-		    new ArrayList<Location>(), new ArrayList<Patient>(), null);
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<>(),
+				new ArrayList<>(), new ArrayList<>(), null);
 		
 		Assert.assertEquals(8, patientIdentifiers.size());
 	}
@@ -418,8 +418,8 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatientIdentifiers_shouldReturnAllMatchingNonVoidedPatientIdentifiersIfIsPreferredIsSetToTrue()
 	{
 		
-		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
-		    new ArrayList<Location>(), new ArrayList<Patient>(), Boolean.TRUE);
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<>(),
+				new ArrayList<>(), new ArrayList<>(), Boolean.TRUE);
 		
 		Assert.assertEquals(2, patientIdentifiers.size());
 	}
@@ -433,8 +433,8 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		//There are two identifiers in the test database for patient with id 2
 		Patient patientWithId2 = Context.getPatientService().getPatient(2);
 		
-		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
-		    new ArrayList<Location>(), Collections.singletonList(patientWithId2), null);
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<>(),
+				new ArrayList<>(), Collections.singletonList(patientWithId2), null);
 		
 		assertThat(patientIdentifiers, containsInAnyOrder(hasIdentifier("101"), hasIdentifier("101-6")));
 	}
@@ -453,8 +453,8 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		
 		List<Patient> patientsList = Arrays.asList(patientWithId6, patientWithId7);
 		
-		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<PatientIdentifierType>(),
-		    new ArrayList<Location>(), patientsList, null);
+		List<PatientIdentifier> patientIdentifiers = dao.getPatientIdentifiers(null, new ArrayList<>(),
+				new ArrayList<>(), patientsList, null);
 		
 		assertThat(patientIdentifiers, containsInAnyOrder(hasIdentifier("12345K"), hasIdentifier("6TS-4")));
 	}

@@ -360,7 +360,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @should return a set of locations
 	 */
 	public Set<Location> getChildLocations(boolean includeRetired) {
-		Set<Location> ret = new HashSet<Location>();
+		Set<Location> ret = new HashSet<>();
 		if (includeRetired) {
 			ret = getChildLocations();
 		} else if (getChildLocations() != null) {
@@ -381,7 +381,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.10
 	 */
 	public Set<Location> getDescendantLocations(boolean includeRetired) {
-		Set<Location> result = new HashSet<Location>();
+		Set<Location> result = new HashSet<>();
 		
 		for (Location childLocation : getChildLocations()) {
 			if (!childLocation.getRetired() || includeRetired) {
@@ -413,7 +413,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 		}
 		
 		if (getChildLocations() == null) {
-			childLocations = new HashSet<Location>();
+			childLocations = new HashSet<>();
 		}
 		
 		if (child.equals(this)) {
@@ -497,7 +497,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 */
 	public void addTag(LocationTag tag) {
 		if (getTags() == null) {
-			tags = new HashSet<LocationTag>();
+			tags = new HashSet<>();
 		}
 		if (tag != null && !tags.contains(tag)) {
 			tags.add(tag);

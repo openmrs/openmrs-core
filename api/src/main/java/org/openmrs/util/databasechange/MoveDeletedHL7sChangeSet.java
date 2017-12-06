@@ -86,11 +86,8 @@ public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 			}
 			
 		}
-		catch (SQLException e) {
+		catch (SQLException | DatabaseException e) {
 			throw new CustomChangeException("Unable to move deleted HL7s from archive table to queue table", e);
-		}
-		catch (DatabaseException dbex) {
-			throw new CustomChangeException("Unable to move deleted HL7s from archive table to queue table", dbex);
 		}
 	}
 	

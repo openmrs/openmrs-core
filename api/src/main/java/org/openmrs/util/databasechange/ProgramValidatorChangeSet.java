@@ -42,7 +42,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		Connection conn = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
-		List<String> messages = new ArrayList<String>();
+		List<String> messages = new ArrayList<>();
 		
 		// Warn if any states are configured as both initial and terminal
 		StringBuilder message = new StringBuilder();
@@ -79,7 +79,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		query.append(" group by 	w.concept_id, s.initial ");
 		
 		results = DatabaseUtil.executeSQL(conn, query.toString(), true);
-		List<Integer> missingInitial = new ArrayList<Integer>();
+		List<Integer> missingInitial = new ArrayList<>();
 		for (List<Object> row : results) {
 			missingInitial.add(Integer.valueOf(row.get(0).toString()));
 		}

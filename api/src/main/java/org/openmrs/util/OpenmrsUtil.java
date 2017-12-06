@@ -122,9 +122,9 @@ public class OpenmrsUtil {
 	
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsUtil.class);
 	
-	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<Locale, SimpleDateFormat>();
+	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<>();
 	
-	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<Locale, SimpleDateFormat>();
+	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<>();
 	
 	/**
 	 * Compares origList to newList returning map of differences
@@ -136,10 +136,10 @@ public class OpenmrsUtil {
 	public static <E extends Object> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {
 		// TODO finish function
 		
-		Collection<Collection<E>> returnList = new ArrayList<Collection<E>>();
+		Collection<Collection<E>> returnList = new ArrayList<>();
 		
-		Collection<E> toAdd = new LinkedList<E>();
-		Collection<E> toDel = new LinkedList<E>();
+		Collection<E> toAdd = new LinkedList<>();
+		Collection<E> toDel = new LinkedList<>();
 		
 		// loop over the new list.
 		for (E currentNewListObj : newList) {
@@ -338,7 +338,7 @@ public class OpenmrsUtil {
 	 * @see Context#checkCoreDataset()
 	 */
 	public static Map<String, String> getCorePrivileges() {
-		Map<String, String> corePrivileges = new HashMap<String, String>();
+		Map<String, String> corePrivileges = new HashMap<>();
 		
 		// TODO getCorePrivileges() is called so so many times that getClassesWithAnnotation() better do some catching.
 		Set<Class<?>> classes = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(HasAddOnStartupPrivileges.class);
@@ -381,7 +381,7 @@ public class OpenmrsUtil {
 	 * @return roles that are core to the system
 	 */
 	public static Map<String, String> getCoreRoles() {
-		Map<String, String> roles = new HashMap<String, String>();
+		Map<String, String> roles = new HashMap<>();
 		
 		Field[] flds = RoleConstants.class.getDeclaredFields();
 		for (Field fld : flds) {
@@ -582,7 +582,7 @@ public class OpenmrsUtil {
 	 * @return Map&lt;String, String&gt; of the parameters passed
 	 */
 	public static Map<String, String> parseParameterList(String paramList) {
-		Map<String, String> ret = new HashMap<String, String>();
+		Map<String, String> ret = new HashMap<>();
 		if (paramList != null && paramList.length() > 0) {
 			String[] args = paramList.split("\\|");
 			for (String s : args) {
@@ -706,7 +706,7 @@ public class OpenmrsUtil {
 	}
 	
 	public static Set<Concept> conceptSetHelper(String descriptor) {
-		Set<Concept> ret = new HashSet<Concept>();
+		Set<Concept> ret = new HashSet<>();
 		if (descriptor == null || descriptor.length() == 0) {
 			return ret;
 		}
@@ -773,7 +773,7 @@ public class OpenmrsUtil {
 				
 				if (c != null) {
 					if (ret == null) {
-						ret = new ArrayList<Concept>();
+						ret = new ArrayList<>();
 					}
 					ret.add(c);
 				}
@@ -793,7 +793,7 @@ public class OpenmrsUtil {
 				
 				if (c != null) {
 					if (ret == null) {
-						ret = new HashMap<String, Concept>();
+						ret = new HashMap<>();
 					}
 					ret.put(token, c);
 				}
@@ -805,7 +805,7 @@ public class OpenmrsUtil {
 	
 	// TODO: properly handle duplicates
 	public static List<Concept> conceptListHelper(String descriptor) {
-		List<Concept> ret = new ArrayList<Concept>();
+		List<Concept> ret = new ArrayList<>();
 		if (descriptor == null || descriptor.length() == 0) {
 			return ret;
 		}
@@ -982,24 +982,16 @@ public class OpenmrsUtil {
 		if (file == null) {// non-local JAR file URL
 			return url.openStream();
 		}
-		JarFile jarFile = new JarFile(file);
-		try {
+		try (JarFile jarFile = new JarFile(file)) {
 			ZipEntry entry = jarFile.getEntry(path);
 			if (entry == null) {
 				throw new FileNotFoundException(url.toExternalForm());
 			}
-			InputStream in = jarFile.getInputStream(entry);
-			try {
+			try (InputStream in = jarFile.getInputStream(entry)) {
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				copyFile(in, out);
 				return new ByteArrayInputStream(out.toByteArray());
 			}
-			finally {
-				in.close();
-			}
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 	
@@ -1201,7 +1193,7 @@ public class OpenmrsUtil {
 	}
 	
 	public static List<Integer> delimitedStringToIntegerList(String delimitedString, String delimiter) {
-		List<Integer> ret = new ArrayList<Integer>();
+		List<Integer> ret = new ArrayList<>();
 		String[] tokens = delimitedString.split(delimiter);
 		for (String token : tokens) {
 			token = token.trim();

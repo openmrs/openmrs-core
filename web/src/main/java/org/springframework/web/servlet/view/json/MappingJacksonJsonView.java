@@ -250,7 +250,7 @@ public class MappingJacksonJsonView extends AbstractView {
 	 * @return the value to be rendered
 	 */
 	protected Object filterModel(Map<String, Object> model) {
-		Map<String, Object> result = new HashMap<String, Object>(model.size());
+		Map<String, Object> result = new HashMap<>(model.size());
 		Set<String> renderedAttributes = (!CollectionUtils.isEmpty(this.modelKeys) ? this.modelKeys : model.keySet());
 		for (Map.Entry<String, Object> entry : model.entrySet()) {
 			if (!(entry.getValue() instanceof BindingResult) && renderedAttributes.contains(entry.getKey())) {

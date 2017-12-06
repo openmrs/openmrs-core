@@ -192,7 +192,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertNotNull("Their should be an associated encounter", firstContactMethodObs.getEncounter());
 		
 		// check that the obs that are grouped have the same group id
-		List<Integer> groupedConceptIds = new Vector<Integer>();
+		List<Integer> groupedConceptIds = new Vector<>();
 		groupedConceptIds.add(1558);
 		groupedConceptIds.add(1553);
 		groupedConceptIds.add(1554);

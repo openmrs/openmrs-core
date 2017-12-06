@@ -74,7 +74,7 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
-		Map<String, HashSet<Integer>> duplicates = new HashMap<String, HashSet<Integer>>();
+		Map<String, HashSet<Integer>> duplicates = new HashMap<>();
 		Statement stmt = null;
 		PreparedStatement pStmt = null;
 		ResultSet rs = null;
@@ -98,7 +98,7 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 				name = rs.getString("name");
 				
 				if (duplicates.get(name) == null) {
-					HashSet<Integer> results = new HashSet<Integer>();
+					HashSet<Integer> results = new HashSet<>();
 					results.add(id);
 					duplicates.put(name, results);
 				} else {

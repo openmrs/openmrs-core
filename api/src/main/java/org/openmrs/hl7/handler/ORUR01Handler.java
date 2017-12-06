@@ -225,7 +225,7 @@ public class ORUR01Handler implements Application {
 		// list of concepts proposed in the obs of this encounter.
 		// these proposals need to be created after the encounter
 		// has been created
-		List<ConceptProposal> conceptProposals = new ArrayList<ConceptProposal>();
+		List<ConceptProposal> conceptProposals = new ArrayList<>();
 		
 		// create observations
 		if (log.isDebugEnabled()) {
@@ -233,7 +233,7 @@ public class ORUR01Handler implements Application {
 		}
 		// we ignore all MEDICAL_RECORD_OBSERVATIONS that are OBRs.  We do not
 		// create obs_groups for them
-		List<Integer> ignoredConceptIds = new ArrayList<Integer>();
+		List<Integer> ignoredConceptIds = new ArrayList<>();
 		
 		String obrConceptId = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, "1238");
@@ -443,7 +443,7 @@ public class ORUR01Handler implements Application {
 		boolean patientCanBeEitherPerson = relType.getbIsToA().equals(relType.getaIsToB());
 		
 		// look at existing relationships to determine if a new one is needed
-		Set<Relationship> rels = new HashSet<Relationship>();
+		Set<Relationship> rels = new HashSet<>();
 		if (relative != null) {
 			if (patientCanBeEitherPerson || patientIsPersonA) {
 				rels.addAll(Context.getPersonService().getRelationships(patient, relative, relType));
@@ -507,7 +507,7 @@ public class ORUR01Handler implements Application {
 	 * @throws HL7Exception
 	 */
 	public List<NK1> getNK1List(ORU_R01 oru) throws HL7Exception {
-		List<NK1> res = new ArrayList<NK1>();
+		List<NK1> res = new ArrayList<>();
 		// there will always be at least one NK1, even if the original message does not contain one
 		for (int i = 0; i < oru.getPATIENT_RESULT().getPATIENT().getNK1Reps(); i++) {
 			// if the setIDNK1 value is null, this NK1 is blank

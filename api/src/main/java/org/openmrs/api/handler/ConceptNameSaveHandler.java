@@ -52,7 +52,7 @@ public class ConceptNameSaveHandler implements SaveHandler<ConceptName> {
 		
 		// put Integer conceptNameTagIds onto ConceptNameTags that are missing them
 		if (conceptName.getTags() != null) {
-			Collection<ConceptNameTag> replacementTags = new ArrayList<ConceptNameTag>();
+			Collection<ConceptNameTag> replacementTags = new ArrayList<>();
 			
 			Iterator<ConceptNameTag> tagsIt = conceptName.getTags().iterator();
 			while (tagsIt.hasNext()) {
