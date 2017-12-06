@@ -1187,13 +1187,7 @@ public class InitializationFilter extends StartupFilter {
 				errors.put("Error executing sql: " + sql + " - " + sqlex.getMessage(), null);
 			}
 		}
-		catch (InstantiationException e) {
-			log.error("Error generated", e);
-		}
-		catch (IllegalAccessException e) {
-			log.error("Error generated", e);
-		}
-		catch (ClassNotFoundException e) {
+		catch (InstantiationException | ClassNotFoundException | IllegalAccessException e) {
 			log.error("Error generated", e);
 		}
 		finally {

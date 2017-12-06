@@ -43,10 +43,7 @@ public class DisableTriggersChangeSet implements CustomTaskChange {
 				connection.prepareStatement("ALTER TABLE " + tableName + " DISABLE TRIGGER ALL").execute();
 			}
 		}
-		catch (DatabaseException ex) {
-			throw new CustomChangeException("Error disabling trigger: " + ex);
-		}
-		catch (SQLException ex) {
+		catch (DatabaseException | SQLException ex) {
 			throw new CustomChangeException("Error disabling trigger: " + ex);
 		}
 	}

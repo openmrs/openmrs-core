@@ -89,10 +89,7 @@ public class CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset implements 
 			}
 			connection.commit();
 		}
-		catch (DatabaseException e) {
-			handleError(connection, e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			handleError(connection, e);
 		}
 		finally {
