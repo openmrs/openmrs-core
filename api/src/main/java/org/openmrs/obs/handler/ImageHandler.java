@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -56,9 +57,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 		
 		// Create a HashSet to quickly check for supported extensions.
 		extensions = new HashSet<String>();
-		for (String mt : ImageIO.getWriterFormatNames()) {
-			extensions.add(mt);
-		}
+		Collections.addAll(extensions, ImageIO.getWriterFormatNames());
 	}
 	
 	/**
