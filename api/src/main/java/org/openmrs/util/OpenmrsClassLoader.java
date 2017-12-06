@@ -523,10 +523,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			if (clazz != null && clazz.getName().contains("openmrs")) { // only clean up openmrs classes
 				try {
 					Field[] fields = clazz.getDeclaredFields();
-					for (int i = 0; i < fields.length; i++) {
-						Field field = fields[i];
+					for (Field field : fields) {
 						int mods = field.getModifiers();
-						if (field.getType().isPrimitive() || (field.getName().indexOf("$") != -1)) {
+						if (field.getType().isPrimitive() || (field.getName().contains("$"))) {
 							continue;
 						}
 						if (Modifier.isStatic(mods)) {
@@ -550,7 +549,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 							catch (Exception t) {
 								if (log.isDebugEnabled()) {
 									log.debug("Could not set field " + field.getName() + " to null in class "
-									        + clazz.getName(), t);
+											+ clazz.getName(), t);
 								}
 							}
 						}
@@ -582,10 +581,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			return;
 		}
 		Field[] fields = instance.getClass().getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			Field field = fields[i];
+		for (Field field : fields) {
 			int mods = field.getModifiers();
-			if (field.getType().isPrimitive() || (field.getName().indexOf("$") != -1)) {
+			if (field.getType().isPrimitive() || (field.getName().contains("$"))) {
 				continue;
 			}
 			try {
@@ -600,14 +598,14 @@ public class OpenmrsClassLoader extends URLClassLoader {
 						if (!loadedByThisOrChild(valueClass)) {
 							if (log.isDebugEnabled()) {
 								log.debug("Not setting field " + field.getName() + " to null in object of class "
-								        + instance.getClass().getName() + " because the referenced object was of type "
-								        + valueClass.getName() + " which was not loaded by this WebappClassLoader.");
+										+ instance.getClass().getName() + " because the referenced object was of type "
+										+ valueClass.getName() + " which was not loaded by this WebappClassLoader.");
 							}
 						} else {
 							field.set(instance, null);
 							if (log.isDebugEnabled()) {
 								log.debug("Set field " + field.getName() + " to null in class "
-								        + instance.getClass().getName());
+										+ instance.getClass().getName());
 							}
 						}
 					}
@@ -616,7 +614,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			catch (Exception e) {
 				if (log.isDebugEnabled()) {
 					log.debug("Could not set field " + field.getName() + " to null in object instance of class "
-					        + instance.getClass().getName(), e);
+							+ instance.getClass().getName(), e);
 				}
 			}
 		}

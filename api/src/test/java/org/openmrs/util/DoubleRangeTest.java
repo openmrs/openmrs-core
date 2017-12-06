@@ -49,60 +49,60 @@ public class DoubleRangeTest {
 	@Test
 	public void DoubleRange_shouldReturnInfiniteLowAndHighIfCalledWithNullParameters() {
 		DoubleRange dr = new DoubleRange(null, null);
-		assertEquals(Double.POSITIVE_INFINITY, dr.getHigh().doubleValue(), 0);
-		assertEquals(Double.NEGATIVE_INFINITY, dr.getLow().doubleValue(), 0);
+		assertEquals(Double.POSITIVE_INFINITY, dr.getHigh(), 0);
+		assertEquals(Double.NEGATIVE_INFINITY, dr.getLow(), 0);
 	}
 	
 	@Test
 	public void getHigh_shouldReturnCorrectValueOfHighIfHighWasSetPreviously() {
 		DoubleRange dr = new DoubleRange(0.0, 4.0);
-		assertEquals(4.0, dr.getHigh().doubleValue(), 0);
+		assertEquals(4.0, dr.getHigh(), 0);
 	}
 	
 	@Test
 	public void getHigh_shouldReturnPositiveInfinityIfHighWasNotSetPreviously() {
 		DoubleRange dr = new DoubleRange(0.0, null);
-		assertEquals(Double.POSITIVE_INFINITY, dr.getHigh().doubleValue(), 0);
+		assertEquals(Double.POSITIVE_INFINITY, dr.getHigh(), 0);
 	}
 	
 	@Test
 	public void setHigh_shouldSetHighToPositiveInfinityOnNullParameter() {
 		DoubleRange dr = new DoubleRange(0.0, 4.0);
 		dr.setHigh(null);
-		assertEquals(Double.POSITIVE_INFINITY, dr.getHigh().doubleValue(), 0);
+		assertEquals(Double.POSITIVE_INFINITY, dr.getHigh(), 0);
 	}
 	
 	@Test
 	public void setHigh_shouldCauseHighToHaveTheSetValue() {
 		DoubleRange dr = new DoubleRange(null, null);
 		dr.setHigh(8.0);
-		assertEquals(8.0, dr.getHigh().doubleValue(), 0);
+		assertEquals(8.0, dr.getHigh(), 0);
 	}
 	
 	@Test
 	public void getLow_shouldReturnCorrectValueOfLowIfLowWasSetPreviously() {
 		DoubleRange dr = new DoubleRange(0.0, 4.0);
-		assertEquals(0.0, dr.getLow().doubleValue(), 0);
+		assertEquals(0.0, dr.getLow(), 0);
 	}
 	
 	@Test
 	public void getLow_shouldReturnNegativeInfinityIfLowWasNotSetPreviously() {
 		DoubleRange dr = new DoubleRange(null, 0.0);
-		assertEquals(Double.NEGATIVE_INFINITY, dr.getLow().doubleValue(), 0);
+		assertEquals(Double.NEGATIVE_INFINITY, dr.getLow(), 0);
 	}
 	
 	@Test
 	public void setLow_shouldSetLowToNegativeInfinityOnNullParameter() {
 		DoubleRange dr = new DoubleRange(0.0, 4.0);
 		dr.setLow(null);
-		assertEquals(Double.NEGATIVE_INFINITY, dr.getLow().doubleValue(), 0);
+		assertEquals(Double.NEGATIVE_INFINITY, dr.getLow(), 0);
 	}
 	
 	@Test
 	public void setLow_shouldCauseLowToHaveTheSetValue() {
 		DoubleRange dr = new DoubleRange(null, null);
 		dr.setLow(8.0);
-		assertEquals(8.0, dr.getLow().doubleValue(), 0);
+		assertEquals(8.0, dr.getLow(), 0);
 	}
 	
 	/**

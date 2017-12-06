@@ -106,7 +106,7 @@ public class GZIPFilter extends OncePerRequestFilter {
 	 */
 	private boolean isGZIPSupported(HttpServletRequest req) {
 		String browserEncodings = req.getHeader("accept-encoding");
-		boolean supported = ((browserEncodings != null) && (browserEncodings.indexOf("gzip") != -1));
+		boolean supported = ((browserEncodings != null) && (browserEncodings.contains("gzip")));
 		
 		String userAgent = req.getHeader("user-agent");
 		

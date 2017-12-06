@@ -327,7 +327,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 		
 		// trim off initial slash if it exists
-		if (contextPath.indexOf("/") != -1) {
+		if (contextPath.contains("/")) {
 			contextPath = contextPath.substring(1);
 		}
 		

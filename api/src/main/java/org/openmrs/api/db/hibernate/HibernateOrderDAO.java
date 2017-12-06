@@ -477,19 +477,18 @@ public class HibernateOrderDAO implements OrderDAO {
 	public boolean isOrderFrequencyInUse(OrderFrequency orderFrequency) {
 		
 		Map<String, ClassMetadata> metadata = sessionFactory.getAllClassMetadata();
-		for (Iterator<ClassMetadata> i = metadata.values().iterator(); i.hasNext();) {
-			ClassMetadata classMetadata = i.next();
+		for (ClassMetadata classMetadata : metadata.values()) {
 			Class<?> entityClass = classMetadata.getMappedClass();
 			if (Order.class.equals(entityClass)) {
 				//ignore the org.openmrs.Order class itself
 				continue;
 			}
-			
+
 			if (!Order.class.isAssignableFrom(entityClass)) {
 				//not a sub class of Order
 				continue;
 			}
-			
+
 			String[] names = classMetadata.getPropertyNames();
 			for (String name : names) {
 				if (classMetadata.getPropertyType(name).getReturnedClass().equals(OrderFrequency.class)) {
