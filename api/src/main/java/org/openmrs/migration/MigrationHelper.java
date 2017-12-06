@@ -202,7 +202,7 @@ public class MigrationHelper {
 		List<Relationship> relsToAdd = new ArrayList<Relationship>();
 		Random rand = new Random();
 		for (String s : relationships) {
-			if (s.indexOf(":") >= 0) {
+			if (s.contains(":")) {
 				s = s.substring(s.indexOf(":") + 1);
 			}
 			String[] ss = s.split(",");
