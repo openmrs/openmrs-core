@@ -502,7 +502,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		if (log.isDebugEnabled()) {
 			StringBuilder buf = new StringBuilder();
-			buf.append("New code URL's populated for module " + getModule() + ":\r\n");
+			buf.append("New code URL's populated for module ").append(getModule()).append(":\r\n");
 			for (URL u : newUrls) {
 				buf.append("\t");
 				buf.append(u);

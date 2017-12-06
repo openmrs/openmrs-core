@@ -615,7 +615,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		query.append("(");
 		if (searchKeywords) {
 			//Put exact phrase higher
-			query.append(" name:(\"" + escapedName + "\")^0.7");
+			query.append(" name:(\"").append(escapedName).append("\")^0.7");
 			
 			if (!tokenizedName.isEmpty()) {
 				query.append(" OR (");
@@ -637,7 +637,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				query.append(")^0.3");
 			}
 		} else {
-			query.append(" name:\"" + escapedName + "\"");
+			query.append(" name:\"").append(escapedName).append("\"");
 		}
 		query.append(")");
 		return query;
