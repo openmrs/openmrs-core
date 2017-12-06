@@ -35,7 +35,7 @@ public class CreateCoreUuids extends BaseContextSensitiveTest {
 		Context.authenticate("admin", "test");
 		System.out.println("db: " + OpenmrsConstants.DATABASE_NAME);
 		
-		Map<String, List<? extends OpenmrsMetadata>> coremetadatas = new LinkedHashMap<String, List<? extends OpenmrsMetadata>>();
+		Map<String, List<? extends OpenmrsMetadata>> coremetadatas = new LinkedHashMap<>();
 		
 		coremetadatas.put("field_type", Context.getFormService().getAllFieldTypes(true));
 		coremetadatas.put("person_attribute_type", Context.getPersonService().getAllPersonAttributeTypes(true));

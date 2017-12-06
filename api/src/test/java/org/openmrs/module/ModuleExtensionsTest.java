@@ -42,14 +42,14 @@ public class ModuleExtensionsTest {
 	 */
 	@Test
 	public void getExtensions_shouldNotExpandExtensionNamesIfExtensionNamesIsNull() throws Exception {
-		ArrayList<Extension> extensions = new ArrayList<Extension>();
+		ArrayList<Extension> extensions = new ArrayList<>();
 
 		Extension mockExtension = new MockExtension();
 		extensions.add(mockExtension);
 
 		mockModule.setExtensions(extensions);
 		mockModule.setExtensionNames(null);
-		ArrayList<Extension> ret = new ArrayList<Extension>(mockModule.getExtensions());
+		ArrayList<Extension> ret = new ArrayList<>(mockModule.getExtensions());
 
 		verifyPrivate(mockModule, never()).invoke("expandExtensionNames");
 	}
@@ -59,14 +59,14 @@ public class ModuleExtensionsTest {
 	 */
 	@Test
 	public void getExtensions_shouldNotExpandExtensionNamesIfExtensionNamesIsEmpty() throws Exception {
-		ArrayList<Extension> extensions = new ArrayList<Extension>();
+		ArrayList<Extension> extensions = new ArrayList<>();
 
 		Extension mockExtension = new MockExtension();
 		extensions.add(mockExtension);
 
 		mockModule.setExtensions(extensions);
-		mockModule.setExtensionNames(new IdentityHashMap<String, String>());
-		ArrayList<Extension> ret = new ArrayList<Extension>(mockModule.getExtensions());
+		mockModule.setExtensionNames(new IdentityHashMap<>());
+		ArrayList<Extension> ret = new ArrayList<>(mockModule.getExtensions());
 
 		verifyPrivate(mockModule, never()).invoke("expandExtensionNames");
 	}
@@ -76,8 +76,8 @@ public class ModuleExtensionsTest {
 	 */
 	@Test
 	public void getExtensions_shouldNotExpandExtensionNamesIfExtensionsMatchesExtensionNames() throws Exception {
-		ArrayList<Extension> extensions = new ArrayList<Extension>();
-		IdentityHashMap<String, String> extensionNames = new IdentityHashMap<String, String>();
+		ArrayList<Extension> extensions = new ArrayList<>();
+		IdentityHashMap<String, String> extensionNames = new IdentityHashMap<>();
 
 		Extension mockExtension = new MockExtension();
 		mockExtension.setPointId("1");
@@ -86,7 +86,7 @@ public class ModuleExtensionsTest {
 
 		mockModule.setExtensions(extensions);
 		mockModule.setExtensionNames(extensionNames);
-		ArrayList<Extension> ret = new ArrayList<Extension>(mockModule.getExtensions());
+		ArrayList<Extension> ret = new ArrayList<>(mockModule.getExtensions());
 
 		verifyPrivate(mockModule, never()).invoke("expandExtensionNames");
 	}
@@ -96,8 +96,8 @@ public class ModuleExtensionsTest {
 	 */
 	@Test
 	public void getExtensions_shouldExpandExtensionNamesIfExtensionsDoesNotMatchExtensionNames() throws Exception {
-		ArrayList<Extension> extensions = new ArrayList<Extension>();
-		IdentityHashMap<String, String> extensionNames = new IdentityHashMap<String, String>();
+		ArrayList<Extension> extensions = new ArrayList<>();
+		IdentityHashMap<String, String> extensionNames = new IdentityHashMap<>();
 
 		Extension mockExtension = new MockExtension();
 		mockExtension.setPointId("1");
@@ -106,7 +106,7 @@ public class ModuleExtensionsTest {
 
 		mockModule.setExtensions(extensions);
 		mockModule.setExtensionNames(extensionNames);
-		ArrayList<Extension> ret = new ArrayList<Extension>(mockModule.getExtensions());
+		ArrayList<Extension> ret = new ArrayList<>(mockModule.getExtensions());
 
 		verifyPrivate(mockModule).invoke("expandExtensionNames");
 	}

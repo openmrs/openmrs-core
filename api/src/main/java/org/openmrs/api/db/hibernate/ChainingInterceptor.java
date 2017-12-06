@@ -36,7 +36,7 @@ public class ChainingInterceptor implements Interceptor {
 	private static final Logger log = LoggerFactory.getLogger(ChainingInterceptor.class);
 	
 	// using a linkedhashset to preserve insert order and maintain a list of unique objects
-	public Collection<Interceptor> interceptors = new LinkedHashSet<Interceptor>();
+	public Collection<Interceptor> interceptors = new LinkedHashSet<>();
 	
 	/**
 	 * Adds the given interceptor to the list of interceptors to be applied to hibernate sessions.
@@ -54,7 +54,7 @@ public class ChainingInterceptor implements Interceptor {
 		log.debug("Adding " + interceptor + " to interceptor chain");
 		
 		if (interceptors == null) {
-			interceptors = new LinkedHashSet<Interceptor>();
+			interceptors = new LinkedHashSet<>();
 		}
 		
 		interceptors.add(interceptor);
@@ -156,7 +156,7 @@ public class ChainingInterceptor implements Interceptor {
 	public int[] findDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
 	        String[] propertyNames, Type[] types) {
 		
-		List<Integer> uniqueIndices = new LinkedList<Integer>();
+		List<Integer> uniqueIndices = new LinkedList<>();
 		
 		for (Interceptor i : interceptors) {
 			int[] indices = i.findDirty(entity, id, currentState, previousState, propertyNames, types);

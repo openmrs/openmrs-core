@@ -36,7 +36,7 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
-	private Set<MutableMessageSource> availableMessageSources = new HashSet<MutableMessageSource>();
+	private Set<MutableMessageSource> availableMessageSources = new HashSet<>();
 	
 	private MutableMessageSource activeMessageSource;
 	

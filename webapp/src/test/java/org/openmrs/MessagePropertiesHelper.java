@@ -34,7 +34,7 @@ public class MessagePropertiesHelper {
 		
 		String[] allFilesInDirectory = new File(MESSAGES_FILE_FOLDER).list();
 		
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		for (String fileName : allFilesInDirectory) {
 			if(fileName.matches(MESSAGE_PROPERTIES_FILENAME_REGEX)){
 				result.add(MESSAGES_FILE_FOLDER + fileName);

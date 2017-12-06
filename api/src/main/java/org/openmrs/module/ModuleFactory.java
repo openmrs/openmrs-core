@@ -65,21 +65,21 @@ public class ModuleFactory {
 	
 	private static Logger log = LoggerFactory.getLogger(ModuleFactory.class);
 	
-	protected static volatile Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
+	protected static volatile Map<String, Module> loadedModules = new WeakHashMap<>();
 	
-	protected static volatile Map<String, Module> startedModules = new WeakHashMap<String, Module>();
+	protected static volatile Map<String, Module> startedModules = new WeakHashMap<>();
 	
-	protected static volatile Map<String, List<Extension>> extensionMap = new HashMap<String, List<Extension>>();
+	protected static volatile Map<String, List<Extension>> extensionMap = new HashMap<>();
 	
 	// maps to keep track of the memory and objects to free/close
-	protected static volatile Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
+	protected static volatile Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<>();
 	
-	private static Map<String, Set<ModuleClassLoader>> providedPackages = new ConcurrentHashMap<String, Set<ModuleClassLoader>>();
+	private static Map<String, Set<ModuleClassLoader>> providedPackages = new ConcurrentHashMap<>();
 	
 	// the name of the file within a module file
 	private static final String MODULE_CHANGELOG_FILENAME = "liquibase.xml";
 	
-	private static final Map<String, DaemonToken> daemonTokens = new WeakHashMap<String, DaemonToken>();
+	private static final Map<String, DaemonToken> daemonTokens = new WeakHashMap<>();
 	
 	private static volatile Set<String> actualStartupOrder;
 	
@@ -279,7 +279,7 @@ public class ModuleFactory {
 	 * @return list of modules
 	 */
 	private static List<Module> getModulesThatShouldStart() {
-		List<Module> modules = new ArrayList<Module>();
+		List<Module> modules = new ArrayList<>();
 		
 		AdministrationService adminService = Context.getAdministrationService();
 		
@@ -309,7 +309,7 @@ public class ModuleFactory {
 	 * @throws CycleException
 	 */
 	public static List<Module> getModulesInStartupOrder(Collection<Module> modules) throws CycleException {
-		Graph<Module> graph = new Graph<Module>();
+		Graph<Module> graph = new Graph<>();
 		
 		for (Module mod : modules) {
 			
@@ -394,7 +394,7 @@ public class ModuleFactory {
 	 *         modules first.
 	 */
 	public static List<Module> getLoadedModulesCoreFirst() {
-		List<Module> list = new ArrayList<Module>(getLoadedModules());
+		List<Module> list = new ArrayList<>(getLoadedModules());
 		final Collection<String> coreModuleIds = ModuleConstants.CORE_MODULES.keySet();
 		Collections.sort(list, new Comparator<Module>() {
 			
@@ -418,7 +418,7 @@ public class ModuleFactory {
 	 *         "org.openmrs.formentry 1.8, org.rg.patientmatching"
 	 */
 	private static List<String> getMissingRequiredModules(Module module) {
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 		for (String moduleName : module.getRequiredModules()) {
 			boolean started = false;
 			for (Module mod : getStartedModules()) {
@@ -461,7 +461,7 @@ public class ModuleFactory {
 	 */
 	public static Map<String, Module> getLoadedModulesMap() {
 		if (loadedModules == null) {
-			loadedModules = new WeakHashMap<String, Module>();
+			loadedModules = new WeakHashMap<>();
 		}
 		
 		return loadedModules;
@@ -475,11 +475,11 @@ public class ModuleFactory {
 	 */
 	public static Map<String, Module> getLoadedModulesMapPackage() {
 		if (loadedModules == null) {
-			loadedModules = new WeakHashMap<String, Module>();
+			loadedModules = new WeakHashMap<>();
 			return loadedModules;
 		}
 		
-		Map<String, Module> map = new WeakHashMap<String, Module>();
+		Map<String, Module> map = new WeakHashMap<>();
 		for (Module loadedModule : loadedModules.values()) {
 			map.put(loadedModule.getPackageName(), loadedModule);
 		}
@@ -500,7 +500,7 @@ public class ModuleFactory {
 	}
 	
 	public static List<Module> getStartedModulesInOrder() {
-		List<Module> modules = new ArrayList<Module>();
+		List<Module> modules = new ArrayList<>();
 		if (actualStartupOrder != null) {
 			for (String moduleId : actualStartupOrder) {
 				modules.add(getStartedModulesMap().get(moduleId));
@@ -519,7 +519,7 @@ public class ModuleFactory {
 	 */
 	public static Map<String, Module> getStartedModulesMap() {
 		if (startedModules == null) {
-			startedModules = new WeakHashMap<String, Module>();
+			startedModules = new WeakHashMap<>();
 		}
 		
 		return startedModules;
@@ -700,13 +700,13 @@ public class ModuleFactory {
 				// a spring context refresh anyway
 				
 				// map extension point to a list of extensions for this module only
-				Map<String, List<Extension>> moduleExtensionMap = new HashMap<String, List<Extension>>();
+				Map<String, List<Extension>> moduleExtensionMap = new HashMap<>();
 				for (Extension ext : module.getExtensions()) {
 					
 					String extId = ext.getExtensionId();
 					List<Extension> tmpExtensions = moduleExtensionMap.get(extId);
 					if (tmpExtensions == null) {
-						tmpExtensions = new Vector<Extension>();
+						tmpExtensions = new Vector<>();
 						moduleExtensionMap.put(extId, tmpExtensions);
 					}
 					
@@ -729,7 +729,7 @@ public class ModuleFactory {
 					// Get existing extensions, and append the ones from the new module
 					List<Extension> extensions = getExtensionMap().get(moduleExtensionEntry.getKey());
 					if (extensions == null) {
-						extensions = new Vector<Extension>();
+						extensions = new Vector<>();
 						getExtensionMap().put(moduleExtensionEntry.getKey(), extensions);
 					}
 					for (Extension ext : sortedModuleExtensions) {
@@ -770,7 +770,7 @@ public class ModuleFactory {
 				// effectively mark this module as started successfully
 				getStartedModulesMap().put(moduleId, module);
 				if (actualStartupOrder == null) {
-					actualStartupOrder = new LinkedHashSet<String>();
+					actualStartupOrder = new LinkedHashSet<>();
 				}
 				actualStartupOrder.add(moduleId);
 				
@@ -856,7 +856,7 @@ public class ModuleFactory {
 	
 	private static void registerProvidedPackages(ModuleClassLoader moduleClassLoader) {
 		for (String providedPackage : moduleClassLoader.getProvidedPackages()) {
-			Set<ModuleClassLoader> newSet = new HashSet<ModuleClassLoader>();
+			Set<ModuleClassLoader> newSet = new HashSet<>();
 			
 			Set<ModuleClassLoader> set = providedPackages.get(providedPackage);
 			if (set != null) {
@@ -870,7 +870,7 @@ public class ModuleFactory {
 	
 	private static void unregisterProvidedPackages(ModuleClassLoader moduleClassLoader) {
 		for (String providedPackage : moduleClassLoader.getProvidedPackages()) {
-			Set<ModuleClassLoader> newSet = new HashSet<ModuleClassLoader>();
+			Set<ModuleClassLoader> newSet = new HashSet<>();
 			
 			Set<ModuleClassLoader> set = providedPackages.get(providedPackage);
 			if (set != null) {
@@ -887,7 +887,7 @@ public class ModuleFactory {
 		if (set == null) {
 			return Collections.emptySet();
 		} else {
-			return new HashSet<ModuleClassLoader>(set);
+			return new HashSet<>(set);
 		}
 	}
 	
@@ -1115,7 +1115,7 @@ public class ModuleFactory {
 	public static List<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
 	        throws ModuleMustStartException {
 		
-		List<Module> dependentModulesStopped = new ArrayList<Module>();
+		List<Module> dependentModulesStopped = new ArrayList<>();
 		
 		if (mod != null) {
 			
@@ -1148,7 +1148,7 @@ public class ModuleFactory {
 			
 			// stop all dependent modules
 			// copy modules to new list to avoid "concurrent modification exception"
-			List<Module> startedModulesCopy = new ArrayList<Module>();
+			List<Module> startedModulesCopy = new ArrayList<>();
 			startedModulesCopy.addAll(getStartedModules());
 			for (Module dependentModule : startedModulesCopy) {
 				if (dependentModule != null && !dependentModule.equals(mod) && isModuleRequiredByAnother(dependentModule, modulePackage)) {
@@ -1330,7 +1330,7 @@ public class ModuleFactory {
 		// get all extensions for this exact pointId
 		extensions = extensionMap.get(pointId);
 		if (extensions == null) {
-			extensions = new ArrayList<Extension>();
+			extensions = new ArrayList<>();
 		}
 		
 		// if this pointId doesn't contain the separator character, search
@@ -1382,7 +1382,7 @@ public class ModuleFactory {
 	 */
 	public static List<Privilege> getPrivileges() {
 		
-		List<Privilege> privileges = new ArrayList<Privilege>();
+		List<Privilege> privileges = new ArrayList<>();
 		
 		for (Module mod : getStartedModules()) {
 			privileges.addAll(mod.getPrivileges());
@@ -1400,7 +1400,7 @@ public class ModuleFactory {
 	 */
 	public static List<GlobalProperty> getGlobalProperties() {
 		
-		List<GlobalProperty> globalProperties = new ArrayList<GlobalProperty>();
+		List<GlobalProperty> globalProperties = new ArrayList<>();
 		
 		for (Module mod : getStartedModules()) {
 			globalProperties.addAll(mod.getGlobalProperties());
@@ -1489,7 +1489,7 @@ public class ModuleFactory {
 	 */
 	public static Map<Module, ModuleClassLoader> getModuleClassLoaderMap() {
 		if (moduleClassLoaders == null) {
-			moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
+			moduleClassLoaders = new WeakHashMap<>();
 		}
 		
 		return moduleClassLoaders;
@@ -1502,7 +1502,7 @@ public class ModuleFactory {
 	 */
 	public static Map<String, List<Extension>> getExtensionMap() {
 		if (extensionMap == null) {
-			extensionMap = new WeakHashMap<String, List<Extension>>();
+			extensionMap = new WeakHashMap<>();
 		}
 		
 		return extensionMap;
@@ -1719,7 +1719,7 @@ public class ModuleFactory {
 		for (Entry<String, Module> entry : startedModules.entrySet()) {
 			if (!moduleId.equals(entry.getKey()) && entry.getValue().getRequiredModules().contains(modulePackage)) {
 				if (dependentModules == null) {
-					dependentModules = new ArrayList<String>();
+					dependentModules = new ArrayList<>();
 				}
 				dependentModules.add(entry.getKey() + " " + entry.getValue().getVersion());
 			}

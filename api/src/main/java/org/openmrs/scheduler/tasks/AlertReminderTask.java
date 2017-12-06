@@ -80,7 +80,7 @@ public class AlertReminderTask extends AbstractTask {
 	 * @return
 	 */
 	private Collection<User> getRecipients(Collection<Alert> alerts) {
-		Collection<User> users = new HashSet<User>();
+		Collection<User> users = new HashSet<>();
 		for (Alert alert : alerts) {
 			log.debug("Send email to alert recipient(s) ...");
 			if (!alert.isAlertRead() && alert.getRecipients() != null) {

@@ -117,7 +117,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 	
 	private List<DiscontinuedOrder> getDiscontinuedOrders(JdbcConnection connection) throws CustomChangeException,
 	        SQLException {
-		List<DiscontinuedOrder> dcOrders = new ArrayList<DiscontinuedOrder>();
+		List<DiscontinuedOrder> dcOrders = new ArrayList<>();
 		PreparedStatement statement = null;
 		try {
 			statement = connection.prepareStatement("select order_id, concept_id, patient_id, encounter_id, date_stopped, "

@@ -402,7 +402,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		
 		String realPath = servletContext.getRealPath("");
 		// TODO centralize map to WebConstants?
-		Map<String, String> custom = new HashMap<String, String>();
+		Map<String, String> custom = new HashMap<>();
 		custom.put("custom.template.dir", "/WEB-INF/template");
 		custom.put("custom.index.jsp.file", "/WEB-INF/view/index.jsp");
 		custom.put("custom.login.jsp.file", "/WEB-INF/view/login.jsp");
@@ -619,7 +619,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 *             {@link MandatoryModuleException} or {@link OpenmrsCoreModuleException}
 	 */
 	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Exception {
-		List<Module> startedModules = new ArrayList<Module>();
+		List<Module> startedModules = new ArrayList<>();
 		startedModules.addAll(ModuleFactory.getStartedModules());
 		performWebStartOfModules(startedModules, servletContext);
 	}

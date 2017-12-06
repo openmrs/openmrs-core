@@ -177,7 +177,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 * @return Collection of complete Privileges this user has
 	 */
 	public Collection<Privilege> getPrivileges() {
-		Set<Privilege> privileges = new HashSet<Privilege>();
+		Set<Privilege> privileges = new HashSet<>();
 		Set<Role> tmproles = getAllRoles();
 		
 		Role role;
@@ -202,11 +202,11 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 */
 	public Set<Role> getAllRoles() {
 		// the user's immediate roles
-		Set<Role> baseRoles = new HashSet<Role>();
+		Set<Role> baseRoles = new HashSet<>();
 		
 		// the user's complete list of roles including
 		// the parent roles of their immediate roles
-		Set<Role> totalRoles = new HashSet<Role>();
+		Set<Role> totalRoles = new HashSet<>();
 		if (getRoles() != null) {
 			baseRoles.addAll(getRoles());
 			totalRoles.addAll(getRoles());
@@ -255,7 +255,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 */
 	public User addRole(Role role) {
 		if (roles == null) {
-			roles = new HashSet<Role>();
+			roles = new HashSet<>();
 		}
 		if (!roles.contains(role) && role != null) {
 			roles.add(role);
@@ -422,7 +422,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 */
 	public Map<String, String> getUserProperties() {
 		if (userProperties == null) {
-			userProperties = new HashMap<String, String>();
+			userProperties = new HashMap<>();
 		}
 		return userProperties;
 	}
@@ -532,7 +532,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 		if ((proficientLocales == null)
 		        || (!OpenmrsUtil.nullSafeEquals(parsedProficientLocalesProperty, proficientLocalesProperty))) {
 			parsedProficientLocalesProperty = proficientLocalesProperty;
-			proficientLocales = new ArrayList<Locale>();
+			proficientLocales = new ArrayList<>();
 			if (proficientLocalesProperty != null) {
 				String[] proficientLocalesArray = proficientLocalesProperty.split(",");
 				for (String proficientLocaleSpec : proficientLocalesArray) {
@@ -554,7 +554,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 		}
 		
 		// return a copy so that the list isn't changed by other processes
-		return new ArrayList<Locale>(proficientLocales);
+		return new ArrayList<>(proficientLocales);
 	}
 	
 	/**

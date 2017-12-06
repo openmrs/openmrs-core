@@ -26,7 +26,7 @@ public class GraphTest {
 	@Test
 	public void topologicalSort_shouldSortGraphInTopologicalOrder() throws CycleException {
 		
-		Graph<String> graph = new Graph<String>();
+		Graph<String> graph = new Graph<>();
 		
 		graph.addNode("E");
 		graph.addNode("D");
@@ -60,7 +60,7 @@ public class GraphTest {
 	@Test(expected = CycleException.class)
 	public void topologicalSort_shouldThrowCycleException() throws CycleException {
 		
-		Graph<String> graph = new Graph<String>();
+		Graph<String> graph = new Graph<>();
 		
 		graph.addNode("E");
 		graph.addNode("D");

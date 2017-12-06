@@ -54,7 +54,7 @@ public class UserContext implements Serializable {
 	/**
 	 * User's permission proxies
 	 */
-	private List<String> proxies = new ArrayList<String>();
+	private List<String> proxies = new ArrayList<>();
 	
 	/**
 	 * User's locale
@@ -274,7 +274,7 @@ public class UserContext implements Serializable {
 	 * @should return same roles as user getAllRoles method
 	 */
 	public Set<Role> getAllRoles(User user) throws Exception {
-		Set<Role> roles = new HashSet<Role>();
+		Set<Role> roles = new HashSet<>();
 		
 		// add the Anonymous Role
 		roles.add(getAnonymousRole());

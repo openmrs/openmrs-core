@@ -92,27 +92,27 @@ public class ConceptNumeric extends Concept {
 		this.setVersion(c.getVersion());
 		this.setUuid(c.getUuid());
 		
-		this.setNames(new HashSet<ConceptName>(c.getNames()));
+		this.setNames(new HashSet<>(c.getNames()));
 		for (ConceptName cName : this.getNames()) {
 			cName.setConcept(this);
 		}
 		
-		this.setAnswers(new HashSet<ConceptAnswer>(c.getAnswers(true)));
+		this.setAnswers(new HashSet<>(c.getAnswers(true)));
 		for (ConceptAnswer cAnswer : this.getAnswers()) {
 			cAnswer.setConcept(this);
 		}
 		
-		this.setConceptSets(new TreeSet<ConceptSet>(c.getConceptSets()));
+		this.setConceptSets(new TreeSet<>(c.getConceptSets()));
 		for (ConceptSet cSet : this.getConceptSets()) {
 			cSet.setConceptSet(this);
 		}
 		
-		this.setDescriptions(new HashSet<ConceptDescription>(c.getDescriptions()));
+		this.setDescriptions(new HashSet<>(c.getDescriptions()));
 		for (ConceptDescription cDescription : this.getDescriptions()) {
 			cDescription.setConcept(this);
 		}
 		
-		this.setConceptMappings(new HashSet<ConceptMap>(c.getConceptMappings()));
+		this.setConceptMappings(new HashSet<>(c.getConceptMappings()));
 		for (ConceptMap cMap : this.getConceptMappings()) {
 			cMap.setConcept(this);
 		}

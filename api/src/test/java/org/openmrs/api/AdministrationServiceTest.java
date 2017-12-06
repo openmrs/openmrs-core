@@ -404,7 +404,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveGlobalProperties_shouldNotFailWithEmptyList() {
-		Context.getAdministrationService().saveGlobalProperties(new ArrayList<GlobalProperty>());
+		Context.getAdministrationService().saveGlobalProperties(new ArrayList<>());
 	}
 	
 	/**
@@ -638,7 +638,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void saveGlobalProperties_shouldSavePropertiesWithCaseDifferenceOnly() {
 		int originalSize = adminService.getAllGlobalProperties().size();
 		
-		List<GlobalProperty> props = new ArrayList<GlobalProperty>();
+		List<GlobalProperty> props = new ArrayList<>();
 		props.add(new GlobalProperty("a.property.key", "something"));
 		props.add(new GlobalProperty("a.property.KEY", "somethingelse"));
 		adminService.saveGlobalProperties(props);
@@ -657,7 +657,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void purgeGlobalProperties_shouldDeleteGlobalPropertiesFromDatabase() {
 		int originalSize = adminService.getAllGlobalProperties().size();
 		
-		List<GlobalProperty> props = new ArrayList<GlobalProperty>();
+		List<GlobalProperty> props = new ArrayList<>();
 		props.add(new GlobalProperty("a.property.key", "something"));
 		props.add(new GlobalProperty("a.property.KEY", "somethingelse"));
 		adminService.saveGlobalProperties(props);
@@ -769,7 +769,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, es, es_CL"));
 		
-		List<Locale> locales = new ArrayList<Locale>();
+		List<Locale> locales = new ArrayList<>();
 		locales.add(new Locale("pl", "PL"));
 		locales.add(new Locale("en"));
 		locales.add(new Locale("es"));
@@ -800,7 +800,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, es"));
 		
-		List<Locale> locales = new ArrayList<Locale>();
+		List<Locale> locales = new ArrayList<>();
 		locales.add(new Locale("pl", "PL"));
 		locales.add(new Locale("en"));
 		locales.add(new Locale("es"));
@@ -833,7 +833,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, es_CL"));
 		
-		List<Locale> locales = new ArrayList<Locale>();
+		List<Locale> locales = new ArrayList<>();
 		locales.add(new Locale("pl", "PL"));
 		locales.add(new Locale("en"));
 		locales.add(new Locale("es"));
@@ -863,7 +863,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, es"));
 		
-		List<Locale> locales = new ArrayList<Locale>();
+		List<Locale> locales = new ArrayList<>();
 		locales.add(new Locale("pl", "PL"));
 		locales.add(new Locale("en"));
 		locales.add(new Locale("es"));
@@ -895,7 +895,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(
 				new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, globalPropertyLocaleListAllowedData));
 		
-		List<Locale> locales = new ArrayList<Locale>();
+		List<Locale> locales = new ArrayList<>();
 		//Add data in random order and verify that order is maintained in the end by checking against order in global property
 		locales.add(new Locale("pl", "PL"));
 		locales.add(new Locale("es"));
@@ -909,7 +909,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		MutableMessageSource mutableMessageSource = Context.getMessageSourceService().getActiveMessageSource();
 		Context.getMessageSourceService().setActiveMessageSource(mutableResourceBundleMessageSource);
 		
-		List<Locale> presentationLocales = new ArrayList<Locale>(Context.getAdministrationService().getPresentationLocales());
+		List<Locale> presentationLocales = new ArrayList<>(Context.getAdministrationService().getPresentationLocales());
 		
 		Context.getMessageSourceService().setActiveMessageSource(mutableMessageSource);
 		
