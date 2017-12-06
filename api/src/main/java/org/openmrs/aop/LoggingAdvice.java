@@ -146,7 +146,7 @@ public class LoggingAdvice implements MethodInterceptor {
 				
 				// only append execution time info if we're in debug mode
 				if (log.isDebugEnabled()) {
-					output.append(". execution time: " + (System.currentTimeMillis() - startTime)).append(" ms");
+					output.append(". execution time: ").append(System.currentTimeMillis() - startTime).append(" ms");
 				}
 				
 				// print the string as either debug or info
