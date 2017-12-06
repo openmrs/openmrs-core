@@ -373,8 +373,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		try {
-			ImplementationId implId = Context.getSerializationService().getDefaultSerializer().deserialize(property, ImplementationId.class);
-			return implId;
+			return Context.getSerializationService().getDefaultSerializer().deserialize(property, ImplementationId.class);
 		}
 		catch (Exception e) {
 			log.debug("Error while getting implementation id", e);

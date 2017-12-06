@@ -197,9 +197,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
 		crit.add(Restrictions.eq("retired", false));
 		crit.add(Restrictions.eq("name", name));
-		EncounterType encounterType = (EncounterType) crit.uniqueResult();
-		
-		return encounterType;
+
+		return (EncounterType) crit.uniqueResult();
 	}
 	
 	/**

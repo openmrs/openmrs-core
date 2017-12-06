@@ -153,9 +153,8 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public User getUser(Integer userId) {
-		User user = (User) sessionFactory.getCurrentSession().get(User.class, userId);
-		
-		return user;
+
+		return (User) sessionFactory.getCurrentSession().get(User.class, userId);
 	}
 	
 	/**
@@ -180,10 +179,9 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<User> getUsersByRole(Role role) throws DAOException {
-		List<User> users = sessionFactory.getCurrentSession().createCriteria(User.class, "u").createCriteria("roles", "r")
+
+		return (List<User>) sessionFactory.getCurrentSession().createCriteria(User.class, "u").createCriteria("roles", "r")
 		        .add(Restrictions.like("r.role", role.getRole())).addOrder(Order.asc("u.username")).list();
-		
-		return users;
 		
 	}
 	
