@@ -512,11 +512,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		requiredModules = collectRequiredModuleImports(getModule());
 		awareOfModules = collectAwareOfModuleImports(getModule());
-		for (Iterator<Map.Entry<URI, File>> it = libraryCache.entrySet().iterator(); it.hasNext();) {
-			if (it.next().getValue() == null) {
-				it.remove();
-			}
-		}
+		libraryCache.entrySet().removeIf(uriFileEntry -> uriFileEntry.getValue() == null);
 	}
 	
 	/**
