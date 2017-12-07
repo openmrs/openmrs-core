@@ -105,9 +105,6 @@ public class ModuleFileParser {
 			outputStream = new FileOutputStream(moduleFile);
 			OpenmrsUtil.copyFile(inputStream, outputStream);
 		}
-		catch (FileNotFoundException e) {
-			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.cannotCreateFile"), e);
-		}
 		catch (IOException e) {
 			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.cannotCreateFile"), e);
 		}

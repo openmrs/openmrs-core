@@ -193,9 +193,6 @@ public class ModuleUtil {
 			outputStream = new FileOutputStream(file);
 			OpenmrsUtil.copyFile(inputStream, outputStream);
 		}
-		catch (FileNotFoundException e) {
-			throw new ModuleException("Can't create module file for " + filename, e);
-		}
 		catch (IOException e) {
 			throw new ModuleException("Can't create module file for " + filename, e);
 		}
@@ -534,10 +531,7 @@ public class ModuleUtil {
 		catch (MalformedURLException mue) {
 			throw mue;
 		}
-		catch (IOException ioe) {
-			throw new MalformedURLException("Cannot convert: " + file.getName() + " to url");
-		}
-		catch (NoSuchMethodError nsme) {
+		catch (IOException | NoSuchMethodError ioe) {
 			throw new MalformedURLException("Cannot convert: " + file.getName() + " to url");
 		}
 	}

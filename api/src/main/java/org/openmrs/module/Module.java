@@ -159,7 +159,7 @@ public final class Module {
 			}
 			
 		}
-		catch (ClassNotFoundException e) {
+		catch (ClassNotFoundException | NoClassDefFoundError e) {
 			
 			throw new ModuleException("Unable to load/find moduleActivator: '" + getActivatorName() + "'", name, e);
 		}
@@ -169,10 +169,7 @@ public final class Module {
 		catch (InstantiationException e) {
 			throw new ModuleException("Unable to load/instantiate moduleActivator: '" + getActivatorName() + "'", name, e);
 		}
-		catch (NoClassDefFoundError e) {
-			throw new ModuleException("Unable to load/find moduleActivator: '" + getActivatorName() + "'", name, e);
-		}
-		
+
 		return moduleActivator;
 	}
 	
@@ -573,13 +570,7 @@ public final class Module {
 				catch (NoClassDefFoundError e) {
 					log.warn(getModuleId() + ": Unable to find class definition for extension: " + point, e);
 				}
-				catch (ClassNotFoundException e) {
-					log.warn(errorLoadClassString + point, e);
-				}
-				catch (IllegalAccessException e) {
-					log.warn(errorLoadClassString + point, e);
-				}
-				catch (InstantiationException e) {
+				catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 					log.warn(errorLoadClassString + point, e);
 				}
 			}

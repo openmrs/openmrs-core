@@ -167,10 +167,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				throw new CustomChangeException("Failed to insert one or more concept map types", be);
 			}
 		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException("Failed to insert one or more concept map types:", e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			throw new CustomChangeException("Failed to insert one or more concept map types:", e);
 		}
 		finally {
@@ -227,10 +224,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 			
 			return result;
 		}
-		catch (DatabaseException e) {
-			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
 		}
 		finally {

@@ -142,10 +142,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 						try {
 							BeanUtils.copyProperties(conceptName, clone);
 						}
-						catch (IllegalAccessException e) {
-							log.error(errorMessage, e);
-						}
-						catch (InvocationTargetException e) {
+						catch (IllegalAccessException | InvocationTargetException e) {
 							log.error(errorMessage, e);
 						}
 					}
@@ -1382,19 +1379,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		try {
 			copy = (ConceptName) BeanUtils.cloneBean(conceptName);
 		}
-		catch (IllegalAccessException e) {
-			
-			log.warn(errorMessage, e);
-		}
-		catch (InstantiationException e) {
-			
-			log.warn(errorMessage, e);
-		}
-		catch (InvocationTargetException e) {
-			
-			log.warn(errorMessage, e);
-		}
-		catch (NoSuchMethodException e) {
+		catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
 			
 			log.warn(errorMessage, e);
 		}
