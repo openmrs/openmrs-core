@@ -10,7 +10,6 @@
 package org.openmrs.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections.buffer.CircularFifoBuffer;

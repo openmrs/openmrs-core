@@ -15,8 +15,6 @@ import org.openmrs.Concept;
 import org.openmrs.TestOrder;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

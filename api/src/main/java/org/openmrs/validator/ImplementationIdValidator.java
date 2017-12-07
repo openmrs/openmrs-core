@@ -13,8 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.ImplementationId;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;

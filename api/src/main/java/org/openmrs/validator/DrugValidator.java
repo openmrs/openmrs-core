@@ -17,8 +17,6 @@ import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Drug;
 import org.openmrs.DrugReferenceMap;
 import org.openmrs.annotation.Handler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;

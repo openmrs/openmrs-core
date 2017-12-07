@@ -12,8 +12,6 @@ package org.openmrs.util;
 import java.util.Comparator;
 
 import org.openmrs.Drug;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The Class DrugsByNameComparator. An Util class which sorts drug names while ignoring any
