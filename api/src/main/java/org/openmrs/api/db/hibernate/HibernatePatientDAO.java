@@ -539,7 +539,7 @@ public class HibernatePatientDAO implements PatientDAO {
 				return patPos1.compareTo(patPos2);
 			}
 		}
-		Collections.sort(patients, new PatientIdComparator(patientIdOrder));
+		patients.sort(new PatientIdComparator(patientIdOrder));
 	}
 	
 	/**

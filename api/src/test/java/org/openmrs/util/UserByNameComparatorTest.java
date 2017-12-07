@@ -55,7 +55,7 @@ public class UserByNameComparatorTest {
 		listToSort.add(user2);
 		
 		// sort the list with userByNameComparator
-		Collections.sort(listToSort, new UserByNameComparator());
+		listToSort.sort(new UserByNameComparator());
 		
 		// make sure that the users are sorted in the expected order
 		Iterator<User> it = listToSort.iterator();

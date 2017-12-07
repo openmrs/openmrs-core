@@ -395,8 +395,8 @@ public class ModuleFactory {
 	public static List<Module> getLoadedModulesCoreFirst() {
 		List<Module> list = new ArrayList<>(getLoadedModules());
 		final Collection<String> coreModuleIds = ModuleConstants.CORE_MODULES.keySet();
-		Collections.sort(list, new Comparator<Module>() {
-			
+		list.sort(new Comparator<Module>() {
+
 			@Override
 			public int compare(Module left, Module right) {
 				Integer leftVal = coreModuleIds.contains(left.getModuleId()) ? 0 : 1;
@@ -723,7 +723,7 @@ public class ModuleFactory {
 				for (Map.Entry<String, List<Extension>> moduleExtensionEntry : moduleExtensionMap.entrySet()) {
 					// Sort this module's extensions for current extension point
 					List<Extension> sortedModuleExtensions = moduleExtensionEntry.getValue();
-					Collections.sort(sortedModuleExtensions, sortOrder);
+					sortedModuleExtensions.sort(sortOrder);
 					
 					// Get existing extensions, and append the ones from the new module
 					List<Extension> extensions = getExtensionMap().get(moduleExtensionEntry.getKey());

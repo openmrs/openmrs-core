@@ -562,8 +562,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 				encounters.add(mockEncounter);
 			}
 			
-			Collections.sort(encounters, new Comparator<Encounter>() {
-				
+			encounters.sort(new Comparator<Encounter>() {
+
 				@Override
 				public int compare(Encounter o1, Encounter o2) {
 					Date o1Date = (o1.getVisit() != null) ? o1.getVisit().getStartDatetime() : o1.getEncounterDatetime();
