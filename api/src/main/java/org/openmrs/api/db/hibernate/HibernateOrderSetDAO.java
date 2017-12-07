@@ -19,8 +19,6 @@ import org.openmrs.OrderSet;
 import org.openmrs.OrderSetMember;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderSetDAO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderSetDAO that

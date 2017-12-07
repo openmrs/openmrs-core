@@ -15,8 +15,6 @@ import java.util.List;
 
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;

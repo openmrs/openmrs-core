@@ -14,8 +14,6 @@ import org.openmrs.ConceptClass;
 import org.openmrs.OrderFrequency;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;

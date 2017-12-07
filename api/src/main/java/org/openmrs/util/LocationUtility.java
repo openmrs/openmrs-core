@@ -13,8 +13,6 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A utility class for working with locations

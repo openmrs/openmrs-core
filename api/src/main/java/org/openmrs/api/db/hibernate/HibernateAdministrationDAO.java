@@ -11,7 +11,6 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
