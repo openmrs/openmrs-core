@@ -211,12 +211,9 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		if (!this.inheritsRoles()) {
 			return total;
 		}
-		
-		Set<Role> allRoles = new HashSet<>(); // total roles (parents + children)
-		Set<Role> myRoles = new HashSet<>(); // new roles
-		allRoles.addAll(total);
-		
-		myRoles.addAll(this.getInheritedRoles());
+
+		Set<Role> allRoles = new HashSet<>(total);
+		Set<Role> myRoles = new HashSet<>(this.getInheritedRoles());
 		myRoles.removeAll(total);
 		myRoles.remove(this); // prevent an obvious looping problem
 		allRoles.addAll(myRoles);
@@ -307,12 +304,10 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		if (!this.hasChildRoles()) {
 			return total;
 		}
-		
-		Set<Role> allRoles = new HashSet<>(); // total roles (parents + children)
-		Set<Role> myRoles = new HashSet<>(); // new roles
-		allRoles.addAll(total);
-		
-		myRoles.addAll(this.getChildRoles());
+
+		Set<Role> allRoles = new HashSet<>(total);
+
+		Set<Role> myRoles = new HashSet<>(this.getChildRoles());
 		myRoles.removeAll(total);
 		myRoles.remove(this); // prevent an obvious looping problem
 		allRoles.addAll(myRoles);

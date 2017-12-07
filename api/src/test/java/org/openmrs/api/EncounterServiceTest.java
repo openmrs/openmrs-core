@@ -2910,9 +2910,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.getEncounterService().saveEncounter(encounter);
 		
 		Context.flushSession();
-		
-		List<Order> orders = new ArrayList<>();
-		orders.addAll(Context.getEncounterService().getEncounterByUuid(encounter.getUuid()).getOrders());
+
+		List<Order> orders = new ArrayList<>(
+				Context.getEncounterService().getEncounterByUuid(encounter.getUuid()).getOrders());
 		
 		assertNotNull("OrderGroup is saved", orders.get(0).getOrderGroup());
 		assertEquals("OrderGroup isa same for both the orders ", true, orders.get(0).getOrderGroup().equals(
@@ -2979,9 +2979,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.getEncounterService().saveEncounter(encounter);
 		
 		Context.flushSession();
-		
-		List<Order> orders = new ArrayList<>();
-		orders.addAll(Context.getEncounterService().getEncounterByUuid(encounter.getUuid()).getOrders());
+
+		List<Order> orders = new ArrayList<>(
+				Context.getEncounterService().getEncounterByUuid(encounter.getUuid()).getOrders());
 		
 		HashMap<Integer, OrderGroup> orderGroups = new HashMap<>();
 		for (Order order : orders) {

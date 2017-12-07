@@ -498,9 +498,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			ObsService obsService = Context.getObsService();
 			List<Encounter> justThisEncounter = new ArrayList<>();
 			justThisEncounter.add(encounter);
-			List<Obs> observations = new ArrayList<>();
-			observations.addAll(obsService.getObservations(null, justThisEncounter, null, null, null, null, null, null,
-			    null, null, null, true));
+			List<Obs> observations = new ArrayList<>(
+					obsService.getObservations(null, justThisEncounter, null, null, null, null, null, null,
+							null, null, null, true));
 			for (Obs o : observations) {
 				obsService.purgeObs(o);
 			}

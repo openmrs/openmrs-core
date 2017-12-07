@@ -348,9 +348,8 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		orderSetMember.setDateCreated(new Date());
 		orderSetMember.setRetired(orderSetMemberRetired);
 		orderSetMember.setOrderSet(orderSet);
-		
-		List<OrderSetMember> orderSetMembers = new ArrayList<>();
-		orderSetMembers.addAll(Collections.singletonList(orderSetMember));
+
+		List<OrderSetMember> orderSetMembers = new ArrayList<>(Collections.singletonList(orderSetMember));
 		orderSet.setOrderSetMembers(orderSetMembers);
 		orderSet.setCreator(new User(1));
 		orderSet.setDateCreated(new Date());

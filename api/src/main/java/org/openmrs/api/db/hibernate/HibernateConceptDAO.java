@@ -644,8 +644,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	private List<String> tokenizeConceptName(final String escapedName, final Set<Locale> locales) {
-		List<String> words = new ArrayList<>();
-		words.addAll(Arrays.asList(escapedName.trim().split(" ")));
+		List<String> words = new ArrayList<>(Arrays.asList(escapedName.trim().split(" ")));
 		
 		Set<String> stopWords = new HashSet<>();
 		for (Locale locale : locales) {

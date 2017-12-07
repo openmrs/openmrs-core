@@ -416,8 +416,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		// search on patient identifier
 		PatientService ps = Context.getPatientService();
 		List<Patient> patients = ps.getPatients(searchString);
-		List<Person> persons = new ArrayList<>();
-		persons.addAll(patients);
+		List<Person> persons = new ArrayList<>(patients);
 		
 		// try to search on encounterId
 		EncounterService es = Context.getEncounterService();

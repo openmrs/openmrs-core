@@ -282,8 +282,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			throw new InsufficientIdentifiersException("At least one nonvoided Patient Identifier is required");
 		}
 
-		final List<PatientIdentifier> patientIdentifiers = new ArrayList<>();
-		patientIdentifiers.addAll(patient.getIdentifiers());
+		final List<PatientIdentifier> patientIdentifiers = new ArrayList<>(patient.getIdentifiers());
 
 		final Set<String> uniqueIdentifiers = new HashSet<>();
 
