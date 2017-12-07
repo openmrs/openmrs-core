@@ -985,8 +985,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public List<Concept> getDrugDispensingUnits() {
-		List<Concept> dispensingUnits = new ArrayList<>();
-		dispensingUnits.addAll(getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID));
+		List<Concept> dispensingUnits = new ArrayList<>(
+				getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID));
 		for (Concept concept : getDrugDosingUnits()) {
 			if (!dispensingUnits.contains(concept)) {
 				dispensingUnits.add(concept);
