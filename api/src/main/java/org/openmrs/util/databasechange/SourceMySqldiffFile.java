@@ -48,7 +48,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	
 	public static final String CONNECTION_PASSWORD = "connection.password";
 	
-	private static Logger log = LoggerFactory.getLogger(SourceMySqldiffFile.class);
+	private static final Logger log = LoggerFactory.getLogger(SourceMySqldiffFile.class);
 	
 	/**
 	 * Absolute path and name of file to source

@@ -61,8 +61,6 @@ import org.springframework.validation.BindException;
 @Transactional
 public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
-	
 	private FormDAO dao;
 	
 	private final FormValidator formValidator;

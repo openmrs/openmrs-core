@@ -33,9 +33,7 @@ import liquibase.resource.ResourceAccessor;
  * carefully review any States marked as final, particularly those also marked as initial
  */
 public class ProgramValidatorChangeSet implements CustomTaskChange {
-	
-	protected final static Logger log = LoggerFactory.getLogger(ProgramValidatorChangeSet.class);
-	
+
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */

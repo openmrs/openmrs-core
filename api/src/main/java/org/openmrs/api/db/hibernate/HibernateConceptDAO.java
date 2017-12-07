@@ -82,7 +82,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateConceptDAO implements ConceptDAO {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(HibernateConceptDAO.class);
 	
 	private SessionFactory sessionFactory;
 	

@@ -30,7 +30,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	/**
 	 * Logger for this class and subclasses
 	 */
-	protected final Logger log = LoggerFactory.getLogger(AuthorizationAdvice.class);
+	private static final Logger log = LoggerFactory.getLogger(AuthorizationAdvice.class);
 	
 	/**
 	 * Allows us to check whether a user is authorized to access a particular method.

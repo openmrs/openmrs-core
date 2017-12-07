@@ -23,7 +23,7 @@ public class TestTask extends AbstractTask {
 	private static int executionCount = 0;
 	
 	// Logger 
-	private Logger log = LoggerFactory.getLogger(TestTask.class);
+	private static final Logger log = LoggerFactory.getLogger(TestTask.class);
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(TaskDefinition)

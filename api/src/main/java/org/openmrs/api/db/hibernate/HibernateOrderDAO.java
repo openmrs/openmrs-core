@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateOrderDAO implements OrderDAO {
 	
-	protected static final Logger log = LoggerFactory.getLogger(HibernateOrderDAO.class);
+	private static final Logger log = LoggerFactory.getLogger(HibernateOrderDAO.class);
 	
 	/**
 	 * Hibernate session factory

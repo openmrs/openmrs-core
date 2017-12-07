@@ -21,9 +21,7 @@ import org.slf4j.LoggerFactory;
 public class CohortMembership extends BaseChangeableOpenmrsData implements Comparable<CohortMembership> {
 	
 	public static final long serialVersionUID = 0L;
-	
-	protected static final Logger log = LoggerFactory.getLogger(CohortMembership.class);
-	
+
 	private Integer cohortMemberId;
 	
 	private Cohort cohort;

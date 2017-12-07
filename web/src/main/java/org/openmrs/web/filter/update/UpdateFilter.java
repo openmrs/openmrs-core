@@ -64,7 +64,7 @@ import liquibase.exception.LockException;
  */
 public class UpdateFilter extends StartupFilter {
 	
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	protected final org.slf4j.Logger log = LoggerFactory.getLogger(UpdateFilter.class);
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup

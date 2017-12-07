@@ -25,9 +25,7 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { Program.class }, order = 50)
 public class ProgramValidator implements Validator {
-	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 * 

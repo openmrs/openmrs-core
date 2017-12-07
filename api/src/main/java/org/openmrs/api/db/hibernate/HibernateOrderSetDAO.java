@@ -36,8 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateOrderSetDAO implements OrderSetDAO {
 	
-	protected static final Logger log = LoggerFactory.getLogger(HibernateOrderSetDAO.class);
-	
 	/**
 	 * Hibernate session factory
 	 */

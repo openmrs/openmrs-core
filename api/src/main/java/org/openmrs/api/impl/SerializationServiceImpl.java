@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SerializationServiceImpl extends BaseOpenmrsService implements SerializationService {
 	
-	public Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(SerializationServiceImpl.class);
 	
 	//***** Properties (set by spring)
 	private static Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap;

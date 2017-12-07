@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
  */
 public class DatabaseUtil {
 	
-	private final static Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
 
 	public final static String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
 

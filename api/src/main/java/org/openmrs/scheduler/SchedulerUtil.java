@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 public class SchedulerUtil {
 	
-	private static Logger log = LoggerFactory.getLogger(SchedulerUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(SchedulerUtil.class);
 	
 	/**
 	 * Start the scheduler given the following start up properties.

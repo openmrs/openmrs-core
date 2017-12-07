@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class AlertReminderTask extends AbstractTask {
 	
 	// Logger 
-	private Logger log = LoggerFactory.getLogger(AlertReminderTask.class);
+	private static final Logger log = LoggerFactory.getLogger(AlertReminderTask.class);
 	
 	/**
 	 * Send alert reminder email to user(s) associated with the alert.

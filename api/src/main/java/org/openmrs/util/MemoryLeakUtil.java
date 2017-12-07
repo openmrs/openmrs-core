@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MemoryLeakUtil {
 	
-	private final static Logger log = LoggerFactory.getLogger(MemoryLeakUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(MemoryLeakUtil.class);
 	
 	//http://bugs.mysql.com/bug.php?id=36565
 	public static void shutdownMysqlCancellationTimer() {

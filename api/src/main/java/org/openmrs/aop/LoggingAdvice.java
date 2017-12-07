@@ -33,7 +33,7 @@ public class LoggingAdvice implements MethodInterceptor {
 	 * Logger for this class. Uses the name "org.openmrs.api" so that it seems to fit into the
 	 * log4j.xml configuration
 	 */
-	protected static final Logger log = LoggerFactory.getLogger("org.openmrs.api");
+	private static final Logger log = LoggerFactory.getLogger("org.openmrs.api");
 	
 	/**
 	 * List of all method name prefixes that result in INFO-level log messages

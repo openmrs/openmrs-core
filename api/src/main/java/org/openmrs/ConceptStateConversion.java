@@ -18,9 +18,7 @@ import org.slf4j.LoggerFactory;
 public class ConceptStateConversion extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 3214511L;
-	
-	protected final Logger log = LoggerFactory.getLogger(ConceptStateConversion.class);
-	
+
 	// ******************
 	// Properties
 	// ******************

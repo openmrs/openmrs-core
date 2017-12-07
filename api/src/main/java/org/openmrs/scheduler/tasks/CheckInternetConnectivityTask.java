@@ -30,7 +30,7 @@ public class CheckInternetConnectivityTask extends AbstractTask {
 	/**
 	 * Logger
 	 */
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(CheckInternetConnectivityTask.class);
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()

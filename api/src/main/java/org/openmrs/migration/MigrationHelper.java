@@ -62,7 +62,7 @@ public class MigrationHelper {
 	
 	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
-	protected final static Logger log = LoggerFactory.getLogger(MigrationHelper.class);
+	private static final Logger log = LoggerFactory.getLogger(MigrationHelper.class);
 	
 	static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	

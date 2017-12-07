@@ -55,7 +55,7 @@ import ca.uhn.hl7v2.model.v25.segment.PV1;
  */
 public class HL7ServiceTest extends BaseContextSensitiveTest {
 	
-	private Logger log = LoggerFactory.getLogger(HL7ServiceTest.class);
+	private static final Logger log = LoggerFactory.getLogger(HL7ServiceTest.class);
 	
 	/**
 	 * @see HL7Service#saveHL7InQueue(HL7InQueue)

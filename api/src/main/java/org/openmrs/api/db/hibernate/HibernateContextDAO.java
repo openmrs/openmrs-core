@@ -53,7 +53,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 public class HibernateContextDAO implements ContextDAO {
 	
-	private static Logger log = LoggerFactory.getLogger(HibernateContextDAO.class);
+	private static final Logger log = LoggerFactory.getLogger(HibernateContextDAO.class);
 	
 	/**
 	 * Hibernate session factory

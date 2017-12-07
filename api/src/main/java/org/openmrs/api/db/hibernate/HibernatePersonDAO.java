@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernatePersonDAO implements PersonDAO {
 	
-	protected final static Logger log = LoggerFactory.getLogger(HibernatePersonDAO.class);
+	private static final Logger log = LoggerFactory.getLogger(HibernatePersonDAO.class);
 	
 	/**
 	 * Hibernate session factory

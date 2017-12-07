@@ -36,8 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
-	
 	private static HibernateSerializedObjectDAO instance;
 	
 	//********* PROPERTIES **********

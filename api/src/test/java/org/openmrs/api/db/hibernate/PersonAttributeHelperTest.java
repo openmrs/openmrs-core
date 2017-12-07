@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public class PersonAttributeHelperTest extends BaseContextSensitiveTest {
 	
-	private final static Logger log = LoggerFactory.getLogger(PersonAttributeHelperTest.class);
+	private static final Logger log = LoggerFactory.getLogger(PersonAttributeHelperTest.class);
 	
 	private final static String PEOPLE_FROM_THE_SHIRE_XML = "org/openmrs/api/db/hibernate/include/HibernatePersonDAOTest-people.xml";
 	

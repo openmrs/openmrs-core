@@ -59,7 +59,7 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  */
 public class ModuleUtil {
 	
-	private static Logger log = LoggerFactory.getLogger(ModuleUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(ModuleUtil.class);
 	
 	/**
 	 * Start up the module system with the given properties.

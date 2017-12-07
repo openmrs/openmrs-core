@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernatePatientDAO implements PatientDAO {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(HibernatePatientDAO.class);
 	
 	/**
 	 * Hibernate session factory

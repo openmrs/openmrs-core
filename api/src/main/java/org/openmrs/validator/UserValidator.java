@@ -36,7 +36,7 @@ import org.springframework.validation.Validator;
 public class UserValidator implements Validator {
 	
 	/** Logger for this class and subclasses */
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(UserValidator.class);
 	
 	private static final Pattern EMAIL_PATTERN = Pattern
 	        .compile("^.+@.+\\..+$");

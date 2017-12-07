@@ -30,7 +30,7 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  */
 public class Daemon {
 	
-	protected static final Logger log = LoggerFactory.getLogger(Daemon.class);
+	private static final Logger log = LoggerFactory.getLogger(Daemon.class);
 	
 	/**
 	 * The uuid defined for the daemon user object

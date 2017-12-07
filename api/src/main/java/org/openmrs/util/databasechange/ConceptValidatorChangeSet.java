@@ -54,7 +54,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class ConceptValidatorChangeSet implements CustomTaskChange {
 	
-	private final static Logger log = LoggerFactory.getLogger(ConceptValidatorChangeSet.class);
+	private static final Logger log = LoggerFactory.getLogger(ConceptValidatorChangeSet.class);
 	
 	//List to store warnings
 	private List<String> updateWarnings = new LinkedList<>();

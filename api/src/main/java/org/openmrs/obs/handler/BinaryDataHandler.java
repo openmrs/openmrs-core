@@ -34,7 +34,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
 	
-	public static final Logger log = LoggerFactory.getLogger(BinaryDataHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(BinaryDataHandler.class);
 	
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally

@@ -112,7 +112,7 @@ import org.xml.sax.InputSource;
 @TransactionConfiguration(defaultRollback = true)
 public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringContextTests {
 	
-	private static Logger log = LoggerFactory.getLogger(BaseContextSensitiveTest.class);
+	private static final Logger log = LoggerFactory.getLogger(BaseContextSensitiveTest.class);
 	
 	/**
 	 * Only the classpath/package path and filename of the initial dataset

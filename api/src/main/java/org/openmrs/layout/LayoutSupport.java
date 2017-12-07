@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class LayoutSupport<T extends LayoutTemplate> {
 	
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(LayoutSupport.class);
 	
 	protected String defaultLayoutFormat;
 	

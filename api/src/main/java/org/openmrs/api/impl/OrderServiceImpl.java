@@ -75,7 +75,7 @@ import org.springframework.util.StringUtils;
 @Transactional
 public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator, GlobalPropertyListener {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 	
 	private static final String ORDER_NUMBER_PREFIX = "ORD-";
 	

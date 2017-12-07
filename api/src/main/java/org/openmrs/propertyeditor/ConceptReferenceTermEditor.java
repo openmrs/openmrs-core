@@ -19,7 +19,7 @@ import org.springframework.util.StringUtils;
 
 public class ConceptReferenceTermEditor extends PropertyEditorSupport {
 	
-	private final static Logger log = LoggerFactory.getLogger(ConceptReferenceTermEditor.class);
+	private static final Logger log = LoggerFactory.getLogger(ConceptReferenceTermEditor.class);
 	
 	public ConceptReferenceTermEditor() {
 	}

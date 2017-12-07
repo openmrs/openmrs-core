@@ -27,9 +27,6 @@ import org.springframework.validation.Validator;
 @Handler(supports = { EncounterType.class }, order = 50)
 public class EncounterTypeValidator implements Validator {
 	
-	/** Logger for this class and subclasses */
-	protected final Logger log = LoggerFactory.getLogger(getClass());
-	
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 * 

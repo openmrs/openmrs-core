@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HelloWorldTask extends AbstractTask {
 	
-	private static Logger log = LoggerFactory.getLogger(HelloWorldTask.class);
+	private static final Logger log = LoggerFactory.getLogger(HelloWorldTask.class);
 	
 	/**
 	 * Public constructor.

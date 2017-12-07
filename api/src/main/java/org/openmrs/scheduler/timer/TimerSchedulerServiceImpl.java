@@ -47,7 +47,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	/**
 	 * Logger
 	 */
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(TimerSchedulerServiceImpl.class);
 	
 	/**
 	 * Registered task list

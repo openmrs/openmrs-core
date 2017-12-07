@@ -96,7 +96,7 @@ import ca.uhn.hl7v2.parser.PipeParser;
  */
 public class ORUR01Handler implements Application {
 	
-	private Logger log = LoggerFactory.getLogger(ORUR01Handler.class);
+	private static final Logger log = LoggerFactory.getLogger(ORUR01Handler.class);
 	
 	private static EncounterRole unknownRole = null;
 	
