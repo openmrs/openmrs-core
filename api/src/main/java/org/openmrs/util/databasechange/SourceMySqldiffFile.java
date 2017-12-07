@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -143,7 +144,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			throw new CustomChangeException("Error while executing command: '" + commands.get(0) + "'", e);
 		}
 		
-		log.debug("Exec called: " + Arrays.asList(commands));
+		log.debug("Exec called: " + Collections.singletonList(commands));
 		
 		if (exitValue != 0) {
 			log.error("There was an error while running the " + commands.get(0) + " command.  Command output: "
