@@ -111,7 +111,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 			formField.setFormFieldId(null);
 		}
 		// this is required because Hibernate would recognize the original collection
-		form.setFormFields(new HashSet<FormField>(form.getFormFields()));
+		form.setFormFields(new HashSet<>(form.getFormFields()));
 		
 		form.setUuid(null);
 		form.setFormId(null);
@@ -385,7 +385,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		// get all forms including unpublished and including retired
 		List<Form> forms = Context.getFormService().getForms(fuzzyName, null, null, null, null, null, null);
 		
-		Set<String> namesAlreadySeen = new HashSet<String>();
+		Set<String> namesAlreadySeen = new HashSet<>();
 		for (Iterator<Form> i = forms.iterator(); i.hasNext();) {
 			Form form = i.next();
 			if (namesAlreadySeen.contains(form.getName())) {
@@ -679,9 +679,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public int mergeDuplicateFields() throws APIException {
 		
 		List<Field> fields = dao.getAllFields(true);
-		Set<Field> fieldsToDelete = new HashSet<Field>();
+		Set<Field> fieldsToDelete = new HashSet<>();
 		
-		Map<String, Integer> fieldNameAsKeyAndFieldIdAsValueMap = new HashMap<String, Integer>();
+		Map<String, Integer> fieldNameAsKeyAndFieldIdAsValueMap = new HashMap<>();
 		
 		for (Field field : fields) {
 			if (fieldNameAsKeyAndFieldIdAsValueMap.containsKey(field.getName())) {

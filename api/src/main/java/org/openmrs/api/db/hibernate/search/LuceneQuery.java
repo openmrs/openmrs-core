@@ -146,7 +146,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 */
 	public LuceneQuery<T> include(String field, Object[] values) {
 		if (values != null && values.length != 0) {
-			Set<Term> terms = new HashSet<Term>();
+			Set<Term> terms = new HashSet<>();
 			for (Object value : values) {
 				terms.add(new Term(field, value.toString()));
 			}

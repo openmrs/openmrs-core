@@ -443,7 +443,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getLocationsHavingAnyTag_shouldReturnEmptyListWhenGivenAnEmptyTagList() {
 		LocationService ls = Context.getLocationService();
-		Assert.assertEquals(0, ls.getLocationsHavingAnyTag(new ArrayList<LocationTag>()).size());
+		Assert.assertEquals(0, ls.getLocationsHavingAnyTag(new ArrayList<>()).size());
 	}
 	
 	/**

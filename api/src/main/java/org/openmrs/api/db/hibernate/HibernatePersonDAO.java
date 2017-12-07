@@ -85,7 +85,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			birthyear = 0;
 		}
 		
-		Set<Person> people = new LinkedHashSet<Person>();
+		Set<Person> people = new LinkedHashSet<>();
 		
 		name = name.replaceAll("  ", " ");
 		name = name.replace(", ", " ");

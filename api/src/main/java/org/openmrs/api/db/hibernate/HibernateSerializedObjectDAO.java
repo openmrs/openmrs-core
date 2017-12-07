@@ -133,7 +133,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	@Override
 	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, String name, boolean exactMatchOnly)
 	        throws DAOException {
-		List<T> ret = new ArrayList<T>();
+		List<T> ret = new ArrayList<>();
 		List<SerializedObject> objects = getAllSerializedObjectsByName(type, name, exactMatchOnly);
 		for (SerializedObject serializedObject : objects) {
 			ret.add(convertSerializedObject(type, serializedObject));
@@ -160,7 +160,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	 */
 	@Override
 	public <T extends OpenmrsObject> List<T> getAllObjects(Class<T> type, boolean includeRetired) throws DAOException {
-		List<T> ret = new ArrayList<T>();
+		List<T> ret = new ArrayList<>();
 		List<SerializedObject> objects = getAllSerializedObjects(type, includeRetired);
 		for (SerializedObject serializedObject : objects) {
 			ret.add(convertSerializedObject(type, serializedObject));
@@ -355,7 +355,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	@Override
 	public List<Class<? extends OpenmrsObject>> getSupportedTypes() {
 		if (supportedTypes == null) {
-			supportedTypes = new ArrayList<Class<? extends OpenmrsObject>>();
+			supportedTypes = new ArrayList<>();
 		}
 		return supportedTypes;
 	}
@@ -365,7 +365,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	 */
 	public void setSupportedTypes(List<Class<? extends OpenmrsObject>> supportedTypes) {
 		if (this.supportedTypes == null) {
-			this.supportedTypes = new ArrayList<Class<? extends OpenmrsObject>>();
+			this.supportedTypes = new ArrayList<>();
 		}
 		if (supportedTypes != null) {
 			this.supportedTypes.addAll(supportedTypes);

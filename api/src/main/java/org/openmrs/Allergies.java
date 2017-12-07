@@ -31,7 +31,7 @@ public class Allergies implements List<Allergy> {
 	
 	private String allergyStatus = UNKNOWN;
 	
-	private List<Allergy> allergies = new ArrayList<Allergy>();
+	private List<Allergy> allergies = new ArrayList<>();
 
 	/**
      * @return the allergyStatus
@@ -297,7 +297,7 @@ public class Allergies implements List<Allergy> {
 	 * @param allergies the given allergies collection
 	 */
 	private void throwExceptionIfHasDuplicateAllergen(Collection<? extends Allergy> allergies) {
-		List<Allergy> allergiesCopy = new ArrayList<Allergy>();
+		List<Allergy> allergiesCopy = new ArrayList<>();
 		allergiesCopy.addAll(allergies);
 		
 		for (Allergy allergy : allergies) {

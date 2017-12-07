@@ -455,7 +455,7 @@ public class HibernateFormDAO implements FormDAO {
 		// TODO junit test
 		if (!containingAnyFormField.isEmpty()) {
 			// Convert form field persistents to integers
-			Set<Integer> anyFormFieldIds = new HashSet<Integer>();
+			Set<Integer> anyFormFieldIds = new HashSet<>();
 			for (FormField ff : containingAnyFormField) {
 				anyFormFieldIds.add(ff.getFormFieldId());
 			}
@@ -470,7 +470,7 @@ public class HibernateFormDAO implements FormDAO {
 		if (!containingAllFormFields.isEmpty()) {
 			
 			// Convert form field persistents to integers
-			Set<Integer> allFormFieldIds = new HashSet<Integer>();
+			Set<Integer> allFormFieldIds = new HashSet<>();
 			for (FormField ff : containingAllFormFields) {
 				allFormFieldIds.add(ff.getFormFieldId());
 			}

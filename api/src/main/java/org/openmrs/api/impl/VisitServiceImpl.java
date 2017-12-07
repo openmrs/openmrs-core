@@ -399,7 +399,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	}
 	
 	private List<VisitType> getVisitTypesFromVisitTypeNames(String[] visitTypeNames) {
-		List<VisitType> result = new ArrayList<VisitType>();
+		List<VisitType> result = new ArrayList<>();
 		for (VisitType visitType : Context.getVisitService().getAllVisitTypes()) {
 			if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase())) {
 				result.add(visitType);

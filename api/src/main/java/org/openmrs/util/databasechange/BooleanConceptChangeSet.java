@@ -42,9 +42,9 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	private Integer falseConceptId;
 	
 	//string values for boolean concepts
-	private static Map<String, String[]> trueNames = new HashMap<String, String[]>();
+	private static Map<String, String[]> trueNames = new HashMap<>();
 	
-	private static Map<String, String[]> falseNames = new HashMap<String, String[]>();
+	private static Map<String, String[]> falseNames = new HashMap<>();
 	
 	// how to say True and Yes in OpenMRS core languages
 	static {

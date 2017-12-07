@@ -34,7 +34,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	private Collection<CohortMembership> memberships;
 	
 	public Cohort() {
-		memberships = new TreeSet<CohortMembership>();
+		memberships = new TreeSet<>();
 	}
 	
 	/**
@@ -191,7 +191,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 */
 	public Collection<CohortMembership> getMemberships() {
 		if (memberships == null) {
-			memberships = new TreeSet<CohortMembership>();
+			memberships = new TreeSet<>();
 		}
 		return memberships;
 	}
@@ -324,7 +324,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 */
 	@Deprecated
 	public Set<Integer> getMemberIds() {
-		Set<Integer> memberIds = new TreeSet<Integer>();
+		Set<Integer> memberIds = new TreeSet<>();
 		for (CohortMembership member : getMemberships()) {
 			memberIds.add(member.getPatientId());
 		}

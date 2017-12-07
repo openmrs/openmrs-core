@@ -115,7 +115,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Transactional(readOnly = true)
 	public SortedMap<String, String> getSystemVariables() throws APIException {
 		if (systemVariables == null) {
-			systemVariables = new TreeMap<String, String>();
+			systemVariables = new TreeMap<>();
 			
 			// Added the server's fully qualified domain name
 			try {
@@ -270,7 +270,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (gp.getProperty() != null && gp.getProperty().length() > 0) {
 			if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST)) {
 				if (gp.getPropertyValue() != null) {
-					List<Locale> localeList = new ArrayList<Locale>();
+					List<Locale> localeList = new ArrayList<>();
 					
 					for (String localeString : gp.getPropertyValue().split(",")) {
 						localeList.add(LocaleUtility.fromSpecification(localeString.trim()));

@@ -22,7 +22,7 @@ public class ModuleConstants {
 	 * openmrs. A module with at least the given version is required to start before openmrs will
 	 * fully start.
 	 */
-	public static final Map<String, String> CORE_MODULES = new HashMap<String, String>();
+	public static final Map<String, String> CORE_MODULES = new HashMap<>();
 	
 	/**
 	 * Used to determine if the {@link #CORE_MODULES} list should be used or not. For unit testing

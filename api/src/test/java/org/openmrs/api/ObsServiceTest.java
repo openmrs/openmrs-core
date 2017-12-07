@@ -1197,7 +1197,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ObsService obsService = Context.getObsService();
 		
 		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(8)), null, null, null, null, null,
-		    new ArrayList<String>(), null, null, null, null, false, null);
+				new ArrayList<>(), null, null, null, null, false, null);
 		
 		Assert.assertEquals(8, obss.get(0).getObsId().intValue());
 		Assert.assertEquals(7, obss.get(1).getObsId().intValue());

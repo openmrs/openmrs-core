@@ -65,7 +65,7 @@ public class OrderTest extends BaseContextSensitiveTest {
 		if (methodName == null) {
 			methodName = "copy";
 		}
-		List<String> fieldsToExclude = new ArrayList<String>();
+		List<String> fieldsToExclude = new ArrayList<>();
 		fieldsToExclude.addAll(Arrays.asList("log", "serialVersionUID", "orderId", "uuid"));
 		if (otherfieldsToExclude != null) {
 			fieldsToExclude.addAll(Arrays.asList(otherfieldsToExclude));
