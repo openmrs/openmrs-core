@@ -174,8 +174,8 @@ public class OpenmrsUtil {
 		boolean retVal = false;
 		
 		if (str != null && arr != null) {
-			for (int i = 0; i < arr.length; i++) {
-				if (str.equals(arr[i])) {
+			for (String anArr : arr) {
+				if (str.equals(anArr)) {
 					retVal = true;
 				}
 			}

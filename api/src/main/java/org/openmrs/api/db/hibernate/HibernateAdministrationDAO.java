@@ -240,16 +240,16 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 					}
 				}
 			}
-			for (int i = 0; i < propNames.length; i++) {
-				Type propType = metadata.getPropertyType(propNames[i]);
+			for (String propName : propNames) {
+				Type propType = metadata.getPropertyType(propName);
 				if (propType instanceof StringType || propType instanceof TextType) {
-					String propertyValue = (String) metadata.getPropertyValue(object, propNames[i]);
+					String propertyValue = (String) metadata.getPropertyValue(object, propName);
 					if (propertyValue != null) {
-						int maxLength = getMaximumPropertyLength(entityClass, propNames[i]);
+						int maxLength = getMaximumPropertyLength(entityClass, propName);
 						int propertyValueLength = propertyValue.length();
 						if (propertyValueLength > maxLength) {
-							errors.rejectValue(propNames[i], "error.exceededMaxLengthOfField", new Object[] { maxLength },
-							    null);
+							errors.rejectValue(propName, "error.exceededMaxLengthOfField", new Object[] { maxLength },
+									null);
 						}
 					}
 				}

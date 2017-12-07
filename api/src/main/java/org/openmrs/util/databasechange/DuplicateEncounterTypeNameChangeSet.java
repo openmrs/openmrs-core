@@ -105,26 +105,25 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 					results.add(id);
 				}
 			}
-			
-			Iterator it2 = duplicates.entrySet().iterator();
-			while (it2.hasNext()) {
-				Map.Entry pairs = (Map.Entry) it2.next();
-				
+
+			for (Object o : duplicates.entrySet()) {
+				Map.Entry pairs = (Map.Entry) o;
+
 				HashSet values = (HashSet) pairs.getValue();
 				List<Integer> ids = new ArrayList<Integer>(values);
-				
+
 				int duplicateNameId = 1;
 				for (int i = 1; i < ids.size(); i++) {
 					String newName = pairs.getKey() + "_" + duplicateNameId;
-					
+
 					List<List<Object>> duplicateResult = null;
 					boolean duplicateName = false;
 					Connection con = DatabaseUpdater.getConnection();
-					
+
 					do {
 						String sqlValidatorString = "select * from encounter_type where name = '" + newName + "'";
 						duplicateResult = DatabaseUtil.executeSQL(con, sqlValidatorString, true);
-						
+
 						if (!duplicateResult.isEmpty()) {
 							duplicateNameId += 1;
 							newName = pairs.getKey() + "_" + duplicateNameId;
@@ -133,13 +132,13 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 							duplicateName = false;
 						}
 					} while (duplicateName);
-					
+
 					pStmt = connection.prepareStatement("update encounter_type set name = ? where encounter_type_id = ?");
 					pStmt.setString(1, newName);
 					pStmt.setInt(2, ids.get(i));
-					
+
 					duplicateNameId += 1;
-					
+
 					pStmt.executeUpdate();
 				}
 			}

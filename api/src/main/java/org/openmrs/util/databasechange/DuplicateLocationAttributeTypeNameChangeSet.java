@@ -102,10 +102,9 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 					results.add(id);
 				}
 			}
-			
-			Iterator it2 = duplicates.entrySet().iterator();
-			while (it2.hasNext()) {
-				Map.Entry pairs = (Map.Entry) it2.next();
+
+			for (Object o : duplicates.entrySet()) {
+				Map.Entry pairs = (Map.Entry) o;
 				HashSet values = (HashSet) pairs.getValue();
 				List<Integer> duplicateNames = new ArrayList<Integer>(values);
 				int duplicateNameId = 1;
@@ -126,20 +125,21 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 						}
 					} while (duplicateName);
 					pStmt = connection
-					        .prepareStatement("update location_attribute_type set name = ?, changed_by = ?, date_changed = ? where location_attribute_type_id = ?");
+							.prepareStatement(
+									"update location_attribute_type set name = ?, changed_by = ?, date_changed = ? where location_attribute_type_id = ?");
 					if (!duplicateResult.isEmpty()) {
 						pStmt.setString(1, newName);
 					}
 					pStmt.setString(1, newName);
 					pStmt.setInt(2, DatabaseUpdater.getAuthenticatedUserId());
-					
+
 					Calendar cal = Calendar.getInstance();
 					Date date = new Date(cal.getTimeInMillis());
-					
+
 					pStmt.setDate(3, date);
 					pStmt.setInt(4, duplicateNames.get(i));
 					duplicateNameId += 1;
-					
+
 					pStmt.executeUpdate();
 				}
 			}
