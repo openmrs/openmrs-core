@@ -137,7 +137,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 		}
 		catch (Exception ex) {
 			log.error("Error in new xml global property value", ex);
-			setAddressTemplate(new Vector<>());
+			setAddressTemplate(new ArrayList<>());
 		}
 	}
 	
@@ -166,7 +166,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 		if (!OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE.equals(propertyName)) {
 			return;
 		}
-		setAddressTemplate(new Vector<>());
+		setAddressTemplate(new ArrayList<>());
 	}
 	
 }

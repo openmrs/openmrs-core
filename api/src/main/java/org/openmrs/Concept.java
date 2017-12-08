@@ -778,7 +778,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		
 		if (compatibleNames == null) {
-			compatibleNames = new Vector<>();
+			compatibleNames = new ArrayList<>();
 			for (ConceptName possibleName : getNames()) {
 				if (LocaleUtility.areCompatible(possibleName.getLocale(), desiredLocale)) {
 					compatibleNames.add(possibleName);
