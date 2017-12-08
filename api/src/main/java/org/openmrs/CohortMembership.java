@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.Objects;
 
 import org.openmrs.util.OpenmrsUtil;
 
@@ -143,5 +144,27 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 			ret = this.getUuid().compareTo(o.getUuid());
 		}
 		return ret;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		if (!super.equals(o))
+			return false;
+		CohortMembership that = (CohortMembership) o;
+		return Objects.equals(cohortMemberId, that.cohortMemberId) &&
+				Objects.equals(cohort, that.cohort) &&
+				Objects.equals(patientId, that.patientId) &&
+				Objects.equals(startDate, that.startDate) &&
+				Objects.equals(endDate, that.endDate);
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(super.hashCode(), cohortMemberId, cohort, patientId, startDate, endDate);
 	}
 }

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -478,7 +479,37 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		DefaultComparator pnDefaultComparator = new DefaultComparator();
 		return pnDefaultComparator.compare(this, other);
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		if (!super.equals(o))
+			return false;
+		PersonName that = (PersonName) o;
+		return Objects.equals(personNameId, that.personNameId) &&
+				Objects.equals(person, that.person) &&
+				Objects.equals(preferred, that.preferred) &&
+				Objects.equals(givenName, that.givenName) &&
+				Objects.equals(prefix, that.prefix) &&
+				Objects.equals(middleName, that.middleName) &&
+				Objects.equals(familyNamePrefix, that.familyNamePrefix) &&
+				Objects.equals(familyName, that.familyName) &&
+				Objects.equals(familyName2, that.familyName2) &&
+				Objects.equals(familyNameSuffix, that.familyNameSuffix) &&
+				Objects.equals(degree, that.degree);
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects
+				.hash(super.hashCode(), personNameId, person, preferred, givenName, prefix, middleName, familyNamePrefix,
+						familyName, familyName2, familyNameSuffix, degree);
+	}
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
