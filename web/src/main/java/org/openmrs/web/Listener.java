@@ -23,6 +23,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
@@ -426,7 +427,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 					webAppLog.debug("Overriding file: " + absolutePath);
 					webAppLog.debug("Overriding file with: " + userOverridePath);
 					if (file.isDirectory()) {
-						for (File f : file.listFiles()) {
+						for (File f : Objects.requireNonNull(file.listFiles())) {
 							userOverridePath = f.getAbsolutePath();
 							if (!f.getName().startsWith(".")) {
 								String tmpAbsolutePath = absolutePath + "/" + f.getName();
@@ -517,7 +518,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 		
 		// loop over the modules and load the modules that we can
-		for (File f : folder.listFiles()) {
+		for (File f : Objects.requireNonNull(folder.listFiles())) {
 			if (!f.getName().startsWith(".")) { // ignore .svn folder and the like
 				try {
 					Module mod = ModuleFactory.loadModule(f);
