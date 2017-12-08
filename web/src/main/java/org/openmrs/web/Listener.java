@@ -73,7 +73,7 @@ import org.xml.sax.SAXException;
  */
 public final class Listener extends ContextLoader implements ServletContextListener {
 	
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
 	
 	private static boolean runtimePropertiesFound = false;
 	
@@ -622,7 +622,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	
 	public static void performWebStartOfModules(Collection<Module> startedModules, ServletContext servletContext)
 	        throws ModuleMustStartException, Exception {
-		final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
 		
 		boolean someModuleNeedsARefresh = false;
 		for (Module mod : startedModules) {
