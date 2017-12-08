@@ -103,7 +103,6 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 		return (writer);
 	}
 	
-	
 	/**
 	 * @see javax.servlet.http.HttpServletResponse#sendError(int, java.lang.String)
 	 */
