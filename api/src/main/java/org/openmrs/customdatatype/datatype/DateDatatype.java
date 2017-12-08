@@ -25,8 +25,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DateDatatype extends SerializingCustomDatatype<Date> {
-	
-	final static String dateFormat = "yyyy-MM-dd";
+
+	static final String dateFormat = "yyyy-MM-dd";
 	
 	/**
 	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#doGetTextSummary(java.lang.Object)
