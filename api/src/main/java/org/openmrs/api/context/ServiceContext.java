@@ -950,15 +950,15 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @since 1.9
 	 */
 	public List<OpenmrsService> getModuleOpenmrsServices(String modulePackage) {
-		List<OpenmrsService> services = new ArrayList<>();
+		List<OpenmrsService> openmrsServices = new ArrayList<>();
 		
 		for (Entry<String, OpenmrsService> entry : moduleOpenmrsServices.entrySet()) {
 			if (entry.getKey().startsWith(modulePackage)) {
-				services.add(entry.getValue());
+				openmrsServices.add(entry.getValue());
 			}
 		}
 		
-		return services;
+		return openmrsServices;
 	}
 	
 	/**

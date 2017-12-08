@@ -1600,8 +1600,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		//sets have moved to the bottom and hence need to be reassigned
 		//higher sort weights than the non retired ones
 		double weight = 990.0;
-		for (ConceptSet set : sortedConceptSets) {
-			set.setSortWeight(weight += 10.0);
+		for (ConceptSet conceptSet : sortedConceptSets) {
+			conceptSet.setSortWeight(weight += 10.0);
 		}
 		
 		if (sortedConceptSets.isEmpty()) {
