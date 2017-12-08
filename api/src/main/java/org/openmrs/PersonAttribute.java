@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Analyzer;
@@ -305,7 +306,28 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 		DefaultComparator paDComparator = new DefaultComparator();
 		return paDComparator.compare(this, other);
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		if (!super.equals(o))
+			return false;
+		PersonAttribute that = (PersonAttribute) o;
+		return Objects.equals(personAttributeId, that.personAttributeId) &&
+				Objects.equals(person, that.person) &&
+				Objects.equals(attributeType, that.attributeType) &&
+				Objects.equals(value, that.value);
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(super.hashCode(), personAttributeId, person, attributeType, value);
+	}
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()

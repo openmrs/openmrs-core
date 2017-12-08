@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
@@ -263,7 +264,37 @@ public class FormField extends BaseChangeableOpenmrsMetadata implements java.io.
 		DefaultComparator pnDefaultComparator = new DefaultComparator();
 		return pnDefaultComparator.compare(this, other);
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		if (!super.equals(o))
+			return false;
+		FormField formField = (FormField) o;
+		return Objects.equals(formFieldId, formField.formFieldId) &&
+				Objects.equals(parent, formField.parent) &&
+				Objects.equals(form, formField.form) &&
+				Objects.equals(field, formField.field) &&
+				Objects.equals(fieldNumber, formField.fieldNumber) &&
+				Objects.equals(fieldPart, formField.fieldPart) &&
+				Objects.equals(pageNumber, formField.pageNumber) &&
+				Objects.equals(minOccurs, formField.minOccurs) &&
+				Objects.equals(maxOccurs, formField.maxOccurs) &&
+				Objects.equals(required, formField.required) &&
+				Objects.equals(sortWeight, formField.sortWeight);
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects
+				.hash(super.hashCode(), formFieldId, parent, form, field, fieldNumber, fieldPart, pageNumber, minOccurs,
+						maxOccurs, required, sortWeight);
+	}
+
 	/**
 	 Provides a default comparator.
 	 @since 1.12
