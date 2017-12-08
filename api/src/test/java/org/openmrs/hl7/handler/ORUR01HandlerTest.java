@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -192,7 +193,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertNotNull("Their should be an associated encounter", firstContactMethodObs.getEncounter());
 		
 		// check that the obs that are grouped have the same group id
-		List<Integer> groupedConceptIds = new Vector<>();
+		List<Integer> groupedConceptIds = new ArrayList<>();
 		groupedConceptIds.add(1558);
 		groupedConceptIds.add(1553);
 		groupedConceptIds.add(1554);

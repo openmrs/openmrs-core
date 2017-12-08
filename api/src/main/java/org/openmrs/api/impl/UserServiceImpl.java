@@ -568,7 +568,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		// persons should be searched
 		Role authRole = getRole(RoleConstants.AUTHENTICATED);
 		if (roles.contains(authRole)) {
-			return dao.getCountOfUsers(name, new Vector<>(), includeRetired);
+			return dao.getCountOfUsers(name, new ArrayList<>(), includeRetired);
 		}
 		
 		return dao.getCountOfUsers(name, roles, includeRetired);
@@ -586,7 +586,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		}
 		
 		if (roles == null) {
-			roles = new Vector<>();
+			roles = new ArrayList<>();
 		}
 		
 		// add the requested roles and all child roles for consideration
@@ -600,7 +600,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		// persons should be searched
 		Role authRole = getRole(RoleConstants.AUTHENTICATED);
 		if (roles.contains(authRole)) {
-			return dao.getUsers(name, new Vector<>(), includeRetired, start, length);
+			return dao.getUsers(name, new ArrayList<>(), includeRetired, start, length);
 		}
 		
 		return dao.getUsers(name, new ArrayList<>(allRoles), includeRetired, start, length);

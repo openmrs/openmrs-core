@@ -456,10 +456,10 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	private List<Concept> getConcepts(String name, Locale loc, boolean searchOnPhrase, List<ConceptClass> classes,
 	        List<ConceptDatatype> datatypes) {
 		if (classes == null) {
-			classes = new Vector<>();
+			classes = new ArrayList<>();
 		}
 		if (datatypes == null) {
-			datatypes = new Vector<>();
+			datatypes = new ArrayList<>();
 		}
 		
 		return dao.getConcepts(name, loc, searchOnPhrase, classes, datatypes);
@@ -1458,16 +1458,16 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	        throws APIException {
 		
 		if (requireClasses == null) {
-			requireClasses = new Vector<>();
+			requireClasses = new ArrayList<>();
 		}
 		if (excludeClasses == null) {
-			excludeClasses = new Vector<>();
+			excludeClasses = new ArrayList<>();
 		}
 		if (requireDatatypes == null) {
-			requireDatatypes = new Vector<>();
+			requireDatatypes = new ArrayList<>();
 		}
 		if (excludeDatatypes == null) {
-			excludeDatatypes = new Vector<>();
+			excludeDatatypes = new ArrayList<>();
 		}
 		
 		return dao.getConcepts(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,
@@ -1501,16 +1501,16 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) {
 		if (requireClasses == null) {
-			requireClasses = new Vector<>();
+			requireClasses = new ArrayList<>();
 		}
 		if (excludeClasses == null) {
-			excludeClasses = new Vector<>();
+			excludeClasses = new ArrayList<>();
 		}
 		if (requireDatatypes == null) {
-			requireDatatypes = new Vector<>();
+			requireDatatypes = new ArrayList<>();
 		}
 		if (excludeDatatypes == null) {
-			excludeDatatypes = new Vector<>();
+			excludeDatatypes = new ArrayList<>();
 		}
 		
 		return dao.getCountOfConcepts(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,

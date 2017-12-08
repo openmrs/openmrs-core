@@ -377,15 +377,15 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	        Boolean isPreferred) throws APIException {
 		
 		if (patientIdentifierTypes == null) {
-			patientIdentifierTypes = new Vector<>();
+			patientIdentifierTypes = new ArrayList<>();
 		}
 		
 		if (locations == null) {
-			locations = new Vector<>();
+			locations = new ArrayList<>();
 		}
 		
 		if (patients == null) {
-			patients = new Vector<>();
+			patients = new ArrayList<>();
 		}
 		
 		return dao.getPatientIdentifiers(identifier, patientIdentifierTypes, locations, patients, isPreferred);
