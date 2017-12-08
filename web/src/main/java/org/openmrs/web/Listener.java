@@ -136,9 +136,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
-		final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
+		final org.slf4j.Logger contextLog = LoggerFactory.getLogger(Listener.class);
 		
-		log.debug("Starting the OpenMRS webapp");
+		contextLog.debug("Starting the OpenMRS webapp");
 		
 		try {
 			// validate the current JVM version
@@ -172,7 +172,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				//ensure that we always log the runtime properties file that we are using
 				//since openmrs is just booting, the log levels are not yet set. TRUNK-4835
 				Logger.getLogger(getClass()).setLevel(Level.INFO);
-				log.info("Using runtime properties file: "
+				contextLog.info("Using runtime properties file: "
 				        + OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
 			}
 			
@@ -199,7 +199,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 		catch (Exception e) {
 			setErrorAtStartup(e);
-			log.error(MarkerFactory.getMarker("FATAL"), "Failed to obtain JDBC connection", e);
+			contextLog.error(MarkerFactory.getMarker("FATAL"), "Failed to obtain JDBC connection", e);
 		}
 		
 	}
@@ -338,7 +338,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @param servletContext
 	 */
 	private void clearDWRFile(ServletContext servletContext) {
-		final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
+		final org.slf4j.Logger cleanLog = LoggerFactory.getLogger(Listener.class);
 		
 		String realPath = servletContext.getRealPath("");
 		String absPath = realPath + "/WEB-INF/dwr-modules.xml";
@@ -363,7 +363,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		catch (Exception e) {
 			// got here because the dwr-modules.xml file is empty for some reason.  This might
 			// happen because the servlet container (i.e. tomcat) crashes when first loading this file
-			log.debug("Error clearing dwr-modules.xml", e);
+			cleanLog.debug("Error clearing dwr-modules.xml", e);
 			dwrFile.delete();
 			FileWriter writer = null;
 			try {
@@ -372,7 +372,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN\" \"http://directwebremoting.org/schema/dwr20.dtd\">\n<dwr></dwr>");
 			}
 			catch (IOException io) {
-				log.error(
+				cleanLog.error(
 				    "Unable to clear out the " + dwrFile.getAbsolutePath() + " file.  Please redeploy the openmrs war file",
 				    io);
 			}
@@ -382,7 +382,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 						writer.close();
 					}
 					catch (IOException io) {
-						log.warn("Couldn't close Writer: " + io);
+						cleanLog.warn("Couldn't close Writer: " + io);
 					}
 				}
 			}
@@ -395,7 +395,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @param servletContext
 	 */
 	private void copyCustomizationIntoWebapp(ServletContext servletContext, Properties props) {
-		final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
+		final org.slf4j.Logger webAppLog = LoggerFactory.getLogger(Listener.class);
 		
 		String realPath = servletContext.getRealPath("");
 		// TODO centralize map to WebConstants?
@@ -423,16 +423,16 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				// if they got the path correct
 				// also, if file does not start with a "." (hidden files, like SVN files)
 				if (file.exists() && !userOverridePath.startsWith(".")) {
-					log.debug("Overriding file: " + absolutePath);
-					log.debug("Overriding file with: " + userOverridePath);
+					webAppLog.debug("Overriding file: " + absolutePath);
+					webAppLog.debug("Overriding file with: " + userOverridePath);
 					if (file.isDirectory()) {
 						for (File f : file.listFiles()) {
 							userOverridePath = f.getAbsolutePath();
 							if (!f.getName().startsWith(".")) {
 								String tmpAbsolutePath = absolutePath + "/" + f.getName();
 								if (!copyFile(userOverridePath, tmpAbsolutePath)) {
-									log.warn("Unable to copy file in folder defined by runtime property: " + prop);
-									log.warn("Your source directory (or a file in it) '" + userOverridePath
+									webAppLog.warn("Unable to copy file in folder defined by runtime property: " + prop);
+									webAppLog.warn("Your source directory (or a file in it) '" + userOverridePath
 									        + " cannot be loaded or destination '" + tmpAbsolutePath + "' cannot be found");
 								}
 							}
@@ -440,8 +440,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 					} else {
 						// file is not a directory
 						if (!copyFile(userOverridePath, absolutePath)) {
-							log.warn("Unable to copy file defined by runtime property: " + prop);
-							log.warn("Your source file '" + userOverridePath + " cannot be loaded or destination '"
+							webAppLog.warn("Unable to copy file defined by runtime property: " + prop);
+							webAppLog.warn("Your source file '" + userOverridePath + " cannot be loaded or destination '"
 							        + absolutePath + "' cannot be found");
 						}
 					}
@@ -459,7 +459,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @return true/false whether the copy was a success
 	 */
 	private boolean copyFile(String fromPath, String toPath) {
-		final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
+		final org.slf4j.Logger copyLog = LoggerFactory.getLogger(Listener.class);
 		
 		FileInputStream inputStream = null;
 		FileOutputStream outputStream = null;
@@ -478,7 +478,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				}
 			}
 			catch (IOException io) {
-				log.warn("Unable to close input stream", io);
+				copyLog.warn("Unable to close input stream", io);
 			}
 			try {
 				if (outputStream != null) {
@@ -486,7 +486,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				}
 			}
 			catch (IOException io) {
-				log.warn("Unable to close input stream", io);
+				copyLog.warn("Unable to close input stream", io);
 			}
 		}
 		return true;
