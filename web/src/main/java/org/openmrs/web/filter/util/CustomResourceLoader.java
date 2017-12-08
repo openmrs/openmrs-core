@@ -91,11 +91,12 @@ public class CustomResourceLoader {
 	private Locale parseLocaleFrom(String filename, String basename) {
 		Locale result = null;
 		
+		String tempFilename=filename;
 		if (filename.startsWith(basename)) {
-			filename = filename.substring(basename.length());
+			tempFilename = filename.substring(basename.length());
 		}
 		
-		String localespec = filename.substring(0, filename.indexOf('.'));
+		String localespec = tempFilename.substring(0, tempFilename.indexOf('.'));
 		
 		if ("".equals(localespec)) {
 			result = Locale.ENGLISH;
