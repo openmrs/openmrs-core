@@ -132,13 +132,13 @@ public class Context {
 	// Global resources
 	private static ContextDAO contextDAO;
 
-	private static Session mailSession;
+	private static volatile Session mailSession;
 
 	// Using "wrapper" (Object array) around UserContext to avoid ThreadLocal
 	// bug in Java 1.5
 	private static final ThreadLocal<Object[] /* UserContext */> userContextHolder = new ThreadLocal<>();
 
-	private static ServiceContext serviceContext;
+	private static volatile ServiceContext serviceContext;
 
 	private static Properties runtimeProperties = new Properties();
 
@@ -246,8 +246,12 @@ public class Context {
 	 */
 	static ServiceContext getServiceContext() {
 		if (serviceContext == null) {
-			log.error("serviceContext is null.  Creating new ServiceContext()");
-			serviceContext = ServiceContext.getInstance();
+			synchronized (Context.class) {
+				if (serviceContext == null) {
+					log.error("serviceContext is null.  Creating new ServiceContext()");
+					serviceContext = ServiceContext.getInstance();
+				}
+			}
 		}
 
 		if (log.isTraceEnabled()) {
@@ -532,26 +536,31 @@ public class Context {
 	 */
 	private static Session getMailSession() {
 		if (mailSession == null) {
-			AdministrationService adminService = getAdministrationService();
+			synchronized (Context.class) {
+				if (mailSession == null) {
+					AdministrationService adminService = getAdministrationService();
 
-			Properties props = new Properties();
-			props.setProperty("mail.transport.protocol", adminService.getGlobalProperty("mail.transport_protocol"));
-			props.setProperty("mail.smtp.host", adminService.getGlobalProperty("mail.smtp_host"));
-			props.setProperty("mail.smtp.port", adminService.getGlobalProperty("mail.smtp_port"));
-			props.setProperty("mail.from", adminService.getGlobalProperty("mail.from"));
-			props.setProperty("mail.debug", adminService.getGlobalProperty("mail.debug"));
-			props.setProperty("mail.smtp.auth", adminService.getGlobalProperty("mail.smtp_auth"));
+					Properties props = new Properties();
+					props.setProperty("mail.transport.protocol", adminService.getGlobalProperty("mail.transport_protocol"));
+					props.setProperty("mail.smtp.host", adminService.getGlobalProperty("mail.smtp_host"));
+					props.setProperty("mail.smtp.port", adminService.getGlobalProperty("mail.smtp_port"));
+					props.setProperty("mail.from", adminService.getGlobalProperty("mail.from"));
+					props.setProperty("mail.debug", adminService.getGlobalProperty("mail.debug"));
+					props.setProperty("mail.smtp.auth", adminService.getGlobalProperty("mail.smtp_auth"));
 
-			Authenticator auth = new Authenticator() {
+					Authenticator auth = new Authenticator() {
 
-				@Override
-				public PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(getAdministrationService().getGlobalProperty("mail.user"),
-					        getAdministrationService().getGlobalProperty("mail.password"));
+						@Override
+						public PasswordAuthentication getPasswordAuthentication() {
+							return new PasswordAuthentication(getAdministrationService().getGlobalProperty("mail.user"),
+									getAdministrationService().getGlobalProperty("mail.password"));
+						}
+					};
+
+					mailSession = Session.getInstance(props, auth);
 				}
-			};
+			}
 
-			mailSession = Session.getInstance(props, auth);
 		}
 		return mailSession;
 	}
