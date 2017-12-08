@@ -66,7 +66,7 @@ import org.openmrs.web.filter.util.LocalizationTool;
  */
 public abstract class StartupFilter implements Filter {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(StartupFilter.class);
 	
 	protected static VelocityEngine velocityEngine = null;
 	
