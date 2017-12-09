@@ -89,7 +89,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @param encounterDatetime The encounterDatetime to set.
 	 */
 	public void setEncounterDatetime(Date encounterDatetime) {
-		this.encounterDatetime = encounterDatetime;
+		this.encounterDatetime = new Date(encounterDatetime.getTime());
 	}
 	
 	/**

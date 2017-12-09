@@ -69,7 +69,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	public Visit(Patient patient, VisitType visitType, Date startDatetime) {
 		this.patient = patient;
 		this.visitType = visitType;
-		this.startDatetime = startDatetime;
+		this.startDatetime = new Date(startDatetime.getTime());
 	}
 	
 	/**
@@ -153,7 +153,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * @param startDatetime the startDatetime to set
 	 */
 	public void setStartDatetime(Date startDatetime) {
-		this.startDatetime = startDatetime;
+		this.startDatetime = new Date(startDatetime.getTime());
 	}
 	
 	/**
@@ -167,7 +167,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * @param stopDatetime the stopDatetime to set
 	 */
 	public void setStopDatetime(Date stopDatetime) {
-		this.stopDatetime = stopDatetime;
+		this.stopDatetime = new Date(stopDatetime.getTime());
 	}
 	
 	/**

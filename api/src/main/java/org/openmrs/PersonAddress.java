@@ -510,7 +510,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 * @since 1.9
 	 */
 	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+		this.startDate = new Date(startDate.getTime());
 	}
 	
 	/**
@@ -526,7 +526,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 * @since 1.9
 	 */
 	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+		this.endDate = new Date(endDate.getTime());
 	}
 	
 	/**

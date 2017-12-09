@@ -195,7 +195,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 			this.personId = person.getPersonId();
 		}
 		this.concept = question;
-		this.obsDatetime = obsDatetime;
+		this.obsDatetime = new Date(obsDatetime.getTime());
 		this.location = location;
 	}
 	
@@ -347,7 +347,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 */
 	public void setObsDatetime(Date obsDatetime) {
 		markAsDirty(this.obsDatetime, obsDatetime);
-		this.obsDatetime = obsDatetime;
+		this.obsDatetime = new Date(obsDatetime.getTime());
 	}
 	
 	/**
@@ -755,7 +755,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 */
 	public void setValueDatetime(Date valueDatetime) {
 		markAsDirty(this.valueDatetime, valueDatetime);
-		this.valueDatetime = valueDatetime;
+		this.valueDatetime = new Date(valueDatetime.getTime());
 	}
 	
 	/**
@@ -773,7 +773,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 */
 	public void setValueDate(Date valueDate) {
 		markAsDirty(this.valueDatetime, valueDate);
-		this.valueDatetime = valueDate;
+		this.valueDatetime = new Date(valueDate.getTime());
 	}
 	
 	/**
@@ -791,7 +791,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 */
 	public void setValueTime(Date valueTime) {
 		markAsDirty(this.valueDatetime, valueTime);
-		this.valueDatetime = valueTime;
+		this.valueDatetime = new Date(valueTime.getTime());
 	}
 	
 	/**

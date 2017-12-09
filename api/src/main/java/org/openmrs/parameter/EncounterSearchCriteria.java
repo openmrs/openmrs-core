@@ -71,9 +71,9 @@ public class EncounterSearchCriteria {
 								   Collection<Visit> visits, boolean includeVoided) {
 		this.patient = patient;
 		this.location = location;
-		this.fromDate = fromDate;
-		this.toDate = toDate;
-		this.dateChanged = dateChanged;
+		this.fromDate = new Date(fromDate.getTime());
+		this.toDate = new Date(toDate.getTime());
+		this.dateChanged = new Date(dateChanged.getTime());
 		this.enteredViaForms = enteredViaForms;
 		this.encounterTypes = encounterTypes;
 		this.providers = providers;

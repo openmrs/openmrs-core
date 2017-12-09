@@ -131,7 +131,7 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	 */
 	@Override
 	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+		this.dateCreated = new Date(dateCreated.getTime());
 	}
 	
 	/**
@@ -165,7 +165,7 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	 */
 	@Override
 	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
+		this.dateChanged = new Date(dateChanged.getTime());
 	}
 	
 	/**

@@ -189,7 +189,7 @@ public class Order extends BaseOpenmrsData {
 	 * @param autoExpireDate The autoExpireDate to set.
 	 */
 	public void setAutoExpireDate(Date autoExpireDate) {
-		this.autoExpireDate = autoExpireDate;
+		this.autoExpireDate = new Date(autoExpireDate.getTime());
 	}
 	
 	/**
@@ -219,7 +219,7 @@ public class Order extends BaseOpenmrsData {
 	 * @since 1.10
 	 */
 	public void setScheduledDate(Date scheduledDate) {
-		this.scheduledDate = scheduledDate;
+		this.scheduledDate = new Date(scheduledDate.getTime());
 	}
 	
 	/**
@@ -325,7 +325,7 @@ public class Order extends BaseOpenmrsData {
 	 * @param dateActivated The dateActivated to set.
 	 */
 	public void setDateActivated(Date dateActivated) {
-		this.dateActivated = dateActivated;
+		this.dateActivated = new Date(dateActivated.getTime());
 	}
 	
 	/**

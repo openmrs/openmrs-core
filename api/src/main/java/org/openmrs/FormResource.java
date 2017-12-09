@@ -294,6 +294,6 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	 * @param dateChanged The date this object was changed
 	 */
 	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
+		this.dateChanged = new Date(dateChanged.getTime());
 	}
 }

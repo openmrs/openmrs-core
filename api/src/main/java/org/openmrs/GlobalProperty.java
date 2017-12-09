@@ -334,6 +334,6 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	 * @param dateChanged The date this object was changed
 	 */
 	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
+		this.dateChanged = new Date(dateChanged.getTime());
 	}
 }

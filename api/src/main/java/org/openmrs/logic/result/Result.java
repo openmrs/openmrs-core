@@ -286,9 +286,9 @@ public class Result extends ArrayList<Result> {
 	 */
 	public Result(Date resultDate, Datatype datatype, Boolean valueBoolean, Concept valueCoded, Date valueDatetime,
 	    Double valueNumeric, String valueText, Object object) {
-		this.resultDatetime = resultDate;
+		this.resultDatetime = new Date(resultDate.getTime());
 		this.valueNumeric = valueNumeric;
-		this.valueDatetime = valueDatetime;
+		this.valueDatetime = new Date(valueDatetime.getTime());
 		this.valueCoded = valueCoded;
 		this.valueText = valueText;
 		this.valueBoolean = valueBoolean;
@@ -324,7 +324,7 @@ public class Result extends ArrayList<Result> {
 	 * @param resultDatetime
 	 */
 	public void setResultDate(Date resultDatetime) {
-		this.resultDatetime = resultDatetime;
+		this.resultDatetime = new Date(resultDatetime.getTime());
 	}
 	
 	/**
@@ -360,7 +360,7 @@ public class Result extends ArrayList<Result> {
 	 * @param valueDatetime
 	 */
 	public void setValueDatetime(Date valueDatetime) {
-		this.valueDatetime = valueDatetime;
+		this.valueDatetime = new Date(valueDatetime.getTime());
 	}
 	
 	/**
