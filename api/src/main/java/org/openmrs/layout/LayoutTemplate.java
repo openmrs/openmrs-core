@@ -90,7 +90,7 @@ public abstract class LayoutTemplate {
 				}
 				
 				if (ret == null) {
-					ret = new Vector<>();
+					ret = new ArrayList<>();
 				}
 				
 				if (i == 0 && idxCurr > 0) {
@@ -145,7 +145,7 @@ public abstract class LayoutTemplate {
 		} else if (line != null && line.length() > 0) {
 			// looks like we have a single token on a line by itself
 			if (ret == null) {
-				ret = new Vector<>();
+				ret = new ArrayList<>();
 			}
 			Map<String, String> currToken = new HashMap<>();
 			
@@ -177,7 +177,7 @@ public abstract class LayoutTemplate {
 		if (this.lineByLineFormat != null) {
 			for (String line : this.lineByLineFormat) {
 				if (ret == null) {
-					ret = new Vector<>();
+					ret = new ArrayList<>();
 				}
 				String tokenizedLine = replaceTokens(line);
 				String[] nonTokens = tokenizedLine.split(LAYOUT_TOKEN);

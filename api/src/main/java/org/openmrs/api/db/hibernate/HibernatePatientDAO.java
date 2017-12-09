@@ -389,7 +389,7 @@ public class HibernatePatientDAO implements PatientDAO {
         @Override
 	public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) {
 		List<Patient> patients = new ArrayList<>();
-		List<Integer> patientIds = new Vector<>();
+		List<Integer> patientIds = new ArrayList<>();
 
 		if (!attributes.isEmpty()) {
 

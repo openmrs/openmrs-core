@@ -705,7 +705,7 @@ public class ModuleFactory {
 					String extId = ext.getExtensionId();
 					List<Extension> tmpExtensions = moduleExtensionMap.get(extId);
 					if (tmpExtensions == null) {
-						tmpExtensions = new Vector<>();
+						tmpExtensions = new ArrayList<>();
 						moduleExtensionMap.put(extId, tmpExtensions);
 					}
 					
@@ -728,7 +728,7 @@ public class ModuleFactory {
 					// Get existing extensions, and append the ones from the new module
 					List<Extension> extensions = getExtensionMap().get(moduleExtensionEntry.getKey());
 					if (extensions == null) {
-						extensions = new Vector<>();
+						extensions = new ArrayList<>();
 						getExtensionMap().put(moduleExtensionEntry.getKey(), extensions);
 					}
 					for (Extension ext : sortedModuleExtensions) {
