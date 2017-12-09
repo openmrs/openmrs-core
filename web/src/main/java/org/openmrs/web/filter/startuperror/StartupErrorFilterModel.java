@@ -19,7 +19,7 @@ import org.openmrs.web.filter.update.UpdateFilter;
  * the {@link StartupFilter}.
  */
 public class StartupErrorFilterModel {
-
+	
 	public Throwable errorAtStartup = null;
 	
 	public String stacktrace = null;
