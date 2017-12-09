@@ -152,7 +152,7 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	 */
 	@Override
 	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+		this.dateCreated = new Date(dateCreated.getTime());
 	}
 	
 	/**

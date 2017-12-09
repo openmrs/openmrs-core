@@ -67,7 +67,7 @@ public class LoginCredential extends BaseOpenmrsObject implements OpenmrsObject 
 	 * @param dateChanged the dateChanged to set
 	 */
 	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
+		this.dateChanged = new Date(dateChanged.getTime());
 	}
 	
 	/**

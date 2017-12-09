@@ -72,7 +72,7 @@ public class EncounterSearchCriteriaBuilder {
      * @return this builder instance
      */
     public EncounterSearchCriteriaBuilder setFromDate(Date fromDate) {
-        this.fromDate = fromDate;
+        this.fromDate = new Date(fromDate.getTime());
         return this;
     }
 
@@ -81,7 +81,7 @@ public class EncounterSearchCriteriaBuilder {
      * @return this builder instance
      */
     public EncounterSearchCriteriaBuilder setToDate(Date toDate) {
-        this.toDate = toDate;
+        this.toDate = new Date(toDate.getTime());
         return this;
     }
 
@@ -90,7 +90,7 @@ public class EncounterSearchCriteriaBuilder {
      * @return this builder instance
      */
     public EncounterSearchCriteriaBuilder setDateChanged(Date dateChanged) {
-        this.dateChanged = dateChanged;
+        this.dateChanged = new Date(dateChanged.getTime());
         return this;
     }
 

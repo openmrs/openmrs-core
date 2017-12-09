@@ -86,7 +86,7 @@ public class AlertRecipient extends BaseOpenmrsObject {
 	 * @param dateChanged The date this alert was changed
 	 */
 	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
+		this.dateChanged = new Date(dateChanged.getTime());
 	}
 	
 	// @override

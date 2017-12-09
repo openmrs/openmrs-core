@@ -150,7 +150,7 @@ public class Relationship extends BaseChangeableOpenmrsData {
 	 * @param startDate relationship's start date.
 	 */
 	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+		this.startDate = new Date(startDate.getTime());
 	}
 	
 	/**
@@ -167,7 +167,7 @@ public class Relationship extends BaseChangeableOpenmrsData {
 	 * @param endDate relationship's end date.
 	 */
 	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+		this.endDate = new Date(endDate.getTime());
 	}
 	
 	@Override

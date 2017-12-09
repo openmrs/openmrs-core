@@ -141,7 +141,7 @@ public class Message implements Serializable {
 	}
 	
 	public void setSentDate(Date sentDate) {
-		this.sentDate = sentDate;
+		this.sentDate = new Date(sentDate.getTime());
 	}
 	
 	public Date getSentDate() {

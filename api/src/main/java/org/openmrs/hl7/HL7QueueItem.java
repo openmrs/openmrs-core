@@ -42,7 +42,7 @@ public abstract class HL7QueueItem extends BaseOpenmrsObject {
 	 * @param dateCreated The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+		this.dateCreated = new Date(dateCreated.getTime());
 	}
 	
 	/**

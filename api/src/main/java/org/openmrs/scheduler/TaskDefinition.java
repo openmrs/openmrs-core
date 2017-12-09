@@ -146,7 +146,7 @@ public class TaskDefinition extends BaseChangeableOpenmrsMetadata {
 	 * @param startTime start time for the task
 	 */
 	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
+		this.startTime = new Date(startTime.getTime());
 	}
 	
 	/**
@@ -164,7 +164,7 @@ public class TaskDefinition extends BaseChangeableOpenmrsMetadata {
 	 * @param lastExecutionTime last execution time
 	 */
 	public void setLastExecutionTime(Date lastExecutionTime) {
-		this.lastExecutionTime = lastExecutionTime;
+		this.lastExecutionTime = new Date(lastExecutionTime.getTime());
 	}
 	
 	/**

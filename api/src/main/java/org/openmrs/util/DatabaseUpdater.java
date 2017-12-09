@@ -520,7 +520,7 @@ public class DatabaseUpdater {
 		 * @param ranDate the ranDate to set
 		 */
 		public void setRanDate(Date ranDate) {
-			this.ranDate = ranDate;
+			this.ranDate = new Date(ranDate.getTime());
 		}
 		
 		/**

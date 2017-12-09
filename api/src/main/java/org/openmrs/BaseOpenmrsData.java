@@ -98,7 +98,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 */
 	@Override
 	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+		this.dateCreated = new Date(dateCreated.getTime());
 	}
 	
 	/**
@@ -138,7 +138,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	@Override
 	@Deprecated
 	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
+		this.dateChanged = new Date(dateChanged.getTime());
 	}
 	
 	/**
@@ -181,7 +181,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	 */
 	@Override
 	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
+		this.dateVoided = new Date(dateVoided.getTime());
 	}
 	
 	/**

@@ -131,7 +131,7 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	 */
 	@Override
 	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+		this.dateCreated = new Date(dateCreated.getTime());
 	}
 	
 	/**
@@ -145,7 +145,7 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	 * @param dateToExpire The date To Expire this alert
 	 */
 	public void setDateToExpire(Date dateToExpire) {
-		this.dateToExpire = dateToExpire;
+		this.dateToExpire = new Date(dateToExpire.getTime());
 	}
 	
 	/**
@@ -233,7 +233,7 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	 */
 	@Override
 	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
+		this.dateChanged = new Date(dateChanged.getTime());
 	}
 	
 	/**

@@ -266,7 +266,7 @@ public class PersonMergeLogData {
 	}
 	
 	public void setPriorDateOfBirth(Date priorDateOfBirth) {
-		this.priorDateOfBirth = priorDateOfBirth;
+		this.priorDateOfBirth = new Date(priorDateOfBirth.getTime());
 	}
 	
 	public boolean isPriorDateOfBirthEstimated() {
@@ -282,7 +282,7 @@ public class PersonMergeLogData {
 	}
 	
 	public void setPriorDateOfDeath(Date priorDateOfDeath) {
-		this.priorDateOfDeath = priorDateOfDeath;
+		this.priorDateOfDeath = new Date(priorDateOfDeath.getTime());
 	}
 	
 	public Boolean getPriorDateOfDeathEstimated() {

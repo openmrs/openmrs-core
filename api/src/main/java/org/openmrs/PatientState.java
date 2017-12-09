@@ -156,7 +156,7 @@ public class PatientState extends BaseChangeableOpenmrsData implements java.io.S
 	}
 	
 	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+		this.endDate = new Date(endDate.getTime());
 	}
 	
 	public Date getStartDate() {
@@ -164,7 +164,7 @@ public class PatientState extends BaseChangeableOpenmrsData implements java.io.S
 	}
 	
 	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+		this.startDate = new Date(startDate.getTime());
 	}
 	
 	/**

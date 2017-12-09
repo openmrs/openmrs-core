@@ -313,7 +313,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 	}
 	
 	public void setDateCompleted(Date dateCompleted) {
-		this.dateCompleted = dateCompleted;
+		this.dateCompleted = new Date(dateCompleted.getTime());
 	}
 	
 	public Date getDateEnrolled() {
@@ -321,7 +321,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 	}
 	
 	public void setDateEnrolled(Date dateEnrolled) {
-		this.dateEnrolled = dateEnrolled;
+		this.dateEnrolled = new Date(dateEnrolled.getTime());
 	}
 	
 	public Patient getPatient() {

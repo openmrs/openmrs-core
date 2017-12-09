@@ -112,7 +112,7 @@ public class Schedule {
 	public Schedule(String name, String description, Date startTime, long repeatInterval) {
 		this.name = name;
 		this.description = description;
-		this.startTime = startTime;
+		this.startTime = new Date(startTime.getTime());
 		this.repeatInterval = repeatInterval;
 		this.dateFormatter = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
 	}
@@ -187,7 +187,7 @@ public class Schedule {
 	 * @param startTime start time for the task
 	 */
 	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
+		this.startTime = new Date(startTime.getTime());
 	}
 	
 	/**

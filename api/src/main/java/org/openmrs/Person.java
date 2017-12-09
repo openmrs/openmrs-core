@@ -202,7 +202,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @param birthdate person's date of birth
 	 */
 	public void setBirthdate(Date birthdate) {
-		this.birthdate = birthdate;
+		this.birthdate = new Date(birthdate.getTime());
 	}
 	
 	/**
@@ -242,7 +242,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @param birthtime person's time of birth
 	 */
 	public void setBirthtime(Date birthtime) {
-		this.birthtime = birthtime;
+		this.birthtime = new Date(birthtime.getTime());
 	}
 	
 	/**
@@ -305,7 +305,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @param deathDate date of person's death
 	 */
 	public void setDeathDate(Date deathDate) {
-		this.deathDate = deathDate;
+		this.deathDate = new Date(deathDate.getTime());
 		if (deathDate != null) {
 			setDead(true);
 		}
@@ -948,7 +948,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 	
 	public void setPersonDateChanged(Date dateChanged) {
-		this.personDateChanged = dateChanged;
+		this.personDateChanged = new Date(dateChanged.getTime());
 		this.setDateChanged(dateChanged);
 	}
 	
@@ -966,7 +966,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 	
 	public void setPersonDateCreated(Date dateCreated) {
-		this.personDateCreated = dateCreated;
+		this.personDateCreated = new Date(dateCreated.getTime());
 		this.setDateCreated(dateCreated);
 	}
 	
@@ -975,7 +975,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 	
 	public void setPersonDateVoided(Date dateVoided) {
-		this.personDateVoided = dateVoided;
+		this.personDateVoided = new Date(dateVoided.getTime());
 		this.setDateVoided(dateVoided);
 	}
 	
