@@ -56,6 +56,7 @@ public class FilterUtil {
 		if (StringUtils.isNotBlank(username)) {
 			PreparedStatement statement = null;
 			Connection connection = null;
+			ResultSet results = null;
 			try {
 				connection = DatabaseUpdater.getConnection();
 				
@@ -68,7 +69,7 @@ public class FilterUtil {
 					statement.setInt(1, userId);
 					statement.setString(2, OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
 					if (statement.execute()) {
-						ResultSet results = statement.getResultSet();
+						results = statement.getResultSet();
 						if (results.next()) {
 							currentLocale = results.getString(1);
 						}
@@ -88,7 +89,7 @@ public class FilterUtil {
 			}
 			finally {
 				try {
-					if (statement != null && !statement.isClosed()) {
+					if (statement != null) {
 						statement.close();
 					}
 				}
@@ -102,6 +103,14 @@ public class FilterUtil {
 					}
 					catch (SQLException e) {
 						log.debug(DATABASE_CLOSING_ERROR, e);
+					}
+				}
+
+				if (results != null) {
+					try {
+						results.close();
+					} catch (SQLException e) {
+						log.warn("Error while closing ResultSet");
 					}
 				}
 			}
