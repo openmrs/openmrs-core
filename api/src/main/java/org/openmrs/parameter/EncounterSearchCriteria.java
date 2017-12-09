@@ -100,21 +100,21 @@ public class EncounterSearchCriteria {
 	 * @return the minimum date (inclusive) this encounter took place
 	 */
 	public Date getFromDate() {
-		return fromDate;
+		return new Date(fromDate.getTime());
 	}
 
 	/**
 	 * @return the maximum date (exclusive) this encounter took place
 	 */
 	public Date getToDate() {
-		return toDate;
+		return new Date(toDate.getTime());
 	}
 
 	/**
 	 * @return the minimum date this encounter was changed
 	 */
 	public Date getDateChanged() {
-		return dateChanged;
+		return new Date(dateChanged.getTime());
 	}
 
 	/**

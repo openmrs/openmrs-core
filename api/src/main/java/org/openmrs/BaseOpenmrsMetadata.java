@@ -130,7 +130,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 */
 	@Override
 	public Date getDateCreated() {
-		return dateCreated;
+		return new Date(dateCreated.getTime());
 	}
 	
 	/**
@@ -168,7 +168,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@Override
 	@Deprecated
 	public Date getDateChanged() {
-		return dateChanged;
+		return new Date(dateChanged.getTime());
 	}
 	
 	/**
@@ -217,7 +217,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 */
 	@Override
 	public Date getDateRetired() {
-		return dateRetired;
+		return new Date(dateRetired.getTime());
 	}
 	
 	/**

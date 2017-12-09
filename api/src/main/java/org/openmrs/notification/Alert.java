@@ -123,7 +123,7 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	 */
 	@Override
 	public Date getDateCreated() {
-		return dateCreated;
+		return new Date(dateCreated.getTime());
 	}
 	
 	/**
@@ -138,7 +138,7 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	 * @return Returns the date this alert expires
 	 */
 	public Date getDateToExpire() {
-		return dateToExpire;
+		return new Date(dateToExpire.getTime());
 	}
 	
 	/**
@@ -225,7 +225,7 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	 */
 	@Override
 	public Date getDateChanged() {
-		return dateChanged;
+		return new Date(dateChanged.getTime());
 	}
 	
 	/**

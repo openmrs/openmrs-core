@@ -182,7 +182,7 @@ public class Order extends BaseOpenmrsData {
 	 * @return Returns the autoExpireDate.
 	 */
 	public Date getAutoExpireDate() {
-		return autoExpireDate;
+		return new Date(autoExpireDate.getTime());
 	}
 	
 	/**
@@ -211,7 +211,7 @@ public class Order extends BaseOpenmrsData {
 	 * @since 1.10
 	 */
 	public Date getScheduledDate() {
-		return scheduledDate;
+		return new Date(scheduledDate.getTime());
 	}
 	
 	/**
@@ -227,7 +227,7 @@ public class Order extends BaseOpenmrsData {
 	 * @since 1.10
 	 */
 	public Date getDateStopped() {
-		return dateStopped;
+		return new Date(dateStopped.getTime());
 	}
 	
 	/**
@@ -318,7 +318,7 @@ public class Order extends BaseOpenmrsData {
 	 * @return Returns the dateActivated.
 	 */
 	public Date getDateActivated() {
-		return dateActivated;
+		return new Date(dateActivated.getTime());
 	}
 	
 	/**
