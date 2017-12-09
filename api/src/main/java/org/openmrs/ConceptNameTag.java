@@ -121,7 +121,7 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 */
 	@Override
 	public Date getDateCreated() {
-		return dateCreated;
+		return new Date(dateCreated.getTime());
 	}
 	
 	/**
@@ -193,7 +193,7 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 */
 	@Override
 	public Date getDateVoided() {
-		return dateVoided;
+		return new Date(dateVoided.getTime());
 	}
 	
 	/**
@@ -284,7 +284,7 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 */
 	@Override
 	public Date getDateChanged() {
-		return dateChanged;
+		return new Date(dateChanged.getTime());
 	}
 	
 	/**

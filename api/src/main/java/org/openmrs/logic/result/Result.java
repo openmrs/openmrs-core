@@ -402,7 +402,7 @@ public class Result extends ArrayList<Result> {
 	 */
 	public Date getResultDate() {
 		if (isSingleResult()) {
-			return resultDatetime;
+			return new Date(resultDatetime.getTime());
 		}
 		return this.get(0).getResultDate();
 	}
@@ -535,7 +535,7 @@ public class Result extends ArrayList<Result> {
 	public Date toDatetime() {
 		if (isSingleResult()) {
 			if (valueDatetime != null) {
-				return valueDatetime;
+				return new Date(valueDatetime.getTime());
 			}
 			if (datatype == Datatype.TEXT && valueText != null) {
 				try {

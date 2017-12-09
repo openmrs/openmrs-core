@@ -166,7 +166,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 */
 	@Override
 	public Date getDateCreated() {
-		return dateCreated;
+		return new Date(dateCreated.getTime());
 	}
 	
 	/**
@@ -238,7 +238,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 */
 	@Override
 	public Date getDateVoided() {
-		return dateVoided;
+		return new Date(dateVoided.getTime());
 	}
 	
 	/**
@@ -601,7 +601,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 */
 	@Override
 	public Date getDateChanged() {
-		return dateChanged;
+		return new Date(dateChanged.getTime());
 	}
 	
 	/**

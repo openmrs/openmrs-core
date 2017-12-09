@@ -339,7 +339,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @return Returns the obsDatetime.
 	 */
 	public Date getObsDatetime() {
-		return obsDatetime;
+		return new Date(obsDatetime.getTime());
 	}
 	
 	/**
@@ -747,7 +747,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @return Returns the valueDatetime.
 	 */
 	public Date getValueDatetime() {
-		return valueDatetime;
+		return new Date(valueDatetime.getTime());
 	}
 	
 	/**
@@ -764,7 +764,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @since 1.9
 	 */
 	public Date getValueDate() {
-		return valueDatetime;
+		return new Date(valueDatetime.getTime());
 	}
 	
 	/**
@@ -782,7 +782,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @since 1.9
 	 */
 	public Date getValueTime() {
-		return valueDatetime;
+		return new Date(valueDatetime.getTime());
 	}
 	
 	/**
