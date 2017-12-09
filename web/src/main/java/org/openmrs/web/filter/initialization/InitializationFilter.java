@@ -1192,7 +1192,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 		finally {
 			try {
-				if (statement != null && !statement.isClosed()) {
+				if (statement != null) {
 					statement.close();
 				}
 			}
