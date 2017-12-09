@@ -15,7 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Vector;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -340,7 +339,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	                                 boolean includeVoidedObs) throws APIException {
 		
 		if (sort == null) {
-			sort = new Vector<>();
+			sort = new ArrayList<>();
 		}
 		if (sort.isEmpty()) {
 			sort.add("obsDatetime");
@@ -363,7 +362,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	                                 boolean includeVoidedObs, String accessionNumber) throws APIException {
 		
 		if (sort == null) {
-			sort = new Vector<>();
+			sort = new ArrayList<>();
 		}
 		if (sort.isEmpty()) {
 			sort.add("obsDatetime");
@@ -458,7 +457,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<Obs> getObservationsByPerson(Person who) {
-		List<Person> whom = new Vector<>();
+		List<Person> whom = new ArrayList<>();
 		whom.add(who);
 		return Context.getObsService().getObservations(whom, null, null, null, null, null, null, null, null, null, null,
 		    false);

@@ -585,7 +585,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new ArrayList<>();
 		patients.add(patient);
 		
-		return dao.getOrders(null, patients, concepts, new Vector<>(), new Vector<>());
+		return dao.getOrders(null, patients, concepts, new ArrayList<>(), new ArrayList<>());
 	}
 	
 	/**
