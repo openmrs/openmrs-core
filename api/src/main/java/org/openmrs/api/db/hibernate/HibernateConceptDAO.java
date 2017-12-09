@@ -1807,7 +1807,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 		if (concepts.size() == 1) {
 			return concepts.iterator().next();
-		} else if (list.size() == 0) {
+		} else if (list.isEmpty()) {
 			log.warn("No concept found for '" + name + "'");
 		} else {
 			log.warn("Multiple concepts found for '" + name + "'");
