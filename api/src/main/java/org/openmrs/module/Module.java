@@ -29,8 +29,7 @@ import org.w3c.dom.Document;
 /**
  * Generic module class that openmrs manipulates
  *
- * @version 1.0
- */
+ * @version 1.0 */
 public final class Module {
 	
 	private static final Logger log = LoggerFactory.getLogger(Module.class);
