@@ -111,6 +111,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
 		if (devDir != null) {
 			File[] fileList = devDir.listFiles();
+		if (filelist != null) {
 			for (File file : fileList) {
 				if (!file.isDirectory()) {
 					continue;
@@ -120,6 +121,7 @@ public class ModuleClassLoader extends URLClassLoader {
 					Collection<File> files = FileUtils.listFiles(dir, new String[] { "class" }, true);
 					addClassFilePackages(files, dir.getAbsolutePath().length() + 1);
 				}
+			}
 			}
 		} else {
 			for (URL url : urls) {
@@ -206,6 +208,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		try {
 			if (devDir != null) {
 				File[] fileList = devDir.listFiles();
+			if (filelist != null) {
 				for (File file : fileList) {
 					if (!file.isDirectory()) {
 						continue;
@@ -215,6 +218,7 @@ public class ModuleClassLoader extends URLClassLoader {
 						result.add(dir.toURI().toURL());
 						devFolderNames.add(file.getName());
 					}
+				}
 				}
 			}
 		}
