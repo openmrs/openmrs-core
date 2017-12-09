@@ -29,8 +29,7 @@ import org.w3c.dom.Document;
 /**
  * Generic module class that openmrs manipulates
  *
- * @version 1.0
- */
+ * @version 1.0 */
 public final class Module {
 	
 	private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -69,7 +68,7 @@ public final class Module {
 	
 	private List<AdvicePoint> advicePoints = new ArrayList<AdvicePoint>();
 	
-	private Map<String, String> extensionNames = new IdentityHashMap<String, String>();
+	private Map<String, String> extensionNames = new IdentityHashMap<>();
 	
 	private List<Extension> extensions = new ArrayList<Extension>();
 	
