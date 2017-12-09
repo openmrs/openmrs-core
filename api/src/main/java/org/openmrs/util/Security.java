@@ -140,7 +140,6 @@ public class Security {
 	private static String hexString(byte[] block) {
 		StringBuilder buf = new StringBuilder();
 		char[] hexChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-		int len = block.length;
 		int high = 0;
 		int low = 0;
 		for (byte aBlock : block) {
