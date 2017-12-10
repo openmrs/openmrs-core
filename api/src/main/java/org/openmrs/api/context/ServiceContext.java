@@ -612,7 +612,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @return Object that is a proxy for the <code>cls</code> class
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Object> T getService(Class<? extends T> cls) {
+	public <T> T getService(Class<? extends T> cls) {
 		if (log.isTraceEnabled()) {
 			log.trace("Getting service: " + cls);
 		}

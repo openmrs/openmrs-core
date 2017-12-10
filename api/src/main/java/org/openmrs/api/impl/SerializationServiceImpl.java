@@ -101,7 +101,7 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	 *      java.lang.Class)
 	 */
 	@Override
-	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> objectClass,
+	public <T> T deserialize(String serializedObject, Class<? extends T> objectClass,
 	        Class<? extends OpenmrsSerializer> serializerClass) throws SerializationException {
 		
 		// Get appropriate OpenmrsSerializer implementation

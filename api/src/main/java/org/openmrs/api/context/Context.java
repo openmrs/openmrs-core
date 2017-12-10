@@ -928,7 +928,7 @@ public class Context {
 	 * @return The requested Service
 	 * @should return the same object when called multiple times for the same class
 	 */
-	public static <T extends Object> T getService(Class<? extends T> cls) {
+	public static <T> T getService(Class<? extends T> cls) {
 		return getServiceContext().getService(cls);
 	}
 
@@ -1190,7 +1190,7 @@ public class Context {
 	 * @since 1.5
 	 * @see ServiceContext#getRegisteredComponents(Class)
 	 */
-	public static <T extends Object> List<T> getRegisteredComponents(Class<T> type) {
+	public static <T> List<T> getRegisteredComponents(Class<T> type) {
 		return getServiceContext().getRegisteredComponents(type);
 	}
 
