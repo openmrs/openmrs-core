@@ -30,7 +30,6 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -318,11 +317,7 @@ public class OpenmrsUtil {
 		if (!folder.isDirectory()) {
 			return false;
 		}
-
-		if (folder.listFiles() == null){
-			return false;
-		}
-
+		
 		for (File f : folder.listFiles()) {
 			if (f.getName().equals(filename)) {
 				return true;
@@ -903,27 +898,22 @@ public class OpenmrsUtil {
 		if (log.isDebugEnabled()) {
 			log.debug("Deleting directory " + dir.getAbsolutePath());
 		}
-
-
-		Files.list(dir.toPath())
-				.filter(file -> file.toFile().isDirectory())
-				.forEach(file -> {
-					try {
-						deleteDirectory(file.toFile());
-					}
-					catch (IOException e) {
-						log.warn("    directory " + file.toString() + " is null" );
-					}
-					boolean success = file.toFile().delete();
-						if (log.isDebugEnabled()) {
-							log.debug("   deleting " + file.toFile().getName() + " : " + (success ? "ok" : "failed"));
-						}
-
-						if (!success) {
-							file.toFile().deleteOnExit();
-						}
-				});
-
+		
+		File[] fileList = dir.listFiles();
+		for (File f : fileList) {
+			if (f.isDirectory()) {
+				deleteDirectory(f);
+			}
+			boolean success = f.delete();
+			
+			if (log.isDebugEnabled()) {
+				log.debug("   deleting " + f.getName() + " : " + (success ? "ok" : "failed"));
+			}
+			
+			if (!success) {
+				f.deleteOnExit();
+			}
+		}
 		
 		boolean success = dir.delete();
 		
@@ -2200,5 +2190,5 @@ public class OpenmrsUtil {
 	public static Set<String> getDeclaredFields(Class<?> clazz) {
 		return Arrays.asList(clazz.getDeclaredFields()).stream().map(f -> f.getName()).collect(Collectors.toSet());
 	}
-
+	
 }
