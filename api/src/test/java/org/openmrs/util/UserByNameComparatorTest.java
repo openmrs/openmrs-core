@@ -63,6 +63,5 @@ public class UserByNameComparatorTest {
 		Assert.assertTrue("Expected user2 to be the second in the sorted user list but wasn't", user2.equals(it.next()));
 		Assert.assertTrue("Expected user3 to be the third in the sorted user list but wasn't", user3.equals(it.next()));
 		Assert.assertTrue("Expected user4 to be the fourth in the sorted user list but wasn't", user4.equals(it.next()));
-		;
 	}
 }
