@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CustomDatatypeUtil {
 	
-	private static Logger log = LoggerFactory.getLogger(CustomDatatypeUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(CustomDatatypeUtil.class);
 	
 	/**
 	 * @param descriptor
@@ -163,7 +163,7 @@ public class CustomDatatypeUtil {
 	public static <T extends AttributeType<?>, U> Map<T, String> getValueReferences(Map<T, U> datatypeValues) {
 		Map<T, String> serializedAttributeValues = null;
 		if (datatypeValues != null) {
-			serializedAttributeValues = new HashMap<T, String>();
+			serializedAttributeValues = new HashMap<>();
 			for (Map.Entry<T, U> e : datatypeValues.entrySet()) {
 				T vat = e.getKey();
 				CustomDatatype<U> customDatatype = (CustomDatatype<U>) getDatatype(vat);
@@ -184,7 +184,7 @@ public class CustomDatatypeUtil {
 	 * @return fully-qualified classnames of all registered datatypes
 	 */
 	public static List<String> getDatatypeClassnames() {
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 		for (Class<?> c : Context.getDatatypeService().getAllDatatypeClasses()) {
 			ret.add(c.getName());
 		}
@@ -195,7 +195,7 @@ public class CustomDatatypeUtil {
 	 * @return full-qualified classnames of all registered handlers
 	 */
 	public static List<String> getHandlerClassnames() {
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 		for (Class<?> c : Context.getDatatypeService().getAllHandlerClasses()) {
 			ret.add(c.getName());
 		}

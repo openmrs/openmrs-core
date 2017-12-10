@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
  */
 public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(WorkflowCollectionEditor.class);
 	
 	public WorkflowCollectionEditor() {
 	}
@@ -69,8 +69,8 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 			catch (Exception ex) {}
 			
 			String[] conceptIds = text.split(" ");
-			Set<ProgramWorkflow> oldSet = program == null ? new HashSet<ProgramWorkflow>() : program.getAllWorkflows();
-			Set<Integer> newConceptIds = new HashSet<Integer>();
+			Set<ProgramWorkflow> oldSet = program == null ? new HashSet<>() : program.getAllWorkflows();
+			Set<Integer> newConceptIds = new HashSet<>();
 			
 			for (String id : conceptIds) {
 				if (id.trim().length() == 0) {
@@ -81,7 +81,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 			}
 			
 			// go through oldSet and see what we need to keep and what we need to unvoid
-			Set<Integer> alreadyDone = new HashSet<Integer>();
+			Set<Integer> alreadyDone = new HashSet<>();
 			for (ProgramWorkflow pw : oldSet) {
 				if (!newConceptIds.contains(pw.getConcept().getConceptId())) {
 					pw.setRetired(true);

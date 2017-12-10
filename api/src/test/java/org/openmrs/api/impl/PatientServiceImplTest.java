@@ -50,6 +50,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -214,7 +215,7 @@ public class PatientServiceImplTest {
 
     @Test(expected = APIException.class)
     public void getDuplicatePatientsByAttributes_shouldThrowErrorGivenEmptyAttributes() throws Exception {
-        patientService.getDuplicatePatientsByAttributes(Arrays.asList());
+        patientService.getDuplicatePatientsByAttributes(Collections.emptyList());
     }
 
     @Test(expected = APIException.class)
@@ -224,7 +225,8 @@ public class PatientServiceImplTest {
 
     @Test
     public void getDuplicatePatientsByAttributes_shouldCallDaoGivenAttributes() throws Exception {
-        when(patientDaoMock.getDuplicatePatientsByAttributes(anyList())).thenReturn(Arrays.asList(mock(Patient.class)));
+        when(patientDaoMock.getDuplicatePatientsByAttributes(anyList())).thenReturn(
+		        Collections.singletonList(mock(Patient.class)));
         final List<Patient> duplicatePatients = patientService.getDuplicatePatientsByAttributes(Arrays.asList("some attribute", "another attribute"));
         verify(patientDaoMock, times(1)).getDuplicatePatientsByAttributes(anyList());
         Assert.assertEquals(duplicatePatients.size(), 1);

@@ -35,16 +35,16 @@ import liquibase.resource.ResourceAccessor;
  */
 public class BooleanConceptChangeSet implements CustomTaskChange {
 	
-	private static Logger log = LoggerFactory.getLogger(BooleanConceptChangeSet.class);
+	private static final Logger log = LoggerFactory.getLogger(BooleanConceptChangeSet.class);
 	
 	private Integer trueConceptId;
 	
 	private Integer falseConceptId;
 	
 	//string values for boolean concepts
-	private static Map<String, String[]> trueNames = new HashMap<String, String[]>();
+	private static Map<String, String[]> trueNames = new HashMap<>();
 	
-	private static Map<String, String[]> falseNames = new HashMap<String, String[]>();
+	private static Map<String, String[]> falseNames = new HashMap<>();
 	
 	// how to say True and Yes in OpenMRS core languages
 	static {

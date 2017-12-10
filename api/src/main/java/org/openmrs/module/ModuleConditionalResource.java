@@ -24,7 +24,7 @@ public class ModuleConditionalResource {
 	
 	private String openmrsPlatformVersion;
 	
-	private List<ModuleAndVersion> modules = new ArrayList<ModuleAndVersion>();
+	private List<ModuleAndVersion> modules = new ArrayList<>();
 	
 	public String getPath() {
 		return path;

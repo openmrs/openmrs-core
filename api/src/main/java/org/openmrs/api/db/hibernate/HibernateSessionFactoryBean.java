@@ -36,14 +36,14 @@ import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 
 public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	
-	private static Logger log = LoggerFactory.getLogger(HibernateSessionFactoryBean.class);
+	private static final Logger log = LoggerFactory.getLogger(HibernateSessionFactoryBean.class);
 	
-	protected Set<String> mappingResources = new HashSet<String>();
+	protected Set<String> mappingResources = new HashSet<>();
 	
 	/**
 	 * @since 1.9.2, 1.10
 	 */
-	protected Set<String> packagesToScan = new HashSet<String>();
+	protected Set<String> packagesToScan = new HashSet<>();
 	
 	// @since 1.6.3, 1.7.2, 1.8.0, 1.9
 	protected ChainingInterceptor chainingInterceptor = new ChainingInterceptor();
@@ -51,7 +51,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	// @since 1.6.3, 1.7.2, 1.8.0, 1.9
 	// This will be sorted on keys before being used
 	@Autowired(required = false)
-	public Map<String, Interceptor> interceptors = new HashMap<String, Interceptor>();
+	public Map<String, Interceptor> interceptors = new HashMap<>();
 	
 	/**
 	 * Collect the mapping resources for future use because the mappingResources object is defined
@@ -59,9 +59,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	 */
 	@Override
 	public void setMappingResources(String... mappingResources) {
-		for (String resource : mappingResources) {
-			this.mappingResources.add(resource);
-		}
+		Collections.addAll(this.mappingResources, mappingResources);
 		
 		super.setMappingResources(this.mappingResources.toArray(new String[] {}));
 	}
@@ -80,9 +78,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	
 	public Set<String> getModuleMappingResources() {
 		for (Module mod : ModuleFactory.getStartedModules()) {
-			for (String s : mod.getMappingFiles()) {
-				mappingResources.add(s);
-			}
+			mappingResources.addAll(mod.getMappingFiles());
 		}
 		return mappingResources;
 	}
@@ -94,11 +90,9 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	 * @since 1.9.2, 1.10
 	 */
 	public Set<String> getModulePackagesWithMappedClasses() {
-		Set<String> packages = new HashSet<String>();
+		Set<String> packages = new HashSet<>();
 		for (Module module : ModuleFactory.getStartedModules()) {
-			for (String pack : module.getPackagesWithMappedClasses()) {
-				packages.add(pack);
-			}
+			packages.addAll(module.getPackagesWithMappedClasses());
 		}
 		return packages;
 	}
@@ -172,7 +166,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		
 		// make sure all autowired interceptors are put onto our chaining interceptor
 		// sort on the keys so that the devs/modules have some sort of control over the order of the interceptors 
-		List<String> keys = new ArrayList<String>(interceptors.keySet());
+		List<String> keys = new ArrayList<>(interceptors.keySet());
 		Collections.sort(keys);
 		for (String key : keys) {
 			chainingInterceptor.addInterceptor(interceptors.get(key));

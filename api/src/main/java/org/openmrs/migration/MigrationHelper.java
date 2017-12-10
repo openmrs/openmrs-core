@@ -62,7 +62,7 @@ public class MigrationHelper {
 	
 	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
-	protected final static Logger log = LoggerFactory.getLogger(MigrationHelper.class);
+	private static final Logger log = LoggerFactory.getLogger(MigrationHelper.class);
 	
 	static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	
@@ -93,10 +93,7 @@ public class MigrationHelper {
 			
 			return builder.parse(new InputSource(new StringReader(xml)));
 		}
-		catch (IOException ex) {
-			return null;
-		}
-		catch (SAXException e) {
+		catch (IOException | SAXException ex) {
 			return null;
 		}
 	}
@@ -122,7 +119,7 @@ public class MigrationHelper {
 		Random rand = new Random();
 		UserService us = Context.getUserService();
 		
-		List<Node> toAdd = new ArrayList<Node>();
+		List<Node> toAdd = new ArrayList<>();
 		findNodesNamed(document, "user", toAdd);
 		for (Node node : toAdd) {
 			Element e = (Element) node;
@@ -165,7 +162,7 @@ public class MigrationHelper {
 	public static int importLocations(Document document) {
 		int ret = 0;
 		LocationService ls = Context.getLocationService();
-		List<Node> toAdd = new ArrayList<Node>();
+		List<Node> toAdd = new ArrayList<>();
 		findNodesNamed(document, "location", toAdd);
 		for (Node node : toAdd) {
 			Element e = (Element) node;
@@ -199,10 +196,10 @@ public class MigrationHelper {
 		PatientService ps = Context.getPatientService();
 		UserService us = Context.getUserService();
 		PersonService personService = Context.getPersonService();
-		List<Relationship> relsToAdd = new ArrayList<Relationship>();
+		List<Relationship> relsToAdd = new ArrayList<>();
 		Random rand = new Random();
 		for (String s : relationships) {
-			if (s.indexOf(":") >= 0) {
+			if (s.contains(":")) {
 				s = s.substring(s.indexOf(":") + 1);
 			}
 			String[] ss = s.split(",");
@@ -291,9 +288,9 @@ public class MigrationHelper {
 	public static int importProgramsAndStatuses(List<String> programWorkflow) throws ParseException {
 		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		PatientService ps = Context.getPatientService();
-		List<PatientProgram> patientPrograms = new ArrayList<PatientProgram>();
-		Map<String, PatientProgram> knownPatientPrograms = new HashMap<String, PatientProgram>();
-		Map<String, Program> programsByName = new HashMap<String, Program>();
+		List<PatientProgram> patientPrograms = new ArrayList<>();
+		Map<String, PatientProgram> knownPatientPrograms = new HashMap<>();
+		Map<String, Program> programsByName = new HashMap<>();
 		for (Program program : pws.getAllPrograms()) {
 			programsByName.put(program.getConcept().getName(Context.getLocale(), false).getName(), program);
 		}

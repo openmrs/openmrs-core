@@ -452,14 +452,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 			//Empty set so return null
 			return null;
 		}
-		Set<Obs> nonVoided = new LinkedHashSet<Obs>(groupMembers);
-		Iterator<Obs> i = nonVoided.iterator();
-		while (i.hasNext()) {
-			Obs obs = i.next();
-			if (obs.getVoided()) {
-				i.remove();
-			}
-		}
+		Set<Obs> nonVoided = new LinkedHashSet<>(groupMembers);
+		nonVoided.removeIf(BaseOpenmrsData::getVoided);
 		return nonVoided;
 	}
 	
@@ -498,7 +492,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 		}
 		
 		if (getGroupMembers() == null) {
-			groupMembers = new HashSet<Obs>();
+			groupMembers = new HashSet<>();
 		}
 		
 		// a quick sanity check to make sure someone isn't adding
@@ -542,7 +536,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @return Set&lt;Obs&gt;
 	 */
 	public Set<Obs> getRelatedObservations() {
-		Set<Obs> ret = new HashSet<Obs>();
+		Set<Obs> ret = new HashSet<>();
 		if (this.isObsGrouping()) {
 			ret.addAll(this.getGroupMembers());
 			Obs parentObs = this;
@@ -987,8 +981,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 				if (getValueDrug() != null) {
 					return getValueDrug().getFullName(locale);
 				} else {
-					ConceptName valueCodedName = getValueCodedName();
-					if (valueCodedName != null) {
+					ConceptName codedName = getValueCodedName();
+					if (codedName != null) {
 						return getValueCoded().getName(locale, false).getName();
 					} else {
 						ConceptName fallbackName = getValueCoded().getName();
@@ -1025,10 +1019,10 @@ public class Obs extends BaseChangeableOpenmrsData {
 			} else if ("ST".equals(abbrev)) {
 				return getValueText();
 			} else if ("ED".equals(abbrev) && getValueComplex() != null) {
-				String[] valueComplex = getValueComplex().split("\\|");
-				for (int i = 0; i < valueComplex.length; i++) {
-					if (StringUtils.isNotEmpty(valueComplex[i])) {
-						return valueComplex[i].trim();
+				String[] valuesComplex = getValueComplex().split("\\|");
+				for (String value : valuesComplex) {
+					if (StringUtils.isNotEmpty(value)) {
+						return value.trim();
 					}
 				}
 			}
@@ -1070,10 +1064,10 @@ public class Obs extends BaseChangeableOpenmrsData {
 		// returns the title portion of the valueComplex
 		// which is everything before the first bar '|' character.
 		if (getValueComplex() != null) {
-			String[] valueComplex = getValueComplex().split("\\|");
-			for (int i = 0; i < valueComplex.length; i++) {
-				if (StringUtils.isNotEmpty(valueComplex[i])) {
-					return valueComplex[i].trim();
+			String[] valuesComplex = getValueComplex().split("\\|");
+			for (String value : valuesComplex) {
+				if (StringUtils.isNotEmpty(value)) {
+					return value.trim();
 				}
 			}
 		}

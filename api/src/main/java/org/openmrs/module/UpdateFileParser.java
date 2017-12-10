@@ -10,8 +10,8 @@
 package org.openmrs.module;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,7 +32,7 @@ import org.xml.sax.InputSource;
  */
 public class UpdateFileParser {
 	
-	private static Logger log = LoggerFactory.getLogger(UpdateFileParser.class);
+	private static final Logger log = LoggerFactory.getLogger(UpdateFileParser.class);
 	
 	private String content;
 	
@@ -159,7 +159,7 @@ public class UpdateFileParser {
 	 * @return
 	 */
 	private static List<String> validConfigVersions() {
-		List<String> versions = new Vector<String>();
+		List<String> versions = new ArrayList<>();
 		versions.add("1.0");
 		versions.add("1.1");
 		return versions;

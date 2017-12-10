@@ -12,7 +12,6 @@ package org.openmrs.module;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
@@ -59,7 +57,7 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  */
 public class ModuleUtil {
 	
-	private static Logger log = LoggerFactory.getLogger(ModuleUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(ModuleUtil.class);
 	
 	/**
 	 * Start up the module system with the given properties.
@@ -80,7 +78,7 @@ public class ModuleUtil {
 			log.debug("Starting all modules in this list: " + moduleListString);
 			
 			String[] moduleArray = moduleListString.split(" ");
-			List<File> modulesToLoad = new Vector<File>();
+			List<File> modulesToLoad = new ArrayList<>();
 			
 			for (String modulePath : moduleArray) {
 				if (modulePath != null && modulePath.length() > 0) {
@@ -149,9 +147,8 @@ public class ModuleUtil {
 	 * Stops the module system by calling stopModule for all modules that are currently started
 	 */
 	public static void shutdown() {
-		
-		List<Module> modules = new Vector<Module>();
-		modules.addAll(ModuleFactory.getStartedModules());
+
+		List<Module> modules = new ArrayList<>(ModuleFactory.getStartedModules());
 		
 		for (Module mod : modules) {
 			if (log.isDebugEnabled()) {
@@ -192,9 +189,6 @@ public class ModuleUtil {
 		try {
 			outputStream = new FileOutputStream(file);
 			OpenmrsUtil.copyFile(inputStream, outputStream);
-		}
-		catch (FileNotFoundException e) {
-			throw new ModuleException("Can't create module file for " + filename, e);
 		}
 		catch (IOException e) {
 			throw new ModuleException("Can't create module file for " + filename, e);
@@ -423,8 +417,8 @@ public class ModuleUtil {
 				return 0;
 			}
 			
-			List<String> versions = new Vector<String>();
-			List<String> values = new Vector<String>();
+			List<String> versions = new ArrayList<>();
+			List<String> values = new ArrayList<>();
 			String separator = "-";
 			
 			// strip off any qualifier e.g. "-SNAPSHOT"
@@ -534,10 +528,7 @@ public class ModuleUtil {
 		catch (MalformedURLException mue) {
 			throw mue;
 		}
-		catch (IOException ioe) {
-			throw new MalformedURLException("Cannot convert: " + file.getName() + " to url");
-		}
-		catch (NoSuchMethodError nsme) {
+		catch (IOException | NoSuchMethodError ioe) {
 			throw new MalformedURLException("Cannot convert: " + file.getName() + " to url");
 		}
 	}
@@ -860,7 +851,7 @@ public class ModuleUtil {
 	public static AbstractRefreshableApplicationContext refreshApplicationContext(AbstractRefreshableApplicationContext ctx,
 	        boolean isOpenmrsStartup, Module startedModule) {
 		//notify all started modules that we are about to refresh the context
-		Set<Module> startedModules = new LinkedHashSet<Module>(ModuleFactory.getStartedModulesInOrder());
+		Set<Module> startedModules = new LinkedHashSet<>(ModuleFactory.getStartedModulesInOrder());
 		for (Module module : startedModules) {
 			try {
 				if (module.getModuleActivator() != null) {
@@ -992,7 +983,7 @@ public class ModuleUtil {
 		}
 		
 		// make a copy of the constant so we can modify the list
-		Map<String, String> coreModules = new HashMap<String, String>(ModuleConstants.CORE_MODULES);
+		Map<String, String> coreModules = new HashMap<>(ModuleConstants.CORE_MODULES);
 		
 		Collection<Module> startedModules = ModuleFactory.getStartedModulesMap().values();
 		
@@ -1036,7 +1027,7 @@ public class ModuleUtil {
 	 */
 	public static List<String> getMandatoryModules() {
 		
-		List<String> mandatoryModuleIds = new ArrayList<String>();
+		List<String> mandatoryModuleIds = new ArrayList<>();
 		
 		try {
 			List<GlobalProperty> props = Context.getAdministrationService().getGlobalPropertiesBySuffix(".mandatory");
@@ -1128,7 +1119,7 @@ public class ModuleUtil {
 			return Collections.<String> emptySet();
 		}
 		
-		Set<String> packagesProvided = new HashSet<String>();
+		Set<String> packagesProvided = new HashSet<>();
 		
 		JarFile jar = null;
 		try {

@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public class TaskThreadedInitializationWrapper implements Task {
 	
 	// Logger 
-	private Logger log = LoggerFactory.getLogger(TaskThreadedInitializationWrapper.class);
+	private static final Logger log = LoggerFactory.getLogger(TaskThreadedInitializationWrapper.class);
 	
 	private Task task;
 	

@@ -33,7 +33,7 @@ public class LoggingAdvice implements MethodInterceptor {
 	 * Logger for this class. Uses the name "org.openmrs.api" so that it seems to fit into the
 	 * log4j.xml configuration
 	 */
-	protected static final Logger log = LoggerFactory.getLogger("org.openmrs.api");
+	private static final Logger log = LoggerFactory.getLogger("org.openmrs.api");
 	
 	/**
 	 * List of all method name prefixes that result in INFO-level log messages
@@ -85,7 +85,7 @@ public class LoggingAdvice implements MethodInterceptor {
 				Object[] values = invocation.getArguments();
 				
 				// change the annotation array of indexes to a list of indexes to ignore
-				List<Integer> argsToIgnore = new ArrayList<Integer>();
+				List<Integer> argsToIgnore = new ArrayList<>();
 				if (loggingAnnotation != null && loggingAnnotation.ignoredArgumentIndexes().length > 0) {
 					for (int argIndexToIgnore : loggingAnnotation.ignoredArgumentIndexes()) {
 						argsToIgnore.add(argIndexToIgnore);
@@ -146,7 +146,7 @@ public class LoggingAdvice implements MethodInterceptor {
 				
 				// only append execution time info if we're in debug mode
 				if (log.isDebugEnabled()) {
-					output.append(". execution time: " + (System.currentTimeMillis() - startTime)).append(" ms");
+					output.append(". execution time: ").append(System.currentTimeMillis() - startTime).append(" ms");
 				}
 				
 				// print the string as either debug or info

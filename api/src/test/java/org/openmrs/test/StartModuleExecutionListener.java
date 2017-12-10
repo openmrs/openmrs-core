@@ -46,14 +46,14 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  */
 public class StartModuleExecutionListener extends AbstractTestExecutionListener {
 	
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(StartModuleExecutionListener.class);
 	
 	// stores the last class that restarted the module system because we only 
 	// want it restarted once per class, not once per method
 	private static String lastClassRun = "";
 	
 	// storing the bean definitions that have been manually removed from the context
-	private Map<String, BeanDefinition> filteredDefinitions = new HashMap<String, BeanDefinition>();
+	private Map<String, BeanDefinition> filteredDefinitions = new HashMap<>();
 	
 	/**
 	 * called before @BeforeTransaction methods
@@ -118,7 +118,7 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 		// first looking at a context loading the bean definitions "now"
 		GenericApplicationContext ctx = new GenericApplicationContext();
 		(new XmlBeanDefinitionReader(ctx)).loadBeanDefinitions("classpath:applicationContext-service.xml");
-		Set<String> filteredBeanNames = new HashSet<String>();
+		Set<String> filteredBeanNames = new HashSet<>();
 		for (String beanName : ctx.getBeanDefinitionNames()) {
 			if (beanName.startsWith("openmrsProfile")) {
 				filteredBeanNames.add(beanName);
@@ -127,7 +127,7 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 		ctx.close();
 		
 		// then looking at the context as it loaded the bean definitions before the module(s) were started
-		Set<String> originalBeanNames = new HashSet<String>();
+		Set<String> originalBeanNames = new HashSet<>();
 		for (String beanName : ((GenericApplicationContext) context).getBeanDefinitionNames()) {
 			if (beanName.startsWith("openmrsProfile")) {
 				originalBeanNames.add(beanName);

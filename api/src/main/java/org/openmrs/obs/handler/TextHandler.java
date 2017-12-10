@@ -39,7 +39,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	private static final String[] supportedViews = { ComplexObsHandler.TEXT_VIEW, ComplexObsHandler.RAW_VIEW,
 	        ComplexObsHandler.URI_VIEW };
 	
-	public static final Logger log = LoggerFactory.getLogger(TextHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(TextHandler.class);
 	
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally

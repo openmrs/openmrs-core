@@ -116,7 +116,7 @@ public class HL7Constants {
 	public static final int MIGRATION_MAX_BATCH_SIZE = 2000;
 	
 	// List of datatypes that do not require complex definitions
-	public static final Map<String, String> simpleDatatypes = new HashMap<String, String>();
+	public static final Map<String, String> simpleDatatypes = new HashMap<>();
 	
 	static {
 		simpleDatatypes.put(HL7_TEXT, "xs:string");

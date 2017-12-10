@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @Deprecated
 public class PatientSearchCriteria {
 	
-	private final static Logger log = LoggerFactory.getLogger(PatientSearchCriteria.class);
+	private static final Logger log = LoggerFactory.getLogger(PatientSearchCriteria.class);
 	
 	private final SessionFactory sessionFactory;
 	
@@ -146,7 +146,7 @@ public class PatientSearchCriteria {
 		addAliasForIdentifiers(criteria);
 		criteria.add(Restrictions.disjunction().add(prepareCriterionForName(query, includeVoided)).add(
 		    prepareCriterionForAttribute(query, includeVoided)).add(
-		    prepareCriterionForIdentifier(query, new ArrayList<PatientIdentifierType>(), false, includeVoided)));
+		    prepareCriterionForIdentifier(query, new ArrayList<>(), false, includeVoided)));
 		if (!includeVoided) {
 			criteria.add(Restrictions.eq("voided", false));
 		}
@@ -193,7 +193,7 @@ public class PatientSearchCriteria {
 			
 			criteria.add(Restrictions.disjunction().add(prepareCriterionForName(query, true, includeVoided)).add(
 			    prepareCriterionForAttribute(query, includeVoided)).add(
-			    prepareCriterionForIdentifier(query, new ArrayList<PatientIdentifierType>(), false, includeVoided)));
+			    prepareCriterionForIdentifier(query, new ArrayList<>(), false, includeVoided)));
 		}
 		
 		if (!includeVoided) {
@@ -352,7 +352,7 @@ public class PatientSearchCriteria {
 	 */
 	private Criterion splitAndGetSearchPattern(String identifier, String patternSearch) {
 		// split the pattern before replacing in case the user searched on a comma
-		List<String> searchPatterns = new ArrayList<String>();
+		List<String> searchPatterns = new ArrayList<>();
 		// replace the @SEARCH@, etc in all elements
 		for (String pattern : patternSearch.split(",")) {
 			searchPatterns.add(replaceSearchString(pattern, identifier));
@@ -445,7 +445,7 @@ public class PatientSearchCriteria {
 		query = query.replace(",", " ");
 		String[] queryPartArray = query.split(" ");
 		
-		List<String> queryPartList = new ArrayList<String>();
+		List<String> queryPartList = new ArrayList<>();
 		for (String queryPart : queryPartArray) {
 			if (queryPart.trim().length() > 0) {
 				queryPartList.add(queryPart);

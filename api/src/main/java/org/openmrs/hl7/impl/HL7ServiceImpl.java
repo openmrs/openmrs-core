@@ -82,7 +82,7 @@ import ca.uhn.hl7v2.parser.GenericParser;
 @Transactional
 public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(HL7ServiceImpl.class);
 	
 	private static HL7ServiceImpl instance;
 	
@@ -422,9 +422,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
  	 * @return error string. User can not be resolveUserId
  	 */
  	private String getFindingUserErrorMessage(String idNum, String fName, String gName) {
- 		String cantFindUser = "Error resolving user with id '" + idNum + "' family name '" + fName
- 				  + "' and given name '" + gName + "'";
- 		return cantFindUser;
+	    return "Error resolving user with id '" + idNum + "' family name '" + fName
+			      + "' and given name '" + gName + "'";
  	}
 	
 	/**

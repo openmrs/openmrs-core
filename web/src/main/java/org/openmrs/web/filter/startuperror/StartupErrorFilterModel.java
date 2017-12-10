@@ -12,8 +12,6 @@ package org.openmrs.web.filter.startuperror;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.openmrs.web.filter.StartupFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link UpdateFilter} uses this model object to hold all properties that are edited by the
@@ -21,8 +19,6 @@ import org.slf4j.LoggerFactory;
  * the {@link StartupFilter}.
  */
 public class StartupErrorFilterModel {
-	
-	protected static final Logger log = LoggerFactory.getLogger(StartupErrorFilterModel.class);
 	
 	public Throwable errorAtStartup = null;
 	

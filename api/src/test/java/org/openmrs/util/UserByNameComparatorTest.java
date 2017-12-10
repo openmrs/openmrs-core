@@ -47,7 +47,7 @@ public class UserByNameComparatorTest {
 		person4.addName(new PersonName("givenName", "middleNamh", "familyName"));
 		User user4 = new User(person4);
 		
-		List<User> listToSort = new ArrayList<User>();
+		List<User> listToSort = new ArrayList<>();
 		// add the users randomly
 		listToSort.add(user3);
 		listToSort.add(user1);
@@ -55,7 +55,7 @@ public class UserByNameComparatorTest {
 		listToSort.add(user2);
 		
 		// sort the list with userByNameComparator
-		Collections.sort(listToSort, new UserByNameComparator());
+		listToSort.sort(new UserByNameComparator());
 		
 		// make sure that the users are sorted in the expected order
 		Iterator<User> it = listToSort.iterator();

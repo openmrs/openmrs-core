@@ -85,7 +85,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class PatientServiceImpl extends BaseOpenmrsService implements PatientService {
 	
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
 	
 	private PatientDAO dao;
 	
@@ -282,8 +282,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			throw new InsufficientIdentifiersException("At least one nonvoided Patient Identifier is required");
 		}
 
-		final List<PatientIdentifier> patientIdentifiers = new ArrayList<>();
-		patientIdentifiers.addAll(patient.getIdentifiers());
+		final List<PatientIdentifier> patientIdentifiers = new ArrayList<>(patient.getIdentifiers());
 
 		final Set<String> uniqueIdentifiers = new HashSet<>();
 
@@ -378,15 +377,15 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	        Boolean isPreferred) throws APIException {
 		
 		if (patientIdentifierTypes == null) {
-			patientIdentifierTypes = new Vector<PatientIdentifierType>();
+			patientIdentifierTypes = new ArrayList<>();
 		}
 		
 		if (locations == null) {
-			locations = new Vector<Location>();
+			locations = new ArrayList<>();
 		}
 		
 		if (patients == null) {
-			patients = new Vector<Patient>();
+			patients = new ArrayList<>();
 		}
 		
 		return dao.getPatientIdentifiers(identifier, patientIdentifierTypes, locations, patients, isPreferred);
@@ -685,7 +684,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	private void mergeRelationships(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy all relationships
 		PersonService personService = Context.getPersonService();
-		Set<String> existingRelationships = new HashSet<String>();
+		Set<String> existingRelationships = new HashSet<>();
 		// fill in the existing relationships with hashes
 		for (Relationship rel : personService.getRelationshipsByPerson(preferred)) {
 			existingRelationships.add(relationshipHash(rel, preferred));
@@ -1277,7 +1276,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	public Map<Class<? extends IdentifierValidator>, IdentifierValidator> getIdentifierValidators() {
 		if (identifierValidators == null) {
-			identifierValidators = new LinkedHashMap<Class<? extends IdentifierValidator>, IdentifierValidator>();
+			identifierValidators = new LinkedHashMap<>();
 		}
 		return identifierValidators;
 	}
@@ -1594,7 +1593,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException {
-		List<Patient> patients = new Vector<Patient>();
+		List<Patient> patients = new ArrayList<>();
 		if (StringUtils.isBlank(query)) {
 			return patients;
 		}

@@ -19,7 +19,7 @@ import org.springframework.util.StringUtils;
 
 public class ConceptMapTypeEditor extends PropertyEditorSupport {
 	
-	private final static Logger log = LoggerFactory.getLogger(ConceptMapTypeEditor.class);
+	private static final Logger log = LoggerFactory.getLogger(ConceptMapTypeEditor.class);
 	
 	public ConceptMapTypeEditor() {
 	}

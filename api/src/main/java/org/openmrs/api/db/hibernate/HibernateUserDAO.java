@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,7 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateUserDAO implements UserDAO {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(HibernateUserDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -153,9 +152,8 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public User getUser(Integer userId) {
-		User user = (User) sessionFactory.getCurrentSession().get(User.class, userId);
-		
-		return user;
+
+		return (User) sessionFactory.getCurrentSession().get(User.class, userId);
 	}
 	
 	/**
@@ -180,10 +178,9 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<User> getUsersByRole(Role role) throws DAOException {
-		List<User> users = sessionFactory.getCurrentSession().createCriteria(User.class, "u").createCriteria("roles", "r")
+
+		return (List<User>) sessionFactory.getCurrentSession().createCriteria(User.class, "u").createCriteria("roles", "r")
 		        .add(Restrictions.like("r.role", role.getRole())).addOrder(Order.asc("u.username")).list();
-		
-		return users;
 		
 	}
 	
@@ -404,7 +401,7 @@ public class HibernateUserDAO implements UserDAO {
 		List<User> returnList = query.list();
 		
 		if (!CollectionUtils.isEmpty(returnList)) {
-			Collections.sort(returnList, new UserByNameComparator());
+			returnList.sort(new UserByNameComparator());
 		}
 		
 		return returnList;
@@ -439,7 +436,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public List<User> getUsersByName(String givenName, String familyName, boolean includeRetired) {
-		List<User> users = new Vector<User>();
+		List<User> users = new ArrayList<User>();
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(User.class);
 		crit.createAlias("person", "person");
 		crit.createAlias("person.names", "names");

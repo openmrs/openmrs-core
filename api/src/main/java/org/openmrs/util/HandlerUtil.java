@@ -36,7 +36,7 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 	
 	private static final Logger log = LoggerFactory.getLogger(HandlerUtil.class);
 	
-	private static volatile Map<Key, List<?>> cachedHandlers = new WeakHashMap<HandlerUtil.Key, List<?>>();
+	private static volatile Map<Key, List<?>> cachedHandlers = new WeakHashMap<>();
 	
 	private static class Key {
 		
@@ -90,7 +90,7 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 	}
 	
 	public static void clearCachedHandlers() {
-		cachedHandlers = new WeakHashMap<HandlerUtil.Key, List<?>>();
+		cachedHandlers = new WeakHashMap<>();
 	}
 	
 	/**
@@ -116,7 +116,7 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 			return (List<H>) list;
 		}
 		
-		List<H> handlers = new ArrayList<H>();
+		List<H> handlers = new ArrayList<>();
 		
 		// First get all registered components of the passed class
 		log.debug("Getting handlers of type " + handlerType + (type == null ? "" : " for class " + type.getName()));
@@ -143,15 +143,15 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 		}
 		
 		// Return the list of handlers based on the order specified in the Handler annotation
-		Collections.sort(handlers, new Comparator<H>() {
-			
+		handlers.sort(new Comparator<H>() {
+
 			@Override
 			public int compare(H o1, H o2) {
 				return getOrderOfHandler(o1.getClass()).compareTo(getOrderOfHandler(o2.getClass()));
 			}
 		});
 		
-		Map<Key, List<?>> newCachedHandlers = new WeakHashMap<Key, List<?>>(cachedHandlers);
+		Map<Key, List<?>> newCachedHandlers = new WeakHashMap<>(cachedHandlers);
 		newCachedHandlers.put(new Key(handlerType, type), handlers);
 		cachedHandlers = newCachedHandlers;
 		

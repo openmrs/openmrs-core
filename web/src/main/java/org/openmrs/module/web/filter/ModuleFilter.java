@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ModuleFilter implements Filter {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(ModuleFilter.class);
 	
 	/**
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)

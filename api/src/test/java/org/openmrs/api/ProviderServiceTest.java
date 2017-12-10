@@ -19,7 +19,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -469,10 +468,9 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, service.getCountOfProviders("Hippo").intValue());
 		Person person = Context.getPersonService().getPerson(502);
 		Set<PersonName> names = person.getNames();
-		for (Iterator<PersonName> iterator = names.iterator(); iterator.hasNext();) {
-			PersonName name = iterator.next();
+		for (PersonName name : names) {
 			name.setVoided(true);
-			
+
 		}
 		PersonName personName = new PersonName("Hippot", "A", "B");
 		personName.setPreferred(true);

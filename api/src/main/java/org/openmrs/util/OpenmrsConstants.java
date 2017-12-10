@@ -14,10 +14,10 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Vector;
 
 import org.apache.commons.io.IOUtils;
 import org.openmrs.GlobalProperty;
@@ -178,7 +178,7 @@ public final class OpenmrsConstants {
 	 * @return Collection&lt;String&gt; of words that are ignored
 	 */
 	public static final Collection<String> STOP_WORDS() {
-		List<String> stopWords = new Vector<String>();
+		List<String> stopWords = new ArrayList<>();
 		stopWords.add("A");
 		stopWords.add("AND");
 		stopWords.add("AT");
@@ -200,7 +200,7 @@ public final class OpenmrsConstants {
 	 * @return Map&lt;String, String&gt; of gender character to gender name
 	 */
 	public static final Map<String, String> GENDER() {
-		Map<String, String> genders = new LinkedHashMap<String, String>();
+		Map<String, String> genders = new LinkedHashMap<>();
 		genders.put("M", "Male");
 		genders.put("F", "Female");
 		return genders;
@@ -212,7 +212,7 @@ public final class OpenmrsConstants {
 	 * @return <code>Collection&lt;String&gt;</code> of the auto-assigned roles
 	 */
 	public static final Collection<String> AUTO_ROLES() {
-		List<String> roles = new Vector<String>();
+		List<String> roles = new ArrayList<>();
 		
 		roles.add(RoleConstants.ANONYMOUS);
 		roles.add(RoleConstants.AUTHENTICATED);
@@ -601,7 +601,7 @@ public final class OpenmrsConstants {
 	 * @return List&lt;GlobalProperty&gt; of the core global properties
 	 */
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
-		List<GlobalProperty> props = new Vector<GlobalProperty>();
+		List<GlobalProperty> props = new ArrayList<>();
 		
 		props.add(new GlobalProperty("use_patient_attribute.healthCenter", "false",
 		        "Indicates whether or not the 'health center' attribute is shown when viewing/searching for patients",
@@ -1071,9 +1071,7 @@ public final class OpenmrsConstants {
 		
 		props
 				.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "", "Specifies the uuid of the concept which represents drug other non coded"));
-		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
-			props.add(gp);
-		}
+		props.addAll(ModuleFactory.getGlobalProperties());
 		
 		return props;
 	}
@@ -1091,7 +1089,7 @@ public final class OpenmrsConstants {
 	public static final String CONCEPT_PROPOSAL_REJECT = "REJECT";
 	
 	public static final Collection<String> CONCEPT_PROPOSAL_STATES() {
-		Collection<String> states = new Vector<String>();
+		Collection<String> states = new ArrayList<>();
 		
 		states.add(CONCEPT_PROPOSAL_UNMAPPED);
 		states.add(CONCEPT_PROPOSAL_CONCEPT);
@@ -1173,11 +1171,11 @@ public final class OpenmrsConstants {
 	 * Shortcut booleans used to make some OS specific checks more generic; note the *nix flavored
 	 * check is missing some less obvious choices
 	 */
-	public static final boolean UNIX_BASED_OPERATING_SYSTEM = (OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_LINUX) > -1
-	        || OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_SUNOS) > -1
-	        || OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_FREEBSD) > -1 || OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_OSX) > -1);
+	public static final boolean UNIX_BASED_OPERATING_SYSTEM = (OPERATING_SYSTEM.contains(OPERATING_SYSTEM_LINUX)
+	        || OPERATING_SYSTEM.contains(OPERATING_SYSTEM_SUNOS)
+	        || OPERATING_SYSTEM.contains(OPERATING_SYSTEM_FREEBSD) || OPERATING_SYSTEM.contains(OPERATING_SYSTEM_OSX));
 	
-	public static final boolean WINDOWS_BASED_OPERATING_SYSTEM = OPERATING_SYSTEM.indexOf("Windows") > -1;
+	public static final boolean WINDOWS_BASED_OPERATING_SYSTEM = OPERATING_SYSTEM.contains("Windows");
 	
 	public static final boolean WINDOWS_VISTA_OPERATING_SYSTEM = OPERATING_SYSTEM.equals(OPERATING_SYSTEM_WINDOWS_VISTA);
 	

@@ -78,7 +78,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	private synchronized void populateBeanListsFromContext() {
 		if (datatypeClasses == null) {
 			List<CustomDatatype> datatypeBeans = Context.getRegisteredComponents(CustomDatatype.class);
-			datatypeClasses = new ArrayList<Class<? extends CustomDatatype>>();
+			datatypeClasses = new ArrayList<>();
 			for (CustomDatatype<?> dt : datatypeBeans) {
 				datatypeClasses.add(dt.getClass());
 			}
@@ -86,7 +86,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 		}
 		if (handlerClasses == null) {
 			List<CustomDatatypeHandler> handlerBeans = Context.getRegisteredComponents(CustomDatatypeHandler.class);
-			handlerClasses = new ArrayList<Class<? extends CustomDatatypeHandler>>();
+			handlerClasses = new ArrayList<>();
 			for (CustomDatatypeHandler<?, ?> h : handlerBeans) {
 				handlerClasses.add(h.getClass());
 			}
@@ -115,7 +115,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	@Override
 	@Transactional(readOnly = true)
 	public List<Class<? extends CustomDatatypeHandler>> getHandlerClasses(Class<? extends CustomDatatype<?>> datatype) {
-		List<Class<? extends CustomDatatypeHandler>> ret = new ArrayList<Class<? extends CustomDatatypeHandler>>();
+		List<Class<? extends CustomDatatypeHandler>> ret = new ArrayList<>();
 		for (Class<? extends CustomDatatypeHandler<?, ?>> candidate : getAllHandlerClasses()) {
 			if (datatypeClassHandled(candidate).equals(datatype)) {
 				ret.add(candidate);
@@ -187,7 +187,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 */
 	private synchronized void prioritizeHandlers() {
 		if (prioritizedHandlerClasses == null) {
-			prioritizedHandlerClasses = new LinkedHashMap<Class<? extends CustomDatatype>, Class<? extends CustomDatatypeHandler>>();
+			prioritizedHandlerClasses = new LinkedHashMap<>();
 			for (Class dt : getAllDatatypeClasses()) {
 				List<Class<? extends CustomDatatypeHandler>> handlerClasses = getHandlerClasses(dt);
 				if (handlerClasses == null || handlerClasses.isEmpty()) {

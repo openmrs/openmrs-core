@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
@@ -82,7 +81,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateConceptDAO implements ConceptDAO {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(HibernateConceptDAO.class);
 	
 	private SessionFactory sessionFactory;
 	
@@ -557,7 +556,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 			locale = loc;
 		}
 		
-		LuceneQuery<ConceptName> conceptNameQuery = newConceptNameLuceneQuery(name, !searchOnPhrase, Arrays.asList(locale),
+		LuceneQuery<ConceptName> conceptNameQuery = newConceptNameLuceneQuery(name, !searchOnPhrase,
+				Collections.singletonList(locale),
 		    false, false, classes, null, datatypes, null, null);
 		
 		List<ConceptName> names = conceptNameQuery.list();
@@ -589,7 +589,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		query.append(nameQuery);
 		query.append(")^0.2)");
 		
-		List<String> localeQueries = new ArrayList<String>();
+		List<String> localeQueries = new ArrayList<>();
 		for (Locale locale : locales) {
 			if (searchExactLocale) {
 				localeQueries.add(locale.toString());
@@ -615,7 +615,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		query.append("(");
 		if (searchKeywords) {
 			//Put exact phrase higher
-			query.append(" name:(\"" + escapedName + "\")^0.7");
+			query.append(" name:(\"").append(escapedName).append("\")^0.7");
 			
 			if (!tokenizedName.isEmpty()) {
 				query.append(" OR (");
@@ -637,22 +637,21 @@ public class HibernateConceptDAO implements ConceptDAO {
 				query.append(")^0.3");
 			}
 		} else {
-			query.append(" name:\"" + escapedName + "\"");
+			query.append(" name:\"").append(escapedName).append("\"");
 		}
 		query.append(")");
 		return query;
 	}
 	
 	private List<String> tokenizeConceptName(final String escapedName, final Set<Locale> locales) {
-		List<String> words = new ArrayList<String>();
-		words.addAll(Arrays.asList(escapedName.trim().split(" ")));
+		List<String> words = new ArrayList<>(Arrays.asList(escapedName.trim().split(" ")));
 		
-		Set<String> stopWords = new HashSet<String>();
+		Set<String> stopWords = new HashSet<>();
 		for (Locale locale : locales) {
 			stopWords.addAll(Context.getConceptService().getConceptStopWords(locale));
 		}
 		
-		List<String> tokenizedName = new ArrayList<String>();
+		List<String> tokenizedName = new ArrayList<>();
 		
 		for (String word : words) {
 			word = word.trim();
@@ -830,7 +829,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	private List<Concept> getParents(Concept current) throws DAOException {
-		List<Concept> parents = new Vector<Concept>();
+		List<Concept> parents = new ArrayList<>();
 		if (current != null) {
 			Query query = sessionFactory.getCurrentSession().createQuery(
 			    "from Concept c join c.conceptSets sets where sets.concept = ?").setEntity(0, current);
@@ -854,7 +853,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public Set<Locale> getLocalesOfConceptNames() {
-		Set<Locale> locales = new HashSet<Locale>();
+		Set<Locale> locales = new HashSet<>();
 		
 		Query query = sessionFactory.getCurrentSession().createQuery("select distinct locale from ConceptName");
 		
@@ -1160,7 +1159,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public Map<Integer, String> getConceptUuids() {
-		Map<Integer, String> ret = new HashMap<Integer, String>();
+		Map<Integer, String> ret = new HashMap<>();
 		Query q = sessionFactory.getCurrentSession().createQuery("select conceptId, uuid from Concept");
 		List<Object[]> list = q.list();
 		for (Object[] o : list) {
@@ -1375,8 +1374,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (concept != null) {
 			query.append(" OR concept.conceptId:(").append(concept.getConceptId()).append(")^0.1");
 		} else if (searchDrugConceptNames) {
-			LuceneQuery<ConceptName> conceptNameQuery = newConceptNameLuceneQuery(drugName, searchKeywords, Arrays
-			        .asList(locale), exactLocale, includeRetired, null, null, null, null, null);
+			LuceneQuery<ConceptName> conceptNameQuery = newConceptNameLuceneQuery(drugName, searchKeywords,
+					Collections.singletonList(locale), exactLocale, includeRetired, null, null, null, null, null);
 			List<Object[]> conceptIds = conceptNameQuery.listProjection("concept.conceptId");
 			if (!conceptIds.isEmpty()) {
 				CollectionUtils.transform(conceptIds, new Transformer() {
@@ -1416,7 +1415,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		ListPart<ConceptName> names = query.listPart(start, size);
 		
-		List<ConceptSearchResult> results = new ArrayList<ConceptSearchResult>();
+		List<ConceptSearchResult> results = new ArrayList<>();
 		
 		for (ConceptName name : names.getList()) {
 			results.add(new ConceptSearchResult(phrase, name.getConcept(), name));
@@ -1447,9 +1446,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 			final Set<Locale> searchLocales;
 			
 			if (locales == null) {
-				searchLocales = new HashSet<Locale>(Arrays.asList(Context.getLocale()));
+				searchLocales = new HashSet<Locale>(Collections.singletonList(Context.getLocale()));
 			} else {
-				searchLocales = new HashSet<Locale>(locales);
+				searchLocales = new HashSet<>(locales);
 			}
 			
 			query.append(newConceptNameQuery(phrase, searchKeywords, searchLocales, searchExactLocale));
@@ -1465,7 +1464,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			Collection<ConceptAnswer> answers = answersToConcept.getAnswers(false);
 			
 			if (answers != null && !answers.isEmpty()) {
-				List<Integer> ids = new ArrayList<Integer>();
+				List<Integer> ids = new ArrayList<>();
 				for (ConceptAnswer conceptAnswer : answersToConcept.getAnswers(false)) {
 					ids.add(conceptAnswer.getAnswerConcept().getId());
 				}
@@ -1509,7 +1508,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		
 		List<ConceptMapType> conceptMapTypes = criteria.list();
-		Collections.sort(conceptMapTypes, new ConceptMapTypeComparator());
+		conceptMapTypes.sort(new ConceptMapTypeComparator());
 		
 		return conceptMapTypes;
 	}
@@ -1763,7 +1762,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public List<Concept> getConceptsByName(final String name, final Locale locale, final Boolean exactLocale) {
 		
-		List<Locale> locales = new ArrayList<Locale>();
+		List<Locale> locales = new ArrayList<>();
 		if (locale == null) {
 			locales.add(Context.getLocale());
 		} else {
@@ -1776,10 +1775,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		    null, null, null, null, null);
 		
 		List<ConceptName> names = conceptNameQuery.list();
-		
-		final List<Concept> concepts = new ArrayList<>(transformNamesToConcepts(names));
-		
-		return concepts;
+
+		return new ArrayList<>(transformNamesToConcepts(names));
 	}
 	
 	/**

@@ -15,8 +15,6 @@ import java.util.List;
 
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -33,16 +31,14 @@ import liquibase.resource.ResourceAccessor;
  * carefully review any States marked as final, particularly those also marked as initial
  */
 public class ProgramValidatorChangeSet implements CustomTaskChange {
-	
-	protected final static Logger log = LoggerFactory.getLogger(ProgramValidatorChangeSet.class);
-	
+
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		Connection conn = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
-		List<String> messages = new ArrayList<String>();
+		List<String> messages = new ArrayList<>();
 		
 		// Warn if any states are configured as both initial and terminal
 		StringBuilder message = new StringBuilder();
@@ -79,7 +75,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		query.append(" group by 	w.concept_id, s.initial ");
 		
 		results = DatabaseUtil.executeSQL(conn, query.toString(), true);
-		List<Integer> missingInitial = new ArrayList<Integer>();
+		List<Integer> missingInitial = new ArrayList<>();
 		for (List<Object> row : results) {
 			missingInitial.add(Integer.valueOf(row.get(0).toString()));
 		}

@@ -136,7 +136,7 @@ public class Context {
 
 	// Using "wrapper" (Object array) around UserContext to avoid ThreadLocal
 	// bug in Java 1.5
-	private static final ThreadLocal<Object[] /* UserContext */> userContextHolder = new ThreadLocal<Object[] /* UserContext */>();
+	private static final ThreadLocal<Object[] /* UserContext */> userContextHolder = new ThreadLocal<>();
 
 	private static ServiceContext serviceContext;
 
@@ -246,8 +246,12 @@ public class Context {
 	 */
 	static ServiceContext getServiceContext() {
 		if (serviceContext == null) {
-			log.error("serviceContext is null.  Creating new ServiceContext()");
-			serviceContext = ServiceContext.getInstance();
+			synchronized (Context.class) {
+				if (serviceContext == null) {
+					log.error("serviceContext is null.  Creating new ServiceContext()");
+					serviceContext = ServiceContext.getInstance();
+				}
+			}
 		}
 
 		if (log.isTraceEnabled()) {
@@ -532,26 +536,31 @@ public class Context {
 	 */
 	private static Session getMailSession() {
 		if (mailSession == null) {
-			AdministrationService adminService = getAdministrationService();
+			synchronized (Context.class) {
+				if (mailSession == null) {
+					AdministrationService adminService = getAdministrationService();
 
-			Properties props = new Properties();
-			props.setProperty("mail.transport.protocol", adminService.getGlobalProperty("mail.transport_protocol"));
-			props.setProperty("mail.smtp.host", adminService.getGlobalProperty("mail.smtp_host"));
-			props.setProperty("mail.smtp.port", adminService.getGlobalProperty("mail.smtp_port"));
-			props.setProperty("mail.from", adminService.getGlobalProperty("mail.from"));
-			props.setProperty("mail.debug", adminService.getGlobalProperty("mail.debug"));
-			props.setProperty("mail.smtp.auth", adminService.getGlobalProperty("mail.smtp_auth"));
+					Properties props = new Properties();
+					props.setProperty("mail.transport.protocol", adminService.getGlobalProperty("mail.transport_protocol"));
+					props.setProperty("mail.smtp.host", adminService.getGlobalProperty("mail.smtp_host"));
+					props.setProperty("mail.smtp.port", adminService.getGlobalProperty("mail.smtp_port"));
+					props.setProperty("mail.from", adminService.getGlobalProperty("mail.from"));
+					props.setProperty("mail.debug", adminService.getGlobalProperty("mail.debug"));
+					props.setProperty("mail.smtp.auth", adminService.getGlobalProperty("mail.smtp_auth"));
 
-			Authenticator auth = new Authenticator() {
+					Authenticator auth = new Authenticator() {
 
-				@Override
-				public PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(getAdministrationService().getGlobalProperty("mail.user"),
-					        getAdministrationService().getGlobalProperty("mail.password"));
+						@Override
+						public PasswordAuthentication getPasswordAuthentication() {
+							return new PasswordAuthentication(getAdministrationService().getGlobalProperty("mail.user"),
+									getAdministrationService().getGlobalProperty("mail.password"));
+						}
+					};
+
+					mailSession = Session.getInstance(props, auth);
 				}
-			};
+			}
 
-			mailSession = Session.getInstance(props, auth);
 		}
 		return mailSession;
 	}
@@ -807,7 +816,7 @@ public class Context {
 	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
 	 *      the required question/datatypes
 	 */
-	public synchronized static void startup(Properties props) throws DatabaseUpdateException, InputRequiredException,
+	public static synchronized void startup(Properties props) throws DatabaseUpdateException, InputRequiredException,
 	        ModuleMustStartException {
 		// do any context database specific startup
 		getContextDAO().startup(props);
@@ -851,7 +860,7 @@ public class Context {
 	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
 	 *      the required question/datatypes
 	 */
-	public synchronized static void startup(String url, String username, String password, Properties properties)
+	public static synchronized void startup(String url, String username, String password, Properties properties)
 	        throws DatabaseUpdateException, InputRequiredException, ModuleMustStartException {
 		if (properties == null) {
 			properties = new Properties();
@@ -975,7 +984,7 @@ public class Context {
 		// setting core roles
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
-			Set<String> currentRoleNames = new HashSet<String>();
+			Set<String> currentRoleNames = new HashSet<>();
 			for (Role role : Context.getUserService().getAllRoles()) {
 				currentRoleNames.add(role.getRole().toUpperCase());
 			}
@@ -1000,7 +1009,7 @@ public class Context {
 		// setting core privileges
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_PRIVILEGES);
-			Set<String> currentPrivilegeNames = new HashSet<String>();
+			Set<String> currentPrivilegeNames = new HashSet<>();
 			for (Privilege privilege : Context.getUserService().getAllPrivileges()) {
 				currentPrivilegeNames.add(privilege.getPrivilege().toUpperCase());
 			}
@@ -1026,9 +1035,9 @@ public class Context {
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			Set<String> currentPropNames = new HashSet<String>();
-			Map<String, GlobalProperty> propsMissingDescription = new HashMap<String, GlobalProperty>();
-			Map<String, GlobalProperty> propsMissingDatatype = new HashMap<String, GlobalProperty>();
+			Set<String> currentPropNames = new HashSet<>();
+			Map<String, GlobalProperty> propsMissingDescription = new HashMap<>();
+			Map<String, GlobalProperty> propsMissingDatatype = new HashMap<>();
 			for (GlobalProperty prop : Context.getAdministrationService().getAllGlobalProperties()) {
 				currentPropNames.add(prop.getProperty().toUpperCase());
 				if (prop.getDescription() == null) {

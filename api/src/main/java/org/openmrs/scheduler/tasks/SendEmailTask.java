@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class SendEmailTask extends AbstractTask {
 	
 	// Logger 
-	private Logger log = LoggerFactory.getLogger(SendEmailTask.class);
+	private static final Logger log = LoggerFactory.getLogger(SendEmailTask.class);
 	
 	/**
 	 * Process the next form entry in the database and then remove the form entry from the database.

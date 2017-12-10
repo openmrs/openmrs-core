@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 public class HibernateTemplateDAO implements TemplateDAO {
 	
-	private final static Logger log = LoggerFactory.getLogger(HibernateTemplateDAO.class);
+	private static final Logger log = LoggerFactory.getLogger(HibernateTemplateDAO.class);
 	
 	/**
 	 * Hibernate session factory

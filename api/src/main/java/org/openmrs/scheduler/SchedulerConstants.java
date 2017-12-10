@@ -22,10 +22,10 @@ public class SchedulerConstants {
 	public static String SCHEDULER_DEFAULT_PASSWORD = "test";
 	
 	/** The default 'from' address for emails send by the schedule */
-	public final static String SCHEDULER_DEFAULT_FROM = "scheduler@openmrs.org";
+	public static final String SCHEDULER_DEFAULT_FROM = "scheduler@openmrs.org";
 	
 	/** The default 'subject' for emails send by the schedule */
-	public final static String SCHEDULER_DEFAULT_SUBJECT = "OpenMRS Scheduler Error";
+	public static final String SCHEDULER_DEFAULT_SUBJECT = "OpenMRS Scheduler Error";
 	
 	/** Scheduler admin email enable property - Tell us whether we can send mail or not */
 	public static String SCHEDULER_ADMIN_EMAIL_ENABLED_PROPERTY = "scheduler.admin_email_enabled";

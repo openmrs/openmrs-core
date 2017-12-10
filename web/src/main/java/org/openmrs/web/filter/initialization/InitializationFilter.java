@@ -183,8 +183,8 @@ public class InitializationFilter extends StartupFilter {
 	 * Variable set at the end of the wizard when spring is being restarted
 	 */
 	private static boolean initializationComplete = false;
-	
-	synchronized protected void setInitializationComplete(boolean initializationComplete) {
+
+	protected synchronized void setInitializationComplete(boolean initializationComplete) {
 		InitializationFilter.initializationComplete = initializationComplete;
 	}
 	
@@ -205,7 +205,7 @@ public class InitializationFilter extends StartupFilter {
 			checkLocaleAttributesForFirstTime(httpRequest);
 		}
 		
-		Map<String, Object> referenceMap = new HashMap<String, Object>();
+		Map<String, Object> referenceMap = new HashMap<>();
 		String page = httpRequest.getParameter("page");
 		
 		referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
@@ -219,7 +219,7 @@ public class InitializationFilter extends StartupFilter {
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
 			httpResponse.setContentType("text/json");
-			Map<String, Object> result = new HashMap<String, Object>();
+			Map<String, Object> result = new HashMap<>();
 			if (initJob != null) {
 				result.put("hasErrors", initJob.hasErrors());
 				if (initJob.hasErrors()) {
@@ -382,7 +382,7 @@ public class InitializationFilter extends StartupFilter {
 	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	        ServletException {
 		String page = httpRequest.getParameter("page");
-		Map<String, Object> referenceMap = new HashMap<String, Object>();
+		Map<String, Object> referenceMap = new HashMap<>();
 		// we need to save current user language in references map since it will be used when template
 		// will be rendered
 		if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null) {
@@ -723,7 +723,7 @@ public class InitializationFilter extends StartupFilter {
 				return;
 			}
 			
-			wizardModel.tasksToExecute = new ArrayList<WizardTask>();
+			wizardModel.tasksToExecute = new ArrayList<>();
 			createDatabaseTask();
 			if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 				wizardModel.importTestData = true;
@@ -913,7 +913,7 @@ public class InitializationFilter extends StartupFilter {
 			errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
 			return;
 		}
-		wizardModel.tasksToExecute = new ArrayList<WizardTask>();
+		wizardModel.tasksToExecute = new ArrayList<>();
 		createDatabaseTask();
 		createTablesTask();
 		createDemoDataTask();
@@ -1174,10 +1174,8 @@ public class InitializationFilter extends StartupFilter {
 			
 			// run the sql statement
 			statement = connection.createStatement();
-			
-			int updateDelta = statement.executeUpdate(replacedSql);
-			statement.close();
-			return updateDelta;
+
+			return statement.executeUpdate(replacedSql);
 			
 		}
 		catch (SQLException sqlex) {
@@ -1187,18 +1185,12 @@ public class InitializationFilter extends StartupFilter {
 				errors.put("Error executing sql: " + sql + " - " + sqlex.getMessage(), null);
 			}
 		}
-		catch (InstantiationException e) {
-			log.error("Error generated", e);
-		}
-		catch (IllegalAccessException e) {
-			log.error("Error generated", e);
-		}
-		catch (ClassNotFoundException e) {
+		catch (InstantiationException | ClassNotFoundException | IllegalAccessException e) {
 			log.error("Error generated", e);
 		}
 		finally {
 			try {
-				if (statement != null && !statement.isClosed()) {
+				if (statement != null) {
 					statement.close();
 				}
 			}
@@ -1225,7 +1217,7 @@ public class InitializationFilter extends StartupFilter {
 	 *
 	 * @return true if this has been run already
 	 */
-	synchronized private static boolean isInitializationComplete() {
+	private synchronized static boolean isInitializationComplete() {
 		return initializationComplete;
 	}
 	
@@ -1258,7 +1250,7 @@ public class InitializationFilter extends StartupFilter {
 		
 		private String message = "";
 		
-		private Map<String, Object[]> errors = new HashMap<String, Object[]>();
+		private Map<String, Object[]> errors = new HashMap<>();
 		
 		private String errorPage = null;
 		
@@ -1268,23 +1260,23 @@ public class InitializationFilter extends StartupFilter {
 		
 		private WizardTask executingTask;
 		
-		private List<WizardTask> executedTasks = new ArrayList<WizardTask>();
+		private List<WizardTask> executedTasks = new ArrayList<>();
 		
-		synchronized public void reportError(String error, String errorPage, Object... params) {
+		public synchronized void reportError(String error, String errorPage, Object... params) {
 			errors.put(error, params);
 			this.errorPage = errorPage;
 			erroneous = true;
 		}
-		
-		synchronized public boolean hasErrors() {
+
+		public synchronized boolean hasErrors() {
 			return erroneous;
 		}
-		
-		synchronized public String getErrorPage() {
+
+		public synchronized String getErrorPage() {
 			return errorPage;
 		}
-		
-		synchronized public Map<String, Object[]> getErrors() {
+
+		public synchronized Map<String, Object[]> getErrors() {
 			return errors;
 		}
 		
@@ -1305,20 +1297,20 @@ public class InitializationFilter extends StartupFilter {
 				log.error("Error generated", e);
 			}
 		}
-		
-		synchronized protected void setStepsComplete(int steps) {
+
+		protected synchronized void setStepsComplete(int steps) {
 			this.steps = steps;
 		}
 		
-		synchronized protected int getStepsComplete() {
+		protected synchronized int getStepsComplete() {
 			return steps;
 		}
 		
-		synchronized public String getMessage() {
+		public synchronized String getMessage() {
 			return message;
 		}
 		
-		synchronized public void setMessage(String message) {
+		public synchronized void setMessage(String message) {
 			this.message = message;
 			setStepsComplete(getStepsComplete() + 1);
 		}
@@ -1326,7 +1318,7 @@ public class InitializationFilter extends StartupFilter {
 		/**
 		 * @return the executingTask
 		 */
-		synchronized protected WizardTask getExecutingTask() {
+		protected synchronized WizardTask getExecutingTask() {
 			return executingTask;
 		}
 		
@@ -1349,21 +1341,21 @@ public class InitializationFilter extends StartupFilter {
 		 *
 		 * @param task
 		 */
-		synchronized protected void addExecutedTask(WizardTask task) {
+		protected synchronized void addExecutedTask(WizardTask task) {
 			this.executedTasks.add(task);
 		}
 		
 		/**
 		 * @param executingTask the executingTask to set
 		 */
-		synchronized protected void setExecutingTask(WizardTask executingTask) {
+		protected synchronized void setExecutingTask(WizardTask executingTask) {
 			this.executingTask = executingTask;
 		}
 		
 		/**
 		 * @return the executedTasks
 		 */
-		synchronized protected List<WizardTask> getExecutedTasks() {
+		protected synchronized List<WizardTask> getExecutedTasks() {
 			return this.executedTasks;
 		}
 		

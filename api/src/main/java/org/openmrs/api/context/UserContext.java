@@ -12,9 +12,9 @@ package org.openmrs.api.context;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Location;
@@ -54,7 +54,7 @@ public class UserContext implements Serializable {
 	/**
 	 * User's permission proxies
 	 */
-	private List<String> proxies = new Vector<String>();
+	private List<String> proxies = new ArrayList<>();
 	
 	/**
 	 * User's locale
@@ -274,7 +274,7 @@ public class UserContext implements Serializable {
 	 * @should return same roles as user getAllRoles method
 	 */
 	public Set<Role> getAllRoles(User user) throws Exception {
-		Set<Role> roles = new HashSet<Role>();
+		Set<Role> roles = new HashSet<>();
 		
 		// add the Anonymous Role
 		roles.add(getAnonymousRole());

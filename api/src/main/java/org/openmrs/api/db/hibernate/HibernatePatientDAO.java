@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernatePatientDAO implements PatientDAO {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(HibernatePatientDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -388,8 +388,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	@SuppressWarnings("unchecked")
         @Override
 	public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) {
-		List<Patient> patients = new Vector<Patient>();
-		List<Integer> patientIds = new Vector<Integer>();
+		List<Patient> patients = new ArrayList<>();
+		List<Integer> patientIds = new ArrayList<>();
 
 		if (!attributes.isEmpty()) {
 
@@ -539,7 +539,7 @@ public class HibernatePatientDAO implements PatientDAO {
 				return patPos1.compareTo(patPos2);
 			}
 		}
-		Collections.sort(patients, new PatientIdComparator(patientIdOrder));
+		patients.sort(new PatientIdComparator(patientIdOrder));
 	}
 	
 	/**
@@ -672,9 +672,8 @@ public class HibernatePatientDAO implements PatientDAO {
 
 		LuceneQuery<PersonName> nameQuery = personLuceneQuery.getPatientNameQuery(query, includeVoided, identifierQuery);
 		LuceneQuery<PersonAttribute> attributeQuery = personLuceneQuery.getPatientAttributeQuery(query, includeVoided, nameQuery);
-		long size = identifierQuery.resultSize() + nameQuery.resultSize() + attributeQuery.resultSize();
 
-		return size;
+		return identifierQuery.resultSize() + nameQuery.resultSize() + attributeQuery.resultSize();
 	}
 
     private List<Patient> findPatients(String query, boolean includeVoided) {

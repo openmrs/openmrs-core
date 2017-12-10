@@ -94,7 +94,7 @@ import ca.uhn.hl7v2.model.v25.segment.PID;
  */
 public class ADTA28Handler implements Application {
 	
-	private Logger log = LoggerFactory.getLogger(ADTA28Handler.class);
+	private static final Logger log = LoggerFactory.getLogger(ADTA28Handler.class);
 	
 	/**
 	 * Always returns true, assuming that the router calling this handler will only call this
@@ -207,7 +207,7 @@ public class ADTA28Handler implements Application {
 			throw new HL7Exception("Missing patient identifier in PID segment");
 		}
 		
-		List<PatientIdentifier> goodIdentifiers = new ArrayList<PatientIdentifier>();
+		List<PatientIdentifier> goodIdentifiers = new ArrayList<>();
 		for (CX id : idList) {
 			
 			String assigningAuthority = id.getAssigningAuthority().getNamespaceID().getValue();

@@ -73,7 +73,7 @@ import org.xml.sax.SAXException;
  */
 public final class Listener extends ContextLoader implements ServletContextListener {
 	
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	protected final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
 	
 	private static boolean runtimePropertiesFound = false;
 	
@@ -136,9 +136,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
-		final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
+		final org.slf4j.Logger contextLog = LoggerFactory.getLogger(Listener.class);
 		
-		log.debug("Starting the OpenMRS webapp");
+		contextLog.debug("Starting the OpenMRS webapp");
 		
 		try {
 			// validate the current JVM version
@@ -172,7 +172,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				//ensure that we always log the runtime properties file that we are using
 				//since openmrs is just booting, the log levels are not yet set. TRUNK-4835
 				Logger.getLogger(getClass()).setLevel(Level.INFO);
-				log.info("Using runtime properties file: "
+				contextLog.info("Using runtime properties file: "
 				        + OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME));
 			}
 			
@@ -199,7 +199,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 		catch (Exception e) {
 			setErrorAtStartup(e);
-			log.error(MarkerFactory.getMarker("FATAL"), "Failed to obtain JDBC connection", e);
+			contextLog.error(MarkerFactory.getMarker("FATAL"), "Failed to obtain JDBC connection", e);
 		}
 		
 	}
@@ -233,11 +233,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			
 			Context.startup(getRuntimeProperties());
 		}
-		catch (DatabaseUpdateException updateEx) {
+		catch (DatabaseUpdateException | InputRequiredException updateEx) {
 			throw new ServletException("Should not be here because updates were run previously", updateEx);
-		}
-		catch (InputRequiredException inputRequiredEx) {
-			throw new ServletException("Should not be here because updates were run previously", inputRequiredEx);
 		}
 		catch (MandatoryModuleException mandatoryModEx) {
 			throw new ServletException(mandatoryModEx);
@@ -327,7 +324,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 		
 		// trim off initial slash if it exists
-		if (contextPath.indexOf("/") != -1) {
+		if (contextPath.contains("/")) {
 			contextPath = contextPath.substring(1);
 		}
 		
@@ -341,7 +338,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @param servletContext
 	 */
 	private void clearDWRFile(ServletContext servletContext) {
-		final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
+		final org.slf4j.Logger cleanLog = LoggerFactory.getLogger(Listener.class);
 		
 		String realPath = servletContext.getRealPath("");
 		String absPath = realPath + "/WEB-INF/dwr-modules.xml";
@@ -366,7 +363,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		catch (Exception e) {
 			// got here because the dwr-modules.xml file is empty for some reason.  This might
 			// happen because the servlet container (i.e. tomcat) crashes when first loading this file
-			log.debug("Error clearing dwr-modules.xml", e);
+			cleanLog.debug("Error clearing dwr-modules.xml", e);
 			dwrFile.delete();
 			FileWriter writer = null;
 			try {
@@ -375,7 +372,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN\" \"http://directwebremoting.org/schema/dwr20.dtd\">\n<dwr></dwr>");
 			}
 			catch (IOException io) {
-				log.error(
+				cleanLog.error(
 				    "Unable to clear out the " + dwrFile.getAbsolutePath() + " file.  Please redeploy the openmrs war file",
 				    io);
 			}
@@ -385,7 +382,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 						writer.close();
 					}
 					catch (IOException io) {
-						log.warn("Couldn't close Writer: " + io);
+						cleanLog.warn("Couldn't close Writer: " + io);
 					}
 				}
 			}
@@ -398,11 +395,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @param servletContext
 	 */
 	private void copyCustomizationIntoWebapp(ServletContext servletContext, Properties props) {
-		final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
+		final org.slf4j.Logger webAppLog = LoggerFactory.getLogger(Listener.class);
 		
 		String realPath = servletContext.getRealPath("");
 		// TODO centralize map to WebConstants?
-		Map<String, String> custom = new HashMap<String, String>();
+		Map<String, String> custom = new HashMap<>();
 		custom.put("custom.template.dir", "/WEB-INF/template");
 		custom.put("custom.index.jsp.file", "/WEB-INF/view/index.jsp");
 		custom.put("custom.login.jsp.file", "/WEB-INF/view/login.jsp");
@@ -426,25 +423,27 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				// if they got the path correct
 				// also, if file does not start with a "." (hidden files, like SVN files)
 				if (file.exists() && !userOverridePath.startsWith(".")) {
-					log.debug("Overriding file: " + absolutePath);
-					log.debug("Overriding file with: " + userOverridePath);
+					webAppLog.debug("Overriding file: " + absolutePath);
+					webAppLog.debug("Overriding file with: " + userOverridePath);
 					if (file.isDirectory()) {
-						for (File f : file.listFiles()) {
-							userOverridePath = f.getAbsolutePath();
-							if (!f.getName().startsWith(".")) {
-								String tmpAbsolutePath = absolutePath + "/" + f.getName();
-								if (!copyFile(userOverridePath, tmpAbsolutePath)) {
-									log.warn("Unable to copy file in folder defined by runtime property: " + prop);
-									log.warn("Your source directory (or a file in it) '" + userOverridePath
-									        + " cannot be loaded or destination '" + tmpAbsolutePath + "' cannot be found");
+						if (file.listFiles() != null) {
+							for (File f : file.listFiles()) {
+								userOverridePath = f.getAbsolutePath();
+								if (!f.getName().startsWith(".")) {
+									String tmpAbsolutePath = absolutePath + "/" + f.getName();
+									if (!copyFile(userOverridePath, tmpAbsolutePath)) {
+										webAppLog.warn("Unable to copy file in folder defined by runtime property: " + prop);
+										webAppLog.warn("Your source directory (or a file in it) '" + userOverridePath
+												+ " cannot be loaded or destination '" + tmpAbsolutePath + "' cannot be found");
+									}
 								}
 							}
 						}
 					} else {
 						// file is not a directory
 						if (!copyFile(userOverridePath, absolutePath)) {
-							log.warn("Unable to copy file defined by runtime property: " + prop);
-							log.warn("Your source file '" + userOverridePath + " cannot be loaded or destination '"
+							webAppLog.warn("Unable to copy file defined by runtime property: " + prop);
+							webAppLog.warn("Your source file '" + userOverridePath + " cannot be loaded or destination '"
 							        + absolutePath + "' cannot be found");
 						}
 					}
@@ -462,7 +461,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @return true/false whether the copy was a success
 	 */
 	private boolean copyFile(String fromPath, String toPath) {
-		final org.slf4j.Logger log = LoggerFactory.getLogger(Listener.class);
+		final org.slf4j.Logger copyLog = LoggerFactory.getLogger(Listener.class);
 		
 		FileInputStream inputStream = null;
 		FileOutputStream outputStream = null;
@@ -481,7 +480,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				}
 			}
 			catch (IOException io) {
-				log.warn("Unable to close input stream", io);
+				copyLog.warn("Unable to close input stream", io);
 			}
 			try {
 				if (outputStream != null) {
@@ -489,7 +488,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				}
 			}
 			catch (IOException io) {
-				log.warn("Unable to close input stream", io);
+				copyLog.warn("Unable to close input stream", io);
 			}
 		}
 		return true;
@@ -520,14 +519,16 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 		
 		// loop over the modules and load the modules that we can
-		for (File f : folder.listFiles()) {
-			if (!f.getName().startsWith(".")) { // ignore .svn folder and the like
-				try {
-					Module mod = ModuleFactory.loadModule(f);
-					log.debug("Loaded bundled module: " + mod + " successfully");
-				}
-				catch (Exception e) {
-					log.warn("Error while trying to load bundled module " + f.getName() + "", e);
+		if (folder.listFiles() != null) {
+			for (File f : folder.listFiles()) {
+				if (!f.getName().startsWith(".")) { // ignore .svn folder and the like
+					try {
+						Module mod = ModuleFactory.loadModule(f);
+						log.debug("Loaded bundled module: " + mod + " successfully");
+					}
+					catch (Exception e) {
+						log.warn("Error while trying to load bundled module " + f.getName() + "", e);
+					}
 				}
 			}
 		}
@@ -619,8 +620,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 *             {@link MandatoryModuleException} or {@link OpenmrsCoreModuleException}
 	 */
 	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Exception {
-		List<Module> startedModules = new ArrayList<Module>();
-		startedModules.addAll(ModuleFactory.getStartedModules());
+		List<Module> startedModules = new ArrayList<>(ModuleFactory.getStartedModules());
 		performWebStartOfModules(startedModules, servletContext);
 	}
 	
@@ -644,11 +644,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			try {
 				WebModuleUtil.refreshWAC(servletContext, true, null);
 			}
-			catch (ModuleMustStartException ex) {
-				// pass this up to the calling method so that openmrs loading stops
-				throw ex;
-			}
-			catch (BeanCreationException ex) {
+			catch (ModuleMustStartException | BeanCreationException ex) {
 				// pass this up to the calling method so that openmrs loading stops
 				throw ex;
 			}

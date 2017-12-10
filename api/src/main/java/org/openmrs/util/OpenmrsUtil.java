@@ -50,7 +50,6 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -122,9 +121,9 @@ public class OpenmrsUtil {
 	
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsUtil.class);
 	
-	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<Locale, SimpleDateFormat>();
+	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<>();
 	
-	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<Locale, SimpleDateFormat>();
+	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<>();
 	
 	/**
 	 * Compares origList to newList returning map of differences
@@ -136,10 +135,10 @@ public class OpenmrsUtil {
 	public static <E extends Object> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {
 		// TODO finish function
 		
-		Collection<Collection<E>> returnList = new Vector<Collection<E>>();
+		Collection<Collection<E>> returnList = new ArrayList<>();
 		
-		Collection<E> toAdd = new LinkedList<E>();
-		Collection<E> toDel = new LinkedList<E>();
+		Collection<E> toAdd = new LinkedList<>();
+		Collection<E> toDel = new LinkedList<>();
 		
 		// loop over the new list.
 		for (E currentNewListObj : newList) {
@@ -174,8 +173,8 @@ public class OpenmrsUtil {
 		boolean retVal = false;
 		
 		if (str != null && arr != null) {
-			for (int i = 0; i < arr.length; i++) {
-				if (str.equals(arr[i])) {
+			for (String anArr : arr) {
+				if (str.equals(anArr)) {
 					retVal = true;
 				}
 			}
@@ -338,7 +337,7 @@ public class OpenmrsUtil {
 	 * @see Context#checkCoreDataset()
 	 */
 	public static Map<String, String> getCorePrivileges() {
-		Map<String, String> corePrivileges = new HashMap<String, String>();
+		Map<String, String> corePrivileges = new HashMap<>();
 		
 		// TODO getCorePrivileges() is called so so many times that getClassesWithAnnotation() better do some catching.
 		Set<Class<?>> classes = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(HasAddOnStartupPrivileges.class);
@@ -381,7 +380,7 @@ public class OpenmrsUtil {
 	 * @return roles that are core to the system
 	 */
 	public static Map<String, String> getCoreRoles() {
-		Map<String, String> roles = new HashMap<String, String>();
+		Map<String, String> roles = new HashMap<>();
 		
 		Field[] flds = RoleConstants.class.getDeclaredFields();
 		for (Field fld : flds) {
@@ -582,7 +581,7 @@ public class OpenmrsUtil {
 	 * @return Map&lt;String, String&gt; of the parameters passed
 	 */
 	public static Map<String, String> parseParameterList(String paramList) {
-		Map<String, String> ret = new HashMap<String, String>();
+		Map<String, String> ret = new HashMap<>();
 		if (paramList != null && paramList.length() > 0) {
 			String[] args = paramList.split("\\|");
 			for (String s : args) {
@@ -706,7 +705,7 @@ public class OpenmrsUtil {
 	}
 	
 	public static Set<Concept> conceptSetHelper(String descriptor) {
-		Set<Concept> ret = new HashSet<Concept>();
+		Set<Concept> ret = new HashSet<>();
 		if (descriptor == null || descriptor.length() == 0) {
 			return ret;
 		}
@@ -773,7 +772,7 @@ public class OpenmrsUtil {
 				
 				if (c != null) {
 					if (ret == null) {
-						ret = new ArrayList<Concept>();
+						ret = new ArrayList<>();
 					}
 					ret.add(c);
 				}
@@ -793,7 +792,7 @@ public class OpenmrsUtil {
 				
 				if (c != null) {
 					if (ret == null) {
-						ret = new HashMap<String, Concept>();
+						ret = new HashMap<>();
 					}
 					ret.put(token, c);
 				}
@@ -805,7 +804,7 @@ public class OpenmrsUtil {
 	
 	// TODO: properly handle duplicates
 	public static List<Concept> conceptListHelper(String descriptor) {
-		List<Concept> ret = new ArrayList<Concept>();
+		List<Concept> ret = new ArrayList<>();
 		if (descriptor == null || descriptor.length() == 0) {
 			return ret;
 		}
@@ -982,24 +981,16 @@ public class OpenmrsUtil {
 		if (file == null) {// non-local JAR file URL
 			return url.openStream();
 		}
-		JarFile jarFile = new JarFile(file);
-		try {
+		try (JarFile jarFile = new JarFile(file)) {
 			ZipEntry entry = jarFile.getEntry(path);
 			if (entry == null) {
 				throw new FileNotFoundException(url.toExternalForm());
 			}
-			InputStream in = jarFile.getInputStream(entry);
-			try {
+			try (InputStream in = jarFile.getInputStream(entry)) {
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				copyFile(in, out);
 				return new ByteArrayInputStream(out.toByteArray());
 			}
-			finally {
-				in.close();
-			}
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 	
@@ -1201,7 +1192,7 @@ public class OpenmrsUtil {
 	}
 	
 	public static List<Integer> delimitedStringToIntegerList(String delimitedString, String delimiter) {
-		List<Integer> ret = new ArrayList<Integer>();
+		List<Integer> ret = new ArrayList<>();
 		String[] tokens = delimitedString.split(delimiter);
 		for (String token : tokens) {
 			token = token.trim();
@@ -1307,7 +1298,7 @@ public class OpenmrsUtil {
 	public static <K, V> void addToSetMap(Map<K, Set<V>> map, K key, V obj) {
 		Set<V> set = map.get(key);
 		if (set == null) {
-			set = new HashSet<V>();
+			set = new HashSet<>();
 			map.put(key, set);
 		}
 		set.add(obj);
@@ -1316,7 +1307,7 @@ public class OpenmrsUtil {
 	public static <K, V> void addToListMap(Map<K, List<V>> map, K key, V obj) {
 		List<V> list = map.get(key);
 		if (list == null) {
-			list = new ArrayList<V>();
+			list = new ArrayList<>();
 			map.put(key, list);
 		}
 		list.add(obj);
@@ -1975,7 +1966,7 @@ public class OpenmrsUtil {
 			return null;
 		}
 		
-		List<String> results = new ArrayList<String>();
+		List<String> results = new ArrayList<>();
 		final Pattern exclude = Pattern.compile("(org.springframework.|java.lang.reflect.Method.invoke|sun.reflect.)");
 		boolean found = false;
 		

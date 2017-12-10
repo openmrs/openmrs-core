@@ -34,7 +34,7 @@ import org.springframework.core.type.filter.TypeFilter;
  */
 public class OpenmrsClassScanner {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(OpenmrsClassScanner.class);
 	
 	private final MetadataReaderFactory metadataReaderFactory;
 	
@@ -75,10 +75,10 @@ public class OpenmrsClassScanner {
 				return annotationToClassMap.get(annotationClass);
 			}
 		} else {
-			annotationToClassMap = new HashMap<Class<?>, Set<Class<?>>>();
+			annotationToClassMap = new HashMap<>();
 		}
 		
-		Set<Class<?>> types = new HashSet<Class<?>>();
+		Set<Class<?>> types = new HashSet<>();
 		String pattern = "classpath*:org/openmrs/**/*.class";
 		
 		try {

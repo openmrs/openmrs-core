@@ -23,8 +23,6 @@ import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.api.db.DAOException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Hibernate implementation of the CohortDAO
@@ -34,8 +32,6 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.api.CohortService
  */
 public class HibernateCohortDAO implements CohortDAO {
-	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private SessionFactory sessionFactory;
 	

@@ -126,7 +126,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	}
 	
 	private Map<String, Object> getPropertyValuesToSave() {
-		Map<String, Object> propertyValues = new HashMap<String, Object>();
+		Map<String, Object> propertyValues = new HashMap<>();
 		propertyValues.put("creator", Context.getAuthenticatedUser());
 		propertyValues.put("dateCreated", new Date());
 		propertyValues.put("personCreator", Context.getAuthenticatedUser());
@@ -135,7 +135,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	}
 	
 	private Map<String, Object> getPropertyValuesToUpdate() {
-		Map<String, Object> propertyValues = new HashMap<String, Object>();
+		Map<String, Object> propertyValues = new HashMap<>();
 		propertyValues.put("changedBy", Context.getAuthenticatedUser());
 		propertyValues.put("dateChanged", new Date());
 		propertyValues.put("personChangedBy", Context.getAuthenticatedUser());

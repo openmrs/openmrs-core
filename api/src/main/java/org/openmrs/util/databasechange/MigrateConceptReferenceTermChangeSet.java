@@ -37,7 +37,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(MigrateConceptReferenceTermChangeSet.class);
 	
 	public static final String DEFAULT_CONCEPT_MAP_TYPE = "NARROWER-THAN";
 	
@@ -61,7 +61,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 			connection.setAutoCommit(false);
 			
 			//Prepare a list of types and their ids.
-			Map<String, Integer> typesToIds = new HashMap<String, Integer>();
+			Map<String, Integer> typesToIds = new HashMap<>();
 			
 			selectTypes = connection.prepareStatement("select * from concept_map_type");
 			selectTypes.execute();

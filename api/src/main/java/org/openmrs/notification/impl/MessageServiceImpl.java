@@ -11,8 +11,8 @@ package org.openmrs.notification.impl;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.Vector;
 
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -226,7 +226,7 @@ public class MessageServiceImpl implements MessageService {
 		log.debug("Sending message to role " + role);
 		log.debug("User Service : " + Context.getUserService());
 		
-		List<Role> roles = new Vector<Role>();
+		List<Role> roles = new ArrayList<>();
 		roles.add(role);
 		
 		Collection<User> users = Context.getUserService().getUsers(null, roles, false);

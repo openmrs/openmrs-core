@@ -20,7 +20,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.Base64;
 import java.util.Base64.Encoder;
@@ -237,11 +236,6 @@ public class TestInstallUtil {
 			//is no connection, this line will fail
 			urlConnect.getContent();
 			return true;
-		}
-		catch (UnknownHostException e) {
-			if (log.isDebugEnabled()) {
-				log.debug("Error generated:", e);
-			}
 		}
 		catch (IOException e) {
 			if (log.isDebugEnabled()) {

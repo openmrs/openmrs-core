@@ -13,9 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Vector;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -38,7 +38,7 @@ import org.xml.sax.SAXException;
  */
 public class SqlDiffFileParser {
 	
-	private static Logger log = LoggerFactory.getLogger(SqlDiffFileParser.class);
+	private static final Logger log = LoggerFactory.getLogger(SqlDiffFileParser.class);
 	
 	private static final String SQLDIFF_CHANGELOG_FILENAME = "sqldiff.xml";
 	
@@ -53,7 +53,7 @@ public class SqlDiffFileParser {
 			throw new ModuleException("Module cannot be null");
 		}
 		
-		SortedMap<String, String> map = new TreeMap<String, String>(new VersionComparator());
+		SortedMap<String, String> map = new TreeMap<>(new VersionComparator());
 		
 		InputStream diffStream = null;
 		
@@ -175,7 +175,7 @@ public class SqlDiffFileParser {
 	 * @return
 	 */
 	private static List<String> validConfigVersions() {
-		List<String> versions = new Vector<String>();
+		List<String> versions = new ArrayList<>();
 		versions.add("1.0");
 		return versions;
 	}

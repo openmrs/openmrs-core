@@ -32,7 +32,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class EncryptSecretAnswersChangeSet implements CustomTaskChange {
 	
-	private final static Logger log = LoggerFactory.getLogger(EncryptSecretAnswersChangeSet.class);
+	private static final Logger log = LoggerFactory.getLogger(EncryptSecretAnswersChangeSet.class);
 	
 	/**
 	 * @see CustomTaskChange#execute(Database)
@@ -59,10 +59,7 @@ public class EncryptSecretAnswersChangeSet implements CustomTaskChange {
 			}
 			pStmt.executeBatch();
 		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException("Failed to update secret answers: " + e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			throw new CustomChangeException("Failed to update secret answers: " + e);
 		}
 		finally {

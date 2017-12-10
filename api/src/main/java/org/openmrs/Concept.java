@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -132,11 +131,11 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 
 	/** default constructor */
 	public Concept() {
-		names = new HashSet<ConceptName>();
-		answers = new HashSet<ConceptAnswer>();
-		conceptSets = new TreeSet<ConceptSet>();
-		descriptions = new HashSet<ConceptDescription>();
-		conceptMappings = new HashSet<ConceptMap>();
+		names = new HashSet<>();
+		answers = new HashSet<>();
+		conceptSets = new TreeSet<>();
+		descriptions = new HashSet<>();
+		conceptMappings = new HashSet<>();
 	}
 	
 	/**
@@ -160,7 +159,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public Collection<ConceptAnswer> getAnswers() {
 		if (answers == null) {
-			answers = new HashSet<ConceptAnswer>();
+			answers = new HashSet<>();
 		}
 		return answers;
 	}
@@ -543,7 +542,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public ConceptName getName(Locale locale, ConceptNameType ofType, ConceptNameTag havingTag) {
 		Collection<ConceptName> namesInLocale = getNames(locale);
 		if (!namesInLocale.isEmpty()) {
-			List<ConceptName> matches = new ArrayList<ConceptName>();
+			List<ConceptName> matches = new ArrayList<>();
 			
 			for (ConceptName candidate : namesInLocale) {
 				if ((ofType == null || ofType.equals(candidate.getConceptNameType()))
@@ -773,13 +772,13 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		// lazy create the cache
 		List<ConceptName> compatibleNames = null;
 		if (compatibleCache == null) {
-			compatibleCache = new HashMap<Locale, List<ConceptName>>();
+			compatibleCache = new HashMap<>();
 		} else {
 			compatibleNames = compatibleCache.get(desiredLocale);
 		}
 		
 		if (compatibleNames == null) {
-			compatibleNames = new Vector<ConceptName>();
+			compatibleNames = new ArrayList<>();
 			for (ConceptName possibleName : getNames()) {
 				if (LocaleUtility.areCompatible(possibleName.getLocale(), desiredLocale)) {
 					compatibleNames.add(possibleName);
@@ -879,7 +878,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return a collection of all short names for this concept
 	 */
 	public Collection<ConceptName> getShortNames() {
-		List<ConceptName> shortNames = new Vector<ConceptName>();
+		List<ConceptName> shortNames = new ArrayList<>();
 		if (getNames().isEmpty()) {
 			if (log.isDebugEnabled()) {
 				log.debug("The Concept with id: " + conceptId + " has no names");
@@ -990,7 +989,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public Collection<ConceptName> getNames(boolean includeVoided) {
 		if (names == null) {
-			names = new HashSet<ConceptName>();
+			names = new HashSet<>();
 		}
 
 		return names.stream()
@@ -1018,7 +1017,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		if (conceptName != null) {
 			conceptName.setConcept(this);
 			if (names == null) {
-				names = new HashSet<ConceptName>();
+				names = new HashSet<>();
 			}
 			if (!names.contains(conceptName)) {
 				if (getNames().isEmpty()
@@ -1108,8 +1107,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		Locale desiredLocale = locale;
 		
 		ConceptDescription defaultDescription = null;
-		for (Iterator<ConceptDescription> i = getDescriptions().iterator(); i.hasNext();) {
-			ConceptDescription availableDescription = i.next();
+		for (ConceptDescription availableDescription : getDescriptions()) {
 			Locale availableLocale = availableDescription.getLocale();
 			if (availableLocale.equals(desiredLocale)) {
 				foundDescription = availableDescription;
@@ -1195,7 +1193,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public Collection<ConceptDescription> getDescriptions() {
 		if (descriptions == null) {
-			descriptions = new HashSet<ConceptDescription>();
+			descriptions = new HashSet<>();
 		}
 		return descriptions;
 	}
@@ -1273,7 +1271,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public Collection<ConceptName> getSynonyms(Locale locale) {
 		
-		List<ConceptName> syns = new Vector<ConceptName>();
+		List<ConceptName> syns = new ArrayList<>();
 		ConceptName preferredConceptName = null;
 		for (ConceptName possibleSynonymInLoc : getSynonyms()) {
 			if (locale.equals(possibleSynonymInLoc.getLocale())) {
@@ -1349,7 +1347,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public Collection<ConceptMap> getConceptMappings() {
 		if (conceptMappings == null) {
-			conceptMappings = new HashSet<ConceptMap>();
+			conceptMappings = new HashSet<>();
 		}
 		return conceptMappings;
 	}
@@ -1415,7 +1413,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@Override
 	public List<Concept> findPossibleValues(String searchText) {
-		List<Concept> concepts = new Vector<Concept>();
+		List<Concept> concepts = new ArrayList<>();
 		try {
 			
 			for (ConceptSearchResult searchResult : Context.getConceptService().getConcepts(searchText,
@@ -1499,7 +1497,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return null;
 		}
 		
-		Set<Locale> locales = new HashSet<Locale>();
+		Set<Locale> locales = new HashSet<>();
 		
 		for (ConceptName cn : getNames()) {
 			locales.add(cn.getLocale());
@@ -1532,7 +1530,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return sortedConceptSet Collection&lt;ConceptSet&gt;
 	 */
 	private List<ConceptSet> getSortedConceptSets() {
-		List<ConceptSet> cs = new Vector<ConceptSet>();
+		List<ConceptSet> cs = new ArrayList<>();
 		if (conceptSets != null) {
 			cs.addAll(conceptSets);
 			Collections.sort(cs);
@@ -1552,7 +1550,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return concept set members sorted with retired last
 	 */
 	public List<Concept> getSetMembers() {
-		List<Concept> conceptMembers = new Vector<Concept>();
+		List<Concept> conceptMembers = new ArrayList<>();
 		
 		Collection<ConceptSet> sortedConceptSet = getSortedConceptSets();
 		
@@ -1602,8 +1600,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		//sets have moved to the bottom and hence need to be reassigned
 		//higher sort weights than the non retired ones
 		double weight = 990.0;
-		for (ConceptSet set : sortedConceptSets) {
-			set.setSortWeight(weight += 10.0);
+		for (ConceptSet conceptSet : sortedConceptSets) {
+			conceptSet.setSortWeight(weight += 10.0);
 		}
 		
 		if (sortedConceptSets.isEmpty()) {
@@ -1631,7 +1629,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@Override
 	public Set<ConceptAttribute> getAttributes() {
 		if (attributes == null) {
-			attributes = new LinkedHashSet<ConceptAttribute>();
+			attributes = new LinkedHashSet<>();
 		}
 		return attributes;
 	}

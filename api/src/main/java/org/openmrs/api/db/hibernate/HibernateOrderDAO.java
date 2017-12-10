@@ -11,7 +11,6 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -59,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateOrderDAO implements OrderDAO {
 	
-	protected static final Logger log = LoggerFactory.getLogger(HibernateOrderDAO.class);
+	private static final Logger log = LoggerFactory.getLogger(HibernateOrderDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -173,11 +172,10 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public Order getDiscontinuationOrder(Order order) {
-		Order discontinuationOrder = (Order) sessionFactory.getCurrentSession().createCriteria(Order.class).add(
+
+		return (Order) sessionFactory.getCurrentSession().createCriteria(Order.class).add(
 		    Restrictions.eq("previousOrder", order)).add(Restrictions.eq("action", Order.Action.DISCONTINUE)).add(
 		    Restrictions.eq("voided", false)).uniqueResult();
-		
-		return discontinuationOrder;
 	}
 	
 	@Override
@@ -478,19 +476,18 @@ public class HibernateOrderDAO implements OrderDAO {
 	public boolean isOrderFrequencyInUse(OrderFrequency orderFrequency) {
 		
 		Map<String, ClassMetadata> metadata = sessionFactory.getAllClassMetadata();
-		for (Iterator<ClassMetadata> i = metadata.values().iterator(); i.hasNext();) {
-			ClassMetadata classMetadata = i.next();
+		for (ClassMetadata classMetadata : metadata.values()) {
 			Class<?> entityClass = classMetadata.getMappedClass();
 			if (Order.class.equals(entityClass)) {
 				//ignore the org.openmrs.Order class itself
 				continue;
 			}
-			
+
 			if (!Order.class.isAssignableFrom(entityClass)) {
 				//not a sub class of Order
 				continue;
 			}
-			
+
 			String[] names = classMetadata.getPropertyNames();
 			for (String name : names) {
 				if (classMetadata.getPropertyType(name).getReturnedClass().equals(OrderFrequency.class)) {

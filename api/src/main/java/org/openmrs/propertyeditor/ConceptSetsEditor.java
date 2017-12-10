@@ -13,7 +13,6 @@ import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 
 import org.openmrs.ConceptSet;
 import org.openmrs.api.ConceptService;
@@ -27,7 +26,7 @@ import org.springframework.util.StringUtils;
  */
 public class ConceptSetsEditor extends PropertyEditorSupport {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(ConceptSetsEditor.class);
 	
 	private Collection<ConceptSet> originalConceptSets = null;
 	
@@ -38,7 +37,7 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 	 */
 	public ConceptSetsEditor(Collection<ConceptSet> conceptSets) {
 		if (conceptSets == null) {
-			originalConceptSets = new Vector<ConceptSet>();
+			originalConceptSets = new ArrayList<>();
 		}
 		
 		this.originalConceptSets = conceptSets;
@@ -54,7 +53,7 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 		if (StringUtils.hasText(text)) {
 			ConceptService cs = Context.getConceptService();
 			String[] conceptIds = text.split(" ");
-			List<Integer> requestConceptIds = new Vector<Integer>();
+			List<Integer> requestConceptIds = new ArrayList<>();
 			//set up parameter Set for easier add/delete functions
 			// and removal of duplicates
 			for (String id : conceptIds) {
@@ -65,10 +64,10 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 			}
 			
 			// used when adding in concept sets
-			List<Integer> originalConceptSetIds = new ArrayList<Integer>(originalConceptSets.size());
+			List<Integer> originalConceptSetIds = new ArrayList<>(originalConceptSets.size());
 			
 			// remove all sets that aren't in the request (aka, that have been deleted by the user)
-			Collection<ConceptSet> copyOfOriginalConceptSets = new ArrayList<ConceptSet>(originalConceptSets);
+			Collection<ConceptSet> copyOfOriginalConceptSets = new ArrayList<>(originalConceptSets);
 			for (ConceptSet origConceptSet : copyOfOriginalConceptSets) {
 				if (!requestConceptIds.contains(origConceptSet.getConcept().getConceptId())) {
 					originalConceptSets.remove(origConceptSet);

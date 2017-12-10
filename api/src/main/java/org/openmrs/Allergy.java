@@ -35,7 +35,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	
 	private String comment;
 	
-	private List<AllergyReaction> reactions = new ArrayList<AllergyReaction>();
+	private List<AllergyReaction> reactions = new ArrayList<>();
 	
 	/**
 	 * Default constructor
@@ -328,7 +328,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 		setAllergen(allergy.getAllergen());
 		setSeverity(allergy.getSeverity());
 		setComment(allergy.getComment());
-		setReactions(new ArrayList<AllergyReaction>());
+		setReactions(new ArrayList<>());
 		
 		for (AllergyReaction reaction : allergy.getReactions()) {
 			reactions.add(reaction);
@@ -338,7 +338,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	}
 
     private List<Concept> getReactionConcepts(){
-        List<Concept> reactionConcepts = new ArrayList<Concept>(getReactions().size());
+        List<Concept> reactionConcepts = new ArrayList<>(getReactions().size());
         for (AllergyReaction ar : getReactions()) {
             reactionConcepts.add(ar.getReaction());
         }

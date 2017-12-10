@@ -118,13 +118,10 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 			catch (NoSuchMethodException e) {
 				log.warn("No such method for comparison " + methodName, e);
 			}
-			catch (IllegalAccessException e) {
+			catch (IllegalAccessException | InvocationTargetException e) {
 				log.error("Error while comparing identifiers", e);
 			}
-			catch (InvocationTargetException e) {
-				log.error("Error while comparing identifiers", e);
-			}
-			
+
 		}
 		
 		return returnValue;

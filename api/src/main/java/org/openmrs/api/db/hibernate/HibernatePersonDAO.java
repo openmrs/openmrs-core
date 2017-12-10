@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernatePersonDAO implements PersonDAO {
 	
-	protected final static Logger log = LoggerFactory.getLogger(HibernatePersonDAO.class);
+	private static final Logger log = LoggerFactory.getLogger(HibernatePersonDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -84,9 +84,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		if (birthyear == null) {
 			birthyear = 0;
 		}
-		
-		Set<Person> people = new LinkedHashSet<Person>();
-		
+
 		name = name.replaceAll("  ", " ");
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
@@ -169,11 +167,11 @@ public class HibernatePersonDAO implements PersonDAO {
 		String genderMatch = " (p.gender = :gender or p.gender = '') ";
 		
 		if (birthyear != 0 && gender != null) {
-			q.append(" and (" + birthdayMatch + "and " + genderMatch + ") ");
+			q.append(" and (").append(birthdayMatch).append("and ").append(genderMatch).append(") ");
 		} else if (birthyear != 0) {
-			q.append(" and " + birthdayMatch);
+			q.append(" and ").append(birthdayMatch);
 		} else if (gender != null) {
-			q.append(" and " + genderMatch);
+			q.append(" and ").append(genderMatch);
 		}
 		
 		q.append(" order by pname.givenName asc,").append(" pname.middleName asc,").append(" pname.familyName asc,").append(
@@ -189,8 +187,8 @@ public class HibernatePersonDAO implements PersonDAO {
 		if (qStr.contains(":gender")) {
 			query.setString("gender", gender);
 		}
-		
-		people.addAll(query.list());
+
+		Set<Person> people = new LinkedHashSet<Person>(query.list());
 		
 		return people;
 	}
@@ -405,10 +403,9 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public Relationship getRelationship(Integer relationshipId) throws DAOException {
-		Relationship relationship = (Relationship) sessionFactory.getCurrentSession()
+
+		return (Relationship) sessionFactory.getCurrentSession()
 		        .get(Relationship.class, relationshipId);
-		
-		return relationship;
 	}
 	
 	/**
@@ -501,10 +498,9 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@Override
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws DAOException {
-		RelationshipType relationshipType = (RelationshipType) sessionFactory.getCurrentSession().get(
+
+		return (RelationshipType) sessionFactory.getCurrentSession().get(
 		    RelationshipType.class, relationshipTypeId);
-		
-		return relationshipType;
 	}
 	
 	/**

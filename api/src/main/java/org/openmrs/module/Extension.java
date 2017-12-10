@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class Extension {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(Extension.class);
 	
 	// point which this extension is extending
 	private String pointId;

@@ -31,7 +31,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class UpdateLayoutAddressFormatChangeSet implements CustomTaskChange {
 	
-	private final static Logger log = LoggerFactory.getLogger(UpdateLayoutAddressFormatChangeSet.class);
+	private static final Logger log = LoggerFactory.getLogger(UpdateLayoutAddressFormatChangeSet.class);
 	
 	/**
 	 * @see CustomTaskChange#execute(Database)
@@ -57,10 +57,7 @@ public class UpdateLayoutAddressFormatChangeSet implements CustomTaskChange {
 				pStmt.executeBatch();
 			}
 		}
-		catch (DatabaseException e) {
-			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
 		}
 		finally {

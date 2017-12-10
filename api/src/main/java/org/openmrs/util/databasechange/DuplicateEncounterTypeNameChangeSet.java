@@ -18,7 +18,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +72,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
-		Map<String, HashSet<Integer>> duplicates = new HashMap<String, HashSet<Integer>>();
+		Map<String, HashSet<Integer>> duplicates = new HashMap<>();
 		Statement stmt = null;
 		PreparedStatement pStmt = null;
 		ResultSet rs = null;
@@ -97,7 +96,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 				name = rs.getString("name");
 				
 				if (duplicates.get(name) == null) {
-					HashSet<Integer> results = new HashSet<Integer>();
+					HashSet<Integer> results = new HashSet<>();
 					results.add(id);
 					duplicates.put(name, results);
 				} else {
@@ -105,26 +104,25 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 					results.add(id);
 				}
 			}
-			
-			Iterator it2 = duplicates.entrySet().iterator();
-			while (it2.hasNext()) {
-				Map.Entry pairs = (Map.Entry) it2.next();
-				
+
+			for (Object o : duplicates.entrySet()) {
+				Map.Entry pairs = (Map.Entry) o;
+
 				HashSet values = (HashSet) pairs.getValue();
 				List<Integer> ids = new ArrayList<Integer>(values);
-				
+
 				int duplicateNameId = 1;
 				for (int i = 1; i < ids.size(); i++) {
 					String newName = pairs.getKey() + "_" + duplicateNameId;
-					
+
 					List<List<Object>> duplicateResult = null;
 					boolean duplicateName = false;
 					Connection con = DatabaseUpdater.getConnection();
-					
+
 					do {
 						String sqlValidatorString = "select * from encounter_type where name = '" + newName + "'";
 						duplicateResult = DatabaseUtil.executeSQL(con, sqlValidatorString, true);
-						
+
 						if (!duplicateResult.isEmpty()) {
 							duplicateNameId += 1;
 							newName = pairs.getKey() + "_" + duplicateNameId;
@@ -133,13 +131,13 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 							duplicateName = false;
 						}
 					} while (duplicateName);
-					
+
 					pStmt = connection.prepareStatement("update encounter_type set name = ? where encounter_type_id = ?");
 					pStmt.setString(1, newName);
 					pStmt.setInt(2, ids.get(i));
-					
+
 					duplicateNameId += 1;
-					
+
 					pStmt.executeUpdate();
 				}
 			}

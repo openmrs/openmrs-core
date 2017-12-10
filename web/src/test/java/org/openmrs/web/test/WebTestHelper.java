@@ -48,8 +48,7 @@ public class WebTestHelper {
 	 * @return
 	 */
 	public MockHttpServletRequest newGET(final String requestURI) {
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", requestURI);
-		return request;
+		return new MockHttpServletRequest("GET", requestURI);
 	}
 	
 	/**
@@ -72,8 +71,7 @@ public class WebTestHelper {
 	 * @return
 	 */
 	public MockHttpServletRequest newPOST(final String requestURI) {
-		MockHttpServletRequest request = new MockHttpServletRequest("POST", requestURI);
-		return request;
+		return new MockHttpServletRequest("POST", requestURI);
 	}
 	
 	/**

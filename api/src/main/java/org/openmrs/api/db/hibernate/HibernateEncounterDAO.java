@@ -43,8 +43,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.parameter.EncounterSearchCriteria;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Hibernate specific dao for the {@link EncounterService} All calls should be made on the
@@ -54,9 +52,7 @@ import org.slf4j.LoggerFactory;
  * @see EncounterService
  */
 public class HibernateEncounterDAO implements EncounterDAO {
-	
-	protected final Logger log = LoggerFactory.getLogger(getClass());
-	
+
 	/**
 	 * Hibernate session factory
 	 */
@@ -197,9 +193,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
 		crit.add(Restrictions.eq("retired", false));
 		crit.add(Restrictions.eq("name", name));
-		EncounterType encounterType = (EncounterType) crit.uniqueResult();
-		
-		return encounterType;
+
+		return (EncounterType) crit.uniqueResult();
 	}
 	
 	/**
@@ -567,8 +562,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 				encounters.add(mockEncounter);
 			}
 			
-			Collections.sort(encounters, new Comparator<Encounter>() {
-				
+			encounters.sort(new Comparator<Encounter>() {
+
 				@Override
 				public int compare(Encounter o1, Encounter o2) {
 					Date o1Date = (o1.getVisit() != null) ? o1.getVisit().getStartDatetime() : o1.getEncounterDatetime();

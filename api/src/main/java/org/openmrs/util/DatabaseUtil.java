@@ -33,9 +33,9 @@ import org.springframework.util.StringUtils;
  */
 public class DatabaseUtil {
 	
-	private final static Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
 
-	public final static String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
+	public static final String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
 
 	/**
 	 * Executes the passed SQL query, enforcing select only if that parameter is set Load the jdbc
@@ -86,7 +86,7 @@ public class DatabaseUtil {
 		sql = sql.trim();
 		boolean dataManipulation = checkQueryForManipulationCommands(sql, selectOnly);
 		
-		final List<List<Object>> result = new ArrayList<List<Object>>();
+		final List<List<Object>> result = new ArrayList<>();
 		final String query = sql;
 		final boolean sessionDataManipulation = dataManipulation;
 		
@@ -108,7 +108,7 @@ public class DatabaseUtil {
 	public static List<List<Object>> executeSQL(Connection conn, String sql, boolean selectOnly) throws DAOException {
 		sql = sql.trim();
 		boolean dataManipulation = checkQueryForManipulationCommands(sql, selectOnly);
-		List<List<Object>> result = new ArrayList<List<Object>>();
+		List<List<Object>> result = new ArrayList<>();
 		populateResultsFromSQLQuery(conn, sql, dataManipulation, result);
 		return result;
 	}
@@ -136,7 +136,7 @@ public class DatabaseUtil {
 			ps = conn.prepareStatement(sql);
 			if (dataManipulation) {
 				Integer i = ps.executeUpdate();
-				List<Object> row = new ArrayList<Object>();
+				List<Object> row = new ArrayList<>();
 				row.add(i);
 				results.add(row);
 			} else {
@@ -146,7 +146,7 @@ public class DatabaseUtil {
 				int columnCount = rmd.getColumnCount();
 				
 				while (resultSet.next()) {
-					List<Object> rowObjects = new ArrayList<Object>();
+					List<Object> rowObjects = new ArrayList<>();
 					for (int x = 1; x <= columnCount; x++) {
 						rowObjects.add(resultSet.getObject(x));
 					}
@@ -181,7 +181,7 @@ public class DatabaseUtil {
 	 */
 	public static <T> Set<T> getUniqueNonNullColumnValues(String columnName, String tableName, Class<T> type,
 	        Connection connection) throws Exception {
-		Set<T> uniqueValues = new HashSet<T>();
+		Set<T> uniqueValues = new HashSet<>();
 		final String alias = "unique_values";
 		String select = "SELECT DISTINCT " + columnName + " AS " + alias + " FROM " + tableName + " WHERE " + columnName
 		        + " IS NOT NULL";

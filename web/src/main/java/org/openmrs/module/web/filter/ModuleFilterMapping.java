@@ -15,7 +15,6 @@ import java.util.List;
 
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
-import org.openmrs.module.web.WebModuleUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -36,9 +35,9 @@ public class ModuleFilterMapping implements Serializable {
 	
 	private String filterName;
 	
-	private List<String> servletNames = new ArrayList<String>();
+	private List<String> servletNames = new ArrayList<>();
 	
-	private List<String> urlPatterns = new ArrayList<String>();
+	private List<String> urlPatterns = new ArrayList<>();
 	
 	/**
 	 * Default constructor, requires a Module
@@ -274,7 +273,7 @@ public class ModuleFilterMapping implements Serializable {
 	 */
 	public static List<ModuleFilterMapping> retrieveFilterMappings(Module module){
 		
-		List<ModuleFilterMapping> mappings = new ArrayList<ModuleFilterMapping>();
+		List<ModuleFilterMapping> mappings = new ArrayList<>();
 		
 		try {
 			Element rootNode = module.getConfig().getDocumentElement();

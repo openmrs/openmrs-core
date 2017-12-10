@@ -303,8 +303,8 @@ public class DatabaseUpdater {
 		
 		// loop over runtime properties and precede each with "hibernate" if
 		// it isn't already
-		Set<Object> runtimePropertyKeys = new HashSet<>();
-		runtimePropertyKeys.addAll(runtimeProperties.keySet()); // must do it this way to prevent concurrent mod errors
+		// must do it this way to prevent concurrent mod errors
+		Set<Object> runtimePropertyKeys = new HashSet<>(runtimeProperties.keySet());
 		for (Object key : runtimePropertyKeys) {
 			String prop = (String) key;
 			String value = (String) runtimeProperties.get(key);

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -74,7 +73,7 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
-		Map<String, HashSet<Integer>> duplicates = new HashMap<String, HashSet<Integer>>();
+		Map<String, HashSet<Integer>> duplicates = new HashMap<>();
 		Statement stmt = null;
 		PreparedStatement pStmt = null;
 		ResultSet rs = null;
@@ -94,7 +93,7 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 				id = rs.getInt("location_attribute_type_id");
 				name = rs.getString("name");
 				if (duplicates.get(name) == null) {
-					HashSet<Integer> results = new HashSet<Integer>();
+					HashSet<Integer> results = new HashSet<>();
 					results.add(id);
 					duplicates.put(name, results);
 				} else {
@@ -102,10 +101,9 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 					results.add(id);
 				}
 			}
-			
-			Iterator it2 = duplicates.entrySet().iterator();
-			while (it2.hasNext()) {
-				Map.Entry pairs = (Map.Entry) it2.next();
+
+			for (Object o : duplicates.entrySet()) {
+				Map.Entry pairs = (Map.Entry) o;
 				HashSet values = (HashSet) pairs.getValue();
 				List<Integer> duplicateNames = new ArrayList<Integer>(values);
 				int duplicateNameId = 1;
@@ -126,20 +124,21 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 						}
 					} while (duplicateName);
 					pStmt = connection
-					        .prepareStatement("update location_attribute_type set name = ?, changed_by = ?, date_changed = ? where location_attribute_type_id = ?");
+							.prepareStatement(
+									"update location_attribute_type set name = ?, changed_by = ?, date_changed = ? where location_attribute_type_id = ?");
 					if (!duplicateResult.isEmpty()) {
 						pStmt.setString(1, newName);
 					}
 					pStmt.setString(1, newName);
 					pStmt.setInt(2, DatabaseUpdater.getAuthenticatedUserId());
-					
+
 					Calendar cal = Calendar.getInstance();
 					Date date = new Date(cal.getTimeInMillis());
-					
+
 					pStmt.setDate(3, date);
 					pStmt.setInt(4, duplicateNames.get(i));
 					duplicateNameId += 1;
-					
+
 					pStmt.executeUpdate();
 				}
 			}

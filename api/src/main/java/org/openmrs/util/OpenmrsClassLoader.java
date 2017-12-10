@@ -59,13 +59,13 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	private static boolean libCacheFolderInitialized = false;
 	
 	// placeholder to hold mementos to restore
-	private static Map<String, OpenmrsMemento> mementos = new WeakHashMap<String, OpenmrsMemento>();
+	private static Map<String, OpenmrsMemento> mementos = new WeakHashMap<>();
 	
 	/**
 	 * Holds all classes that has been requested from this class loader. We use weak references so that
 	 * module classes can be garbage collected when modules are unloaded.
 	 */
-	private Map<String, WeakReference<Class<?>>> cachedClasses = new ConcurrentHashMap<String, WeakReference<Class<?>>>();
+	private Map<String, WeakReference<Class<?>>> cachedClasses = new ConcurrentHashMap<>();
 	
 	// suffix of the OpenMRS required library cache folder
 	private static final String LIBCACHESUFFIX = ".openmrs-lib-cache";
@@ -199,7 +199,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	private void cacheClass(String name, Class<?> clazz) {
-		cachedClasses.put(name, new WeakReference<Class<?>>(clazz));
+		cachedClasses.put(name, new WeakReference<>(clazz));
 	}
 	
 	/**
@@ -235,7 +235,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	@Override
 	public Enumeration<URL> findResources(final String name) throws IOException {
-		Set<URI> results = new HashSet<URI>();
+		Set<URI> results = new HashSet<>();
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			Enumeration<URL> urls = classLoader.findResources(name);
 			while (urls.hasMoreElements()) {
@@ -261,7 +261,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			}
 		}
 		
-		List<URL> resources = new ArrayList<URL>(results.size());
+		List<URL> resources = new ArrayList<>(results.size());
 		for (URI result : results) {
 			resources.add(result.toURL());
 		}
@@ -297,7 +297,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	@Override
 	public Enumeration<URL> getResources(String packageName) throws IOException {
-		Set<URI> results = new HashSet<URI>();
+		Set<URI> results = new HashSet<>();
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			Enumeration<URL> urls = classLoader.getResources(packageName);
 			while (urls.hasMoreElements()) {
@@ -323,7 +323,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			}
 		}
 		
-		List<URL> resources = new ArrayList<URL>(results.size());
+		List<URL> resources = new ArrayList<>(results.size());
 		for (URI result : results) {
 			resources.add(result.toURL());
 		}
@@ -417,7 +417,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	
 	// List all threads and recursively list all subgroup
 	private static List<Thread> listThreads(ThreadGroup group, String indent) {
-		List<Thread> threadToReturn = new ArrayList<Thread>();
+		List<Thread> threadToReturn = new ArrayList<>();
 		
 		log.error(indent + "Group[" + group.getName() + ":" + group.getClass() + "]");
 		int nt = group.activeCount();
@@ -523,10 +523,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			if (clazz != null && clazz.getName().contains("openmrs")) { // only clean up openmrs classes
 				try {
 					Field[] fields = clazz.getDeclaredFields();
-					for (int i = 0; i < fields.length; i++) {
-						Field field = fields[i];
+					for (Field field : fields) {
 						int mods = field.getModifiers();
-						if (field.getType().isPrimitive() || (field.getName().indexOf("$") != -1)) {
+						if (field.getType().isPrimitive() || (field.getName().contains("$"))) {
 							continue;
 						}
 						if (Modifier.isStatic(mods)) {
@@ -550,7 +549,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 							catch (Exception t) {
 								if (log.isDebugEnabled()) {
 									log.debug("Could not set field " + field.getName() + " to null in class "
-									        + clazz.getName(), t);
+											+ clazz.getName(), t);
 								}
 							}
 						}
@@ -582,10 +581,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			return;
 		}
 		Field[] fields = instance.getClass().getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			Field field = fields[i];
+		for (Field field : fields) {
 			int mods = field.getModifiers();
-			if (field.getType().isPrimitive() || (field.getName().indexOf("$") != -1)) {
+			if (field.getType().isPrimitive() || (field.getName().contains("$"))) {
 				continue;
 			}
 			try {
@@ -600,14 +598,14 @@ public class OpenmrsClassLoader extends URLClassLoader {
 						if (!loadedByThisOrChild(valueClass)) {
 							if (log.isDebugEnabled()) {
 								log.debug("Not setting field " + field.getName() + " to null in object of class "
-								        + instance.getClass().getName() + " because the referenced object was of type "
-								        + valueClass.getName() + " which was not loaded by this WebappClassLoader.");
+										+ instance.getClass().getName() + " because the referenced object was of type "
+										+ valueClass.getName() + " which was not loaded by this WebappClassLoader.");
 							}
 						} else {
 							field.set(instance, null);
 							if (log.isDebugEnabled()) {
 								log.debug("Set field " + field.getName() + " to null in class "
-								        + instance.getClass().getName());
+										+ instance.getClass().getName());
 							}
 						}
 					}
@@ -616,7 +614,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			catch (Exception e) {
 				if (log.isDebugEnabled()) {
 					log.debug("Could not set field " + field.getName() + " to null in object instance of class "
-					        + instance.getClass().getName(), e);
+							+ instance.getClass().getName(), e);
 				}
 			}
 		}

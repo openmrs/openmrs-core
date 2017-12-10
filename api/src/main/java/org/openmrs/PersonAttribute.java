@@ -150,13 +150,10 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 			catch (NoSuchMethodException e) {
 				log.warn("No such method for comparison " + methodAttribute, e);
 			}
-			catch (IllegalAccessException e) {
+			catch (IllegalAccessException | InvocationTargetException e) {
 				log.error("Error while comparing attributes", e);
 			}
-			catch (InvocationTargetException e) {
-				log.error("Error while comparing attributes", e);
-			}
-			
+
 		}
 		
 		return returnValue;
@@ -263,8 +260,7 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 			catch (InstantiationException e) {
 				// try to hydrate the object with the String constructor
 				log.trace("Unable to call no-arg constructor for class: " + c.getName());
-				Object o = c.getConstructor(String.class).newInstance(getValue());
-				return o;
+				return c.getConstructor(String.class).newInstance(getValue());
 			}
 		}
 		catch (Exception e) {

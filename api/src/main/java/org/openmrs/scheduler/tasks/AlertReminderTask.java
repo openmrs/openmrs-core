@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class AlertReminderTask extends AbstractTask {
 	
 	// Logger 
-	private Logger log = LoggerFactory.getLogger(AlertReminderTask.class);
+	private static final Logger log = LoggerFactory.getLogger(AlertReminderTask.class);
 	
 	/**
 	 * Send alert reminder email to user(s) associated with the alert.
@@ -80,7 +80,7 @@ public class AlertReminderTask extends AbstractTask {
 	 * @return
 	 */
 	private Collection<User> getRecipients(Collection<Alert> alerts) {
-		Collection<User> users = new HashSet<User>();
+		Collection<User> users = new HashSet<>();
 		for (Alert alert : alerts) {
 			log.debug("Send email to alert recipient(s) ...");
 			if (!alert.isAlertRead() && alert.getRecipients() != null) {

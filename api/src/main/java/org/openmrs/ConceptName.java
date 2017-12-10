@@ -372,7 +372,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 */
 	public void addTag(ConceptNameTag tag) {
 		if (tags == null) {
-			tags = new HashSet<ConceptNameTag>();
+			tags = new HashSet<>();
 		}
 		
 		if (!tags.contains(tag)) {

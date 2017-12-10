@@ -23,6 +23,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
@@ -76,7 +77,7 @@ import org.xml.sax.SAXException;
 
 public class WebModuleUtil {
 	
-	private static Logger log = LoggerFactory.getLogger(WebModuleUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(WebModuleUtil.class);
 	
 	private static DispatcherServlet dispatcherServlet = null;
 	
@@ -167,7 +168,7 @@ public class WebModuleUtil {
 						
 						// if a module id has a . in it, we should treat that as a /, i.e. files in the module
 						// ui.springmvc should go in folder names like .../ui/springmvc/...
-						absPath.append(mod.getModuleIdAsPath() + "/" + filepath);
+						absPath.append(mod.getModuleIdAsPath()).append("/").append(filepath);
 						if (log.isDebugEnabled()) {
 							log.debug("Moving file from: " + name + " to " + absPath);
 						}
@@ -528,7 +529,7 @@ public class WebModuleUtil {
 	public static void loadFilters(Module module, ServletContext servletContext) {
 		
 		// Load Filters
-		Map<String, Filter> filters = new HashMap<String, Filter>();
+		Map<String, Filter> filters = new HashMap<>();
 		try {
 			for (ModuleFilterDefinition def : ModuleFilterDefinition.retrieveFilterDefinitions(module)) {
 				if (moduleFiltersByName.containsKey(def.getFilterName())) {
@@ -587,13 +588,8 @@ public class WebModuleUtil {
 			}
 			log.debug("Module: " + module.getModuleId() + " successfully unloaded " + filters.size() + " filters.");
 			moduleFilters.remove(module);
-			
-			for (Iterator<Filter> i = moduleFiltersByName.values().iterator(); i.hasNext();) {
-				Filter filterVal = i.next();
-				if (filters.contains(filterVal)) {
-					i.remove();
-				}
-			}
+
+			moduleFiltersByName.values().removeIf(filters::contains);
 		}
 	}
 	
@@ -625,7 +621,7 @@ public class WebModuleUtil {
 	 */
 	public static List<Filter> getFiltersForRequest(ServletRequest request) {
 		
-		List<Filter> filters = new Vector<Filter>();
+		List<Filter> filters = new ArrayList<>();
 		if (request != null) {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			String requestPath = httpRequest.getRequestURI();

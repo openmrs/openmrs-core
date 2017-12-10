@@ -13,7 +13,7 @@ import java.beans.PropertyEditorSupport;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
  */
 public class ConceptAnswersEditor extends PropertyEditorSupport {
 	
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(ConceptAnswersEditor.class);
 	
 	private Collection<ConceptAnswer> originalConceptAnswers = null;
 	
@@ -41,7 +41,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 	 */
 	public ConceptAnswersEditor(Collection<ConceptAnswer> originalAnswers) {
 		if (originalAnswers == null) {
-			originalConceptAnswers = new HashSet<ConceptAnswer>();
+			originalConceptAnswers = new HashSet<>();
 		} else {
 			originalConceptAnswers = originalAnswers;
 		}
@@ -59,7 +59,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 		if (StringUtils.hasText(text)) {
 			ConceptService cs = Context.getConceptService();
 			String[] conceptIds = text.split(" ");
-			List<String> requestConceptIds = new Vector<String>();
+			List<String> requestConceptIds = new ArrayList<>();
 			//set up parameter answer Set for easier add/delete functions and removal of duplicates
 			for (String id : conceptIds) {
 				id = id.trim();
@@ -68,7 +68,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 				}
 			}
 			
-			Collection<ConceptAnswer> deletedConceptAnswers = new HashSet<ConceptAnswer>();
+			Collection<ConceptAnswer> deletedConceptAnswers = new HashSet<>();
 			
 			// loop over original concept answers to find any deleted answers
 			for (ConceptAnswer origConceptAnswer : originalConceptAnswers) {

@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -43,7 +44,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW };
 	
-	public static final Logger log = LoggerFactory.getLogger(ImageHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(ImageHandler.class);
 	
 	private Set<String> extensions;
 	
@@ -55,10 +56,8 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 		super();
 		
 		// Create a HashSet to quickly check for supported extensions.
-		extensions = new HashSet<String>();
-		for (String mt : ImageIO.getWriterFormatNames()) {
-			extensions.add(mt);
-		}
+		extensions = new HashSet<>();
+		Collections.addAll(extensions, ImageIO.getWriterFormatNames());
 	}
 	
 	/**

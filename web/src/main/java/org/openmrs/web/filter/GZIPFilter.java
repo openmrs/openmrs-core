@@ -106,7 +106,7 @@ public class GZIPFilter extends OncePerRequestFilter {
 	 */
 	private boolean isGZIPSupported(HttpServletRequest req) {
 		String browserEncodings = req.getHeader("accept-encoding");
-		boolean supported = ((browserEncodings != null) && (browserEncodings.indexOf("gzip") != -1));
+		boolean supported = ((browserEncodings != null) && (browserEncodings.contains("gzip")));
 		
 		String userAgent = req.getHeader("user-agent");
 		
@@ -130,9 +130,8 @@ public class GZIPFilter extends OncePerRequestFilter {
 		try {
 			String gzipEnabled = Context.getAdministrationService().getGlobalProperty(
 			    OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, "");
-			
-			boolean isEnabled = Boolean.valueOf(gzipEnabled);
-			cachedGZipEnabledFlag = isEnabled;
+
+			cachedGZipEnabledFlag = Boolean.valueOf(gzipEnabled);
 			return cachedGZipEnabledFlag;
 		}
 		catch (Exception e) {
