@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -278,8 +279,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 * @return list of compatible validators
 	 */
 	protected List<Validator> getValidators(Object obj) {
-		List<Validator> matchingValidators = new Vector<Validator>();
-		
+		List<Validator> matchingValidators = new ArrayList<Validator>();
+
 		List<Validator> validators = HandlerUtil.getHandlersForType(Validator.class, obj.getClass());
 		
 		for (Validator validator : validators) {

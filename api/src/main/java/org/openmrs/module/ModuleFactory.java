@@ -1115,7 +1115,7 @@ public class ModuleFactory {
 	public static List<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
 	        throws ModuleMustStartException {
 		
-		List<Module> dependentModulesStopped = new Vector<Module>();
+		List<Module> dependentModulesStopped = new ArrayList<Module>();
 		
 		if (mod != null) {
 			
@@ -1382,7 +1382,7 @@ public class ModuleFactory {
 	 */
 	public static List<Privilege> getPrivileges() {
 		
-		List<Privilege> privileges = new Vector<Privilege>();
+		List<Privilege> privileges = new ArrayList<Privilege>();
 		
 		for (Module mod : getStartedModules()) {
 			privileges.addAll(mod.getPrivileges());
@@ -1400,7 +1400,7 @@ public class ModuleFactory {
 	 */
 	public static List<GlobalProperty> getGlobalProperties() {
 		
-		List<GlobalProperty> globalProperties = new Vector<GlobalProperty>();
+		List<GlobalProperty> globalProperties = new ArrayList<GlobalProperty>();
 		
 		for (Module mod : getStartedModules()) {
 			globalProperties.addAll(mod.getGlobalProperties());

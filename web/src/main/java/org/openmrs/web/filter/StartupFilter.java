@@ -231,8 +231,8 @@ public abstract class StartupFilter implements Filter {
 		}
 		
 		Object locale = referenceMap.get(FilterUtil.LOCALE_ATTRIBUTE);
-		ToolContext toolContext = getToolContext(locale != null ? locale.toString() : Context.getLocale().toString());
-		VelocityContext velocityContext = new VelocityContext(toolContext);
+		ToolContext velocityToolContext = getToolContext(locale != null ? locale.toString() : Context.getLocale().toString());
+		VelocityContext velocityContext = new VelocityContext(velocityToolContext);
 		
 		for (Map.Entry<String, Object> entry : referenceMap.entrySet()) {
 			velocityContext.put(entry.getKey(), entry.getValue());
@@ -268,10 +268,10 @@ public abstract class StartupFilter implements Filter {
 		
 		try {
 			velocityEngine.evaluate(velocityContext, httpResponse.getWriter(), this.getClass().getName(),
-			    new InputStreamReader(templateInputStream));
+			    new InputStreamReader(templateInputStream,"UTF-8"));
 		}
 		catch (Exception e) {
-			throw new RuntimeException("Unable to process template: " + fullTemplatePath, e);
+			throw new APIException("Unable to process template: " + fullTemplatePath, e);
 		}
 	}
 	

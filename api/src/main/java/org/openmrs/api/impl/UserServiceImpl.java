@@ -130,7 +130,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<User> getUsersByRole(Role role) throws APIException {
-		List<Role> roles = new Vector<Role>();
+		List<Role> roles = new ArrayList<Role>();
 		roles.add(role);
 		
 		return Context.getUserService().getUsers(null, roles, false);
@@ -377,7 +377,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	private void checkPrivileges(User user) {
 		Collection<Role> roles = user.getAllRoles();
-		List<String> requiredPrivs = new Vector<String>();
+		List<String> requiredPrivs = new ArrayList<String>();
 		
 		for (Role r : roles) {
 			if (r.getRole().equals(RoleConstants.SUPERUSER)
@@ -566,8 +566,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		// if the authenticated role is in the list of searched roles, then all
 		// persons should be searched
-		Role auth_role = getRole(RoleConstants.AUTHENTICATED);
-		if (roles.contains(auth_role)) {
+		Role authRole = getRole(RoleConstants.AUTHENTICATED);
+		if (roles.contains(authRole)) {
 			return dao.getCountOfUsers(name, new Vector<Role>(), includeRetired);
 		}
 		
@@ -598,8 +598,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		// if the authenticated role is in the list of searched roles, then all
 		// persons should be searched
-		Role auth_role = getRole(RoleConstants.AUTHENTICATED);
-		if (roles.contains(auth_role)) {
+		Role authRole = getRole(RoleConstants.AUTHENTICATED);
+		if (roles.contains(authRole)) {
 			return dao.getUsers(name, new Vector<Role>(), includeRetired, start, length);
 		}
 		
