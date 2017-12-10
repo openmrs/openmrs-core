@@ -132,7 +132,7 @@ public class OpenmrsUtil {
 	 * @param newList
 	 * @return [List toAdd, List toDelete] with respect to origList
 	 */
-	public static <E extends Object> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {
+	public static <E> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {
 		// TODO finish function
 		
 		Collection<Collection<E>> returnList = new ArrayList<>();
@@ -689,7 +689,7 @@ public class OpenmrsUtil {
 	 * @param separator string to put between all elements
 	 * @return a String representing the toString() of all elements in c, separated by separator
 	 */
-	public static <E extends Object> String join(Collection<E> c, String separator) {
+	public static <E> String join(Collection<E> c, String separator) {
 		if (c == null) {
 			return "";
 		}
