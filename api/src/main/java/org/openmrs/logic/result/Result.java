@@ -299,7 +299,7 @@ public class Result extends ArrayList<Result> {
 	/**
 	 * @return null/empty result
 	 */
-	public static final Result emptyResult() {
+	public static Result emptyResult() {
 		return emptyResult;
 	}
 	
