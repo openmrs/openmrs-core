@@ -87,7 +87,7 @@ public interface CustomDatatype<T> {
 	 * A short representation of a custom value, along with an indication of whether this is the complete value,
 	 * or just a summary.
 	 */
-	public class Summary {
+	class Summary {
 		
 		private String summary;
 		

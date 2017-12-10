@@ -15,49 +15,49 @@ package org.openmrs.logic.op;
 public interface Operator {
 	
 	// comparison operators
-	public static final Operator CONTAINS = ComparisonOperator.CONTAINS;
+	Operator CONTAINS = ComparisonOperator.CONTAINS;
 	
-	public static final Operator EQUALS = ComparisonOperator.EQUALS;
+	Operator EQUALS = ComparisonOperator.EQUALS;
 	
-	public static final Operator WITHIN = ComparisonOperator.WITHIN;
+	Operator WITHIN = ComparisonOperator.WITHIN;
 	
-	public static final Operator GT = ComparisonOperator.GT;
+	Operator GT = ComparisonOperator.GT;
 	
-	public static final Operator GTE = ComparisonOperator.GTE;
+	Operator GTE = ComparisonOperator.GTE;
 	
-	public static final Operator LT = ComparisonOperator.LT;
+	Operator LT = ComparisonOperator.LT;
 	
-	public static final Operator LTE = ComparisonOperator.LTE;
+	Operator LTE = ComparisonOperator.LTE;
 	
-	public static final Operator BEFORE = ComparisonOperator.BEFORE;
+	Operator BEFORE = ComparisonOperator.BEFORE;
 	
-	public static final Operator AFTER = ComparisonOperator.AFTER;
+	Operator AFTER = ComparisonOperator.AFTER;
 	
-	public static final Operator IN = ComparisonOperator.IN;
+	Operator IN = ComparisonOperator.IN;
 	
 	// weird operator
-	public static final Operator ASOF = new AsOf();
+	Operator ASOF = new AsOf();
 	
 	// logical operators
-	public static final Operator AND = LogicalOperator.AND;
+	Operator AND = LogicalOperator.AND;
 	
-	public static final Operator OR = LogicalOperator.OR;
+	Operator OR = LogicalOperator.OR;
 	
-	public static final Operator NOT = LogicalOperator.NOT;
+	Operator NOT = LogicalOperator.NOT;
 	
 	// transform operators
-	public static final Operator LAST = TransformOperator.LAST;
+	Operator LAST = TransformOperator.LAST;
 	
-	public static final Operator FIRST = TransformOperator.FIRST;
+	Operator FIRST = TransformOperator.FIRST;
 	
-	public static final Operator DISTINCT = TransformOperator.DISTINCT;
+	Operator DISTINCT = TransformOperator.DISTINCT;
 	
-	public static final Operator EXISTS = TransformOperator.EXISTS;
+	Operator EXISTS = TransformOperator.EXISTS;
 	
-	public static final Operator NOT_EXISTS = TransformOperator.NOT_EXISTS;
+	Operator NOT_EXISTS = TransformOperator.NOT_EXISTS;
 	
-	public static final Operator COUNT = TransformOperator.COUNT;
+	Operator COUNT = TransformOperator.COUNT;
 	
-	public static final Operator AVERAGE = TransformOperator.AVERAGE;
+	Operator AVERAGE = TransformOperator.AVERAGE;
 	
 }

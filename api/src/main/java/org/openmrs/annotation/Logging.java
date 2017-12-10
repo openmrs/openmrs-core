@@ -49,7 +49,7 @@ public @interface Logging {
 	 * @return boolean true/false to suppress OpenMRS's automatic logging of this method
 	 * @since 1.8
 	 */
-	public boolean ignore() default false;
+	boolean ignore() default false;
 	
 	/**
 	 * If set to true, the annotated method will not print out the contents of the arguments every
@@ -57,7 +57,7 @@ public @interface Logging {
 	 * 
 	 * @return boolean true/false to ignore the argument content when logging
 	 */
-	public boolean ignoreAllArgumentValues() default false;
+	boolean ignoreAllArgumentValues() default false;
 	
 	/**
 	 * This list should set the argument indexes that should not be printed. This is useful if one
@@ -67,6 +67,6 @@ public @interface Logging {
 	 * 
 	 * @return list of argument indexes to ignore. (first argument is 0, second is 1, etc)
 	 */
-	public int[] ignoredArgumentIndexes() default {};
+	int[] ignoredArgumentIndexes() default {};
 	
 }

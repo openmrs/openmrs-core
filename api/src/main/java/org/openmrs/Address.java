@@ -15,57 +15,57 @@ package org.openmrs;
  */
 public interface Address {
 	
-	public String getAddress1();
+	String getAddress1();
 	
-	public void setAddress1(String address1);
+	void setAddress1(String address1);
 	
-	public String getAddress2();
+	String getAddress2();
 	
-	public void setAddress2(String address2);
+	void setAddress2(String address2);
 	
-	public String getAddress3();
+	String getAddress3();
 	
-	public void setAddress3(String address3);
+	void setAddress3(String address3);
 	
-	public String getAddress4();
+	String getAddress4();
 	
-	public void setAddress4(String address4);
+	void setAddress4(String address4);
 	
-	public String getAddress5();
+	String getAddress5();
 	
-	public void setAddress5(String address5);
+	void setAddress5(String address5);
 	
-	public String getAddress6();
+	String getAddress6();
 	
-	public void setAddress6(String address6);
+	void setAddress6(String address6);
 	
-	public String getCityVillage();
+	String getCityVillage();
 	
-	public void setCityVillage(String cityVillage);
+	void setCityVillage(String cityVillage);
 	
-	public String getStateProvince();
+	String getStateProvince();
 	
-	public void setStateProvince(String stateProvince);
+	void setStateProvince(String stateProvince);
 	
-	public String getCountyDistrict();
+	String getCountyDistrict();
 	
-	public void setCountyDistrict(String countyDistrict);
+	void setCountyDistrict(String countyDistrict);
 	
-	public String getPostalCode();
+	String getPostalCode();
 	
-	public void setPostalCode(String postalCode);
+	void setPostalCode(String postalCode);
 	
-	public String getCountry();
+	String getCountry();
 	
-	public void setCountry(String country);
+	void setCountry(String country);
 	
-	public String getLatitude();
+	String getLatitude();
 	
-	public void setLatitude(String latitude);
+	void setLatitude(String latitude);
 	
-	public String getLongitude();
+	String getLongitude();
 	
-	public void setLongitude(String longitude);
+	void setLongitude(String longitude);
 	
 	/**
 	 * @since 2.0

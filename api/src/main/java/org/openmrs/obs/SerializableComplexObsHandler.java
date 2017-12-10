@@ -30,7 +30,7 @@ public interface SerializableComplexObsHandler extends ComplexObsHandler {
 	 * 
 	 * @return Set of form fields
 	 */
-	public Set<FormField> getFormFields();
+	Set<FormField> getFormFields();
 	
 	/**
 	 * Transforms the incoming data from one format to another. For example, this can be useful if
@@ -39,6 +39,6 @@ public interface SerializableComplexObsHandler extends ComplexObsHandler {
 	 * @param data the data to serialize
 	 * @return the serialized form data
 	 */
-	public String serializeFormData(String data);
+	String serializeFormData(String data);
 	
 }

@@ -41,6 +41,6 @@ public @interface DisableHandlers {
 	/**
 	 * The set of handlers to be be disabled
 	 */
-	public Class<? extends RequiredDataHandler>[] handlerTypes() default {};
+	Class<? extends RequiredDataHandler>[] handlerTypes() default {};
 	
 }

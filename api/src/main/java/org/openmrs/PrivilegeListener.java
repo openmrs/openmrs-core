@@ -30,5 +30,5 @@ public interface PrivilegeListener {
 	 * @param hasPrivilege <code>true</code> if the authenticated user has the required privilege or if it is a proxy privilege
 	 * @since 1.8.4, 1.9.1, 1.10
 	 */
-	public void privilegeChecked(User user, String privilege, boolean hasPrivilege);
+	void privilegeChecked(User user, String privilege, boolean hasPrivilege);
 }

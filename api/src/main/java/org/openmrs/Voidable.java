@@ -35,45 +35,45 @@ public interface Voidable extends OpenmrsObject {
 	 */
 	@Deprecated
 	@JsonIgnore
-	public Boolean isVoided();
+	Boolean isVoided();
 	
 	/**
 	 * @return true if this object is voided and otherwise false
 	 */
-	public Boolean getVoided();
+	Boolean getVoided();
 	
 	/**
 	 * @param voided - whether of not this object is voided
 	 */
-	public void setVoided(Boolean voided);
+	void setVoided(Boolean voided);
 	
 	/**
 	 * @return User - the user who voided the object
 	 */
-	public User getVoidedBy();
+	User getVoidedBy();
 	
 	/**
 	 * @param voidedBy - the user who voided the object
 	 */
-	public void setVoidedBy(User voidedBy);
+	void setVoidedBy(User voidedBy);
 	
 	/**
 	 * @return Date - the date the object was voided
 	 */
-	public Date getDateVoided();
+	Date getDateVoided();
 	
 	/**
 	 * @param dateVoided - the date the object was voided
 	 */
-	public void setDateVoided(Date dateVoided);
+	void setDateVoided(Date dateVoided);
 	
 	/**
 	 * @return String - the reason the object was voided
 	 */
-	public String getVoidReason();
+	String getVoidReason();
 	
 	/**
 	 * @param voidReason - the reason the object was voided
 	 */
-	public void setVoidReason(String voidReason);
+	void setVoidReason(String voidReason);
 }

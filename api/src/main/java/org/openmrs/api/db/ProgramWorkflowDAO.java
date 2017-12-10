@@ -41,7 +41,7 @@ public interface ProgramWorkflowDAO {
 	 * @return The saved {@link Program}
 	 * @throws DAOException
 	 */
-	public Program saveProgram(Program program) throws DAOException;
+	Program saveProgram(Program program) throws DAOException;
 	
 	/**
 	 * Retrieves a {@link Program} from the database by primary key programId
@@ -50,7 +50,7 @@ public interface ProgramWorkflowDAO {
 	 * @return Program - The {@link Program} matching the passed programId
 	 * @throws DAOException
 	 */
-	public Program getProgram(Integer programId) throws DAOException;
+	Program getProgram(Integer programId) throws DAOException;
 	
 	/**
 	 * Returns all programs
@@ -59,7 +59,7 @@ public interface ProgramWorkflowDAO {
 	 * @return List&lt;Program&gt; all existing programs, including retired based on the input parameter
 	 * @throws DAOException
 	 */
-	public List<Program> getAllPrograms(boolean includeRetired) throws DAOException;
+	List<Program> getAllPrograms(boolean includeRetired) throws DAOException;
 	
 	/**
 	 * Returns programs that match the given string. A null list will never be returned. An empty
@@ -69,7 +69,7 @@ public interface ProgramWorkflowDAO {
 	 * @return List&lt;Program&gt; - list of Programs whose name matches the input parameter
 	 * @throws DAOException
 	 */
-	public List<Program> findPrograms(String nameFragment) throws DAOException;
+	List<Program> findPrograms(String nameFragment) throws DAOException;
 	
 	/**
 	 * Completely remove a program from the database (not reversible) This method delegates to
@@ -78,7 +78,7 @@ public interface ProgramWorkflowDAO {
 	 * @param program the Program to clean out of the database.
 	 * @throws DAOException
 	 */
-	public void deleteProgram(Program program) throws DAOException;
+	void deleteProgram(Program program) throws DAOException;
 	
 	// **************************
 	// PATIENT PROGRAM
@@ -91,7 +91,7 @@ public interface ProgramWorkflowDAO {
 	 * @return PatientProgram - the saved PatientProgram
 	 * @throws DAOException
 	 */
-	public PatientProgram savePatientProgram(PatientProgram patientProgram) throws DAOException;
+	PatientProgram savePatientProgram(PatientProgram patientProgram) throws DAOException;
 	
 	/**
 	 * Returns a PatientProgram given that PatientPrograms primary key <code>patientProgramId</code>
@@ -102,9 +102,9 @@ public interface ProgramWorkflowDAO {
 	 *         <code>patientProgramId</code> passed in.
 	 * @throws DAOException
 	 */
-	public PatientProgram getPatientProgram(Integer id);
+	PatientProgram getPatientProgram(Integer id);
 	
-	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs);
+	List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs);
 	
 	/**
 	 * Returns PatientPrograms that match the input parameters. If an input parameter is set to
@@ -127,8 +127,8 @@ public interface ProgramWorkflowDAO {
 	 * @return List&lt;PatientProgram&gt; of PatientPrograms that match the passed input parameters
 	 * @throws DAOException
 	 */
-	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
-	        Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided)
+	List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
+			Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided)
 	        throws DAOException;
 	
 	/**
@@ -138,7 +138,7 @@ public interface ProgramWorkflowDAO {
 	 * @param patientProgram the PatientProgram to clean out of the database.
 	 * @throws DAOException
 	 */
-	public void deletePatientProgram(PatientProgram patientProgram) throws DAOException;
+	void deletePatientProgram(PatientProgram patientProgram) throws DAOException;
 	
 	// **************************
 	// CONCEPT STATE CONVERSION
@@ -151,7 +151,7 @@ public interface ProgramWorkflowDAO {
 	 * @return The saved ConceptStateConversion
 	 * @throws DAOException
 	 */
-	public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion csc) throws DAOException;
+	ConceptStateConversion saveConceptStateConversion(ConceptStateConversion csc) throws DAOException;
 	
 	/**
 	 * Returns all conceptStateConversions
@@ -159,7 +159,7 @@ public interface ProgramWorkflowDAO {
 	 * @return List&lt;ConceptStateConversion&gt; of all ConceptStateConversions that exist
 	 * @throws DAOException
 	 */
-	public List<ConceptStateConversion> getAllConceptStateConversions() throws DAOException;
+	List<ConceptStateConversion> getAllConceptStateConversions() throws DAOException;
 	
 	/**
 	 * Returns a conceptStateConversion given that conceptStateConversions primary key
@@ -172,7 +172,7 @@ public interface ProgramWorkflowDAO {
 	 *         <code>conceptStateConversionId</code> passed in.
 	 * @throws DAOException
 	 */
-	public ConceptStateConversion getConceptStateConversion(Integer id);
+	ConceptStateConversion getConceptStateConversion(Integer id);
 	
 	/**
 	 * Completely remove a conceptStateConversion from the database (not reversible)
@@ -180,7 +180,7 @@ public interface ProgramWorkflowDAO {
 	 * @param csc the ConceptStateConversion to clean out of the database.
 	 * @throws DAOException
 	 */
-	public void deleteConceptStateConversion(ConceptStateConversion csc);
+	void deleteConceptStateConversion(ConceptStateConversion csc);
 	
 	/**
 	 * Retrieves the ConceptStateConversion that matches the passed <code>ProgramWorkflow</code> and
@@ -192,25 +192,25 @@ public interface ProgramWorkflowDAO {
 	 *         <code>Concept</code>
 	 * @throws DAOException
 	 */
-	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger);
+	ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger);
 	
 	/**
 	 * @param uuid
 	 * @return concept state conversion or null
 	 */
-	public ConceptStateConversion getConceptStateConversionByUuid(String uuid);
+	ConceptStateConversion getConceptStateConversionByUuid(String uuid);
 	
 	/**
 	 * @param uuid
 	 * @return patient program or null
 	 */
-	public PatientProgram getPatientProgramByUuid(String uuid);
+	PatientProgram getPatientProgramByUuid(String uuid);
 	
 	/**
 	 * @param uuid
 	 * @return program or null
 	 */
-	public Program getProgramByUuid(String uuid);
+	Program getProgramByUuid(String uuid);
 	
 	/**
 	 * Retrieves the Programs from the dB which have the given name.
@@ -220,7 +220,7 @@ public interface ProgramWorkflowDAO {
 	 * @should return only and exactly the programs with the given name
 	 * @return all Programs with the given name.
 	 */
-	public List<Program> getProgramsByName(String name, boolean includeRetired);
+	List<Program> getProgramsByName(String name, boolean includeRetired);
 	
 	/**
 	 * Retrieves a {@code ProgramWorkflowState} from the database by its primary key.
@@ -229,15 +229,15 @@ public interface ProgramWorkflowDAO {
 	 * @return the program workflow state matching given id or null if not found
 	 * @since 2.2.0
 	 */
-	public ProgramWorkflowState getState(Integer stateId);
+	ProgramWorkflowState getState(Integer stateId);
 	
 	/**
 	 * @param uuid
 	 * @return program workflow state or null
 	 */
-	public ProgramWorkflowState getStateByUuid(String uuid);
+	ProgramWorkflowState getStateByUuid(String uuid);
 	
-	public PatientState getPatientStateByUuid(String uuid);
+	PatientState getPatientStateByUuid(String uuid);
 	
 	/**
 	 * Retrieves a {@code ProgramWorkflow} from the database by its primary key.
@@ -246,13 +246,13 @@ public interface ProgramWorkflowDAO {
 	 * @return the program workflow matching given id or null if not found
 	 * @since 2.2.0
 	 */
-	public ProgramWorkflow getWorkflow(Integer workflowId);
+	ProgramWorkflow getWorkflow(Integer workflowId);
 	
 	/**
 	 * @param uuid
 	 * @return program workflow or null
 	 */
-	public ProgramWorkflow getWorkflowByUuid(String uuid);
+	ProgramWorkflow getWorkflowByUuid(String uuid);
 	
 	/**
 	 * Returns a list of Programs that are using a particular concept.
@@ -260,7 +260,7 @@ public interface ProgramWorkflowDAO {
 	 * @param concept - The Concept being used.
 	 * @return - A List of Programs
 	 */
-	public List<Program> getProgramsByConcept(Concept concept);
+	List<Program> getProgramsByConcept(Concept concept);
 	
 	/**
 	 * Returns a list of ProgramWorkflows that are using a particular concept.
@@ -268,7 +268,7 @@ public interface ProgramWorkflowDAO {
 	 * @param concept - The Concept being used.
 	 * @return - A List of ProgramWorkflows
 	 */
-	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept);
+	List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept);
 	
 	/**
 	 * Returns a list of ProgramWorkflowStates that are using a particular concept.
@@ -276,5 +276,5 @@ public interface ProgramWorkflowDAO {
 	 * @param concept - The Concept being used.
 	 * @return - A List of ProgramWorkflowStates
 	 */
-	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept);
+	List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept);
 }

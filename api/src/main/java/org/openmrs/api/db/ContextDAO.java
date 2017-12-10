@@ -50,7 +50,7 @@ public interface ContextDAO {
 	 * @should throw a ContextAuthenticationException if username is an empty string
 	 * @should throw a ContextAuthenticationException if username is white space
 	 */
-	public User authenticate(String username, String password) throws ContextAuthenticationException;
+	User authenticate(String username, String password) throws ContextAuthenticationException;
 	
 	/**
 	 * Gets a user given the uuid. Privilege checks are not done here because this is used by the
@@ -60,27 +60,27 @@ public interface ContextDAO {
 	 * @return the User from the database
 	 * @throws ContextAuthenticationException
 	 */
-	public User getUserByUuid(String uuid) throws ContextAuthenticationException;
+	User getUserByUuid(String uuid) throws ContextAuthenticationException;
 	
 	/**
 	 * Open session.
 	 */
-	public void openSession();
+	void openSession();
 	
 	/**
 	 * Close session.
 	 */
-	public void closeSession();
+	void closeSession();
 	
 	/**
 	 * @see org.openmrs.api.context.Context#clearSession()
 	 */
-	public void clearSession();
+	void clearSession();
 	
 	/**
 	 * @see org.openmrs.api.context.Context#flushSession()
 	 */
-	public void flushSession();
+	void flushSession();
 	
 	/**
 	 * Used to clear a cached object out of a session in the middle of a unit of work. Future
@@ -90,7 +90,7 @@ public interface ContextDAO {
 	 * @param obj The object to evict/remove from the session
 	 * @see org.openmrs.api.context.Context#evictFromSession(Object)
 	 */
-	public void evictFromSession(Object obj);
+	void evictFromSession(Object obj);
 
 	/**
 	 * Used to re-read the state of the given instance from the underlying database.
@@ -99,7 +99,7 @@ public interface ContextDAO {
 	 * @param obj The object to refresh from the database in the session
 	 * @see org.openmrs.api.context.Context#refreshEntity(Object)
 	 */
-	public void refreshEntity(Object obj);
+	void refreshEntity(Object obj);
 
 	/**
 	 * Starts the OpenMRS System
@@ -108,20 +108,20 @@ public interface ContextDAO {
 	 * 
 	 * @param props Properties
 	 */
-	public void startup(Properties props);
+	void startup(Properties props);
 	
 	/**
 	 * Stops the OpenMRS System Should be called after all activity has ended and application is
 	 * closing
 	 */
-	public void shutdown();
+	void shutdown();
 	
 	/**
 	 * Merge in the default properties defined for this database connection
 	 * 
 	 * @param runtimeProperties The current user specific runtime properties
 	 */
-	public void mergeDefaultRuntimeProperties(Properties runtimeProperties);
+	void mergeDefaultRuntimeProperties(Properties runtimeProperties);
 	
 	/**
 	 * Updates the search index if necessary.
@@ -129,25 +129,25 @@ public interface ContextDAO {
 	 * The update is triggered if {@link OpenmrsConstants#GP_SEARCH_INDEX_VERSION} is blank
 	 * or the value does not match {@link OpenmrsConstants#SEARCH_INDEX_VERSION}.
 	 */
-	public void setupSearchIndex();
+	void setupSearchIndex();
 	
 	/**
 	 * @see Context#updateSearchIndex()
 	 */
-	public void updateSearchIndex();
+	void updateSearchIndex();
 
 	/**
 	 * @see Context#updateSearchIndexAsync()
 	 */
-	public Future<?> updateSearchIndexAsync();
+	Future<?> updateSearchIndexAsync();
 	
 	/**
 	 * @see Context#updateSearchIndexForObject(Object)
 	 */
-	public void updateSearchIndexForObject(Object object);
+	void updateSearchIndexForObject(Object object);
 	
 	/**
 	 * @see Context#updateSearchIndexForType(Class)
 	 */
-	public void updateSearchIndexForType(Class<?> type);
+	void updateSearchIndexForType(Class<?> type);
 }

@@ -41,6 +41,6 @@ public interface UnretireHandler<R extends Retireable> extends RequiredDataHandl
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
 	 */
 	@Override
-	public void handle(R retireableObject, User retiringUser, Date origParentRetiredDate, String unused);
+	void handle(R retireableObject, User retiringUser, Date origParentRetiredDate, String unused);
 	
 }

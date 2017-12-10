@@ -14,21 +14,21 @@ public interface Task {
 	/**
 	 * Executes the task defined in the task definition.
 	 */
-	public void execute();
+	void execute();
 	
 	/**
 	 * Initializes the task and sets the task definition.
 	 * 
 	 * @param definition
 	 */
-	public void initialize(TaskDefinition definition);
+	void initialize(TaskDefinition definition);
 	
 	/**
 	 * Returns the task definition associated with this task.
 	 * 
 	 * @return a task definition
 	 */
-	public TaskDefinition getTaskDefinition();
+	TaskDefinition getTaskDefinition();
 	
 	/**
 	 * Returns true if the task is currently in its execute() method.
