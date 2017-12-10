@@ -32,43 +32,23 @@ public class PatientIdentifierTypeDefaultComparator implements Comparator<Patien
 		final NullComparator nullLowerComparator = new NullComparator(false);
 		
 		//Retired higher
-		comparatorChain.addComparator(new Comparator<PatientIdentifierType>() {
-			
-			@Override
-			public int compare(PatientIdentifierType o1, PatientIdentifierType o2) {
-				return nullLowerComparator.compare(o1.getRetired(), o2.getRetired());
-			}
-		});
+		comparatorChain.addComparator(
+				(Comparator<PatientIdentifierType>) (o1, o2) -> nullLowerComparator.compare(o1.getRetired(), o2.getRetired()));
 		
 		//Required lower
-		comparatorChain.addComparator(new Comparator<PatientIdentifierType>() {
-			
-			@Override
-			public int compare(PatientIdentifierType o1, PatientIdentifierType o2) {
-				return nullLowerComparator.compare(o1.getRequired(), o2.getRequired());
-			}
-		}, true);
+		comparatorChain.addComparator(
+				(Comparator<PatientIdentifierType>) (o1, o2) -> nullLowerComparator.compare(o1.getRequired(), o2.getRequired()), true);
 		
 		//By name
-		comparatorChain.addComparator(new Comparator<PatientIdentifierType>() {
-			
-			@Override
-			public int compare(PatientIdentifierType o1, PatientIdentifierType o2) {
-				String o1Name = (o1.getName() != null) ? o1.getName().toLowerCase() : null;
-				String o2Name = (o2.getName() != null) ? o2.getName().toLowerCase() : null;
-				
-				return nullHigherComparator.compare(o1Name, o2Name);
-			}
+		comparatorChain.addComparator((Comparator<PatientIdentifierType>) (o1, o2) -> {
+			String o1Name = (o1.getName() != null) ? o1.getName().toLowerCase() : null;
+			String o2Name = (o2.getName() != null) ? o2.getName().toLowerCase() : null;
+
+			return nullHigherComparator.compare(o1Name, o2Name);
 		});
 		
 		//By id
-		comparatorChain.addComparator(new Comparator<PatientIdentifierType>() {
-			
-			@Override
-			public int compare(PatientIdentifierType o1, PatientIdentifierType o2) {
-				return nullHigherComparator.compare(o1.getPatientIdentifierTypeId(), o2.getPatientIdentifierTypeId());
-			}
-		});
+		comparatorChain.addComparator((Comparator<PatientIdentifierType>) (o1, o2) -> nullHigherComparator.compare(o1.getPatientIdentifierTypeId(), o2.getPatientIdentifierTypeId()));
 	}
 	
 	/**

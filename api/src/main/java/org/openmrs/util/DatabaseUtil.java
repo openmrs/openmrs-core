@@ -91,13 +91,7 @@ public class DatabaseUtil {
 		final boolean sessionDataManipulation = dataManipulation;
 		
 		//todo replace with lambdas after moving on to Java 8
-		session.doWork(new Work() {
-			
-			@Override
-			public void execute(Connection conn) {
-				populateResultsFromSQLQuery(conn, query, sessionDataManipulation, result);
-			}
-		});
+		session.doWork(conn -> populateResultsFromSQLQuery(conn, query, sessionDataManipulation, result));
 		
 		return result;
 	}

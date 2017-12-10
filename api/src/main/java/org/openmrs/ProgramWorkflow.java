@@ -181,14 +181,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	public Set<ProgramWorkflowState> getSortedStates() {
 		final Comparator<String> naturalComparator = NaturalStrings.getNaturalComparator();
 		
-		Comparator<ProgramWorkflowState> stateComparator = new Comparator<ProgramWorkflowState>() {
-			
-			@Override
-			public int compare(ProgramWorkflowState o1, ProgramWorkflowState o2) {
-				return naturalComparator.compare(o1.getConcept().getName().getName(), o2.getConcept().getName().getName());
-			}
-			
-		};
+		Comparator<ProgramWorkflowState> stateComparator = (o1, o2) -> naturalComparator.compare(o1.getConcept().getName().getName(), o2.getConcept().getName().getName());
 		
 		Set<ProgramWorkflowState> sorted = new TreeSet<>(stateComparator);
 		if (getStates() != null) {

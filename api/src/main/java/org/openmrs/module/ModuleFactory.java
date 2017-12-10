@@ -710,13 +710,7 @@ public class ModuleFactory {
 				}
 				
 				// Sort this module's extensions, and merge them into the full extensions map
-				Comparator<Extension> sortOrder = new Comparator<Extension>() {
-					
-					@Override
-					public int compare(Extension e1, Extension e2) {
-						return Integer.valueOf(e1.getOrder()).compareTo(Integer.valueOf(e2.getOrder()));
-					}
-				};
+				Comparator<Extension> sortOrder = (e1, e2) -> Integer.valueOf(e1.getOrder()).compareTo(Integer.valueOf(e2.getOrder()));
 				for (Map.Entry<String, List<Extension>> moduleExtensionEntry : moduleExtensionMap.entrySet()) {
 					// Sort this module's extensions for current extension point
 					List<Extension> sortedModuleExtensions = moduleExtensionEntry.getValue();

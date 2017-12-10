@@ -61,7 +61,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 		this.name = name;
 		this.description = description;
 		if (ids != null) {
-			Arrays.stream(ids).forEach(id -> addMember(id));
+			Arrays.stream(ids).forEach(this::addMember);
 		}
 	}
 	
