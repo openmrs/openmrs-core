@@ -95,7 +95,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		orderSetService.saveOrderSet(orderSetObj);
 		Context.flushSession();
 		
-		assertNotNull("OrderSet has a order_set_id", orderSetObj.getId().intValue());
+		assertNotNull("OrderSet has a order_set_id", orderSetObj.getId());
 		assertEquals("OrderSet has updated description", "Test Order Set Description Updated", orderSetObj.getDescription());
 		assertEquals("OrderSet has updated operator", "ONE", orderSetObj.getOperator().toString());
 		
