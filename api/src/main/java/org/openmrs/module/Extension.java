@@ -180,7 +180,7 @@ public abstract class Extension {
 	 * @param mediaType
 	 * @return string extension id
 	 */
-	public static final String toExtensionId(String pointId, MEDIA_TYPE mediaType) {
+	public static String toExtensionId(String pointId, MEDIA_TYPE mediaType) {
 		if (mediaType != null) {
 			return new StringBuffer(pointId).append(Extension.extensionIdSeparator).append(mediaType).toString();
 		} else {

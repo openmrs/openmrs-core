@@ -177,7 +177,7 @@ public final class OpenmrsConstants {
 	 * 
 	 * @return Collection&lt;String&gt; of words that are ignored
 	 */
-	public static final Collection<String> STOP_WORDS() {
+	public static Collection<String> STOP_WORDS() {
 		List<String> stopWords = new ArrayList<>();
 		stopWords.add("A");
 		stopWords.add("AND");
@@ -199,7 +199,7 @@ public final class OpenmrsConstants {
 	 * 
 	 * @return Map&lt;String, String&gt; of gender character to gender name
 	 */
-	public static final Map<String, String> GENDER() {
+	public static Map<String, String> GENDER() {
 		Map<String, String> genders = new LinkedHashMap<>();
 		genders.put("M", "Male");
 		genders.put("F", "Female");
@@ -211,7 +211,7 @@ public final class OpenmrsConstants {
 	 * 
 	 * @return <code>Collection&lt;String&gt;</code> of the auto-assigned roles
 	 */
-	public static final Collection<String> AUTO_ROLES() {
+	public static Collection<String> AUTO_ROLES() {
 		List<String> roles = new ArrayList<>();
 		
 		roles.add(RoleConstants.ANONYMOUS);
@@ -600,7 +600,7 @@ public final class OpenmrsConstants {
 	 * 
 	 * @return List&lt;GlobalProperty&gt; of the core global properties
 	 */
-	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
+	public static List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
 		List<GlobalProperty> props = new ArrayList<>();
 		
 		props.add(new GlobalProperty("use_patient_attribute.healthCenter", "false",
@@ -1088,7 +1088,7 @@ public final class OpenmrsConstants {
 	
 	public static final String CONCEPT_PROPOSAL_REJECT = "REJECT";
 	
-	public static final Collection<String> CONCEPT_PROPOSAL_STATES() {
+	public static Collection<String> CONCEPT_PROPOSAL_STATES() {
 		Collection<String> states = new ArrayList<>();
 		
 		states.add(CONCEPT_PROPOSAL_UNMAPPED);
