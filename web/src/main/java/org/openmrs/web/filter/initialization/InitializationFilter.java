@@ -821,7 +821,6 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			renderTemplate(page, referenceMap, httpResponse);
-			return;
 		}
 	}
 	

@@ -307,7 +307,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// if we're using the in-memory hypersonic database, add those
 		// connection properties here to override what is in the runtime
 		// properties
-		if (useInMemoryDatabase() == true) {
+		if (useInMemoryDatabase()) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
 			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000";
 			runtimeProperties.setProperty(Environment.URL, url);

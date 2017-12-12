@@ -747,7 +747,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public void purgeConceptProposal(ConceptProposal cp) throws DAOException {
 		sessionFactory.getCurrentSession().delete(cp);
-		return;
 	}
 	
 	/**

@@ -112,10 +112,7 @@ public class Allergen {
     }
 
 	public boolean isCoded(){
-		if (codedAllergen == null || codedAllergen.getUuid().equals(getOtherNonCodedConceptUuid())) {
-			return false;
-		}
-		return true;
+		return codedAllergen != null && !codedAllergen.getUuid().equals(getOtherNonCodedConceptUuid());
 	}
 
 	@Override
@@ -140,22 +137,11 @@ public class Allergen {
 	 */
 	public boolean isSameAllergen(Allergen allergen) {
 		if (isCoded()) {
-			if (allergen.getCodedAllergen() == null) {
-				return false;
-			}
-			if (!codedAllergen.equals(allergen.getCodedAllergen())) {
-				return false;
-			}
+			return allergen.getCodedAllergen() != null && codedAllergen.equals(allergen.getCodedAllergen());
+		}  else {
+			return nonCodedAllergen != null && allergen.getNonCodedAllergen() != null && nonCodedAllergen
+					.equalsIgnoreCase(allergen.getNonCodedAllergen());
 		}
-		else {
-			if (nonCodedAllergen == null || allergen.getNonCodedAllergen() == null) {
-				return false;
-			}
-			if (!nonCodedAllergen.equalsIgnoreCase(allergen.getNonCodedAllergen())) {
-				return false;
-			}
-		}
-		
-		return true;
+
 	}
 }

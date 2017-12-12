@@ -42,7 +42,7 @@ public class Format {
 	}
 	
 	public static String format(double d) {
-		return "" + ((d == (int) d) ? (int) d : d);
+		return "" + (d);
 	}
 	
 	public static String format(Double d) {

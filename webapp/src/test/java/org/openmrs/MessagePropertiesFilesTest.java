@@ -74,7 +74,6 @@ public class MessagePropertiesFilesTest {
 		try {
 			duplicatedKeys = propertiesFileValidator.getDuplicatedKeys(fileInputStream);
 			Assert.assertTrue(duplicatedKeys.isEmpty());
-			return;
 		}catch(Exception e){
 			Assert.fail("Problem with checking messages properties file.");
 		} finally {
