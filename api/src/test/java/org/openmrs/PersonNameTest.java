@@ -60,7 +60,7 @@ public class PersonNameTest {
 		PersonName copy = PersonName.newInstance(pn);
 		
 		Assert.assertEquals(personNameId, copy.getPersonNameId());
-		Assert.assertEquals(preferred, copy.getPreferred().booleanValue());
+		Assert.assertEquals(preferred, copy.getPreferred());
 		Assert.assertEquals(prefix, copy.getPrefix());
 		Assert.assertEquals(person, copy.getPerson());
 		Assert.assertEquals(givenName, copy.getGivenName());
@@ -70,7 +70,7 @@ public class PersonNameTest {
 		Assert.assertEquals(familyName2, copy.getFamilyName2());
 		Assert.assertEquals(familyNameSuffix, copy.getFamilyNameSuffix());
 		Assert.assertEquals(degree, copy.getDegree());
-		Assert.assertEquals(voided, copy.getVoided().booleanValue());
+		Assert.assertEquals(voided, copy.getVoided());
 		Assert.assertEquals(voidedBy, copy.getVoidedBy());
 		Assert.assertEquals(voidReason, copy.getVoidReason());
 	}

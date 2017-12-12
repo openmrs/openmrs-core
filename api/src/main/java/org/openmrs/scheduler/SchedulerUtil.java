@@ -177,7 +177,7 @@ public class SchedulerUtil {
 				}
 				
 				// The time between successive runs (e.g. 24 hours)
-				long repeatInterval = taskDefinition.getRepeatInterval().longValue();
+				long repeatInterval = taskDefinition.getRepeatInterval();
 				if (repeatInterval == 0) {
 					// task is one-shot so just return the start time
 					return firstTime;

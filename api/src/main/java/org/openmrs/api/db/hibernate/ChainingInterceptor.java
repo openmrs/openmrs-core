@@ -178,7 +178,7 @@ public class ChainingInterceptor implements Interceptor {
 		int[] uniquePrimitiveIndices = new int[uniqueIndices.size()];
 		
 		for (int x = 0; x < uniqueIndices.size(); x++) {
-			uniquePrimitiveIndices[x] = uniqueIndices.get(x).intValue();
+			uniquePrimitiveIndices[x] = uniqueIndices.get(x);
 		}
 		
 		return uniquePrimitiveIndices;

@@ -206,7 +206,7 @@ public class Daemon {
 		if (b == null) {
 			return false;
 		} else {
-			return b.booleanValue();
+			return b;
 		}
 	}
 	
