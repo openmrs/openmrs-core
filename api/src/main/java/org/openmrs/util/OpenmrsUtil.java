@@ -318,6 +318,10 @@ public class OpenmrsUtil {
 		if (!folder.isDirectory()) {
 			return false;
 		}
+
+		if (folder.listFiles() == null){
+			return false;
+		}
 		
 		for (File f : Objects.requireNonNull(folder.listFiles())) {
 			if (f.getName().equals(filename)) {
@@ -898,6 +902,10 @@ public class OpenmrsUtil {
 		
 		if (log.isDebugEnabled()) {
 			log.debug("Deleting directory " + dir.getAbsolutePath());
+		}
+
+		if (dir.listFiles() == null){
+			return false;
 		}
 		
 		File[] fileList = dir.listFiles();
