@@ -112,14 +112,14 @@ public class ModuleClassLoader extends URLClassLoader {
 		if (devDir != null) {
 			File[] fileList = devDir.listFiles();
 			if (fileList != null) {
-			for (File file : fileList) {
-				if (!file.isDirectory()) {
-					continue;
+				for (File file : fileList) {
+					if (!file.isDirectory()) {
+						continue;
 				}
-				File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
-				if (dir.exists()) {
-					Collection<File> files = FileUtils.listFiles(dir, new String[] { "class" }, true);
-					addClassFilePackages(files, dir.getAbsolutePath().length() + 1);
+					File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
+					if (dir.exists()) {
+						Collection<File> files = FileUtils.listFiles(dir, new String[] { "class" }, true);
+						addClassFilePackages(files, dir.getAbsolutePath().length() + 1);
 				}
 			}
 			}
@@ -209,14 +209,14 @@ public class ModuleClassLoader extends URLClassLoader {
 			if (devDir != null) {
 				File[] fileList = devDir.listFiles();
 				if (fileList != null) {
-				for (File file : fileList) {
-					if (!file.isDirectory()) {
-						continue;
+					for (File file : fileList) {
+						if (!file.isDirectory()) {
+							continue;
 					}
-					File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
-					if (dir.exists()) {
-						result.add(dir.toURI().toURL());
-						devFolderNames.add(file.getName());
+						File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
+						if (dir.exists()) {
+							result.add(dir.toURI().toURL());
+							devFolderNames.add(file.getName());
 					}
 				}
 				}
