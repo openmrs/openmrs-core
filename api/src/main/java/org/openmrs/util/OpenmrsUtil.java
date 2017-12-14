@@ -318,8 +318,13 @@ public class OpenmrsUtil {
 		if (!folder.isDirectory()) {
 			return false;
 		}
+
+		File[] files = folder.listFiles();
+		if (files == null) {
+			return false;
+		}
 		
-		for (File f : Objects.requireNonNull(folder.listFiles())) {
+		for (File f : files) {
 			if (f.getName().equals(filename)) {
 				return true;
 			}
@@ -901,7 +906,11 @@ public class OpenmrsUtil {
 		}
 		
 		File[] fileList = dir.listFiles();
-		for (File f : Objects.requireNonNull(fileList)) {
+		if (fileList == null) {
+			return false;
+		}
+
+		for (File f : fileList) {
 			if (f.isDirectory()) {
 				deleteDirectory(f);
 			}
