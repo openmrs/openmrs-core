@@ -414,7 +414,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertTrue(service.getCohort(2).contains(patientToAdd.getPatientId()));
 		
 		// call the method and it should not return the voided cohort
-		List<Cohort> cohortsWithPatientAdded = service.getCohortsContainingPatient(patientToAdd);
+		List<Cohort> cohortsWithPatientAdded = service.getCohortsContainingPatientId(patientToAdd.getId());
 		assertNotNull(cohortsWithPatientAdded);
 		assertFalse(cohortsWithPatientAdded.contains(service.getCohort(1)));
 		
@@ -431,7 +431,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		service.addPatientToCohort(service.getCohort(2), patientToAdd);
 		assertTrue(service.getCohort(2).contains(patientToAdd.getPatientId()));
 		
-		List<Cohort> cohortsWithGivenPatient = service.getCohortsContainingPatient(patientToAdd);
+		List<Cohort> cohortsWithGivenPatient = service.getCohortsContainingPatientId(patientToAdd.getId());
 		assertTrue(cohortsWithGivenPatient.contains(service.getCohort(2)));
 	}
 	
@@ -553,7 +553,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		cohort.addMembership(newMemberContainingVoidedPatient);
 		assertTrue(cohort.contains(voidedPatient.getPatientId()));
 		
-		assertEquals(1, service.getCohortsContainingPatient(voidedPatient).size());
+		assertEquals(1, service.getCohortsContainingPatientId(voidedPatient.getId()).size());
 		
 		service.notifyPatientVoided(voidedPatient);
 		assertTrue(newMemberContainingVoidedPatient.getVoided());
@@ -700,7 +700,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		Date endDate = dateFormat.parse("2017-01-31 00:00:00");
 		membership.setEndDate(endDate);
 		
-		List<Cohort> cohortsWithPatientAdded = service.getCohortsContainingPatient(patient);
+		List<Cohort> cohortsWithPatientAdded = service.getCohortsContainingPatientId(patient.getId());
 		assertEquals(0, cohortsWithPatientAdded.size());
 	}
 	
