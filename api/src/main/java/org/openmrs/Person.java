@@ -131,7 +131,7 @@ public class Person extends BaseChangeableOpenmrsData {
 		birthtime = person.getBirthDateTime();
 		birthdateEstimated = person.getBirthdateEstimated();
 		deathdateEstimated = person.getDeathdateEstimated();
-		dead = person.isDead();
+		dead = person.getDead();
 		deathDate = person.getDeathDate();
 		causeOfDeath = person.getCauseOfDeath();
 		
