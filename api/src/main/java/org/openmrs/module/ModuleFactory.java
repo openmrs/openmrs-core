@@ -396,14 +396,10 @@ public class ModuleFactory {
 	public static List<Module> getLoadedModulesCoreFirst() {
 		List<Module> list = new ArrayList<>(getLoadedModules());
 		final Collection<String> coreModuleIds = ModuleConstants.CORE_MODULES.keySet();
-		list.sort(new Comparator<Module>() {
-
-			@Override
-			public int compare(Module left, Module right) {
-				Integer leftVal = coreModuleIds.contains(left.getModuleId()) ? 0 : 1;
-				Integer rightVal = coreModuleIds.contains(right.getModuleId()) ? 0 : 1;
-				return leftVal.compareTo(rightVal);
-			}
+		list.sort((left, right) -> {
+			Integer leftVal = coreModuleIds.contains(left.getModuleId()) ? 0 : 1;
+			Integer rightVal = coreModuleIds.contains(right.getModuleId()) ? 0 : 1;
+			return leftVal.compareTo(rightVal);
 		});
 		return list;
 	}
