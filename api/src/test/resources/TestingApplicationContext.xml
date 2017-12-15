@@ -30,6 +30,10 @@
 		</property>
 	</bean>
 
+	<bean id="nameSupport"
+	      class="org.openmrs.layout.name.NameSupport">
+	</bean>
+
 	<!-- 
 		Tell the hibernate session factory to look for all omods on the classpath and add them
 		as possible jar files that could contain mapping files
