@@ -139,13 +139,7 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 		}
 		
 		// Return the list of handlers based on the order specified in the Handler annotation
-		handlers.sort(new Comparator<H>() {
-
-			@Override
-			public int compare(H o1, H o2) {
-				return getOrderOfHandler(o1.getClass()).compareTo(getOrderOfHandler(o2.getClass()));
-			}
-		});
+		handlers.sort(Comparator.comparing(o -> getOrderOfHandler(o.getClass())));
 		
 		Map<Key, List<?>> newCachedHandlers = new WeakHashMap<>(cachedHandlers);
 		newCachedHandlers.put(new Key(handlerType, type), handlers);
