@@ -10,7 +10,6 @@
 package org.openmrs.comparator;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
