@@ -33,6 +33,8 @@ public class HL7InQueueProcessor /* implements Runnable */{
 
 	private static final Object lock = new Object();
 	
+	private static final Object lock = new Object();
+	
 	private static Integer count = 0;
 	
 	// processor per JVM
