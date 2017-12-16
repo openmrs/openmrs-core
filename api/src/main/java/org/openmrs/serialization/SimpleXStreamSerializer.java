@@ -101,7 +101,7 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> clazz) throws SerializationException {
+	public <T> T deserialize(String serializedObject, Class<? extends T> clazz) throws SerializationException {
 		
 		try {
 			return (T) xstream.fromXML(serializedObject);

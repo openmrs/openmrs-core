@@ -561,7 +561,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		
 		return encounterProviders.stream()
 				.filter(ep -> ep.getEncounterRole().equals(role) && (includeVoided || !ep.getVoided()))
-				.map(ep -> ep.getProvider())
+				.map(EncounterProvider::getProvider)
 				.collect(Collectors.toSet());
 	}
 	
@@ -698,9 +698,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		Map<String, OrderGroup> orderGroups = new HashMap<>();
 		for (Order order : orders) {
 			if (order.getOrderGroup() != null) {
-				if (null == orderGroups.get(order.getOrderGroup().getUuid())) {
-					orderGroups.put(order.getOrderGroup().getUuid(), order.getOrderGroup());
-				}
+				orderGroups.computeIfAbsent(order.getOrderGroup().getUuid(), k -> order.getOrderGroup());
 				order.getOrderGroup().addOrder(order, null);
 			}
 		}

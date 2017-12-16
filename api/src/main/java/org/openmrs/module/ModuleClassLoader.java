@@ -36,6 +36,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -111,6 +112,9 @@ public class ModuleClassLoader extends URLClassLoader {
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
 		if (devDir != null) {
 			File[] fileList = devDir.listFiles();
+			if (fileList == null) {
+				return;
+			}
 			for (File file : fileList) {
 				if (!file.isDirectory()) {
 					continue;
@@ -206,14 +210,16 @@ public class ModuleClassLoader extends URLClassLoader {
 		try {
 			if (devDir != null) {
 				File[] fileList = devDir.listFiles();
-				for (File file : fileList) {
-					if (!file.isDirectory()) {
-						continue;
-					}
-					File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
-					if (dir.exists()) {
-						result.add(dir.toURI().toURL());
-						devFolderNames.add(file.getName());
+				if (fileList != null) {
+					for (File file : fileList) {
+						if (!file.isDirectory()) {
+							continue;
+						}
+						File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
+						if (dir.exists()) {
+							result.add(dir.toURI().toURL());
+							devFolderNames.add(file.getName());
+						}
 					}
 				}
 			}

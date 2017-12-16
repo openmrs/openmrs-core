@@ -83,13 +83,7 @@ public class MigrationHelper {
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		try {
 			// Disable resolution of external entities. See TRUNK-3942 
-			builder.setEntityResolver(new EntityResolver() {
-				
-				@Override
-				public InputSource resolveEntity(String publicId, String systemId) {
-					return new InputSource(new StringReader(""));
-				}
-			});
+			builder.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
 			
 			return builder.parse(new InputSource(new StringReader(xml)));
 		}

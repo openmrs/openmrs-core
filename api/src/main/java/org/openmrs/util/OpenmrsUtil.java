@@ -46,6 +46,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
@@ -132,7 +133,7 @@ public class OpenmrsUtil {
 	 * @param newList
 	 * @return [List toAdd, List toDelete] with respect to origList
 	 */
-	public static <E extends Object> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {
+	public static <E> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {
 		// TODO finish function
 		
 		Collection<Collection<E>> returnList = new ArrayList<>();
@@ -317,8 +318,13 @@ public class OpenmrsUtil {
 		if (!folder.isDirectory()) {
 			return false;
 		}
+
+		File[] files = folder.listFiles();
+		if (files == null) {
+			return false;
+		}
 		
-		for (File f : folder.listFiles()) {
+		for (File f : files) {
 			if (f.getName().equals(filename)) {
 				return true;
 			}
@@ -689,7 +695,7 @@ public class OpenmrsUtil {
 	 * @param separator string to put between all elements
 	 * @return a String representing the toString() of all elements in c, separated by separator
 	 */
-	public static <E extends Object> String join(Collection<E> c, String separator) {
+	public static <E> String join(Collection<E> c, String separator) {
 		if (c == null) {
 			return "";
 		}
@@ -900,6 +906,10 @@ public class OpenmrsUtil {
 		}
 		
 		File[] fileList = dir.listFiles();
+		if (fileList == null) {
+			return false;
+		}
+
 		for (File f : fileList) {
 			if (f.isDirectory()) {
 				deleteDirectory(f);
@@ -1296,20 +1306,12 @@ public class OpenmrsUtil {
 	 * Allows easy manipulation of a Map&lt;?, Set&gt;
 	 */
 	public static <K, V> void addToSetMap(Map<K, Set<V>> map, K key, V obj) {
-		Set<V> set = map.get(key);
-		if (set == null) {
-			set = new HashSet<>();
-			map.put(key, set);
-		}
+		Set<V> set = map.computeIfAbsent(key, k -> new HashSet<>());
 		set.add(obj);
 	}
 	
 	public static <K, V> void addToListMap(Map<K, List<V>> map, K key, V obj) {
-		List<V> list = map.get(key);
-		if (list == null) {
-			list = new ArrayList<>();
-			map.put(key, list);
-		}
+		List<V> list = map.computeIfAbsent(key, k -> new ArrayList<>());
 		list.add(obj);
 	}
 	
@@ -2188,7 +2190,7 @@ public class OpenmrsUtil {
 	 * @return
 	 */
 	public static Set<String> getDeclaredFields(Class<?> clazz) {
-		return Arrays.asList(clazz.getDeclaredFields()).stream().map(f -> f.getName()).collect(Collectors.toSet());
+		return Arrays.asList(clazz.getDeclaredFields()).stream().map(Field::getName).collect(Collectors.toSet());
 	}
 	
 }

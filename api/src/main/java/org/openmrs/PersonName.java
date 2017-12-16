@@ -183,10 +183,10 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		}
 		
 		if (pn.getPreferred() != null) {
-			newName.setPreferred(pn.getPreferred().booleanValue());
+			newName.setPreferred(pn.getPreferred());
 		}
 		if (pn.getVoided() != null) {
-			newName.setVoided(pn.getVoided().booleanValue());
+			newName.setVoided(pn.getVoided());
 		}
 		
 		newName.setPerson(pn.getPerson());
@@ -511,7 +511,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		public int compare(PersonName pn1, PersonName pn2) {
 			int ret = pn1.getVoided().compareTo(pn2.getVoided());
 			if (ret == 0) {
-				ret = pn2.isPreferred().compareTo(pn1.isPreferred());
+				ret = pn2.getPreferred().compareTo(pn1.getPreferred());
 			}
 			if (ret == 0) {
 				ret = OpenmrsUtil.compareWithNullAsGreatest(pn1.getFamilyName(), pn2.getFamilyName());

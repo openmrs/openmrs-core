@@ -73,13 +73,7 @@ public class UpdateFileParser {
 				DocumentBuilder db = dbf.newDocumentBuilder();
 				
 				// Disable resolution of external entities. See TRUNK-3942 
-				db.setEntityResolver(new EntityResolver() {
-					
-					@Override
-					public InputSource resolveEntity(String publicId, String systemId) {
-						return new InputSource(new StringReader(""));
-					}
-				});
+				db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
 				
 				updateDoc = db.parse(inputSource);
 			}

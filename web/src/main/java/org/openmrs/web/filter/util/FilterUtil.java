@@ -102,11 +102,12 @@ public class FilterUtil {
 						log.debug(DATABASE_CLOSING_ERROR, e);
 					}
 				}
-
+				
 				if (results != null) {
 					try {
 						results.close();
-					} catch (SQLException e) {
+					}
+					catch (SQLException e) {
 						log.warn("Error while closing ResultSet", e);
 					}
 				}

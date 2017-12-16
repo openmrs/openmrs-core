@@ -469,15 +469,15 @@ public class Result extends ArrayList<Result> {
 				case BOOLEAN:
 					return (valueBoolean == null ? false : valueBoolean);
 				case CODED:
-					return (valueCoded == null ? false : true); // TODO: return
+					return (valueCoded != null); // TODO: return
 					// false for "FALSE"
 					// concept
 				case DATETIME:
-					return (valueDatetime == null ? false : true);
+					return (valueDatetime != null);
 				case NUMERIC:
-					return (valueNumeric == null || valueNumeric == 0 ? false : true);
+					return (valueNumeric != null && valueNumeric != 0);
 				case TEXT:
-					return (valueText == null || valueText.length() < 1 ? false : true);
+					return (valueText != null && valueText.length() >= 1);
 				default:
 					return valueBoolean;
 			}

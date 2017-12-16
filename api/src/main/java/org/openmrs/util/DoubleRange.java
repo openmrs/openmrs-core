@@ -125,13 +125,9 @@ public class DoubleRange implements Comparable<DoubleRange> {
 		if (high != null) {
 			if (closedHigh) {
 				//unreachable code as closedHigh is never set to true anywhere
-				if (d > high) {
-					return false;
-				}
+				return d <= high;
 			} else {
-				if (d >= high) {
-					return false;
-				}
+				return d < high;
 			}
 		}
 		return true;
@@ -148,18 +144,18 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	@Override
 	public String toString() {
 		StringBuilder ret = new StringBuilder();
-		if (low != null && low.doubleValue() != Double.NEGATIVE_INFINITY) {
+		if (low != null && low != Double.NEGATIVE_INFINITY) {
 			ret.append(">");
 			if (closedLow) {
 				ret.append("=");
 			}
 			ret.append(" ").append(Format.format(low));
-			if (high != null && high.doubleValue() != Double.NEGATIVE_INFINITY) {
+			if (high != null && high != Double.NEGATIVE_INFINITY) {
 				//BUG: should not append this if high is also infinite
 				ret.append(" and ");
 			}
 		}
-		if (high != null && high.doubleValue() != Double.POSITIVE_INFINITY) {
+		if (high != null && high != Double.POSITIVE_INFINITY) {
 			ret.append("<");
 			if (closedHigh) {
 				ret.append("=");

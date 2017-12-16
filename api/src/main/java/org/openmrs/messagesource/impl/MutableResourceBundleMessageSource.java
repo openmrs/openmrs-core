@@ -310,11 +310,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		for (Resource propertiesFile : propertiesFiles) {
 			Properties props = new Properties();
 			Locale propsLocale = parseLocaleFrom(propertiesFile.getFilename());
-			List<Resource> propList = localeToFilesMap.get(propsLocale);
-			if (propList == null) {
-				propList = new ArrayList<>();
-				localeToFilesMap.put(propsLocale, propList);
-			}
+			List<Resource> propList = localeToFilesMap.computeIfAbsent(propsLocale, k -> new ArrayList<>());
 			propList.add(propertiesFile);
 			
 			try {
@@ -346,7 +342,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 						propertyDestination = possibleDestination;
 					}
 				}
-				if ((propExists && overwrite) || !propExists) {
+				if (!propExists || overwrite) {
 					propertyDestination.put(message.getCode(), message.getMessage());
 				}
 				

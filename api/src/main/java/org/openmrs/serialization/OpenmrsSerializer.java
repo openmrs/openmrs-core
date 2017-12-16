@@ -29,5 +29,5 @@ public interface OpenmrsSerializer {
 	 * @param clazz - The class to deserialize the Object into
 	 * @return hydrated object of the appropriate type
 	 */
-	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> clazz) throws SerializationException;
+	public <T> T deserialize(String serializedObject, Class<? extends T> clazz) throws SerializationException;
 }

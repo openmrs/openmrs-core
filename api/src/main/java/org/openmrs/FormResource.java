@@ -31,7 +31,9 @@ import org.openmrs.customdatatype.SingleCustomValue;
  * @since 1.9
  */
 public class FormResource extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<FormResource> {
-	
+
+	private static final long serialVersionUID = 1L;
+
 	private Integer formResourceId;
 	
 	private Form form;

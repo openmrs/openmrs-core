@@ -747,7 +747,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public void purgeConceptProposal(ConceptProposal cp) throws DAOException {
 		sessionFactory.getCurrentSession().delete(cp);
-		return;
 	}
 	
 	/**
@@ -1378,13 +1377,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 					Collections.singletonList(locale), exactLocale, includeRetired, null, null, null, null, null);
 			List<Object[]> conceptIds = conceptNameQuery.listProjection("concept.conceptId");
 			if (!conceptIds.isEmpty()) {
-				CollectionUtils.transform(conceptIds, new Transformer() {
-					
-					@Override
-					public Object transform(Object input) {
-						return ((Object[]) input)[0].toString();
-					}
-				});
+				CollectionUtils.transform(conceptIds, input -> ((Object[]) input)[0].toString());
 				//The default Lucene clauses limit is 1024. We arbitrarily chose to use 512 here as it does not make sense to return more hits by concept name anyway.
 				int maxSize = (conceptIds.size() < 512) ? conceptIds.size() : 512;
 				query.append(" OR concept.conceptId:(").append(StringUtils.join(conceptIds.subList(0, maxSize), " OR "))
@@ -1807,7 +1800,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 		if (concepts.size() == 1) {
 			return concepts.iterator().next();
-		} else if (list.size() == 0) {
+		} else if (list.isEmpty()) {
 			log.warn("No concept found for '" + name + "'");
 		} else {
 			log.warn("Multiple concepts found for '" + name + "'");

@@ -396,14 +396,10 @@ public class ModuleFactory {
 	public static List<Module> getLoadedModulesCoreFirst() {
 		List<Module> list = new ArrayList<>(getLoadedModules());
 		final Collection<String> coreModuleIds = ModuleConstants.CORE_MODULES.keySet();
-		list.sort(new Comparator<Module>() {
-
-			@Override
-			public int compare(Module left, Module right) {
-				Integer leftVal = coreModuleIds.contains(left.getModuleId()) ? 0 : 1;
-				Integer rightVal = coreModuleIds.contains(right.getModuleId()) ? 0 : 1;
-				return leftVal.compareTo(rightVal);
-			}
+		list.sort((left, right) -> {
+			Integer leftVal = coreModuleIds.contains(left.getModuleId()) ? 0 : 1;
+			Integer rightVal = coreModuleIds.contains(right.getModuleId()) ? 0 : 1;
+			return leftVal.compareTo(rightVal);
 		});
 		return list;
 	}
@@ -704,34 +700,21 @@ public class ModuleFactory {
 				for (Extension ext : module.getExtensions()) {
 					
 					String extId = ext.getExtensionId();
-					List<Extension> tmpExtensions = moduleExtensionMap.get(extId);
-					if (tmpExtensions == null) {
-						tmpExtensions = new ArrayList<>();
-						moduleExtensionMap.put(extId, tmpExtensions);
-					}
-					
+					List<Extension> tmpExtensions = moduleExtensionMap.computeIfAbsent(extId, k -> new ArrayList<>());
+
 					tmpExtensions.add(ext);
 				}
 				
 				// Sort this module's extensions, and merge them into the full extensions map
-				Comparator<Extension> sortOrder = new Comparator<Extension>() {
-					
-					@Override
-					public int compare(Extension e1, Extension e2) {
-						return Integer.valueOf(e1.getOrder()).compareTo(Integer.valueOf(e2.getOrder()));
-					}
-				};
+				Comparator<Extension> sortOrder = (e1, e2) -> Integer.valueOf(e1.getOrder()).compareTo(Integer.valueOf(e2.getOrder()));
 				for (Map.Entry<String, List<Extension>> moduleExtensionEntry : moduleExtensionMap.entrySet()) {
 					// Sort this module's extensions for current extension point
 					List<Extension> sortedModuleExtensions = moduleExtensionEntry.getValue();
 					sortedModuleExtensions.sort(sortOrder);
 					
 					// Get existing extensions, and append the ones from the new module
-					List<Extension> extensions = getExtensionMap().get(moduleExtensionEntry.getKey());
-					if (extensions == null) {
-						extensions = new ArrayList<>();
-						getExtensionMap().put(moduleExtensionEntry.getKey(), extensions);
-					}
+					List<Extension> extensions = getExtensionMap()
+							.computeIfAbsent(moduleExtensionEntry.getKey(), k -> new ArrayList<>());
 					for (Extension ext : sortedModuleExtensions) {
 						log.debug("Adding to mapping ext: " + ext.getExtensionId() + " ext.class: " + ext.getClass());
 						extensions.add(ext);

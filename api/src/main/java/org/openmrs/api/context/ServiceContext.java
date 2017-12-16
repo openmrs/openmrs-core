@@ -483,9 +483,7 @@ public class ServiceContext implements ApplicationContextAware {
 		if (advisedService.indexOf(advisor) < 0) {
 			advisedService.addAdvisor(advisor);
 		}
-		if (addedAdvisors.get(cls) == null) {
-			addedAdvisors.put(cls, new HashSet<>());
-		}
+		addedAdvisors.computeIfAbsent(cls, k -> new HashSet<>());
 		getAddedAdvisors(cls).add(advisor);
 	}
 	
@@ -498,9 +496,7 @@ public class ServiceContext implements ApplicationContextAware {
 		if (advisedService.indexOf(advice) < 0) {
 			advisedService.addAdvice(advice);
 		}
-		if (addedAdvice.get(cls) == null) {
-			addedAdvice.put(cls, new HashSet<>());
-		}
+		addedAdvice.computeIfAbsent(cls, k -> new HashSet<>());
 		getAddedAdvice(cls).add(advice);
 	}
 	
@@ -616,7 +612,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @return Object that is a proxy for the <code>cls</code> class
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Object> T getService(Class<? extends T> cls) {
+	public <T> T getService(Class<? extends T> cls) {
 		if (log.isTraceEnabled()) {
 			log.trace("Getting service: " + cls);
 		}
@@ -909,36 +905,32 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @since 1.9
 	 */
 	private void runOpenmrsServiceOnStartup(final OpenmrsService openmrsService, final String classString) {
-		new Thread() {
-			
-			@Override
-			public void run() {
-				try {
-					synchronized (refreshingContextLock) {
-						//Need to wait for application context to finish refreshing otherwise we get into trouble.
-						while (refreshingContext) {
-							if (log.isDebugEnabled()) {
-								log.debug("Waiting to get service: " + classString + " while the context"
-								        + " is being refreshed");
-							}
-							
-							refreshingContextLock.wait();
-							
-							if (log.isDebugEnabled()) {
-								log.debug("Finished waiting to get service " + classString
-								        + " while the context was being refreshed");
-							}
+		new Thread(() -> {
+			try {
+				synchronized (refreshingContextLock) {
+					//Need to wait for application context to finish refreshing otherwise we get into trouble.
+					while (refreshingContext) {
+						if (log.isDebugEnabled()) {
+							log.debug("Waiting to get service: " + classString + " while the context"
+							        + " is being refreshed");
+						}
+
+						refreshingContextLock.wait();
+
+						if (log.isDebugEnabled()) {
+							log.debug("Finished waiting to get service " + classString
+							        + " while the context was being refreshed");
 						}
 					}
-					
-					Daemon.runStartupForService(openmrsService);
 				}
-				catch (InterruptedException e) {
-					log.warn("Refresh lock was interrupted while waiting to run OpenmrsService.onStartup() for "
-					        + classString, e);
-				}
+
+				Daemon.runStartupForService(openmrsService);
 			}
-		}.start();
+			catch (InterruptedException e) {
+				log.warn("Refresh lock was interrupted while waiting to run OpenmrsService.onStartup() for "
+				        + classString, e);
+			}
+		}).start();
 	}
 	
 	/**

@@ -120,5 +120,5 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	@Transactional(readOnly = true)
 	public OrderSetMember getOrderSetMemberByUuid(String uuid) {
 		return dao.getOrderSetMemberByUuid(uuid);
-	};
+	}
 }

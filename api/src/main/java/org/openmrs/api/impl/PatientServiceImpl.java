@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.Allergen;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
+import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -312,14 +313,14 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	private void checkForMissingRequiredIdentifiers(List<PatientIdentifier> patientIdentifiers) {
 		final Set<PatientIdentifierType> patientIdentifierTypes =
 				patientIdentifiers.stream()
-						.map(identifier -> identifier.getIdentifierType())
+						.map(PatientIdentifier::getIdentifierType)
 						.collect(Collectors.toSet());
 
 		final List<PatientIdentifierType> requiredTypes = this.getPatientIdentifierTypes(null, null, true, null);
 		final Set<String> missingRequiredTypeNames =
 				requiredTypes.stream()
 						.filter(requiredType -> !patientIdentifierTypes.contains(requiredType))
-						.map(type -> type.getName())
+						.map(BaseOpenmrsMetadata::getName)
 						.collect(Collectors.toSet());
 
 		if(! missingRequiredTypeNames.isEmpty()) {
@@ -621,17 +622,15 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		String messageKey = "Patient.merge.cannotHaveSameTypeActiveOrders";
 		List<Order> ordersByPatient1 = Context.getOrderService().getAllOrdersByPatient(patient1);
 		List<Order> ordersByPatient2 = Context.getOrderService().getAllOrdersByPatient(patient2);
-		ordersByPatient1.forEach((Order order1) -> {
-			ordersByPatient2.forEach((Order order2) -> {
-				if (order1.isActive() && order2.isActive() && order1.getOrderType().equals(order2.getOrderType())) {
-					Object[] parameters = { patient1.getPatientId(), patient2.getPatientId(), order1.getOrderType() };
-					String message = Context.getMessageSourceService().getMessage(messageKey, parameters,
-							Context.getLocale());
-					log.debug(message);
-					throw new APIException(message);
-				}
-			});
-		});
+		ordersByPatient1.forEach((Order order1) -> ordersByPatient2.forEach((Order order2) -> {
+			if (order1.isActive() && order2.isActive() && order1.getOrderType().equals(order2.getOrderType())) {
+				Object[] parameters = { patient1.getPatientId(), patient2.getPatientId(), order1.getOrderType() };
+				String message = Context.getMessageSourceService().getMessage(messageKey, parameters,
+						Context.getLocale());
+				log.debug(message);
+				throw new APIException(message);
+			}
+		}));
 	}
 
 	private void mergeProgramEnrolments(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
@@ -1622,9 +1621,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, Integer start, Integer length) throws APIException {
-		if (identifierTypes == null) {
-			identifierTypes = Collections.emptyList();
-		}
 		
 		return dao.getPatients(name != null ? name : identifier, start, length);
 	}

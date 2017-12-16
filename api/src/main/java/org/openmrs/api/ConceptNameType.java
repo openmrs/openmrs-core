@@ -36,6 +36,6 @@ public enum ConceptNameType {
 	
 	FULLY_SPECIFIED,
 	SHORT,
-	INDEX_TERM;
-	
+	INDEX_TERM
+
 }

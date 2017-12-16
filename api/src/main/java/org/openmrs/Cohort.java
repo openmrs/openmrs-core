@@ -61,7 +61,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 		this.name = name;
 		this.description = description;
 		if (ids != null) {
-			Arrays.stream(ids).forEach(id -> addMember(id));
+			Arrays.stream(ids).forEach(this::addMember);
 		}
 	}
 	
@@ -337,7 +337,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 */
 	@Deprecated
 	public void setMemberIds(Set<Integer> memberIds) {
-		if (getMemberships().size() == 0) {
+		if (getMemberships().isEmpty()) {
 			for (Integer id : memberIds) {
 				addMembership(new CohortMembership(id));
 			}
