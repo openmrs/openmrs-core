@@ -642,7 +642,10 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		// trim off all trailing commas
 		while (name.endsWith(",")) {
+			
 			name = name.substring(0, name.length() - 1);
+			// Server Side BugFix for XSS (Input Sanitization)
+			name.replaceAll("(?i)<(/?script[^>]*)>", "&lt;$1&gt;");
 		}
 		
 		String firstName = name;
