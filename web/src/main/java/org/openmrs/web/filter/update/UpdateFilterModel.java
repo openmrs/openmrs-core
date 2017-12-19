@@ -27,17 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UpdateFilterModel {
 	
-	// automatically given to the .vm files and used there
-	public String headerTemplate = "org/openmrs/web/filter/update/header.vm";
-	
-	// automatically given to the .vm files and used there
-	public String footerTemplate = "org/openmrs/web/filter/update/footer.vm";
-	
 	public List<OpenMRSChangeSet> changes = null;
-	
-	public String superuserrole = RoleConstants.SUPERUSER;
-	
-	public String setupPageUrl = WebConstants.SETUP_PAGE_URL;
 	
 	public static final String OPENMRS_VERSION = OpenmrsConstants.OPENMRS_VERSION_SHORT;
 	
