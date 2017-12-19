@@ -1,3 +1,53 @@
+
+Skip to content
+This repository
+
+    Pull requests
+    Issues
+    Marketplace
+    Explore
+
+    @dilekamadushan
+
+124
+574
+
+    1,987
+
+openmrs/openmrs-core
+Code
+Pull requests 16
+Insights
+openmrs-core/api/src/main/java/org/openmrs/PersonName.java
+f2fdb81 9 hours ago
+@BartlomiejRasztabiga BartlomiejRasztabiga TRUNK-344 PersonName.getFullName() should use the configured nameLayo…
+@wluyima
+@teleivo
+@k-joseph
+@BartlomiejRasztabiga
+@rkorytkowski
+@tommunist
+@tomaszmueller
+@mseaton
+@djazayeri
+@isha-tripathi
+@YashuJindal
+@wongalvis
+@suniala
+@lluismf
+@kushal8
+@kkaczmarczyk
+@Izaron
+@ivange94
+@grwarren
+@dszafranek
+@finchie
+@dkayiwa
+@collinsnji
+@chaityabshah
+@bmamlin
+@AdamGrzybkowski
+557 lines (488 sloc) 16.1 KB
 /**
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -554,3 +604,18 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	}
 	
 }
+
+    © 2017 GitHub, Inc.
+    Terms
+    Privacy
+    Security
+    Status
+    Help
+
+    Contact GitHub
+    API
+    Training
+    Shop
+    Blog
+    About
+
