@@ -67,6 +67,9 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			encounterService = Context.getEncounterService();
 			cs = Context.getConceptService();
 		}
+
+        // taking program workflow service from the spring application context object
+        pws = (ProgramWorkflowService) applicationContext.getBean("programWorkflowService");
 	}
 	
 	/**
@@ -490,5 +493,40 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	//
 	//    	return props;
 	//    }
+
+    @Test
+    public void getProgramsByConceptTest_shouldReturnProgramsByConcept() {
+
+        List<Program> actualProgramList;
+        List<Program> expectedProgramList = new ArrayList<>();
+
+        Program program1 = new Program();
+
+        program1.setName( "TEST PROGRAM1" );
+        program1.setDescription( "TEST DESCRIPTION1" );
+        program1.setConcept( cs.getConcept( 3) );
+
+        Program program2 = new Program();
+
+        program2.setName( "TEST PROGRAM2" );
+        program2.setDescription( "TEST DESCRIPTION2" );
+        program2.setConcept( cs.getConcept( 3 ) );
+
+        Program program3 = new Program();
+
+        program3.setName( "TEST PROGRAM3" );
+        program3.setDescription( "TEST DESCRIPTION3" );
+        program3.setConcept( cs.getConcept( 4 ) );
+
+        expectedProgramList.add( 0, program1 );
+        expectedProgramList.add( 1, program2 );
+
+        pws.saveProgram( program1 );
+        pws.saveProgram( program2 );
+        pws.saveProgram( program3 );
+
+        actualProgramList = pws.getProgramsByConcept( cs.getConcept( 3) );
+        assertEquals( expectedProgramList, actualProgramList );
+    }
 	
 }
