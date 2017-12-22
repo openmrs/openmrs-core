@@ -9,19 +9,6 @@
  */
 package org.openmrs;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import org.databene.benerator.Generator;
 import org.databene.benerator.factory.GeneratorFactory;
 import org.junit.Assert;
@@ -31,6 +18,21 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.LocaleUtility;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
 /**
  * Behavior-driven tests of the Concept class.
@@ -1096,6 +1098,7 @@ public class ConceptTest {
 	 */
 	@Test
 	public void getName_shouldReturnNameAnyNameIfNoLocaleMatchGivenExactEqualsFalse() throws Exception {
+		LocaleUtility.setLocalesAllowedListCache(Arrays.asList(new Locale("en"), new Locale("fr")));
 		Locale locale = new Locale("en");
 		Locale localeToSearch = new Locale("fr");
 		Concept concept = new Concept();
