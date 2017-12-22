@@ -371,6 +371,16 @@
 			</dependency>
 			<dependency>
 				<groupId>ca.uhn.hapi</groupId>
+				<artifactId>hapi-structures-v23</artifactId>
+				<version>2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>ca.uhn.hapi</groupId>
+				<artifactId>hapi-structures-v24</artifactId>
+				<version>2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>ca.uhn.hapi</groupId>
 				<artifactId>hapi-structures-v25</artifactId>
 				<version>2.0</version>
 			</dependency>
