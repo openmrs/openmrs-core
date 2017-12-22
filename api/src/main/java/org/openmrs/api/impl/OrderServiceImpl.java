@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.hibernate.proxy.HibernateProxy;

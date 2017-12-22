@@ -83,7 +83,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public Provider getProvider(Integer id) {
-		return (Provider) getSession().load(Provider.class, id);
+		return (Provider) getSession().get(Provider.class, id);
 	}
 	
 	/**
@@ -118,7 +118,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public ProviderAttribute getProviderAttribute(Integer providerAttributeID) {
-		return (ProviderAttribute) getSession().load(ProviderAttribute.class, providerAttributeID);
+		return (ProviderAttribute) getSession().get(ProviderAttribute.class, providerAttributeID);
 	}
 	
 	/**
@@ -277,7 +277,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public ProviderAttributeType getProviderAttributeType(Integer providerAttributeTypeId) {
-		return (ProviderAttributeType) getSession().load(ProviderAttributeType.class, providerAttributeTypeId);
+		return (ProviderAttributeType) getSession().get(ProviderAttributeType.class, providerAttributeTypeId);
 	}
 	
 	/* (non-Javadoc)

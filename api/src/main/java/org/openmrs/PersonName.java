@@ -26,6 +26,8 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
+import org.openmrs.layout.name.NameSupport;
+import org.openmrs.layout.name.NameTemplate;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -399,6 +401,11 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	 * @should not put spaces around an empty middle name
 	 */
 	public String getFullName() {
+		NameTemplate nameTemplate = NameSupport.getInstance().getDefaultLayoutTemplate();
+		if (nameTemplate != null) {
+			return nameTemplate.format(this);
+		}
+
 		List<String> temp = new ArrayList<>();
 		if (StringUtils.hasText(getPrefix())) {
 			temp.add(getPrefix());
@@ -511,7 +518,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		public int compare(PersonName pn1, PersonName pn2) {
 			int ret = pn1.getVoided().compareTo(pn2.getVoided());
 			if (ret == 0) {
-				ret = pn2.isPreferred().compareTo(pn1.isPreferred());
+				ret = pn2.getPreferred().compareTo(pn1.getPreferred());
 			}
 			if (ret == 0) {
 				ret = OpenmrsUtil.compareWithNullAsGreatest(pn1.getFamilyName(), pn2.getFamilyName());
