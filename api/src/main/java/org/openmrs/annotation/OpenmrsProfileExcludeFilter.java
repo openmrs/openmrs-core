@@ -9,6 +9,9 @@
  */
 package org.openmrs.annotation;
 
+import java.io.IOException;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
@@ -17,9 +20,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
-
-import java.io.IOException;
-import java.util.Map;
 
 /**
  * Prevents creating a bean if profile is not matched. It returns true if a bean should not be created.
@@ -64,22 +64,27 @@ public class OpenmrsProfileExcludeFilter implements TypeFilter {
 		String[] modules = (String[]) openmrsProfile.get("modules");
 		
 		for (String moduleAndVersion : modules) {
-			String[] splitModuleAndVersion = moduleAndVersion.split(":");
-			String moduleId = splitModuleAndVersion[0];
-			String moduleVersion = splitModuleAndVersion[1];
-			
-			boolean moduleMatched = false;
-			for (Module module : ModuleFactory.getStartedModules()) {
-				if (module.getModuleId().equals(moduleId)) {
-					if (ModuleUtil.matchRequiredVersions(module.getVersion(), moduleVersion)) {
+			if ("!".equals(moduleAndVersion.substring(0, 1))) {
+				if (ModuleFactory.isModuleStarted(moduleAndVersion.substring(1, moduleAndVersion.length()))) {
+					return false;
+				}
+			} else {
+				String[] splitModuleAndVersion = moduleAndVersion.split(":");
+				String moduleId = splitModuleAndVersion[0];
+				String moduleVersion = splitModuleAndVersion[1];
+				
+				boolean moduleMatched = false;
+				for (Module module : ModuleFactory.getStartedModules()) {
+					if (module.getModuleId().equals(moduleId)
+					        && ModuleUtil.matchRequiredVersions(module.getVersion(), moduleVersion)) {
 						moduleMatched = true;
 						break;
 					}
 				}
-			}
-			
-			if (!moduleMatched) {
-				return false;
+				
+				if (!moduleMatched) {
+					return false;
+				}
 			}
 		}
 		
