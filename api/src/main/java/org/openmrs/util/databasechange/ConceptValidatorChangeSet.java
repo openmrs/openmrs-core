@@ -507,15 +507,15 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		try {
 			//get the default locale
 			stmt = connection.createStatement();
-			ResultSet rs_defaultLocale = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '"
+			ResultSet rsDefaultLocale = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '"
 			        + OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE + "'");
 			
-			if (rs_defaultLocale.next()) {
-				String defaultLocaleStr = rs_defaultLocale.getString("property_value");
+			if (rsDefaultLocale.next()) {
+				String defaultLocaleStr = rsDefaultLocale.getString("property_value");
 				if (!StringUtils.isBlank(defaultLocaleStr) && defaultLocaleStr.length() > 1) {
-					Locale defaultLocale_GP = LocaleUtility.fromSpecification(defaultLocaleStr);
-					if (defaultLocale_GP != null) {
-						defaultLocale = defaultLocale_GP;
+					Locale defaultLocaleGP = LocaleUtility.fromSpecification(defaultLocaleStr);
+					if (defaultLocaleGP != null) {
+						defaultLocale = defaultLocaleGP;
 					}
 				} else {
 					updateWarnings.add("'" + defaultLocaleStr
@@ -526,11 +526,11 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			allowedLocales.add(defaultLocale);
 			
 			//get the locale.allowed.list
-			ResultSet rs_allowedLocales = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '"
+			ResultSet rsAllowedLocales = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '"
 			        + OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST + "'");
 			
-			if (rs_allowedLocales.next()) {
-				String allowedLocaleStr = rs_allowedLocales.getString("property_value");
+			if (rsAllowedLocales.next()) {
+				String allowedLocaleStr = rsAllowedLocales.getString("property_value");
 				if (!StringUtils.isBlank(allowedLocaleStr)) {
 					String[] localesArray = allowedLocaleStr.split(",");
 					for (String localeStr : localesArray) {
