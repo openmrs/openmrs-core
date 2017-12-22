@@ -99,6 +99,14 @@
       </dependency>
       <dependency>
          <groupId>ca.uhn.hapi</groupId>
+         <artifactId>hapi-structures-v23</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>ca.uhn.hapi</groupId>
+         <artifactId>hapi-structures-v24</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>ca.uhn.hapi</groupId>
          <artifactId>hapi-structures-v25</artifactId>
       </dependency>
       <dependency>
