@@ -1208,9 +1208,7 @@ public class OpenmrsUtil {
 		String[] tokens = delimitedString.split(delimiter);
 		for (String token : tokens) {
 			token = token.trim();
-			if (token.length() == 0) {
-				continue;
-			} else {
+			if (token.length() != 0) {
 				ret.add(Integer.valueOf(token));
 			}
 		}
