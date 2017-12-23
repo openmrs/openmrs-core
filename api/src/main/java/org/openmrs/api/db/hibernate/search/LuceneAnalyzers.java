@@ -16,6 +16,9 @@ package org.openmrs.api.db.hibernate.search;
  */
 public class LuceneAnalyzers {
 	
+	private LuceneAnalyzers() {
+	}
+	
 	public static final String START_ANALYZER = "startAnalyzer";
 	
 	public static final String ANYWHERE_ANALYZER = "anywhereAnalyzer";

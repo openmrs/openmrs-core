@@ -31,6 +31,9 @@ import org.slf4j.LoggerFactory;
  * @since 1.9
  */
 public class CustomDatatypeUtil {
+
+	private CustomDatatypeUtil() {
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(CustomDatatypeUtil.class);
 	

@@ -39,6 +39,9 @@ import org.slf4j.LoggerFactory;
  * methods will be written to the database at startup if they don't exist yet.
  */
 public final class OpenmrsConstants {
+
+	private OpenmrsConstants() {
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(OpenmrsConstants.class);
 	

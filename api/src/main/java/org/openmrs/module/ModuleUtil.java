@@ -56,6 +56,9 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  * Utility methods for working and manipulating modules
  */
 public class ModuleUtil {
+
+	private ModuleUtil() {
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleUtil.class);
 	

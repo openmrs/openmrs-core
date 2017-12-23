@@ -22,6 +22,9 @@ import org.slf4j.LoggerFactory;
 
 public class SchedulerUtil {
 	
+	private SchedulerUtil() {
+	}
+	
 	private static final Logger log = LoggerFactory.getLogger(SchedulerUtil.class);
 	
 	/**
