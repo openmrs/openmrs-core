@@ -16,6 +16,9 @@ import java.util.Map;
  * Constants used by the module system in openmrs
  */
 public class ModuleConstants {
+
+	private ModuleConstants() {
+	}
 	
 	/**
 	 * A map from "moduleid" to "required version" for all core modules that are required by

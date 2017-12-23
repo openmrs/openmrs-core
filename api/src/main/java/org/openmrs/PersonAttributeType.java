@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -191,7 +192,9 @@ public class PersonAttributeType extends BaseChangeableOpenmrsMetadata implement
 	 Provides a default comparator.
 	 @since 1.12
 	 **/
-	public static class DefaultComparator implements Comparator<PersonAttributeType> {
+	public static class DefaultComparator implements Comparator<PersonAttributeType>, Serializable {
+
+		private static final long serialVersionUID = 1L;
 		
 		@Override
 		public int compare(PersonAttributeType pat1, PersonAttributeType pat2) {

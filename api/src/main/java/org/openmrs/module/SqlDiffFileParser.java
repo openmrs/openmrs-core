@@ -37,6 +37,9 @@ import org.xml.sax.SAXException;
  * @version 1.0
  */
 public class SqlDiffFileParser {
+
+	private SqlDiffFileParser() {
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(SqlDiffFileParser.class);
 	

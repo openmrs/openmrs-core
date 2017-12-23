@@ -109,6 +109,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * can happen correctly.
 	 */
 	private static class OpenmrsClassLoaderHolder {
+
+		private OpenmrsClassLoaderHolder() {
+		}
 		
 		private static OpenmrsClassLoader INSTANCE = null;
 		
@@ -588,10 +591,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			}
 			try {
 				field.setAccessible(true);
-				if (Modifier.isStatic(mods) && Modifier.isFinal(mods)) {
-					// Doing something recursively is too risky
-					continue;
-				} else {
+				if (!Modifier.isStatic(mods) || !Modifier.isFinal(mods)) {
 					Object value = field.get(instance);
 					if (null != value) {
 						Class<?> valueClass = value.getClass();

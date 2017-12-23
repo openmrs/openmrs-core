@@ -657,7 +657,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 					if (matchingIds == null || matchingIds.isEmpty()) {
 						// no matches
 						log.warn("NO matches found for " + hl7PersonId);
-						continue; // try next identifier
 					} else if (matchingIds.size() == 1) {
 						// unique match -- we're done
 						return matchingIds.get(0).getPatient();
@@ -665,13 +664,11 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 						// ambiguous identifier
 						log.debug("Ambiguous identifier in PID. " + matchingIds.size() + " matches for identifier '"
 						        + hl7PersonId + "' of type '" + pit + "'");
-						continue; // try next identifier
 					}
 				}
 				catch (Exception e) {
 					log.error("Error resolving patient identifier '" + hl7PersonId + "' for assigning authority '"
 					        + assigningAuthority + "'", e);
-					continue;
 				}
 			} else {
 				try {
@@ -934,7 +931,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 				}
 			} else {
 				log.debug("NK1 contains identifier with no assigning authority");
-				continue;
 			}
 		}
 		if (!goodIdentifiers.isEmpty()) {

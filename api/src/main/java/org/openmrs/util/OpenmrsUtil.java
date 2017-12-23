@@ -118,6 +118,9 @@ import org.w3c.dom.DocumentType;
  * Utility methods used in openmrs
  */
 public class OpenmrsUtil {
+
+	private OpenmrsUtil() {
+	}
 	
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsUtil.class);
 	
@@ -1205,9 +1208,7 @@ public class OpenmrsUtil {
 		String[] tokens = delimitedString.split(delimiter);
 		for (String token : tokens) {
 			token = token.trim();
-			if (token.length() == 0) {
-				continue;
-			} else {
+			if (token.length() != 0) {
 				ret.add(Integer.valueOf(token));
 			}
 		}

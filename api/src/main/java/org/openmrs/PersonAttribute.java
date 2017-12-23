@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Comparator;
@@ -330,7 +331,9 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	 Provides a default comparator.
 	 @since 1.12
 	 **/
-	public static class DefaultComparator implements Comparator<PersonAttribute> {
+	public static class DefaultComparator implements Comparator<PersonAttribute>, Serializable {
+
+		private static final long serialVersionUID = 1L;
 		
 		@Override
 		public int compare(PersonAttribute pa1, PersonAttribute pa2) {

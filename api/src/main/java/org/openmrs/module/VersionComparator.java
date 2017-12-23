@@ -9,6 +9,7 @@
  */
 package org.openmrs.module;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -17,7 +18,9 @@ import java.util.Comparator;
  * number 10 from coming before version number 9.
  *
  */
-public class VersionComparator implements Comparator<String> {
+public class VersionComparator implements Comparator<String>, Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	String TOKEN = ".";
 	
