@@ -9,6 +9,7 @@
  */
 package org.openmrs.util;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.openmrs.Provider;
@@ -21,7 +22,9 @@ import org.openmrs.Provider;
  *
  * Utilizes the {@link PersonByNameComparator} comparator to do the underlying sort
  */
-public class ProviderByPersonNameComparator implements Comparator<Provider> {
+public class ProviderByPersonNameComparator implements Comparator<Provider>, Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	@Override
 	public int compare(Provider provider1, Provider provider2) {
