@@ -12,10 +12,12 @@ package org.openmrs.util;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -670,13 +672,15 @@ public class DatabaseUpdater {
 	 * @param text text to be written to the file
 	 */
 	public static void writeUpdateMessagesToFile(String text) {
+		OutputStreamWriter streamWriter = null;
 		PrintWriter writer = null;
 		File destFile = new File(OpenmrsUtil.getApplicationDataDirectory(), DatabaseUpdater.DATABASE_UPDATES_LOG_FILE);
 		try {
 			String lineSeparator = System.getProperty("line.separator");
 			Date date = Calendar.getInstance().getTime();
-			
-			writer = new PrintWriter(new BufferedWriter(new FileWriter(destFile, true)));
+
+			streamWriter = new OutputStreamWriter(new FileOutputStream(destFile, true), StandardCharsets.UTF_8);
+			writer = new PrintWriter(new BufferedWriter(streamWriter));
 			writer.write("********** START OF DATABASE UPDATE LOGS AS AT " + date + " **********");
 			writer.write(lineSeparator);
 			writer.write(lineSeparator);
@@ -701,6 +705,7 @@ public class DatabaseUpdater {
 			log.warn("Failed to write to the database update log file", e);
 		}
 		finally {
+			IOUtils.closeQuietly(streamWriter);
 			IOUtils.closeQuietly(writer);
 		}
 	}

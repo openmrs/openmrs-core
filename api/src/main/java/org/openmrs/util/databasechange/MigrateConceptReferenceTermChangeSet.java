@@ -9,6 +9,7 @@
  */
 package org.openmrs.util.databasechange;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -140,7 +141,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 				} else {
 					insertTerm.setInt(1, conceptMapId);
 					//We need to guaranty that UUIDs are always the same when run on different systems.
-					insertTerm.setString(2, UUID.nameUUIDFromBytes(uuid.getBytes()).toString());
+					insertTerm.setString(2, UUID.nameUUIDFromBytes(uuid.getBytes(StandardCharsets.UTF_8)).toString());
 					insertTerm.setInt(3, source);
 					insertTerm.setString(4, sourceCode);
 					insertTerm.setInt(5, creator);

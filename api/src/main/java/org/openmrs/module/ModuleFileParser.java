@@ -14,8 +14,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -175,7 +175,7 @@ public class ModuleFileParser {
 			catch (Exception e) {
 				log.error("Error parsing config.xml: " + configStream.toString(), e);
 				
-				OutputStream out = null;
+				ByteArrayOutputStream out = null;
 				String output = "";
 				try {
 					out = new ByteArrayOutputStream();
@@ -185,7 +185,7 @@ public class ModuleFileParser {
 					while ((bytesRead = configStream.read(buffer)) != -1) {
 						out.write(buffer, 0, bytesRead);
 					}
-					output = out.toString();
+					output = out.toString(StandardCharsets.UTF_8.name());
 				}
 				catch (Exception e2) {
 					log.warn("Another error parsing config.xml", e2);
