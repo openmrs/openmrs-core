@@ -119,15 +119,9 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		if (StringUtils.hasText(locationGP)) {
 			location = Context.getLocationService().getLocation(locationGP);
 		}
-		
-		//Try to look up 'Unknown Location' in case the global property is something else
-		if (location == null && (!StringUtils.hasText(locationGP) || !"Unknown Location".equalsIgnoreCase(locationGP))) {
-			location = Context.getLocationService().getLocation("Unknown Location");
-		}
-		
-		// If Unknown Location does not exist, try Unknown if the global property was different
-		if (location == null && (!StringUtils.hasText(locationGP) || !"Unknown".equalsIgnoreCase(locationGP))) {
-			location = Context.getLocationService().getLocation("Unknown");
+
+		if (location == null) {
+			location = getDefaultLocation(location, locationGP);
 		}
 		
 		// If neither exist, get the first available location
@@ -136,6 +130,27 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		}
 		
 		return location;
+	}
+
+	private Location getDefaultLocation(Location location, String locationGP) {
+		//Try to look up 'Unknown Location' in case the global property is something else
+		Location result = getDefaultLocationFromSting(location, locationGP, "Unknown Location");
+
+		// If Unknown Location does not exist, try Unknown if the global property was different
+		if (result == null) {
+			result = getDefaultLocationFromSting(location, locationGP, "Unknown");
+		}
+
+		return result;
+	}
+
+	private Location getDefaultLocationFromSting(Location location, String locationGP, String defaultLocation) {
+		Location result = null;
+		if (location == null && (!StringUtils.hasText(locationGP) || !defaultLocation.equalsIgnoreCase(locationGP))) {
+			result = Context.getLocationService().getLocation(defaultLocation);
+		}
+
+		return result;
 	}
 	
 	/**
