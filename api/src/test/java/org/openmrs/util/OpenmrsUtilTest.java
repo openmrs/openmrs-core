@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -680,7 +681,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void storeProperties_shouldEscapeSlashes() throws IOException {
-		Charset utf8 = Charset.forName("UTF-8");
+		Charset utf8 = StandardCharsets.UTF_8;
 		String expectedProperty = "blacklistRegex";
 		String expectedValue = "[^\\p{InBasicLatin}\\p{InLatin1Supplement}]";
 		Properties properties = new Properties();

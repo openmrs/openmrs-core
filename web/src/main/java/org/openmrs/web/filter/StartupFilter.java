@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -265,7 +266,7 @@ public abstract class StartupFilter implements Filter {
 		
 		try {
 			velocityEngine.evaluate(velocityContext, httpResponse.getWriter(), this.getClass().getName(),
-			    new InputStreamReader(templateInputStream,"UTF-8"));
+			    new InputStreamReader(templateInputStream, StandardCharsets.UTF_8));
 		}
 		catch (Exception e) {
 			throw new APIException("Unable to process template: " + fullTemplatePath, e);

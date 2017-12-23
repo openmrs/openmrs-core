@@ -30,6 +30,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -1646,7 +1647,7 @@ public class OpenmrsUtil {
 	 */
 	public static void storeProperties(Properties properties, OutputStream outStream, String comment) {
 		try {
-			Charset utf8 = Charset.forName("UTF-8");
+			Charset utf8 = StandardCharsets.UTF_8;
 			properties.store(new OutputStreamWriter(outStream, utf8), comment);
 		}
 		catch (FileNotFoundException fnfe) {
@@ -1674,7 +1675,7 @@ public class OpenmrsUtil {
 	public static void loadProperties(Properties props, InputStream inputStream) {
 		InputStreamReader reader = null;
 		try {
-			reader = new InputStreamReader(inputStream, "UTF-8");
+			reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
 			props.load(reader);
 		}
 		catch (FileNotFoundException fnfe) {

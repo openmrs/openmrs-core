@@ -11,6 +11,7 @@ package org.openmrs.web.filter.util;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -57,7 +58,7 @@ public class CustomResourceLoader {
 			Resource[] localResources = patternResolver.getResources("classpath*:messages*.properties");
 			for (Resource localeResource : localResources) {
 				Locale locale = parseLocaleFrom(localeResource.getFilename(), PREFIX);
-				ResourceBundle rb = new PropertyResourceBundle(new InputStreamReader(localeResource.getInputStream(), "UTF-8"));
+				ResourceBundle rb = new PropertyResourceBundle(new InputStreamReader(localeResource.getInputStream(), StandardCharsets.UTF_8));
 				getResource().put(locale, rb);
 				getAvailablelocales().add(locale);
 			}
