@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -207,7 +208,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		    cmdWithArguments);
 		
 		out.append("Normal cmd output:\n");
-		Reader reader = new InputStreamReader(p.getInputStream());
+		Reader reader = new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8);
 		BufferedReader input = new BufferedReader(reader);
 		int readChar = 0;
 		while ((readChar = input.read()) != -1) {
@@ -217,7 +218,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		reader.close();
 		
 		out.append("ErrorStream cmd output:\n");
-		reader = new InputStreamReader(p.getErrorStream());
+		reader = new InputStreamReader(p.getErrorStream(), StandardCharsets.UTF_8);
 		input = new BufferedReader(reader);
 		readChar = 0;
 		while ((readChar = input.read()) != -1) {

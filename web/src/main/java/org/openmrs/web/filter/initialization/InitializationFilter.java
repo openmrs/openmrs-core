@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -1502,9 +1503,9 @@ public class InitializationFilter extends StartupFilter {
 						runtimeProperties.put("auto_update_database", wizardModel.autoUpdateDatabase.toString());
 						final Encoder base64 = Base64.getEncoder();
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY,
-						    new String(base64.encode(Security.generateNewInitVector())));
+						    new String(base64.encode(Security.generateNewInitVector()), StandardCharsets.UTF_8));
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY,
-						    new String(base64.encode(Security.generateNewSecretKey())));
+						    new String(base64.encode(Security.generateNewSecretKey()), StandardCharsets.UTF_8));
 						
 						Properties properties = Context.getRuntimeProperties();
 						properties.putAll(runtimeProperties);
