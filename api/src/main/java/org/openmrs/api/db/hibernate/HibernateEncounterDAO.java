@@ -438,9 +438,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		} else {
 			//As identifier could be all alpha, no heuristic here will work in determining intent of user for querying by name versus identifier
 			//So search by both!
-			String name = query;
-			String identifier = query;
-			criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
+			criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(query, query,
 			    new ArrayList<PatientIdentifierType>(), true, orderByNames, true);	
 		}
 		

@@ -120,11 +120,9 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldNotFailIfTheConceptNameTagIsTheSame() {
 		String objectName = "duplicate concept name tag";
-		
-		ConceptNameTag existing = Context.getConceptService().getConceptNameTag(1);
-		
-		ConceptNameTag cnt = existing;
-		
+
+		ConceptNameTag cnt = Context.getConceptService().getConceptNameTag(1);
+
 		Errors errors = new BindException(cnt, objectName);
 		new ConceptNameTagValidator().validate(cnt, errors);
 		Assert.assertFalse(errors.hasErrors());
