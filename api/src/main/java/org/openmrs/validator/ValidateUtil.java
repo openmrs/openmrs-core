@@ -40,6 +40,9 @@ import org.springframework.validation.ObjectError;
  */
 public class ValidateUtil {
 
+	private ValidateUtil() {
+	}
+
 	/**
 	 * This is set in {@link Context#checkCoreDataset()} class
 	 */

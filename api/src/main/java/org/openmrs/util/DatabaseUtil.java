@@ -32,6 +32,9 @@ import org.springframework.util.StringUtils;
  * @since 1.6
  */
 public class DatabaseUtil {
+
+	private DatabaseUtil() {
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
 

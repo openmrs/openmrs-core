@@ -21,7 +21,10 @@ import org.openmrs.annotation.HasAddOnStartupPrivileges;
  */
 @HasAddOnStartupPrivileges
 public class PrivilegeConstants {
-	
+
+	private PrivilegeConstants() {
+	}
+
 	@AddOnStartup(description = "Able to get concept entries")
 	public static final String GET_CONCEPTS = "Get Concepts";
 	

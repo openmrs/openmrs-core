@@ -29,7 +29,7 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  * module startup when there is no user to authenticate as.
  */
 public class Daemon {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(Daemon.class);
 	
 	/**

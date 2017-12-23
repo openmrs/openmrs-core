@@ -118,6 +118,9 @@ public class OpenmrsClassScanner {
 	 * collection can happen correctly.
 	 */
 	private static class OpenmrsClassScannerHolder {
+
+		private OpenmrsClassScannerHolder() {
+		}
 		
 		private static OpenmrsClassScanner INSTANCE = null;
 	}

@@ -11,6 +11,9 @@ package org.openmrs.scheduler;
 
 public class SchedulerConstants {
 	
+	private SchedulerConstants() {
+	}
+	
 	// Number of milliseconds per second (used for readability)
 	public static int SCHEDULER_MILLIS_PER_SECOND = 1000;
 	

@@ -118,6 +118,9 @@ import org.w3c.dom.DocumentType;
  * Utility methods used in openmrs
  */
 public class OpenmrsUtil {
+
+	private OpenmrsUtil() {
+	}
 	
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsUtil.class);
 	

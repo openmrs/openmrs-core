@@ -77,6 +77,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class WebModuleUtil {
+
+	private WebModuleUtil() {
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(WebModuleUtil.class);
 	

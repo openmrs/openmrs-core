@@ -29,6 +29,9 @@ import net.sf.ehcache.config.CacheConfiguration;
 
 public class CachePropertiesUtil {
 
+    private CachePropertiesUtil() {
+    }
+
     /**
      * This method looks for all apiCacheConfig.properties file located in cacheConfig folder in classpath
      * @return list of CacheConfiguration objects
