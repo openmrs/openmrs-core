@@ -292,7 +292,7 @@ public class TestInstallUtil {
 		final StringBuilder result = new StringBuilder();
 		result.append("username=");
 		final Encoder encoder = Base64.getEncoder();
-		final Charset utf8 = Charset.forName("UTF-8");
+		final Charset utf8 = StandardCharsets.UTF_8;
 		result.append(new String(encoder.encode(openmrsUsername.getBytes(utf8)), utf8));
 		result.append("&password=");
 		result.append(new String(encoder.encode(openmrsPassword.getBytes(utf8)), utf8));
