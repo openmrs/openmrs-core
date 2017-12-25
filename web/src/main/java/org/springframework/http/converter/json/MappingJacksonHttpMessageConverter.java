@@ -148,11 +148,6 @@ public class MappingJacksonHttpMessageConverter extends AbstractHttpMessageConve
 	}
 	
 	@Override
-	public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-		return (this.objectMapper.canSerialize(clazz) && canWrite(mediaType));
-	}
-	
-	@Override
 	protected boolean supports(Class<?> clazz) {
 		// should not be called, since we override canRead/Write instead
 		throw new UnsupportedOperationException();
@@ -173,7 +168,19 @@ public class MappingJacksonHttpMessageConverter extends AbstractHttpMessageConve
 		JavaType javaType = getJavaType(type, contextClass);
 		return readJavaType(javaType, inputMessage);
 	}
-	
+
+	@Override
+	public void write(Object o, Type type, MediaType contentType, HttpOutputMessage outputMessage)
+			throws HttpMessageNotWritableException {
+		throw new UnsupportedOperationException("write() is not implemented!");
+	}
+
+	@Override
+	public boolean canWrite(Type type, Class<?> aClass, MediaType mediaType) {
+		return (this.objectMapper.canSerialize(aClass) && canWrite(mediaType));
+	}
+
+
 	private Object readJavaType(JavaType javaType, HttpInputMessage inputMessage) {
 		try {
 			return this.objectMapper.readValue(inputMessage.getBody(), javaType);
