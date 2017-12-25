@@ -333,6 +333,110 @@ public class ObsTest {
 	}
 	
 	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldSetValueAsBooleanIfDataTypeOfQuestionConceptIsBoolean() throws Exception {
+		Obs obs = new Obs();
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("BIT");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+		obs.setConcept(c);
+		obs.setValueAsString("false");
+		obs.setValueAsString("true");
+	}
+	
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test(expected = RuntimeException.class)
+	public void setValueAsString_shouldThrowRuntimeExceptionForAbbreviationCWE() throws Exception {
+		Obs obs = new Obs();
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("CWE");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+		obs.setConcept(c);
+		obs.setValueAsString("ABC");
+	}
+	
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldSetValueAsNumericIfDataTypeOfQuestionConceptIsNumeric() throws Exception {
+		Obs obs = new Obs();
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("NM");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+		obs.setConcept(c);
+		obs.setValueAsString("123");
+		
+		cdt.setHl7Abbreviation("SN");
+		Concept c1 = new Concept();
+		c1.setDatatype(cdt);
+		obs.setConcept(c1);
+		obs.setValueAsString("1234");
+	}
+	
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldSetValueAsStringIfDataTypeOfQuestionConceptIsText() throws Exception {
+		Obs obs = new Obs();
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("ST");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+		obs.setConcept(c);
+		obs.setValueAsString("FFF");
+	}
+	
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldSetValueAsDateTimeIfDataTypeOfQuestionConceptIsDateTime() throws Exception {
+		Obs obs = new Obs();
+		ConceptDatatype cdt = new ConceptDatatype();
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+		obs.setConcept(c);
+		
+		String[] dateFormats = { "2011-05-01", "2011-05-01 00:00:00", "2011-05-01T00:00:00.000", "2011-05-01T00:00:00.000" };
+		for (int i = 0; i < dateFormats.length; i++) {
+			obs.setValueAsString(dateFormats[i]);
+		}
+	}
+	
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldSetValueAsDateTimeIfDataTypeOfQuestionConceptIsDateTimeHavingTimeZone()
+	        throws Exception {
+		Obs obs = new Obs();
+		ConceptDatatype cdt = new ConceptDatatype();
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+		obs.setConcept(c);
+		
+		String[] dates1 = { "2016-01-12T06:00:00+05:30", "2016-01-12T06:00:00+0530" };
+		String[] dates2 = { "2014-02-20T11:00:00.000-05:00", "2014-02-20T11:00:00.000-05" };
+		
+		for (String date : dates1) {
+			obs.setValueAsString(date);
+		}
+		
+		for (String date : dates2) {
+			obs.setValueAsString(date);
+		}
+	}
+	
+	/**
 	 * @see Obs#getValueAsBoolean()
 	 */
 	@Test
