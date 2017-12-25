@@ -34,7 +34,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		ft.setId(0xdeadcafe);
 		ff.setFieldType(ft);
 		ff.setRetired(retired);
-		Boolean multiple = new Boolean(false);
+		Boolean multiple = Boolean.FALSE;
 		ff.setSelectMultiple(multiple);
 		
 		Errors errors = new BindException(ff, "name");
@@ -51,11 +51,11 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Field ff = new Field();
 		ff.setName("");
 		FieldType ft = new FieldType();
-		Boolean retired = new Boolean(false);
+		Boolean retired = Boolean.FALSE;
 		ft.setId(0xdeadcafe);
 		ff.setFieldType(ft);
 		ff.setRetired(retired);
-		Boolean multiple = new Boolean(false);
+		Boolean multiple = Boolean.FALSE;
 		ff.setSelectMultiple(multiple);
 		
 		Errors errors = new BindException(ff, "name");
@@ -72,11 +72,11 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Field ff = new Field();
 		ff.setName("    ");
 		FieldType ft = new FieldType();
-		Boolean retired = new Boolean(false);
+		Boolean retired = Boolean.FALSE;
 		ft.setId(0xdeadcafe);
 		ff.setFieldType(ft);
 		ff.setRetired(retired);
-		Boolean multiple = new Boolean(false);
+		Boolean multiple = Boolean.FALSE;
 		ff.setSelectMultiple(multiple);
 		
 		Errors errors = new BindException(ff, "name");
@@ -94,7 +94,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		ff.setName("good");
 		FieldType ft = new FieldType();
 		ft.setFieldTypeId(0xdeadcafe);
-		Boolean retired = new Boolean(false);
+		Boolean retired = Boolean.FALSE;
 		ff.setFieldType(ft);
 		ff.setName("valid");
 		ff.setRetired(retired);
@@ -120,7 +120,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		ff.setName("valid");
 		Boolean retired = null;
 		ff.setRetired(retired);
-		Boolean multiple = new Boolean(true);
+		Boolean multiple = Boolean.TRUE;
 		ff.setSelectMultiple(multiple);
 		
 		Errors errors = new BindException(ff, "retired");
@@ -136,12 +136,12 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassValidationIfAllFieldsAreCorrect() {
 		Field ff = new Field();
 		FieldType ft = new FieldType();
-		Boolean retired = new Boolean(false);
+		Boolean retired = Boolean.FALSE;
 		ft.setId(0xdeadcafe);
 		ff.setFieldType(ft);
 		ff.setName("valid");
 		ff.setRetired(retired);
-		Boolean multiple = new Boolean(false);
+		Boolean multiple = Boolean.FALSE;
 		ff.setSelectMultiple(multiple);
 		
 		Errors errors = new BindException(ff, "name");
@@ -157,12 +157,12 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Field ff = new Field();
 		FieldType ft = new FieldType();
-		Boolean retired = new Boolean(false);
+		Boolean retired = Boolean.FALSE;
 		ft.setId(0xdeadcafe);
 		ff.setFieldType(ft);
 		ff.setName("name");
 		ff.setRetired(retired);
-		Boolean multiple = new Boolean(false);
+		Boolean multiple = Boolean.FALSE;
 		ff.setSelectMultiple(multiple);
 		ff.setTableName("tableName");
 		ff.setAttributeName("attributeName");
@@ -181,13 +181,13 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Field ff = new Field();
 		FieldType ft = new FieldType();
-		Boolean retired = new Boolean(false);
+		Boolean retired = Boolean.FALSE;
 		ft.setId(0xdeadcafe);
 		ff.setFieldType(ft);
 		ff
 		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		ff.setRetired(retired);
-		Boolean multiple = new Boolean(false);
+		Boolean multiple = Boolean.FALSE;
 		ff.setSelectMultiple(multiple);
 		ff
 		        .setTableName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
