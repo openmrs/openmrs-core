@@ -750,7 +750,7 @@ public class Result extends ArrayList<Result> {
 		if (isSingleResult()) {
 			return this;
 		}
-		Integer something = Integer.valueOf(1);
+		Integer something = 1;
 		Map<Result, Integer> map = new HashMap<>();
 		for (Result r : this) {
 			map.put(r, something);

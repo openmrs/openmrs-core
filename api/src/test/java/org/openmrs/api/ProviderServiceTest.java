@@ -263,7 +263,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	public void saveProvider_shouldSaveAProviderWithPersonAlone() {
 		Provider provider = new Provider();
 		provider.setIdentifier("unique");
-		Person person = Context.getPersonService().getPerson(Integer.valueOf(999));
+		Person person = Context.getPersonService().getPerson(999);
 		provider.setPerson(person);
 		service.saveProvider(provider);
 		Assert.assertNotNull(provider.getId());
