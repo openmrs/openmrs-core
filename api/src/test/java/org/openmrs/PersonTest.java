@@ -725,7 +725,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttribute_shouldReturnNullWhenExistingPersonAttributeTypeIsVoided() {
 		Person person = personHelper(true, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-	 	PersonAttributeType type = new PersonAttributeType(new Integer(3));
+	 	PersonAttributeType type = new PersonAttributeType(3);
 	 	type.setName("name3");
 		Assert.assertNull(person.getAttribute(type));
 	}
@@ -736,7 +736,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttribute_shouldreturnPersonAttributeBasedOnAttributeTypeId() {
 		Person person = personHelper(false, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-		Assert.assertEquals(new Integer(3), person.getAttribute(new Integer(3)).getAttributeType().getId());
+		Assert.assertEquals(new Integer(3), person.getAttribute(3).getAttributeType().getId());
 	}
 
 	/**
@@ -745,7 +745,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttribute_shouldReturnNullWhenExistingPersonAttributeWithMatchingAttributeTypeIdIsVoided() {
 		Person person = personHelper(true, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-		Assert.assertNull(person.getAttribute(new Integer(3)));
+		Assert.assertNull(person.getAttribute(3));
 	}
 
 	/**
@@ -763,7 +763,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttributes_shouldReturnListOfPersonAttributesBasedOnAttributeTypeId() {
 		Person person = personHelper(false, 1, 1, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-		Assert.assertEquals(2, person.getAttributes(new Integer(1)).size());
+		Assert.assertEquals(2, person.getAttributes(1).size());
 	}
 
 	/**
@@ -772,15 +772,15 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttributes_shouldReturnEmptyListWhenMatchingPersonAttributeByIdIsVoided() {
 		Person person = personHelper(true, 1, 1, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-		Assert.assertEquals(0, person.getAttributes(new Integer(1)).size());
+		Assert.assertEquals(0, person.getAttributes(1).size());
 	}
 
 	private Person personHelper(boolean isVoid, int attributeType1, int attributeType2, int attributeType3, String attributeName1, String attributeName2, String attributeName3, String attributeValue1, String attributeValue2, String attributeValue3) {
 		Person person = new Person();
 
-	 	PersonAttributeType type1 = new PersonAttributeType(new Integer(attributeType1));
-	 	PersonAttributeType type2 = new PersonAttributeType(new Integer(attributeType2));
-	 	PersonAttributeType type3 = new PersonAttributeType(new Integer(attributeType3));
+	 	PersonAttributeType type1 = new PersonAttributeType(attributeType1);
+	 	PersonAttributeType type2 = new PersonAttributeType(attributeType2);
+	 	PersonAttributeType type3 = new PersonAttributeType(attributeType3);
 	    
 	 	type1.setName(attributeName1);
 	 	type2.setName(attributeName2);
