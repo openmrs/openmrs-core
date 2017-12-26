@@ -178,10 +178,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			
 			return conceptId;
 		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException("Unable to create concept with names " + names, e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			throw new CustomChangeException("Unable to create concept with names " + names, e);
 		}
 		finally {
@@ -220,10 +217,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			updateStatement.setInt(1, falseConceptId);
 			updateStatement.executeUpdate();
 		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException("Unable to change obs", e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			throw new CustomChangeException("Unable to change obs", e);
 		}
 		finally {
@@ -266,11 +260,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			updateStatement.setString(4, UUID.randomUUID().toString());
 			updateStatement.executeUpdate();
 		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException("Unable to create global properties for concept ids defining boolean concepts",
-			        e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			throw new CustomChangeException("Unable to create global properties for concept ids defining boolean concepts",
 			        e);
 		}
@@ -312,10 +302,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			
 			return result;
 		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException("Unable to get int", e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			throw new CustomChangeException("Unable to get int", e);
 		}
 		finally {
