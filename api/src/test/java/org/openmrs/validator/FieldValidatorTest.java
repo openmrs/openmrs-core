@@ -30,7 +30,7 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Field ff = new Field();
 		ff.setName(null);
 		FieldType ft = new FieldType();
-		Boolean retired = new Boolean(false);
+		Boolean retired = Boolean.FALSE;
 		ft.setId(0xdeadcafe);
 		ff.setFieldType(ft);
 		ff.setRetired(retired);

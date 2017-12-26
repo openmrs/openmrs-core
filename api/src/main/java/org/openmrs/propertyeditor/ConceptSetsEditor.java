@@ -86,12 +86,12 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 				
 				if (!originalConceptSetIds.contains(requestConceptId)) {
 					// the null weight will be reset in the next step of normalization
-					originalConceptSets.add(new ConceptSet(cs.getConcept(requestConceptId), new Double(x)));
+					originalConceptSets.add(new ConceptSet(cs.getConcept(requestConceptId), (double) x));
 				} else {
 					// find this conceptId in the original set and set its weight
 					for (ConceptSet conceptSet : originalConceptSets) {
 						if (conceptSet.getConcept().getConceptId().equals(requestConceptId)) {
-							conceptSet.setSortWeight(new Double(x));
+							conceptSet.setSortWeight((double) x);
 						}
 					}
 				}
