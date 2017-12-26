@@ -724,14 +724,14 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<groupId>org.codehaus.sonar</groupId>
+					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>4.5.4</version>
+					<version>3.4.0.905</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.7.4.201502262128</version>
+					<version>0.7.8</version>
 					<configuration>
 						<includes>
 							<include>org/openmrs/**</include>
@@ -1014,11 +1014,11 @@
 		<hibernateVersion>4.3.9.Final</hibernateVersion>
 		<customArgLineForTesting/>
 
-		<sonar.host.url>https://sonar.openmrs.org/sonar</sonar.host.url>
+		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
 		<sonar.issuesReport.lightModeOnly>true</sonar.issuesReport.lightModeOnly>
 		<sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
-		<sonar.analysis.mode>incremental</sonar.analysis.mode>
+		<sonar.analysis.mode>publish</sonar.analysis.mode>
 
 		<argLine>-Duser.language=en -Duser.region=US -Xmx2g ${customArgLineForTesting}</argLine>
 	</properties>
