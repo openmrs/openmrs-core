@@ -479,7 +479,7 @@ public class HibernateFormDAO implements FormDAO {
 			subquery.add(Restrictions.eqProperty("ff.form", "form"));
 			subquery.add(Restrictions.in("ff.formFieldId", allFormFieldIds));
 			
-			crit.add(Subqueries.eq(Long.valueOf(containingAllFormFields.size()), subquery));
+			crit.add(Subqueries.eq((long) containingAllFormFields.size(), subquery));
 		}
 		
 		// get all forms (dupes included) that have this field on them

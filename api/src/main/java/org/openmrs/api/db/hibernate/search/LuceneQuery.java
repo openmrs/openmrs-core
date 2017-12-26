@@ -363,7 +363,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		@SuppressWarnings("unchecked")
 		List<T> list = fullTextQuery.list();
 
-		return ListPart.newListPart(list, firstResult, maxResults, Long.valueOf(fullTextQuery.getResultSize()),
+		return ListPart.newListPart(list, firstResult, maxResults, (long) fullTextQuery.getResultSize(),
 		    !fullTextQuery.hasPartialResults());
 	}
 	
@@ -406,7 +406,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		@SuppressWarnings("unchecked")
 		List<Object[]> list = fullTextQuery.list();
 		
-		return ListPart.newListPart(list, firstResult, maxResults, Long.valueOf(fullTextQuery.getResultSize()),
+		return ListPart.newListPart(list, firstResult, maxResults, (long) fullTextQuery.getResultSize(),
 		    !fullTextQuery.hasPartialResults());
 		
 	}
