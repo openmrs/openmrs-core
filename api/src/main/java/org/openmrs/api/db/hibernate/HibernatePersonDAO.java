@@ -188,9 +188,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			query.setString("gender", gender);
 		}
 
-		Set<Person> people = new LinkedHashSet<Person>(query.list());
-		
-		return people;
+		return new LinkedHashSet<Person>(query.list());
 	}
 	
 	/**

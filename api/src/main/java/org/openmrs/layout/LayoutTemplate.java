@@ -155,10 +155,9 @@ public abstract class LayoutTemplate {
 			ret.add(currNonToken);
 			
 			currToken.put("isToken", getLayoutToken());
-			String realToken = line;
-			currToken.put("displayText", this.getNameMappings().get(realToken));
-			currToken.put("displaySize", this.getSizeMappings().get(realToken));
-			currToken.put("codeName", realToken);
+			currToken.put("displayText", this.getNameMappings().get(line));
+			currToken.put("displaySize", this.getSizeMappings().get(line));
+			currToken.put("codeName", line);
 			
 			ret.add(currToken);
 		}
