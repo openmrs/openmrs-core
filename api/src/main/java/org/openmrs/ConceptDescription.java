@@ -137,7 +137,6 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	/**
 	 * @return Returns the User who last changed the description.
 	 */
-	@Override
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -145,7 +144,6 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	/**
 	 * @param changedBy The user who changed this description
 	 */
-	@Override
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -153,7 +151,6 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	/**
 	 * @return Returns the date the description was last changed.
 	 */
-	@Override
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -163,7 +160,6 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	 * 
 	 * @param dateChanged the data the description was changed.
 	 */
-	@Override
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
