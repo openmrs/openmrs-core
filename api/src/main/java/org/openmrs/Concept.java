@@ -232,7 +232,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the changedBy.
 	 */
-	@Override
+
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -240,7 +240,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param changedBy The changedBy to set.
 	 */
-	@Override
+
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -328,7 +328,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @return Returns the dateChanged.
 	 */
-	@Override
+
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -336,7 +336,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param dateChanged The dateChanged to set.
 	 */
-	@Override
+	
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
