@@ -336,7 +336,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param dateChanged The dateChanged to set.
 	 */
-	
+
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
