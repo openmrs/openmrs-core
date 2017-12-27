@@ -314,9 +314,8 @@ public class ModuleFactory {
 		Graph<Module> graph = new Graph<>();
 		
 		for (Module mod : modules) {
-			
-			Module toNode = mod;
-			graph.addNode(toNode);
+
+			graph.addNode(mod);
 			
 			// Required dependencies
 			for (String key : mod.getRequiredModules()) {
@@ -328,7 +327,7 @@ public class ModuleFactory {
 				
 				if (fromNode != null) {
 					graph.addEdge(graph.new Edge(
-					                             fromNode, toNode));
+					                             fromNode, mod));
 				}
 			}
 			
@@ -342,7 +341,7 @@ public class ModuleFactory {
 				
 				if (fromNode != null) {
 					graph.addEdge(graph.new Edge(
-					                             fromNode, toNode));
+					                             fromNode, mod));
 				}
 			}
 		}
