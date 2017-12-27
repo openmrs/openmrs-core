@@ -25,7 +25,6 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.hibernate.jdbc.ReturningWork;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.Location;
 import org.openmrs.attribute.AttributeType;
