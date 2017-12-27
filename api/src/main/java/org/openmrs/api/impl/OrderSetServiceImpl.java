@@ -35,7 +35,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	}
 	
 	@Override
-	@Transactional(readOnly = false)
+	@Transactional()
 	public OrderSet saveOrderSet(OrderSet orderSet) throws APIException {
 		return saveOrderSetInternal(orderSet);
 	}
@@ -44,7 +44,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	 * @see org.openmrs.api.OrderSetService#retireOrderSet(OrderSet, String)
 	 */
 	@Override
-	@Transactional(readOnly = false)
+	@Transactional()
 	public OrderSet retireOrderSet(OrderSet orderSet, String retireReason) throws APIException {
 		if (StringUtils.isBlank(retireReason)) {
 			throw new IllegalArgumentException("retire reason cannot be empty or null");
@@ -59,7 +59,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 	 * @see org.openmrs.api.OrderSetService#unretireOrderSet(OrderSet)
 	 */
 	@Override
-	@Transactional(readOnly = false)
+	@Transactional()
 	public OrderSet unretireOrderSet(OrderSet orderSet) throws APIException {
 		return saveOrderSetInternal(orderSet);
 	}

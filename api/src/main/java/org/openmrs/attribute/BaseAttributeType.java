@@ -29,13 +29,13 @@ public abstract class BaseAttributeType<OwningType extends Customizable<?>> exte
 	@Column(name = "max_occurs", length = 11)
 	private Integer maxOccurs = null;
 	
-	@Column(name = "datatype", length = 255)
+	@Column(name = "datatype")
 	private String datatypeClassname;
 	
 	@Column(name = "datatype_config", length = 65535)
 	private String datatypeConfig;
 	
-	@Column(name = "preferred_handler", length = 255)
+	@Column(name = "preferred_handler")
 	private String preferredHandlerClassname;
 	
 	@Column(name = "handler_config", length = 65535)

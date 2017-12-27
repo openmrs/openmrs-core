@@ -34,7 +34,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * out, just put these tests in ModuleActivatorTest NOTE: The way we start, stop, unload, etc,
  * modules is copied from ModuleListController
  */
-@ContextConfiguration(locations = { "classpath*:webModuleApplicationContext.xml" }, inheritLocations = true, loader = TestContextLoader.class)
+@ContextConfiguration(locations = { "classpath*:webModuleApplicationContext.xml" }, loader = TestContextLoader.class)
 public class WebModuleActivatorTest extends BaseModuleActivatorTest {
 	
 	public void createWebInfFolderIfNotExist() {

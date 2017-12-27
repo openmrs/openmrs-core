@@ -32,11 +32,11 @@ import org.hibernate.search.annotations.Field;
 public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements OpenmrsMetadata {
 	
 	//***** Properties *****
-	@Column(name = "name", nullable = false, length = 255)
+	@Column(name = "name", nullable = false)
 	@Field
 	private String name;
 	
-	@Column(name = "description", length = 255)
+	@Column(name = "description")
 	private String description;
 	
 	@ManyToOne(optional = false)
@@ -64,7 +64,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@JoinColumn(name = "retired_by")
 	private User retiredBy;
 	
-	@Column(name = "retire_reason", length = 255)
+	@Column(name = "retire_reason")
 	private String retireReason;
 	
 	//***** Constructors *****
