@@ -67,7 +67,7 @@ public class ModuleUtil {
 	 *
 	 * @param props Properties (OpenMRS runtime properties)
 	 */
-	public static void startup(Properties props) throws ModuleMustStartException, OpenmrsCoreModuleException {
+	public static void startup(Properties props) throws OpenmrsCoreModuleException {
 		
 		String moduleListString = props.getProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD);
 		

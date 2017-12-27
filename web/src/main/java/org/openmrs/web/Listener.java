@@ -605,13 +605,13 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @throws ModuleMustStartException if the context cannot restart due to a
 	 *             {@link MandatoryModuleException} or {@link OpenmrsCoreModuleException}
 	 */
-	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Exception {
+	public static void performWebStartOfModules(ServletContext servletContext) throws Exception {
 		List<Module> startedModules = new ArrayList<>(ModuleFactory.getStartedModules());
 		performWebStartOfModules(startedModules, servletContext);
 	}
 	
 	public static void performWebStartOfModules(Collection<Module> startedModules, ServletContext servletContext)
-	        throws ModuleMustStartException, Exception {
+	        throws ModuleMustStartException {
 		
 		boolean someModuleNeedsARefresh = false;
 		for (Module mod : startedModules) {
