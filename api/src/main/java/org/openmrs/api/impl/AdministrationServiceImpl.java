@@ -471,7 +471,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		// set up the data map to post to the openmrs server
-		Map<String, String> data = new HashMap<String, String>();
+		Map<String, String> data = new HashMap<>();
 		data.put("implementationId", implementationId);
 		data.put("description", description);
 		data.put("passphrase", passphrase);
@@ -525,7 +525,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		// allowedLocales is guaranteed to not be null at this point
-		return new ArrayList<Locale>(allowedLocales);
+		return new ArrayList<>(allowedLocales);
 	}
 	
 	/**
@@ -545,14 +545,14 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Transactional(readOnly = true)
 	public Set<Locale> getPresentationLocales() {
 		if (presentationLocales == null) {
-			presentationLocales = new LinkedHashSet<Locale>();
+			presentationLocales = new LinkedHashSet<>();
 			Collection<Locale> messageLocales = Context.getMessageSourceService().getLocales();
 			List<Locale> allowedLocales = getAllowedLocales();
 			
 			for (Locale locale : allowedLocales) {
 				// if no country is specified all countries with this language will be added
 				if (StringUtils.isEmpty(locale.getCountry())) {
-					List<Locale> localsWithSameLanguage = new ArrayList<Locale>();
+					List<Locale> localsWithSameLanguage = new ArrayList<>();
 					for (Locale possibleLocale : messageLocales) {
 						if (locale.getLanguage().equals(possibleLocale.getLanguage())
 						        && !StringUtils.isEmpty(possibleLocale.getCountry())) {
@@ -665,7 +665,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	@Transactional(readOnly = true)
 	public Map<String, Map<String, String>> getSystemInformation() throws APIException {
-		Map<String, Map<String, String>> systemInfoMap = new LinkedHashMap<String, Map<String, String>>();
+		Map<String, Map<String, String>> systemInfoMap = new LinkedHashMap<>();
 		
 		systemInfoMap.put("SystemInfo.title.openmrsInformation", new LinkedHashMap<String, String>() {
 			
@@ -803,7 +803,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	@Cacheable(value = "userSearchLocales")
 	public List<Locale> getSearchLocales(Locale currentLocale, User user) throws APIException {
-		Set<Locale> locales = new LinkedHashSet<Locale>();
+		Set<Locale> locales = new LinkedHashSet<>();
 		locales.add(currentLocale); //the currently used full locale
 		locales.add(new Locale(currentLocale.getLanguage()));
 
@@ -817,7 +817,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		//limit locales to only allowed locales
 		List<Locale> allowedLocales = Context.getAdministrationService().getAllowedLocales();
 		if (allowedLocales != null) {
-			Set<Locale> retainLocales = new HashSet<Locale>();
+			Set<Locale> retainLocales = new HashSet<>();
 			
 			for (Locale allowedLocale : allowedLocales) {
 				retainLocales.add(allowedLocale);
@@ -827,7 +827,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			locales.retainAll(retainLocales);
 		}
 		
-		return new ArrayList<Locale>(locales);
+		return new ArrayList<>(locales);
 	}
 
 	/**

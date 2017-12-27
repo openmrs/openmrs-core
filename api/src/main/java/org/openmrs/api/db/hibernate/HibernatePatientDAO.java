@@ -787,7 +787,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see PatientSearchCriteria
 	 */
 	private List<String> tokenizeIdentifierQuery(String query) {
-		List<String> searchPatterns = new ArrayList<String>();
+		List<String> searchPatterns = new ArrayList<>();
 
 		String patternSearch = Context.getAdministrationService().getGlobalProperty(
 				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN, "");

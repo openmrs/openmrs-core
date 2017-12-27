@@ -1439,7 +1439,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			final Set<Locale> searchLocales;
 			
 			if (locales == null) {
-				searchLocales = new HashSet<Locale>(Collections.singletonList(Context.getLocale()));
+				searchLocales = new HashSet<>(Collections.singletonList(Context.getLocale()));
 			} else {
 				searchLocales = new HashSet<>(locales);
 			}
