@@ -60,7 +60,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	 * 
 	 * @param conceptSetId The concept set identifier.
 	 */
-	public void setConceptSetId(Integer conceptSetId) {
+	private void setConceptSetId(Integer conceptSetId) {
 		this.conceptSetId = conceptSetId;
 	}
 	

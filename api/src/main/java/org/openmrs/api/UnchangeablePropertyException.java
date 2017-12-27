@@ -17,7 +17,7 @@ package org.openmrs.api;
  */
 public class UnchangeablePropertyException extends APIException {
 	
-	public UnchangeablePropertyException(String message) {
+	private UnchangeablePropertyException(String message) {
 		super(message);
 	}
 	

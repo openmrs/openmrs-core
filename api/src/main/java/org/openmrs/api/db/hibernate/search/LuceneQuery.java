@@ -50,7 +50,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 
 	private Set<Object> skipSameValues;
 
-	boolean useOrQueryParser = false;
+	private boolean useOrQueryParser = false;
 
 	public static <T> LuceneQuery<T> newQuery(final Class<T> type, final Session session, final String query, final Collection<String> fields) {
 		return new LuceneQuery<T>(
@@ -100,7 +100,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		return QueryParser.escape(query);
 	}
 	
-	public LuceneQuery(Class<T> type, Session session) {
+	private LuceneQuery(Class<T> type, Session session) {
 		super(session, type);
 	}
 
@@ -204,16 +204,6 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	protected abstract Query prepareQuery() throws ParseException;
 	
 	/**
-	 * It is called by the constructor after creating {@link FullTextQuery}.
-	 * <p>
-	 * You can override it to adjust the full text query, e.g. add a filter.
-	 * 
-	 * @param fullTextQuery
-	 */
-	protected void adjustFullTextQuery(FullTextQuery fullTextQuery) {
-	}
-	
-	/**
 	 * You can use it in {@link #prepareQuery()}.
 	 * 
 	 * @return the query builder
@@ -263,7 +253,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 * 
 	 * @return the full text session
 	 */
-	protected FullTextSession getFullTextSession() {
+	private FullTextSession getFullTextSession() {
 		return Search.getFullTextSession(getSession());
 	}
 	
@@ -393,7 +383,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		return list;
 	}
 	
-	public ListPart<Object[]> listPartProjection(Long firstResult, Long maxResults, String... fields) {
+	private ListPart<Object[]> listPartProjection(Long firstResult, Long maxResults, String... fields) {
 		if (noUniqueTerms) {
 			return ListPart.newListPart(Collections.emptyList(), firstResult, maxResults, 0L, true);
 		}
@@ -432,8 +422,6 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 				.setParameter("excludeTerms", excludeTerms);
 
 		fullTextQuery.setFilter(termsFilter);
-
-		adjustFullTextQuery(fullTextQuery);
 
 		return fullTextQuery;
 	}

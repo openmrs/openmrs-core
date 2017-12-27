@@ -68,7 +68,7 @@ public class HibernateUtil {
 	 * @param sessionFactory SessionFactory to pull the dialect from
 	 * @return Dialect of sql that this connection/session is using
 	 */
-	public static Dialect getDialect(SessionFactory sessionFactory) {
+	private static Dialect getDialect(SessionFactory sessionFactory) {
 		
 		// return cached dialect
 		if (dialect != null) {

@@ -357,7 +357,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @param tag human-readable text string for the tag
 	 * @param description description of the tag's purpose
 	 */
-	public void addTag(String tag, String description) {
+	private void addTag(String tag, String description) {
 		ConceptNameTag nameTag = new ConceptNameTag(tag, description);
 		addTag(nameTag);
 	}
@@ -420,7 +420,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @param tagToFind the string of the tag for which to check
 	 * @return true if the tags include the specified tag, false otherwise
 	 */
-	public Boolean hasTag(String tagToFind) {
+	private Boolean hasTag(String tagToFind) {
 		boolean foundTag = false;
 		if (tags != null) {
 			for (ConceptNameTag nameTag : getTags()) {

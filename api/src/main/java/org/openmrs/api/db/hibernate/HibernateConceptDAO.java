@@ -952,7 +952,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getMaxConceptId()
 	 */
-	public Integer getMinConceptId() {
+	private Integer getMinConceptId() {
 		Query query = sessionFactory.getCurrentSession().createQuery("select min(conceptId) from Concept");
 		return (Integer) query.uniqueResult();
 	}

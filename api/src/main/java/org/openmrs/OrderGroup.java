@@ -49,7 +49,7 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	 *
 	 * @param orderGroupId the orderGroupId to set
 	 */
-	public void setOrderGroupId(Integer orderGroupId) {
+	private void setOrderGroupId(Integer orderGroupId) {
 		this.orderGroupId = orderGroupId;
 	}
 	

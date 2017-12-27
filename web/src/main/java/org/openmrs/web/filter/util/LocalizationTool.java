@@ -42,7 +42,7 @@ public class LocalizationTool extends ResourceTool {
 	/**
 	 * @return the defaultResourceBundle
 	 */
-	public static ResourceBundle getDefaultResourceBundle() {
+	private static ResourceBundle getDefaultResourceBundle() {
 		if (defaultResourceBundle == null) {
 			defaultResourceBundle = CustomResourceLoader.getInstance(null).getResourceBundle(Locale.ENGLISH);
 		}

@@ -72,7 +72,7 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	/**
 	 * @param conceptDescriptionId The conceptId to set.
 	 */
-	public void setConceptDescriptionId(Integer conceptDescriptionId) {
+	private void setConceptDescriptionId(Integer conceptDescriptionId) {
 		this.conceptDescriptionId = conceptDescriptionId;
 	}
 	

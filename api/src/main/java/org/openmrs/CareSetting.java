@@ -48,7 +48,7 @@ public class CareSetting extends BaseChangeableOpenmrsMetadata {
 		return careSettingId;
 	}
 	
-	public void setCareSettingId(Integer careSettingId) {
+	private void setCareSettingId(Integer careSettingId) {
 		this.careSettingId = careSettingId;
 	}
 	
@@ -56,7 +56,7 @@ public class CareSetting extends BaseChangeableOpenmrsMetadata {
 		return careSettingType;
 	}
 	
-	public void setCareSettingType(CareSettingType careSettingType) {
+	private void setCareSettingType(CareSettingType careSettingType) {
 		this.careSettingType = careSettingType;
 	}
 	

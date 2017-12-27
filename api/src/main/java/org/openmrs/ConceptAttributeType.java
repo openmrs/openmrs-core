@@ -20,7 +20,7 @@ public class ConceptAttributeType extends BaseAttributeType<Concept> implements 
 		return conceptAttributeTypeId;
 	}
 	
-	public void setConceptAttributeTypeId(Integer conceptAttributeTypeId) {
+	private void setConceptAttributeTypeId(Integer conceptAttributeTypeId) {
 		this.conceptAttributeTypeId = conceptAttributeTypeId;
 	}
 	

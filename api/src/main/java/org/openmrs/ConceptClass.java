@@ -75,7 +75,7 @@ public class ConceptClass extends BaseChangeableOpenmrsMetadata {
 		return this.conceptClassId;
 	}
 	
-	public void setConceptClassId(Integer conceptClassId) {
+	private void setConceptClassId(Integer conceptClassId) {
 		this.conceptClassId = conceptClassId;
 	}
 	

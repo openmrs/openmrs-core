@@ -66,7 +66,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	private static final Logger log = LoggerFactory.getLogger(AdministrationServiceImpl.class);
 
-	protected AdministrationDAO dao;
+	private AdministrationDAO dao;
 	
 	private EventListeners eventListeners;
 	
@@ -100,7 +100,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * a module is loaded or removed the variable is destroyed (along with the administration
 	 * service) and recreated the next time it is called
 	 */
-	protected SortedMap<String, String> systemVariables = null;
+	private SortedMap<String, String> systemVariables = null;
 	
 	/**
 	 * Set of locales which can be used to present messages in the user interface. Created lazily as

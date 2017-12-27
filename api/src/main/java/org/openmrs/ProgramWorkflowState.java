@@ -93,7 +93,7 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 		return programWorkflowStateId;
 	}
 	
-	public void setProgramWorkflowStateId(Integer programWorkflowStateId) {
+	private void setProgramWorkflowStateId(Integer programWorkflowStateId) {
 		this.programWorkflowStateId = programWorkflowStateId;
 	}
 	

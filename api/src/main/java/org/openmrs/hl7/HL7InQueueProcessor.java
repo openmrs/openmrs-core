@@ -44,7 +44,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	public HL7InQueueProcessor() {
 	}
 	
-	public static void setCount(Integer count) {
+	private static void setCount(Integer count) {
 		HL7InQueueProcessor.count = count;
 	}
 	
@@ -53,7 +53,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	 *
 	 * @param hl7InQueue queue entry to be processed
 	 */
-	public void processHL7InQueue(HL7InQueue hl7InQueue) {
+	private void processHL7InQueue(HL7InQueue hl7InQueue) {
 		
 		if (log.isDebugEnabled()) {
 			log.debug("Processing HL7 inbound queue (id=" + hl7InQueue.getHL7InQueueId() + ",key="
@@ -86,7 +86,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	 *
 	 * @return true if a queue entry was processed, false if queue was empty
 	 */
-	public boolean processNextHL7InQueue() {
+	private boolean processNextHL7InQueue() {
 		boolean entryProcessed = false;
 		HL7Service hl7Service = Context.getHL7Service();
 		HL7InQueue hl7InQueue = hl7Service.getNextHL7InQueue();

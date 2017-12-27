@@ -36,7 +36,7 @@ public class ChainingInterceptor implements Interceptor {
 	private static final Logger log = LoggerFactory.getLogger(ChainingInterceptor.class);
 	
 	// using a linkedhashset to preserve insert order and maintain a list of unique objects
-	public Collection<Interceptor> interceptors = new LinkedHashSet<>();
+	private Collection<Interceptor> interceptors = new LinkedHashSet<>();
 	
 	/**
 	 * Adds the given interceptor to the list of interceptors to be applied to hibernate sessions.

@@ -40,7 +40,7 @@ public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 	 * 
 	 * @param orderFrequencyId
 	 */
-	public void setOrderFrequencyId(Integer orderFrequencyId) {
+	private void setOrderFrequencyId(Integer orderFrequencyId) {
 		this.orderFrequencyId = orderFrequencyId;
 	}
 	

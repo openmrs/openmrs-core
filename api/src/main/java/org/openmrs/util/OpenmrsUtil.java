@@ -487,7 +487,7 @@ public class OpenmrsUtil {
 	 * OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL ) exists. Valid values for global property are
 	 * trace, debug, info, warn, error or fatal.
 	 */
-	public static void applyLogLevels() {
+	private static void applyLogLevels() {
 		AdministrationService adminService = Context.getAdministrationService();
 		String logLevel = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, "");
 		
@@ -507,7 +507,7 @@ public class OpenmrsUtil {
 	 * 
 	 * @since 1.9.2
 	 */
-	public static void setupLogAppenders() {
+	private static void setupLogAppenders() {
 		Logger rootLogger = Logger.getRootLogger();
 		
 		FileAppender fileAppender = null;
@@ -550,7 +550,7 @@ public class OpenmrsUtil {
 	 *            OpenmrsConstants.LOG_CLASS_DEFAULT . Should be something like org.openmrs.___
 	 * @param logLevel one of OpenmrsConstants.LOG_LEVEL_*
 	 */
-	public static void applyLogLevel(String logClass, String logLevel) {
+	private static void applyLogLevel(String logClass, String logLevel) {
 		
 		if (logLevel != null) {
 			
@@ -1110,7 +1110,7 @@ public class OpenmrsUtil {
 	 * @return the path to the OpenMRS log file
 	 * @since 1.9.2
 	 */
-	public static String getOpenmrsLogLocation() {
+	private static String getOpenmrsLogLocation() {
 		String logPathGP = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_LOG_LOCATION, "");
 		File logPath = OpenmrsUtil.getDirectoryInApplicationDataDirectory(logPathGP);
 		
@@ -1578,7 +1578,7 @@ public class OpenmrsUtil {
 	 * 
 	 * @return unique string
 	 */
-	public static String generateUid(Integer size) {
+	private static String generateUid(Integer size) {
 		Random gen = new Random();
 		StringBuilder sb = new StringBuilder(size);
 		for (int i = 0; i < size; i++) {
@@ -1720,7 +1720,7 @@ public class OpenmrsUtil {
 	 * @param args the replacement values for the translation string
 	 * @return the message, or if not found, the code
 	 */
-	public static String getMessage(String code, Object... args) {
+	private static String getMessage(String code, Object... args) {
 		Locale l = Context.getLocale();
 		try {
 			String translation = Context.getMessageSourceService().getMessage(code, args, l);

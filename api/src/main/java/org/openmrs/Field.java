@@ -64,7 +64,7 @@ public class Field extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * @param fieldId The fieldId to set.
 	 */
-	public void setFieldId(Integer fieldId) {
+	private void setFieldId(Integer fieldId) {
 		this.fieldId = fieldId;
 	}
 	

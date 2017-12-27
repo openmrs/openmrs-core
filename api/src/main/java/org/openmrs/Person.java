@@ -44,7 +44,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	private static final Logger log = LoggerFactory.getLogger(Person.class);
 
 	@DocumentId
-	protected Integer personId;
+	private Integer personId;
 
 	private Set<PersonAddress> addresses = null;
 
@@ -97,7 +97,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * This is "cached" for each user upon first load. When an attribute is changed, the cache is
 	 * cleared and rebuilt on next access.
 	 */
-	Map<String, PersonAttribute> attributeMap = null;
+	private Map<String, PersonAttribute> attributeMap = null;
 	
 	private Map<String, PersonAttribute> allAttributeMap = null;
 	
@@ -388,7 +388,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @should not get voided attributes
 	 * @should not fail with null attributes
 	 */
-	public List<PersonAttribute> getActiveAttributes() {
+	private List<PersonAttribute> getActiveAttributes() {
 		List<PersonAttribute> attrs = new ArrayList<>();
 		for (PersonAttribute attr : getAttributes()) {
 			if (!attr.getVoided()) {
@@ -657,7 +657,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * 
 	 * @return Returns a string with all the attributes
 	 */
-	public String printAttributes() {
+	private String printAttributes() {
 		StringBuilder s = new StringBuilder("");
 		
 		for (PersonAttribute attribute : getAttributes()) {

@@ -35,9 +35,9 @@ public class AbstractHandler {
 	
 	private static final Logger log = LoggerFactory.getLogger(AbstractHandler.class);
 	
-	protected NumberFormat nf;
+	private NumberFormat nf;
 	
-	protected SimpleDateFormat longfmt;
+	private SimpleDateFormat longfmt;
 	
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally

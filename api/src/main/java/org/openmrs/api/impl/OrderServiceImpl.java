@@ -77,7 +77,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	private static final String ORDER_NUMBER_PREFIX = "ORD-";
 	
-	protected OrderDAO dao;
+	private OrderDAO dao;
 	
 	private static OrderNumberGenerator orderNumberGenerator = null;
 

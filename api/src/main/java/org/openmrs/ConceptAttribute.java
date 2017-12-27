@@ -28,7 +28,7 @@ public class ConceptAttribute extends BaseAttribute<ConceptAttributeType, Concep
 		return this.conceptAttributeId;
 	}
 	
-	public void setConceptAttributeId(Integer conceptAttributeId) {
+	private void setConceptAttributeId(Integer conceptAttributeId) {
 		this.conceptAttributeId = conceptAttributeId;
 	}
 	

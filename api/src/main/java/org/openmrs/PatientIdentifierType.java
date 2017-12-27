@@ -165,7 +165,7 @@ public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * @param patientIdentifierTypeId The patientIdentifierTypeId to set.
 	 */
-	public void setPatientIdentifierTypeId(Integer patientIdentifierTypeId) {
+	private void setPatientIdentifierTypeId(Integer patientIdentifierTypeId) {
 		this.patientIdentifierTypeId = patientIdentifierTypeId;
 	}
 	

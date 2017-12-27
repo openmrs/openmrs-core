@@ -183,7 +183,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	 *
 	 * @return true/false whether this role inherits from other roles
 	 */
-	public boolean inheritsRoles() {
+	private boolean inheritsRoles() {
 		return getInheritedRoles() != null && !getInheritedRoles().isEmpty();
 	}
 	
@@ -207,7 +207,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	 * @param total Roles already looped over
 	 * @return Set&lt;Role&gt; Current and inherited roles
 	 */
-	public Set<Role> recurseOverParents(final Set<Role> total) {
+	private Set<Role> recurseOverParents(final Set<Role> total) {
 		if (!this.inheritsRoles()) {
 			return total;
 		}
@@ -300,7 +300,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	 * @return Set&lt;Role&gt; Current and child roles
 	 * @since 1.9
 	 */
-	public Set<Role> recurseOverChildren(final Set<Role> total) {
+	private Set<Role> recurseOverChildren(final Set<Role> total) {
 		if (!this.hasChildRoles()) {
 			return total;
 		}

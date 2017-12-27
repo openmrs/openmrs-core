@@ -44,7 +44,7 @@ public class ModuleFilterMapping implements Serializable {
 	 * 
 	 * @param module - the module to use to construct this ModuleFilterMapping
 	 */
-	public ModuleFilterMapping(Module module) {
+	private ModuleFilterMapping(Module module) {
 		this.module = module;
 	}
 	
@@ -72,14 +72,14 @@ public class ModuleFilterMapping implements Serializable {
 	/**
 	 * @param filterName the name of the Filter
 	 */
-	public void setFilterName(String filterName) {
+	private void setFilterName(String filterName) {
 		this.filterName = filterName;
 	}
 	
 	/**
 	 * @return a List of all Servlet Names mapped to this Filter
 	 */
-	public List<String> getServletNames() {
+	private List<String> getServletNames() {
 		return servletNames;
 	}
 	
@@ -95,14 +95,14 @@ public class ModuleFilterMapping implements Serializable {
 	 * 
 	 * @param servletName - The servlet name to add
 	 */
-	public void addServletName(String servletName) {
+	private void addServletName(String servletName) {
 		this.servletNames.add(servletName);
 	}
 	
 	/**
 	 * @return - a List of all Url Patterns mapped to this filter
 	 */
-	public List<String> getUrlPatterns() {
+	private List<String> getUrlPatterns() {
 		return urlPatterns;
 	}
 	
@@ -118,7 +118,7 @@ public class ModuleFilterMapping implements Serializable {
 	 * 
 	 * @param urlPattern - The urlPattern to add
 	 */
-	public void addUrlPattern(String urlPattern) {
+	private void addUrlPattern(String urlPattern) {
 		this.urlPatterns.add(urlPattern);
 	}
 	
@@ -178,7 +178,7 @@ public class ModuleFilterMapping implements Serializable {
 	 * @should return true if the pattern matches by extension
 	 * @should return false if no pattern matches
 	 */
-	public static boolean urlPatternMatches(String patternToCheck, String requestPath) {
+	private static boolean urlPatternMatches(String patternToCheck, String requestPath) {
 		
 		// Return false if patternToCheck is null
 		if (patternToCheck == null) {
@@ -228,7 +228,7 @@ public class ModuleFilterMapping implements Serializable {
 	 * @should return true if the pattern matches the servlet name exactly
 	 * @should return false if no pattern matches
 	 */
-	public static boolean servletNameMatches(String patternToCheck, String servletName) {
+	private static boolean servletNameMatches(String patternToCheck, String servletName) {
 		
 		// Return false if servletName is null
 		if (servletName == null) {

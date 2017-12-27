@@ -26,7 +26,7 @@ public class EncounterProvider extends BaseChangeableOpenmrsData {
 	
 	private EncounterRole encounterRole;
 	
-	public void setEncounterProviderId(Integer encounterProviderId) {
+	private void setEncounterProviderId(Integer encounterProviderId) {
 		this.encounterProviderId = encounterProviderId;
 	}
 	

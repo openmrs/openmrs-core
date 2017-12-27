@@ -89,7 +89,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	
 	private static HL7ServiceImpl instance;
 	
-	protected HL7DAO dao;
+	private HL7DAO dao;
 	
 	private GenericParser parser;
 	

@@ -109,13 +109,13 @@ public class Obs extends BaseChangeableOpenmrsData {
 	
 	private static final int FORM_NAMESPACE_PATH_MAX_LENGTH = 255;
 	
-	protected Integer obsId;
+	private Integer obsId;
 	
-	protected Concept concept;
+	private Concept concept;
 	
-	protected Date obsDatetime;
+	private Date obsDatetime;
 	
-	protected String accessionNumber;
+	private String accessionNumber;
 	
 	/**
 	 * The "parent" of this obs. It is the grouping that brings other obs together. note:
@@ -124,7 +124,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * 
 	 * @see #isObsGrouping() (??)
 	 */
-	protected Obs obsGroup;
+	private Obs obsGroup;
 	
 	/**
 	 * The list of obs grouped under this obs.
@@ -132,38 +132,38 @@ public class Obs extends BaseChangeableOpenmrsData {
 	@AllowDirectAccess
 	protected Set<Obs> groupMembers;
 	
-	protected Concept valueCoded;
+	private Concept valueCoded;
 	
-	protected ConceptName valueCodedName;
+	private ConceptName valueCodedName;
 	
-	protected Drug valueDrug;
+	private Drug valueDrug;
 	
-	protected Integer valueGroupId;
+	private Integer valueGroupId;
 	
-	protected Date valueDatetime;
+	private Date valueDatetime;
 	
-	protected Double valueNumeric;
+	private Double valueNumeric;
 	
-	protected String valueModifier;
+	private String valueModifier;
 	
-	protected String valueText;
+	private String valueText;
 	
-	protected String valueComplex;
+	private String valueComplex;
 	
 	// ComplexData is not persisted in the database.
-	protected transient ComplexData complexData;
+	private transient ComplexData complexData;
 	
-	protected String comment;
+	private String comment;
 	
-	protected transient Integer personId;
+	private transient Integer personId;
 	
-	protected Person person;
+	private Person person;
 	
-	protected Order order;
+	private Order order;
 	
-	protected Location location;
+	private Location location;
 	
-	protected Encounter encounter;
+	private Encounter encounter;
 	
 	private Obs previousVersion;
 	
@@ -367,7 +367,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * 
 	 * @param obsGroup the obsGroup to set
 	 */
-	public void setObsGroup(Obs obsGroup) {
+	private void setObsGroup(Obs obsGroup) {
 		markAsDirty(this.obsGroup, obsGroup);
 		this.obsGroup = obsGroup;
 	}
@@ -567,7 +567,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	/**
 	 * @param obsId The obsId to set.
 	 */
-	public void setObsId(Integer obsId) {
+	private void setObsId(Integer obsId) {
 		this.obsId = obsId;
 	}
 	
@@ -605,7 +605,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @see #setPerson(Person)
 	 * @param personId
 	 */
-	protected void setPersonId(Integer personId) {
+	public void setPersonId(Integer personId) {
 		markAsDirty(this.personId, personId);
 		this.personId = personId;
 	}

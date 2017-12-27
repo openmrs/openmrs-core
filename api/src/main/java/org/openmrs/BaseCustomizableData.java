@@ -39,7 +39,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 	/**
 	 * @param attributes the attributes to set
 	 */
-	public void setAttributes(Set<A> attributes) {
+	private void setAttributes(Set<A> attributes) {
 		this.attributes = attributes;
 	}
 	

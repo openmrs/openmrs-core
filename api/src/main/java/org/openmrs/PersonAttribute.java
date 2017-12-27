@@ -101,7 +101,7 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	 * @param target a PersonAttribute that will have the state of <code>this</code> copied into it
 	 * @return Returns the PersonAttribute that was passed in, with state copied into it
 	 */
-	protected PersonAttribute copyHelper(PersonAttribute target) {
+	private PersonAttribute copyHelper(PersonAttribute target) {
 		target.setPerson(getPerson());
 		target.setAttributeType(getAttributeType());
 		target.setValue(getValue());
@@ -230,7 +230,7 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	/**
 	 * @param personAttributeId the personAttributeId to set
 	 */
-	public void setPersonAttributeId(Integer personAttributeId) {
+	private void setPersonAttributeId(Integer personAttributeId) {
 		this.personAttributeId = personAttributeId;
 	}
 	

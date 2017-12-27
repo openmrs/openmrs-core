@@ -72,7 +72,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
     /**
      * @param allergyId the allergyId to set
      */
-    public void setAllergyId(Integer allergyId) {
+    private void setAllergyId(Integer allergyId) {
     	this.allergyId = allergyId;
     }
 
@@ -103,7 +103,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	/**
 	 * @param patient the patient to set
 	 */
-	public void setPatient(Patient patient) {
+	private void setPatient(Patient patient) {
 		this.patient = patient;
 	}
 	/**
@@ -179,7 +179,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	/**
 	 * @param reactions the reactions to set
 	 */
-	public void setReactions(List<AllergyReaction> reactions) {
+	private void setReactions(List<AllergyReaction> reactions) {
 		//we do not allow to be in a state where reactions is null
 		if (reactions != null) {
 			this.reactions = reactions;
@@ -299,7 +299,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	 * @param allergyReactionId the allergy reaction id
 	 * @return the allergy reaction with a matching id
 	 */
-	public AllergyReaction getAllergyReaction(Integer allergyReactionId) {
+	private AllergyReaction getAllergyReaction(Integer allergyReactionId) {
 		for (AllergyReaction reaction : reactions) {
 			if (OpenmrsUtil.nullSafeEquals(reaction.getAllergyReactionId(), allergyReactionId)) {
 				return reaction;

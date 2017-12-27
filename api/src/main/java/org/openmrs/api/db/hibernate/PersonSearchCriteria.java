@@ -38,7 +38,7 @@ public class PersonSearchCriteria {
 		}
 	}
 	
-	Criterion prepareCriterionForName(String value, Boolean voided) {
+	private Criterion prepareCriterionForName(String value, Boolean voided) {
 		if (voided == null || !voided) {
 			return Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(
 			    Restrictions.disjunction().add(Restrictions.ilike("name.givenName", value, MatchMode.START)).add(

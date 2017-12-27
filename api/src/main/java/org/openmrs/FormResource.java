@@ -125,7 +125,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	 *
 	 * @param formResourceId the form resource's id
 	 */
-	public void setFormResourceId(Integer formResourceId) {
+	private void setFormResourceId(Integer formResourceId) {
 		this.formResourceId = formResourceId;
 	}
 	
@@ -267,7 +267,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 		return getDirty();
 	}
 	
-	public boolean getDirty() {
+	private boolean getDirty() {
 		return dirty;
 	}
 	

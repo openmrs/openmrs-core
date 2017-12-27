@@ -50,7 +50,7 @@ public class TestOrder extends Order {
 		return copyHelper(new TestOrder());
 	}
 	
-	protected TestOrder copyHelper(TestOrder target) {
+	private TestOrder copyHelper(TestOrder target) {
 		super.copyHelper(target);
 		target.specimenSource = getSpecimenSource();
 		target.laterality = getLaterality();
@@ -88,7 +88,7 @@ public class TestOrder extends Order {
 	 * 
 	 * @param laterality the laterality to set.
 	 */
-	public void setLaterality(Laterality laterality) {
+	private void setLaterality(Laterality laterality) {
 		this.laterality = laterality;
 	}
 	
@@ -185,7 +185,7 @@ public class TestOrder extends Order {
 	/**
 	 * @see Order#cloneForRevisionHelper(Order)
 	 */
-	protected TestOrder cloneForRevisionHelper(TestOrder target) {
+	private TestOrder cloneForRevisionHelper(TestOrder target) {
 		super.cloneForRevisionHelper(target);
 		target.setSpecimenSource(getSpecimenSource());
 		target.setLaterality(getLaterality());

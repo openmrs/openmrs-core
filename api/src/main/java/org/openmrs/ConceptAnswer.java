@@ -119,7 +119,7 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	/**
 	 * @param conceptAnswerId The conceptAnswerId to set.
 	 */
-	public void setConceptAnswerId(Integer conceptAnswerId) {
+	private void setConceptAnswerId(Integer conceptAnswerId) {
 		this.conceptAnswerId = conceptAnswerId;
 	}
 	

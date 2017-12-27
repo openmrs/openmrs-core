@@ -379,7 +379,7 @@ public class WebUtil implements GlobalPropertyListener {
 		return formatDate(date, Context.getLocale(), FORMAT_TYPE.DATE);
 	}
 	
-	public static String formatDate(Date date, Locale locale, FORMAT_TYPE type) {
+	private static String formatDate(Date date, Locale locale, FORMAT_TYPE type) {
 		log.debug("Formatting date: " + date + " with locale " + locale);
 		
 		DateFormat dateFormat = null;
@@ -420,7 +420,7 @@ public class WebUtil implements GlobalPropertyListener {
 		return OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT.equals(propertyName);
 	}
 	
-	public static void setDefaultDateCache(String defaultDateCache) {
+	private static void setDefaultDateCache(String defaultDateCache) {
 		WebUtil.defaultDateCache = defaultDateCache;
 	}
 	

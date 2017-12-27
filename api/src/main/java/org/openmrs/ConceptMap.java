@@ -88,7 +88,7 @@ public class ConceptMap extends BaseConceptMap {
 	/**
 	 * @param conceptMapId The conceptMapId to set.
 	 */
-	public void setConceptMapId(Integer conceptMapId) {
+	private void setConceptMapId(Integer conceptMapId) {
 		this.conceptMapId = conceptMapId;
 	}
 	

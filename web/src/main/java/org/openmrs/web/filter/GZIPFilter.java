@@ -70,7 +70,7 @@ public class GZIPFilter extends OncePerRequestFilter {
 	 * @param req request
 	 * @return gzipped request
 	 */
-	public HttpServletRequest performGZIPRequest(HttpServletRequest req) {
+	private HttpServletRequest performGZIPRequest(HttpServletRequest req) {
 		String contentEncoding = req.getHeader("Content-encoding");
 		if (contentEncoding != null && contentEncoding.contains("gzip")) {
 			if (!isCompressedRequestForPathAccepted(req.getRequestURI())) {

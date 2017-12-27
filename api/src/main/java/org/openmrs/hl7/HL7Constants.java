@@ -28,7 +28,7 @@ public class HL7Constants {
 	
 	public static final Integer HL7_STATUS_ERROR = 3;
 	
-	public static final String HL7_TEXT = "ST";
+	private static final String HL7_TEXT = "ST";
 	
 	public static final String HL7_CODED = "CE";
 	
@@ -36,13 +36,13 @@ public class HL7Constants {
 	
 	public static final String HL7_NUMERIC = "NM";
 	
-	public static final String HL7_DATE = "DT";
+	private static final String HL7_DATE = "DT";
 	
-	public static final String HL7_TIME = "TM";
+	private static final String HL7_TIME = "TM";
 	
-	public static final String HL7_DATETIME = "TS";
+	private static final String HL7_DATETIME = "TS";
 	
-	public static final String HL7_BOOLEAN = "BIT";
+	private static final String HL7_BOOLEAN = "BIT";
 	
 	public static final String HL7_AUTHORITY_UUID = "UUID";
 	
@@ -119,7 +119,7 @@ public class HL7Constants {
 	public static final int MIGRATION_MAX_BATCH_SIZE = 2000;
 	
 	// List of datatypes that do not require complex definitions
-	public static final Map<String, String> simpleDatatypes = new HashMap<>();
+	private static final Map<String, String> simpleDatatypes = new HashMap<>();
 	
 	static {
 		simpleDatatypes.put(HL7_TEXT, "xs:string");

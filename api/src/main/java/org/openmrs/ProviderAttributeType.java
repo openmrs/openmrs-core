@@ -37,7 +37,7 @@ public class ProviderAttributeType extends BaseAttributeType<Provider> implement
 		setProviderAttributeTypeId(id);
 	}
 	
-	public void setProviderAttributeTypeId(Integer providerAttributeTypeId) {
+	private void setProviderAttributeTypeId(Integer providerAttributeTypeId) {
 		this.providerAttributeTypeId = providerAttributeTypeId;
 	}
 	

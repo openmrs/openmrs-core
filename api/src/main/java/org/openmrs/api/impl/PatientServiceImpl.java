@@ -978,7 +978,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 *            exited
 	 * @throws APIException
 	 */
-	public void exitFromCare(Patient patient, Date dateExited, Concept reasonForExit) throws APIException {
+	private void exitFromCare(Patient patient, Date dateExited, Concept reasonForExit) throws APIException {
 		
 		if (patient == null) {
 			throw new APIException("Patient.invalid.care", (Object[]) null);

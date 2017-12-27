@@ -66,7 +66,7 @@ public class FreeTextDosingInstructions implements DosingInstructions {
 		return null;
 	}
 	
-	public String getInstructions() {
+	private String getInstructions() {
 		return instructions;
 	}
 	

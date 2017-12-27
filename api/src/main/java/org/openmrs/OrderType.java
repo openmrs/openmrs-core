@@ -78,7 +78,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * @param orderTypeId The orderTypeId to set.
 	 */
-	public void setOrderTypeId(Integer orderTypeId) {
+	private void setOrderTypeId(Integer orderTypeId) {
 		this.orderTypeId = orderTypeId;
 	}
 	

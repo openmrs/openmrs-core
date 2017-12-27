@@ -63,7 +63,7 @@ public class PatientState extends BaseChangeableOpenmrsData implements java.io.S
 	 * @param target a PatientState that will have the state of <code>this</code> copied into it
 	 * @return the PatientState that was passed in, with state copied into it
 	 */
-	protected PatientState copyHelper(PatientState target) {
+	private PatientState copyHelper(PatientState target) {
 		target.setPatientProgram(this.getPatientProgram());
 		target.setState(this.getState());
 		target.setStartDate(this.getStartDate());
@@ -139,7 +139,7 @@ public class PatientState extends BaseChangeableOpenmrsData implements java.io.S
 		return patientStateId;
 	}
 	
-	public void setPatientStateId(Integer patientStatusId) {
+	private void setPatientStateId(Integer patientStatusId) {
 		this.patientStateId = patientStatusId;
 	}
 	

@@ -63,7 +63,7 @@ public class VisitAttribute extends BaseAttribute<VisitAttributeType, Visit> imp
 	/**
 	 * @param visitAttributeId the visitAttributeId to set
 	 */
-	public void setVisitAttributeId(Integer visitAttributeId) {
+	private void setVisitAttributeId(Integer visitAttributeId) {
 		this.visitAttributeId = visitAttributeId;
 	}
 	

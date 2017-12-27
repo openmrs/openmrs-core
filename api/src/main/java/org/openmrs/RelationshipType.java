@@ -71,7 +71,7 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	/**
 	 * @param relationshipTypeId The relationshipTypeId to set.
 	 */
-	public void setRelationshipTypeId(Integer relationshipTypeId) {
+	private void setRelationshipTypeId(Integer relationshipTypeId) {
 		this.relationshipTypeId = relationshipTypeId;
 	}
 	

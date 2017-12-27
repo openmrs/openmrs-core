@@ -55,8 +55,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 	
-	protected UserDAO dao;
-	
+	private UserDAO dao;
+
 	@Autowired(required = false)
 	List<PrivilegeListener> privilegeListeners;
 	

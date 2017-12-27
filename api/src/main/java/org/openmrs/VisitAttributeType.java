@@ -46,7 +46,7 @@ public class VisitAttributeType extends BaseAttributeType<Visit> implements Attr
 	/**
 	 * @param visitAttributeTypeId the visitAttributeTypeId to set
 	 */
-	public void setVisitAttributeTypeId(Integer visitAttributeTypeId) {
+	private void setVisitAttributeTypeId(Integer visitAttributeTypeId) {
 		this.visitAttributeTypeId = visitAttributeTypeId;
 	}
 	

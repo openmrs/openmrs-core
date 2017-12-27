@@ -39,7 +39,7 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 	/**
 	 * @param attributes the attributes to set
 	 */
-	public void setAttributes(Set<A> attributes) {
+	private void setAttributes(Set<A> attributes) {
 		this.attributes = attributes;
 	}
 	

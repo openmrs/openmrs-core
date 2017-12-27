@@ -500,7 +500,7 @@ public class WebModuleUtil {
 	 *
 	 * @param mod the module that is being stopped that needs its servlets removed
 	 */
-	public static void unloadServlets(Module mod) {
+	private static void unloadServlets(Module mod) {
 		Element rootNode = mod.getConfig().getDocumentElement();
 		NodeList servletTags = rootNode.getElementsByTagName("servlet");
 		
@@ -566,7 +566,7 @@ public class WebModuleUtil {
 	 *
 	 * @param module - The Module for which you want to remove and destroy filters.
 	 */
-	public static void unloadFilters(Module module) {
+	private static void unloadFilters(Module module) {
 		
 		// Unload Filter Mappings
 		for (Iterator<ModuleFilterMapping> mapIter = moduleFilterMappings.iterator(); mapIter.hasNext();) {
@@ -610,7 +610,7 @@ public class WebModuleUtil {
 	 * @return A Collection of all {@link ModuleFilterMapping}s that have been registered by a
 	 *         Module
 	 */
-	public static Collection<ModuleFilterMapping> getFilterMappings() {
+	private static Collection<ModuleFilterMapping> getFilterMappings() {
 		return moduleFilterMappings;
 	}
 	
@@ -718,7 +718,7 @@ public class WebModuleUtil {
 	 * @param servletContext
 	 * @param skipRefresh
 	 */
-	public static void stopModule(Module mod, ServletContext servletContext, boolean skipRefresh) {
+	private static void stopModule(Module mod, ServletContext servletContext, boolean skipRefresh) {
 		
 		String moduleId = mod.getModuleId();
 		String modulePackage = mod.getPackageName();
@@ -926,7 +926,7 @@ public class WebModuleUtil {
 		return moduleWebFolder.replace("/", File.separator);
 	}
 	
-	public static void createDwrModulesXml(String realPath) {
+	private static void createDwrModulesXml(String realPath) {
 		
 		try {
 			
@@ -956,7 +956,7 @@ public class WebModuleUtil {
 		}
 	}
 	
-	public static String getRealPath(ServletContext servletContext) {
+	private static String getRealPath(ServletContext servletContext) {
 		return servletContext.getRealPath("");
 	}
 	

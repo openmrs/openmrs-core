@@ -155,7 +155,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		return dose;
 	}
 	
-	public void setDose(Double dose) {
+	private void setDose(Double dose) {
 		this.dose = dose;
 	}
 	
@@ -163,7 +163,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		return doseUnits;
 	}
 	
-	public void setDoseUnits(Concept doseUnits) {
+	private void setDoseUnits(Concept doseUnits) {
 		this.doseUnits = doseUnits;
 	}
 	
@@ -171,7 +171,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		return route;
 	}
 	
-	public void setRoute(Concept route) {
+	private void setRoute(Concept route) {
 		this.route = route;
 	}
 	
@@ -179,7 +179,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		return frequency;
 	}
 	
-	public void setFrequency(OrderFrequency frequency) {
+	private void setFrequency(OrderFrequency frequency) {
 		this.frequency = frequency;
 	}
 	
@@ -187,7 +187,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		return duration;
 	}
 	
-	public void setDuration(Integer duration) {
+	private void setDuration(Integer duration) {
 		this.duration = duration;
 	}
 	
@@ -195,7 +195,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		return durationUnits;
 	}
 	
-	public void setDurationUnits(Concept durationUnits) {
+	private void setDurationUnits(Concept durationUnits) {
 		this.durationUnits = durationUnits;
 	}
 	
@@ -203,7 +203,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		return asNeeded;
 	}
 	
-	public void setAsNeeded(Boolean asNeeded) {
+	private void setAsNeeded(Boolean asNeeded) {
 		this.asNeeded = asNeeded;
 	}
 	
@@ -211,7 +211,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		return asNeededCondition;
 	}
 	
-	public void setAsNeededCondition(String asNeededCondition) {
+	private void setAsNeededCondition(String asNeededCondition) {
 		this.asNeededCondition = asNeededCondition;
 	}
 	
@@ -219,7 +219,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		return administrationInstructions;
 	}
 	
-	public void setAdministrationInstructions(String administrationInstructions) {
+	private void setAdministrationInstructions(String administrationInstructions) {
 		this.administrationInstructions = administrationInstructions;
 	}
 	

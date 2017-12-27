@@ -51,7 +51,7 @@ public class HL7InArchive extends HL7QueueItem {
 	/**
 	 * @param hl7InArchiveId The hl7InArchiveId to set.
 	 */
-	public void setHL7InArchiveId(int hl7InArchiveId) {
+	private void setHL7InArchiveId(int hl7InArchiveId) {
 		this.hl7InArchiveId = hl7InArchiveId;
 	}
 	

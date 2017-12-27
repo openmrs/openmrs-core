@@ -41,7 +41,7 @@ public class PatientIdentifierException extends APIException {
 		return patientIdentifier;
 	}
 	
-	public void setPatientIdentifier(PatientIdentifier patientIdentifier) {
+	private void setPatientIdentifier(PatientIdentifier patientIdentifier) {
 		this.patientIdentifier = patientIdentifier;
 	}
 }

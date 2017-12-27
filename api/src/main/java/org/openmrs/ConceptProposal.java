@@ -91,7 +91,7 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	/**
 	 * @param conceptProposalId The conceptProposalId to set.
 	 */
-	public void setConceptProposalId(Integer conceptProposalId) {
+	private void setConceptProposalId(Integer conceptProposalId) {
 		this.conceptProposalId = conceptProposalId;
 	}
 	
