@@ -435,7 +435,6 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public List<User> getUsersByName(String givenName, String familyName, boolean includeRetired) {
-		List<User> users = new ArrayList<>();
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(User.class);
 		crit.createAlias("person", "person");
 		crit.createAlias("person.names", "names");
@@ -445,10 +444,7 @@ public class HibernateUserDAO implements UserDAO {
 		if (!includeRetired) {
 			crit.add(Restrictions.eq("retired", false));
 		}
-		for (User u : (List<User>) crit.list()) {
-			users.add(u);
-		}
-		return users;
+		return new ArrayList<>((List<User>) crit.list());
 	}
 	
 	/**
