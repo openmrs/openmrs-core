@@ -38,8 +38,8 @@ public class DropMillisecondsHibernateInterceptorTest extends BaseContextSensiti
 
 	@Test
 	public void shouldClearMillisecondsWhenSavingANewObject() {
-		Date dateWithMillisecond = new Date(567l);
-		Date dateWithoutMillisecond = new Date(0l);
+		Date dateWithMillisecond = new Date(567L);
+		Date dateWithoutMillisecond = new Date(0L);
 
 		Person person = new Person();
 		person.addName(new PersonName("Alice", null, "Paul"));
@@ -54,8 +54,8 @@ public class DropMillisecondsHibernateInterceptorTest extends BaseContextSensiti
 
 	@Test
 	public void shouldClearMillisecondsWhenUpdatingAnExistingObject() {
-		Date dateWithMillisecond = new Date(567l);
-		Date dateWithoutMillisecond = new Date(0l);
+		Date dateWithMillisecond = new Date(567L);
+		Date dateWithoutMillisecond = new Date(0L);
 
 		Person person = personService.getPerson(1);
 		person.setBirthdate(dateWithMillisecond);

@@ -345,7 +345,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		td.setTaskClass(BareTask.class.getName());
 		td.setStartTime(null);
 		td.setName("name");
-		td.setRepeatInterval(5000l);
+		td.setRepeatInterval(5000L);
 		
 		synchronized (TASK_TEST_METHOD_LOCK) {
 			latch = new CountDownLatch(1);
@@ -384,7 +384,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		td.setStartOnStartup(false);
 		td.setTaskClass(StoreExecutionTimeTask.class.getName());
 		td.setStartTime(null);
-		td.setRepeatInterval(0l);//0 indicates single execution
+		td.setRepeatInterval(0L);//0 indicates single execution
 		synchronized (TASK_TEST_METHOD_LOCK) {
 			latch = new CountDownLatch(1);
 			service.saveTaskDefinition(td);
