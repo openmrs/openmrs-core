@@ -103,11 +103,10 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	 */
 	@Override
 	public String toString() {
-		return new StringBuilder().append("a1:").append(getAddress1()).append(", a2:").append(getAddress2()).append(", cv:")
-		        .append(getCityVillage()).append(", sp:").append(getStateProvince()).append(", c:").append(getCountry())
-		        .append(", cd:").append(getCountyDistrict()).append(", nc:").append(getAddress3()).append(", pc:").append(
-		            getPostalCode()).append(", lat:").append(getLatitude()).append(", long:").append(getLongitude())
-		        .toString();
+		return "a1:" + getAddress1() + ", a2:" + getAddress2() + ", cv:" +
+				getCityVillage() + ", sp:" + getStateProvince() + ", c:" + getCountry() +
+				", cd:" + getCountyDistrict() + ", nc:" + getAddress3() + ", pc:" +
+				getPostalCode() + ", lat:" + getLatitude() + ", long:" + getLongitude();
 	}
 	
 	/**
