@@ -56,7 +56,7 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	@JoinColumn(name = "voided_by")
 	private User voidedBy;
 	
-	@Column(name = "void_reason", length = 255)
+	@Column(name = "void_reason")
 	private String voidReason;
 	
 	//***** Constructors *****

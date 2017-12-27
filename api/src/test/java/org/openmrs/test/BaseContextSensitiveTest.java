@@ -107,7 +107,7 @@ import org.xml.sax.InputSource;
 @TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class,
         StartModuleExecutionListener.class })
 @Transactional
-@TransactionConfiguration(defaultRollback = true)
+@TransactionConfiguration()
 public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringContextTests {
 	
 	private static final Logger log = LoggerFactory.getLogger(BaseContextSensitiveTest.class);
