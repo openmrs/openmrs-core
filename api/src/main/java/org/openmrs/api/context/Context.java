@@ -210,7 +210,7 @@ public class Context {
 	 */
 	public static void clearUserContext() {
 		if (log.isTraceEnabled()) {
-			log.trace("Clearing user context " + userContextHolder.get());
+			log.trace("Clearing user context " + Arrays.toString(userContextHolder.get()));
 		}
 
 		userContextHolder.remove();
