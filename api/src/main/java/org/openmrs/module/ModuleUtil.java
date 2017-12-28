@@ -1119,7 +1119,7 @@ public class ModuleUtil {
 		
 		// End early if we're given a non jar file
 		if (!file.getName().endsWith(".jar")) {
-			return Collections.<String> emptySet();
+			return Collections.emptySet();
 		}
 		
 		Set<String> packagesProvided = new HashSet<>();
