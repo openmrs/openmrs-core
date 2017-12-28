@@ -531,7 +531,7 @@ public class ModuleFactory {
 	 */
 	private static Module getModuleFromFile(File moduleFile) throws ModuleException {
 		
-		Module module = null;
+		Module module;
 		try {
 			module = new ModuleFileParser(moduleFile).parse();
 		}
@@ -904,7 +904,7 @@ public class ModuleFactory {
 	 */
 	public static void loadAdvice(Module module) {
 		for (AdvicePoint advice : module.getAdvicePoints()) {
-			Class<?> cls = null;
+			Class<?> cls;
 			try {
 				cls = Context.loadClass(advice.getPoint());
 				Object aopObject = advice.getClassInstance();
@@ -1003,7 +1003,7 @@ public class ModuleFactory {
 	 */
 	private static void runLiquibase(Module module) {
 		JarFile jarFile = null;
-		boolean liquibaseFileExists = false;
+		boolean liquibaseFileExists;
 		
 		try {
 			try {
@@ -1157,7 +1157,7 @@ public class ModuleFactory {
 				// remove all advice by this module
 				try {
 					for (AdvicePoint advice : mod.getAdvicePoints()) {
-						Class cls = null;
+						Class cls;
 						try {
 							cls = Context.loadClass(advice.getPoint());
 							Object aopObject = advice.getClassInstance();
@@ -1231,7 +1231,6 @@ public class ModuleFactory {
 			ModuleClassLoader cl = removeClassLoader(mod);
 			if (cl != null) {
 				cl.dispose();
-				cl = null;
 				// remove files from lib cache
 				File folder = OpenmrsClassLoader.getLibCacheFolder();
 				File tmpModuleDir = new File(folder, moduleId);
@@ -1290,9 +1289,7 @@ public class ModuleFactory {
 				file.deleteOnExit();
 				log.warn("Could not delete " + file.getAbsolutePath());
 			}
-			
-			file = null;
-			mod = null;
+
 		}
 	}
 	
@@ -1304,7 +1301,7 @@ public class ModuleFactory {
 	 * @return List of extensions
 	 */
 	public static List<Extension> getExtensions(String pointId) {
-		List<Extension> extensions = null;
+		List<Extension> extensions;
 		Map<String, List<Extension>> extensionMap = getExtensionMap();
 		
 		// get all extensions for this exact pointId
@@ -1528,7 +1525,7 @@ public class ModuleFactory {
 			return mod;
 		}
 		
-		URL url = null;
+		URL url;
 		try {
 			url = new URL(mod.getDownloadURL());
 		}

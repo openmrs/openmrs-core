@@ -116,7 +116,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 		try {
 			File outfile = getOutputFileToWrite(obs);
 			fout = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outfile), StandardCharsets.UTF_8));
-			Reader tempRd = null;
+			Reader tempRd;
 			Object data = obs.getComplexData().getData();
 			if (data instanceof char[]) {
 				fout.write((char[]) data);

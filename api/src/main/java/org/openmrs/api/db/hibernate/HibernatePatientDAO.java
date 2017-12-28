@@ -549,7 +549,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
         @Override
 	public Patient getPatientByUuid(String uuid) {
-		Patient p = null;
+		Patient p;
 		
 		p = (Patient) sessionFactory.getCurrentSession().createQuery("from Patient p where p.uuid = :uuid").setString(
 		    "uuid", uuid).uniqueResult();

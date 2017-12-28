@@ -70,7 +70,7 @@ public class MessagePropertiesFilesTest {
 		FileInputStream fileInputStream = new FileInputStream(
 				messagePropertiesFileName);
 
-		List<String> duplicatedKeys = null;
+		List<String> duplicatedKeys;
 		try {
 			duplicatedKeys = propertiesFileValidator.getDuplicatedKeys(fileInputStream);
 			Assert.assertTrue(duplicatedKeys.isEmpty());

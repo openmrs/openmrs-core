@@ -56,7 +56,7 @@ public class SqlDiffFileParser {
 		
 		SortedMap<String, String> map = new TreeMap<>(new VersionComparator());
 		
-		InputStream diffStream = null;
+		InputStream diffStream;
 		
 		// get the diff stream
 		JarFile jarfile = null;
@@ -88,7 +88,7 @@ public class SqlDiffFileParser {
 			
 			try {
 				// turn the diff stream into an xml document
-				Document diffDoc = null;
+				Document diffDoc;
 				try {
 					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 					DocumentBuilder db = dbf.newDocumentBuilder();

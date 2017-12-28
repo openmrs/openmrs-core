@@ -88,8 +88,8 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 			rs = stmt
 			        .executeQuery("SELECT * FROM encounter_type INNER JOIN (SELECT name FROM encounter_type GROUP BY name HAVING count(name) > 1) dup ON encounter_type.name = dup.name");
 			
-			Integer id = null;
-			String name = null;
+			Integer id;
+			String name;
 			
 			while (rs.next()) {
 				id = rs.getInt("encounter_type_id");
@@ -115,8 +115,8 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 				for (int i = 1; i < ids.size(); i++) {
 					String newName = pairs.getKey() + "_" + duplicateNameId;
 
-					List<List<Object>> duplicateResult = null;
-					boolean duplicateName = false;
+					List<List<Object>> duplicateResult;
+					boolean duplicateName;
 					Connection con = DatabaseUpdater.getConnection();
 
 					do {

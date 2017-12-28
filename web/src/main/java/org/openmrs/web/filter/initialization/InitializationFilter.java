@@ -1008,7 +1008,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @return the runtime properties file.
 	 */
 	private File getRuntimePropertiesFile() {
-		File file = null;
+		File file;
 		
 		String pathName = OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME);
 		if (pathName != null) {
@@ -1158,7 +1158,7 @@ public class InitializationFilter extends StartupFilter {
 				replacedSql = replacedSql.replaceAll("`", "\"");
 			}
 			
-			String tempDatabaseConnection = "";
+			String tempDatabaseConnection;
 			if (sql.contains("create database")) {
 				tempDatabaseConnection = wizardModel.databaseConnection.replace("@DBNAME@", ""); // make this dbname agnostic so we can create the db
 			} else {
@@ -1380,7 +1380,7 @@ public class InitializationFilter extends StartupFilter {
 							setMessage("Create database");
 							setExecutingTask(WizardTask.CREATE_SCHEMA);
 							// connect via jdbc and create a database
-							String sql = null;
+							String sql;
 							if (wizardModel.databaseConnection.contains("mysql")) {
 								sql = "create database if not exists `?` default character set utf8";
 							} else if (wizardModel.databaseConnection.contains("postgresql")) {

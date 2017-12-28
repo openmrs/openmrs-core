@@ -684,7 +684,7 @@ public class ModuleUtil {
 	protected static InputStream openConnectionCheckRedirects(URLConnection c) throws IOException {
 		boolean redir;
 		int redirects = 0;
-		InputStream in = null;
+		InputStream in;
 		do {
 			if (c instanceof HttpURLConnection) {
 				((HttpURLConnection) c).setInstanceFollowRedirects(false);

@@ -86,7 +86,7 @@ public class Format {
 		}
 		log.debug("Formatting date: " + date + " with locale " + locale);
 		
-		DateFormat dateFormat = null;
+		DateFormat dateFormat;
 		
 		if (type == FORMAT_TYPE.TIMESTAMP) {
 			dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);

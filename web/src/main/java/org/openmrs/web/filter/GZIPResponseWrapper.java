@@ -29,7 +29,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	
 	private static final Logger log = LoggerFactory.getLogger(GZIPResponseWrapper.class);
 	
-	protected HttpServletResponse origResponse = null;
+	protected HttpServletResponse origResponse;
 	
 	protected ServletOutputStream stream = null;
 	

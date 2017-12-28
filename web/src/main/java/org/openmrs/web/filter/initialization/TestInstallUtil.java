@@ -63,7 +63,7 @@ public class TestInstallUtil {
 	 * @return true if data was added successfully
 	 */
 	protected static boolean addTestData(String host, int port, String databaseName, String user, String pwd, String filePath) {
-		Process proc = null;
+		Process proc;
 		BufferedReader br = null;
 		String errorMsg = null;
 		String[] command = new String[] { "mysql", "--host=" + host, "--port=" + port, "--user=" + user,

@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 public class GZIPRequestStream extends ServletInputStream {
 	
 	//reference to the gzipped input stream
-	protected GZIPInputStream zipInput = null;
+	protected GZIPInputStream zipInput;
 	
 	public GZIPRequestStream(HttpServletRequest request) throws IOException {
 		super();

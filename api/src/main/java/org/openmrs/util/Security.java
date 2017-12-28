@@ -134,8 +134,8 @@ public class Security {
 	private static String hexString(byte[] block) {
 		StringBuilder buf = new StringBuilder();
 		char[] hexChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-		int high = 0;
-		int low = 0;
+		int high;
+		int low;
 		for (byte aBlock : block) {
 			high = ((aBlock & 0xf0) >> 4);
 			low = (aBlock & 0x0f);
@@ -259,7 +259,7 @@ public class Security {
 	public static String decrypt(String text, byte[] initVector, byte[] secretKey) {
 		IvParameterSpec initVectorSpec = new IvParameterSpec(initVector);
 		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
-		String decrypted = null;
+		String decrypted;
 		
 		try {
 			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
@@ -344,7 +344,7 @@ public class Security {
 	 */
 	public static byte[] generateNewSecretKey() {
 		// Get the KeyGenerator
-		KeyGenerator kgen = null;
+		KeyGenerator kgen;
 		try {
 			kgen = KeyGenerator.getInstance(OpenmrsConstants.ENCRYPTION_KEY_SPEC);
 		}

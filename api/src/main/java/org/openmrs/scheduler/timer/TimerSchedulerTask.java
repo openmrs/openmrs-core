@@ -57,7 +57,7 @@ public class TimerSchedulerTask extends TimerTask {
 	 * Save the last execution time in the TaskDefinition
 	 */
 	private static void saveLastExecutionTime(Task task) {
-		TaskDefinition taskDefinition = null;
+		TaskDefinition taskDefinition;
 		try {
 			// We re-get the task definition in case the copy set during the
 			// task initialization has become stale.  NOTE: If a task does not
