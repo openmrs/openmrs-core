@@ -138,7 +138,7 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 		// loop over all of the selected methods and compare this and other
 		for (String methodAttribute : methods) {
 			try {
-				Method method = attributeClass.getMethod(methodAttribute, new Class[] {});
+				Method method = attributeClass.getMethod(methodAttribute);
 				
 				Object thisValue = method.invoke(this);
 				Object otherValue = method.invoke(otherAttribute);

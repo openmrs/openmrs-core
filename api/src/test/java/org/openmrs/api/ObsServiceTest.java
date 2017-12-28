@@ -1178,7 +1178,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ObsService obsService = Context.getObsService();
 		
 		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(7)), null, null, null, null, null,
-		    Arrays.asList(new String[] { "concept", "obsDatetime" }), null, null, null, null, false, null);
+		    Arrays.asList("concept", "obsDatetime"), null, null, null, null, false, null);
 		
 		// check the order of a few of the obs returned
 		Assert.assertEquals(11, obss.get(0).getObsId().intValue());

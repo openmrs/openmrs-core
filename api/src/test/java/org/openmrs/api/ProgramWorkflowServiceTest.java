@@ -107,7 +107,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Date dateCompleted2 = patientProgram.getDateCompleted();
 		Date dateChanged2 = patientProgram.getDateChanged();
 		User changedBy2 = patientProgram.getChangedBy();
-		
+
 		if (null != dateCompleted2) {
 			//System.out.println("Date Completed: " + dateCompleted2);
 		}
@@ -169,7 +169,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		for (ProgramWorkflowState s : wf.getStates()) {
 			names.add(s.getConcept().getName().getName());
 		}
-		TestUtil.assertCollectionContentsEquals(Arrays.asList(new String[] { "SINGLE", "MARRIED" }), names);
+		TestUtil.assertCollectionContentsEquals(Arrays.asList("SINGLE", "MARRIED"), names);
 	}
 	
 	/**
