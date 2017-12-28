@@ -30,7 +30,7 @@ public class SchedulerUtilTest {
 		Calendar startTime = Calendar.getInstance();
 		
 		// Execute task every 4 minutes
-		Long repeatInterval = new Long(4 * 60);
+		Long repeatInterval = (long) (4 * 60);
 		
 		// Create the new task
 		TaskDefinition taskDefinition = new TaskDefinition();

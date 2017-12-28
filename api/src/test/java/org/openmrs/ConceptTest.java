@@ -1076,9 +1076,9 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	@Test
 	public void removeDescription_shouldRemoveDescriptionPassedFromListOfDescriptions() {
 		Concept c = new Concept();
-		ConceptDescription c1 = new ConceptDescription(new Integer(1));
+		ConceptDescription c1 = new ConceptDescription(1);
 		c1.setDescription("Description 1");
-		ConceptDescription c2 = new ConceptDescription(new Integer(2));
+		ConceptDescription c2 = new ConceptDescription(2);
 		c2.setDescription("Description 2");
 		c.addDescription(c1);
 		c.addDescription(c2);
@@ -1096,10 +1096,10 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	@Test
 	public void removeConceptMapping_shouldRemoveConceptMapPassedFromListOfMappings() {
 		Concept c = new Concept();
-		ConceptMap c1 = new ConceptMap(new Integer(1));
-		c1.setConceptMapType(new ConceptMapType(new Integer(1)));
-		ConceptMap c2 = new ConceptMap(new Integer(2));
-		c2.setConceptMapType(new ConceptMapType(new Integer(2)));
+		ConceptMap c1 = new ConceptMap(1);
+		c1.setConceptMapType(new ConceptMapType(1));
+		ConceptMap c2 = new ConceptMap(2);
+		c2.setConceptMapType(new ConceptMapType(2));
 		c.addConceptMapping(c1);
 		c.addConceptMapping(c2);
 		Collection<ConceptMap> mappings = c.getConceptMappings();

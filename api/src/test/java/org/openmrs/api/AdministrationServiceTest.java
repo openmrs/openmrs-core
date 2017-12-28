@@ -561,10 +561,10 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// put the global property into the database
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
-		Object value = adminService.getGlobalPropertyValue("valid.integer", Integer.valueOf(4));
+		Object value = adminService.getGlobalPropertyValue("valid.integer", 4);
 		
 		Assert.assertTrue(value instanceof Integer);
-		Assert.assertEquals(Integer.valueOf(1234), value);
+		Assert.assertEquals(1234, value);
 	}
 	
 	/**
@@ -575,9 +575,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// put the global property into the database
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
-		Object value = adminService.getGlobalPropertyValue("does.not.exist", Integer.valueOf(1234));
+		Object value = adminService.getGlobalPropertyValue("does.not.exist", 1234);
 		
-		Assert.assertEquals(Integer.valueOf(1234), value);
+		Assert.assertEquals(1234, value);
 	}
 	
 	/**
@@ -588,10 +588,10 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// put the global property into the database
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
-		Object retValue = adminService.getGlobalPropertyValue("valid.double", new Double(4.34));
+		Object retValue = adminService.getGlobalPropertyValue("valid.double", 4.34);
 		
 		Assert.assertTrue(retValue instanceof Double);
-		Assert.assertEquals(new Double(1234.54), retValue);
+		Assert.assertEquals(1234.54, retValue);
 	}
 	
 	/**

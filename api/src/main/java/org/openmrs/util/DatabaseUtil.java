@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
-import org.hibernate.jdbc.Work;
 import org.openmrs.api.db.DAOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

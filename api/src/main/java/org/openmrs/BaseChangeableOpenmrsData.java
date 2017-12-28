@@ -9,6 +9,9 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.util.Date;
 
 /**
@@ -18,12 +21,20 @@ import java.util.Date;
  */
 public abstract class BaseChangeableOpenmrsData extends BaseOpenmrsData {
 	
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
+	private User changedBy;
+	
+	@Column(name = "date_changed")
+	private Date dateChanged;
+	
+	
 	/**
 	 * @see Auditable#getChangedBy()
 	 */
 	@Override
 	public User getChangedBy() {
-		return super.getChangedBy();
+		return this.changedBy;
 	}
 	
 	/**
@@ -31,7 +42,7 @@ public abstract class BaseChangeableOpenmrsData extends BaseOpenmrsData {
 	 */
 	@Override
 	public void setChangedBy(User changedBy) {
-		super.setChangedBy(changedBy);
+		this.changedBy = changedBy;
 	}
 	
 	/**
@@ -39,7 +50,7 @@ public abstract class BaseChangeableOpenmrsData extends BaseOpenmrsData {
 	 */
 	@Override
 	public Date getDateChanged() {
-		return super.getDateChanged();
+		return this.dateChanged;
 	}
 	
 	/**
@@ -47,7 +58,7 @@ public abstract class BaseChangeableOpenmrsData extends BaseOpenmrsData {
 	 */
 	@Override
 	public void setDateChanged(Date dateChanged) {
-		super.setDateChanged(dateChanged);
+		this.dateChanged = dateChanged ;
 	}
 	
 }

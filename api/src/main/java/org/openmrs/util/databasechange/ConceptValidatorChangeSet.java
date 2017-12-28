@@ -450,10 +450,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				conceptIds.add(rs.getInt("concept_id"));
 			}
 		}
-		catch (DatabaseException e) {
-			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
 		}
 		finally {
@@ -507,15 +504,15 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		try {
 			//get the default locale
 			stmt = connection.createStatement();
-			ResultSet rs_defaultLocale = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '"
+			ResultSet rsDefaultLocale = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '"
 			        + OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE + "'");
 			
-			if (rs_defaultLocale.next()) {
-				String defaultLocaleStr = rs_defaultLocale.getString("property_value");
+			if (rsDefaultLocale.next()) {
+				String defaultLocaleStr = rsDefaultLocale.getString("property_value");
 				if (!StringUtils.isBlank(defaultLocaleStr) && defaultLocaleStr.length() > 1) {
-					Locale defaultLocale_GP = LocaleUtility.fromSpecification(defaultLocaleStr);
-					if (defaultLocale_GP != null) {
-						defaultLocale = defaultLocale_GP;
+					Locale defaultLocaleGP = LocaleUtility.fromSpecification(defaultLocaleStr);
+					if (defaultLocaleGP != null) {
+						defaultLocale = defaultLocaleGP;
 					}
 				} else {
 					updateWarnings.add("'" + defaultLocaleStr
@@ -526,11 +523,11 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			allowedLocales.add(defaultLocale);
 			
 			//get the locale.allowed.list
-			ResultSet rs_allowedLocales = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '"
+			ResultSet rsAllowedLocales = stmt.executeQuery("SELECT property_value FROM global_property WHERE property = '"
 			        + OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST + "'");
 			
-			if (rs_allowedLocales.next()) {
-				String allowedLocaleStr = rs_allowedLocales.getString("property_value");
+			if (rsAllowedLocales.next()) {
+				String allowedLocaleStr = rsAllowedLocales.getString("property_value");
 				if (!StringUtils.isBlank(allowedLocaleStr)) {
 					String[] localesArray = allowedLocaleStr.split(",");
 					for (String localeStr : localesArray) {
@@ -546,10 +543,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				log.warn("The global property '" + OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST + "' isn't set");
 			}
 		}
-		catch (DatabaseException e) {
-			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
 		}
 		finally {
@@ -622,10 +616,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				localeConceptNamesMap.get(conceptName.getLocale()).add(conceptName);
 			}
 		}
-		catch (DatabaseException e) {
-			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
 		}
 		finally {
@@ -718,10 +709,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				}
 			}
 		}
-		catch (SQLException e) {
-			log.warn("Error generated", e);
-		}
-		catch (DatabaseException e) {
+		catch (SQLException | DatabaseException e) {
 			log.warn("Error generated", e);
 		}
 		finally {
@@ -770,10 +758,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			
 			return result;
 		}
-		catch (DatabaseException e) {
-			log.warn("Error generated", e);
-		}
-		catch (SQLException e) {
+		catch (DatabaseException | SQLException e) {
 			log.warn("Error generated", e);
 		}
 		finally {

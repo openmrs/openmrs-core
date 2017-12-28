@@ -14,8 +14,6 @@ import java.util.List;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUpdater.OpenMRSChangeSet;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.RoleConstants;
-import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
