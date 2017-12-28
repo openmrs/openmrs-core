@@ -346,8 +346,6 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 					propertyDestination.put(message.getCode(), message.getMessage());
 				}
 				
-			} else {
-				// no properties files for this locale
 			}
 			
 			message.getCode();
