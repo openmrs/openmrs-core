@@ -62,6 +62,7 @@ import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
+import org.openmrs.notification.SentMessageService;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.scheduler.SchedulerService;
@@ -526,6 +527,13 @@ public class Context {
 			log.error("Unable to create message service due", e);
 		}
 		return ms;
+	}
+
+	/**
+	 *@return sent message service
+	 */
+	public static SentMessageService getSentMessageService() {
+		return getServiceContext().getSentMessageService();
 	}
 
 	/**
