@@ -587,19 +587,19 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		if (roles == null) {
 			roles = new ArrayList<>();
 		}
-		
-		// add the requested roles and all child roles for consideration
-		Set<Role> allRoles = new HashSet<>();
-		for (Role r : roles) {
-			allRoles.add(r);
-			allRoles.addAll(r.getAllChildRoles());
-		}
-		
+
 		// if the authenticated role is in the list of searched roles, then all
 		// persons should be searched
 		Role authRole = getRole(RoleConstants.AUTHENTICATED);
 		if (roles.contains(authRole)) {
 			return dao.getUsers(name, new ArrayList<>(), includeRetired, start, length);
+		}
+
+		// add the requested roles and all child roles for consideration
+		Set<Role> allRoles = new HashSet<>();
+		for (Role r : roles) {
+			allRoles.add(r);
+			allRoles.addAll(r.getAllChildRoles());
 		}
 		
 		return dao.getUsers(name, new ArrayList<>(allRoles), includeRetired, start, length);
