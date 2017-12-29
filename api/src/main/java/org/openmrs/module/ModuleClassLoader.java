@@ -108,7 +108,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		this(module, urls, parent, null);
 		
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
-		if (devDir != null) {
+		if (devDir != null && devDir.list().length != 0) {
 			File[] fileList = devDir.listFiles();
 			if (fileList == null) {
 				return;
@@ -118,7 +118,7 @@ public class ModuleClassLoader extends URLClassLoader {
 					continue;
 				}
 				File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
-				if (dir.exists()) {
+				if (dir.exists() && dir.list().length != 0) {
 					Collection<File> files = FileUtils.listFiles(dir, new String[] { "class" }, true);
 					addClassFilePackages(files, dir.getAbsolutePath().length() + 1);
 				}
@@ -206,7 +206,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		List<String> devFolderNames = new ArrayList<>();
 		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
 		try {
-			if (devDir != null) {
+			if (devDir != null && devDir.list().length != 0) {
 				File[] fileList = devDir.listFiles();
 				if (fileList != null) {
 					for (File file : fileList) {
@@ -293,7 +293,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				}
 				
 				// recursively get files
-				Collection<File> files = (Collection<File>) FileUtils.listFiles(libdir, new String[] { "jar" }, true);
+				Collection<File> files = FileUtils.listFiles(libdir, new String[] { "jar" }, true);
 				for (File file : files) {
 					
 					//if in dev mode, do not put the module source jar files in the class path

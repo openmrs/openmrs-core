@@ -317,7 +317,7 @@ public class OpenmrsUtil {
 		if (folder == null) {
 			return false;
 		}
-		if (!folder.isDirectory()) {
+		if (!folder.isDirectory() || folder.list().length != 0) {
 			return false;
 		}
 
@@ -899,7 +899,7 @@ public class OpenmrsUtil {
 	 * @throws IOException if <code>dir</code> is not a directory
 	 */
 	public static boolean deleteDirectory(File dir) throws IOException {
-		if (!dir.exists() || !dir.isDirectory()) {
+		if (!dir.exists() || !dir.isDirectory() || dir.list().length == 0) {
 			throw new IOException("Could not delete directory '" + dir.getAbsolutePath() + "' (not a directory)");
 		}
 		
