@@ -152,8 +152,8 @@ public class PersonAddressTest {
 	public void equalsContent_shouldIndicateUnequalWhenOnlyStartDateDiffers() {
 		PersonAddress address1 = new PersonAddress();
 		PersonAddress address2 = new PersonAddress();
-		address2.setStartDate(new Date(123l));
-		address1.setStartDate(new Date(1000000l));
+		address2.setStartDate(new Date(123L));
+		address1.setStartDate(new Date(1000000L));
 		
 		assertThat(address2.equalsContent(address1), is(false));
 	}
@@ -162,8 +162,8 @@ public class PersonAddressTest {
 	public void equalsContent_shouldIndicateUnequalWhenOnlyEndDateDiffers() {
 		PersonAddress address1 = new PersonAddress();
 		PersonAddress address2 = new PersonAddress();
-		address2.setStartDate(new Date(123l));
-		address1.setStartDate(new Date(1000000l));
+		address2.setStartDate(new Date(123L));
+		address1.setStartDate(new Date(1000000L));
 		
 		assertThat(address2.equalsContent(address1), is(false));
 	}

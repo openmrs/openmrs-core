@@ -59,13 +59,11 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	private void logPerson(Person person) {
-		StringBuilder builder = new StringBuilder();
-		
-		builder.append("class=").append(person.getClass().getCanonicalName()).append(", person=").append(person.toString())
-		        .append(", person.names=").append(person.getNames().toString()).append(", person.attributes=").append(
-		            person.getAttributes().toString());
-		
-		log.debug(builder.toString());
+		String info = "class=" + person.getClass().getCanonicalName() + ", person=" + person.toString() +
+				", person.names=" + person.getNames().toString() + ", person.attributes=" +
+				person.getAttributes().toString();
+
+		log.debug(info);
 	}
 	
 	/**

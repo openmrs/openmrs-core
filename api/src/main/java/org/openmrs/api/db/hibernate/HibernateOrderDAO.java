@@ -436,7 +436,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		criteria.createAlias("concept.names", "conceptName");
 		criteria.add(Restrictions.ilike("conceptName.name", searchPhrase, MatchMode.ANYWHERE));
 		if (locale != null) {
-			List<Locale> locales = new ArrayList<Locale>(2);
+			List<Locale> locales = new ArrayList<>(2);
 			locales.add(locale);
 			//look in the broader locale too if exactLocale is false e.g en for en_GB
 			if (!exactLocale && StringUtils.isNotBlank(locale.getCountry())) {

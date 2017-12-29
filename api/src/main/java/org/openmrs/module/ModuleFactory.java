@@ -314,9 +314,8 @@ public class ModuleFactory {
 		Graph<Module> graph = new Graph<>();
 		
 		for (Module mod : modules) {
-			
-			Module toNode = mod;
-			graph.addNode(toNode);
+
+			graph.addNode(mod);
 			
 			// Required dependencies
 			for (String key : mod.getRequiredModules()) {
@@ -328,7 +327,7 @@ public class ModuleFactory {
 				
 				if (fromNode != null) {
 					graph.addEdge(graph.new Edge(
-					                             fromNode, toNode));
+					                             fromNode, mod));
 				}
 			}
 			
@@ -342,7 +341,7 @@ public class ModuleFactory {
 				
 				if (fromNode != null) {
 					graph.addEdge(graph.new Edge(
-					                             fromNode, toNode));
+					                             fromNode, mod));
 				}
 			}
 		}
@@ -708,7 +707,9 @@ public class ModuleFactory {
 				}
 				
 				// Sort this module's extensions, and merge them into the full extensions map
+
 				Comparator<Extension> sortOrder = Comparator.comparing(e1 -> (e1.getOrder()));
+
 				for (Map.Entry<String, List<Extension>> moduleExtensionEntry : moduleExtensionMap.entrySet()) {
 					// Sort this module's extensions for current extension point
 					List<Extension> sortedModuleExtensions = moduleExtensionEntry.getValue();

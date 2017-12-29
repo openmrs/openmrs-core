@@ -295,7 +295,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getForms_shouldReturnFormsThatHaveAnyMatchingFormFieldsInContainingAnyFormField() {
 		
-		Integer numberOfExpectedForms = new Integer(2);
+		Integer numberOfExpectedForms = 2;
 		
 		executeDataSet(INITIAL_FIELDS_XML);
 		executeDataSet(MULTIPLE_FORMS_FORM_FIELDS_XML);
@@ -305,7 +305,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		List<Form> formsReturned = formService.getForms(null, null, null, null, containingAnyFormField, null, null);
 		
-		Integer currentNumberOfForms = new Integer(formsReturned.size());
+		Integer currentNumberOfForms = formsReturned.size();
 		
 		assertEquals(numberOfExpectedForms, currentNumberOfForms);
 		assertTrue(wasFormsSuccessfullyFilteredByMatchingFormFieldsInContainingAnyFormField(containingAnyFormField,

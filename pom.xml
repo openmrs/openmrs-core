@@ -104,11 +104,6 @@
 				<version>2.0</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>jstl</artifactId>
-				<version>1.1.2</version>
-			</dependency>
-			<dependency>
 				<groupId>taglibs</groupId>
 				<artifactId>request</artifactId>
 				<version>1.0.1</version>
@@ -230,7 +225,7 @@
 			<dependency>
 				<groupId>org.javassist</groupId>
 				<artifactId>javassist</artifactId>
-				<version>3.19.0-GA</version>
+				<version>3.22.0-GA</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -444,22 +439,22 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.11</version>
+				<version>4.12</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>1.9.5</version>
+				<version>1.10.19</version>
 			</dependency>
 			<dependency>
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-module-junit4</artifactId>
-				<version>1.5</version>
+				<version>1.6.6</version>
 			</dependency>
 			<dependency>
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-api-mockito</artifactId>
-				<version>1.5</version>
+				<version>1.6.6</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>mockito-all</artifactId>
@@ -724,14 +719,14 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<groupId>org.codehaus.sonar</groupId>
+					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>4.5.4</version>
+					<version>3.4.0.905</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.7.4.201502262128</version>
+					<version>0.7.8</version>
 					<configuration>
 						<includes>
 							<include>org/openmrs/**</include>
@@ -1014,11 +1009,11 @@
 		<hibernateVersion>4.3.9.Final</hibernateVersion>
 		<customArgLineForTesting/>
 
-		<sonar.host.url>https://sonar.openmrs.org/sonar</sonar.host.url>
+		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
 		<sonar.issuesReport.lightModeOnly>true</sonar.issuesReport.lightModeOnly>
 		<sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
-		<sonar.analysis.mode>incremental</sonar.analysis.mode>
+		<sonar.analysis.mode>publish</sonar.analysis.mode>
 
 		<argLine>-Duser.language=en -Duser.region=US -Xmx2g ${customArgLineForTesting}</argLine>
 	</properties>

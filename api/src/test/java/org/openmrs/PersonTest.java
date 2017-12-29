@@ -538,11 +538,10 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		// addresses
 		PersonAddress notVoidedAddress = PersonAddressBuilder.newBuilder().withPreferred(false).withVoided(false).build();
-		
-		PersonAddress expectedPersonAddress = notVoidedAddress;
+
 		Set<PersonAddress> personAddresses = new HashSet<>(Arrays.asList(voidedAddress, notVoidedAddress));
 		
-		checkGetPersonAddressResultForVoidedPerson(expectedPersonAddress, personAddresses);
+		checkGetPersonAddressResultForVoidedPerson(notVoidedAddress, personAddresses);
 	}
 	
 	/**
@@ -556,12 +555,11 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		PersonAddress preferredNotVoidedAddress = PersonAddressBuilder.newBuilder().withPreferred(true).withVoided(false)
 		        .build();
-		
-		PersonAddress expectedPersonAddress = preferredNotVoidedAddress;
+
 		HashSet<PersonAddress> personAddresses = new HashSet<>(Arrays.asList(voidedAddress,
 		    preferredNotVoidedAddress));
 		
-		checkGetPersonAddressResultForVoidedPerson(expectedPersonAddress, personAddresses);
+		checkGetPersonAddressResultForVoidedPerson(preferredNotVoidedAddress, personAddresses);
 		
 	}
 	
@@ -594,10 +592,8 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		PersonName notVoidedName = PersonNameBuilder.newBuilder().withVoided(false).build();
 		PersonName voidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
-		
-		PersonName expectedPersonName = notVoidedName;
-		
-		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<>(Arrays.asList(notVoidedName,
+
+		checkGetPersonNameResultForVoidedPerson(notVoidedName, new HashSet<>(Arrays.asList(notVoidedName,
 				voidedName)));
 	}
 	
@@ -610,10 +606,8 @@ public class PersonTest extends BaseContextSensitiveTest {
 		PersonName preferredNotVoidedName = PersonNameBuilder.newBuilder().withPreferred(true).withVoided(false).build();
 		PersonName notVoidedName = PersonNameBuilder.newBuilder().withVoided(false).build();
 		PersonName voidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
-		
-		PersonName expectedPersonName = preferredNotVoidedName;
-		
-		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<>(Arrays.asList(
+
+		checkGetPersonNameResultForVoidedPerson(preferredNotVoidedName, new HashSet<>(Arrays.asList(
 		    preferredNotVoidedName, notVoidedName, voidedName)));
 	}
 	
@@ -624,10 +618,8 @@ public class PersonTest extends BaseContextSensitiveTest {
 	public void getPersonName_shouldGetVoidedPersonAddressIfPersonIsVoidedAndNotvoidedAddressDoesNotExist() {
 		
 		PersonName voidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
-		
-		PersonName expectedPersonName = voidedName;
-		
-		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<>(Collections.singletonList(voidedName)));
+
+		checkGetPersonNameResultForVoidedPerson(voidedName, new HashSet<>(Collections.singletonList(voidedName)));
 		
 	}
 	
@@ -725,7 +717,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttribute_shouldReturnNullWhenExistingPersonAttributeTypeIsVoided() {
 		Person person = personHelper(true, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-	 	PersonAttributeType type = new PersonAttributeType(new Integer(3));
+	 	PersonAttributeType type = new PersonAttributeType(3);
 	 	type.setName("name3");
 		Assert.assertNull(person.getAttribute(type));
 	}
@@ -736,7 +728,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttribute_shouldreturnPersonAttributeBasedOnAttributeTypeId() {
 		Person person = personHelper(false, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-		Assert.assertEquals(new Integer(3), person.getAttribute(new Integer(3)).getAttributeType().getId());
+		Assert.assertEquals(new Integer(3), person.getAttribute(3).getAttributeType().getId());
 	}
 
 	/**
@@ -745,7 +737,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttribute_shouldReturnNullWhenExistingPersonAttributeWithMatchingAttributeTypeIdIsVoided() {
 		Person person = personHelper(true, 1, 2, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-		Assert.assertNull(person.getAttribute(new Integer(3)));
+		Assert.assertNull(person.getAttribute(3));
 	}
 
 	/**
@@ -763,7 +755,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttributes_shouldReturnListOfPersonAttributesBasedOnAttributeTypeId() {
 		Person person = personHelper(false, 1, 1, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-		Assert.assertEquals(2, person.getAttributes(new Integer(1)).size());
+		Assert.assertEquals(2, person.getAttributes(1).size());
 	}
 
 	/**
@@ -772,15 +764,15 @@ public class PersonTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAttributes_shouldReturnEmptyListWhenMatchingPersonAttributeByIdIsVoided() {
 		Person person = personHelper(true, 1, 1, 3, "name1", "name2", "name3", "value1", "value2", "value3");
-		Assert.assertEquals(0, person.getAttributes(new Integer(1)).size());
+		Assert.assertEquals(0, person.getAttributes(1).size());
 	}
 
 	private Person personHelper(boolean isVoid, int attributeType1, int attributeType2, int attributeType3, String attributeName1, String attributeName2, String attributeName3, String attributeValue1, String attributeValue2, String attributeValue3) {
 		Person person = new Person();
 
-	 	PersonAttributeType type1 = new PersonAttributeType(new Integer(attributeType1));
-	 	PersonAttributeType type2 = new PersonAttributeType(new Integer(attributeType2));
-	 	PersonAttributeType type3 = new PersonAttributeType(new Integer(attributeType3));
+	 	PersonAttributeType type1 = new PersonAttributeType(attributeType1);
+	 	PersonAttributeType type2 = new PersonAttributeType(attributeType2);
+	 	PersonAttributeType type3 = new PersonAttributeType(attributeType3);
 	    
 	 	type1.setName(attributeName1);
 	 	type2.setName(attributeName2);

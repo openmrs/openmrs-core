@@ -126,7 +126,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		
 		// If neither exist, get the first available location
 		if (location == null) {
-			location = Context.getLocationService().getLocation(Integer.valueOf(1));
+			location = Context.getLocationService().getLocation(1);
 		}
 		
 		return location;
