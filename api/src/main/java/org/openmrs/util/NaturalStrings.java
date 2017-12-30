@@ -43,7 +43,7 @@ public final class NaturalStrings {
 	 * characters.
 	 * </p>
 	 */
-	private static final Comparator<String> NATURAL_COMPARATOR_ASCII = (o1, o2) -> compareNaturalAscii(o1, o2);
+	private static final Comparator<String> NATURAL_COMPARATOR_ASCII = NaturalStrings::compareNaturalAscii;
 	
 	/**
 	 * <p>
@@ -55,7 +55,7 @@ public final class NaturalStrings {
 	 * characters.
 	 * </p>
 	 */
-	private static final Comparator<String> IGNORE_CASE_NATURAL_COMPARATOR_ASCII = (o1, o2) -> compareNaturalIgnoreCaseAscii(o1, o2);
+	private static final Comparator<String> IGNORE_CASE_NATURAL_COMPARATOR_ASCII = NaturalStrings::compareNaturalIgnoreCaseAscii;
 	
 	/**
 	 * This is a utility class (static methods only), don't instantiate.
