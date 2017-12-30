@@ -97,7 +97,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	@Test
 	public void isOpenmrsVersionInVersions_shouldReturnFalseWhenVersionsIsEmpty() {
 
-		Assert.assertFalse(ModuleUtil.isOpenmrsVersionInVersions( new String[] {}));
+		Assert.assertFalse(ModuleUtil.isOpenmrsVersionInVersions());
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		modifiersField.setInt(versionField, versionField.getModifiers() & ~Modifier.FINAL);
 		versionField.set(null, "1.9.8");
 
-		Assert.assertFalse(ModuleUtil.isOpenmrsVersionInVersions( new String[] { "1.11.*", "2.1.0" }));
+		Assert.assertFalse(ModuleUtil.isOpenmrsVersionInVersions("1.11.*", "2.1.0"));
 	}
 
 	/**

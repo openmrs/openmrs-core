@@ -106,7 +106,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 		// loop over all of the selected methods and compare this and other
 		for (String methodName : methods) {
 			try {
-				Method method = identifierClass.getMethod(methodName, new Class[] {});
+				Method method = identifierClass.getMethod(methodName);
 				
 				Object thisValue = method.invoke(this);
 				Object otherValue = method.invoke(otherIdentifier);
