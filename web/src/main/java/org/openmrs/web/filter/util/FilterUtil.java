@@ -254,7 +254,7 @@ public class FilterUtil {
 	 * @return not null id of given user in case of success or null otherwise
 	 * @throws SQLException
 	 */
-	public static Integer getUserIdByName(String userNameOrSystemId, Connection connection) throws SQLException {
+	private static Integer getUserIdByName(String userNameOrSystemId, Connection connection) throws SQLException {
 		
 		String select = "select user_id from users where system_id = ? or username = ?";
 		PreparedStatement statement = connection.prepareStatement(select);

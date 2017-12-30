@@ -63,7 +63,7 @@ public class EncounterType extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * @param encounterTypeId The encounterTypeId to set.
 	 */
-	public void setEncounterTypeId(Integer encounterTypeId) {
+	private void setEncounterTypeId(Integer encounterTypeId) {
 		this.encounterTypeId = encounterTypeId;
 	}
 	

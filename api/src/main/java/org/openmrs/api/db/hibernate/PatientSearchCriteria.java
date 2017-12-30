@@ -140,7 +140,7 @@ public class PatientSearchCriteria {
 	 * @param includeVoided true/false whether or not to included voided patients
 	 * @return criteria for searching by name OR identifier OR searchable attributes
 	 */
-	Criteria prepareCriteria(String query, boolean includeVoided) {
+	private Criteria prepareCriteria(String query, boolean includeVoided) {
 		addAliasForName(criteria, true);
 		personSearchCriteria.addAliasForAttribute(criteria);
 		addAliasForIdentifiers(criteria);

@@ -46,7 +46,7 @@ public class ConceptMapType extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * @param conceptMapTypeId the conceptMapTypeId to set
 	 */
-	public void setConceptMapTypeId(Integer conceptMapTypeId) {
+	private void setConceptMapTypeId(Integer conceptMapTypeId) {
 		this.conceptMapTypeId = conceptMapTypeId;
 	}
 	

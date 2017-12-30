@@ -39,7 +39,7 @@ public class Daemon {
 	
 	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<>();
 	
-	protected static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
+	private static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
 	
 	/**
 	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext)
@@ -266,7 +266,7 @@ public class Daemon {
 	 * @since 1.9.2
 	 */
 	@SuppressWarnings("squid:S1217")
-	public static Thread runInDaemonThread(final Runnable runnable, DaemonToken token) {
+	private static Thread runInDaemonThread(final Runnable runnable, DaemonToken token) {
 		if (!ModuleFactory.isTokenValid(token)) {
 			throw new ContextAuthenticationException("Invalid token " + token);
 		}

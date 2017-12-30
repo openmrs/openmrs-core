@@ -51,7 +51,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * The data access object for the obs service
 	 */
-	protected ObsDAO dao;
+	private ObsDAO dao;
 	
 	/**
 	 * Report handlers that have been registered. This is filled via {@link #setHandlers(Map)} and
@@ -520,7 +520,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * Internal method to remove ComplexData when an Obs is purged.
 	 */
-	protected boolean purgeComplexData(Obs obs) throws APIException {
+	private boolean purgeComplexData(Obs obs) throws APIException {
 		if (obs.isComplex()) {
 			ComplexObsHandler handler = getHandler(obs);
 			if (null != handler) {

@@ -64,14 +64,14 @@ public class Hl7InArchivesMigrateThread extends Thread {
 		NONE
 	}
 	
-	public static void setProgressStatusMap(Map<String, Integer> progressStatusMap) {
+	private static void setProgressStatusMap(Map<String, Integer> progressStatusMap) {
 		Hl7InArchivesMigrateThread.progressStatusMap = progressStatusMap;
 	}
 	
 	/**
 	 * Constructor to initialize variables
 	 */
-	public Hl7InArchivesMigrateThread() {
+	private Hl7InArchivesMigrateThread() {
 		this.userContext = Context.getUserContext();
 		setProgressStatusMap(new HashMap<>());
 		progressStatusMap.put(HL7Constants.NUMBER_TRANSFERRED_KEY, 0);
@@ -102,11 +102,11 @@ public class Hl7InArchivesMigrateThread extends Thread {
 	/**
 	 * @param active the active to set
 	 */
-	public static void setActive(boolean active) {
+	private static void setActive(boolean active) {
 		Hl7InArchivesMigrateThread.active = active;
 	}
 	
-	public static void setTransferStatus(Status transferStatus) {
+	private static void setTransferStatus(Status transferStatus) {
 		Hl7InArchivesMigrateThread.transferStatus = transferStatus;
 	}
 	

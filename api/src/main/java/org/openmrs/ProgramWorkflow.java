@@ -161,7 +161,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	 *            objects in this ProgramWorkflow
 	 * @return Set&lt;ProgramWorkflowState&gt; - all ProgramWorkflowStates matching input parameters
 	 */
-	public Set<ProgramWorkflowState> getStates(boolean includeRetired) {
+	private Set<ProgramWorkflowState> getStates(boolean includeRetired) {
 		Set<ProgramWorkflowState> ret = new HashSet<>();
 		for (ProgramWorkflowState s : getStates()) {
 			if (includeRetired || !s.getRetired()) {
@@ -266,7 +266,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 		return programWorkflowId;
 	}
 	
-	public void setProgramWorkflowId(Integer programWorkflowId) {
+	private void setProgramWorkflowId(Integer programWorkflowId) {
 		this.programWorkflowId = programWorkflowId;
 	}
 	

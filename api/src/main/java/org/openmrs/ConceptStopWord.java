@@ -66,7 +66,7 @@ public class ConceptStopWord extends BaseOpenmrsObject {
 		return value;
 	}
 	
-	public void setValue(String value) {
+	private void setValue(String value) {
 		if (StringUtils.hasText(value)) {
 			this.value = value.toUpperCase();
 		}
@@ -76,7 +76,7 @@ public class ConceptStopWord extends BaseOpenmrsObject {
 		return locale;
 	}
 	
-	public void setLocale(Locale locale) {
+	private void setLocale(Locale locale) {
 		this.locale = locale == null ? Context.getLocale() : locale;
 	}
 	
@@ -84,7 +84,7 @@ public class ConceptStopWord extends BaseOpenmrsObject {
 		return conceptStopWordId;
 	}
 	
-	public void setConceptStopWordId(Integer conceptStopWordId) {
+	private void setConceptStopWordId(Integer conceptStopWordId) {
 		this.conceptStopWordId = conceptStopWordId;
 	}
 	

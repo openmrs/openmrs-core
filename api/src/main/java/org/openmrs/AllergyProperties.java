@@ -26,7 +26,7 @@ public class AllergyProperties {
 	@Qualifier("adminService")
 	protected AdministrationService administrationService;
 	
-	protected Concept getConceptByGlobalProperty(String globalPropertyName) {
+	private Concept getConceptByGlobalProperty(String globalPropertyName) {
 		String globalProperty = administrationService.getGlobalProperty(globalPropertyName);
 		Concept concept = conceptService.getConceptByUuid(globalProperty);
 		if (concept == null) {

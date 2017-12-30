@@ -94,7 +94,7 @@ public final class NaturalStrings {
 	 *         </p>
 	 * @see #getNaturalComparator()
 	 */
-	public static Comparator<String> getNaturalComparator(final Collator collator) {
+	private static Comparator<String> getNaturalComparator(final Collator collator) {
 		if (collator == null) {
 			// it's important to explicitly handle this here - else the bug will manifest anytime later in possibly
 			// unrelated code that tries to use the comparator
@@ -174,7 +174,7 @@ public final class NaturalStrings {
 	 *         <code>s</code> lexicographically precedes <code>t</code> and a value larger than zero
 	 *         iff <code>s</code> lexicographically follows <code>t</code>
 	 */
-	public static int compareNatural(Collator collator, String s, String t) {
+	private static int compareNatural(Collator collator, String s, String t) {
 		return compareNatural(s, t, true, collator);
 	}
 	
@@ -191,7 +191,7 @@ public final class NaturalStrings {
 	 *         <code>s</code> lexicographically precedes <code>t</code> and a value larger than zero
 	 *         iff <code>s</code> lexicographically follows <code>t</code>
 	 */
-	public static int compareNaturalAscii(String s, String t) {
+	private static int compareNaturalAscii(String s, String t) {
 		return compareNatural(s, t, true, null);
 	}
 	
@@ -208,7 +208,7 @@ public final class NaturalStrings {
 	 *         <code>s</code> lexicographically precedes <code>t</code> and a value larger than zero
 	 *         iff <code>s</code> lexicographically follows <code>t</code>
 	 */
-	public static int compareNaturalIgnoreCaseAscii(String s, String t) {
+	private static int compareNaturalIgnoreCaseAscii(String s, String t) {
 		return compareNatural(s, t, false, null);
 	}
 	

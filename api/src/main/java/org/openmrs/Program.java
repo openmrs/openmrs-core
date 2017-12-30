@@ -143,7 +143,7 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 		return programId;
 	}
 	
-	public void setProgramId(Integer programId) {
+	private void setProgramId(Integer programId) {
 		this.programId = programId;
 	}
 	

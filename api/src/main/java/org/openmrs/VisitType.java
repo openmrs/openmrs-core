@@ -56,7 +56,7 @@ public class VisitType extends BaseChangeableOpenmrsMetadata{
 	/**
 	 * @param visitTypeId the visitTypeId to set.
 	 */
-	public void setVisitTypeId(Integer visitTypeId) {
+	private void setVisitTypeId(Integer visitTypeId) {
 		this.visitTypeId = visitTypeId;
 	}
 	

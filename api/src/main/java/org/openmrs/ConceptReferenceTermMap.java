@@ -58,7 +58,7 @@ public class ConceptReferenceTermMap extends BaseConceptMap {
 	/**
 	 * @param conceptReferenceTermMapId the conceptReferenceTermMapId to set
 	 */
-	public void setConceptReferenceTermMapId(Integer conceptReferenceTermMapId) {
+	private void setConceptReferenceTermMapId(Integer conceptReferenceTermMapId) {
 		this.conceptReferenceTermMapId = conceptReferenceTermMapId;
 	}
 	

@@ -56,7 +56,7 @@ public class LocationTag extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * @param locationTagId The locationTagId to set.
 	 */
-	public void setLocationTagId(Integer locationTagId) {
+	private void setLocationTagId(Integer locationTagId) {
 		this.locationTagId = locationTagId;
 	}
 	

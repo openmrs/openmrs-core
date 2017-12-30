@@ -36,7 +36,7 @@ public class ConceptsLockedException extends APIException {
 	 * 
 	 * @param message the String to show to the user as to why the concepts are locked
 	 */
-	public ConceptsLockedException(String message) {
+	private ConceptsLockedException(String message) {
 		super(message);
 	}
 	

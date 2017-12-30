@@ -26,16 +26,16 @@ import javax.servlet.http.HttpServletResponse;
 public class GZIPResponseStream extends ServletOutputStream {
 	
 	// abstraction of the output stream used for compression
-	protected OutputStream bufferedOutput = null;
+	private OutputStream bufferedOutput = null;
 	
 	// state keeping variable for if close() has been called
-	protected boolean closed = false;
+	private boolean closed = false;
 	
 	// reference to original response
-	protected HttpServletResponse response = null;
+	private HttpServletResponse response = null;
 	
 	// reference to the output stream to the client's browser
-	protected ServletOutputStream output = null;
+	private ServletOutputStream output = null;
 	
 	// default size of the in-memory buffer
 	private int bufferSize = 50000;

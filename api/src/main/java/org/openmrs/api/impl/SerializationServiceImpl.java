@@ -133,7 +133,7 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 		return new ArrayList<>(serializerMap.values());
 	}
 	
-	public static void setSerializerMap(Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap) {
+	private static void setSerializerMap(Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap) {
 		SerializationServiceImpl.serializerMap = serializerMap;
 	}
 	

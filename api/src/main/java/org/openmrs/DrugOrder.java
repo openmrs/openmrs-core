@@ -82,7 +82,7 @@ public class DrugOrder extends Order {
 	/**
 	 * @see org.openmrs.Order#copyHelper(Order)
 	 */
-	protected DrugOrder copyHelper(DrugOrder target) {
+	private DrugOrder copyHelper(DrugOrder target) {
 		super.copyHelper(target);
 		target.setDose(getDose());
 		target.setDoseUnits(getDoseUnits());
@@ -406,7 +406,7 @@ public class DrugOrder extends Order {
 	 * @param dispenseAsWritten
 	 * @since 1.10
 	 */
-	public void setDispenseAsWritten(Boolean dispenseAsWritten) {
+	private void setDispenseAsWritten(Boolean dispenseAsWritten) {
 		this.dispenseAsWritten = dispenseAsWritten;
 	}
 
@@ -446,7 +446,7 @@ public class DrugOrder extends Order {
 	/**
 	 * @see Order#cloneForRevisionHelper(Order)
 	 */
-	protected DrugOrder cloneForRevisionHelper(DrugOrder target) {
+	private DrugOrder cloneForRevisionHelper(DrugOrder target) {
 		super.cloneForRevisionHelper(target);
 		target.setDose(getDose());
 		target.setDoseUnits(getDoseUnits());

@@ -92,7 +92,7 @@ public class PseudoStaticContentController implements Controller, LastModified, 
 		return -1;
 	}
 	
-	public static void setLastModified(Long lastModified) {
+	private static void setLastModified(Long lastModified) {
 		PseudoStaticContentController.lastModified = lastModified;
 	}
 	

@@ -102,7 +102,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	/**
 	 * @param encounterId The encounterId to set.
 	 */
-	public void setEncounterId(Integer encounterId) {
+	private void setEncounterId(Integer encounterId) {
 		this.encounterId = encounterId;
 	}
 	
@@ -524,7 +524,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @should return empty map if no providers
 	 * @should return all roles and providers
 	 */
-	public Map<EncounterRole, Set<Provider>> getProvidersByRoles(boolean includeVoided) {
+	private Map<EncounterRole, Set<Provider>> getProvidersByRoles(boolean includeVoided) {
 		
 		return encounterProviders.stream()
 				.filter(ep -> includeVoided || !ep.getVoided())

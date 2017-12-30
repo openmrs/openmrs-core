@@ -29,20 +29,20 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	
 	private static final Logger log = LoggerFactory.getLogger(GZIPResponseWrapper.class);
 	
-	protected HttpServletResponse origResponse = null;
+	private HttpServletResponse origResponse = null;
 	
-	protected ServletOutputStream stream = null;
+	private ServletOutputStream stream = null;
 	
-	protected PrintWriter writer = null;
+	private PrintWriter writer = null;
 	
-	protected int error = 0;
+	private int error = 0;
 	
 	public GZIPResponseWrapper(HttpServletResponse response) {
 		super(response);
 		origResponse = response;
 	}
 	
-	public ServletOutputStream createOutputStream() throws IOException {
+	private ServletOutputStream createOutputStream() throws IOException {
 		return new GZIPResponseStream(origResponse);
 	}
 	

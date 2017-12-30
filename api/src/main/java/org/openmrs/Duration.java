@@ -36,7 +36,7 @@ public class Duration {
 	
 	public static final String SNOMED_CT_DAYS_CODE = "258703001";
 	
-	public static final String SNOMED_CT_WEEKS_CODE = "258705008";
+	private static final String SNOMED_CT_WEEKS_CODE = "258705008";
 	
 	public static final String SNOMED_CT_MONTHS_CODE = "258706009";
 	

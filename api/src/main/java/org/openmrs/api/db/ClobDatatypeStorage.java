@@ -22,7 +22,7 @@ public class ClobDatatypeStorage extends BaseOpenmrsObject {
 	
 	// inherits uuid from BaseOpenmrsObject
 	
-	String value;
+	private String value;
 	
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()

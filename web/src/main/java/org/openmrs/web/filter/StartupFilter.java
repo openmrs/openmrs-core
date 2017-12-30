@@ -69,7 +69,7 @@ public abstract class StartupFilter implements Filter {
 	
 	private static final Logger log = LoggerFactory.getLogger(StartupFilter.class);
 	
-	protected static VelocityEngine velocityEngine = null;
+	private static VelocityEngine velocityEngine = null;
 	
 	public static final String AUTO_RUN_OPENMRS = "auto_run_openmrs";
 	
@@ -342,7 +342,7 @@ public abstract class StartupFilter implements Filter {
 	 * @param locale the string with locale parameter for configuring tools context
 	 * @return the tool context object
 	 */
-	public ToolContext getToolContext(String locale) {
+	private ToolContext getToolContext(String locale) {
 		Locale systemLocale = LocaleUtility.fromSpecification(locale);
 		//Defaults to en if systemLocale is null or invalid e.g en_GBs
 		if (systemLocale == null || !ArrayUtils.contains(Locale.getAvailableLocales(), systemLocale)) {

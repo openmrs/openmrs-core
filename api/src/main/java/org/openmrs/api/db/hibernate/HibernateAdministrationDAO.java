@@ -275,7 +275,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 * @param obj the object that will be validated
 	 * @return list of compatible validators
 	 */
-	protected List<Validator> getValidators(Object obj) {
+	private List<Validator> getValidators(Object obj) {
 		List<Validator> matchingValidators = new ArrayList<>();
 
 		List<Validator> validators = HandlerUtil.getHandlersForType(Validator.class, obj.getClass());

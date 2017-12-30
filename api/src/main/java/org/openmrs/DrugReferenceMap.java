@@ -68,7 +68,7 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	/**
 	 * @param drugReferenceMapId The drugReferenceMapId to set.
 	 */
-	public void setDrugReferenceMapId(Integer drugReferenceMapId) {
+	private void setDrugReferenceMapId(Integer drugReferenceMapId) {
 		this.drugReferenceMapId = drugReferenceMapId;
 	}
 	

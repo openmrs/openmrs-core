@@ -33,7 +33,7 @@ public class LocationAttribute extends BaseAttribute<LocationAttributeType, Loca
 	/**
 	 * @param locationAttributeId the locationAttributeId to set
 	 */
-	public void setLocationAttributeId(Integer locationAttributeId) {
+	private void setLocationAttributeId(Integer locationAttributeId) {
 		this.locationAttributeId = locationAttributeId;
 	}
 	

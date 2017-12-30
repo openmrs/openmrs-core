@@ -160,7 +160,7 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	private static final String PROGRESS_VM_AJAXREQUEST = "progress.vm.ajaxRequest";
 	
-	public static final String RELEASE_TESTING_MODULE_PATH = "/module/releasetestinghelper/";
+	private static final String RELEASE_TESTING_MODULE_PATH = "/module/releasetestinghelper/";
 	
 	/**
 	 * The model object that holds all the properties that the rendered templates use. All
@@ -185,7 +185,7 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	private static boolean initializationComplete = false;
 
-	protected synchronized void setInitializationComplete(boolean initializationComplete) {
+	private synchronized void setInitializationComplete(boolean initializationComplete) {
 		InitializationFilter.initializationComplete = initializationComplete;
 	}
 	
@@ -966,7 +966,7 @@ public class InitializationFilter extends StartupFilter {
 	 *
 	 * @param httpRequest the http request object
 	 */
-	public void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
+	private void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
 		Locale locale = httpRequest.getLocale();
 		if (CustomResourceLoader.getInstance(httpRequest).getAvailablelocales().contains(locale)) {
 			httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, locale.toString());
@@ -1069,14 +1069,14 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * @param isInstallationStarted the value to set
 	 */
-	protected static synchronized void setInstallationStarted(boolean isInstallationStarted) {
+	private static synchronized void setInstallationStarted(boolean isInstallationStarted) {
 		InitializationFilter.isInstallationStarted = isInstallationStarted;
 	}
 	
 	/**
 	 * @return true if installation has been started
 	 */
-	protected static boolean isInstallationStarted() {
+	private static boolean isInstallationStarted() {
 		return isInstallationStarted;
 	}
 	
@@ -1879,7 +1879,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @param databaseDriver the database driver class name to load
 	 * @return the loaded driver string
 	 */
-	public static String loadDriver(String connection, String databaseDriver) {
+	private static String loadDriver(String connection, String databaseDriver) {
 		String loadedDriverString = null;
 		try {
 			loadedDriverString = DatabaseUtil.loadDatabaseDriver(connection, databaseDriver);

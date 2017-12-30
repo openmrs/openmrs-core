@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetService {
 	
-	protected OrderSetDAO dao;
+	private OrderSetDAO dao;
 	
 	/**
 	 * @see org.openmrs.api.OrderSetService#setOrderSetDAO(org.openmrs.api.db.OrderSetDAO)

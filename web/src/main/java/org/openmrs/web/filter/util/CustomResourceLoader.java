@@ -36,7 +36,7 @@ public class CustomResourceLoader {
 	private static final Logger log = LoggerFactory.getLogger(CustomResourceLoader.class);
 	
 	/** */
-	public static final String PREFIX = "messages";
+	private static final String PREFIX = "messages";
 	
 	/** the map that contains resource bundles for each locale */
 	private Map<Locale, ResourceBundle> resources = null;
@@ -120,7 +120,7 @@ public class CustomResourceLoader {
 	 * @return the map object, which contains locale as key and resources bundle for each locale as
 	 *         value
 	 */
-	public Map<Locale, ResourceBundle> getResource() {
+	private Map<Locale, ResourceBundle> getResource() {
 		return resources;
 	}
 	

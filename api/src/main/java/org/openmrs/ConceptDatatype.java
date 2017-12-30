@@ -38,29 +38,29 @@ public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 	
 	// UUIDs for core datatypes
 	
-	public static final String NUMERIC_UUID = "8d4a4488-c2cc-11de-8d13-0010c6dffd0f";
+	private static final String NUMERIC_UUID = "8d4a4488-c2cc-11de-8d13-0010c6dffd0f";
 	
 	public static final String CODED_UUID = "8d4a48b6-c2cc-11de-8d13-0010c6dffd0f";
 	
-	public static final String TEXT_UUID = "8d4a4ab4-c2cc-11de-8d13-0010c6dffd0f";
+	private static final String TEXT_UUID = "8d4a4ab4-c2cc-11de-8d13-0010c6dffd0f";
 	
-	public static final String N_A_UUID = "8d4a4c94-c2cc-11de-8d13-0010c6dffd0f";
+	private static final String N_A_UUID = "8d4a4c94-c2cc-11de-8d13-0010c6dffd0f";
 	
-	public static final String DOCUMENT_UUID = "8d4a4e74-c2cc-11de-8d13-0010c6dffd0f";
+	private static final String DOCUMENT_UUID = "8d4a4e74-c2cc-11de-8d13-0010c6dffd0f";
 	
-	public static final String DATE_UUID = "8d4a505e-c2cc-11de-8d13-0010c6dffd0f";
+	private static final String DATE_UUID = "8d4a505e-c2cc-11de-8d13-0010c6dffd0f";
 	
-	public static final String TIME_UUID = "8d4a591e-c2cc-11de-8d13-0010c6dffd0f";
+	private static final String TIME_UUID = "8d4a591e-c2cc-11de-8d13-0010c6dffd0f";
 	
-	public static final String DATETIME_UUID = "8d4a5af4-c2cc-11de-8d13-0010c6dffd0f";
+	private static final String DATETIME_UUID = "8d4a5af4-c2cc-11de-8d13-0010c6dffd0f";
 	
-	public static final String BOOLEAN_UUID = "8d4a5cca-c2cc-11de-8d13-0010c6dffd0f";
+	private static final String BOOLEAN_UUID = "8d4a5cca-c2cc-11de-8d13-0010c6dffd0f";
 	
-	public static final String RULE_UUID = "8d4a5e96-c2cc-11de-8d13-0010c6dffd0f";
+	private static final String RULE_UUID = "8d4a5e96-c2cc-11de-8d13-0010c6dffd0f";
 	
 	public static final String STRUCTURED_NUMERIC_UUID = "8d4a606c-c2cc-11de-8d13-0010c6dffd0f";
 	
-	public static final String COMPLEX_UUID = "8d4a6242-c2cc-11de-8d13-0010c6dffd0f";
+	private static final String COMPLEX_UUID = "8d4a6242-c2cc-11de-8d13-0010c6dffd0f";
 	
 	// Fields
 	@DocumentId
@@ -85,7 +85,7 @@ public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 		return this.conceptDatatypeId;
 	}
 	
-	public void setConceptDatatypeId(Integer conceptDatatypeId) {
+	private void setConceptDatatypeId(Integer conceptDatatypeId) {
 		this.conceptDatatypeId = conceptDatatypeId;
 	}
 	

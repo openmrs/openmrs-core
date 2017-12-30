@@ -72,7 +72,7 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 		return cohortMemberId;
 	}
 	
-	public void setCohortMemberId(Integer cohortMemberId) {
+	private void setCohortMemberId(Integer cohortMemberId) {
 		this.cohortMemberId = cohortMemberId;
 	}
 	

@@ -305,7 +305,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 		return getDirty();
 	}
 	
-	public boolean getDirty() {
+	private boolean getDirty() {
 		return dirty;
 	}
 	

@@ -99,7 +99,7 @@ public class PersonAttributeType extends BaseChangeableOpenmrsMetadata implement
 	/**
 	 * @param newPersonAttributeTypeId The PersonAttributeTypeId to set.
 	 */
-	public void setPersonAttributeTypeId(Integer newPersonAttributeTypeId) {
+	private void setPersonAttributeTypeId(Integer newPersonAttributeTypeId) {
 		this.personAttributeTypeId = newPersonAttributeTypeId;
 	}
 	

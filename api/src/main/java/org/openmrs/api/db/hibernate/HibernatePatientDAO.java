@@ -681,7 +681,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		return findPatients(query, includeVoided, null, null);
 	}
 
-	public List<Patient> findPatients(String query, boolean includeVoided, Integer start, Integer length){
+	private List<Patient> findPatients(String query, boolean includeVoided, Integer start, Integer length){
 		Integer tmpStart = start;
 		if (tmpStart == null) {
 			tmpStart = 0;

@@ -80,7 +80,7 @@ public class ConceptStateConversion extends BaseOpenmrsObject {
 	/**
 	 * @param conceptStateConversionId The conceptStateConversionId to set.
 	 */
-	public void setConceptStateConversionId(Integer conceptStateConversionId) {
+	private void setConceptStateConversionId(Integer conceptStateConversionId) {
 		this.conceptStateConversionId = conceptStateConversionId;
 	}
 	

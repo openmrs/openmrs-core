@@ -326,7 +326,7 @@ public class Allergies implements List<Allergy> {
 	 * @param allergies the allergies whose allergens to compare with
 	 * @return true if the same allergen exists, else false
 	 */
-	public boolean containsAllergen(Allergy allergy, Collection<? extends Allergy> allergies) {
+	private boolean containsAllergen(Allergy allergy, Collection<? extends Allergy> allergies) {
 		for (Allergy alg : allergies) {
 			if (alg.hasSameAllergen(allergy)) {
 				return true;

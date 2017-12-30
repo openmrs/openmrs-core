@@ -54,7 +54,7 @@ public class FieldAnswer extends BaseOpenmrsObject {
 	/**
 	 * @return boolean whether or not this fieldAnswer has been modified
 	 */
-	public boolean getDirty() {
+	private boolean getDirty() {
 		return dirty;
 	}
 	

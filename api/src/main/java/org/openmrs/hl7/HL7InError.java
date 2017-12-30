@@ -53,7 +53,7 @@ public class HL7InError extends HL7QueueItem {
 	/**
 	 * @param hl7InErrorId The hl7InExceptionId to set.
 	 */
-	public void setHL7InErrorId(Integer hl7InErrorId) {
+	private void setHL7InErrorId(Integer hl7InErrorId) {
 		this.hl7InErrorId = hl7InErrorId;
 	}
 	

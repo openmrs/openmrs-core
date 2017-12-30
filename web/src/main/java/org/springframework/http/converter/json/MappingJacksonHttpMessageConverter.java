@@ -57,7 +57,7 @@ import org.springframework.util.Assert;
  */
 public class MappingJacksonHttpMessageConverter extends AbstractHttpMessageConverter<Object> implements GenericHttpMessageConverter<Object> {
 	
-	public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 	
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
@@ -228,7 +228,7 @@ public class MappingJacksonHttpMessageConverter extends AbstractHttpMessageConve
 	 * in which the target type appears in a method signature, can be {@code null}
 	 * @return the java type
 	 */
-	protected JavaType getJavaType(Type type, Class<?> contextClass) {
+	private JavaType getJavaType(Type type, Class<?> contextClass) {
 		return (contextClass != null) ? TypeFactory.type(type, TypeFactory.type(contextClass)) : TypeFactory.type(type);
 	}
 	
@@ -237,7 +237,7 @@ public class MappingJacksonHttpMessageConverter extends AbstractHttpMessageConve
 	 * @param contentType the media type as requested by the caller
 	 * @return the JSON encoding to use (never {@code null})
 	 */
-	protected JsonEncoding getJsonEncoding(MediaType contentType) {
+	private JsonEncoding getJsonEncoding(MediaType contentType) {
 		if (contentType != null && contentType.getCharSet() != null) {
 			Charset charset = contentType.getCharSet();
 			for (JsonEncoding encoding : JsonEncoding.values()) {

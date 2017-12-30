@@ -119,11 +119,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		return errorAtStartup;
 	}
 	
-	public static void setRuntimePropertiesFound(boolean runtimePropertiesFound) {
+	private static void setRuntimePropertiesFound(boolean runtimePropertiesFound) {
 		Listener.runtimePropertiesFound = runtimePropertiesFound;
 	}
 	
-	public static void setErrorAtStartup(Throwable errorAtStartup) {
+	private static void setErrorAtStartup(Throwable errorAtStartup) {
 		Listener.errorAtStartup = errorAtStartup;
 	}
 	
@@ -490,7 +490,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 *
 	 * @param servletContext the current servlet context for the webapp
 	 */
-	public static void loadBundledModules(ServletContext servletContext) {
+	private static void loadBundledModules(ServletContext servletContext) {
 		String path = servletContext.getRealPath("");
 		path += File.separator + "WEB-INF" + File.separator + "bundledModules";
 		File folder = new File(path);
@@ -594,7 +594,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @return Properties
 	 * @see OpenmrsUtil#getRuntimeProperties(String)
 	 */
-	public static Properties getRuntimeProperties() {
+	private static Properties getRuntimeProperties() {
 		return OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
 	}
 	
@@ -610,7 +610,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		performWebStartOfModules(startedModules, servletContext);
 	}
 	
-	public static void performWebStartOfModules(Collection<Module> startedModules, ServletContext servletContext)
+	private static void performWebStartOfModules(Collection<Module> startedModules, ServletContext servletContext)
 	        throws ModuleMustStartException, Exception {
 		
 		boolean someModuleNeedsARefresh = false;

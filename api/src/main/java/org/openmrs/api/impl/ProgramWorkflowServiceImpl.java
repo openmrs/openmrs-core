@@ -47,7 +47,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	
 	private static final Logger log = LoggerFactory.getLogger(ProgramWorkflowServiceImpl.class);
 	
-	protected ProgramWorkflowDAO dao;
+	private ProgramWorkflowDAO dao;
 	
 	public ProgramWorkflowServiceImpl() {
 	}

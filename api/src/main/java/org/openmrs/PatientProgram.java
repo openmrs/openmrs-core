@@ -75,7 +75,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 	 * @param target a PatientProgram that will have the state of <code>this</code> copied into it
 	 * @return the PatientProgram that was passed in, with state copied into it
 	 */
-	protected PatientProgram copyHelper(PatientProgram target) {
+	private PatientProgram copyHelper(PatientProgram target) {
 		target.setPatient(this.getPatient());
 		target.setProgram(this.getProgram());
 		target.setLocation(this.getLocation());
@@ -113,7 +113,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 	 * @return boolean - true if the associated {@link Patient} is enrolled in the associated
 	 *         {@link Program} on the passed {@link Date}
 	 */
-	public boolean getActive(Date onDate) {
+	private boolean getActive(Date onDate) {
 		if (onDate == null) {
 			onDate = new Date();
 		}
@@ -279,7 +279,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 	 * @return List&lt;PatientState&gt; of all {@link PatientState}s in the passed {@link ProgramWorkflow}
 	 *         for the {@link PatientProgram}
 	 */
-	public List<PatientState> statesInWorkflow(ProgramWorkflow programWorkflow, boolean includeVoided) {
+	private List<PatientState> statesInWorkflow(ProgramWorkflow programWorkflow, boolean includeVoided) {
 		List<PatientState> ret = new ArrayList<>();
 		for (PatientState st : getSortedStates()) {
 			if (st.getState().getProgramWorkflow().equals(programWorkflow) && (includeVoided || !st.getVoided())) {
@@ -336,7 +336,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 		return patientProgramId;
 	}
 	
-	public void setPatientProgramId(Integer patientProgramId) {
+	private void setPatientProgramId(Integer patientProgramId) {
 		this.patientProgramId = patientProgramId;
 	}
 	
@@ -386,7 +386,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 	 * @since 1.8
 	 * @param location the location to set
 	 */
-	public void setLocation(Location location) {
+	private void setLocation(Location location) {
 		this.location = location;
 	}
 	

@@ -189,7 +189,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	/**
 	 * @param locationId The locationId to set.
 	 */
-	public void setLocationId(Integer locationId) {
+	private void setLocationId(Integer locationId) {
 		this.locationId = locationId;
 	}
 	

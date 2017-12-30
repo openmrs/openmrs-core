@@ -79,7 +79,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 	 * @param request the current http request
 	 * @return the file being requested or null if not found
 	 */
-	protected File getFile(HttpServletRequest request) {
+	private File getFile(HttpServletRequest request) {
 		
 		String path = request.getPathInfo();
 		

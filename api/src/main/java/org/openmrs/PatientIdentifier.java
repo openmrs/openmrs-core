@@ -259,7 +259,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 * @since 1.5
 	 * @param patientIdentifierId the patientIdentifierId to set
 	 */
-	public void setPatientIdentifierId(Integer patientIdentifierId) {
+	private void setPatientIdentifierId(Integer patientIdentifierId) {
 		this.patientIdentifierId = patientIdentifierId;
 	}
 	

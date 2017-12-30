@@ -48,7 +48,7 @@ public class ConceptSource extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * @param conceptSourceId The conceptSourceId to set.
 	 */
-	public void setConceptSourceId(Integer conceptSourceId) {
+	private void setConceptSourceId(Integer conceptSourceId) {
 		this.conceptSourceId = conceptSourceId;
 	}
 	

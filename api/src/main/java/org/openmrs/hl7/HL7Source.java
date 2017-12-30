@@ -45,7 +45,7 @@ public class HL7Source extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * @param hl7SourceId The hl7SourceId to set.
 	 */
-	public void setHL7SourceId(Integer hl7SourceId) {
+	private void setHL7SourceId(Integer hl7SourceId) {
 		this.hl7SourceId = hl7SourceId;
 	}
 	

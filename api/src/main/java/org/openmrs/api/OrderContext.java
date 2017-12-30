@@ -62,7 +62,7 @@ public class OrderContext {
 	/**
 	 * @return the contextAttributes
 	 */
-	public Map<String, Object> getContextAttributes() {
+	private Map<String, Object> getContextAttributes() {
 		if (contextAttributes == null) {
 			return contextAttributes = new HashMap<>();
 		}

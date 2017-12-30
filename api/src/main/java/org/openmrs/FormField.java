@@ -28,27 +28,27 @@ public class FormField extends BaseChangeableOpenmrsMetadata implements java.io.
 	
 	// Fields
 	
-	protected Integer formFieldId;
+	private Integer formFieldId;
 	
-	protected FormField parent;
+	private FormField parent;
 	
-	protected Form form;
+	private Form form;
 	
-	protected Field field;
+	private Field field;
 	
-	protected Integer fieldNumber;
+	private Integer fieldNumber;
 	
-	protected String fieldPart;
+	private String fieldPart;
 	
-	protected Integer pageNumber;
+	private Integer pageNumber;
 	
-	protected Integer minOccurs;
+	private Integer minOccurs;
 	
-	protected Integer maxOccurs;
+	private Integer maxOccurs;
 	
-	protected Boolean required = false;
+	private Boolean required = false;
 	
-	protected Float sortWeight;
+	private Float sortWeight;
 	
 	// Constructors
 	

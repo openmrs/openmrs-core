@@ -73,7 +73,7 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	/**
 	 * @param conceptReferenceTermId the conceptReferenceTermId to set
 	 */
-	public void setConceptReferenceTermId(Integer conceptReferenceTermId) {
+	private void setConceptReferenceTermId(Integer conceptReferenceTermId) {
 		this.conceptReferenceTermId = conceptReferenceTermId;
 	}
 	

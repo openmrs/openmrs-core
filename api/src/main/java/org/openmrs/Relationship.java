@@ -65,7 +65,7 @@ public class Relationship extends BaseChangeableOpenmrsData {
 	 * @param target a Relationship that will have the state of <code>this</code> copied into it
 	 * @return the Relationship that was passed in, with state copied into it
 	 */
-	protected Relationship copyHelper(Relationship target) {
+	private Relationship copyHelper(Relationship target) {
 		target.personA = getPersonA();
 		target.relationshipType = getRelationshipType();
 		target.personB = getPersonB();
@@ -118,7 +118,7 @@ public class Relationship extends BaseChangeableOpenmrsData {
 	/**
 	 * @param relationshipId The relationshipId to set.
 	 */
-	public void setRelationshipId(Integer relationshipId) {
+	private void setRelationshipId(Integer relationshipId) {
 		this.relationshipId = relationshipId;
 	}
 	

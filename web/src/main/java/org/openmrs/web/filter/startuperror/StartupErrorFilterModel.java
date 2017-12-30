@@ -22,7 +22,7 @@ public class StartupErrorFilterModel {
 	
 	public Throwable errorAtStartup = null;
 	
-	public String stacktrace = null;
+	private String stacktrace = null;
 	
 	/**
 	 * Default constructor that sets up some of the properties

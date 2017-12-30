@@ -65,7 +65,7 @@ public class HL7InQueue extends HL7QueueItem {
 	/**
 	 * @param hl7InQueueId The hl7InQueueId to set.
 	 */
-	public void setHL7InQueueId(Integer hl7InQueueId) {
+	private void setHL7InQueueId(Integer hl7InQueueId) {
 		this.hl7InQueueId = hl7InQueueId;
 	}
 	

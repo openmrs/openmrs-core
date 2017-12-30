@@ -43,7 +43,7 @@ public class OrderSetMember extends BaseChangeableOpenmrsMetadata {
 	 *
 	 * @param orderSetMemberId the orderSetMemberId to set
 	 */
-	public void setOrderSetMemberId(Integer orderSetMemberId) {
+	private void setOrderSetMemberId(Integer orderSetMemberId) {
 		this.orderSetMemberId = orderSetMemberId;
 	}
 	

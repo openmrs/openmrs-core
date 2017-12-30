@@ -62,7 +62,7 @@ public class MappingJacksonJsonView extends AbstractView {
 	 * Default content type: "application/json".
 	 * Overridable through {@link #setContentType}.
 	 */
-	public static final String DEFAULT_CONTENT_TYPE = "application/json";
+	private static final String DEFAULT_CONTENT_TYPE = "application/json";
 	
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
@@ -249,7 +249,7 @@ public class MappingJacksonJsonView extends AbstractView {
 	 * @param model the model, as passed on to {@link #renderMergedOutputModel}
 	 * @return the value to be rendered
 	 */
-	protected Object filterModel(Map<String, Object> model) {
+	private Object filterModel(Map<String, Object> model) {
 		Map<String, Object> result = new HashMap<>(model.size());
 		Set<String> renderedAttributes = (!CollectionUtils.isEmpty(this.modelKeys) ? this.modelKeys : model.keySet());
 		for (Map.Entry<String, Object> entry : model.entrySet()) {
@@ -268,7 +268,7 @@ public class MappingJacksonJsonView extends AbstractView {
 	 * (as indicated through {@link #setJsonPrefix}/{@link #setPrefixJson})
 	 * @throws IOException if writing failed
 	 */
-	protected void writeContent(OutputStream stream, Object value, String jsonPrefix) throws IOException {
+	private void writeContent(OutputStream stream, Object value, String jsonPrefix) throws IOException {
 		JsonGenerator generator = this.objectMapper.getJsonFactory().createJsonGenerator(stream, this.encoding);
 		
 		// A workaround for JsonGenerators not applying serialization features

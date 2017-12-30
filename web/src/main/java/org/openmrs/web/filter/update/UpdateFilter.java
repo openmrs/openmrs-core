@@ -64,7 +64,7 @@ import liquibase.exception.LockException;
  */
 public class UpdateFilter extends StartupFilter {
 	
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(UpdateFilter.class);
+	private final org.slf4j.Logger log = LoggerFactory.getLogger(UpdateFilter.class);
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
@@ -299,7 +299,7 @@ public class UpdateFilter extends StartupFilter {
 	 *
 	 * @param httpRequest the http request object
 	 */
-	public void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
+	private void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
 		Locale locale = httpRequest.getLocale();
 		String systemDefaultLocale = FilterUtil.readSystemDefaultLocale(null);
 		if (CustomResourceLoader.getInstance(httpRequest).getAvailablelocales().contains(locale)) {
@@ -582,11 +582,11 @@ public class UpdateFilter extends StartupFilter {
 	 * existing lock of liquibasechangeloglock table by another user, when he also tries
 	 * to run database update when another user is currently running it
 	 */
-	public static Boolean isLockReleased() {
+	private static Boolean isLockReleased() {
 		return lockReleased;
 	}
 	
-	public static synchronized void setLockReleased(Boolean lockReleased) {
+	private static synchronized void setLockReleased(Boolean lockReleased) {
 		UpdateFilter.lockReleased = lockReleased;
 	}
 	

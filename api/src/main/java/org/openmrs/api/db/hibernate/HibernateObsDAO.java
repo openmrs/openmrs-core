@@ -46,7 +46,7 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
  */
 public class HibernateObsDAO implements ObsDAO {
 	
-	protected SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 	
 	/**
 	 * Set session factory that allows us to connect to the database that Hibernate knows about.

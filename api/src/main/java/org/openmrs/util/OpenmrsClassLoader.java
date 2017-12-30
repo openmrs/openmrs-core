@@ -73,7 +73,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	/**
 	 * Creates the instance for the OpenmrsClassLoader
 	 */
-	public OpenmrsClassLoader(ClassLoader parent) {
+	private OpenmrsClassLoader(ClassLoader parent) {
 		super(new URL[0], parent);
 		
 		if (parent instanceof OpenmrsClassLoader) {
@@ -99,7 +99,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	/**
 	 * Normal constructor. Sets this class as the parent classloader
 	 */
-	public OpenmrsClassLoader() {
+	private OpenmrsClassLoader() {
 		this(OpenmrsClassLoader.class.getClassLoader());
 	}
 	
@@ -500,7 +500,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 *
 	 * @since 1.5
 	 */
-	protected static void clearReferences() {
+	private static void clearReferences() {
 		
 		// Unregister any JDBC drivers loaded by this classloader
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
@@ -579,7 +579,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 *
 	 * @param instance the object whose fields need to be nulled out
 	 */
-	protected static void nullInstance(Object instance) {
+	private static void nullInstance(Object instance) {
 		if (instance == null) {
 			return;
 		}
@@ -628,7 +628,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * <br>
 	 * Borrowed from Tomcat's WebappClassLoader
 	 */
-	protected static boolean loadedByThisOrChild(Class<?> clazz) {
+	private static boolean loadedByThisOrChild(Class<?> clazz) {
 		boolean result = false;
 		for (ClassLoader classLoader = clazz.getClassLoader(); null != classLoader; classLoader = classLoader.getParent()) {
 			if (classLoader.equals(getInstance())) {

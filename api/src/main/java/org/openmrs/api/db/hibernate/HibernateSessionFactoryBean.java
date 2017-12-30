@@ -38,15 +38,15 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateSessionFactoryBean.class);
 	
-	protected Set<String> mappingResources = new HashSet<>();
+	private Set<String> mappingResources = new HashSet<>();
 	
 	/**
 	 * @since 1.9.2, 1.10
 	 */
-	protected Set<String> packagesToScan = new HashSet<>();
+	private Set<String> packagesToScan = new HashSet<>();
 	
 	// @since 1.6.3, 1.7.2, 1.8.0, 1.9
-	protected ChainingInterceptor chainingInterceptor = new ChainingInterceptor();
+	private ChainingInterceptor chainingInterceptor = new ChainingInterceptor();
 	
 	// @since 1.6.3, 1.7.2, 1.8.0, 1.9
 	// This will be sorted on keys before being used
@@ -76,7 +76,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		super.setPackagesToScan(this.packagesToScan.toArray(new String[0]));
 	}
 	
-	public Set<String> getModuleMappingResources() {
+	private Set<String> getModuleMappingResources() {
 		for (Module mod : ModuleFactory.getStartedModules()) {
 			mappingResources.addAll(mod.getMappingFiles());
 		}
@@ -89,7 +89,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	 * @return the set of packages with mapped classes
 	 * @since 1.9.2, 1.10
 	 */
-	public Set<String> getModulePackagesWithMappedClasses() {
+	private Set<String> getModulePackagesWithMappedClasses() {
 		Set<String> packages = new HashSet<>();
 		for (Module module : ModuleFactory.getStartedModules()) {
 			packages.addAll(module.getPackagesWithMappedClasses());
