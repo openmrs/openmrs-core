@@ -752,9 +752,17 @@ public class HibernatePatientDAO implements PatientDAO {
     private LuceneQuery<PatientIdentifier> getPatientIdentifierLuceneQuery(String query, boolean includeVoided) {
 		query = removeIdentifierPadding(query);
 		List<String> tokens = tokenizeIdentifierQuery(query);
-
-		LuceneQuery<PatientIdentifier> luceneQuery = LuceneQuery
-                .newQuery(PatientIdentifier.class, sessionFactory.getCurrentSession(), "identifierPhrase:(" + StringUtils.join(tokens, " OR ") + ")");
+		query = StringUtils.join(tokens, " OR ");
+		List<String> fields = new ArrayList<>();
+		fields.add("identifierPhrase");
+	
+	    String matchMode = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE);
+	    if (OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START.equals(matchMode)) {
+	    	fields.add("identifierStart");
+	    } else if (OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE.equals(matchMode)) {
+	    	fields.add("identifierAnywhere");
+	    }
+		LuceneQuery<PatientIdentifier> luceneQuery = LuceneQuery.newQuery(PatientIdentifier.class, sessionFactory.getCurrentSession(), query, fields);
         if(!includeVoided){
         	luceneQuery.include("voided", false);
 			luceneQuery.include("patient.voided", false);
