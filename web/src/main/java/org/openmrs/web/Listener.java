@@ -415,7 +415,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				if (file.exists() && !userOverridePath.startsWith(".")) {
 					log.debug("Overriding file: " + absolutePath);
 					log.debug("Overriding file with: " + userOverridePath);
-					if (file.isDirectory()) {
+					if (file.isDirectory() && file.list().length != 0) {
 						if (file.listFiles() != null) {
 							for (File f : file.listFiles()) {
 								userOverridePath = f.getAbsolutePath();
@@ -499,7 +499,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			log.warn("Bundled module folder doesn't exist: " + folder.getAbsolutePath());
 			return;
 		}
-		if (!folder.isDirectory()) {
+		if (!folder.isDirectory() || folder.list().length == 0) {
 			log.warn("Bundled module folder isn't really a directory: " + folder.getAbsolutePath());
 			return;
 		}
