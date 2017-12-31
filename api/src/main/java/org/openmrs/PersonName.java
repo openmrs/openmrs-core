@@ -146,7 +146,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		if (pn == null) {
 			throw new IllegalArgumentException();
 		}
-		PersonName newName = new PersonName(Integer.valueOf(pn.getPersonNameId()));
+		PersonName newName = new PersonName(pn.getPersonNameId());
 		if (pn.getGivenName() != null) {
 			newName.setGivenName(String.valueOf(pn.getGivenName()));
 		}
