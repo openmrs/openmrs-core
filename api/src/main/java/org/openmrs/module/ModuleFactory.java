@@ -171,10 +171,11 @@ public class ModuleFactory {
 			log.debug("Loading modules from: " + modulesFolder.getAbsolutePath());
 		}
 		
-		if (modulesFolder.isDirectory()) {
-			loadModules(Arrays.asList(modulesFolder.listFiles()));
+		File[] files = modulesFolder.listFiles();
+		if (modulesFolder.isDirectory() && files != null) {
+			loadModules(Arrays.asList(files));
 		} else {
-			log.error("modules folder: '" + modulesFolder.getAbsolutePath() + "' is not a valid directory");
+			log.error("modules folder: '" + modulesFolder.getAbsolutePath() + "' is not a directory or IO error occurred");
 		}
 	}
 	
