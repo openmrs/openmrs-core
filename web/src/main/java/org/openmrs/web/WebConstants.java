@@ -80,7 +80,7 @@ public class WebConstants {
 	 * 
 	 * @see org.openmrs.web.servlet.LoginServlet
 	 */
-	public static String GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP = "security.loginAttemptsAllowedPerIP";
+	public static final String GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP = "security.loginAttemptsAllowedPerIP";
 	
 	/**
 	 * User names of the logged-in users are stored in this map (session id -&gt; user name) in the
