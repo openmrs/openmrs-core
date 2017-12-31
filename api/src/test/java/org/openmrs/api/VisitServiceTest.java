@@ -462,11 +462,13 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getVisits_shouldGetVisitsEndedBetweenTheGivenEndDates() {
 		executeDataSet(VISITS_WITH_DATES_XML);
+		
 		Calendar cal = Calendar.getInstance();
-		cal.set(2005, 1, 1, 0, 0, 0);
+		cal.set(2005, Calendar.FEBRUARY, 1, 0, 0, 0);
 		Date minEndDate = cal.getTime();
-		cal.set(2005, 1, 2, 23, 59, 0);
+		cal.set(2005, Calendar.FEBRUARY, 2, 23, 59, 0);
 		Date maxEndDate = cal.getTime();
+		
 		assertEquals(2, visitService.getVisits(null, null, null, null, null, null, minEndDate, maxEndDate,
 		    null, true, false).size());
 	}
@@ -494,11 +496,13 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getVisits_shouldGetVisitsStartedBetweenTheGivenStartDates() {
 		executeDataSet(VISITS_WITH_DATES_XML);
+		
 		Calendar cal = Calendar.getInstance();
-		cal.set(2005, 0, 1, 1, 0, 0);
+		cal.set(2005, Calendar.JANUARY, 1, 1, 0, 0);
 		Date minStartDate = cal.getTime();
-		cal.set(2005, 0, 1, 4, 0, 0);
+		cal.set(2005, Calendar.JANUARY, 1, 4, 0, 0);
 		Date maxStartDate = cal.getTime();
+		
 		assertEquals(2, visitService.getVisits(null, null, null, null, minStartDate, maxStartDate, null, null,
 		    null, true, false).size());
 	}
