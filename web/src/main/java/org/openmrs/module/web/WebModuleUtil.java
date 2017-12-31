@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.jar.JarEntry;
@@ -687,7 +686,7 @@ public class WebModuleUtil {
 		
 		if (folder.exists()) {
 			Properties emptyProperties = new Properties();
-			for (File f : Objects.requireNonNull(folder.listFiles())) {
+			for (File f : folder.listFiles()) {
 				if (f.getName().startsWith("module_messages")) {
 					OpenmrsUtil.storeProperties(emptyProperties, f, "");
 				}
