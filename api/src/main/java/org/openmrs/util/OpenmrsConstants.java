@@ -39,9 +39,6 @@ import org.slf4j.LoggerFactory;
  * methods will be written to the database at startup if they don't exist yet.
  */
 public final class OpenmrsConstants {
-
-	private OpenmrsConstants() {
-	}
 	
 	private static final Logger log = LoggerFactory.getLogger(OpenmrsConstants.class);
 	
@@ -157,9 +154,9 @@ public final class OpenmrsConstants {
 	 * @see #APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY
 	 * @see OpenmrsUtil#getApplicationDataDirectory()
 	 */
-	public static String APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX = "/var/lib";
+	public static final String APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX = "/var/lib";
 	
-	public static String APPLICATION_DATA_DIRECTORY_FALLBACK_WIN = System.getenv("appdata");
+	public static final String APPLICATION_DATA_DIRECTORY_FALLBACK_WIN = System.getenv("appdata");
 	
 	/**
 	 * The name of the runtime property that a user can set that will specify where openmrs's
@@ -167,13 +164,13 @@ public final class OpenmrsConstants {
 	 * 
 	 * @see #APPLICATION_DATA_DIRECTORY
 	 */
-	public static String APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY = "application_data_directory";
+	public static final String APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY = "application_data_directory";
 	
 	/**
 	 * The name of the runtime property that a user can set that will specify whether the database
 	 * is automatically updated on startup
 	 */
-	public static String AUTO_UPDATE_DATABASE_RUNTIME_PROPERTY = "auto_update_database";
+	public static final String AUTO_UPDATE_DATABASE_RUNTIME_PROPERTY = "auto_update_database";
 	
 	/**
 	 * These words are ignored in concept and patient searches
@@ -378,37 +375,37 @@ public final class OpenmrsConstants {
 	 * Global property name that allows specification of whether user passwords must contain both
 	 * upper and lower case characters. Allowable values are "true", "false", and null
 	 */
-	public static String GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE = "security.passwordRequiresUpperAndLowerCase";
+	public static final String GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE = "security.passwordRequiresUpperAndLowerCase";
 	
 	/**
 	 * Global property name that allows specification of whether user passwords require non-digits.
 	 * Allowable values are "true", "false", and null
 	 */
-	public static String GP_PASSWORD_REQUIRES_NON_DIGIT = "security.passwordRequiresNonDigit";
+	public static final String GP_PASSWORD_REQUIRES_NON_DIGIT = "security.passwordRequiresNonDigit";
 	
 	/**
 	 * Global property name that allows specification of whether user passwords must contain digits.
 	 * Allowable values are "true", "false", and null
 	 */
-	public static String GP_PASSWORD_REQUIRES_DIGIT = "security.passwordRequiresDigit";
+	public static final String GP_PASSWORD_REQUIRES_DIGIT = "security.passwordRequiresDigit";
 	
 	/**
 	 * Global property name that allows specification of whether user passwords can match username
 	 * or system id. Allowable values are "true", "false", and null
 	 */
-	public static String GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID = "security.passwordCannotMatchUsername";
+	public static final String GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID = "security.passwordCannotMatchUsername";
 	
 	/**
 	 * Global property name that allows specification of whether user passwords have a minimum
 	 * length requirement Allowable values are any integer
 	 */
-	public static String GP_PASSWORD_MINIMUM_LENGTH = "security.passwordMinimumLength";
+	public static final String GP_PASSWORD_MINIMUM_LENGTH = "security.passwordMinimumLength";
 	
 	/**
 	 * Global property name that allows specification of a regular expression that passwords must
 	 * adhere to
 	 */
-	public static String GP_PASSWORD_CUSTOM_REGEX = "security.passwordCustomRegex";
+	public static final String GP_PASSWORD_CUSTOM_REGEX = "security.passwordCustomRegex";
 	
 	/**
 	 * Global property name for absolute color for patient graphs.
@@ -1255,5 +1252,8 @@ public final class OpenmrsConstants {
 	
 	/** Value for the long person name format */
 	public static final String PERSON_NAME_FORMAT_LONG = "long";
-
+	
+	private OpenmrsConstants() {
+	}
+	
 }
