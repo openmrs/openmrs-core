@@ -2349,7 +2349,200 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		List<Patient> patients = patientService.getPatients("as_567");
 		assertThat(patients, contains(patient));
 	}
-
+	
+	@Test
+	public void getPatients_shouldGetPatientByIdentifierStartMatch() {
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
+		
+		List<Patient> patients = dao.getPatients("42-42", false, 0, null);
+		Assert.assertEquals(1, patients.size());
+		Assert.assertEquals("42-42-42",patients.get(0).getPatientIdentifier().toString());
+		if (oldPropertyValue != null) {
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+					oldPropertyValue);
+		} else {
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE);
+		}
+		
+	}
+	
+	@Test
+	public void getPatients_shouldNotGetPatientByWrongIdentifierStartMatchPhrase() {
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
+		
+		List<Patient> patients = dao.getPatients("42-47", false, 0, null);
+		Assert.assertEquals(0, patients.size());
+		
+		if (oldPropertyValue != null) {
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+					oldPropertyValue);
+		} else {
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE);
+		}
+	}
+	
+	@Test
+	public void getPatients_shouldGetVoidedPatientsWithIdentifierStartMatch() {
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
+		
+		List<Patient> patients = dao.getPatients("voided", true, 0, 11);
+		Assert.assertEquals(3, patients.size());
+		Assert.assertEquals(42, (int) patients.get(0).getPersonId());
+		if (oldPropertyValue != null) {
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+					oldPropertyValue);
+		} else {
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE);
+		}
+	}
+	
+	@Test
+	public void getPatients_shouldGetNewPatientByIdentifierStartMatch() {
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
+		
+		Patient patient = patientService.getPatient(2);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("OM292", patientService.getPatientIdentifierType(5), Context
+				.getLocationService().getLocation(1));
+		patient.addIdentifier(patientIdentifier);
+		patientService.savePatient(patient);
+		updateSearchIndex();
+		//Check for partial identifier match
+		List<Patient> patients = dao.getPatients("OM", false, 0, null);
+		Assert.assertEquals(1, patients.size());
+		Assert.assertEquals("OM292", patients.get(0).getPatientIdentifier(5).toString());
+		
+		if (oldPropertyValue != null) {
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+					oldPropertyValue);
+		} else {
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE);
+		}
+	}
+	
+	@Test
+	public void getPatients_shouldNotGetNewPatientByWrongIdentifierStartMatch() {
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
+		Patient patient = patientService.getPatient(2);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("OM292", patientService.getPatientIdentifierType(5), Context
+				.getLocationService().getLocation(1));
+		patient.addIdentifier(patientIdentifier);
+		patientService.savePatient(patient);
+		updateSearchIndex();
+		
+		List<Patient> patients = dao.getPatients("OM78", false, 0, null);
+		Assert.assertEquals(0, patients.size());
+		if (oldPropertyValue != null) {
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+					oldPropertyValue);
+		} else {
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE);
+		}
+	}
+	
+	@Test
+	public void getPatients_shouldGetCloseIdentifiersWithCorrectStartPhrase(){
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
+		Patient patient = patientService.getPatient(2);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("BAH409", patientService.getPatientIdentifierType(5), Context
+				.getLocationService().getLocation(1));
+		patient.addIdentifier(patientIdentifier);
+		patientService.savePatient(patient);
+		
+		//add closely matching identifier to a different patient
+		Patient patient2 = patientService.getPatient(6);
+		PatientIdentifier patientIdentifier6 = new PatientIdentifier("BAH509", patientService.getPatientIdentifierType(5), Context
+				.getLocationService().getLocation(1));
+		patientIdentifier6.setPreferred(true);
+		patient2.addIdentifier(patientIdentifier6);
+		patientService.savePatient(patient2);
+		
+		updateSearchIndex();
+		
+		//Check for partial identifier match
+		List<Patient> patients = dao.getPatients("BAH", false, 0, null);
+		Assert.assertEquals(2,patients.size());
+		if (oldPropertyValue != null) {
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+					oldPropertyValue);
+		} else {
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE);
+		}
+	}
+	
+	@Test
+	public void getPatients_shouldNotGetCloseIdentifiersWithWrongStartPhrase(){
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
+		Patient patient = patientService.getPatient(2);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("BAH409", patientService.getPatientIdentifierType(5), Context
+				.getLocationService().getLocation(1));
+		patient.addIdentifier(patientIdentifier);
+		patientService.savePatient(patient);
+		
+		//add closely matching identifier to a different patient
+		Patient patient2 = patientService.getPatient(6);
+		PatientIdentifier patientIdentifier6 = new PatientIdentifier("BAH509", patientService.getPatientIdentifierType(5), Context
+				.getLocationService().getLocation(1));
+		patientIdentifier6.setPreferred(true);
+		patient2.addIdentifier(patientIdentifier6);
+		patientService.savePatient(patient2);
+		
+		updateSearchIndex();
+		
+		//Check for partial identifier match
+		List<Patient> patients = dao.getPatients("BAH5", false, 0, null);
+		Assert.assertEquals(1,patients.size());
+		Assert.assertEquals("BAH509", patients.get(0).getPatientIdentifier(5).toString());
+		if (oldPropertyValue != null) {
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+					oldPropertyValue);
+		} else {
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE);
+		}
+	}
+	
+	@Test
+	public void getPatients_shouldGetPatientByIdentifierAnywhereMatch() {
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE);
+		Patient patient = patientService.getPatient(2);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("OM292", patientService.getPatientIdentifierType(5), Context
+				.getLocationService().getLocation(1));
+		patient.addIdentifier(patientIdentifier);
+		patientService.savePatient(patient);
+		updateSearchIndex();
+		List<Patient> patients = dao.getPatients("292", false, 0, null);
+		Assert.assertEquals(1, patients.size());
+		Assert.assertEquals("OM292", patients.get(0).getPatientIdentifier(5).toString());
+		Patient actualPatient = patients.get(0);
+		Assert.assertEquals(patient, actualPatient);
+		
+		if (oldPropertyValue != null) {
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE,
+					oldPropertyValue);
+		} else {
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE);
+		}
+	}
+	
+	@Test
+	public void getPatients_shouldNotGetNewPatientByWrongIdentifierAnywhereMatch() {
+	
+	}
 	@Test
 	@Ignore("Designated for manual runs")
 	public void getPatients_shouldFindPatientsEfficiently() throws IOException, URISyntaxException {
