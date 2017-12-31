@@ -3,6 +3,6 @@ root = true
 [*]
 charset = utf-8
 insert_final_newline = true
-trim_trailing_whitespace = true
+trim_trailing_whitespace = false
 indent_style = tab
 indent_size = 4
