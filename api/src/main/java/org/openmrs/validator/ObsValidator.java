@@ -11,6 +11,7 @@ package org.openmrs.validator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
@@ -222,6 +223,10 @@ public class ObsValidator implements Validator {
 			} else { // dt is null
 				errors.rejectValue("concept", "must have a datatype");
 			}
+		}
+
+		if (obs.getPerson() != null && obs.getEncounter() != null && obs.getEncounter().getPatient() != null && !Objects.equals( obs.getPerson(), obs.getEncounter().getPatient() )) {
+				errors.rejectValue( "person", "error.obs.encounter.mismatch" );
 		}
 		
 		// If an obs fails validation, don't bother checking its children

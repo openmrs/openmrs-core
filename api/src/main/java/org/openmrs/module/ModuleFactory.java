@@ -26,7 +26,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.WeakHashMap;
@@ -172,10 +171,11 @@ public class ModuleFactory {
 			log.debug("Loading modules from: " + modulesFolder.getAbsolutePath());
 		}
 		
-		if (modulesFolder.isDirectory()) {
-			loadModules(Arrays.asList(Objects.requireNonNull(modulesFolder.listFiles())));
+		File[] files = modulesFolder.listFiles();
+		if (modulesFolder.isDirectory() && files != null) {
+			loadModules(Arrays.asList(files));
 		} else {
-			log.error("modules folder: '" + modulesFolder.getAbsolutePath() + "' is not a valid directory");
+			log.error("modules folder: '" + modulesFolder.getAbsolutePath() + "' is not a directory or IO error occurred");
 		}
 	}
 	
