@@ -9,6 +9,9 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -408,6 +411,21 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, encountersByVisit.size());
 	}
 	
+	@Test
+	public void getVisitsByPatient_shouldReturnEmptyListGivenNull() {
+		
+		assertThat(visitService.getVisitsByPatient(null), is(empty()));
+	}
+	
+	@Test
+	public void getVisitsByPatient_shouldReturnEmptyListGivenPatientWithNullPatientId() {
+		
+		Patient p = new Patient();
+		p.setPatientId(null);
+		
+		assertThat(visitService.getVisitsByPatient(p), is(empty()));
+	}
+	
 	/**
 	 * @see VisitService#getVisitsByPatient(Patient)
 	 */
@@ -435,6 +453,21 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void getActiveVisitsByPatient_shouldReturnAllUnvoidedVisitsForTheSpecifiedPatient() {
 		executeDataSet(VISITS_WITH_DATES_XML);
 		assertEquals(8, visitService.getVisitsByPatient(new Patient(2), true, false).size());
+	}
+	
+	@Test
+	public void getVisitsByPatient_shouldReturnEmptyListGivenNullAndFalse() {
+		
+		assertThat(visitService.getVisitsByPatient(null, false, false), is(empty()));
+	}
+	
+	@Test
+	public void getVisitsByPatient_shouldReturnEmptyListGivenPatientWithNullPatientIdAndFalse() {
+		
+		Patient p = new Patient();
+		p.setPatientId(null);
+		
+		assertThat(visitService.getVisitsByPatient(p, false, false), is(empty()));
 	}
 	
 	@Test
