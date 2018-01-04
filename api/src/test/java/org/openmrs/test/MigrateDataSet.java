@@ -137,7 +137,7 @@ public class MigrateDataSet {
 			finally {
 				dbunitConnection = null;
 			}
-			
+
 			System.out.println("Finished!");
 		}
 	}
