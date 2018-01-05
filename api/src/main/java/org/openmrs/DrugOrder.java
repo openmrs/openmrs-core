@@ -11,7 +11,7 @@ package org.openmrs;
 
 import static org.openmrs.Order.Action.DISCONTINUE;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.util.OpenmrsUtil;
 
 /**

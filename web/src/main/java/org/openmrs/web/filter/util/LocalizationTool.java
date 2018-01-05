@@ -12,7 +12,7 @@ package org.openmrs.web.filter.util;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.tools.config.DefaultKey;
 import org.apache.velocity.tools.generic.ResourceTool;
 import org.openmrs.util.LocaleUtility;

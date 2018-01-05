@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 import org.openmrs.Retireable;

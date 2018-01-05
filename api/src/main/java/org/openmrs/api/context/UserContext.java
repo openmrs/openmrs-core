@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Location;
 import org.openmrs.Role;
 import org.openmrs.User;

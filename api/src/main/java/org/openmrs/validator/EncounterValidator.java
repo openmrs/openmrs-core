@@ -11,7 +11,7 @@ package org.openmrs.validator;
 
 import java.util.Date;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.openmrs.Encounter;
 import org.openmrs.Visit;
 import org.openmrs.annotation.Handler;
