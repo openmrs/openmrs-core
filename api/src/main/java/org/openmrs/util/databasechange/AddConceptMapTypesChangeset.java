@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.util.DatabaseUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -9,7 +9,7 @@
  */
 package org.openmrs.validator;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Allergen;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;

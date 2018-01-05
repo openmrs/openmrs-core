@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.PersonName;
 import org.openmrs.api.APIException;
 import org.openmrs.layout.LayoutSupport;

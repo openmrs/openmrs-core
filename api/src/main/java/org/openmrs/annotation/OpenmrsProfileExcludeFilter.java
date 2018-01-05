@@ -12,7 +12,7 @@ package org.openmrs.annotation;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;

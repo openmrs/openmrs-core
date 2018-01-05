@@ -12,7 +12,7 @@ package org.openmrs;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
