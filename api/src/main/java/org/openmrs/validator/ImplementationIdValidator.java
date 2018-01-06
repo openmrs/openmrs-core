@@ -9,7 +9,7 @@
  */
 package org.openmrs.validator;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.ImplementationId;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;

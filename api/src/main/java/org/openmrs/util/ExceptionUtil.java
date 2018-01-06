@@ -9,7 +9,7 @@
  */
 package org.openmrs.util;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.openmrs.api.APIAuthenticationException;
 
 /**

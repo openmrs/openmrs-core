@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.SQLQuery;
@@ -241,10 +241,6 @@ public class HibernateObsDAO implements ObsDAO {
 		if (personTypes.contains(PERSON_TYPE.USER)) {
 			DetachedCriteria crit = DetachedCriteria.forClass(User.class, "user").setProjection(Property.forName("userId"));
 			criteria.add(Subqueries.propertyIn("person.personId", crit));
-		}
-		
-		if (personTypes.contains(PERSON_TYPE.PERSON)) {
-			// all observations are already on person's.  Limit to non-patient and non-users here?
 		}
 		
 		return criteria;

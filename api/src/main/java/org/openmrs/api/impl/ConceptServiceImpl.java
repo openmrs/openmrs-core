@@ -9,7 +9,7 @@
  */
 package org.openmrs.api.impl;
 
-import static org.apache.commons.lang.StringUtils.contains;
+import static org.apache.commons.lang3.StringUtils.contains;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

@@ -9,7 +9,7 @@
  */
 package org.openmrs.api.impl;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Allergen;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
@@ -125,14 +125,18 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 
 		if (!patient.getVoided()) {
-			checkPatientIdentifiers(patient);
+			synchronized (this){
+				checkPatientIdentifiers(patient);
+			}
 		}
 
 		setPreferredPatientIdentifier(patient);
 		setPreferredPatientName(patient);
 		setPreferredPatientAddress(patient);
 
-		return dao.savePatient(patient);
+		synchronized (this){
+			return dao.savePatient(patient);
+		}
 	}
 
 	private void requireAppropriatePatientModificationPrivilege(Patient patient) {

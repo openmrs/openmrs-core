@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
