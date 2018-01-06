@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
  * OpenMRS's security class deals with the hashing of passwords.
  */
 public class Security {
-
+	
 	private Security() {
 	}
 	
@@ -98,7 +98,7 @@ public class Security {
 			log.error(getPasswordEncodeFailMessage(algorithm), e);
 			throw new APIException("system.cannot.find.password.encryption.algorithm", null, e);
 		}
-
+		
 		return hexString(md.digest(input));
 	}
 	
@@ -121,7 +121,7 @@ public class Security {
 			log.error(getPasswordEncodeFailMessage(algorithm), e);
 			throw new APIException("system.cannot.find.encryption.algorithm", null, e);
 		}
-
+		
 		return hexString(md.digest(input));
 	}
 	
@@ -166,7 +166,7 @@ public class Security {
 			log.error(getPasswordEncodeFailMessage(algorithm), e);
 			throw new APIException("system.cannot.find.encryption.algorithm", null, e);
 		}
-
+		
 		return incorrectHexString(md.digest(input));
 	}
 	
