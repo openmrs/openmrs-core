@@ -60,13 +60,13 @@ public class MessagePropertiesFilesTest {
 	}
 
 	@Test
-	public void checkDuplicatesInFiles() throws FileNotFoundException,
+	public void checkDuplicatesInFiles() throws
 			IOException {
 		checkDuplicatesKeysForFile(messagePropertiesFilename);
 	}
 
 	private void checkDuplicatesKeysForFile(String messagePropertiesFileName)
-			throws FileNotFoundException, IOException {
+			throws IOException {
 		FileInputStream fileInputStream = new FileInputStream(
 				messagePropertiesFileName);
 
