@@ -128,7 +128,7 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 		
 		// then looking at the context as it loaded the bean definitions before the module(s) were started
 		Set<String> originalBeanNames = new HashSet<>();
-		for (String beanName : ((GenericApplicationContext) context).getBeanDefinitionNames()) {
+		for (String beanName : context.getBeanDefinitionNames()) {
 			if (beanName.startsWith("openmrsProfile")) {
 				originalBeanNames.add(beanName);
 			}

@@ -48,7 +48,7 @@ public class LuhnIdentifierValidator extends BaseHyphenatedIdentifierValidator {
 				// following formula allows us to gracefully calculate a
 				// weight for non-numeric "digits" as well (from their
 				// ASCII value - 48).
-				weight = (2 * digit) - (int) (digit / 5) * 9;
+				weight = (2 * digit) - digit / 5 * 9;
 				
 			} else {
 				

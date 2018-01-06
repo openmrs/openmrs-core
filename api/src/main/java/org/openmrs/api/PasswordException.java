@@ -32,7 +32,7 @@ public class PasswordException extends APIException {
 	}
 	
 	public PasswordException(String message, Throwable cause) {
-		super(message, (Object[]) null, cause);
+		super(message, null, cause);
 	}
 	
 	public PasswordException(String message) {

@@ -624,10 +624,10 @@ public class OpenmrsUtil {
 			return d1.compareTo(d2);
 		}
 		if (d1 instanceof Timestamp) {
-			d1 = new Date(((Timestamp) d1).getTime());
+			d1 = new Date(d1.getTime());
 		}
 		if (d2 instanceof Timestamp) {
-			d2 = new Date(((Timestamp) d2).getTime());
+			d2 = new Date(d2.getTime());
 		}
 		return d1.compareTo(d2);
 	}
