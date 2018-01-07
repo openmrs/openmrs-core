@@ -417,7 +417,7 @@ public class ORUR01Handler implements Application {
 		}
 		
 		// get the type ID
-		Integer relTypeId = 0;
+		Integer relTypeId;
 		try {
 			relTypeId = Integer.parseInt(relIdentifier.substring(0, relIdentifier.length() - 1));
 		}
@@ -540,7 +540,7 @@ public class ORUR01Handler implements Application {
 	private Encounter createEncounter(MSH msh, Patient patient, PV1 pv1, ORC orc) throws HL7Exception {
 		
 		// the encounter we will return
-		Encounter encounter = null;
+		Encounter encounter;
 		
 		// look for the encounter id in PV1-19
 		CX visitNumber = pv1.getVisitNumber();
@@ -1036,7 +1036,7 @@ public class ORUR01Handler implements Application {
 		String id = hl7Provider.getIDNumber().getValue();
 		String assignAuth = hl7Provider.getAssigningAuthority().getUniversalID().getValue();
 		String type = hl7Provider.getAssigningAuthority().getUniversalIDType().getValue();
-		String errorMessage = "";
+		String errorMessage;
 		if (StringUtils.hasText(id)) {
 			String specificErrorMsg = "";
 			if (OpenmrsUtil.nullSafeEquals("L", type)) {

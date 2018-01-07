@@ -49,8 +49,8 @@ public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 		insertHL7Sql.append(HL7Constants.HL7_STATUS_DELETED);
 		insertHL7Sql.append(")");
 		
-		PreparedStatement insertStatement = null;
-		PreparedStatement deleteStatement = null;
+		PreparedStatement insertStatement;
+		PreparedStatement deleteStatement;
 		
 		try {
 			insertStatement = connection.prepareStatement(insertHL7Sql.toString());

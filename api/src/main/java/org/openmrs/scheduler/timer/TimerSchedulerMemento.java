@@ -16,7 +16,7 @@ import org.openmrs.util.OpenmrsMemento;
 
 public class TimerSchedulerMemento extends OpenmrsMemento {
 	
-	private Set<Integer> startedTaskIds = new HashSet<>();
+	private Set<Integer> startedTaskIds;
 	
 	private static Set<Integer> errorTaskIds = new HashSet<>();
 	

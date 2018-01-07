@@ -89,8 +89,8 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 			rs = stmt
 			        .executeQuery("SELECT * FROM encounter_role INNER JOIN (SELECT name FROM encounter_role GROUP BY name HAVING count(name) > 1) dup ON encounter_role.name = dup.name");
 			
-			Integer id = null;
-			String name = null;
+			Integer id;
+			String name;
 			
 			while (rs.next()) {
 				id = rs.getInt("encounter_role_id");
@@ -116,8 +116,8 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 				int duplicateNameId = 1;
 				for (int i = 1; i < ids.size(); i++) {
 					String newName = pairs.getKey() + "_" + duplicateNameId;
-					List<List<Object>> duplicateResult = null;
-					boolean duplicateName = false;
+					List<List<Object>> duplicateResult;
+					boolean duplicateName;
 					Connection con = DatabaseUpdater.getConnection();
 					do {
 						String sqlValidatorString = "select * from encounter_role where name = '" + newName + "'";

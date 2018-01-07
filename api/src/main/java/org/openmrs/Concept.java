@@ -510,7 +510,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return false;
 		}
 		
-		Collection<ConceptName> currentNames = null;
+		Collection<ConceptName> currentNames;
 		if (locale == null) {
 			currentNames = getNames();
 		} else {

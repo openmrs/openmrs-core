@@ -111,7 +111,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * @return Locale derived from the given string
 	 */
 	private Locale parseLocaleFrom(String filename) {
-		Locale parsedLocale = null;
+		Locale parsedLocale;
 		
 		// trim off leading basename
 		filename = filename.substring("messages".length());

@@ -39,10 +39,10 @@ public class CustomResourceLoader {
 	public static final String PREFIX = "messages";
 	
 	/** the map that contains resource bundles for each locale */
-	private Map<Locale, ResourceBundle> resources = null;
+	private Map<Locale, ResourceBundle> resources;
 	
 	/** the set of languages, which is currently supported */
-	private Set<Locale> availablelocales = null;
+	private Set<Locale> availablelocales;
 	
 	private static CustomResourceLoader instance = null;
 	
@@ -90,7 +90,7 @@ public class CustomResourceLoader {
 	 * @return Locale derived from the given string
 	 */
 	private Locale parseLocaleFrom(String filename, String basename) {
-		Locale result = null;
+		Locale result;
 		String tempFilename = filename;
 		
 		if (filename.startsWith(basename)) {

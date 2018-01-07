@@ -353,7 +353,7 @@ public class DatabaseUpdater {
 	 * @throws Exception
 	 */
 	private static Liquibase getLiquibase(String changeLogFile, ClassLoader cl) throws Exception {
-		Connection connection = null;
+		Connection connection;
 		try {
 			connection = getConnection();
 		}

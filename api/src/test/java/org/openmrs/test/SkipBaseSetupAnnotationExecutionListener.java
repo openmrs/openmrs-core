@@ -61,7 +61,7 @@ public class SkipBaseSetupAnnotationExecutionListener extends AbstractTestExecut
 	 */
 	private void callMethod(TestContext testContext, String methodName) throws Exception {
 		
-		Method method = null;
+		Method method;
 		
 		try {
 			method = testContext.getTestClass().getMethod(methodName);

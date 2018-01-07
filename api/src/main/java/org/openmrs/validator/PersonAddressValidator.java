@@ -70,7 +70,7 @@ public class PersonAddressValidator implements Validator {
 		PersonAddress personAddress = (PersonAddress) object;
 		
 		//resolve a shorter name to display along with the error message
-		String addressString = null;
+		String addressString;
 		if (StringUtils.isNotBlank(personAddress.getAddress1())) {
 			addressString = personAddress.getAddress1();
 		} else if (StringUtils.isNotBlank(personAddress.getAddress2())) {

@@ -162,7 +162,7 @@ public class Result extends ArrayList<Result> {
 		        .getValueNumeric(), obs.getValueText(), obs);
 		
 		Concept concept = obs.getConcept();
-		ConceptDatatype conceptDatatype = null;
+		ConceptDatatype conceptDatatype;
 		
 		if (concept != null) {
 			conceptDatatype = concept.getDatatype();

@@ -224,7 +224,7 @@ public class OpenmrsUtil {
 		StringBuilder fileData = new StringBuilder(1000);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 		char[] buf = new char[1024];
-		int numRead = 0;
+		int numRead;
 		while ((numRead = reader.read(buf)) != -1) {
 			String readData = String.valueOf(buf, 0, numRead);
 			fileData.append(readData);
@@ -761,7 +761,7 @@ public class OpenmrsUtil {
 		if (delimitedString != null) {
 			String[] tokens = delimitedString.split(delimiter);
 			for (String token : tokens) {
-				Integer conceptId = null;
+				Integer conceptId;
 				
 				try {
 					conceptId = Integer.valueOf(token);
@@ -770,7 +770,7 @@ public class OpenmrsUtil {
 					conceptId = null;
 				}
 				
-				Concept c = null;
+				Concept c;
 				
 				if (conceptId != null) {
 					c = Context.getConceptService().getConcept(conceptId);
@@ -2010,7 +2010,7 @@ public class OpenmrsUtil {
 		if (applicationName == null) {
 			applicationName = "openmrs";
 		}
-		String pathName = "";
+		String pathName;
 		pathName = getRuntimePropertiesFilePathName(applicationName);
 		FileInputStream propertyStream = null;
 		try {

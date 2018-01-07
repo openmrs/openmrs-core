@@ -107,7 +107,7 @@ public abstract class BaseHyphenatedIdentifierValidator implements IdentifierVal
 			checkDigit = "9";
 		}
 		
-		int givenCheckDigit = 10;
+		int givenCheckDigit;
 		
 		try {
 			givenCheckDigit = Integer.valueOf(checkDigit);

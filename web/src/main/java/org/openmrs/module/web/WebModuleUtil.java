@@ -450,7 +450,7 @@ public class WebModuleUtil {
 				continue;
 			}
 			
-			HttpServlet httpServlet = null;
+			HttpServlet httpServlet;
 			try {
 				httpServlet = (HttpServlet) ModuleFactory.getModuleClassLoader(mod).loadClass(className).newInstance();
 			}
@@ -506,7 +506,7 @@ public class WebModuleUtil {
 		for (int i = 0; i < servletTags.getLength(); i++) {
 			Node node = servletTags.item(i);
 			NodeList childNodes = node.getChildNodes();
-			String name = "";
+			String name;
 			for (int j = 0; j < childNodes.getLength(); j++) {
 				Node childNode = childNodes.item(j);
 				if ("servlet-name".equals(childNode.getNodeName()) && childNode.getTextContent() != null) {
@@ -653,7 +653,7 @@ public class WebModuleUtil {
 	 * @return
 	 */
 	private static Document getDWRModuleXML(InputStream inputStream, String realPath) {
-		Document dwrmodulexml = null;
+		Document dwrmodulexml;
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();

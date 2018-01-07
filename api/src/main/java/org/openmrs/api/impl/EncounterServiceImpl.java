@@ -108,7 +108,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		// orig date
 		// after the save
 		Patient p = encounter.getPatient();
-		Date originalDate = null;
+		Date originalDate;
 		Location originalLocation = null;
 		
 		if (!isNewEncounter) {
@@ -699,7 +699,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			return null;
 		}
 		
-		EncounterVisitHandler handler = null;
+		EncounterVisitHandler handler;
 		
 		// convention = [NamePrefix:beanName] or [className]
 		String namePrefix = OpenmrsConstants.REGISTERED_COMPONENT_NAME_PREFIX;
