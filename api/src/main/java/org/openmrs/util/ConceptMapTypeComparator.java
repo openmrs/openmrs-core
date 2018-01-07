@@ -35,7 +35,7 @@ public class ConceptMapTypeComparator implements Comparator<ConceptMapType>, Ser
 		int firstWeight = getConceptMapTypeSortWeight(conceptMapType);
 		int secondWeight = getConceptMapTypeSortWeight(conceptMapType2);
 		
-		return (firstWeight < secondWeight) ? -1 : (firstWeight == secondWeight) ? 0 : 1;
+		return Integer.compare(firstWeight, secondWeight);
 	}
 	
 	/**
