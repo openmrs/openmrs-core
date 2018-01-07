@@ -94,11 +94,10 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(providerId);
-		sb.append(" providerName:");
-		sb.append((person != null) ? person.getNames() : "");
-		return "[Provider: providerId:" + sb.toString() + " ]";
+		String provider = String.valueOf(providerId)
+				+ " providerName:"
+				+ ((person != null) ? person.getNames() : "");
+		return "[Provider: providerId:" + provider + " ]";
 	}
 	
 	/**
