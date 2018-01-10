@@ -9,7 +9,7 @@
  */
 package org.openmrs.api.impl;
 
-import static org.apache.commons.lang.StringUtils.contains;
+import static org.apache.commons.lang3.StringUtils.contains;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -151,18 +151,17 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		if (CollectionUtils.isNotEmpty(changedConceptNames)) {
 			for (ConceptName changedName : changedConceptNames) {
 				// void old concept name
-				ConceptName nameInDB = changedName;
-				nameInDB.setVoided(true);
-				nameInDB.setDateVoided(new Date());
-				nameInDB.setVoidedBy(Context.getAuthenticatedUser());
-				nameInDB.setVoidReason(Context.getMessageSourceService().getMessage("Concept.name.voidReason.nameChanged"));
+				changedName.setVoided(true);
+				changedName.setDateVoided(new Date());
+				changedName.setVoidedBy(Context.getAuthenticatedUser());
+				changedName.setVoidReason(Context.getMessageSourceService().getMessage("Concept.name.voidReason.nameChanged"));
 
-				makeVoidedNameSynonym(nameInDB);
-				makeLocaleNotPreferred(nameInDB);
+				makeVoidedNameSynonym(changedName);
+				makeLocaleNotPreferred(changedName);
 				
 				// create a new concept name from the matching cloned
 				// conceptName
-				ConceptName clone = uuidClonedConceptNameMap.get(nameInDB.getUuid());
+				ConceptName clone = uuidClonedConceptNameMap.get(changedName.getUuid());
 				clone.setUuid(UUID.randomUUID().toString());
 				clone.setDateCreated(null);
 				clone.setCreator(null);
@@ -425,8 +424,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	@Transactional(readOnly = true)
 	public Concept getConcept(String conceptIdOrName) {
-		Concept c = null;
-		Integer conceptId = null;
+		Concept c;
+		Integer conceptId;
 		try {
 			conceptId = Integer.valueOf(conceptIdOrName);
 		}
@@ -464,7 +463,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	@Transactional(readOnly = true)
 	public Drug getDrug(String drugNameOrId) {
-		Integer drugId = null;
+		Integer drugId;
 		
 		try {
 			drugId = Integer.valueOf(drugNameOrId);

@@ -25,7 +25,7 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 
 import org.aopalliance.aop.Advice;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Allergen;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PersonName;
@@ -210,7 +210,7 @@ public class Context {
 	 */
 	public static void clearUserContext() {
 		if (log.isTraceEnabled()) {
-			log.trace("Clearing user context " + userContextHolder.get());
+			log.trace("Clearing user context " + Arrays.toString(userContextHolder.get()));
 		}
 
 		userContextHolder.remove();
@@ -659,7 +659,7 @@ public class Context {
 	 */
 	public static void requirePrivilege(String privilege) throws ContextAuthenticationException {
 		if (!hasPrivilege(privilege)) {
-			String errorMessage = null;
+			String errorMessage;
 			if (StringUtils.isNotBlank(privilege)) {
 				errorMessage = Context.getMessageSourceService().getMessage("error.privilegesRequired",
 				    new Object[] { privilege }, null);
@@ -1108,7 +1108,7 @@ public class Context {
 	 *      the required question/datatypes
 	 */
 	private static void checkForDatabaseUpdates(Properties props) throws DatabaseUpdateException, InputRequiredException {
-		boolean updatesRequired = true;
+		boolean updatesRequired;
 		try {
 			updatesRequired = DatabaseUpdater.updatesRequired();
 		}

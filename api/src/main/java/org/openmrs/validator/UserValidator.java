@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
@@ -105,7 +105,7 @@ public class UserValidator implements Validator {
 			}
 			
 			AdministrationService as = Context.getAdministrationService();
-			boolean emailAsUsername = false;
+			boolean emailAsUsername;
 			try {
 				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 				emailAsUsername = Boolean.parseBoolean(as.getGlobalProperty(

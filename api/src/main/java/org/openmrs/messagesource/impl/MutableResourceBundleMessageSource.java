@@ -111,7 +111,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * @return Locale derived from the given string
 	 */
 	private Locale parseLocaleFrom(String filename) {
-		Locale parsedLocale = null;
+		Locale parsedLocale;
 		
 		// trim off leading basename
 		filename = filename.substring("messages".length());
@@ -346,8 +346,6 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 					propertyDestination.put(message.getCode(), message.getMessage());
 				}
 				
-			} else {
-				// no properties files for this locale
 			}
 			
 			message.getCode();

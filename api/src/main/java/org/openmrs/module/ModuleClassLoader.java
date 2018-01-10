@@ -35,12 +35,11 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.APIException;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
@@ -265,7 +264,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 			
 			// add the module jar as a url in the classpath of the classloader
-			URL moduleFileURL = null;
+			URL moduleFileURL;
 			try {
 				moduleFileURL = ModuleUtil.file2url(tmpModuleJar);
 				result.add(moduleFileURL);
@@ -770,7 +769,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			return libraryCache.get(libUri);
 		}
 		
-		File result = null;
+		File result;
 		try {
 			if (cacheFolder == null) {
 				throw new IOException("can't initialize libraries cache folder");

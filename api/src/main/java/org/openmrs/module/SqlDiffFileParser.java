@@ -27,9 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * This class will parse an xml sql diff file
@@ -37,6 +35,9 @@ import org.xml.sax.SAXException;
  * @version 1.0
  */
 public class SqlDiffFileParser {
+
+	private SqlDiffFileParser() {
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(SqlDiffFileParser.class);
 	
@@ -55,7 +56,7 @@ public class SqlDiffFileParser {
 		
 		SortedMap<String, String> map = new TreeMap<>(new VersionComparator());
 		
-		InputStream diffStream = null;
+		InputStream diffStream;
 		
 		// get the diff stream
 		JarFile jarfile = null;
@@ -87,7 +88,7 @@ public class SqlDiffFileParser {
 			
 			try {
 				// turn the diff stream into an xml document
-				Document diffDoc = null;
+				Document diffDoc;
 				try {
 					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 					DocumentBuilder db = dbf.newDocumentBuilder();

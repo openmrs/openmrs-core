@@ -150,14 +150,12 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		if (visit.getStartDatetime() != null && visit.getStopDatetime() != null && otherVisit.getStartDatetime() != null
 		        && otherVisit.getStopDatetime() != null && visit.getStartDatetime().before(otherVisit.getStartDatetime())
 		        && visit.getStopDatetime().after(otherVisit.getStopDatetime())) {
-			
-			StringBuilder messageBuilder = new StringBuilder();
-			messageBuilder.append("This visit contains another visit of the same patient, ");
-			messageBuilder.append("i.e. its start date is before the start date of the other visit ");
-			messageBuilder.append("and its stop date is after the stop date of the other visit.");
-			
-			errors.rejectValue("stopDatetime", "Visit.visitCannotContainAnotherVisitOfTheSamePatient", messageBuilder
-			        .toString());
+
+			String message = "This visit contains another visit of the same patient, "
+					+ "i.e. its start date is before the start date of the other visit "
+					+ "and its stop date is after the stop date of the other visit.";
+
+			errors.rejectValue("stopDatetime", "Visit.visitCannotContainAnotherVisitOfTheSamePatient", message);
 		}
 		
 	}

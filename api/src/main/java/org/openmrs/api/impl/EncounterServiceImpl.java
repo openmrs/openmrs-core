@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
@@ -108,7 +108,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		// orig date
 		// after the save
 		Patient p = encounter.getPatient();
-		Date originalDate = null;
+		Date originalDate;
 		Location originalLocation = null;
 		
 		if (!isNewEncounter) {
@@ -699,7 +699,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			return null;
 		}
 		
-		EncounterVisitHandler handler = null;
+		EncounterVisitHandler handler;
 		
 		// convention = [NamePrefix:beanName] or [className]
 		String namePrefix = OpenmrsConstants.REGISTERED_COMPONENT_NAME_PREFIX;

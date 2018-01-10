@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.PersonAddress;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
@@ -70,7 +70,7 @@ public class PersonAddressValidator implements Validator {
 		PersonAddress personAddress = (PersonAddress) object;
 		
 		//resolve a shorter name to display along with the error message
-		String addressString = null;
+		String addressString;
 		if (StringUtils.isNotBlank(personAddress.getAddress1())) {
 			addressString = personAddress.getAddress1();
 		} else if (StringUtils.isNotBlank(personAddress.getAddress2())) {

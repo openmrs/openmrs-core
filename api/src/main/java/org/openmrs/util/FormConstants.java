@@ -20,6 +20,9 @@ package org.openmrs.util;
  */
 public class FormConstants {
 	
+	private FormConstants() {
+	}
+	
 	public static final Integer FIELD_TYPE_CONCEPT = 1;
 	
 	public static final Integer FIELD_TYPE_DATABASE = 2;

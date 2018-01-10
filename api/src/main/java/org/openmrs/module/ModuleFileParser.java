@@ -14,8 +14,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,7 +29,7 @@ import java.util.zip.ZipEntry;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.api.context.Context;
@@ -42,9 +42,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * This class will parse a file into an org.openmrs.module.Module object
@@ -128,7 +126,7 @@ public class ModuleFileParser {
 	 */
 	public Module parse() throws ModuleException {
 		
-		Module module = null;
+		Module module;
 		JarFile jarfile = null;
 		InputStream configStream = null;
 		
@@ -158,7 +156,7 @@ public class ModuleFileParser {
 			}
 			
 			// turn the config file into an xml document
-			Document configDoc = null;
+			Document configDoc;
 			try {
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
@@ -175,7 +173,7 @@ public class ModuleFileParser {
 			catch (Exception e) {
 				log.error("Error parsing config.xml: " + configStream.toString(), e);
 				
-				OutputStream out = null;
+				ByteArrayOutputStream out = null;
 				String output = "";
 				try {
 					out = new ByteArrayOutputStream();
@@ -185,7 +183,7 @@ public class ModuleFileParser {
 					while ((bytesRead = configStream.read(buffer)) != -1) {
 						out.write(buffer, 0, bytesRead);
 					}
-					output = out.toString();
+					output = out.toString(StandardCharsets.UTF_8.name());
 				}
 				catch (Exception e2) {
 					log.warn("Another error parsing config.xml", e2);

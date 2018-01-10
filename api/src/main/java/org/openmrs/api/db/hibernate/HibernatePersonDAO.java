@@ -188,9 +188,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			query.setString("gender", gender);
 		}
 
-		Set<Person> people = new LinkedHashSet<Person>(query.list());
-		
-		return people;
+		return new LinkedHashSet<Person>(query.list());
 	}
 	
 	/**
@@ -269,11 +267,11 @@ public class HibernatePersonDAO implements PersonDAO {
 		List<Person> people = new ArrayList<>();
 
 		ListPart<Object[]> names = nameQuery.listPartProjection(0, maxResults, "person.personId");
-		names.getList().stream().forEach(name -> people.add(getPerson((Integer) name[0])));
+		names.getList().forEach(name -> people.add(getPerson((Integer) name[0])));
 
 		LuceneQuery<PersonAttribute> attributeQuery = personLuceneQuery.getPersonAttributeQueryWithOrParser(query, includeVoided, nameQuery);
 		ListPart<Object[]> attributes = attributeQuery.listPartProjection(0, maxResults, "person.personId");
-		attributes.getList().stream().forEach(attribute -> people.add(getPerson((Integer) attribute[0])));
+		attributes.getList().forEach(attribute -> people.add(getPerson((Integer) attribute[0])));
 
 		return people;
 	}

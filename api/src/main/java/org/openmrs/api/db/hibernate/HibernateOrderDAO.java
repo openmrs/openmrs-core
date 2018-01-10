@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.LockOptions;
@@ -270,7 +270,7 @@ public class HibernateOrderDAO implements OrderDAO {
 			        new Object[] { OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED });
 		}
 		
-		Long gpNumericValue = null;
+		Long gpNumericValue;
 		try {
 			gpNumericValue = Long.parseLong(gpTextValue);
 		}
@@ -436,7 +436,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		criteria.createAlias("concept.names", "conceptName");
 		criteria.add(Restrictions.ilike("conceptName.name", searchPhrase, MatchMode.ANYWHERE));
 		if (locale != null) {
-			List<Locale> locales = new ArrayList<Locale>(2);
+			List<Locale> locales = new ArrayList<>(2);
 			locales.add(locale);
 			//look in the broader locale too if exactLocale is false e.g en for en_GB
 			if (!exactLocale && StringUtils.isNotBlank(locale.getCountry())) {

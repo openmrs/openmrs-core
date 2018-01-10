@@ -15,11 +15,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,8 +38,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
@@ -56,6 +56,9 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  * Utility methods for working and manipulating modules
  */
 public class ModuleUtil {
+
+	private ModuleUtil() {
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleUtil.class);
 	
@@ -681,7 +684,7 @@ public class ModuleUtil {
 	protected static InputStream openConnectionCheckRedirects(URLConnection c) throws IOException {
 		boolean redir;
 		int redirects = 0;
-		InputStream in = null;
+		InputStream in;
 		do {
 			if (c instanceof HttpURLConnection) {
 				((HttpURLConnection) c).setInstanceFollowRedirects(false);
@@ -727,7 +730,7 @@ public class ModuleUtil {
 	 */
 	public static String getURL(URL url) {
 		InputStream in = null;
-		OutputStream out = null;
+		ByteArrayOutputStream out = null;
 		String output = "";
 		try {
 			in = getURLStream(url);
@@ -738,7 +741,7 @@ public class ModuleUtil {
 			
 			out = new ByteArrayOutputStream();
 			OpenmrsUtil.copyFile(in, out);
-			output = out.toString();
+			output = out.toString(StandardCharsets.UTF_8.name());
 		}
 		catch (IOException io) {
 			log.warn("io while reading: " + url, io);
@@ -1116,7 +1119,7 @@ public class ModuleUtil {
 		
 		// End early if we're given a non jar file
 		if (!file.getName().endsWith(".jar")) {
-			return Collections.<String> emptySet();
+			return Collections.emptySet();
 		}
 		
 		Set<String> packagesProvided = new HashSet<>();

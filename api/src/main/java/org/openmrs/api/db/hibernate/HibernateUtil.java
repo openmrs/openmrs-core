@@ -13,7 +13,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
@@ -25,7 +25,6 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.hibernate.jdbc.ReturningWork;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.Location;
 import org.openmrs.attribute.AttributeType;
@@ -36,6 +35,9 @@ import org.slf4j.LoggerFactory;
  * This class holds common methods and utilities that are used across the hibernate related classes
  */
 public class HibernateUtil {
+
+	private HibernateUtil() {
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateUtil.class);
 	

@@ -11,6 +11,7 @@ package org.openmrs.web.filter.util;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -38,10 +39,10 @@ public class CustomResourceLoader {
 	public static final String PREFIX = "messages";
 	
 	/** the map that contains resource bundles for each locale */
-	private Map<Locale, ResourceBundle> resources = null;
+	private Map<Locale, ResourceBundle> resources;
 	
 	/** the set of languages, which is currently supported */
-	private Set<Locale> availablelocales = null;
+	private Set<Locale> availablelocales;
 	
 	private static CustomResourceLoader instance = null;
 	
@@ -57,7 +58,7 @@ public class CustomResourceLoader {
 			Resource[] localResources = patternResolver.getResources("classpath*:messages*.properties");
 			for (Resource localeResource : localResources) {
 				Locale locale = parseLocaleFrom(localeResource.getFilename(), PREFIX);
-				ResourceBundle rb = new PropertyResourceBundle(new InputStreamReader(localeResource.getInputStream(), "UTF-8"));
+				ResourceBundle rb = new PropertyResourceBundle(new InputStreamReader(localeResource.getInputStream(), StandardCharsets.UTF_8));
 				getResource().put(locale, rb);
 				getAvailablelocales().add(locale);
 			}
@@ -89,7 +90,7 @@ public class CustomResourceLoader {
 	 * @return Locale derived from the given string
 	 */
 	private Locale parseLocaleFrom(String filename, String basename) {
-		Locale result = null;
+		Locale result;
 		String tempFilename = filename;
 		
 		if (filename.startsWith(basename)) {

@@ -64,7 +64,6 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.H2Dialect;
-import org.hibernate.jdbc.ReturningWork;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assume;

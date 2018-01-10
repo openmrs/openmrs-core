@@ -12,9 +12,10 @@ package org.openmrs.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -356,9 +357,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			// happen because the servlet container (i.e. tomcat) crashes when first loading this file
 			log.debug("Error clearing dwr-modules.xml", e);
 			dwrFile.delete();
-			FileWriter writer = null;
+			OutputStreamWriter writer = null;
 			try {
-				writer = new FileWriter(dwrFile);
+				writer = new OutputStreamWriter(new FileOutputStream(dwrFile), StandardCharsets.UTF_8);
 				writer.write(
 				    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN\" \"http://directwebremoting.org/schema/dwr20.dtd\">\n<dwr></dwr>");
 			}
@@ -415,8 +416,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 					log.debug("Overriding file: " + absolutePath);
 					log.debug("Overriding file with: " + userOverridePath);
 					if (file.isDirectory()) {
-						if (file.listFiles() != null) {
-							for (File f : file.listFiles()) {
+						File[] files = file.listFiles();
+						if (files != null) {
+							for (File f : files) {
 								userOverridePath = f.getAbsolutePath();
 								if (!f.getName().startsWith(".")) {
 									String tmpAbsolutePath = absolutePath + "/" + f.getName();
@@ -504,8 +506,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 		
 		// loop over the modules and load the modules that we can
-		if (folder.listFiles() != null) {
-			for (File f : folder.listFiles()) {
+		File[] files = folder.listFiles();
+		if (files != null) {
+			for (File f : files) {
 				if (!f.getName().startsWith(".")) { // ignore .svn folder and the like
 					try {
 						Module mod = ModuleFactory.loadModule(f);

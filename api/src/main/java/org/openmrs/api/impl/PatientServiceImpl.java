@@ -9,7 +9,7 @@
  */
 package org.openmrs.api.impl;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Allergen;
 import org.openmrs.Allergies;
 import org.openmrs.Allergy;
@@ -1027,7 +1027,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				if (obssExit.size() > 1) {
 					log.error("Multiple reasons for exit (" + obssExit.size() + ")?  Shouldn't be...");
 				} else {
-					Obs obsExit = null;
+					Obs obsExit;
 					if (obssExit.size() == 1) {
 						// already has a reason for exit - let's edit it.
 						log.debug("Already has a reason for exit, so changing it");
@@ -1149,7 +1149,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				if (obssDeath.size() > 1) {
 					log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
 				} else {
-					Obs obsDeath = null;
+					Obs obsDeath;
 					if (obssDeath.size() == 1) {
 						// already has a cause of death - let's edit it.
 						log.debug("Already has a cause of death, so changing it");

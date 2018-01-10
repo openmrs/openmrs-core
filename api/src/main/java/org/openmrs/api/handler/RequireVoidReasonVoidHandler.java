@@ -11,7 +11,7 @@ package org.openmrs.api.handler;
 
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;

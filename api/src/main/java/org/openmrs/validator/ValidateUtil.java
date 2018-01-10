@@ -12,7 +12,7 @@ package org.openmrs.validator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
@@ -39,6 +39,9 @@ import org.springframework.validation.ObjectError;
  * @since 1.5
  */
 public class ValidateUtil {
+
+	private ValidateUtil() {
+	}
 
 	/**
 	 * This is set in {@link Context#checkCoreDataset()} class

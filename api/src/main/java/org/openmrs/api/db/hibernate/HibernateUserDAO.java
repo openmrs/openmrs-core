@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
@@ -119,7 +119,7 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		
 		if (userId == null) {
-			userId = Integer.valueOf(-1);
+			userId = -1;
 		}
 		
 		String usernameWithCheckDigit = username;
@@ -418,7 +418,7 @@ public class HibernateUserDAO implements UserDAO {
 		
 		Object object = query.uniqueResult();
 		
-		Integer id = null;
+		Integer id;
 		if (object instanceof Number) {
 			id = ((Number) query.uniqueResult()).intValue() + 1;
 		} else {
@@ -435,7 +435,6 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public List<User> getUsersByName(String givenName, String familyName, boolean includeRetired) {
-		List<User> users = new ArrayList<User>();
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(User.class);
 		crit.createAlias("person", "person");
 		crit.createAlias("person.names", "names");
@@ -445,10 +444,7 @@ public class HibernateUserDAO implements UserDAO {
 		if (!includeRetired) {
 			crit.add(Restrictions.eq("retired", false));
 		}
-		for (User u : (List<User>) crit.list()) {
-			users.add(u);
-		}
-		return users;
+		return new ArrayList<>((List<User>) crit.list());
 	}
 	
 	/**
@@ -566,9 +562,9 @@ public class HibernateUserDAO implements UserDAO {
 		//	 and role in :roleList 
 		//   and user.retired = false
 		// order by username asc
-		List<String> criteria = new ArrayList<String>();
+		List<String> criteria = new ArrayList<>();
 		int counter = 0;
-		Map<String, String> namesMap = new HashMap<String, String>();
+		Map<String, String> namesMap = new HashMap<>();
 		if (name != null) {
 			name = name.replace(", ", " ");
 			String[] names = name.split(" ");

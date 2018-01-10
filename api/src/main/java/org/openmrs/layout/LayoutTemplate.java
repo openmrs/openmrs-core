@@ -127,9 +127,7 @@ public abstract class LayoutTemplate {
 					currNonToken.put("displayText", nonToken);
 					
 					ret.add(currNonToken);
-					if (idxCurr + nonToken.length() >= line.length()) {
-						// we are at the end, so we are done
-					} else {
+					if (idxCurr + nonToken.length() < line.length()) {
 						// we need to add one last token at the end
 						Map<String, String> currToken = new HashMap<>();
 						currToken.put("isToken", getLayoutToken());
@@ -155,10 +153,9 @@ public abstract class LayoutTemplate {
 			ret.add(currNonToken);
 			
 			currToken.put("isToken", getLayoutToken());
-			String realToken = line;
-			currToken.put("displayText", this.getNameMappings().get(realToken));
-			currToken.put("displaySize", this.getSizeMappings().get(realToken));
-			currToken.put("codeName", realToken);
+			currToken.put("displayText", this.getNameMappings().get(line));
+			currToken.put("displaySize", this.getSizeMappings().get(line));
+			currToken.put("codeName", line);
 			
 			ret.add(currToken);
 		}

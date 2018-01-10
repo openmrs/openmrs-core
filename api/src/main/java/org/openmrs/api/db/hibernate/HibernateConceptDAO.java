@@ -23,8 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
@@ -174,8 +173,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 				// hence row should be deleted from the concept_numeric
 				if (!concept.isNumeric()) {
 					deleteSubclassConcept("concept_numeric", concept.getConceptId());
-				} else {
-					// it is indeed numeric now... don't delete
 				}
 			}
 		}
@@ -212,8 +209,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 				// hence row should be deleted from the concept_complex
 				if (!concept.isComplex()) {
 					deleteSubclassConcept("concept_complex", concept.getConceptId());
-				} else {
-					// it is indeed numeric now... don't delete
 				}
 			}
 		}
@@ -1439,7 +1434,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			final Set<Locale> searchLocales;
 			
 			if (locales == null) {
-				searchLocales = new HashSet<Locale>(Collections.singletonList(Context.getLocale()));
+				searchLocales = new HashSet<>(Collections.singletonList(Context.getLocale()));
 			} else {
 				searchLocales = new HashSet<>(locales);
 			}

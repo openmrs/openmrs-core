@@ -31,7 +31,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 	
 	private static final Logger log = LoggerFactory.getLogger(ConceptAnswersEditor.class);
 	
-	private Collection<ConceptAnswer> originalConceptAnswers = null;
+	private Collection<ConceptAnswer> originalConceptAnswers;
 	
 	/**
 	 * Default constructor taking in the original answers. This should be the actual list on the

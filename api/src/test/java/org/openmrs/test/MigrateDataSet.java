@@ -137,7 +137,7 @@ public class MigrateDataSet {
 			finally {
 				dbunitConnection = null;
 			}
-			
+
 			System.out.println("Finished!");
 		}
 	}
@@ -188,7 +188,7 @@ public class MigrateDataSet {
 			out.append("Normal cmd output:\n");
 			Reader reader = new InputStreamReader(p.getInputStream());
 			BufferedReader input = new BufferedReader(reader);
-			int readChar = 0;
+			int readChar;
 			while ((readChar = input.read()) != -1) {
 				out.append((char) readChar);
 			}
@@ -199,7 +199,6 @@ public class MigrateDataSet {
 			out.append("ErrorStream cmd output:\n");
 			reader = new InputStreamReader(p.getErrorStream());
 			input = new BufferedReader(reader);
-			readChar = 0;
 			while ((readChar = input.read()) != -1) {
 				out.append((char) readChar);
 			}

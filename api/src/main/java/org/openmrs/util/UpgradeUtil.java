@@ -24,6 +24,9 @@ import java.util.Properties;
 import org.openmrs.api.APIException;
 
 public class UpgradeUtil {
+
+	private UpgradeUtil() {
+	}
 	
 	/**
 	 * Returns conceptId for the given units from DatabaseUtil#ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME
@@ -38,9 +41,9 @@ public class UpgradeUtil {
 		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
 		Properties props = new Properties();
 		String conceptId = null;
-		String filePath = new StringBuilder(appDataDir)
-				.append(System.getProperty("file.separator"))
-				.append(DatabaseUtil.ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME).toString();
+		String filePath = appDataDir +
+				System.getProperty("file.separator") +
+				DatabaseUtil.ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME;
 
 		try (FileInputStream fis = new FileInputStream(filePath)) {
 
@@ -101,7 +104,7 @@ public class UpgradeUtil {
 	}
 	
 	public static List<Integer> getMemberSetIds(Connection connection, String conceptUuid) throws SQLException {
-		Integer conceptSetId = null;
+		Integer conceptSetId;
 
 		try (PreparedStatement select = connection.prepareStatement("select concept_id from concept where uuid = ?")) {
 			select.setString(1, conceptUuid);

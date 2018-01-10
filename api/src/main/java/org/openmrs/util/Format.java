@@ -14,7 +14,7 @@ import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +86,7 @@ public class Format {
 		}
 		log.debug("Formatting date: " + date + " with locale " + locale);
 		
-		DateFormat dateFormat = null;
+		DateFormat dateFormat;
 		
 		if (type == FORMAT_TYPE.TIMESTAMP) {
 			dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);

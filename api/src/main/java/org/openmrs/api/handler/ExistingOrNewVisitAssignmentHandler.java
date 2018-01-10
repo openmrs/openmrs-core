@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.GlobalProperty;
@@ -121,7 +121,7 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 					if (targetEncounterTypeId.equals(encounterTypeIdOrUuid)
 					        || encounterType.getUuid().equals(encounterTypeIdOrUuid)) {
 						String visitTypeIdOrUuid = mapping.substring(index + 1).trim();
-						VisitType visitType = null;
+						VisitType visitType;
 						if (StringUtils.isNumeric(visitTypeIdOrUuid)) {
 							visitType = visitService.getVisitType(Integer.parseInt(visitTypeIdOrUuid));
 						} else {

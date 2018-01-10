@@ -26,7 +26,7 @@ import org.openmrs.logic.result.Result;
  */
 public class LogicTransform {
 	
-	private Operator transformOperator = null;
+	private Operator transformOperator;
 	
 	private Integer numResults = null;
 	

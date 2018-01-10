@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleClassLoader;
@@ -109,6 +109,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * can happen correctly.
 	 */
 	private static class OpenmrsClassLoaderHolder {
+
+		private OpenmrsClassLoaderHolder() {
+		}
 		
 		private static OpenmrsClassLoader INSTANCE = null;
 		

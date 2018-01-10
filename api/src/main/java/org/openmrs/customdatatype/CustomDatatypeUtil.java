@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -31,6 +31,9 @@ import org.slf4j.LoggerFactory;
  * @since 1.9
  */
 public class CustomDatatypeUtil {
+
+	private CustomDatatypeUtil() {
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(CustomDatatypeUtil.class);
 	

@@ -20,6 +20,9 @@ import org.slf4j.LoggerFactory;
  */
 public class OrderUtil {
 	
+	private OrderUtil() {
+	}
+	
 	private static final Logger log = LoggerFactory.getLogger(OrderUtil.class);
 	
 	/**

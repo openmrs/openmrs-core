@@ -38,6 +38,9 @@ import org.openmrs.hl7.HL7Constants;
  * @see org.openmrs.FieldAnswer
  */
 public class FormUtil {
+
+	private FormUtil() {
+	}
 	
 	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
@@ -156,7 +159,7 @@ public class FormUtil {
 	 */
 	public static Map<Integer, TreeSet<FormField>> getFormStructure(Form form) {
 		Map<Integer, TreeSet<FormField>> formStructure = new TreeMap<>();
-		Integer base = Integer.valueOf(0);
+		Integer base = 0;
 		formStructure.put(base, new TreeSet<>());
 		
 		for (FormField formField : form.getFormFields()) {

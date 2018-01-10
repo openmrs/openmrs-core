@@ -9,14 +9,15 @@
  */
 package org.openmrs;
 
-import static org.apache.commons.lang.StringUtils.defaultString;
+import static org.apache.commons.lang3.StringUtils.defaultString;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
@@ -145,7 +146,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 		if (pn == null) {
 			throw new IllegalArgumentException();
 		}
-		PersonName newName = new PersonName(Integer.valueOf(pn.getPersonNameId()));
+		PersonName newName = new PersonName(pn.getPersonNameId());
 		if (pn.getGivenName() != null) {
 			newName.setGivenName(String.valueOf(pn.getGivenName()));
 		}
@@ -512,7 +513,9 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	 Provides a default comparator.
 	 @since 1.12
 	 **/
-	public static class DefaultComparator implements Comparator<PersonName> {
+	public static class DefaultComparator implements Comparator<PersonName>, Serializable {
+
+		private static final long serialVersionUID = 1L;
 		
 		@Override
 		public int compare(PersonName pn1, PersonName pn2) {

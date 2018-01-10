@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.jar.JarEntry;
@@ -72,11 +71,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class WebModuleUtil {
+
+	private WebModuleUtil() {
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(WebModuleUtil.class);
 	
@@ -450,7 +450,7 @@ public class WebModuleUtil {
 				continue;
 			}
 			
-			HttpServlet httpServlet = null;
+			HttpServlet httpServlet;
 			try {
 				httpServlet = (HttpServlet) ModuleFactory.getModuleClassLoader(mod).loadClass(className).newInstance();
 			}
@@ -506,7 +506,7 @@ public class WebModuleUtil {
 		for (int i = 0; i < servletTags.getLength(); i++) {
 			Node node = servletTags.item(i);
 			NodeList childNodes = node.getChildNodes();
-			String name = "";
+			String name;
 			for (int j = 0; j < childNodes.getLength(); j++) {
 				Node childNode = childNodes.item(j);
 				if ("servlet-name".equals(childNode.getNodeName()) && childNode.getTextContent() != null) {
@@ -653,7 +653,7 @@ public class WebModuleUtil {
 	 * @return
 	 */
 	private static Document getDWRModuleXML(InputStream inputStream, String realPath) {
-		Document dwrmodulexml = null;
+		Document dwrmodulexml;
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
@@ -684,9 +684,10 @@ public class WebModuleUtil {
 		String messagesPath = realPath + "/WEB-INF/";
 		File folder = new File(messagesPath.replace("/", File.separator));
 		
-		if (folder.exists()) {
+		File[] files = folder.listFiles();
+		if (folder.exists() && files != null) {
 			Properties emptyProperties = new Properties();
-			for (File f : Objects.requireNonNull(folder.listFiles())) {
+			for (File f : files) {
 				if (f.getName().startsWith("module_messages")) {
 					OpenmrsUtil.storeProperties(emptyProperties, f, "");
 				}

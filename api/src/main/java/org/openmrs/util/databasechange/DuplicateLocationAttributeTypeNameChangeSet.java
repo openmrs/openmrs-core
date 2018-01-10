@@ -86,8 +86,8 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 			rs = stmt.executeQuery("SELECT * FROM location_attribute_type "
 			        + "INNER JOIN (SELECT name FROM location_attribute_type GROUP BY name HAVING count(name) > 1) "
 			        + "dup ON location_attribute_type.name = dup.name");
-			Integer id = null;
-			String name = null;
+			Integer id;
+			String name;
 			
 			while (rs.next()) {
 				id = rs.getInt("location_attribute_type_id");
@@ -109,8 +109,8 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 				int duplicateNameId = 1;
 				for (int i = 1; i < duplicateNames.size(); i++) {
 					String newName = pairs.getKey() + "_" + duplicateNameId;
-					List<List<Object>> duplicateResult = null;
-					boolean duplicateName = false;
+					List<List<Object>> duplicateResult;
+					boolean duplicateName;
 					Connection con = DatabaseUpdater.getConnection();
 					do {
 						String sqlValidatorString = "select * from location_attribute_type where name = '" + newName + "'";

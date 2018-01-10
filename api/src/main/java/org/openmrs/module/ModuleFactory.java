@@ -26,7 +26,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.WeakHashMap;
@@ -61,6 +60,9 @@ import org.springframework.util.StringUtils;
  * Methods for loading, starting, stopping, and storing OpenMRS modules
  */
 public class ModuleFactory {
+
+	private ModuleFactory() {
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleFactory.class);
 	
@@ -169,10 +171,11 @@ public class ModuleFactory {
 			log.debug("Loading modules from: " + modulesFolder.getAbsolutePath());
 		}
 		
-		if (modulesFolder.isDirectory()) {
-			loadModules(Arrays.asList(Objects.requireNonNull(modulesFolder.listFiles())));
+		File[] files = modulesFolder.listFiles();
+		if (modulesFolder.isDirectory() && files != null) {
+			loadModules(Arrays.asList(files));
 		} else {
-			log.error("modules folder: '" + modulesFolder.getAbsolutePath() + "' is not a valid directory");
+			log.error("modules folder: '" + modulesFolder.getAbsolutePath() + "' is not a directory or IO error occurred");
 		}
 	}
 	
@@ -311,9 +314,8 @@ public class ModuleFactory {
 		Graph<Module> graph = new Graph<>();
 		
 		for (Module mod : modules) {
-			
-			Module toNode = mod;
-			graph.addNode(toNode);
+
+			graph.addNode(mod);
 			
 			// Required dependencies
 			for (String key : mod.getRequiredModules()) {
@@ -325,7 +327,7 @@ public class ModuleFactory {
 				
 				if (fromNode != null) {
 					graph.addEdge(graph.new Edge(
-					                             fromNode, toNode));
+					                             fromNode, mod));
 				}
 			}
 			
@@ -339,7 +341,7 @@ public class ModuleFactory {
 				
 				if (fromNode != null) {
 					graph.addEdge(graph.new Edge(
-					                             fromNode, toNode));
+					                             fromNode, mod));
 				}
 			}
 		}
@@ -529,7 +531,7 @@ public class ModuleFactory {
 	 */
 	private static Module getModuleFromFile(File moduleFile) throws ModuleException {
 		
-		Module module = null;
+		Module module;
 		try {
 			module = new ModuleFileParser(moduleFile).parse();
 		}
@@ -705,7 +707,7 @@ public class ModuleFactory {
 				}
 				
 				// Sort this module's extensions, and merge them into the full extensions map
-				Comparator<Extension> sortOrder = (e1, e2) -> Integer.valueOf(e1.getOrder()).compareTo(Integer.valueOf(e2.getOrder()));
+				Comparator<Extension> sortOrder = (e1, e2) -> Integer.valueOf(e1.getOrder()).compareTo(e2.getOrder());
 				for (Map.Entry<String, List<Extension>> moduleExtensionEntry : moduleExtensionMap.entrySet()) {
 					// Sort this module's extensions for current extension point
 					List<Extension> sortedModuleExtensions = moduleExtensionEntry.getValue();
@@ -902,7 +904,7 @@ public class ModuleFactory {
 	 */
 	public static void loadAdvice(Module module) {
 		for (AdvicePoint advice : module.getAdvicePoints()) {
-			Class<?> cls = null;
+			Class<?> cls;
 			try {
 				cls = Context.loadClass(advice.getPoint());
 				Object aopObject = advice.getClassInstance();
@@ -1001,7 +1003,7 @@ public class ModuleFactory {
 	 */
 	private static void runLiquibase(Module module) {
 		JarFile jarFile = null;
-		boolean liquibaseFileExists = false;
+		boolean liquibaseFileExists;
 		
 		try {
 			try {
@@ -1155,7 +1157,7 @@ public class ModuleFactory {
 				// remove all advice by this module
 				try {
 					for (AdvicePoint advice : mod.getAdvicePoints()) {
-						Class cls = null;
+						Class cls;
 						try {
 							cls = Context.loadClass(advice.getPoint());
 							Object aopObject = advice.getClassInstance();
@@ -1229,7 +1231,6 @@ public class ModuleFactory {
 			ModuleClassLoader cl = removeClassLoader(mod);
 			if (cl != null) {
 				cl.dispose();
-				cl = null;
 				// remove files from lib cache
 				File folder = OpenmrsClassLoader.getLibCacheFolder();
 				File tmpModuleDir = new File(folder, moduleId);
@@ -1288,9 +1289,7 @@ public class ModuleFactory {
 				file.deleteOnExit();
 				log.warn("Could not delete " + file.getAbsolutePath());
 			}
-			
-			file = null;
-			mod = null;
+
 		}
 	}
 	
@@ -1302,7 +1301,7 @@ public class ModuleFactory {
 	 * @return List of extensions
 	 */
 	public static List<Extension> getExtensions(String pointId) {
-		List<Extension> extensions = null;
+		List<Extension> extensions;
 		Map<String, List<Extension>> extensionMap = getExtensionMap();
 		
 		// get all extensions for this exact pointId
@@ -1526,7 +1525,7 @@ public class ModuleFactory {
 			return mod;
 		}
 		
-		URL url = null;
+		URL url;
 		try {
 			url = new URL(mod.getDownloadURL());
 		}

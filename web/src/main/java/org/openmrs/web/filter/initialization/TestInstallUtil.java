@@ -21,6 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.Enumeration;
@@ -29,7 +30,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -45,6 +46,9 @@ import org.slf4j.LoggerFactory;
  * installation
  */
 public class TestInstallUtil {
+
+	private TestInstallUtil() {
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(TestInstallUtil.class);
 	
@@ -59,7 +63,7 @@ public class TestInstallUtil {
 	 * @return true if data was added successfully
 	 */
 	protected static boolean addTestData(String host, int port, String databaseName, String user, String pwd, String filePath) {
-		Process proc = null;
+		Process proc;
 		BufferedReader br = null;
 		String errorMsg = null;
 		String[] command = new String[] { "mysql", "--host=" + host, "--port=" + port, "--user=" + user,
@@ -77,7 +81,7 @@ public class TestInstallUtil {
 		try {
 			proc = Runtime.getRuntime().exec(command);
 			try {
-				br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+				br = new BufferedReader(new InputStreamReader(proc.getErrorStream(), StandardCharsets.UTF_8));
 				String line;
 				StringBuilder sb = new StringBuilder();
 				while ((line = br.readLine()) != null) {
@@ -258,7 +262,7 @@ public class TestInstallUtil {
 	        throws MalformedURLException, IOException, APIException {
 		
 		HttpURLConnection connection = createConnection(url);
-		OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
+		OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
 		out.write(encodeCredentials(openmrsUsername, openmrsPassword));
 		out.flush();
 		out.close();
@@ -288,7 +292,7 @@ public class TestInstallUtil {
 		final StringBuilder result = new StringBuilder();
 		result.append("username=");
 		final Encoder encoder = Base64.getEncoder();
-		final Charset utf8 = Charset.forName("UTF-8");
+		final Charset utf8 = StandardCharsets.UTF_8;
 		result.append(new String(encoder.encode(openmrsUsername.getBytes(utf8)), utf8));
 		result.append("&password=");
 		result.append(new String(encoder.encode(openmrsPassword.getBytes(utf8)), utf8));

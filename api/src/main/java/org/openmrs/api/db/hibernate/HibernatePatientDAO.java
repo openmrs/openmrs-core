@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -415,7 +415,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 
 	private String getDuplicatePatientsSQLString(List<String> attributes) {
-		String outerSelect = "select distinct t1.patient_id from patient t1 ";
+		StringBuilder outerSelect = new StringBuilder("select distinct t1.patient_id from patient t1 ");
 		final String t5 = " = t5.";
 		
 		Set<String> patientFieldNames = OpenmrsUtil.getDeclaredFields(Patient.class);
@@ -427,7 +427,7 @@ public class HibernatePatientDAO implements PatientDAO {
 
 
 		List<String> innerFields = new ArrayList<>();
-		String innerSelect = " from patient p1 ";
+		StringBuilder innerSelect = new StringBuilder(" from patient p1 ");
 
 		for (String attribute : attributes) {
 			if (attribute != null) {
@@ -443,9 +443,9 @@ public class HibernatePatientDAO implements PatientDAO {
 				whereConditions.add(" t1." + attribute + t5 + attribute);
 				innerFields.add("p1." + attribute);
 			} else if (personFieldNames.contains(attribute)) {
-				if (!outerSelect.contains("person")) {
-					outerSelect += "inner join person t2 on t1.patient_id = t2.person_id ";
-					innerSelect += "inner join person person1 on p1.patient_id = person1.person_id ";
+				if (!outerSelect.toString().contains("person")) {
+					outerSelect.append("inner join person t2 on t1.patient_id = t2.person_id ");
+					innerSelect.append("inner join person person1 on p1.patient_id = person1.person_id ");
 				}
 
 				AbstractEntityPersister aep = (AbstractEntityPersister) sessionFactory.getClassMetadata(Person.class);
@@ -459,9 +459,9 @@ public class HibernatePatientDAO implements PatientDAO {
 				whereConditions.add(" t2." + attribute + t5 + attribute);
 				innerFields.add("person1." + attribute);
 			} else if (personNameFieldNames.contains(attribute)) {
-				if (!outerSelect.contains("person_name")) {
-					outerSelect += "inner join person_name t3 on t2.person_id = t3.person_id ";
-					innerSelect += "inner join person_name pn1 on person1.person_id = pn1.person_id ";
+				if (!outerSelect.toString().contains("person_name")) {
+					outerSelect.append("inner join person_name t3 on t2.person_id = t3.person_id ");
+					innerSelect.append("inner join person_name pn1 on person1.person_id = pn1.person_id ");
 				}
 
 				//Since we are firing a native query get the actual table column name from the field name of the entity
@@ -478,9 +478,9 @@ public class HibernatePatientDAO implements PatientDAO {
 				whereConditions.add(" t3." + attribute + t5 + attribute);
 				innerFields.add("pn1." + attribute);
 			} else if (identifierFieldNames.contains(attribute)) {
-				if (!outerSelect.contains("patient_identifier")) {
-					outerSelect += "inner join patient_identifier t4 on t1.patient_id = t4.patient_id ";
-					innerSelect += "inner join patient_identifier pi1 on p1.patient_id = pi1.patient_id ";
+				if (!outerSelect.toString().contains("patient_identifier")) {
+					outerSelect.append("inner join patient_identifier t4 on t1.patient_id = t4.patient_id ");
+					innerSelect.append("inner join patient_identifier pi1 on p1.patient_id = pi1.patient_id ");
 				}
 
 				AbstractEntityPersister aep = (AbstractEntityPersister) sessionFactory
@@ -549,7 +549,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
         @Override
 	public Patient getPatientByUuid(String uuid) {
-		Patient p = null;
+		Patient p;
 		
 		p = (Patient) sessionFactory.getCurrentSession().createQuery("from Patient p where p.uuid = :uuid").setString(
 		    "uuid", uuid).uniqueResult();
@@ -752,10 +752,18 @@ public class HibernatePatientDAO implements PatientDAO {
     private LuceneQuery<PatientIdentifier> getPatientIdentifierLuceneQuery(String query, boolean includeVoided) {
 		query = removeIdentifierPadding(query);
 		List<String> tokens = tokenizeIdentifierQuery(query);
-
-		LuceneQuery<PatientIdentifier> luceneQuery = LuceneQuery
-                .newQuery(PatientIdentifier.class, sessionFactory.getCurrentSession(), "identifierPhrase:(" + StringUtils.join(tokens, " OR ") + ")");
-        if(!includeVoided){
+	    query = StringUtils.join(tokens, " OR ");
+	    List<String> fields = new ArrayList<>();
+	    fields.add("identifierPhrase");
+	
+	    String matchMode = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_MATCH_MODE);
+	    if (OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START.equals(matchMode)) {
+		    fields.add("identifierStart");
+	    } else if (OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE.equals(matchMode)) {
+		    fields.add("identifierAnywhere");
+	    }
+	    LuceneQuery<PatientIdentifier> luceneQuery = LuceneQuery.newQuery(PatientIdentifier.class, sessionFactory.getCurrentSession(), query, fields);
+		if(!includeVoided){
         	luceneQuery.include("voided", false);
 			luceneQuery.include("patient.voided", false);
         }
@@ -787,7 +795,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see PatientSearchCriteria
 	 */
 	private List<String> tokenizeIdentifierQuery(String query) {
-		List<String> searchPatterns = new ArrayList<String>();
+		List<String> searchPatterns = new ArrayList<>();
 
 		String patternSearch = Context.getAdministrationService().getGlobalProperty(
 				OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN, "");

@@ -9,6 +9,7 @@
  */
 package org.openmrs.util;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.openmrs.Drug;
@@ -18,7 +19,9 @@ import org.openmrs.Drug;
  * numericals or other characters contained in the string. It will ignore all except letters a-z and
  * A-Z.
  */
-public class DrugsByNameComparator implements Comparator<Drug> {
+public class DrugsByNameComparator implements Comparator<Drug>, Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	/* (non-Jsdoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)

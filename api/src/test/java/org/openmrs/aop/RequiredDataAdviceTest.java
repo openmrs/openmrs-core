@@ -537,7 +537,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		SomeOpenmrsData openmrsObject = new SomeOpenmrsData();
 		requiredDataAdvice.before(m, null, new WithAppropriatelyNamedMethod());
 		requiredDataAdvice.before(m, new Object[] {}, new WithAppropriatelyNamedMethod());
-		verify(saveHandler, never()).handle(eq(openmrsObject), Matchers.<User> anyObject(), Matchers.<Date> anyObject(),
+		verify(saveHandler, never()).handle(eq(openmrsObject), Matchers.anyObject(), Matchers.anyObject(),
 		    anyString());
 	}
 	
@@ -547,7 +547,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		Method m = WithAppropriatelyNamedMethod.class.getMethod("saveSomeOpenmrsData", SomeOpenmrsData.class);
 		SomeOpenmrsData openmrsObject = new SomeOpenmrsData();
 		requiredDataAdvice.before(m, new Object[] { openmrsObject }, new WithAppropriatelyNamedMethod());
-		verify(saveHandler, times(1)).handle(eq(openmrsObject), Matchers.<User> anyObject(), Matchers.<Date> anyObject(),
+		verify(saveHandler, times(1)).handle(eq(openmrsObject), Matchers.anyObject(), Matchers.anyObject(),
 		    anyString());
 	}
 	
@@ -557,7 +557,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		Method m = WithAppropriatelyNamedMethod.class.getMethod("saveSomeOpenmrsDataButNotReally", SomeOpenmrsData.class);
 		SomeOpenmrsData openmrsObject = new SomeOpenmrsData();
 		requiredDataAdvice.before(m, new Object[] { openmrsObject }, new WithAppropriatelyNamedMethod());
-		verify(saveHandler, never()).handle(eq(openmrsObject), Matchers.<User> anyObject(), Matchers.<Date> anyObject(),
+		verify(saveHandler, never()).handle(eq(openmrsObject), Matchers.anyObject(), Matchers.anyObject(),
 		    anyString());
 	}
 	
@@ -567,8 +567,8 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		Method m = WithAppropriatelyNamedMethod.class.getMethod("saveSomeOpenmrsDatas", List.class);
 		List<SomeOpenmrsData> openmrsObjects = Arrays.asList(new SomeOpenmrsData(), new SomeOpenmrsData());
 		requiredDataAdvice.before(m, new Object[] { openmrsObjects }, new WithAppropriatelyNamedMethod());
-		verify(saveHandler, times(2)).handle(Matchers.<SomeOpenmrsData> anyObject(), Matchers.<User> anyObject(),
-		    Matchers.<Date> anyObject(), anyString());
+		verify(saveHandler, times(2)).handle(Matchers.anyObject(), Matchers.anyObject(),
+		    Matchers.anyObject(), anyString());
 	}
 	
 	@Test
@@ -578,7 +578,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		SomeOpenmrsData openmrsObject = new SomeOpenmrsData();
 		requiredDataAdvice.before(m, null, new WithAppropriatelyNamedMethod());
 		requiredDataAdvice.before(m, new Object[] {}, new WithAppropriatelyNamedMethod());
-		verify(voidHandler, never()).handle(eq(openmrsObject), Matchers.<User> anyObject(), Matchers.<Date> anyObject(),
+		verify(voidHandler, never()).handle(eq(openmrsObject), Matchers.anyObject(), Matchers.anyObject(),
 		    anyString());
 	}
 	
@@ -588,7 +588,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		Method m = WithAppropriatelyNamedMethod.class.getMethod("voidSomeOpenmrsData", SomeOpenmrsData.class);
 		SomeOpenmrsData openmrsObject = new SomeOpenmrsData();
 		requiredDataAdvice.before(m, new Object[] { openmrsObject, "void reason" }, new WithAppropriatelyNamedMethod());
-		verify(voidHandler, times(1)).handle(eq(openmrsObject), Matchers.<User> anyObject(), Matchers.<Date> anyObject(),
+		verify(voidHandler, times(1)).handle(eq(openmrsObject), Matchers.anyObject(), Matchers.anyObject(),
 		    anyString());
 	}
 	
@@ -599,8 +599,8 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		SomeOpenmrsData openmrsObjectSubClass = new SomeOpenmrsDataSubClass();
 		requiredDataAdvice.before(m, new Object[] { openmrsObjectSubClass, "void reason" },
 		    new WithAppropriatelyNamedMethod());
-		verify(voidHandler, times(1)).handle(eq(openmrsObjectSubClass), Matchers.<User> anyObject(),
-		    Matchers.<Date> anyObject(), anyString());
+		verify(voidHandler, times(1)).handle(eq(openmrsObjectSubClass), Matchers.anyObject(),
+		    Matchers.anyObject(), anyString());
 	}
 	
 	@Test
@@ -609,7 +609,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		Method m = WithAppropriatelyNamedMethod.class.getMethod("voidSomeOpenmrsDataButNotReally", SomeOpenmrsData.class);
 		SomeOpenmrsData openmrsObject = new SomeOpenmrsData();
 		requiredDataAdvice.before(m, new Object[] { openmrsObject }, new WithAppropriatelyNamedMethod());
-		verify(voidHandler, never()).handle(eq(openmrsObject), Matchers.<User> anyObject(), Matchers.<Date> anyObject(),
+		verify(voidHandler, never()).handle(eq(openmrsObject), Matchers.anyObject(), Matchers.anyObject(),
 		    anyString());
 	}
 	
@@ -630,7 +630,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		requiredDataAdvice.before(m, new Object[] { openmrsObject, "void reason" }, new WithAppropriatelyNamedMethod());
 		
 		// verify that the handle method was never called on this object
-		verify(voidHandler, never()).handle(eq(person), Matchers.<User> anyObject(), Matchers.<Date> anyObject(),
+		verify(voidHandler, never()).handle(eq(person), Matchers.anyObject(), Matchers.anyObject(),
 		    anyString());
 		
 	}
@@ -652,7 +652,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		requiredDataAdvice.before(m, new Object[] { openmrsObject, "void reason" }, new WithAppropriatelyNamedMethod());
 		
 		// verify that the handle method was called on this object
-		verify(voidHandler, times(1)).handle(eq(person), Matchers.<User> anyObject(), Matchers.<Date> anyObject(),
+		verify(voidHandler, times(1)).handle(eq(person), Matchers.anyObject(), Matchers.anyObject(),
 		    anyString());
 		
 	}

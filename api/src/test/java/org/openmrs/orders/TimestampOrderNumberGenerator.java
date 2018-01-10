@@ -9,7 +9,7 @@
  */
 package org.openmrs.orders;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.OrderContext;
 import org.openmrs.api.OrderNumberGenerator;
 import org.springframework.stereotype.Component;

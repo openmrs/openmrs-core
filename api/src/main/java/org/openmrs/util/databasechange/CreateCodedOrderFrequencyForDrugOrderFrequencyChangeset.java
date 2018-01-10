@@ -9,6 +9,7 @@
  */
 package org.openmrs.util.databasechange;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -76,7 +77,7 @@ public class CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset implements 
 				//Generating UUID for order frequency. Generated UUIDs will be the same if concepts UUIDs are the same.
 				String uuid = UpgradeUtil.getConceptUuid(connection.getUnderlyingConnection(), conceptIdForFrequency);
 				uuid += "-6925ebb0-7c69-11e3-baa7-0800200c9a66"; //Adding random value for order frequency
-				uuid = UUID.nameUUIDFromBytes(uuid.getBytes()).toString();
+				uuid = UUID.nameUUIDFromBytes(uuid.getBytes(StandardCharsets.UTF_8)).toString();
 				
 				insertOrderFrequencyStatement.setInt(1, conceptIdForFrequency);
 				insertOrderFrequencyStatement.setInt(2, 1);

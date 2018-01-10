@@ -12,7 +12,7 @@ package org.openmrs.util.databasechange;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.UpgradeUtil;
 

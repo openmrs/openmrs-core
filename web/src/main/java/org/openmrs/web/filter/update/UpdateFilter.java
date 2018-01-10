@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.openmrs.util.DatabaseUpdateException;
@@ -729,7 +729,6 @@ public class UpdateFilter extends StartupFilter {
 							
 							if (CollectionUtils.isNotEmpty(warnings)) {
 								reportWarnings(warnings);
-								warnings = null;
 							}
 						}
 						catch (InputRequiredException inputRequired) {

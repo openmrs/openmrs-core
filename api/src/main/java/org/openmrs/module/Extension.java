@@ -182,7 +182,7 @@ public abstract class Extension {
 	 */
 	public static final String toExtensionId(String pointId, MEDIA_TYPE mediaType) {
 		if (mediaType != null) {
-			return new StringBuffer(pointId).append(Extension.extensionIdSeparator).append(mediaType).toString();
+			return pointId + Extension.extensionIdSeparator + mediaType;
 		} else {
 			return pointId;
 		}

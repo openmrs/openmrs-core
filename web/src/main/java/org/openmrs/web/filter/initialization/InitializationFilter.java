@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -324,40 +325,40 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.currentDatabasePassword = script.getProperty("connection.password",
 			    wizardModel.currentDatabasePassword);
 			
-			String has_current_openmrs_database = script.getProperty("has_current_openmrs_database");
-			if (has_current_openmrs_database != null) {
-				wizardModel.hasCurrentOpenmrsDatabase = Boolean.valueOf(has_current_openmrs_database);
+			String hasCurrentOpenmrsDatabase = script.getProperty("has_current_openmrs_database");
+			if (hasCurrentOpenmrsDatabase != null) {
+				wizardModel.hasCurrentOpenmrsDatabase = Boolean.valueOf(hasCurrentOpenmrsDatabase);
 			}
 			wizardModel.createDatabaseUsername = script.getProperty("create_database_username",
 			    wizardModel.createDatabaseUsername);
 			wizardModel.createDatabasePassword = script.getProperty("create_database_password",
 			    wizardModel.createDatabasePassword);
 			
-			String create_tables = script.getProperty("create_tables");
-			if (create_tables != null) {
-				wizardModel.createTables = Boolean.valueOf(create_tables);
+			String createTables = script.getProperty("create_tables");
+			if (createTables != null) {
+				wizardModel.createTables = Boolean.valueOf(createTables);
 			}
 			
-			String create_database_user = script.getProperty("create_database_user");
-			if (create_database_user != null) {
-				wizardModel.createDatabaseUser = Boolean.valueOf(create_database_user);
+			String createDatabaseUser = script.getProperty("create_database_user");
+			if (createDatabaseUser != null) {
+				wizardModel.createDatabaseUser = Boolean.valueOf(createDatabaseUser);
 			}
 			wizardModel.createUserUsername = script.getProperty("create_user_username", wizardModel.createUserUsername);
 			wizardModel.createUserPassword = script.getProperty("create_user_password", wizardModel.createUserPassword);
 			
-			String add_demo_data = script.getProperty("add_demo_data");
-			if (add_demo_data != null) {
-				wizardModel.addDemoData = Boolean.valueOf(add_demo_data);
+			String addDemoData = script.getProperty("add_demo_data");
+			if (addDemoData != null) {
+				wizardModel.addDemoData = Boolean.valueOf(addDemoData);
 			}
 			
-			String module_web_admin = script.getProperty("module_web_admin");
-			if (module_web_admin != null) {
-				wizardModel.moduleWebAdmin = Boolean.valueOf(module_web_admin);
+			String moduleWebAdmin = script.getProperty("module_web_admin");
+			if (moduleWebAdmin != null) {
+				wizardModel.moduleWebAdmin = Boolean.valueOf(moduleWebAdmin);
 			}
 			
-			String auto_update_database = script.getProperty("auto_update_database");
-			if (auto_update_database != null) {
-				wizardModel.autoUpdateDatabase = Boolean.valueOf(auto_update_database);
+			String autoUpdateDatabase = script.getProperty("auto_update_database");
+			if (autoUpdateDatabase != null) {
+				wizardModel.autoUpdateDatabase = Boolean.valueOf(autoUpdateDatabase);
 			}
 			
 			wizardModel.adminUserPassword = script.getProperty("admin_user_password", wizardModel.adminUserPassword);
@@ -1007,7 +1008,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @return the runtime properties file.
 	 */
 	private File getRuntimePropertiesFile() {
-		File file = null;
+		File file;
 		
 		String pathName = OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME);
 		if (pathName != null) {
@@ -1157,7 +1158,7 @@ public class InitializationFilter extends StartupFilter {
 				replacedSql = replacedSql.replaceAll("`", "\"");
 			}
 			
-			String tempDatabaseConnection = "";
+			String tempDatabaseConnection;
 			if (sql.contains("create database")) {
 				tempDatabaseConnection = wizardModel.databaseConnection.replace("@DBNAME@", ""); // make this dbname agnostic so we can create the db
 			} else {
@@ -1379,7 +1380,7 @@ public class InitializationFilter extends StartupFilter {
 							setMessage("Create database");
 							setExecutingTask(WizardTask.CREATE_SCHEMA);
 							// connect via jdbc and create a database
-							String sql = null;
+							String sql;
 							if (wizardModel.databaseConnection.contains("mysql")) {
 								sql = "create database if not exists `?` default character set utf8";
 							} else if (wizardModel.databaseConnection.contains("postgresql")) {
@@ -1502,9 +1503,9 @@ public class InitializationFilter extends StartupFilter {
 						runtimeProperties.put("auto_update_database", wizardModel.autoUpdateDatabase.toString());
 						final Encoder base64 = Base64.getEncoder();
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY,
-						    new String(base64.encode(Security.generateNewInitVector())));
+						    new String(base64.encode(Security.generateNewInitVector()), StandardCharsets.UTF_8));
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY,
-						    new String(base64.encode(Security.generateNewSecretKey())));
+						    new String(base64.encode(Security.generateNewSecretKey()), StandardCharsets.UTF_8));
 						
 						Properties properties = Context.getRuntimeProperties();
 						properties.putAll(runtimeProperties);

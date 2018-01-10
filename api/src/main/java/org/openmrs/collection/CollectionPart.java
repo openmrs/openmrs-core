@@ -40,7 +40,7 @@ public abstract class CollectionPart<E> {
 		}
 		
 		if (maxElements == null) {
-			this.maxElements = Long.valueOf(collection.size());
+			this.maxElements = (long) collection.size();
 		} else {
 			this.maxElements = maxElements;
 		}

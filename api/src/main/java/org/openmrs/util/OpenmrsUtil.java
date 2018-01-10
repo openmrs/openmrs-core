@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,6 +29,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -66,7 +66,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -118,6 +118,9 @@ import org.w3c.dom.DocumentType;
  * Utility methods used in openmrs
  */
 public class OpenmrsUtil {
+
+	private OpenmrsUtil() {
+	}
 	
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsUtil.class);
 	
@@ -219,9 +222,9 @@ public class OpenmrsUtil {
 	 */
 	public static String getFileAsString(File file) throws IOException {
 		StringBuilder fileData = new StringBuilder(1000);
-		BufferedReader reader = new BufferedReader(new FileReader(file));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 		char[] buf = new char[1024];
-		int numRead = 0;
+		int numRead;
 		while ((numRead = reader.read(buf)) != -1) {
 			String readData = String.valueOf(buf, 0, numRead);
 			fileData.append(readData);
@@ -758,7 +761,7 @@ public class OpenmrsUtil {
 		if (delimitedString != null) {
 			String[] tokens = delimitedString.split(delimiter);
 			for (String token : tokens) {
-				Integer conceptId = null;
+				Integer conceptId;
 				
 				try {
 					conceptId = Integer.valueOf(token);
@@ -767,7 +770,7 @@ public class OpenmrsUtil {
 					conceptId = null;
 				}
 				
-				Concept c = null;
+				Concept c;
 				
 				if (conceptId != null) {
 					c = Context.getConceptService().getConcept(conceptId);
@@ -1643,7 +1646,7 @@ public class OpenmrsUtil {
 	 */
 	public static void storeProperties(Properties properties, OutputStream outStream, String comment) {
 		try {
-			Charset utf8 = Charset.forName("UTF-8");
+			Charset utf8 = StandardCharsets.UTF_8;
 			properties.store(new OutputStreamWriter(outStream, utf8), comment);
 		}
 		catch (FileNotFoundException fnfe) {
@@ -1671,7 +1674,7 @@ public class OpenmrsUtil {
 	public static void loadProperties(Properties props, InputStream inputStream) {
 		InputStreamReader reader = null;
 		try {
-			reader = new InputStreamReader(inputStream, "UTF-8");
+			reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
 			props.load(reader);
 		}
 		catch (FileNotFoundException fnfe) {
@@ -2007,7 +2010,7 @@ public class OpenmrsUtil {
 		if (applicationName == null) {
 			applicationName = "openmrs";
 		}
-		String pathName = "";
+		String pathName;
 		pathName = getRuntimePropertiesFilePathName(applicationName);
 		FileInputStream propertyStream = null;
 		try {
@@ -2189,7 +2192,7 @@ public class OpenmrsUtil {
 	 * @return
 	 */
 	public static Set<String> getDeclaredFields(Class<?> clazz) {
-		return Arrays.asList(clazz.getDeclaredFields()).stream().map(Field::getName).collect(Collectors.toSet());
+		return Arrays.stream(clazz.getDeclaredFields()).map(Field::getName).collect(Collectors.toSet());
 	}
 	
 }

@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DocumentId;
@@ -510,7 +510,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return false;
 		}
 		
-		Collection<ConceptName> currentNames = null;
+		Collection<ConceptName> currentNames;
 		if (locale == null) {
 			currentNames = getNames();
 		} else {
@@ -945,9 +945,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return whether this concept has the given name in any locale
 	 */
 	public boolean isNamed(String name) {
-		return getNames().stream()
-				.filter(cn -> name.equals(cn.getName()))
-				.count() > 0;
+		return getNames().stream().anyMatch(cn -> name.equals(cn.getName()));
 	}
 	
 	/**

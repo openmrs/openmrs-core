@@ -9,7 +9,7 @@
  */
 package org.openmrs.web.filter.startuperror;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.openmrs.web.filter.StartupFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
 
@@ -20,9 +20,9 @@ import org.openmrs.web.filter.update.UpdateFilter;
  */
 public class StartupErrorFilterModel {
 	
-	public Throwable errorAtStartup = null;
+	public Throwable errorAtStartup;
 	
-	public String stacktrace = null;
+	public String stacktrace;
 	
 	/**
 	 * Default constructor that sets up some of the properties

@@ -9,12 +9,13 @@
  */
 package org.openmrs;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DocumentId;
@@ -137,7 +138,7 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 		// loop over all of the selected methods and compare this and other
 		for (String methodAttribute : methods) {
 			try {
-				Method method = attributeClass.getMethod(methodAttribute, new Class[] {});
+				Method method = attributeClass.getMethod(methodAttribute);
 				
 				Object thisValue = method.invoke(this);
 				Object otherValue = method.invoke(otherAttribute);
@@ -330,7 +331,9 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	 Provides a default comparator.
 	 @since 1.12
 	 **/
-	public static class DefaultComparator implements Comparator<PersonAttribute> {
+	public static class DefaultComparator implements Comparator<PersonAttribute>, Serializable {
+
+		private static final long serialVersionUID = 1L;
 		
 		@Override
 		public int compare(PersonAttribute pa1, PersonAttribute pa2) {

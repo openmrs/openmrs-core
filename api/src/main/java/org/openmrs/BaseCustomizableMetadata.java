@@ -102,9 +102,7 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 		
 		if (getActiveAttributes(attribute.getAttributeType()).size() == 1) {
 			A existing = getActiveAttributes(attribute.getAttributeType()).get(0);
-			if (existing.getValue().equals(attribute.getValue())) {
-				// do nothing, since the value is already as-specified
-			} else {
+			if (!existing.getValue().equals(attribute.getValue())) {
 				if (existing.getId() != null) {
 					existing.setVoided(true);
 				} else {
@@ -113,7 +111,6 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 				getAttributes().add(attribute);
 				attribute.setOwner(this);
 			}
-			
 		} else {
 			for (A existing : getActiveAttributes(attribute.getAttributeType())) {
 				if (existing.getAttributeType().equals(attribute.getAttributeType())) {

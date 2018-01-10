@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
 /**
@@ -63,7 +62,7 @@ public class UpdateFileParser {
 	public void parse() throws ModuleException {
 		StringReader stringReader = null;
 		try {
-			Document updateDoc = null;
+			Document updateDoc;
 			try {
 				stringReader = new StringReader(content);
 				InputSource inputSource = new InputSource(stringReader);
