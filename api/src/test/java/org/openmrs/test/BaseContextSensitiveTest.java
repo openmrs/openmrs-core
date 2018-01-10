@@ -561,7 +561,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	/**
 	 * This initializes the empty in-memory database with some rows in order to actually run some
 	 * tests
-	 * 
+	 *
 	 * @throws SQLException
 	 * @throws Exception
 	 */
@@ -570,19 +570,23 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		if (!useInMemoryDatabase())
 			throw new RuntimeException(
 			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
+
+		setAutoIncrementOnTablesWithNativeIfNotAssignedIdentityGenerator();
+		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
+	}
+
+	public void setAutoIncrementOnTablesWithNativeIfNotAssignedIdentityGenerator() throws SQLException {
 		/*
-		 * Hbm2ddl used in tests creates primary key columns, which are not auto incremented, if
+		 * Hbm2ddl used in tests creates primary key columns, which are not auto incremented if
 		 * NativeIfNotAssignedIdentityGenerator is used. We need to alter those columns in tests.
 		 */
 		List<String> tables = Collections.singletonList("concept");
 		for (String table : tables) {
 			getConnection().prepareStatement("ALTER TABLE " + table + " ALTER COLUMN " + table + "_id INT AUTO_INCREMENT")
-			        .execute();
+					.execute();
 		}
-		
-		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 	}
-	
+
 	/**
 	 * Note that with the H2 DB this operation always commits an open transaction.
 	 * 
