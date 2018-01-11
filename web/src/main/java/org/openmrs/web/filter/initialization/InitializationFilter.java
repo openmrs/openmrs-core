@@ -1836,7 +1836,7 @@ public class InitializationFilter extends StartupFilter {
 				DatabaseUtil.loadDatabaseDriver(databaseConnectionFinalUrl, null);
 				connection = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword);
 				
-				DatabaseMetaData dbMetaData = (DatabaseMetaData) connection.getMetaData();
+				DatabaseMetaData dbMetaData = connection.getMetaData();
 				
 				String[] types = { "TABLE" };
 				

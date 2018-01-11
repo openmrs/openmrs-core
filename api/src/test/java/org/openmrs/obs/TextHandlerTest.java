@@ -45,6 +45,6 @@ public class TextHandlerTest {
         assertFalse(handler.supportsView(ComplexObsHandler.PREVIEW_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.TITLE_VIEW));
         assertFalse(handler.supportsView(""));
-        assertFalse(handler.supportsView((String) null));
+        assertFalse(handler.supportsView(null));
     }
 }

@@ -293,7 +293,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				}
 				
 				// recursively get files
-				Collection<File> files = (Collection<File>) FileUtils.listFiles(libdir, new String[] { "jar" }, true);
+				Collection<File> files = FileUtils.listFiles(libdir, new String[] { "jar" }, true);
 				for (File file : files) {
 					
 					//if in dev mode, do not put the module source jar files in the class path

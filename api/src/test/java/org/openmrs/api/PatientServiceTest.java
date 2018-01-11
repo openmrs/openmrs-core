@@ -3043,7 +3043,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldFindAPatientsWithAMatchingIdentifierWithNoDigits() throws Exception {
 		final String identifier = "XYZ";
 		Patient patient = patientService.getPatient(2);
-		Assert.assertEquals(0, patientService.getPatients(identifier, (Integer) null, (Integer) null).size());
+		Assert.assertEquals(0, patientService.getPatients(identifier, null, null).size());
 		PatientIdentifier pId = new PatientIdentifier(identifier, patientService.getPatientIdentifierType(5),
 		        locationService.getLocation(1));
 		patient.addIdentifier(pId);
