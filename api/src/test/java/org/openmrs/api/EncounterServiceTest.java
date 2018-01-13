@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -1003,7 +1002,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getEncounters_shouldGetEncountersByForm() {
-		List<Form> forms = new Vector<>();
+		List<Form> forms = new ArrayList<>();
 		forms.add(new Form(1));
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setEnteredViaForms(forms)
 		        .setIncludeVoided(true).createEncounterSearchCriteria();
@@ -1017,7 +1016,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getEncounters_shouldGetEncountersByType() {
-		List<EncounterType> types = new Vector<>();
+		List<EncounterType> types = new ArrayList<>();
 		types.add(new EncounterType(1));
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setEncounterTypes(types)
 		        .setIncludeVoided(true).createEncounterSearchCriteria();
@@ -1618,7 +1617,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getEncounters_shouldGetEncountersByVisitType() {
-		List<VisitType> visitTypes = new Vector<>();
+		List<VisitType> visitTypes = new ArrayList<>();
 		visitTypes.add(new VisitType(2));
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setVisitTypes(visitTypes)
 		        .setIncludeVoided(true).createEncounterSearchCriteria();
