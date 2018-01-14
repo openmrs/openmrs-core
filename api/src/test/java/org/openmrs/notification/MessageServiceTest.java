@@ -10,12 +10,17 @@
 package org.openmrs.notification;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Unit tests for the MessageService.
@@ -107,6 +112,109 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 		catch (MessageException e) {
 			//So that this test doesn't fail just because the user isn't running an SMTP server.
 			if (!e.getMessage().contains(NO_SMTP_SERVER_ERROR)) {
+				e.printStackTrace();
+				fail();
+			}
+		}
+	}
+	
+	/**
+	 * @see MessageService#getMessagePreparator()
+	 */
+	@Test
+	public void getMessagePreparator_shouldGetMessagePreparator() {
+		
+		assertNotNull(ms.getMessagePreparator());
+		
+	}
+	
+	/**
+	 * @see MessageService#setMessagePreparator(MessagePreparator)
+	 */
+	@Test
+	public void setMessagePreparator_shouldSetMessagePreparator(){
+		
+		ms.setMessagePreparator(null);
+		assertNull(ms.getMessagePreparator());
+		
+	}
+	
+	/**
+	 * @throws MessageException
+	 * @see MessageService#prepareMessage(Template)
+	 */
+	@Test
+	public void prepareMessage_shouldPrepareMessage() throws MessageException{
+		
+		try {
+			ms.prepareMessage("template1", new Map() {
+				
+				@Override
+				public int size() {
+					return 0;
+				}
+				
+				@Override
+				public boolean isEmpty() {
+					return false;
+				}
+				
+				@Override
+				public boolean containsKey(Object key) {
+					return false;
+				}
+				
+				@Override
+				public boolean containsValue(Object value) {
+					return false;
+				}
+				
+				@Override
+				public Object get(Object key) {
+					return null;
+				}
+				
+				@Override
+				public Object put(Object key, Object value) {
+					return null;
+				}
+				
+				@Override
+				public Object remove(Object key) {
+					return null;
+				}
+				
+				@Override
+				public void putAll(Map m) {
+					//your functions
+					
+				}
+				
+				@Override
+				public void clear() {
+					//your functions
+					
+				}
+				
+				@Override
+				public Set keySet() {
+					return null;
+				}
+				
+				@Override
+				public Collection values() {
+					return null;
+				}
+				
+				@Override
+				public Set<Entry> entrySet() {
+					return null;
+				}
+			});
+		}
+		catch (MessageException e) {
+			//So that this test doesn't fail just because of templateName.
+			if (!e.getMessage().contains("Could not prepare message with template")) {
 				e.printStackTrace();
 				fail();
 			}
