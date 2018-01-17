@@ -15,7 +15,7 @@
     "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.openmrs">
 
-	<class name="ConceptDatatype" table="concept_datatype">
+	<class name="ConceptDatatype" table="concept_datatype" mutable="false">
 	
 		<cache usage="read-only"/>
 
