@@ -77,7 +77,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Vector;
 import java.util.stream.Collectors;
 
 /**
@@ -453,7 +452,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		authenticate();
 		updateSearchIndex();
 		
-		List<PatientIdentifierType> types = new Vector<>();
+		List<PatientIdentifierType> types = new ArrayList<>();
 		types.add(new PatientIdentifierType(1));
 		// make sure we get back only one patient
 		List<Patient> patients = patientService.getPatients("1234", null, types, false);
