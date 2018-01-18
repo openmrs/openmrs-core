@@ -10,19 +10,21 @@
 package org.openmrs.api.impl;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-
+import java.util.Map;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientProgramAttribute;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
+import org.openmrs.ProgramAttributeType;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.APIException;
@@ -48,7 +50,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	private static final Logger log = LoggerFactory.getLogger(ProgramWorkflowServiceImpl.class);
 	
 	protected ProgramWorkflowDAO dao;
-	
+        
 	public ProgramWorkflowServiceImpl() {
 	}
 	
@@ -584,5 +586,43 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	public ProgramWorkflow getWorkflowByUuid(String uuid) {
 		return dao.getWorkflowByUuid(uuid);
 	}
-	
+        
+        @Override
+        public List<ProgramAttributeType> getAllProgramAttributeTypes() {
+            return dao.getAllProgramAttributeTypes();
+        }
+
+        @Override
+        public ProgramAttributeType getProgramAttributeType(Integer id) {
+            return dao.getProgramAttributeType(id);
+        }
+        
+        @Override
+        public ProgramAttributeType getProgramAttributeTypeByUuid(String uuid) {
+            return dao.getProgramAttributeTypeByUuid(uuid);
+        }
+
+        @Override
+        public ProgramAttributeType saveProgramAttributeType(ProgramAttributeType type) {
+            return dao.saveProgramAttributeType(type);
+        }
+
+        @Override
+        public void purgeProgramAttributeType(ProgramAttributeType type) {
+            dao.purgeProgramAttributeType(type);
+        }
+
+        @Override
+        public PatientProgramAttribute getPatientProgramAttributeByUuid(String uuid) {
+            return dao.getPatientProgramAttributeByUuid(uuid);
+        }
+
+        @Override
+        public Map<Object, Object> getPatientProgramAttributeByAttributeName(List<Integer> patients, String attributeName){
+            return dao.getPatientProgramAttributeByAttributeName(patients, attributeName);
+        }
+        @Override
+        public List<PatientProgram> getPatientProgramByAttributeNameAndValue(String attributeName, String attributeValue) {
+            return dao.getPatientProgramByAttributeNameAndValue(attributeName, attributeValue);
+        }	
 }

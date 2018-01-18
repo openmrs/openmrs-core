@@ -11,7 +11,10 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -19,17 +22,22 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.FlushMode;
+import org.hibernate.type.StandardBasicTypes;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientProgramAttribute;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
+import org.openmrs.ProgramAttributeType;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ProgramWorkflowDAO;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
 
 /**
  * Hibernate specific ProgramWorkflow related functions.<br>
@@ -136,11 +144,14 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@Override
 	public PatientProgram savePatientProgram(PatientProgram patientProgram) throws DAOException {
-		if (patientProgram.getPatientProgramId() == null) {
+                CustomDatatypeUtil.saveAttributesIfNecessary(patientProgram);
+
+                if (patientProgram.getPatientProgramId() == null) {
 			sessionFactory.getCurrentSession().save(patientProgram);
 		} else {
 			sessionFactory.getCurrentSession().merge(patientProgram);
 		}
+                
 		return patientProgram;
 	}
 	
@@ -382,4 +393,86 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		squery.setEntity("concept", concept);
 		return squery.list();
 	}
+        
+        @Override
+        public List<ProgramAttributeType> getAllProgramAttributeTypes() {
+            return sessionFactory.getCurrentSession().createCriteria(ProgramAttributeType.class).list();
+        }
+
+        @Override
+        public ProgramAttributeType getProgramAttributeType(Integer id) {
+            return (ProgramAttributeType) sessionFactory.getCurrentSession().get(ProgramAttributeType.class, id);
+        }
+
+        @Override
+        public ProgramAttributeType getProgramAttributeTypeByUuid(String uuid) {
+            return (ProgramAttributeType) sessionFactory.getCurrentSession().createCriteria(ProgramAttributeType.class).add(
+                    Restrictions.eq("uuid", uuid)).uniqueResult();
+        }
+
+        @Override
+        public ProgramAttributeType saveProgramAttributeType(ProgramAttributeType programAttributeType) {
+            sessionFactory.getCurrentSession().saveOrUpdate(programAttributeType);
+            return programAttributeType;
+        }
+
+        @Override
+        public PatientProgramAttribute getPatientProgramAttributeByUuid(String uuid) {
+            return (PatientProgramAttribute) sessionFactory.getCurrentSession().createCriteria(PatientProgramAttribute.class).add(Restrictions.eq("uuid", uuid)).uniqueResult();
+        }
+
+        @Override
+        public void purgeProgramAttributeType(ProgramAttributeType type) {
+            sessionFactory.getCurrentSession().delete(type);
+        }
+
+        @Override
+        public List<PatientProgram> getPatientProgramByAttributeNameAndValue(String attributeName, String attributeValue) {
+            FlushMode flushMode = sessionFactory.getCurrentSession().getFlushMode();
+            sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
+            Query query;
+            try {
+                query = sessionFactory.getCurrentSession().createQuery(
+                        "SELECT pp FROM patient_program pp " +
+                                "INNER JOIN pp.attributes attr " +
+                                "INNER JOIN attr.attributeType attr_type " +
+                                "WHERE attr.valueReference = :attributeValue " +
+                                "AND attr_type.name = :attributeName " +
+                                "AND pp.voided = 0")
+                        .setParameter("attributeName", attributeName)
+                        .setParameter("attributeValue", attributeValue);
+                return query.list();
+            } finally {
+                sessionFactory.getCurrentSession().setFlushMode(flushMode);
+            }
+        }
+
+        @Override
+        public Map<Object, Object> getPatientProgramAttributeByAttributeName(List<Integer> patientIds, String attributeName) {
+            Map<Object, Object> patientProgramAttributes = new HashMap<>();
+            if (patientIds.isEmpty() || attributeName == null) {
+                return patientProgramAttributes;
+            }
+            String commaSeperatedPatientIds = StringUtils.join(patientIds, ",");
+            List list = sessionFactory.getCurrentSession().createSQLQuery(
+                    "SELECT p.patient_id as person_id, " +
+                            " concat('{',group_concat(DISTINCT (coalesce(concat('\"',ppt.name,'\":\"', COALESCE (cn.name, ppa.value_reference),'\"'))) SEPARATOR ','),'}') AS patientProgramAttributeValue  " +
+                            " from patient p " +
+                            " join patient_program pp on p.patient_id = pp.patient_id and p.patient_id in (" + commaSeperatedPatientIds + ")" +
+                            " join patient_program_attribute ppa on pp.patient_program_id = ppa.patient_program_id and ppa.voided=0" +
+                            " join program_attribute_type ppt on ppa.attribute_type_id = ppt.program_attribute_type_id and ppt.name ='" + attributeName + "' "+
+                            " LEFT OUTER JOIN concept_name cn on ppa.value_reference = cn.concept_id and cn.concept_name_type= 'FULLY_SPECIFIED' and cn.voided=0 and ppt.datatype like '%ConceptDataType%'" +
+                            " group by p.patient_id")
+                    .addScalar("person_id", StandardBasicTypes.INTEGER)
+                    .addScalar("patientProgramAttributeValue", StandardBasicTypes.STRING)
+                    .list();
+
+            for (Object o : list) {
+                Object[] arr = (Object[]) o;
+                patientProgramAttributes.put(arr[0], arr[1]);
+            }
+
+            return patientProgramAttributes;
+
+        }
 }

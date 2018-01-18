@@ -63,6 +63,8 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Patient.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientIdentifier.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientIdentifierType.hbm.xml" />
+                <mapping resource="org/openmrs/api/db/hibernate/PatientProgram.hbm.xml" />
+                <mapping resource="org/openmrs/api/db/hibernate/PatientProgramAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Relationship.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/RelationshipType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderType.hbm.xml" />
@@ -80,9 +82,9 @@
         <mapping resource="org/openmrs/api/db/hibernate/EncounterProvider.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/EncounterRole.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Program.hbm.xml" />
+                <mapping resource="org/openmrs/api/db/hibernate/ProgramAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflow.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ProgramWorkflowState.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/PatientProgram.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientState.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Cohort.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/CohortMembership.hbm.xml"/>

@@ -9,15 +9,19 @@
  */
 package org.openmrs.api;
 
+import org.openmrs.ProgramAttributeType;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import org.openmrs.Encounter;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientProgramAttribute;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
@@ -25,6 +29,7 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Contains methods pertaining to management of Programs, ProgramWorkflows, ProgramWorkflowStates,
@@ -530,4 +535,32 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should throw an error when multiple program states with same uuid are found
 	 */
 	public ConceptStateConversion getConceptStateConversionByUuid(String uuid);
+
+        @Transactional(readOnly = true)
+        @Authorized({"Get Patient Program Attribute Types"})
+        public List<ProgramAttributeType> getAllProgramAttributeTypes();
+
+        @Transactional(readOnly = true)
+        @Authorized({"Get Patient Program Attribute Types"})
+        public ProgramAttributeType getProgramAttributeType(Integer var1);
+
+        @Transactional(readOnly = true)
+        @Authorized({"Get Patient Program Attribute Types"})
+        public ProgramAttributeType getProgramAttributeTypeByUuid(String var1);
+
+        @Authorized({"Manage Patient Program Attribute Types"})
+        public ProgramAttributeType saveProgramAttributeType(ProgramAttributeType var1);
+
+        @Authorized({"Purge Patient Program Attribute Types"})
+        public void purgeProgramAttributeType(ProgramAttributeType var1);
+
+        @Transactional(readOnly = true)
+        @Authorized({"Get Patient Programs"})
+        public PatientProgramAttribute getPatientProgramAttributeByUuid(String var1);
+
+        public Map<Object, Object> getPatientProgramAttributeByAttributeName(List<Integer> patients, String attributeName);
+
+        @Transactional(readOnly = true)
+        @Authorized({"Get Patient Programs"})
+        public List<PatientProgram> getPatientProgramByAttributeNameAndValue(String attributeName, String attributeValue);       
 }

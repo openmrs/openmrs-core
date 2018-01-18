@@ -13,15 +13,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Collection;
 
+import org.openmrs.customdatatype.CustomValueDescriptor;
+import org.openmrs.customdatatype.Customizable;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * PatientProgram
  */
-public class PatientProgram extends BaseChangeableOpenmrsData {
+public class PatientProgram extends BaseChangeableOpenmrsData implements Customizable<PatientProgramAttribute>{
 	
 	public static final long serialVersionUID = 0L;
 	
@@ -44,6 +48,8 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 	private Concept outcome;
 	
 	private Set<PatientState> states = new HashSet<>();
+         
+        private Set<PatientProgramAttribute> attributes = new LinkedHashSet();
 	
 	// ******************
 	// Constructors
@@ -57,7 +63,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 	public PatientProgram(Integer patientProgramId) {
 		setPatientProgramId(patientProgramId);
 	}
-	
+
 	/**
 	 * Does a mostly-shallow copy of this PatientProgram. Does not copy patientProgramId. The
 	 * 'states' property will be deep-copied.
@@ -398,4 +404,86 @@ public class PatientProgram extends BaseChangeableOpenmrsData {
 		Collections.sort(sortedStates);
 		return sortedStates;
 	}
+
+        @Override
+        public Set<PatientProgramAttribute> getAttributes() {
+            return attributes;
+        }
+
+        @Override
+        public Collection<PatientProgramAttribute> getActiveAttributes() {
+            ArrayList<PatientProgramAttribute> ret = new ArrayList<>();
+
+            if (this.getAttributes() != null) {
+                for (PatientProgramAttribute attr : this.getAttributes()) {
+                    if (!attr.isVoided()) {
+                        ret.add(attr);
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        @Override
+        public List<PatientProgramAttribute> getActiveAttributes(CustomValueDescriptor ofType) {
+            ArrayList<PatientProgramAttribute> ret = new ArrayList<>();
+
+            if (this.getAttributes() != null) {
+                for (PatientProgramAttribute attr : this.getAttributes()) {
+                    if (attr.getAttributeType().equals(ofType) && !attr.isVoided()) {
+                        ret.add(attr);
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        @Override
+        public void addAttribute(PatientProgramAttribute attribute) {
+            if (this.getAttributes() == null) {
+                this.setAttributes(new LinkedHashSet());
+            }
+
+            this.getAttributes().add(attribute);
+            attribute.setOwner(this);
+        }
+
+        public void setAttributes(Set<PatientProgramAttribute> attributes) {
+            this.attributes = attributes;
+        }
+
+        public void setAttribute(PatientProgramAttribute attribute) {
+            if (this.getAttributes() == null) {
+                this.addAttribute(attribute);
+            } else {
+                if (this.getActiveAttributes(attribute.getAttributeType()).size() == 1) {
+                    PatientProgramAttribute patientProgramAttribute = this.getActiveAttributes(attribute.getAttributeType()).get(0);
+                    if (!patientProgramAttribute.getValue().equals(attribute.getValue())) {
+                        if (patientProgramAttribute.getId() != null) {
+                            patientProgramAttribute.setVoided(Boolean.TRUE);
+                        } else {
+                            this.getAttributes().remove(patientProgramAttribute);
+                        }
+
+                        this.getAttributes().add(attribute);
+                        attribute.setOwner(this);
+                    }
+                } else {
+                    for (PatientProgramAttribute existing : this.getActiveAttributes(attribute.getAttributeType())) {
+                        if (existing.getAttributeType().equals(attribute.getAttributeType())) {
+                            if (existing.getId() != null) {
+                                existing.setVoided(Boolean.TRUE);
+                            } else {
+                                this.getAttributes().remove(existing);
+                            }
+                        }
+                    }
+
+                    this.getAttributes().add(attribute);
+                    attribute.setOwner(this);
+                }
+            }
+        }
 }
