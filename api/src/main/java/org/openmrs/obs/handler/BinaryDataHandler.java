@@ -45,8 +45,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 	}
 	
 	/**
-	 * Currently supports the following views:
-	 * org.openmrs.obs.ComplexObsHandler#RAW_VIEW
+	 * Currently supports the following views: org.openmrs.obs.ComplexObsHandler#RAW_VIEW
 	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */
@@ -71,8 +70,6 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			catch (IOException e) {
 				log.error("Trying to read file: " + file.getAbsolutePath(), e);
 			}
-			
-			obs.setComplexData(complexData);
 		} else {
 			// No other view supported
 			// NOTE: if adding support for another view, don't forget to update supportedViews list above
@@ -80,7 +77,11 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		}
 		
 		Assert.notNull(complexData, "Complex data must not be null");
-		complexData.setMimeType("application/octet-stream");
+		
+		// Get the Mime Type and set it
+		String mimeType = OpenmrsUtil.getFileMimeType(file);
+		complexData.setMimeType(mimeType);
+		
 		obs.setComplexData(complexData);
 		
 		return obs;

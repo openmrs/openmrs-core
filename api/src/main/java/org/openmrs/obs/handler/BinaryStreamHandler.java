@@ -58,11 +58,12 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 	@Override
 	public Obs getObs(Obs obs, String view) {
 		ComplexData complexData = null;
+		File file = null;
 		
 		// Raw stream
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
 			try {
-				File file = getComplexDataFile(obs);
+				file = getComplexDataFile(obs);
 				String[] names = obs.getValueComplex().split("\\|");
 				String originalFilename = names[0];
 				originalFilename = originalFilename.replace(",", "").replace(" ", "");
@@ -84,7 +85,11 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 		}
 		
 		Assert.notNull(complexData, "Complex data must not be null");
-		complexData.setMimeType("application/octet-stream");
+		
+		// Get the Mime Type and set it
+		String mimeType = OpenmrsUtil.getFileMimeType(file);
+		complexData.setMimeType(mimeType);
+		
 		obs.setComplexData(complexData);
 		
 		return obs;
