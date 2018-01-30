@@ -60,10 +60,13 @@ public class AbstractHandler {
 	 */
 	public File getOutputFileToWrite(Obs obs) throws IOException {
 		// Get the title and remove the extension.
-		String t = obs.getComplexData().getTitle();
-		
-		String extension = getExtension(t);
 		String title = obs.getComplexData().getTitle();
+		String extension = "." + getExtension(title);
+		
+		// If getExtension returns the title, there was no extension
+		if (getExtension(title).equals(title)) {
+			extension = "";
+		}
 		
 		File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
@@ -74,8 +77,9 @@ public class AbstractHandler {
 			String now = longfmt.format(new Date());
 			outputfile = new File(dir, now);
 		} else {
-			title = title.replace("." + extension, "");
-			outputfile = new File(dir, title + "." + extension);
+			title = title.replace(extension, "");
+			
+			outputfile = new File(dir, title + extension);
 		}
 		
 		int i = 0;
@@ -85,12 +89,12 @@ public class AbstractHandler {
 		// count number to the filename and save it.
 		while (obs.getObsId() == null && outputfile.exists() && i < 100) {
 			// Remove the extension from the filename.
-			tmp = String.valueOf(outputfile.getAbsolutePath().replace("." + extension, ""));
+			tmp = String.valueOf(outputfile.getAbsolutePath().replace(extension, ""));
 			// Append two-digit count number to the filename.
 			String filename = (i < 1) ? tmp + "_" + nf.format(Integer.valueOf(++i)) : tmp.replace(nf.format(Integer
 			        .valueOf(i)), nf.format(Integer.valueOf(++i)));
-			// Append the extension to the filename.
-			outputfile = new File(filename + "." + extension);
+			// Append the extension to the filename
+			outputfile = new File(filename + extension);
 		}
 		
 		return outputfile;
@@ -130,7 +134,8 @@ public class AbstractHandler {
 		catch (IOException e) {
 			log.error("Trying to read file: " + file.getAbsolutePath(), e);
 		}
-		
+		String mimeType = OpenmrsUtil.getFileMimeType(file);
+		complexData.setMimeType(mimeType);
 		obs.setComplexData(complexData);
 		
 		return obs;

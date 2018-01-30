@@ -27,6 +27,7 @@ import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,13 +82,15 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 			
 			ComplexData complexData = new ComplexData(file.getName(), img);
 			
+			String mimeType = null;
+			
 			// Image MIME type
 			try {
 				FileImageInputStream imgStream = new FileImageInputStream(file);
 				Iterator<ImageReader> imgReader = ImageIO.getImageReaders(imgStream);
 				imgStream.close();
 				if (imgReader.hasNext()) {
-					complexData.setMimeType("image/" + imgReader.next().getFormatName().toLowerCase());
+					mimeType = "image/" + imgReader.next().getFormatName().toLowerCase();
 				} else {
 					log.warn("MIME type of " + file.getAbsolutePath() + " is not known");
 				}
@@ -98,6 +101,11 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 			catch (IOException e) {
 				log.error("Trying to determine MIME type of " + file.getAbsolutePath(), e);
 			}
+					
+			// If the mimetype is still null, determine it via getFileMimeType()
+			mimeType = mimeType != null ? mimeType : OpenmrsUtil.getFileMimeType(file);
+			
+			complexData.setMimeType(mimeType);	
 			
 			obs.setComplexData(complexData);
 		} else {
@@ -163,9 +171,9 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 			
 		}
 		catch (IOException ioe) {
-		   if (outfile != null && outfile.length() == 0) {
-		      outfile.delete(); // OpenJDK 7 & 8 may leave a 0-byte file when ImageIO.write(..) fails.
-		   }
+			if (outfile != null && outfile.length() == 0) {
+				outfile.delete(); // OpenJDK 7 & 8 may leave a 0-byte file when ImageIO.write(..) fails.
+			}
 			throw new APIException("Obs.error.trying.write.complex", null, ioe);
 		}
 		
