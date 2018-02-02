@@ -252,44 +252,4 @@ public class CohortMembershipTest {
 		
 		assertThat(list, contains(startedRecently, startedLongAgo, noStartOrEnd, endedRecently, endedLongAgo, voided));
 	}
-	
-	@Test
-	public void compareTo_shouldIgnoreUuidDifferences() {
-		CohortMembership firstMembership = new CohortMembership(4);
-		CohortMembership secondMembership = new CohortMembership(4);
-		
-		Cohort cohort = new Cohort(2);
-		firstMembership.setCohort(cohort);
-		secondMembership.setCohort(cohort);
-		
-		Date date = new Date();
-		firstMembership.setStartDate(date);
-		secondMembership.setStartDate(date);
-		
-		firstMembership.setUuid("same-uuid1");
-		secondMembership.setUuid("same-uuid2");
-		
-		assertEquals(0, firstMembership.compareTo(secondMembership));
-		assertEquals(0, secondMembership.compareTo(firstMembership));
-	}
-	
-	@Test
-	public void compareTo_shouldIgnoreStartDatesWithLessThanOneHourDifference() throws Exception { 
-		CohortMembership firstMembership = new CohortMembership(4);
-		CohortMembership secondMembership = new CohortMembership(4);
-		
-		Cohort cohort = new Cohort(2);
-		firstMembership.setCohort(cohort);
-		secondMembership.setCohort(cohort);
-
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		firstMembership.setStartDate(dateFormat.parse("2017-01-01 23:59:00"));
-		secondMembership.setStartDate(dateFormat.parse("2017-01-02 00:00:00"));
-		
-		firstMembership.setUuid("same-uuid");
-		secondMembership.setUuid("same-uuid");
-		
-		assertEquals(0, firstMembership.compareTo(secondMembership));
-		assertEquals(0, secondMembership.compareTo(firstMembership));
-	}
 }

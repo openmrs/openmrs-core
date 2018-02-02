@@ -134,31 +134,14 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 			ret = -OpenmrsUtil.compareWithNullAsLatest(this.getEndDate(), o.getEndDate());
 		}
 		if (ret == 0) {
-			//When cohort members are built from patient ids, they are given start dates at 
-			//the time of instantiation using the CohortMembership(Integer) constructor
-			//Since this is done in a loop, the dates will be different but almost the same
-			//We assume that the difference will be in seconds, and hence not exceed one minute
-			if (this.getStartDate() == null || o.getStartDate() == null || getMinutesBetween(this.getStartDate(), o.getStartDate()) > 1) {
-				ret = -OpenmrsUtil.compareWithNullAsEarliest(this.getStartDate(), o.getStartDate());
-			}
+			ret = -OpenmrsUtil.compareWithNullAsEarliest(this.getStartDate(), o.getStartDate());
 		}
 		if (ret == 0) {
 			ret = this.getPatientId().compareTo(o.getPatientId());
 		}
-		return ret;
-	}
-	
-	/**
-	 * Gets the number of minutes between two dates
-	 * 
-	 * @param date1 the first date
-	 * @param date2 the second date
-	 * @return the number of minutes between two given dates. Returns 0 if any of the dates is null
-	 */
-	private static long getMinutesBetween(Date date1, Date date2) {
-		if (date1 == null || date2 == null) {
-			return 0;
+		if (ret == 0) {
+			ret = this.getUuid().compareTo(o.getUuid());
 		}
-		return Math.abs((date1.getTime() - date2.getTime()) / (1000 * 60));
+		return ret;
 	}
 }
