@@ -274,7 +274,7 @@ public class CohortMembershipTest {
 	}
 	
 	@Test
-	public void compareTo_shouldIgnoreStartDatesWithLessThanOneMinuteDifference() throws Exception { 
+	public void compareTo_shouldIgnoreStartDatesWithLessThanOneHourDifference() throws Exception { 
 		CohortMembership firstMembership = new CohortMembership(4);
 		CohortMembership secondMembership = new CohortMembership(4);
 		
