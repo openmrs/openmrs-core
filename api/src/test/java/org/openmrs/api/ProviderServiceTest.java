@@ -26,7 +26,6 @@ import java.util.TreeSet;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
@@ -478,12 +477,11 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		Context.getPersonService().savePerson(person);
 		assertEquals(1, service.getCountOfProviders("Hippo").intValue());
 	}
-	
+
 	/**
 	 * @see ProviderService#getCountOfProviders(String)
 	 */
 	@Test
-	@Ignore
 	public void getCountOfProviders_shouldExcludeRetiredProviders() {
 		assertEquals(2, service.getCountOfProviders("provider").intValue());
 	}
@@ -492,9 +490,8 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 * @see ProviderService#getCountOfProviders(String,null)
 	 */
 	@Test
-	@Ignore
 	public void getCountOfProviders_shouldIncludeRetiredProvidersIfIncludeRetiredIsSetToTrue() {
-		assertEquals(4, service.getCountOfProviders("provider").intValue());
+		assertEquals(4, service.getCountOfProviders("provider", true).intValue());
 	}
 	
 	/**
