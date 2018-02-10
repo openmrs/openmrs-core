@@ -24,7 +24,9 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	
 	private ProgramWorkflow programWorkflow;
 	
-	private Concept concept;
+	private String name;
+	
+	private String description;
 	
 	private Boolean initial;
 	
@@ -50,20 +52,12 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	/** @see Object#toString() */
 	@Override
 	public String toString() {
-		return "State " + getConcept().getName() + " initial=" + getInitial() + " terminal=" + getTerminal();
+		return "State " + getName() + " initial=" + getInitial() + " terminal=" + getTerminal();
 	}
 	
 	// ******************
 	// Property Access
 	// ******************
-	
-	public Concept getConcept() {
-		return concept;
-	}
-	
-	public void setConcept(Concept concept) {
-		this.concept = concept;
-	}
 	
 	public Boolean getInitial() {
 		return initial;
@@ -113,6 +107,34 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	@Override
 	public void setId(Integer id) {
 		setProgramWorkflowStateId(id);
+		
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	/*
+	 * Initializes {@link ProgramWorkflowState} <code>name</code> and <code>description</code> with {@link Concept} properties.
+	 * @param concept the {@link Concept} used to initialize the {@link ProgramWorkflowState}
+	 */
+	public void initializeWorkflowStateWithConcept(Concept concept) {
+		this.name = concept.getName().getName();
+		if (concept.getDescription() != null) {
+			this.description = concept.getDescription().getDescription();
+		}
 		
 	}
 }

@@ -55,7 +55,6 @@ public class ProgramValidator implements Validator {
 			errors.rejectValue("program", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "concept", "error.concept");
 			
 			Program existingProgram = Context.getProgramWorkflowService().getProgramByName(p.getName());
 			if (existingProgram != null && !existingProgram.getUuid().equals(p.getUuid())) {

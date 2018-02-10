@@ -34,7 +34,9 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	
 	private Program program;
 	
-	private Concept concept;
+	private String name;
+	
+	private String description;
 	
 	private Set<ProgramWorkflowState> states = new HashSet<>();
 	
@@ -103,22 +105,6 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	}
 	
 	/**
-	 * Returns a {@link ProgramWorkflowState} whose Concept matches the passed concept
-	 * 
-	 * @param concept the Concept to match
-	 * @return Returns a {@link ProgramWorkflowState} whose {@link Concept} matches the passed
-	 *         <code>concept</code>
-	 */
-	public ProgramWorkflowState getState(Concept concept) {
-		for (ProgramWorkflowState s : getStates()) {
-			if (s.getConcept().equals(concept)) {
-				return s;
-			}
-		}
-		return null;
-	}
-	
-	/**
 	 * Returns a {@link ProgramWorkflowState} whose Concept name matches the passed name in any
 	 * {@link Locale}
 	 * 
@@ -128,7 +114,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	 */
 	public ProgramWorkflowState getState(String name) {
 		for (ProgramWorkflowState s : getStates()) {
-			if (s.getConcept().isNamed(name)) {
+			if (s.getName().equals(name)) {
 				return s;
 			}
 		}
@@ -145,7 +131,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	 */
 	public ProgramWorkflowState getStateByName(String name) {
 		for (ProgramWorkflowState s : getStates()) {
-			if (s.getConcept().isNamed(name)) {
+			if (s.getName().equals(name)) {
 				return s;
 			}
 		}
@@ -181,7 +167,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	public Set<ProgramWorkflowState> getSortedStates() {
 		final Comparator<String> naturalComparator = NaturalStrings.getNaturalComparator();
 		
-		Comparator<ProgramWorkflowState> stateComparator = (o1, o2) -> naturalComparator.compare(o1.getConcept().getName().getName(), o2.getConcept().getName().getName());
+		Comparator<ProgramWorkflowState> stateComparator = (o1, o2) -> naturalComparator.compare(o1.getName(), o2.getName());
 		
 		Set<ProgramWorkflowState> sorted = new TreeSet<>(stateComparator);
 		if (getStates() != null) {
@@ -246,13 +232,6 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 		this.states = states;
 	}
 	
-	public Concept getConcept() {
-		return concept;
-	}
-	
-	public void setConcept(Concept concept) {
-		this.concept = concept;
-	}
 	
 	public Program getProgram() {
 		return program;
@@ -298,5 +277,33 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	 */
 	public int getNonRetiredStateCount() {
 		return getStates(false).size();
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	/*
+	 * Initializes {@link ProgramWorkflow} <code>name</code> and <code>description</code> with {@link Concept} properties.
+	 * @param concept the {@link Concept} used to initialize the {@link ProgramWorkflow}
+	 */
+	public void initializeWorkflowWithConcept(Concept concept) {
+		this.name = concept.getName().getName();
+		if (concept.getDescription() != null) {
+			this.description = concept.getDescription().getDescription();
+		}
+		
 	}
 }

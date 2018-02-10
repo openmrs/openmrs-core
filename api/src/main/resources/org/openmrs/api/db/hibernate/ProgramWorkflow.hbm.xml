@@ -27,6 +27,12 @@
 
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
+			
+		<property name="name" type="java.lang.String"
+			column="name" not-null="true" length="100" />
+			
+		<property name="description" type="java.lang.String"
+			column="description" length="500" />
 
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
 		
@@ -35,8 +41,6 @@
 		<property name="retired" type="java.lang.Boolean" column="retired" length="1" not-null="true" />
 		
 		<many-to-one name="program" class="Program" column="program_id" not-null="true" />
-	
-		<many-to-one name="concept" class="Concept" column="concept_id" not-null="true" />
 	
 		<many-to-one name="creator" class="User" column="creator" not-null="true" />
 		

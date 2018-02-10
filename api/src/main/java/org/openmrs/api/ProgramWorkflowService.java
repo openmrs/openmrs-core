@@ -492,33 +492,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs);
 		
 	/**
-	 * Returns a list of Programs that are using a particular concept.
-	 * 
-	 * @param concept - The Concept being used.
-	 * @return - A List of Programs
-	 */
-	@Authorized( { PrivilegeConstants.GET_PATIENT_PROGRAMS })
-	public List<Program> getProgramsByConcept(Concept concept);
-	
-	/**
-	 * Returns a list of ProgramWorkflows that are using a particular concept.
-	 * 
-	 * @param concept - The Concept being used.
-	 * @return - A List of ProgramWorkflows
-	 */
-	@Authorized( { PrivilegeConstants.GET_PATIENT_PROGRAMS })
-	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept);
-	
-	/**
-	 * Returns a list of ProgramWorkflowStates that are using a particular concept.
-	 * 
-	 * @param concept - The Concept being used.
-	 * @return - A List of ProgramWorkflowStates
-	 */
-	@Authorized( { PrivilegeConstants.GET_PATIENT_PROGRAMS })
-	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept);
-	
-	/**
 	 * Get a concept state conversion by its uuid. There should be only one of these in the
 	 * database. If multiple are found, an error is thrown.
 	 * 

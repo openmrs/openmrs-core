@@ -28,7 +28,9 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	
 	private Integer programId;
 	
-	private Concept concept;
+	private String description;
+	
+	private String name;
 	
 	/**
 	 * Represents the possible outcomes for this program. The concept should have answers or a
@@ -106,7 +108,7 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	 */
 	public ProgramWorkflow getWorkflowByName(String name) {
 		for (ProgramWorkflow pw : getAllWorkflows()) {
-			if (pw.getConcept().isNamed(name)) {
+			if (pw.getName().equals(name)) {
 				return pw;
 			}
 		}
@@ -116,19 +118,27 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	/** @see Object#toString() */
 	@Override
 	public String toString() {
-		return "Program(id=" + getProgramId() + ", concept=" + getConcept() + ", workflows=" + getWorkflows() + ")";
+		return "Program(id=" + getProgramId()+ ", workflows=" + getWorkflows() + ")";
 	}
 	
 	// ******************
 	// Property Access
 	// ******************
 	
-	public Concept getConcept() {
-		return concept;
+	public String getName() {
+		return name;
+    }
+		 
+	public void setName(String name) {
+		this.name = name;
+    }
+		 
+    public String getDescription() {
+		return description;
 	}
-	
-	public void setConcept(Concept concept) {
-		this.concept = concept;
+		 
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	public Concept getOutcomesConcept() {
@@ -212,6 +222,17 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	@Override
 	public void setId(Integer id) {
 		setProgramId(id);
+		
+	}
+	/*
+	 * Initializes {@link Program} <code>name</code> and <code>description</code> with {@link Concept} properties.
+	 * @param concept the {@link Concept} used to initialize the {@link Program}
+	 */
+	public void initializeProgWithConcept(Concept concept) {
+		this.name = concept.getName().getName();
+		if (concept.getDescription() != null) {
+			this.description = concept.getDescription().getDescription();
+		}
 		
 	}
 }
