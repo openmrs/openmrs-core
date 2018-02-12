@@ -19,6 +19,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.openmrs.Concept;
+import org.openmrs.Patient;
+import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
@@ -172,5 +175,55 @@ public class ProgramWorkflowServiceUnitTest {
 		program.addWorkflow(workflow);
 		
 		pws.saveProgram(program);
+	}
+	
+	@Test
+	public void savePatientProgram_shouldFailForNullPatient() {
+		
+		exception.expect(APIException.class);
+		exception.expectMessage("PatientProgram requires a Patient and a Program");
+		
+		PatientProgram patientProgram = new PatientProgram(1);
+		patientProgram.setProgram(new Program(1));
+		
+		pws.savePatientProgram(patientProgram);
+	}
+	
+	@Test
+	public void savePatientProgram_shouldFailForNullProgram() {
+		
+		exception.expect(APIException.class);
+		exception.expectMessage("PatientProgram requires a Patient and a Program");
+		
+		PatientProgram patientProgram = new PatientProgram(1);
+		patientProgram.setPatient(new Patient(1));
+		
+		pws.savePatientProgram(patientProgram);
+	}
+	
+	@Test
+	public void purgePatientProgram_shouldFailGivenNonEmptyStatesAndTrueCascade() {
+		
+		exception.expect(APIException.class);
+		exception.expectMessage("Cascade purging of PatientPrograms is not implemented yet");
+		
+		PatientProgram patientProgram = new PatientProgram();
+		PatientState patientState = new PatientState();
+		patientProgram.getStates().add(patientState);
+		
+		pws.purgePatientProgram(patientProgram, true);
+	}
+	
+	@Test
+	public void purgeProgram_shouldFailGivenNonEmptyWorkFlowsAndTrueCascade() {
+		
+		exception.expect(APIException.class);
+		exception.expectMessage("Cascade purging of Programs is not implemented yet");
+		
+		Program program = new Program(1);
+		ProgramWorkflow workflow = new ProgramWorkflow(1);
+		program.addWorkflow(workflow);
+		
+		pws.purgeProgram(program, true);
 	}
 }
