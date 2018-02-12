@@ -520,7 +520,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 * @see ProviderService#getCountOfProviders(String)
 	 */
 	@Test
-	@Ignore
 	@Verifies(value = "should exclude retired providers", method = "getCountOfProviders(String)")
 	public void getCountOfProviders_shouldExcludeRetiredProviders() throws Exception {
 		assertEquals(2, service.getCountOfProviders("provider").intValue());
@@ -530,10 +529,9 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 * @see ProviderService#getCountOfProviders(String,null)
 	 */
 	@Test
-	@Ignore
 	@Verifies(value = "should include retired providers if includeRetired is set to true", method = "getCountOfProviders(String,null)")
 	public void getCountOfProviders_shouldIncludeRetiredProvidersIfIncludeRetiredIsSetToTrue() throws Exception {
-		assertEquals(4, service.getCountOfProviders("provider").intValue());
+		assertEquals(4, service.getCountOfProviders("provider", true).intValue());
 	}
 	
 	/**
