@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -25,6 +25,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
@@ -63,6 +64,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	/**
 	 * @see org.openmrs.api.db.ProviderDAO#saveProvider(org.openmrs.Provider)
 	 */
+	@Override
 	public Provider saveProvider(Provider provider) {
 		getSession().saveOrUpdate(provider);
 		return provider;
@@ -81,7 +83,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public Provider getProvider(Integer id) {
-		return (Provider) getSession().load(Provider.class, id);
+		return (Provider) getSession().get(Provider.class, id);
 	}
 	
 	/**
@@ -116,7 +118,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public ProviderAttribute getProviderAttribute(Integer providerAttributeID) {
-		return (ProviderAttribute) getSession().load(ProviderAttribute.class, providerAttributeID);
+		return (ProviderAttribute) getSession().get(ProviderAttribute.class, providerAttributeID);
 	}
 	
 	/**
@@ -184,14 +186,15 @@ public class HibernateProviderDAO implements ProviderDAO {
 		}
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class).createAlias("person", "p",
-		    Criteria.LEFT_JOIN);
+		    JoinType.LEFT_OUTER_JOIN);
+		
 		if (!includeRetired) {
 			criteria.add(Restrictions.eq("retired", false));
 		}
 		
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		
-		criteria.createAlias("p.names", "personName", Criteria.LEFT_JOIN);
+		criteria.createAlias("p.names", "personName", JoinType.LEFT_OUTER_JOIN);
 		
 		Disjunction or = Restrictions.disjunction();
 		or.add(Restrictions.ilike("identifier", name, getMatchMode()));
@@ -238,9 +241,8 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public Long getCountOfProviders(String name, boolean includeRetired) {
-		Criteria criteria = prepareProviderCriteria(name, includeRetired);
-		criteria.setProjection(Projections.countDistinct("providerId"));
-		return (Long) criteria.uniqueResult();
+	  Criteria criteria = prepareProviderCriteria(name, includeRetired);
+	  return (long) criteria.list().size();
 	}
 	
 	/* (non-Javadoc)
@@ -274,7 +276,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 */
 	@Override
 	public ProviderAttributeType getProviderAttributeType(Integer providerAttributeTypeId) {
-		return (ProviderAttributeType) getSession().load(ProviderAttributeType.class, providerAttributeTypeId);
+		return (ProviderAttributeType) getSession().get(ProviderAttributeType.class, providerAttributeTypeId);
 	}
 	
 	/* (non-Javadoc)
