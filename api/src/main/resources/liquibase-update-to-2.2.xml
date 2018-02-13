@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!--
+    This file contains all changesets that have been introduced on top of liquibase-update-to-2.0.xml exclusively.
+    If you intend for a changeset to be backported to older releases, you must put such a changeset in the
+    liquibase-update-to-2.0.xml, which have been used for older releases.
+-->
+<databaseChangeLog logicalFilePath="liquibase-update-to-latest.xml" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<!--
+		See http://www.liquibase.org/manual/home#available_database_refactorings
+		for a list of supported elements and attributes
+	-->
+	<changeSet id="TRUNK-4755" author="Rahul,Swathi" dbms="mysql">
+            <preConditions onFail="MARK_RAN">
+                <not>
+                    <tableExists tableName="program_attribute_type" />
+                </not>
+            </preConditions>
+            <comment>Creating program_attribute_type table</comment>
+            <createTable tableName="program_attribute_type">
+                <column name="program_attribute_type_id" type="int" autoIncrement="true">
+                    <constraints primaryKey="true" nullable="false" />
+                </column>
+                <column name="name" type="varchar(255)">
+                    <constraints nullable="false"  unique="true"/>
+                </column>
+                <column name="description" type="varchar(1024)" />
+                <column name="datatype" type="varchar(255)" />
+                <column name="datatype_config" type="text" />
+                <column name="preferred_handler" type="varchar(255)" />
+                <column name="handler_config" type="text" />
+                <column name="min_occurs" type="int">
+                    <constraints nullable="false" />
+                </column>
+                <column name="max_occurs" type="int"></column>
+                <column name="creator" type="int">
+                    <constraints nullable="false" />
+                </column>
+                <column name="date_created" type="datetime">
+                    <constraints nullable="false" />
+                </column>
+                <column name="changed_by" type="int" />
+                <column name="date_changed" type="datetime" />
+                <column name="retired" type="smallint" defaultValueNumeric="0">
+                    <constraints nullable="false" />
+                </column>
+                <column name="retired_by" type="int(11)" />
+                <column name="date_retired" type="datetime" />
+                <column name="retire_reason" type="varchar(255)" defaultValue="null" />
+                <column name="uuid" type="char(38)">
+                    <constraints nullable="false" unique="true" />
+                </column>
+            </createTable>
+            <addForeignKeyConstraint constraintName="program_attribute_type_creator_fk"
+                                     baseTableName="program_attribute_type" baseColumnNames="creator"
+                                     referencedTableName="users" referencedColumnNames="user_id" />
+            <addForeignKeyConstraint constraintName="program_attribute_type_changed_by_fk"
+                                     baseTableName="program_attribute_type" baseColumnNames="changed_by"
+                                     referencedTableName="users" referencedColumnNames="user_id" />
+            <addForeignKeyConstraint constraintName="program_attribute_type_retired_by_fk"
+                                     baseTableName="program_attribute_type" baseColumnNames="retired_by"
+                                     referencedTableName="users" referencedColumnNames="user_id" />
+        </changeSet>
+        <changeSet id="20151218-1530" author="Rahul,Swathi">
+            <preConditions onFail="MARK_RAN">
+                <not>
+                    <tableExists tableName="patient_program_attribute" />
+                </not>
+            </preConditions>
+             <comment>Creating patient_program_attribute table</comment>
+            <createTable tableName="patient_program_attribute">
+                <column name="patient_program_attribute_id" type="int" autoIncrement="true">
+                    <constraints primaryKey="true" nullable="false" />
+                </column>
+                <column name="patient_program_id" type="int"><constraints nullable="false" /></column>
+                <column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+                <column name="value_reference" type="text"><constraints nullable="false" /></column>
+                <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+                <column name="creator" type="int"><constraints nullable="false"/></column>
+                <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+                <column name="changed_by" type="int"/>
+                <column name="date_changed" type="datetime" />
+                <column name="voided" type="boolean" defaultValueBoolean="false">
+                    <constraints nullable="false" />
+                </column>
+                <column name="voided_by" type="int" />
+                <column name="date_voided" type="datetime" />
+                <column name="void_reason" type="varchar(255)" defaultValue="null"/>
+            </createTable>
+            <addForeignKeyConstraint constraintName="patient_program_attribute_programid_fk"
+                                     baseTableName="patient_program_attribute" baseColumnNames="patient_program_id"
+                                     referencedTableName="patient_program" referencedColumnNames="patient_program_id" />
+            <addForeignKeyConstraint constraintName="patient_program_attribute_attributetype_fk"
+                                     baseTableName="patient_program_attribute" baseColumnNames="attribute_type_id"
+                                     referencedTableName="program_attribute_type" referencedColumnNames="program_attribute_type_id" />
+            <addForeignKeyConstraint constraintName="patient_program_attribute_creator_fk"
+                                     baseTableName="patient_program_attribute" baseColumnNames="creator"
+                                     referencedTableName="users" referencedColumnNames="user_id" />
+            <addForeignKeyConstraint constraintName="patient_program_attribute_changed_by_fk"
+                                     baseTableName="patient_program_attribute" baseColumnNames="changed_by"
+                                     referencedTableName="users" referencedColumnNames="user_id" />
+            <addForeignKeyConstraint constraintName="patient_program_attribute_retired_by_fk"
+                                     baseTableName="patient_program_attribute" baseColumnNames="voided_by"
+            referencedTableName="users" referencedColumnNames="user_id" />
+    </changeSet>
+    
+</databaseChangeLog>

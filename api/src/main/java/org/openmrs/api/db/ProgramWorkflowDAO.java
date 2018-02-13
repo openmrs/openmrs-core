@@ -9,15 +9,18 @@
  */
 package org.openmrs.api.db;
 
+import org.openmrs.ProgramAttributeType;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientProgramAttribute;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
@@ -277,4 +280,19 @@ public interface ProgramWorkflowDAO {
 	 * @return - A List of ProgramWorkflowStates
 	 */
 	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept);
+        public List getAllProgramAttributeTypes();
+
+        public ProgramAttributeType getProgramAttributeType(Integer var1);
+
+        public ProgramAttributeType getProgramAttributeTypeByUuid(String var1);
+
+        public ProgramAttributeType saveProgramAttributeType(ProgramAttributeType var1);
+
+        public PatientProgramAttribute getPatientProgramAttributeByUuid(String var1);
+
+        public void purgeProgramAttributeType(ProgramAttributeType var1);
+
+        public List<PatientProgram> getPatientProgramByAttributeNameAndValue(String attributeName, String attributeValue);
+
+        public Map<Object, Object> getPatientProgramAttributeByAttributeName(List<Integer> patientIds, String attributeName);
 }

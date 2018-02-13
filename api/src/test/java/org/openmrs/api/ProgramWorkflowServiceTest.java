@@ -32,6 +32,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
+import org.openmrs.ProgramAttributeType;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
@@ -49,7 +50,9 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String PROGRAM_WITH_OUTCOMES_XML = "org/openmrs/api/include/ProgramWorkflowServiceTest-initialData.xml";
 	
-	protected ProgramWorkflowService pws = null;
+	protected static final String PROGRAM_ATTRIBUTES_XML = "org/openmrs/api/include/ProgramAttributesDataset.xml";
+        
+        protected ProgramWorkflowService pws = null;
 	
 	protected AdministrationService adminService = null;
 	
@@ -60,7 +63,8 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	@Before
 	public void runBeforeEachTest() {
 		executeDataSet(CREATE_PATIENT_PROGRAMS_XML);
-		
+		executeDataSet(PROGRAM_ATTRIBUTES_XML);
+                
 		if (pws == null) {
 			pws = Context.getProgramWorkflowService();
 			adminService = Context.getAdministrationService();
@@ -472,7 +476,40 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		// make sure that the program was deleted properly
 		assertNull(Context.getProgramWorkflowService().getProgram(2));
 	}
-	
+	@Test
+	public void shouldTestGetAllProgramAttributeTypes() throws Exception {
+                assertEquals(1, pws.getAllProgramAttributeTypes().size());
+	}
+
+	@Test
+	public void shouldTestGetProgramAttributeType() throws Exception {
+
+		ProgramAttributeType programAttributeType  = pws.getProgramAttributeType(1);
+		assertEquals("d7477c21-bfc3-4922-9591-e89d8b9c8efb",programAttributeType.getUuid());
+	}
+
+	@Test
+	public void shouldTestGetProgramAttributeTypeByUuid() throws Exception {
+		ProgramAttributeType p = pws.getProgramAttributeTypeByUuid("d7477c21-bfc3-4922-9591-e89d8b9c8efb");
+		assertEquals("ProgramId",p.getName());
+	}
+
+	@Test
+	public void shouldTestSaveProgramAttributeType() throws Exception {
+		assertEquals(1,pws.getAllProgramAttributeTypes().size());
+		ProgramAttributeType programAttributeType = new ProgramAttributeType();
+		programAttributeType.setName("test");
+		pws.saveProgramAttributeType(programAttributeType);
+		assertEquals(2,pws.getAllProgramAttributeTypes().size());
+	}
+
+	@Test
+	public void shouldTestPurgeProgramAttributeType() throws Exception {
+		ProgramAttributeType programAttributeType = pws.getProgramAttributeType(1);
+                int totalAttributeTypes = pws.getAllProgramAttributeTypes().size();
+		pws.purgeProgramAttributeType(programAttributeType);
+		assertEquals((totalAttributeTypes - 1), pws.getAllProgramAttributeTypes().size());
+}
 	//	/**
 	//	 * This method should be uncommented when you want to examine the actual hibernate
 	//	 * sql calls being made.  The calls that should be limiting the number of returned
