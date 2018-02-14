@@ -12,6 +12,7 @@ package org.openmrs.module.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -99,7 +100,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 			realPath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources" + relativePath;
 		}
 		
-		realPath = realPath.replace("/", File.separator);
+		realPath = Paths.get(realPath).toString();
 		
 		File f = new File(realPath);
 		if (!f.exists()) {

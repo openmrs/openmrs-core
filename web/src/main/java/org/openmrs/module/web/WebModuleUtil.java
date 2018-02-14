@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -128,7 +129,7 @@ public class WebModuleUtil {
 				realPath = System.getProperty("user.dir");
 			}
 			
-			File webInf = new File(realPath + "/WEB-INF".replace("/", File.separator));
+			File webInf = new File(realPath, "WEB-INF");
 			if (!webInf.exists()) {
 				webInf.mkdir();
 			}
@@ -175,7 +176,7 @@ public class WebModuleUtil {
 						}
 						
 						// get the output file
-						File outFile = new File(absPath.toString().replace("/", File.separator));
+						File outFile = Paths.get(absPath.toString()).toFile();
 						if (entry.isDirectory()) {
 							if (!outFile.exists()) {
 								outFile.mkdirs();
@@ -239,8 +240,7 @@ public class WebModuleUtil {
 				if (root.getElementsByTagName("dwr").getLength() > 0) {
 					
 					// get the dwr-module.xml file that we're appending our code to
-					File f = new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator));
-					
+					File f = Paths.get(realPath,"WEB-INF","dwr-modules.xml").toFile();
 					// testing if file exists
 					if (!f.exists()) {
 						// if it does not -> needs to be created
@@ -287,8 +287,7 @@ public class WebModuleUtil {
 			
 			// mark to delete the entire module web directory on exit
 			// this will usually only be used when an improper shutdown has occurred.
-			String folderPath = realPath + "/WEB-INF/view/module/" + mod.getModuleIdAsPath();
-			File outFile = new File(folderPath.replace("/", File.separator));
+			File outFile = Paths.get(realPath , "WEB-INF", "view", "module", mod.getModuleIdAsPath()).toFile();
 			outFile.deleteOnExit();
 			
 			// additional checks on module needing a context refresh
@@ -681,8 +680,7 @@ public class WebModuleUtil {
 		String realPath = getRealPath(servletContext);
 		
 		// clear the module messages
-		String messagesPath = realPath + "/WEB-INF/";
-		File folder = new File(messagesPath.replace("/", File.separator));
+		File folder = Paths.get(realPath,"WEB-INF").toFile();
 		
 		File[] files = folder.listFiles();
 		if (folder.exists() && files != null) {
@@ -733,8 +731,7 @@ public class WebModuleUtil {
 		String realPath = getRealPath(servletContext);
 		
 		// delete the web files from the webapp
-		String absPath = realPath + "/WEB-INF/view/module/" + moduleId;
-		File moduleWebFolder = new File(absPath.replace("/", File.separator));
+		File moduleWebFolder = Paths.get(realPath, "WEB-INF", "view", "module", moduleId).toFile();
 		if (moduleWebFolder.exists()) {
 			try {
 				OpenmrsUtil.deleteDirectory(moduleWebFolder);
@@ -764,8 +761,7 @@ public class WebModuleUtil {
 			if (root.getElementsByTagName("dwr").getLength() > 0) {
 				
 				// get the dwr-module.xml file that we're appending our code to
-				File f = new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator));
-				
+				File f = Paths.get(realPath,"WEB-INF", "dwr-modules.xml").toFile();
 				// testing if file exists
 				if (!f.exists()) {
 					// if it does not -> needs to be created
@@ -923,7 +919,7 @@ public class WebModuleUtil {
 		
 		moduleWebFolder += moduleId;
 		
-		return moduleWebFolder.replace("/", File.separator);
+		return Paths.get(moduleWebFolder).toString();
 	}
 	
 	public static void createDwrModulesXml(String realPath) {
@@ -942,8 +938,7 @@ public class WebModuleUtil {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(realPath
-			        + "/WEB-INF/dwr-modules.xml".replace("/", File.separator)));
+			StreamResult result = new StreamResult(Paths.get(realPath,"WEB-INF", "dwr-modules.xml").toFile());
 			
 			transformer.transform(source, result);
 			

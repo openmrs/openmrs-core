@@ -9,6 +9,7 @@
  */
 package org.openmrs.util;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,11 +42,8 @@ public class UpgradeUtil {
 		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
 		Properties props = new Properties();
 		String conceptId = null;
-		String filePath = appDataDir +
-				System.getProperty("file.separator") +
-				DatabaseUtil.ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME;
 
-		try (FileInputStream fis = new FileInputStream(filePath)) {
+		try (FileInputStream fis = new FileInputStream(new File(appDataDir,DatabaseUtil.ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME))) {
 
 			props.load(fis);
 			for (Map.Entry prop : props.entrySet()) {

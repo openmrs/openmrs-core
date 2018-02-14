@@ -19,6 +19,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -80,9 +81,8 @@ public class MediaHandlerTest {
 	@Before
 	public void initVariablesForMimetypeTests() {
 		filename = "TestingComplexObsSaving.mp3";
-		filepath = new File("target" + File.separator + "test-classes").getAbsolutePath();
-		sourceFile = new File(
-		        "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestAudio.mp3");
+		filepath = Paths.get("target","test-classes").toAbsolutePath().toString();
+		sourceFile = Paths.get("src", "test", "resources", "ComplexObsTestAudio.mp3").toFile();
 	}
     
 	@Test
