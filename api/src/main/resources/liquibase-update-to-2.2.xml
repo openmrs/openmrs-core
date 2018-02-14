@@ -24,7 +24,7 @@
 		See http://www.liquibase.org/manual/home#available_database_refactorings
 		for a list of supported elements and attributes
 	-->
-	<changeSet id="TRUNK-4755" author="Rahul,Swathi" dbms="mysql">
+	<changeSet id="TRUNK-4755" author="Rahul,Swathi">
             <preConditions onFail="MARK_RAN">
                 <not>
                     <tableExists tableName="program_attribute_type" />
@@ -55,7 +55,7 @@
                 </column>
                 <column name="changed_by" type="int" />
                 <column name="date_changed" type="datetime" />
-                <column name="retired" type="smallint" defaultValueNumeric="0">
+                <column name="retired" type="boolean" defaultValueBoolean="false">
                     <constraints nullable="false" />
                 </column>
                 <column name="retired_by" type="int(11)" />
