@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.openmrs">
+
+	<class name="Diagnosis" table="encounter_diagnosis">
+
+		<id name="diagnosisId" type="int" column="diagnosis_id">
+			<generator class="native" />
+		</id>
+
+		<property name="diagnosis" column="coded_or_free_text" length="50" not-null="true">
+			<type name="org.openmrs.CodedOrFreeText"/>
+		</property>
+
+		<property name="certainty" column="condition_verification_status" length="50" not-null="true">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">org.openmrs.ConditionVerificationStatus</param>
+			</type>
+		</property>
+
+		<property name="rank" type="java.lang.Integer" not-null="true"/>
+		
+		<property name="dateCreated" type="java.util.Date"
+				  column="date_created" not-null="true" length="19" />
+		
+		<property name="voided" type="java.lang.Boolean"
+				  column="voided" length="1" not-null="true" />
+		
+		<property name="dateVoided" type="java.util.Date"
+				  column="date_voided" length="19" />
+		
+		<property name="voidReason" type="java.lang.String"
+				  column="void_reason" length="255" />
+		
+		<property name="uuid" type="java.lang.String"
+				  column="uuid" length="38" unique="true" />
+		
+		<many-to-one name="creator" column="creator" class="org.openmrs.User" not-null="true" />
+		
+		<many-to-one name="voidedBy" class="org.openmrs.User" column="voided_by" />
+		
+		<many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
+
+		<many-to-one name="encounter" class="org.openmrs.Encounter"
+					 not-null="true" />
+
+		<many-to-one name="condition" class="org.openmrs.Condition"/>
+
+	</class>
+
+</hibernate-mapping>
