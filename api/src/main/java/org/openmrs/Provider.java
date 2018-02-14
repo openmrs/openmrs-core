@@ -27,6 +27,10 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
 	private String identifier;
 	
+	private Concept role;
+	
+	private Concept speciality;
+	
 	public Provider() {
 	}
 	
@@ -90,6 +94,48 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	 */
 	public String getIdentifier() {
 		return identifier;
+	}
+	
+	/**
+	 * Sets the role concept
+	 * 
+	 * @since 2.2
+	 * @param role the role to set
+	 *                
+	 */
+	public void setRole(Concept role){
+		this.role = role;
+	}
+
+	/**
+	 * Gets the role concept
+	 * 
+	 * @since 2.2
+	 * @return the role
+	 * 
+	 */
+	public Concept getRole(){
+		return role;
+	}
+
+	/**
+	 * Sets the speciality concept
+	 * 
+	 * @since 2.2
+	 * @param speciality the speciality to set 
+	 */
+	public void setSpeciality(Concept speciality){
+		this.speciality = speciality;
+	}
+
+	/**
+	 * Gets the speciality concept
+	 * 
+	 * @since 2.2
+	 * @return the speciality
+	 */
+	public Concept getSpeciality(){
+		return speciality;
 	}
 	
 	@Override
