@@ -18,6 +18,8 @@ package org.openmrs;
  * <br>
  * The purpose of this class therefore is to record information of a single encounter by taking the
  * concept and concept name or a string for a concept that may not be in the database.
+ * 
+ * @since 2.2
  */
 public class CodedOrFreeText {
 	
