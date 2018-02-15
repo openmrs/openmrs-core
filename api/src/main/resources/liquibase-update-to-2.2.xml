@@ -117,5 +117,47 @@
                                      baseTableName="patient_program_attribute" baseColumnNames="voided_by"
             referencedTableName="users" referencedColumnNames="user_id" />
     </changeSet>
+
+	<changeSet id="20180214-1000" author="Kelechi+iheanyi">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="condition"/></not>
+		</preConditions>
+		<comment>
+			Add condition table
+		</comment>
+		<createTable tableName="condition">
+			<column name="condition_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="additional_detail" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+			<column name="previous_version" type="int"></column>
+			<column name="condition" type="varchar(255)" />
+			<column name="clinical_status" type="varchar(50)" >
+				<constraints nullable="false" />
+			</column>
+			<column name="verification_status" type="varchar(50)" >
+				<constraints nullable="false"/>
+			</column>
+			<column name="onset_date" type="datetime" />
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_voided" type="datetime" />
+			<column name="void_reason" type="varchar(255)" />
+			<column name="uuid" type="varchar(38)">
+				<constraints unique="true" />
+			</column>
+			<column name="creator" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided_by" type="int" />
+			<column name="changed_by" type="int" />
+		</createTable>
+	</changeSet>
     
 </databaseChangeLog>
