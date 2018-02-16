@@ -26,6 +26,7 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
 import org.openmrs.layout.name.NameSupport;
 import org.openmrs.layout.name.NameTemplate;
@@ -402,7 +403,14 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	 * @should not put spaces around an empty middle name
 	 */
 	public String getFullName() {
-		NameTemplate nameTemplate = NameSupport.getInstance().getDefaultLayoutTemplate();
+		NameTemplate nameTemplate = null;
+		try {
+			nameTemplate = NameSupport.getInstance().getDefaultLayoutTemplate();
+		}
+		catch (APIException ex) {
+			log.warn("No name layout format set");
+		}
+		
 		if (nameTemplate != null) {
 			return nameTemplate.format(this);
 		}
