@@ -113,7 +113,7 @@
             <addForeignKeyConstraint constraintName="patient_program_attribute_changed_by_fk"
                                      baseTableName="patient_program_attribute" baseColumnNames="changed_by"
                                      referencedTableName="users" referencedColumnNames="user_id" />
-            <addForeignKeyConstraint constraintName="patient_program_attribute_retired_by_fk"
+            <addForeignKeyConstraint constraintName="patient_program_attribute_voided_by_fk"
                                      baseTableName="patient_program_attribute" baseColumnNames="voided_by"
             referencedTableName="users" referencedColumnNames="user_id" />
     </changeSet>
