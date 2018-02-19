@@ -7,10 +7,12 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs;
+package org.openmrs.api;
 
+import org.openmrs.Concept;
+import org.openmrs.Condition;
+import org.openmrs.Patient;
 import org.openmrs.annotation.Authorized;
-import org.openmrs.api.OpenmrsService;
 import org.openmrs.util.PrivilegeConstants;
 
 import java.util.List;
@@ -24,20 +26,20 @@ public interface ConditionService extends OpenmrsService {
 	Condition save(Condition condition);
 
 	/**
-	 * @param condition - the condition to be saved
-	 * @param voidReason - description of condition
+	 * @param condition - the condition to be voided
+	 * @param voidReason - the reason for voiding the condition
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_CONDITIONS })
 	Condition voidCondition(Condition condition, String voidReason);
 
 	/**
-	 * @param uuid - id of the condition to be returned
+	 * @param uuid - uuid of the condition to be returned
 	 * @return the condition
 	 */
 	Condition getConditionByUuid(String uuid);
 
 	/**
-	 * @param patient - the patient in question
+	 * @param patient - the patient to retrieve conditions for
 	 * @return a list of the patient's active conditions
 	 */
 	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
