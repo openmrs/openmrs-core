@@ -158,6 +158,18 @@
 			<column name="voided_by" type="int" />
 			<column name="changed_by" type="int" />
 		</createTable>
+		<addForeignKeyConstraint constraintName="condition_previous_version_fk"
+								 baseTableName="condition" baseColumnNames="previous_version"
+								 referencedTableName="condition" referencedColumnNames="condition_id" />
+		<addForeignKeyConstraint constraintName="condition_creator_fk"
+								 baseTableName="condition" baseColumnNames="creator"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="condition_changed_by_fk"
+								 baseTableName="condition" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="condition_voided_by_fk"
+								 baseTableName="condition" baseColumnNames="voided_by"
+								 referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
     
 </databaseChangeLog>
