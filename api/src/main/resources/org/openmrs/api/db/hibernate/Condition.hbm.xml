@@ -22,7 +22,7 @@
 			</generator>
 		</id>
 
-		<property name="previousVersion" type="org.openmrs.Condition" column="previous_version" />
+		<many-to-one name="previousVersion" class="org.openmrs.Condition" column="previous_version" />
 		<property name="onsetDate" type="java.util.Date"
 				  column="onset_date" length="19"  />
 		<property name="condition" type="java.lang.String"
