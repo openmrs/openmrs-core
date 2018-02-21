@@ -132,7 +132,9 @@
 				<constraints nullable="true"/>
 			</column>
 			<column name="previous_version" type="int"></column>
-			<column name="condition" type="varchar(255)" />
+			<column name="condition_coded" type="int" />
+			<column name="condition_non_coded" type="varchar(255)" />
+			<column name="condition_coded_name" type="int" />
 			<column name="clinical_status" type="varchar(50)" >
 				<constraints nullable="false" />
 			</column>
@@ -160,6 +162,12 @@
 		<addForeignKeyConstraint constraintName="condition_previous_version_fk"
 								 baseTableName="condition" baseColumnNames="previous_version"
 								 referencedTableName="condition" referencedColumnNames="condition_id" />
+		<addForeignKeyConstraint constraintName="condition_condition_coded_fk"
+								 baseTableName="condition" baseColumnNames="condition_coded"
+								 referencedTableName="concept" referencedColumnNames="concept_id " />
+		<addForeignKeyConstraint constraintName="condition_condition_coded_name_fk"
+								 baseTableName="condition" baseColumnNames="condition_coded_name"
+								 referencedTableName="concept_name" referencedColumnNames="concept_name_id " />
 		<addForeignKeyConstraint constraintName="condition_creator_fk"
 								 baseTableName="condition" baseColumnNames="creator"
 								 referencedTableName="users" referencedColumnNames="user_id" />
