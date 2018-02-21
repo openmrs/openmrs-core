@@ -41,6 +41,14 @@ public interface DiagnosisDAO {
 	Diagnosis getDiagnosisById(Integer diagnosisId) throws DAOException;
 
 	/**
+	 * Gets the diagnosis attached to the specified UUID.
+	 *
+	 * @param uuid the uuid to search for in the database.
+	 * @return the diagnosis associated with the UUID.
+	 */
+	Diagnosis getDiagnosisByUuid(String uuid);
+	
+	/**
 	 * Gets all diagnoses for a given encounter
 	 *
 	 * @param encounter the specific encounter to get the diagnoses for.
