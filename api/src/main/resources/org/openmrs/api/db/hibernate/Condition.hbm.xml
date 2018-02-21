@@ -21,12 +21,14 @@
 				<param name="sequence">condition_condition_id_seq</param>
 			</generator>
 		</id>
-
 		<many-to-one name="previousVersion" class="org.openmrs.Condition" column="previous_version" />
 		<property name="onsetDate" type="java.util.Date"
 				  column="onset_date" length="19"  />
-		<property name="condition" type="java.lang.String"
-				  not-null="true" length="50" column="condition" />
+		<component name="condition" class="org.openmrs.CodedOrFreeText">
+			<many-to-one name="coded" class="org.openmrs.Concept" column="condition_coded" />
+			<property name="nonCoded" type="java.lang.String" length="255" column="condition_non_coded" />
+			<many-to-one name="specificName" class="org.openmrs.ConceptName" column="condition_coded_name" />
+		</component>
 		<property name="clinicalStatus" column="clinical_status">
 			<type name="org.hibernate.type.EnumType">
 				<param name="enumClass">org.openmrs.ConditionClinicalStatus</param>
@@ -51,7 +53,6 @@
 				  column="void_reason" length="255" />
 		<property name="uuid" type="java.lang.String"
 				  column="uuid" length="38" unique="true" />
-
 		<many-to-one name="creator" column="creator" class="org.openmrs.User" not-null="true" />
 		<many-to-one name="voidedBy" class="org.openmrs.User" column="voided_by" />
 		<many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
