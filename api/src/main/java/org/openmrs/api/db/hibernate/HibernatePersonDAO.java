@@ -171,7 +171,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			q.append(" and " + genderMatch);
 		}
 		
-		q.append(" order by pname.givenName asc,").append(" pname.middleName asc,").append(" pname.familyName asc").append(
+		q.append(" order by pname.givenName asc,").append(" pname.middleName asc,").append(" pname.familyName asc,").append(
 		    " pname.familyName2 asc");
 		
 		String qStr = q.toString();
