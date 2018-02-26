@@ -11,6 +11,7 @@ package org.openmrs.validator;
 
 import org.openmrs.Condition;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -43,6 +44,13 @@ public class ConditionValidator implements Validator {
 		}
 		if(!(object instanceof Condition)){
 			throw  new IllegalArgumentException("The object parameter should be of type " + Condition.class);
+		}
+		Condition condition = (Condition) object;
+		if(condition.getCondition() == null){
+			errors.rejectValue("condition", "Condition.conditionShouldNotBeNull", "The condition is required");
+		}
+		if(condition.getClinicalStatus() == null){
+			errors.rejectValue("clinicalStatus", "Condition.clinicalStatusShouldNotBeNull", "The clinical status is required");
 		}
 	}
 }

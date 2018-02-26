@@ -14,10 +14,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.openmrs.CodedOrFreeText;
 import org.openmrs.Cohort;
+import org.openmrs.ConceptName;
 import org.openmrs.Condition;
+import org.openmrs.Concept;
+import org.openmrs.ConditionClinicalStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+
+import java.util.Locale;
 
 /**
  * Class to implement tests for {@link ConditionValidator}
@@ -47,7 +53,6 @@ public class ConditionValidatorTest {
 	public void shouldFailIfGivenNull(){
 		expectedException.expect(IllegalArgumentException.class);
 		expectedException.expectMessage(NULL_ERROR_MESSAGE);
-
 		validator.validate(null, errors);
 	}
 
@@ -55,15 +60,24 @@ public class ConditionValidatorTest {
 	public void shouldFailIfGivenInstanceOfClassOtherThanCondition(){
 		expectedException.expect(IllegalArgumentException.class);
 		expectedException.expectMessage(INCOMPATIBLE_ERROR_MESSAGE);
-
 		validator.validate(new Cohort(), errors);
+	}
+	
+	@Test
+	public void shouldFailIfGivenConditionWithNullConditionProperties(){
+		Condition condition = new Condition();
+		validator.validate(condition, errors);
+		Assert.assertTrue(errors.hasFieldErrors("condition"));
+		Assert.assertTrue(errors.hasFieldErrors("clinicalStatus"));
 	}
 
 	@Test
-	public void shouldPassIfConditionClassIsPassed(){
-		validator.validate(new Condition(), errors);
-
-		Assert.assertFalse(errors.hasErrors());
+	public void shouldPassIfConditionClassIsPassedWithRequiredConditionProperties(){
+		Condition condition = new Condition();
+		condition.setCondition(new CodedOrFreeText(new Concept(), new ConceptName("name", new Locale("en")), "nonCoded"));
+		condition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
+		validator.validate(condition, errors);
 		Assert.assertFalse(errors.hasFieldErrors("condition"));
+		Assert.assertFalse(errors.hasFieldErrors("clinicalStatus"));
 	}
 }
