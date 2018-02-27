@@ -52,4 +52,12 @@ public interface ConditionDAO {
 	 * @return all active conditions associated with the specified patient.
 	 */
 	List<Condition> getActiveConditions(Patient patient);
+
+	/**
+	 * Removes a condition from the database
+	 *
+	 * @param condition the condition to delete
+	 * @return the deleted condition
+	 */
+	Condition deleteCondition(Condition condition);
 }
