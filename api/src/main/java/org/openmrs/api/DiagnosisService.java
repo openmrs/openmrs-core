@@ -92,5 +92,30 @@ public interface DiagnosisService extends OpenmrsService {
 	 * @return the list of diagnoses
 	 */
 	List<Diagnosis> getUniqueDiagnoses(Patient patient, Date fromDate);
-}
 
+	/**
+	 * Revive a diagnosis (pull a Lazarus)
+	 *
+	 * @param diagnosis diagnosis to unvoid
+	 * @throws APIException
+	 * @should unset voided bit on given diagnosis
+	 * @return the unvoided diagnosis
+	 */
+	@Authorized(PrivilegeConstants.EDIT_DIAGNOSES)
+	Diagnosis unvoidDiagnosis(Diagnosis diagnosis) throws APIException;
+
+	/**
+	 * Completely remove a diagnosis from the database. This should typically not be called
+	 * because we don't want to ever lose data. The data really <i>should</i> be voided and then it
+	 * is not seen in interface any longer (see #voidDiagnosis(Diagnosis) for that one) If other things link to
+	 * this diagnosis, an error will be thrown.
+	 *
+	 * @param diagnosis diagnosis to remove from the database
+	 * @throws APIException
+	 * @see #purgeDiagnosis(Diagnosis) 
+	 * @should delete the given diagnosis from th e database
+	 */
+	@Authorized(PrivilegeConstants.DELETE_DIAGNOSES)
+	void purgeDiagnosis(Diagnosis diagnosis) throws APIException;
+	
+}
