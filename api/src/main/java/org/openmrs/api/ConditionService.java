@@ -17,44 +17,71 @@ import org.openmrs.util.PrivilegeConstants;
 import java.util.List;
 
 /**
-* This interface defines methods for condition objects.
-*
-* @since 2.2
-*/
+ * This interface defines methods for condition objects.
+ *
+ * @since 2.2
+ */
 public interface ConditionService extends OpenmrsService {
 
 	/**
 	 * Saves a condition
-	 * 
+	 *
 	 * @param condition - the condition to be saved
+	 * @throws APIException   
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_CONDITIONS })
-	Condition save(Condition condition);
+	Condition save(Condition condition) throws APIException;
 
 	/**
 	 * Voids a condition
-	 * 
+	 *
 	 * @param condition - the condition to be voided
 	 * @param voidReason - the reason for voiding the condition
+	 * @throws APIException   
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_CONDITIONS })
-	Condition voidCondition(Condition condition, String voidReason);
+	Condition voidCondition(Condition condition, String voidReason) throws APIException;
 
 	/**
 	 * Gets a condition based on the uuid
-	 * 
+	 *
 	 * @param uuid - uuid of the condition to be returned
+	 * @throws APIException   
 	 * @return the condition
 	 */
 	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
-	Condition getConditionByUuid(String uuid);
+	Condition getConditionByUuid(String uuid) throws APIException;
 
 	/**
 	 * Gets a patient's active conditions
-	 * 
+	 *
 	 * @param patient - the patient to retrieve conditions for
+	 * @throws APIException   
 	 * @return a list of the patient's active conditions
 	 */
 	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
-	List<Condition> getActiveConditions(Patient patient);
+	List<Condition> getActiveConditions(Patient patient) throws APIException;
+
+	/**
+	 * Revive a condition (pull a Lazarus)
+	 *
+	 * @param condition Condition to unvoid
+	 * @throws APIException
+	 * @should unset voided bit on given condition
+	 */
+	@Authorized(PrivilegeConstants.EDIT_CONDITIONS)
+	Condition unvoidCondition(Condition condition) throws APIException;
+
+	/**
+	 * Completely remove a condition from the database. This should typically not be called
+	 * because we don't want to ever lose data. The data really <i>should</i> be voided and then it
+	 * is not seen in interface any longer (see #voidCondition(Condition) for that one) If other things link to
+	 * this condition, an error will be thrown.
+	 *
+	 * @param condition
+	 * @throws APIException
+	 * @should delete the given condition from the database
+	 */
+	@Authorized(PrivilegeConstants.DELETE_CONDITIONS)
+	void purgeCondition(Condition condition) throws APIException;
 }
