@@ -554,6 +554,8 @@ public class PrivilegeConstants {
 	public static final String EDIT_CONDITIONS = "Edit Conditions";
 
 	public static final String GET_CONDITIONS = "Get Conditions";
+	
+	public static final String DELETE_CONDITIONS = "Delete Conditions";
 
 	public static final String EDIT_DIAGNOSES = "Edit Diagnoses";
 
