@@ -47,6 +47,14 @@ public interface DiagnosisDAO {
 	 * @return the diagnosis associated with the UUID.
 	 */
 	Diagnosis getDiagnosisByUuid(String uuid);
+
+	/**
+	 * Deletes a diagnosis
+	 *
+	 * @param diagnosis the diagnosis to delete
+	 * @throws DAOException exception thrown if error occurs while deleting the diagnosis
+	 */
+	void deleteDiagnosis(Diagnosis diagnosis) throws DAOException;
 	
 	/**
 	 * Gets all diagnoses for a given encounter
