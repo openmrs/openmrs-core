@@ -560,4 +560,7 @@ public class PrivilegeConstants {
 	public static final String EDIT_DIAGNOSES = "Edit Diagnoses";
 
 	public static final String GET_DIAGNOSES = "Get Diagnoses";
+
+	public static final String DELETE_DIAGNOSES = "Delete Diagnoses";
+
 }
