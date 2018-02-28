@@ -9555,4 +9555,60 @@
 		</createIndex>
 	</changeSet>
 
+	<changeSet id="TRUNK-2497-20171221-1107" author="lehone">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="sent_message"/></not>
+		</preConditions>
+		<comment>
+			Persist all messages sent using MessageService api
+		</comment>
+		<createTable tableName="sent_message">
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="message_id" type="int">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="sender_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="subject" type="varchar(120)"/>
+			<column name="content" type="text"/>
+			<column name="content_type" type="varchar(50)"/>
+			<column name="sent_date" type="datetime"/>
+		</createTable>
+		<addForeignKeyConstraint constraintName="fk_sender_id_user_id"
+		                         baseTableName="sent_message" baseColumnNames="sender_id"
+		                         referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="TRUNK-2497-20171221-1125" author="lehone">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="message_receiver"/></not>
+		</preConditions>
+		<comment>
+			Persist all receivers of a particular message sent using MessageService api
+		</comment>
+		<createTable tableName="message_receiver">
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="id" type="int">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="message_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="receiver_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="sent_date" type="datetime"/>
+		</createTable>
+		<addForeignKeyConstraint constraintName="fk_message_id_message_id"
+		                         baseTableName="message_receiver" baseColumnNames="message_id"
+		                         referencedTableName="sent_message" referencedColumnNames="message_id"/>
+		<addForeignKeyConstraint constraintName="fk_receiver_id_user_id"
+		                         baseTableName="message_receiver" baseColumnNames="receiver_id"
+		                         referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
 </databaseChangeLog>

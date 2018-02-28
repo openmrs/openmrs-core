@@ -44,6 +44,7 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.messagesource.impl.DefaultMessageSourceServiceImpl;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
+import org.openmrs.notification.SentMessageService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.slf4j.Logger;
@@ -327,7 +328,21 @@ public class ServiceContext implements ApplicationContextAware {
 	public void setMessageService(MessageService messageService) {
 		setService(MessageService.class, messageService);
 	}
-	
+
+	/**
+	 * @return sentMessageService
+	 */
+	public SentMessageService getSentMessageService() {
+		return getService(SentMessageService.class);
+	}
+
+	/**
+	 * @param sentMessageService
+	 */
+	public void setSentMessageService(SentMessageService sentMessageService) {
+		setService(SentMessageService.class, sentMessageService);
+	}
+
 	/**
 	 * @return the hl7Service
 	 */
