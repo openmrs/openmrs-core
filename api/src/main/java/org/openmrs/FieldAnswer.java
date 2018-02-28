@@ -13,6 +13,9 @@ import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 /**
  * FieldAnswer
  * 

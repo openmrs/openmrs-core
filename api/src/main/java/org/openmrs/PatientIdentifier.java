@@ -27,6 +27,14 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * A <code>Patient</code> can have zero to n identifying PatientIdentifier(s). PatientIdentifiers
  * are anything from medical record numbers, to social security numbers, to driver's licenses. The
@@ -36,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.PatientIdentifierType
  */
 @Indexed
+@Table(name = "patient_identifier")
 public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Comparable<PatientIdentifier> {
 	
 	public static final long serialVersionUID = 1123121L;
@@ -48,9 +57,14 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 * @since 1.5
 	 */
 	@DocumentId
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "patient_identifier_id")
 	private Integer patientIdentifierId;
 
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@ManyToOne
+	@JoinColumn(name = "patient_id")
 	private Patient patient;
 
 	@Fields({
@@ -59,14 +73,19 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 			@Field(name = "identifierStart", analyzer = @Analyzer(definition = LuceneAnalyzers.START_ANALYZER), boost = @Boost(2f)),
 			@Field(name = "identifierAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER))
 	})
+	@Column(name = "identifier", length = 50)
 	private String identifier;
 
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@Column(name = "identifier_type")
 	private PatientIdentifierType identifierType;
 	
+	@ManyToOne
+	@JoinColumn(name = "location_id", nullable = false)
 	private Location location;
 
 	@Field
+	@Column(nullable = false)
 	private Boolean preferred = false;
 	
 	/** default constructor */

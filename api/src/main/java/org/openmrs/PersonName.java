@@ -19,6 +19,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DocumentId;
@@ -36,10 +38,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * A Person can have zero to n PersonName(s).
  */
 @Indexed
+@Entity
+@Table(name = "person_name")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class PersonName extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName> {
 	
 	public static final long serialVersionUID = 4353L;
@@ -48,9 +64,14 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 
 	// Fields
 	@DocumentId
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "person_name_id")	
 	private Integer personNameId;
 
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	@ManyToOne
+	@JoinColumn(name = "person_id")
 	private Person person;
 
 	private Boolean preferred = false;
@@ -60,7 +81,12 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 			@Field(name = "givenNameStart", analyzer = @Analyzer(definition = LuceneAnalyzers.START_ANALYZER), boost = @Boost(4f)),
 			@Field(name = "givenNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER), boost = @Boost(2f))
 	})
+	@Column(name = "given_name", length = 50)
+	@Access(value = AccessType.FIELD)
 	private String givenName;
+
+	@Column(name = "prefix", length = 50)
+	@Access(value = AccessType.FIELD)
 	private String prefix;
 
 	@Fields({
@@ -68,8 +94,12 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 			@Field(name = "middleNameStart", analyzer = @Analyzer(definition = LuceneAnalyzers.START_ANALYZER), boost = @Boost(2f)),
 			@Field(name = "middleNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER))
 	})
+	@Column(name = "middle_name", length = 50)
+	@Access(value = AccessType.FIELD)
 	private String middleName;
-	
+
+	@Column(name = "family_name_prefix", length = 50)
+	@Access(value = AccessType.FIELD)
 	private String familyNamePrefix;
 
 	@Fields({
@@ -77,6 +107,8 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 			@Field(name = "familyNameStart", analyzer = @Analyzer(definition = LuceneAnalyzers.START_ANALYZER), boost = @Boost(4f)),
 			@Field(name = "familyNameAnywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER), boost = @Boost(2f)),
 	})
+	@Column(name = "family_name", length = 50)
+	@Access(value = AccessType.FIELD)
 	private String familyName;
 
 	@Fields({
@@ -84,10 +116,16 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 			@Field(name = "familyName2Start", analyzer = @Analyzer(definition = LuceneAnalyzers.START_ANALYZER), boost = @Boost(2f)),
 			@Field(name = "familyName2Anywhere", analyzer = @Analyzer(definition = LuceneAnalyzers.ANYWHERE_ANALYZER)),
 	})
+	@Column(name = "family_name2", length = 50)
+	@Access(value = AccessType.FIELD)
 	private String familyName2;
-	
+
+	@Column(name = "family_name_suffix", length = 50)
+	@Access(value = AccessType.FIELD)
 	private String familyNameSuffix;
-	
+
+	@Column(name = "degree", length = 50)
+	@Access(value = AccessType.FIELD)
 	private String degree;
 	
 	private static String format = OpenmrsConstants.PERSON_NAME_FORMAT_SHORT;

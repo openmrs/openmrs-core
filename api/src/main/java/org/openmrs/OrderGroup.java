@@ -14,6 +14,18 @@ import java.util.List;
 
 import org.openmrs.api.APIException;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+
 /**
  * Contains a group of {@link org.openmrs.Order}s that are ordered together within a single encounter,often driven by an {@link org.openmrs.OrderSet}. 
  * Not all orders in an encounter need to be grouped this way, only those that have a specific connection to each other 
@@ -21,18 +33,33 @@ import org.openmrs.api.APIException;
  * 
  * @since 1.12
  */
+@Entity
+@Table(name = "order_group")
+@DiscriminatorColumn(name = "order_group_id")
 public class OrderGroup extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 72232L;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "order_group_id", insertable = false)
 	private Integer orderGroupId;
 	
+	@ManyToOne
+	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 	
+	@ManyToOne
+	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
 	
+	@OneToMany	
+	@JoinColumn(name = "order_group_id")
+	@OrderBy("sort_weight")
 	private List<Order> orders;
-	
+
+	@OneToMany
+	@JoinColumn(name = "order_set_id")
 	private OrderSet orderSet;
 	
 	/**

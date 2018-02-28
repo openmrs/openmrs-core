@@ -12,7 +12,21 @@ package org.openmrs;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.openmrs.api.APIException;
+
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  * Represents the grouping of orders into a set,
@@ -20,6 +34,9 @@ import org.openmrs.api.APIException;
  * 
  * @since 1.12
  */
+@Entity
+@Table(name = "order_set")
+@DiscriminatorColumn(name = "order_set_id")
 public class OrderSet extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 72232L;
@@ -34,10 +51,18 @@ public class OrderSet extends BaseChangeableOpenmrsMetadata {
 		ALL, ONE, ANY
 	}
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "order_set_id", insertable = false)
 	private Integer orderSetId;
-	
+		
+	@Column(name = "operator", nullable = false)	
+	@Enumerated(value = EnumType.STRING)
 	private Operator operator;
 	
+	@OneToMany
+	@JoinColumn(name = "order_set_id")
+	@Cascade(value = CascadeType.SAVE_UPDATE)
 	private List<OrderSetMember> orderSetMembers;
 	
 	/**

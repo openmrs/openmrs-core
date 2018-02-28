@@ -3,19 +3,28 @@
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
  * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
- *
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A Role is just an aggregater of {@link Privilege}s. {@link User}s contain a number of roles
@@ -25,58 +34,78 @@ import org.slf4j.LoggerFactory;
  *
  * @see Privilege
  */
+@Entity
+@Table(name = "role")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Role extends BaseChangeableOpenmrsMetadata {
-	
+
 	public static final long serialVersionUID = 1234233L;
-	
+
 	private static final Logger log = LoggerFactory.getLogger(Role.class);
-	
+
 	// Fields
-	
+
+	@Id
+	@Column(name = "role")
 	private String role;
-	
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "role_prvilege",
+		joinColumns = { @JoinColumn(name = "role") },
+		inverseJoinColumns = { @JoinColumn(name = "privilege") }
+	)
 	private Set<Privilege> privileges;
-	
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "role_role",
+		joinColumns = { @JoinColumn(name = "child_role") },
+		inverseJoinColumns = { @JoinColumn(name = "parent_role") }
+	)
 	private Set<Role> inheritedRoles;
-	
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "role_role",
+		joinColumns = { @JoinColumn(name = "parent_role") },
+		inverseJoinColumns = { @JoinColumn(name = "child_role") }
+	)
 	private Set<Role> childRoles;
-	
+
 	// Constructors
-	
+
 	/** default constructor */
 	public Role() {
 	}
-	
+
 	/** constructor with id */
 	public Role(String role) {
 		this.role = role;
 	}
-	
+
 	/** constructor with all database required properties */
 	public Role(String role, String description) {
 		this.role = role;
 		setDescription(description);
 	}
-	
+
 	/**
 	 * @return Returns the privileges.
 	 */
 	public Set<Privilege> getPrivileges() {
 		return privileges;
 	}
-	
+
 	/**
 	 * @param privileges The privileges to set.
 	 */
 	public void setPrivileges(Set<Privilege> privileges) {
 		this.privileges = privileges;
 	}
-	
+
 	@Override
 	public String getName() {
 		return this.getRole();
 	}
-	
+
 	/**
 	 * Adds the given Privilege to the list of privileges
 	 *
@@ -90,7 +119,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 			privileges.add(privilege);
 		}
 	}
-	
+
 	private boolean containsPrivilege(Collection<Privilege> privileges, String privilegeName) {
 		for (Privilege privilege : privileges) {
 			if (privilege.getPrivilege().equals(privilegeName)) {
@@ -99,7 +128,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Removes the given Privilege from the list of privileges
 	 *
@@ -110,21 +139,21 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 			privileges.remove(privilege);
 		}
 	}
-	
+
 	/**
 	 * @return Returns the role.
 	 */
 	public String getRole() {
 		return role;
 	}
-	
+
 	/**
 	 * @param role The role to set.
 	 */
 	public void setRole(String role) {
 		this.role = role;
 	}
-	
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
@@ -132,7 +161,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	public String toString() {
 		return this.role;
 	}
-	
+
 	/**
 	 * Looks for the given <code>privilegeName</code> privilege name in this roles privileges. This
 	 * method does not recurse through the inherited roles
@@ -145,11 +174,11 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	 * @should return true for any privilegeName if super user
 	 */
 	public boolean hasPrivilege(String privilegeName) {
-		
+
 		if (RoleConstants.SUPERUSER.equals(this.role)) {
 			return true;
 		}
-		
+
 		if (privileges != null) {
 			for (Privilege p : privileges) {
 				if (p.getPrivilege().equals(privilegeName)) {
@@ -157,10 +186,10 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * @return Returns the inheritedRoles.
 	 */
@@ -170,14 +199,14 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		}
 		return inheritedRoles;
 	}
-	
+
 	/**
 	 * @param inheritedRoles The inheritedRoles to set.
 	 */
 	public void setInheritedRoles(Set<Role> inheritedRoles) {
 		this.inheritedRoles = inheritedRoles;
 	}
-	
+
 	/**
 	 * Convenience method to test whether or not this role extends/ inherits from any other roles
 	 *
@@ -186,7 +215,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	public boolean inheritsRoles() {
 		return getInheritedRoles() != null && !getInheritedRoles().isEmpty();
 	}
-	
+
 	/**
 	 * Recursive (if need be) method to return all parent roles of this role
 	 *
@@ -200,7 +229,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		}
 		return parents;
 	}
-	
+
 	/**
 	 * Returns the full set of roles be looping over inherited roles. Duplicate roles are dropped.
 	 *
@@ -217,20 +246,20 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		myRoles.removeAll(total);
 		myRoles.remove(this); // prevent an obvious looping problem
 		allRoles.addAll(myRoles);
-		
+
 		for (Role r : myRoles) {
 			if (r.inheritsRoles()) {
 				allRoles.addAll(r.recurseOverParents(allRoles));
 			}
 		}
-		
+
 		if (log.isDebugEnabled()) {
 			log.debug("Total roles: " + allRoles);
 		}
-		
+
 		return allRoles;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -239,7 +268,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	public Integer getId() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -248,7 +277,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	public void setId(Integer id) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * @since 1.9
 	 * @return immediate children
@@ -259,7 +288,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		}
 		return childRoles;
 	}
-	
+
 	/**
 	 * @since 1.9
 	 * @param childRoles the immediate children to set
@@ -267,7 +296,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	public void setChildRoles(Set<Role> childRoles) {
 		this.childRoles = childRoles;
 	}
-	
+
 	/**
 	 * Convenience method to test whether or not this role is a parent of another role
 	 *
@@ -277,7 +306,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	public boolean hasChildRoles() {
 		return getChildRoles() != null && !getChildRoles().isEmpty();
 	}
-	
+
 	/**
 	 * Recursive (if need be) method to return all child roles of this role
 	 *
@@ -292,7 +321,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		}
 		return children;
 	}
-	
+
 	/**
 	 * Returns the full set of child roles be looping over children. Duplicate roles are dropped.
 	 *
@@ -311,17 +340,17 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		myRoles.removeAll(total);
 		myRoles.remove(this); // prevent an obvious looping problem
 		allRoles.addAll(myRoles);
-		
+
 		for (Role r : myRoles) {
 			if (r.hasChildRoles()) {
 				allRoles.addAll(r.recurseOverChildren(allRoles));
 			}
 		}
-		
+
 		if (log.isDebugEnabled()) {
 			log.debug("Total roles: " + allRoles);
 		}
-		
+
 		return allRoles;
 	}
 }

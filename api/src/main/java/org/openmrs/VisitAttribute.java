@@ -12,13 +12,25 @@ package org.openmrs;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * A value for a user-defined {@link VisitAttributeType} that is stored on a {@link Visit}.
  * @see Attribute
  * @since 1.9
  */
+@Entity
+@Table(name = "visit_attribute")
 public class VisitAttribute extends BaseAttribute<VisitAttributeType, Visit> implements Attribute<VisitAttributeType, Visit> {
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "visit_attribute_id")
 	private Integer visitAttributeId;
 	
 	// BaseAttribute<Visit> has an "owner" property of type Visit, which we re-expose as "visit"

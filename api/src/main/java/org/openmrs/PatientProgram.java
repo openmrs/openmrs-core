@@ -18,13 +18,30 @@ import java.util.List;
 import java.util.Set;
 import java.util.Collection;
 
+import org.hibernate.annotations.BatchSize;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
 import org.openmrs.util.OpenmrsUtil;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+
 /**
  * PatientProgram
  */
+@Entity
+@Table(name = "patient_program")
+@DiscriminatorColumn(name = "patient_program_id")
 public class PatientProgram extends BaseChangeableOpenmrsData implements Customizable<PatientProgramAttribute>{
 	
 	public static final long serialVersionUID = 0L;
@@ -33,23 +50,42 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	// Properties
 	// ******************
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@Column(name = "patient_program_id", insertable = false)
 	private Integer patientProgramId;
 	
+	@ManyToOne
+	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 	
+	@ManyToOne
+	@JoinColumn(name = "program_id", nullable = false)
 	private Program program;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "location_id")
 	private Location location;
 	
+	@Column(name = "date_enrolled", length = 19)
 	private Date dateEnrolled;
 	
+	@Column(name = "date_completed", length = 19)
 	private Date dateCompleted;
 	
+	@ManyToOne
+	@JoinColumn(name = "outcome_concept_id")
 	private Concept outcome;
 	
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinColumn(name = "patient_program_id", nullable = false)
 	private Set<PatientState> states = new HashSet<>();
          
-        private Set<PatientProgramAttribute> attributes = new LinkedHashSet();
+	@OneToMany
+	@JoinColumn(name = "patient_program_id")
+	@OrderBy("voided asc")
+	@BatchSize(size = 100)
+	private Set<PatientProgramAttribute> attributes = new LinkedHashSet();
 	
 	// ******************
 	// Constructors

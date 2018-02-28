@@ -13,11 +13,28 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.openmrs.annotation.AllowDirectAccess;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
 /**
  * Program
  */
+@Entity
+@Table(name = "program")
 public class Program extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 3214567L;
@@ -26,17 +43,29 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	// Properties
 	// ******************
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "program_id")
 	private Integer programId;
 	
+	@ManyToOne
+	@JoinColumn(name = "outcomes_id", nullable = false)
 	private Concept concept;
 	
 	/**
 	 * Represents the possible outcomes for this program. The concept should have answers or a
 	 * memberSet.
 	 */
+	@ManyToOne
+	@JoinColumn(name = "outcomes_concept_id")
 	private Concept outcomesConcept;
 	
 	@AllowDirectAccess
+	@OneToMany(orphanRemoval = true)
+	@JoinColumn(name = "program_id", nullable = false)
+	@Access(value = AccessType.FIELD)
+	@Cascade(value = CascadeType.ALL)
+	@OrderBy("date_created asc")
 	private Set<ProgramWorkflow> allWorkflows = new HashSet<>();
 	
 	// ******************

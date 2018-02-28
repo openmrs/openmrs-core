@@ -9,6 +9,18 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,22 +31,35 @@ import java.util.Set;
  *
  * @version 1.0
  */
+@Entity
+@Table(name = "form")
 public class Form extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 845634L;
 	
 	// Fields
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "form_id")
 	private Integer formId;
 	
+	@Column(name = "version", length = 50)
 	private String version;
 	
+	@Column(name = "build")
 	private Integer build;
 	
+	@Column(name = "published", length = 1)
 	private Boolean published = false;
 	
+	@ManyToOne
+	@JoinColumn(name = "encounter_type")
 	private EncounterType encounterType;
 	
+	@OneToMany(orphanRemoval = true)
+	@JoinColumn(name = "form_id")
+	@Cascade(value = CascadeType.ALL)
 	private Set<FormField> formFields;
 	
 	// Constructors

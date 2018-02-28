@@ -21,6 +21,9 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -31,6 +34,21 @@ import org.openmrs.util.Format.FORMAT_TYPE;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
 /**
  * An observation is a single unit of clinical information. <br>
@@ -61,6 +79,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @see Encounter
  */
+@Entity
+@Table(name = "obs")
+@BatchSize(size = 25)
 public class Obs extends BaseChangeableOpenmrsData {
 	
 	/**
@@ -109,12 +130,19 @@ public class Obs extends BaseChangeableOpenmrsData {
 	
 	private static final int FORM_NAMESPACE_PATH_MAX_LENGTH = 255;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "osb_id")
 	protected Integer obsId;
 	
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	protected Concept concept;
 	
+	@Column(name = "osb_datetime", length = 19, nullable = false)
 	protected Date obsDatetime;
 	
+	@Column(name = "accession_number")
 	protected String accessionNumber;
 	
 	/**
@@ -124,55 +152,94 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * 
 	 * @see #isObsGrouping() (??)
 	 */
+	@ManyToOne
+	@JoinColumn(name = "obs_group_id")
 	protected Obs obsGroup;
 	
 	/**
 	 * The list of obs grouped under this obs.
 	 */
 	@AllowDirectAccess
+	@OneToMany
+	@JoinColumn(name = "obs_group_id")
+	@OrderBy("obs_id")
+	@Cascade(CascadeType.DELETE)
+	@Access(value = AccessType.FIELD)
+	@BatchSize(size = 25)
 	protected Set<Obs> groupMembers;
 	
+	@ManyToOne
+	@JoinColumn(name = "value_coded")
 	protected Concept valueCoded;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "value_coded_name_id")
 	protected ConceptName valueCodedName;
 	
+	@ManyToOne
+	@JoinColumn(name = "value_drug") 
 	protected Drug valueDrug;
 	
+	@Column(name = "value_group_id", length = 11)
 	protected Integer valueGroupId;
 	
+	@Column(name = "value_datetime", length = 19)
 	protected Date valueDatetime;
 	
+	@Column(name = "value_numeric", length = 22)
 	protected Double valueNumeric;
 	
+	@Column(name = "value_modifier", length = 2)
 	protected String valueModifier;
 	
+	@Column(name = "value_text", length = 65535)
 	protected String valueText;
 	
+	@Column(name = "value_complex")
 	protected String valueComplex;
 	
 	// ComplexData is not persisted in the database.
 	protected transient ComplexData complexData;
 	
+	@Column(name = "comments")
 	protected String comment;
 	
+	@Column(name = "person_id", length = 11, nullable = false, insertable = false, updatable = false)
 	protected transient Integer personId;
 	
+	@ManyToOne
+	@JoinColumn(name = "person_id", nullable = false)
 	protected Person person;
 	
+	@ManyToOne
+	@JoinColumn(name = "order_id")
 	protected Order order;
 	
+	@ManyToOne
+	@JoinColumn(name = "location_id")
 	protected Location location;
 	
+	@ManyToOne
+	@JoinColumn(name = "encounter_id")
 	protected Encounter encounter;
 	
+	@ManyToOne
+	@JoinColumn(name = "previous_version", unique = true)
 	private Obs previousVersion;
 	
+	@ManyToOne
+	@JoinColumn(name = "form_namespace_and_path")
+	@Access(value = AccessType.FIELD)
 	private String formNamespaceAndPath;
 	
 	private Boolean dirty = Boolean.FALSE;
 	
+	@Column(name = "interpretation", length = 32)
+	@Enumerated(value = EnumType.STRING)
 	private Interpretation interpretation;
 	
+	@Column(name = "status", length = 16, nullable = false)
+	@Enumerated(value = EnumType.STRING)
 	private Status status = Status.FINAL;
 	
 	/** default constructor */

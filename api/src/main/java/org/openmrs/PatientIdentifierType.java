@@ -12,9 +12,20 @@ package org.openmrs;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.annotations.Field;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * PatientIdentifierType
  */
+@Entity
+@Table(name = "patient_identifier_type")
 public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 211231L;
@@ -57,19 +68,30 @@ public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 	}
 	
 	// Fields	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "patient_identifier_type_id")
 	private Integer patientIdentifierTypeId;
 	
+	@Column(name = "format")
 	private String format;
 
 	@Field
+	@Column(name = "required", nullable = false)
 	private Boolean required = Boolean.FALSE;
 	
+	@Column(name = "format_descripion", length = 250)
 	private String formatDescription;
 
+	@Column(name = "validator", length = 200)
 	private String validator;
 	
+	@Column(name = "location_behavior", length = 50)
+	@Enumerated(value = EnumType.STRING)
 	private LocationBehavior locationBehavior;
-	
+
+	@Column(name = "location_behavior", length = 50)
+	@Enumerated(value = EnumType.STRING)
 	private UniquenessBehavior uniquenessBehavior;
 	
 	/** default constructor */

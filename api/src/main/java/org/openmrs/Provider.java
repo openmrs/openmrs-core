@@ -9,22 +9,39 @@
  */
 package org.openmrs;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Represents a person who may provide care to a patient during an encounter
  *
  * @since 1.9
  */
+@Entity
+@Table(name = "provider")
 public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
 	private static final Logger log = LoggerFactory.getLogger(Provider.class);
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "provider_id")
 	private Integer providerId;
 	
+	@Column(name = "person_id")
+	@Cascade(value = CascadeType.SAVE_UPDATE)
 	private Person person;
 	
+	@Column(name = "identifier")
 	private String identifier;
 	
 	public Provider() {
