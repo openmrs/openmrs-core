@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +30,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	private Integer cohortId;
 	
 	private String name;
+	
 	
 	private String description;
 	
@@ -267,10 +270,21 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	public static Cohort intersect(Cohort a, Cohort b) {
 		Cohort ret = new Cohort();
 		ret.setName("(" + (a == null ? "NULL" : a.getName()) + " * " + (b == null ? "NULL" : b.getName()) + ")");
-		if (a != null && b != null) {
-			ret.getMemberships().addAll(a.getMemberships());
-			ret.getMemberships().retainAll(b.getMemberships());
+		List<CohortMembership> cohortMemberships = new ArrayList<CohortMembership>();
+			
+		for(CohortMembership  a_member: a.getMemberships()){
+			for(CohortMembership  b_member: b.getMemberships()){
+				if(a_member.getPatientId() == b_member.getPatientId()){
+					if(a_member.getStartDate() != null && b_member.getStartDate() != null ) {
+						cohortMemberships.add(a_member.getStartDate().before(b_member.getStartDate()) ||
+							a_member.getStartDate().equals(b_member.getStartDate()) ? b_member : a_member);
+					} else {
+						cohortMemberships.add(a_member.getStartDate() == null ? a_member : b_member);
+					}
+				}
+			}
 		}
+		ret.getMemberships().addAll(cohortMemberships);
 		return ret;
 	}
 	

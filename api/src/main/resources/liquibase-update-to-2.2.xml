@@ -224,4 +224,31 @@
 								 baseTableName="encounter_diagnosis" baseColumnNames="changed_by"
 								 referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
+	<changeSet id="20180226-TRUNK-5331" author="patrick">
+		<preConditions onFail="MARK_RAN" onError="CONTINUE">
+			<sqlCheck expectedResult="NO">
+				SELECT is_Nullable
+				FROM  INFORMATION_SCHEMA.COLUMNS
+				WHERE table_name='cohort_member'
+				AND column_name='start_date'
+			</sqlCheck>
+		</preConditions>
+		<dropNotNullConstraint 
+			tableName="cohort_member"
+			columnName="start_date"
+			columnDataType="datetime"/>
+	</changeSet>
+	<changeSet author="patrick" id="20180307-TRUNK-5331">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT COUNT(*) from cohort_member
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Updating cohort_start_date with value null</comment>
+		<update tableName="cohort_member">
+			<column name="start_date" type="DATETIME" value="null"/>
+		</update>
+	</changeSet>
 </databaseChangeLog>
