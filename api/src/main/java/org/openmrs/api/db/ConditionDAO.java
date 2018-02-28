@@ -60,4 +60,12 @@ public interface ConditionDAO {
 	 * @return the deleted condition
 	 */
 	Condition deleteCondition(Condition condition);
+
+	/**
+	 * Gets a condition by id
+	 *
+	 * @param conditionId the id of the condition to return
+	 * @return the condition associated with the id
+	 */
+	Condition getCondition(Integer conditionId);
 }
