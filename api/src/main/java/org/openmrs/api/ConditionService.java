@@ -30,7 +30,7 @@ public interface ConditionService extends OpenmrsService {
 	 * @throws APIException   
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_CONDITIONS })
-	Condition save(Condition condition) throws APIException;
+	Condition saveCondition(Condition condition) throws APIException;
 
 	/**
 	 * Voids a condition
@@ -61,6 +61,16 @@ public interface ConditionService extends OpenmrsService {
 	 */
 	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
 	List<Condition> getActiveConditions(Patient patient) throws APIException;
+
+	/**
+	 * Gets a condition by id
+	 *
+	 * @param conditionId - the id of the Condition to retrieve
+	 * @return the Condition with the given id, or null if none exists
+	 * @throws APIException
+	 */
+	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
+	Condition getCondition(Integer conditionId) throws APIException;
 
 	/**
 	 * Revive a condition (pull a Lazarus)
