@@ -93,6 +93,16 @@ public interface DiagnosisService extends OpenmrsService {
 	 */
 	List<Diagnosis> getUniqueDiagnoses(Patient patient, Date fromDate);
 
+
+	/**
+	 * Gets a diagnosis by id.
+	 *
+	 * @param diagnosisId - id of the diagnosis to be returned
+	 * @return diagnosis matching the given id
+	 */
+	@Authorized({ PrivilegeConstants.GET_DIAGNOSES })
+	Diagnosis getDiagnosis(Integer diagnosisId);
+
 	/**
 	 * Revive a diagnosis (pull a Lazarus)
 	 *
