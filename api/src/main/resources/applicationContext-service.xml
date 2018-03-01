@@ -190,6 +190,9 @@
 	<bean id="providerDAO" class="org.openmrs.api.db.hibernate.HibernateProviderDAO">
         <property name="sessionFactory"><ref bean="sessionFactory"/></property>
     </bean>
+	<bean id="conditionDAO" class="org.openmrs.api.db.hibernate.HibernateConditionDAO">
+        <property name="sessionFactory"><ref bean="sessionFactory"/></property>
+    </bean>
 	
 
 	<!--  **************************  SCHEDULER SERVICE  *************************  -->

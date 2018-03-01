@@ -32,7 +32,7 @@ public interface ConditionDAO {
 	/**
 	 * Gets the condition attached to the specified UUID.
 	 *
-	 * @param uuid the uuid to search for in the database.
+	 * @param uuid the UUID to search for in the database.
 	 * @return the condition associated with the UUID.
 	 */
 	Condition getConditionByUuid(String uuid);
@@ -54,18 +54,17 @@ public interface ConditionDAO {
 	List<Condition> getActiveConditions(Patient patient);
 
 	/**
-	 * Removes a condition from the database
-	 *
-	 * @param condition the condition to delete
-	 * @return the deleted condition
-	 */
-	Condition deleteCondition(Condition condition);
-
-	/**
 	 * Gets a condition by id
 	 *
 	 * @param conditionId the id of the condition to return
 	 * @return the condition associated with the id
 	 */
 	Condition getCondition(Integer conditionId);
+	
+	/**
+	 * Removes a condition from the database
+	 * 
+	 * @param condition the condition object to delete from database
+	 */
+	void deleteCondition(Condition condition) throws DAOException;
 }
