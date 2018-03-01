@@ -19,17 +19,17 @@ import java.util.Date;
  * The condition class records detailed information about a condition, problem, diagnosis, or other situation or issue.
  * This records information about a disease/illness identified from diagnosis
  * or identification of health issues/situations that require ongoing monitoring.
- * 
+ *
  * @see <a href="https://www.hl7.org/fhir/condition.html">https://www.hl7.org/fhir/condition.html</a>
- * 
+ *
  * @since 2.2
  */
 public class Condition extends BaseChangeableOpenmrsData {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	private Integer conditionId;
-	
+
 	private CodedOrFreeText condition;
 
 	private ConditionClinicalStatus clinicalStatus;
@@ -42,33 +42,40 @@ public class Condition extends BaseChangeableOpenmrsData {
 
 	private Date onsetDate;
 
+	private Date endDate;
+
+	private Patient patient;
+
 	public Condition() {
 	}
 
 	/**
 	 * Convenience constructor to instantiate a condition class with all the necessary parameters
-	 * 
+	 *
 	 * @param condition - the condition to be set
 	 * @param clinicalStatus - the clinical status of the condition to be set
 	 * @param verificationStatus - the verification status of the condition, describing if the condition is confirmed or not
 	 * @param previousVersion - the previous version of the condition to be set
 	 * @param additionalDetail - additional details of the condition to be set
 	 * @param onsetDate - the date the condition is set
+	 * @param patient - the patient associated with the condition
 	 */
 	public Condition(CodedOrFreeText condition, ConditionClinicalStatus clinicalStatus,
 		ConditionVerificationStatus verificationStatus, Condition previousVersion, String additionalDetail,
-		Date onsetDate) {
+		Date onsetDate, Date endDate, Patient patient) {
 		this.condition = condition;
 		this.clinicalStatus = clinicalStatus;
 		this.verificationStatus = verificationStatus;
 		this.previousVersion = previousVersion;
 		this.additionalDetail = additionalDetail;
 		this.onsetDate = onsetDate;
+		this.endDate = endDate;
+		this.patient = patient;
 	}
 
 	/**
-	 * Gets the condition id 
-	 * 
+	 * Gets the condition id
+	 *
 	 * @return conditionId - the id of the condition
 	 */
 	public Integer getConditionId() {
@@ -77,8 +84,8 @@ public class Condition extends BaseChangeableOpenmrsData {
 
 	/**
 	 * Sets the condition id
-	 * 
-	 * @param conditionId the id of the codition to be set
+	 *
+	 * @param conditionId the id of the condition to be set
 	 */
 	public void setConditionId(Integer conditionId) {
 		this.conditionId = conditionId;
@@ -86,7 +93,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 
 	/**
 	 * Gets the condition that has been set
-	 * 
+	 *
 	 * @return condition - a CodedOrFreeText object that defines the condition
 	 */
 	public CodedOrFreeText getCondition() {
@@ -95,7 +102,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 
 	/**
 	 * Sets the condition
-	 * 
+	 *
 	 * @param condition the condition to be set
 	 */
 	public void setCondition(CodedOrFreeText condition) {
@@ -104,7 +111,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 
 	/**
 	 * Gets the clinical status of the condition
-	 * 
+	 *
 	 * @return clinicalStatus - a ConditionClinicalStatus object that defines the clinical status
 	 */
 	public ConditionClinicalStatus getClinicalStatus() {
@@ -113,7 +120,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 
 	/**
 	 * Sets the clinical status of the condition
-	 * 
+	 *
 	 * @param clinicalStatus the clinical status of the condition to be set
 	 */
 	public void setClinicalStatus(ConditionClinicalStatus clinicalStatus) {
@@ -122,7 +129,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 
 	/**
 	 * Gets the verification status of the condition
-	 * 
+	 *
 	 * @return verificationStatus - a ConditionVerificationStatus object that defines the verification status of the condition
 	 */
 	public ConditionVerificationStatus getVerificationStatus() {
@@ -131,7 +138,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 
 	/**
 	 * Sets the verification status of the condition
-	 * 
+	 *
 	 * @param verificationStatus the verification status of the condition to be set
 	 */
 	public void setVerificationStatus(ConditionVerificationStatus verificationStatus) {
@@ -158,7 +165,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 
 	/**
 	 * Gets the addition detail of the condition
-	 * 
+	 *
 	 * @return additionalDetail - a string showing additional detail of the condition
 	 */
 	public String getAdditionalDetail() {
@@ -167,7 +174,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 
 	/**
 	 * Sets the additional detail of the condition
-	 * 
+	 *
 	 * @param additionalDetail the additional detail of the condition to be set
 	 */
 	public void setAdditionalDetail(String additionalDetail) {
@@ -176,7 +183,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 
 	/**
 	 * Gets the onset date of the condition
-	 * 
+	 *
 	 * @return onsetDate - a date object that shows the onset date which is the date the condition was set
 	 */
 	public Date getOnsetDate() {
@@ -185,11 +192,29 @@ public class Condition extends BaseChangeableOpenmrsData {
 
 	/**
 	 * Sets the onset date
-	 * 
+	 *
 	 * @param onsetDate the onset date of the condition to be set
 	 */
 	public void setOnsetDate(Date onsetDate) {
 		this.onsetDate = onsetDate;
+	}
+
+	/**
+	 * Gets the condition end date
+	 *
+	 * @return endDate - a date object that shows the end date of the condition
+	 */
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	/**
+	 * Sets the end date
+	 *
+	 * @param endDate the end date to be set for the condition
+	 */
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	/**
@@ -206,6 +231,24 @@ public class Condition extends BaseChangeableOpenmrsData {
 	@Override
 	public void setId(Integer id) {
 		setConditionId(id);
+	}
+
+	/**
+	 * Gets the patient associated with the condition
+	 *
+	 * @return patient - the patient object associated with the condition
+	 */
+	public Patient getPatient() {
+		return patient;
+	}
+
+	/**
+	 * Sets the patient associated with the condition
+	 *
+	 * @param patient - The patient object to be associated with condition
+	 */
+	public void setPatient(Patient patient) {
+		this.patient = patient;
 	}
 
 }
