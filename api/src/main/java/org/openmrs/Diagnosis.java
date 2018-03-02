@@ -54,7 +54,7 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	 */
 	@Override
 	public Integer getId() {
-		return diagnosisId;
+		return getDiagnosisId();
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	 */
 	@Override
 	public void setId(Integer diagnosisId) {
-		this.diagnosisId = diagnosisId;
+		this.setDiagnosisId(diagnosisId);
 	}
 
 	/**
@@ -155,5 +155,13 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	 */
 	public void setCondition(Condition condition)   {
 		this.condition = condition;
+	}
+
+	public Integer getDiagnosisId() {
+		return diagnosisId;
+	}
+
+	public void setDiagnosisId(Integer diagnosisId) {
+		this.diagnosisId = diagnosisId;
 	}
 }
