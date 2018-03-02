@@ -18,7 +18,7 @@ package org.openmrs;
 public class Diagnosis extends BaseChangeableOpenmrsData {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private Integer diagnosisId;
 	
 	private Encounter encounter;
@@ -30,6 +30,8 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	private ConditionVerificationStatus certainty;
 	
 	private Integer rank;
+
+	private Patient patient;
 	
 	public Diagnosis() {
 	}
@@ -67,6 +69,24 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 		this.diagnosisId = diagnosisId;
 	}
 
+	/**
+	 * Gets the diagnosis id.
+	 *
+	 * @return the diagnosis id of this diagnosis
+	 */
+	public Integer getDiagnosisId() {
+		return diagnosisId;
+	}
+
+	/**
+	 * Sets diagnosis id
+	 *
+	 * @param diagnosisId the diagnosis id to set for this diagnosis
+	 */
+	public void setDiagnosisId(Integer diagnosisId) {
+		this.diagnosisId = diagnosisId;
+	}
+	
 	/**
 	 * Gets the encounter associated with this diagnosis.
 	 * 
@@ -156,4 +176,23 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	public void setCondition(Condition condition)   {
 		this.condition = condition;
 	}
+
+	/**
+	 * Gets the patient
+	 *
+	 * @return the patient with this diagnosis
+	 */
+	public Patient getPatient() {
+		return patient;
+	}
+
+	/**
+	 * Sets patient with this diagnosis
+	 *
+	 * @param patient the patient with this diagnosis.
+	 */
+	public void setPatient(Patient patient) {
+		this.patient = patient;
+	}
+	
 }
