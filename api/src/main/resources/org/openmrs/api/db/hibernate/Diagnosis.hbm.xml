@@ -21,13 +21,16 @@
 			<generator class="native" />
 		</id>
 
-		<property name="diagnosis" column="coded_or_free_text" length="50" not-null="true">
-			<type name="org.openmrs.CodedOrFreeText"/>
-		</property>
+		<component name="diagnosis" class="org.openmrs.CodedOrFreeText" >
+			<many-to-one name="coded" class="org.openmrs.Concept" column="diagnosis_coded" />
+			<property name="nonCoded" type="java.lang.String" length="255" column="diagnosis_non_coded" />
+			<many-to-one name="specificName" class="org.openmrs.ConceptName" column="diagnosis_coded_name" />
+		</component>
 
-		<property name="certainty" column="condition_verification_status" length="50" not-null="true">
+		<property name="certainty" column="certainty" length="50" not-null="true">
 			<type name="org.hibernate.type.EnumType">
 				<param name="enumClass">org.openmrs.ConditionVerificationStatus</param>
+				<param name="type">12</param> 
 			</type>
 		</property>
 
@@ -54,10 +57,10 @@
 		
 		<many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
 
-		<many-to-one name="encounter" class="org.openmrs.Encounter"
+		<many-to-one name="encounter" class="org.openmrs.Encounter" column="encounter_id"
 					 not-null="true" />
 
-		<many-to-one name="condition" class="org.openmrs.Condition"/>
+		<many-to-one name="condition" class="org.openmrs.Condition" column="condition_id"/>
 
 	</class>
 
