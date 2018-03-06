@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+	<encounter_diagnosis diagnosis_id="1" patient_id="2" encounter_id="1" creator="1" date_created="2015-01-12 00:00:00" 
+			   voided="false"  condition_id="2" certainty="PROVISIONAL"
+	           rank="5" uuid="2cc6880e-2c46-15e4-9038-a6c5e4d22fb7"/>
+	<encounter_diagnosis diagnosis_id="2" patient_id="2" encounter_id="2" creator="1" date_created="2015-01-12 00:00:00" 
+			   voided="false" condition_id="1" certainty="CONFIRMED"
+	           rank="1" uuid="2cc6880e-2c46-11e4-9138-a6c5e4d20fb7"/>
+	<encounter_diagnosis diagnosis_id="4" patient_id="2" encounter_id="2" creator="1" date_created="2016-01-12 00:00:00" 
+			   voided="true" date_voided="2017-01-12 00:00:52" voided_by="1" void_reason="test reason" 
+			             condition_id="2" certainty="PROVISIONAL"
+	           rank="5" uuid="2cb6880e-2cd6-11e4-9138-a6c5e4d20fb7"/>
+	<encounter_diagnosis diagnosis_id="6" patient_id="8" encounter_id="2" creator="1" date_created="2015-04-12 00:00:00" 
+			   voided="false"  condition_id="3" certainty="PROVISIONAL"
+	           rank="5" uuid="2cd6780e-2a46-11e4-9038-a6c5e4d26fc2"/>
+</dataset>

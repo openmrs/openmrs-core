@@ -24,6 +24,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DatatypeService;
+import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.LocationService;
@@ -208,17 +209,17 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	/**
 	 * @return condition related service
-	 * 
+	 *
 	 * @since 2.2
 	 */
 	public ConditionService getConditionService() {
 		return getService(ConditionService.class);
 	}
-	
+
 	/**
 	 * @param conditionService condition related service
-	 *            
-	 * @since 2.2   
+	 *
+	 * @since 2.2
 	 */
 	public void setConditionService(ConditionService conditionService) {
 		setService(ConditionService.class, conditionService);
@@ -237,7 +238,25 @@ public class ServiceContext implements ApplicationContextAware {
 	public void setCohortService(CohortService cs) {
 		setService(CohortService.class, cs);
 	}
-	
+
+	/**
+	 * @return diagnosis related service
+	 *
+	 * @since 2.2
+	 */
+	public DiagnosisService getDiagnosisService() {
+		return getService(DiagnosisService.class);
+	}
+
+	/**
+	 * @param diagnosisService diagnosis related service
+	 *
+	 * @since 2.2
+	 */
+	public void setDiagnosisService(DiagnosisService diagnosisService) {
+		setService(DiagnosisService.class, diagnosisService);
+	}
+
 	/**
 	 * @return order set service
 	 */
