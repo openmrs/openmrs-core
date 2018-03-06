@@ -54,8 +54,8 @@ public class MandatoryModuleException extends ModuleMustStartException {
 	 */
 	public MandatoryModuleException(List<String> moduleIds) {
 		super("The following modules are marked as 'mandatory' but were unable to start: "
-		        + OpenmrsUtil.join(moduleIds, ","));
-		this.moduleId = OpenmrsUtil.join(moduleIds, ",");
+		        + String.join(",", moduleIds));
+		this.moduleId = String.join(",", moduleIds);
 	}
 	
 	/**
