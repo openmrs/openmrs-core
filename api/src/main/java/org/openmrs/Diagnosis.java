@@ -42,11 +42,13 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	 * @param certainty the certainty for the diagnosis
 	 * @param rank the rank of the diagnosis
 	 */
-	public Diagnosis(Encounter encounter, CodedOrFreeText diagnosis, ConditionVerificationStatus certainty, Integer rank) {
+	public Diagnosis(Encounter encounter, CodedOrFreeText diagnosis,ConditionVerificationStatus certainty,
+					 Integer rank, Patient patient) {
 		this.encounter = encounter;
 		this.diagnosis = diagnosis;
 		this.certainty = certainty;
 		this.rank = rank;
+		this.patient = patient;
 	}
 	
 	/**
@@ -56,7 +58,7 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	 */
 	@Override
 	public Integer getId() {
-		return diagnosisId;
+		return getDiagnosisId();
 	}
 
 	/**
@@ -66,7 +68,7 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	 */
 	@Override
 	public void setId(Integer diagnosisId) {
-		this.diagnosisId = diagnosisId;
+		this.setDiagnosisId(diagnosisId);
 	}
 
 	/**
@@ -178,9 +180,9 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Gets the patient
+	 * Gets the patient associated with the diagnosis
 	 *
-	 * @return the patient with this diagnosis
+	 * @return patient - the patient object associated with the diagnosis
 	 */
 	public Patient getPatient() {
 		return patient;
@@ -194,5 +196,4 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
-	
 }
