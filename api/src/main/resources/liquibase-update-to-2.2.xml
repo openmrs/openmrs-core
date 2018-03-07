@@ -215,7 +215,6 @@
 			<column name="voided_by" type="int" />
 			<column name="date_voided" type="datetime" />
 			<column name="void_reason" type="varchar(255)"/>
-			<column name="patient_id" type="int"><constraints nullable="false" /></column>
 		</createTable>
 		
 		<addForeignKeyConstraint constraintName="encounter_diagnosis_encounter_id_fk"
