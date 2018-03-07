@@ -9,108 +9,94 @@
  */
 package org.openmrs.module;
 
-import static org.mockito.Mockito.never;
-import static org.powermock.api.mockito.PowerMockito.spy;
-import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
- * Tests Module Methods
+ * Unit tests for {@link Module}.
  */
-
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Module.class)
 public class ModuleExtensionsTest {
 
-	private Module mockModule;
+	private Module module;
 
 	@Before
-	public void before() throws Exception {
-		mockModule = spy(new Module("mockmodule"));
+	public void before() {
+		module = new Module("mockmodule");
 	}
 
-	/*
-	 * @see Module#getExtensions()
-	 */
 	@Test
-	public void getExtensions_shouldNotExpandExtensionNamesIfExtensionNamesIsNull() throws Exception {
-		ArrayList<Extension> extensions = new ArrayList<>();
+	public void getExtensions_shouldNotExpandExtensionNamesIfExtensionNamesIsNull() {
+		
+		Extension extension = new MockExtension();
+		List<Extension> extensions = new ArrayList<>();
+		extensions.add(extension);
+		module.setExtensions(extensions);
+		module.setExtensionNames(null);
+		
+		List<Extension> result = module.getExtensions();
+		
+		assertThat(result, is(extensions));
+	}
+	
+	@Test
+	public void getExtensions_shouldNotExpandExtensionNamesIfExtensionNamesIsEmpty() {
+		
+		Extension extension = new MockExtension();
+		List<Extension> extensions = new ArrayList<>();
+		extensions.add(extension);
+		module.setExtensions(extensions);
+		module.setExtensionNames(new IdentityHashMap<>());
 
-		Extension mockExtension = new MockExtension();
-		extensions.add(mockExtension);
-
-		mockModule.setExtensions(extensions);
-		mockModule.setExtensionNames(null);
-		ArrayList<Extension> ret = new ArrayList<>(mockModule.getExtensions());
-
-		verifyPrivate(mockModule, never()).invoke("expandExtensionNames");
+		List<Extension> result = module.getExtensions();
+		
+		assertThat(result, is(extensions));
 	}
 
-	/*
-	 * @see Module#getExtensions()
-	 */
 	@Test
-	public void getExtensions_shouldNotExpandExtensionNamesIfExtensionNamesIsEmpty() throws Exception {
-		ArrayList<Extension> extensions = new ArrayList<>();
+	public void getExtensions_shouldNotExpandExtensionNamesIfExtensionsMatchesExtensionNames() {
 
-		Extension mockExtension = new MockExtension();
-		extensions.add(mockExtension);
-
-		mockModule.setExtensions(extensions);
-		mockModule.setExtensionNames(new IdentityHashMap<>());
-		ArrayList<Extension> ret = new ArrayList<>(mockModule.getExtensions());
-
-		verifyPrivate(mockModule, never()).invoke("expandExtensionNames");
-	}
-
-	/*
-	 * @see Module#getExtensions()
-	 */
-	@Test
-	public void getExtensions_shouldNotExpandExtensionNamesIfExtensionsMatchesExtensionNames() throws Exception {
-		ArrayList<Extension> extensions = new ArrayList<>();
+		Extension extension = new MockExtension();
+		extension.setPointId("1");
+		List<Extension> extensions = new ArrayList<>();
+		extensions.add(extension);
+		
 		IdentityHashMap<String, String> extensionNames = new IdentityHashMap<>();
+		extensionNames.put("1", extension.getClass().getName());
 
-		Extension mockExtension = new MockExtension();
-		mockExtension.setPointId("1");
-		extensions.add(mockExtension);
-		extensionNames.put("1", mockExtension.getClass().getName());
+		module.setExtensions(extensions);
+		module.setExtensionNames(extensionNames);
 
-		mockModule.setExtensions(extensions);
-		mockModule.setExtensionNames(extensionNames);
-		ArrayList<Extension> ret = new ArrayList<>(mockModule.getExtensions());
-
-		verifyPrivate(mockModule, never()).invoke("expandExtensionNames");
+		List<Extension> result = module.getExtensions();
+		
+		assertThat(result, is(extensions));
 	}
-
-	/*
-	 * @see Module#getExtensions()
-	 */
+	
 	@Test
-	public void getExtensions_shouldExpandExtensionNamesIfExtensionsDoesNotMatchExtensionNames() throws Exception {
+	public void getExtensions_shouldNotExpandExtensionNamesIfNoModuleClassloaderIsFound() {
+
+		Extension extension = new MockExtension();
+		extension.setPointId("1");
 		ArrayList<Extension> extensions = new ArrayList<>();
+		extensions.add(extension);
+		
 		IdentityHashMap<String, String> extensionNames = new IdentityHashMap<>();
+		extensionNames.put("2", extension.getClass().getName());
 
-		Extension mockExtension = new MockExtension();
-		mockExtension.setPointId("1");
-		extensions.add(mockExtension);
-		extensionNames.put("2", mockExtension.getClass().getName());
+		module.setExtensions(extensions);
+		module.setExtensionNames(extensionNames);
 
-		mockModule.setExtensions(extensions);
-		mockModule.setExtensionNames(extensionNames);
-		ArrayList<Extension> ret = new ArrayList<>(mockModule.getExtensions());
-
-		verifyPrivate(mockModule).invoke("expandExtensionNames");
+		List<Extension> result = module.getExtensions();
+		
+		assertThat(result, is(extensions));
 	}
-
+	
 	private class MockExtension extends Extension {
 		@Override
 		public Extension.MEDIA_TYPE getMediaType() {
