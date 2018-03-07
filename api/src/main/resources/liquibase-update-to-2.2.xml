@@ -215,6 +215,7 @@
 			<column name="voided_by" type="int" />
 			<column name="date_voided" type="datetime" />
 			<column name="void_reason" type="varchar(255)"/>
+			<column name="patient_id" type="int"><constraints nullable="false" /></column>
 		</createTable>
 		
 		<addForeignKeyConstraint constraintName="encounter_diagnosis_encounter_id_fk"
@@ -241,5 +242,8 @@
 		<addForeignKeyConstraint constraintName="encounter_diagnosis_coded_name_fk"
 								 baseTableName="encounter_diagnosis" baseColumnNames="diagnosis_coded_name"
 								 referencedTableName="concept_name" referencedColumnNames="concept_name_id " />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_patient_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="patient_id"
+								 referencedTableName="patient" referencedColumnNames="patient_id" />
 	</changeSet>
 </databaseChangeLog>
