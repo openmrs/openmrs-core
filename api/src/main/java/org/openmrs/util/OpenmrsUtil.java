@@ -696,7 +696,9 @@ public class OpenmrsUtil {
 	 * @param c Collection to be joined
 	 * @param separator string to put between all elements
 	 * @return a String representing the toString() of all elements in c, separated by separator
+	 * @deprecated as of 2.2 use Java's {@link String#join} or Apache Commons StringUtils.join for iterables which do not extend {@link CharSequence}
 	 */
+	@Deprecated
 	public static <E> String join(Collection<E> c, String separator) {
 		if (c == null) {
 			return "";

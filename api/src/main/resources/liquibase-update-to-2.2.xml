@@ -117,5 +117,132 @@
                                      baseTableName="patient_program_attribute" baseColumnNames="voided_by"
             referencedTableName="users" referencedColumnNames="user_id" />
     </changeSet>
-    
+	<changeSet id="20180214-1000" author="Kelechi+iheanyi">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="condition"/></not>
+		</preConditions>
+		<comment>
+			Add condition table
+		</comment>
+		<createTable tableName="condition">
+			<column name="condition_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="additional_detail" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+			<column name="previous_version" type="int"></column>
+			<column name="condition_coded" type="int" />
+			<column name="condition_non_coded" type="varchar(255)" />
+			<column name="condition_coded_name" type="int" />
+			<column name="clinical_status" type="varchar(50)" >
+				<constraints nullable="false" />
+			</column>
+			<column name="verification_status" type="varchar(50)" >
+				<constraints nullable="false"/>
+			</column>
+			<column name="onset_date" type="datetime" />
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_voided" type="datetime" />
+			<column name="void_reason" type="varchar(255)" />
+			<column name="uuid" type="varchar(38)">
+				<constraints unique="true" />
+			</column>
+			<column name="creator" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided_by" type="int" />
+			<column name="changed_by" type="int" />
+			<column name="patient_id" type="int"><constraints nullable="false" /></column>
+			<column name="end_date" type="datetime" />
+		</createTable>
+		<addForeignKeyConstraint constraintName="condition_previous_version_fk"
+								 baseTableName="condition" baseColumnNames="previous_version"
+								 referencedTableName="condition" referencedColumnNames="condition_id" />
+		<addForeignKeyConstraint constraintName="condition_condition_coded_fk"
+								 baseTableName="condition" baseColumnNames="condition_coded"
+								 referencedTableName="concept" referencedColumnNames="concept_id " />
+		<addForeignKeyConstraint constraintName="condition_condition_coded_name_fk"
+								 baseTableName="condition" baseColumnNames="condition_coded_name"
+								 referencedTableName="concept_name" referencedColumnNames="concept_name_id " />
+		<addForeignKeyConstraint constraintName="condition_creator_fk"
+								 baseTableName="condition" baseColumnNames="creator"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="condition_changed_by_fk"
+								 baseTableName="condition" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="condition_voided_by_fk"
+								 baseTableName="condition" baseColumnNames="voided_by"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="condition_patient_fk"
+								 baseTableName="condition" baseColumnNames="patient_id"
+								 referencedTableName="patient" referencedColumnNames="patient_id" />
+	</changeSet>
+	<changeSet id="20181402-TRUNK-5339" author="esirkings">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="encounter_diagnosis" />
+			</not>
+		</preConditions>
+
+		<comment>Creating encounter_diagnosis table</comment>
+
+		<createTable tableName="encounter_diagnosis">
+			<column name="diagnosis_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="diagnosis_coded" type="int" />
+			<column name="diagnosis_non_coded" type="varchar(255)" />
+			<column name="diagnosis_coded_name" type="int" />
+			<column name="encounter_id" type="int"><constraints nullable="false" /></column>
+			<column name="patient_id" type="int"><constraints nullable="false" /></column>
+			<column name="condition_id" type="int"><constraints nullable="false" /></column>
+			<column name="certainty" type="varchar(255)"><constraints nullable="false" /></column>
+			<column name="rank" type="int"><constraints nullable="false" /></column>
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="datetime"><constraints nullable="false"/></column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="datetime" />
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided_by" type="int" />
+			<column name="date_voided" type="datetime" />
+			<column name="void_reason" type="varchar(255)"/>
+		</createTable>
+		
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_encounter_id_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="encounter_id"
+								 referencedTableName="encounter" referencedColumnNames="encounter_id" />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_patient_id_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="patient_id"
+								 referencedTableName="patient" referencedColumnNames="patient_id" />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_condition_id_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="condition_id"
+								 referencedTableName="condition" referencedColumnNames="condition_id" />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_creator_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="creator"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_voided_by_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="voided_by"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_changed_by_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_coded_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="diagnosis_coded"
+								 referencedTableName="concept" referencedColumnNames="concept_id " />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_coded_name_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="diagnosis_coded_name"
+								 referencedTableName="concept_name" referencedColumnNames="concept_name_id " />
+		<addForeignKeyConstraint constraintName="encounter_diagnosis_patient_fk"
+								 baseTableName="encounter_diagnosis" baseColumnNames="patient_id"
+								 referencedTableName="patient" referencedColumnNames="patient_id" />
+	</changeSet>
 </databaseChangeLog>

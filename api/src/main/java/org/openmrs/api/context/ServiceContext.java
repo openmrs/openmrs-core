@@ -38,6 +38,7 @@ import org.openmrs.api.ProviderService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
+import org.openmrs.api.ConditionService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
@@ -205,6 +206,24 @@ public class ServiceContext implements ApplicationContextAware {
 		return getService(ObsService.class);
 	}
 	
+	/**
+	 * @return condition related service
+	 * 
+	 * @since 2.2
+	 */
+	public ConditionService getConditionService() {
+		return getService(ConditionService.class);
+	}
+	
+	/**
+	 * @param conditionService condition related service
+	 *            
+	 * @since 2.2   
+	 */
+	public void setConditionService(ConditionService conditionService) {
+		setService(ConditionService.class, conditionService);
+	}
+
 	/**
 	 * @return cohort related service
 	 */

@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.openmrs">
+
+	<class name="Diagnosis" table="encounter_diagnosis">
+
+		<id name="diagnosisId" type="int" column="diagnosis_id">
+			<generator class="native" />
+		</id>
+
+		<component name="diagnosis" class="org.openmrs.CodedOrFreeText">
+			<many-to-one name="coded" class="org.openmrs.Concept" column="diagnosis_coded" />
+			<property name="nonCoded" type="java.lang.String" length="255" column="diagnosis_non_coded" />
+			<many-to-one name="specificName" class="org.openmrs.ConceptName" column="diagnosis_coded_name" />
+		</component>
+
+		<property name="certainty" column="certainty" length="50" not-null="true">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">org.openmrs.ConditionVerificationStatus</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+
+		<property name="rank" type="java.lang.Integer" not-null="true"/>
+
+		<property name="dateCreated" type="java.util.Date"
+				  column="date_created" not-null="true" length="19" />
+
+		<property name="voided" type="java.lang.Boolean"
+				  column="voided" length="1" not-null="true" />
+
+		<property name="dateVoided" type="java.util.Date"
+				  column="date_voided" length="19" />
+
+		<property name="voidReason" type="java.lang.String"
+				  column="void_reason" length="255" />
+
+		<property name="uuid" type="java.lang.String"
+				  column="uuid" length="38" unique="true" />
+		
+		<many-to-one name="creator" column="creator" class="org.openmrs.User" not-null="true" />
+
+		<many-to-one name="voidedBy" class="org.openmrs.User" column="voided_by" />
+
+		<many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
+
+		<many-to-one name="encounter" class="org.openmrs.Encounter" column="encounter_id"
+					 not-null="true" />
+
+		<many-to-one name="condition" column="condition_id" class="org.openmrs.Condition"/>
+
+		<many-to-one name="patient" column="patient_id" class="org.openmrs.Patient" not-null="true" />
+
+	</class>
+
+</hibernate-mapping>

@@ -882,7 +882,7 @@ public class ModuleFactory {
 	 * @return the message text.
 	 */
 	private static String getFailedToStartModuleMessage(Module module) {
-		String[] params = { module.getName(), OpenmrsUtil.join(getMissingRequiredModules(module), ", ") };
+		String[] params = { module.getName(), String.join(",", getMissingRequiredModules(module)) };
 		return Context.getMessageSourceService().getMessage("Module.error.moduleCannotBeStarted", params,
 		    Context.getLocale());
 	}

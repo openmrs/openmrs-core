@@ -97,6 +97,7 @@
         <property name="encounterService"><ref bean="encounterService"/></property>
         <property name="locationService"><ref bean="locationService"/></property>
         <property name="orderService"><ref bean="orderService"/></property>
+		<property name="conditionService"><ref bean="conditionService"/></property>
 		<property name="orderSetService"><ref bean="orderSetService"/></property>
         <property name="formService"><ref bean="formService"/></property>
         <property name="administrationService"><ref bean="adminService"/></property>
@@ -190,6 +191,12 @@
 	<bean id="providerDAO" class="org.openmrs.api.db.hibernate.HibernateProviderDAO">
         <property name="sessionFactory"><ref bean="sessionFactory"/></property>
     </bean>
+	<bean id="conditionDAO" class="org.openmrs.api.db.hibernate.HibernateConditionDAO">
+        <property name="sessionFactory"><ref bean="sessionFactory"/></property>
+    </bean>
+	<bean id="diagnosisDAO" class="org.openmrs.api.db.hibernate.HibernateDiagnosisDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
 	
 
 	<!--  **************************  SCHEDULER SERVICE  *************************  -->
@@ -252,6 +259,9 @@
 	</bean>
 	<bean id="orderServiceTarget" class="org.openmrs.api.impl.OrderServiceImpl">
 		<property name="orderDAO"><ref bean="orderDAO"/></property>
+	</bean>
+	<bean id="conditionServiceTarget" class="org.openmrs.api.impl.ConditionServiceImpl">
+		<property name="conditionDAO"><ref bean="conditionDAO"/></property>
 	</bean>
 	<bean id="orderSetServiceTarget" class="org.openmrs.api.impl.OrderSetServiceImpl">
 		<property name="orderSetDAO"><ref bean="orderSetDAO"/></property>
@@ -396,6 +406,14 @@
 	<bean id="orderService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="orderServiceTarget"/></property>
+		<property name="preInterceptors">
+			<ref local="serviceInterceptors" />
+		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+	</bean>
+	<bean id="conditionService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="conditionServiceTarget"/></property>
 		<property name="preInterceptors">
 			<ref local="serviceInterceptors" />
 		</property>

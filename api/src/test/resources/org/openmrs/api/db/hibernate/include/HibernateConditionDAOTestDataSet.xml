@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+  <condition condition_id="1" patient_id="2" clinical_status="INACTIVE" creator="1" date_created="2015-01-12 00:00:00" voided="false"
+    onset_date="2017-01-12 00:00:00" verification_status="PROVISIONAL" uuid="2cc6880e-2c46-15e4-9038-a6c5e4d22fb7"/>
+  <condition condition_id="2" patient_id="2" clinical_status="ACTIVE" creator="1" date_created="2015-01-12 00:00:00" voided="false"
+    onset_date="2017-01-12 00:00:50" verification_status="CONFIRMED" uuid="2cc6880e-2c46-11e4-9138-a6c5e4d20fb7"/>
+  <condition condition_id="4" patient_id="2" clinical_status="INACTIVE" creator="1" date_created="2016-01-12 00:00:00" voided="false"
+    onset_date="2017-01-12 00:00:52" end_date="2017-06-12 00:10:52" verification_status="CONFIRMED" uuid="2cb6880e-2cd6-11e4-9138-a6c5e4d20fb7"/>
+  <condition condition_id="6" patient_id="8" clinical_status="ACTIVE" creator="1" date_created="2015-04-12 00:00:00" voided="false"
+    onset_date="2017-02-12 00:40:00" verification_status="CONFIRMED" uuid="2cd6780e-2a46-11e4-9038-a6c5e4d26fc2"/>
+</dataset>
