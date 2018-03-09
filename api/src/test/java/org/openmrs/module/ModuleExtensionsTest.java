@@ -10,97 +10,210 @@
 package org.openmrs.module;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.IdentityHashMap;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Unit tests for {@link Module}.
+ * Tests for {@link Module#getExtensions()}.
+ * 
+ * Look at {@link ModuleFileParser#parse()} for how a Module is constructed and initialized.
+ * At first the extension tags found in config.xml are parsed and set in {@link Module#setExtensionNames(Map)}.
  */
 public class ModuleExtensionsTest {
+
+	private static final String EXTENSION_POINT_ID_PATIENT_DASHBOARD = "org.openmrs.patientDashboard";
+	private static final String LOGIC_MODULE_PATH = "org/openmrs/module/include/logic-0.2.omod";
 
 	private Module module;
 
 	@Before
 	public void before() {
-		module = new Module("mockmodule");
+		module = new Module("Extension Test", "extensiontest", "org.openmrs.module.extensiontest", "", "", "0.0.1");
+	}
+	
+	@After
+	public void after() {
+		// needed so other tests which rely on no ModuleClassLoaderFound
+		// are not affected by tests registering one
+		ModuleFactory.moduleClassLoaders = null;
 	}
 
 	@Test
-	public void getExtensions_shouldNotExpandExtensionNamesIfExtensionNamesIsNull() {
+	public void getExtensions_shouldNotExpandIfExtensionNamesAreNull() {
 		
-		Extension extension = new MockExtension();
-		List<Extension> extensions = new ArrayList<>();
-		extensions.add(extension);
-		module.setExtensions(extensions);
 		module.setExtensionNames(null);
-		
-		List<Extension> result = module.getExtensions();
-		
-		assertThat(result, is(extensions));
+
+		assertThat(module.getExtensions(), is(equalTo(Collections.EMPTY_LIST)));
 	}
 	
 	@Test
-	public void getExtensions_shouldNotExpandExtensionNamesIfExtensionNamesIsEmpty() {
-		
-		Extension extension = new MockExtension();
-		List<Extension> extensions = new ArrayList<>();
-		extensions.add(extension);
-		module.setExtensions(extensions);
-		module.setExtensionNames(new IdentityHashMap<>());
+	public void getExtensions_shouldNotExpandIfExtensionNamesAreEmpty() {
 
-		List<Extension> result = module.getExtensions();
-		
-		assertThat(result, is(extensions));
+		module.setExtensionNames(new HashMap<>());
+
+		assertThat(module.getExtensions(), is(equalTo(Collections.EMPTY_LIST)));
 	}
 
 	@Test
-	public void getExtensions_shouldNotExpandExtensionNamesIfExtensionsMatchesExtensionNames() {
+	public void getExtensions_shouldNotExpandIfNoModuleClassloaderIsFound() {
 
-		Extension extension = new MockExtension();
-		extension.setPointId("1");
-		List<Extension> extensions = new ArrayList<>();
-		extensions.add(extension);
-		
-		IdentityHashMap<String, String> extensionNames = new IdentityHashMap<>();
-		extensionNames.put("1", extension.getClass().getName());
-
-		module.setExtensions(extensions);
+		HashMap<String, String> extensionNames = new HashMap<>();
+		extensionNames.put(EXTENSION_POINT_ID_PATIENT_DASHBOARD, AccessibleExtension.class.getName());
 		module.setExtensionNames(extensionNames);
-
-		List<Extension> result = module.getExtensions();
 		
-		assertThat(result, is(extensions));
+		ModuleFactory.moduleClassLoaders = null;
+
+		assertThat(module.getExtensions(), is(equalTo(Collections.EMPTY_LIST)));
 	}
 	
 	@Test
-	public void getExtensions_shouldNotExpandExtensionNamesIfNoModuleClassloaderIsFound() {
+	public void getExtensions_shouldNotFailExpandingAnExtensionNameCausingANoClassDefinitionFoundError() {
+		// Tests that when an extension is defined in config.xml and its class is found inside the module but
+		// the Extension extends another Extension for which no definition can be found for.
+		// In this particular case the logic module has an Extension based on one that was moved to the
+		// legacyui module, which since thats not loaded cannot be found, more specifically leads to
+		// java.lang.NoClassDefFoundError: org/openmrs/module/web/extension/AdministrationSectionExt
 
-		Extension extension = new MockExtension();
-		extension.setPointId("1");
-		ArrayList<Extension> extensions = new ArrayList<>();
-		extensions.add(extension);
-		
-		IdentityHashMap<String, String> extensionNames = new IdentityHashMap<>();
-		extensionNames.put("2", extension.getClass().getName());
+		File moduleFile = new File(getClass().getClassLoader().getResource(LOGIC_MODULE_PATH).getPath());
+		module = new ModuleFileParser(moduleFile).parse();
+		ModuleClassLoader moduleClassLoader = new ModuleClassLoader(module, getClass().getClassLoader());
+		ModuleFactory.getModuleClassLoaderMap().put(module, moduleClassLoader);
 
-		module.setExtensions(extensions);
+		assertThat(module.getExtensions(), is(equalTo(Collections.EMPTY_LIST)));
+	}
+
+	@Test
+	public void getExtensions_shouldNotFailExpandingAClassWhichCannotBeFound() {
+
+		HashMap<String, String> extensionNames = new HashMap<>();
+		extensionNames.put(EXTENSION_POINT_ID_PATIENT_DASHBOARD, "org.openmrs.unknown.Nonexisting.class");
 		module.setExtensionNames(extensionNames);
+		registerModuleClassLoader();
 
-		List<Extension> result = module.getExtensions();
-		
-		assertThat(result, is(extensions));
+		assertThat(module.getExtensions(), is(equalTo(Collections.EMPTY_LIST)));
 	}
 	
-	private class MockExtension extends Extension {
+	@Test
+	public void getExtensions_shouldNotFailExpandingAClassWhichCannotBeInstantiated() {
+
+		// pass in the abstract base class Extension itself which cannot be instantiated
+		HashMap<String, String> extensionNames = new HashMap<>();
+		extensionNames.put(EXTENSION_POINT_ID_PATIENT_DASHBOARD, Extension.class.getName());
+		module.setExtensionNames(extensionNames);
+		registerModuleClassLoader();
+
+		assertThat(module.getExtensions(), is(equalTo(Collections.EMPTY_LIST)));
+	}
+	
+	@Test
+	public void getExtensions_shouldNotFailExpandingAClassWhichCannotAccessed() {
+
+		// pass in the abstract base class Extension itself which cannot be instantiated
+		HashMap<String, String> extensionNames = new HashMap<>();
+		extensionNames.put(EXTENSION_POINT_ID_PATIENT_DASHBOARD, ExtensionCausingIllegalAccessException.class.getName());
+		module.setExtensionNames(extensionNames);
+		registerModuleClassLoader();
+
+		assertThat(module.getExtensions(), is(equalTo(Collections.EMPTY_LIST)));
+	}
+	
+	@Test
+	public void getExtensions_shouldExpandClassNamesIntoClassInstances() {
+
+		HashMap<String, String> extensionNames = new HashMap<>();
+		extensionNames.put(EXTENSION_POINT_ID_PATIENT_DASHBOARD, AccessibleExtension.class.getName());
+		module.setExtensionNames(extensionNames);
+		registerModuleClassLoader();
+
+		List<Extension> result = module.getExtensions();
+		assertThat(result.size(), is(1));
+		Extension extension = result.get(0);
+		assertThat(extension, is(instanceOf(AccessibleExtension.class)));
+		assertThat(extension.getPointId(), is(EXTENSION_POINT_ID_PATIENT_DASHBOARD));
+		assertThat(extension.getModuleId(), is(module.getModuleId()));
+	}
+	
+	@Test
+	public void getExtensions_shouldNotExpandAgainIfClassNamesMatch() {
+
+		HashMap<String, String> extensionNames = new HashMap<>();
+		extensionNames.put(EXTENSION_POINT_ID_PATIENT_DASHBOARD, AccessibleExtension.class.getName());
+		module.setExtensionNames(extensionNames);
+		registerModuleClassLoader();
+
+		List<Extension> result = module.getExtensions();
+		assertThat(result.size(), is(1));
+		Extension extension = result.get(0);
+
+		result = module.getExtensions();
+		assertThat(result.size(), is(1));
+		assertThat(result.get(0), is(sameInstance(extension)));
+	}
+	
+	@Test
+	public void getExtensions_shouldExpandAgainIfExtensionNamesNowHaveADifferentClassOnSameExtensionPoint() {
+
+		HashMap<String, String> extensionNames = new HashMap<>();
+		extensionNames.put(EXTENSION_POINT_ID_PATIENT_DASHBOARD, AccessibleExtension.class.getName());
+		module.setExtensionNames(extensionNames);
+		registerModuleClassLoader();
+
+		List<Extension> result = module.getExtensions();
+		assertThat(result.size(), is(1));
+		
+		extensionNames.put(EXTENSION_POINT_ID_PATIENT_DASHBOARD, AnotherAccessibleExtension.class.getName());
+
+		result = module.getExtensions();
+		assertThat(result.size(), is(1));
+		Extension extension = result.get(0);
+		assertThat(extension, is(instanceOf(AnotherAccessibleExtension.class)));
+		assertThat(extension.getPointId(), is(EXTENSION_POINT_ID_PATIENT_DASHBOARD));
+		assertThat(extension.getModuleId(), is(module.getModuleId()));
+	}
+
+	private void registerModuleClassLoader() {
+		// needed to prevent NullPointerException's in the ModuleClassLoader constructor
+		// TODO: we should aim to properly initialize Module after construction so a module without
+		// required modules can be safely used as module.
+		module.setRequiredModulesMap(new HashMap<>());
+		module.setAwareOfModulesMap(new HashMap<>());
+		ModuleClassLoader moduleClassLoader = new ModuleClassLoader(module, new ArrayList<>(), getClass().getClassLoader());
+		ModuleFactory.getModuleClassLoaderMap().put(module, moduleClassLoader);
+	}
+
+	static class AccessibleExtension extends Extension {
 		@Override
 		public Extension.MEDIA_TYPE getMediaType() {
 			return null;
+		}
+	}
+	
+	static class AnotherAccessibleExtension extends Extension {
+		@Override
+		public Extension.MEDIA_TYPE getMediaType() {
+			return null;
+		}
+	}
+	
+	static class ExtensionCausingIllegalAccessException extends Extension {
+		@Override
+		public Extension.MEDIA_TYPE getMediaType() {
+			return null;
+		}
+		private ExtensionCausingIllegalAccessException() {
 		}
 	}
 }
