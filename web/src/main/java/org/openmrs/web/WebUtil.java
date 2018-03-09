@@ -30,7 +30,11 @@ import org.slf4j.LoggerFactory;
 public class WebUtil implements GlobalPropertyListener {
 	
 	private static final Logger log = LoggerFactory.getLogger(WebUtil.class);
-	
+
+	/**
+	 * @deprecated as of 2.2.0, there is no replacement field available.
+	 */
+	@Deprecated
 	private static String defaultDateCache = null;
 
 	/**
@@ -419,7 +423,11 @@ public class WebUtil implements GlobalPropertyListener {
 	public boolean supportsPropertyName(String propertyName) {
 		return OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT.equals(propertyName);
 	}
-	
+
+	/**
+	 * @deprecated as of 2.2.0, there is no replacement method available.
+	 */
+	@Deprecated
 	public static void setDefaultDateCache(String defaultDateCache) {
 		WebUtil.defaultDateCache = defaultDateCache;
 	}
