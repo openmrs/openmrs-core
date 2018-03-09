@@ -1078,6 +1078,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty("allergy.concept.unknown", "1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 		        "UUID for the allergy unknown concept"));
+
+		props.add(new GlobalProperty(LOGIN_URL, "../../login.htm",
+		        "Specifies the URL to the resource that should handle authentication for the platform"));
 		
 		props
 				.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "", "Specifies the uuid of the concept which represents drug other non coded"));
@@ -1234,6 +1237,8 @@ public final class OpenmrsConstants {
 	public static final String LOG_LEVEL_ERROR = "error";
 	
 	public static final String LOG_LEVEL_FATAL = "fatal";
+
+	public static final String LOGIN_URL = "../../login.htm";
 	
 	/**
 	 * These enumerations should be used in ObsService and PersonService getters to help determine
