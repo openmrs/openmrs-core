@@ -550,30 +550,30 @@ public final class Module {
 		if (moduleClsLoader == null) {
 			log.debug(String.format("Module class loader is not available, maybe the module %s is stopped/stopping",
 			    getName()));
-		} else if (!extensionsMatchNames()) {
-			extensions.clear();
-			for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
-				String point = entry.getKey();
-				String className = entry.getValue();
-				final String errorLoadClassString = "Unable to load class for extension: ";
-				log.debug("expanding extension names: " + point + " : " + className);
-				try {
-					Class<?> cls = moduleClsLoader.loadClass(className);
-					Extension ext = (Extension) cls.newInstance();
-					ext.setPointId(point);
-					ext.setModuleId(this.getModuleId());
-					extensions.add(ext);
-					log.debug("Added extension: " + ext.getExtensionId() + " : " + ext.getClass());
-				}
-				catch (NoClassDefFoundError e) {
-					log.warn(getModuleId() + ": Unable to find class definition for extension: " + point, e);
-				}
-				catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-					log.warn(errorLoadClassString + point, e);
-				}
-			}
+			return extensions;
 		}
 		
+		extensions.clear();
+		for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
+			String point = entry.getKey();
+			String className = entry.getValue();
+			final String errorLoadClassString = "Unable to load class for extension: ";
+			log.debug("expanding extension names: " + point + " : " + className);
+			try {
+				Class<?> cls = moduleClsLoader.loadClass(className);
+				Extension ext = (Extension) cls.newInstance();
+				ext.setPointId(point);
+				ext.setModuleId(this.getModuleId());
+				extensions.add(ext);
+				log.debug("Added extension: " + ext.getExtensionId() + " : " + ext.getClass());
+			}
+			catch (NoClassDefFoundError e) {
+				log.warn(getModuleId() + ": Unable to find class definition for extension: " + point, e);
+			}
+			catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+				log.warn(errorLoadClassString + point, e);
+			}
+		}
 		return extensions;
 	}
 	
