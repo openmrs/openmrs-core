@@ -524,17 +524,16 @@ public final class Module {
 	 * @return a boolean for whether extensions match the contents of extensionNames
 	 */
 	private boolean extensionsMatchNames() {
-		if (extensionNames != null && extensionNames.size() != 0) {
-			for (Extension ext : extensions) {
-				if (extensionNames.get(ext.getPointId()) != ext.getClass().getName()) {
-					return false;
-				}
-			}
-
-			return extensions.size() == extensionNames.size();
+		if (extensionNames == null || extensionNames.isEmpty()) {
+			return true;
 		}
 		
-		return true;
+		for (Extension ext : extensions) {
+			if (extensionNames.get(ext.getPointId()) != ext.getClass().getName()) {
+				return false;
+			}
+		}
+		return extensions.size() == extensionNames.size();
 	}
 	
 	/**
