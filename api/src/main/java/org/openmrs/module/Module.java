@@ -484,7 +484,7 @@ public final class Module {
 	 * @should expand extensionNames if extensions does not match extensionNames 
 	 */
 	public List<Extension> getExtensions() {
-		if (extensionsMatchNames()) {
+		if (isNoNeedToExpand()) {
 			return extensions;
 		} else {
 			return expandExtensionNames();
@@ -523,7 +523,7 @@ public final class Module {
 	 *
 	 * @return a boolean for whether extensions match the contents of extensionNames
 	 */
-	private boolean extensionsMatchNames() {
+	private boolean isNoNeedToExpand() {
 		if (extensionNames == null || extensionNames.isEmpty()) {
 			return true;
 		}
