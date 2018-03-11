@@ -476,6 +476,8 @@ public final class Module {
 	}
 	
 	/**
+	 * Expands (i.e. creates instances of) {@code Extension}s defined by their class name in {@link #setExtensionNames(Map)}.
+	 * 
 	 * @return the extensions
 	 *
 	 * @should not expand extensionNames if extensionNames is null
@@ -484,11 +486,10 @@ public final class Module {
 	 * @should expand extensionNames if extensions does not match extensionNames 
 	 */
 	public List<Extension> getExtensions() {
-		if (extensionsMatchNames()) {
+		if (isNoNeedToExpand()) {
 			return extensions;
-		} else {
-			return expandExtensionNames();
 		}
+		return expandExtensionNames();
 	}
 	
 	/**
@@ -499,13 +500,23 @@ public final class Module {
 	}
 	
 	/**
-	 * A map of pointid to classname. The classname is expected to be a class that extends the
-	 * {@link Extension} object. <br>
+	 * A map of pointId to classname. The classname is expected to be a class that extends the
+	 * {@link Extension} object.
 	 * <br>
 	 * This map will be expanded into full Extension objects the first time {@link #getExtensions()}
-	 * is called
+	 * is called.
+	 * <p>
+	 * The map is a direct representation of {@code extension} tags in a module's config.xml. For example
+	 * <pre>{@code
+	 * <extension>
+	 *     <point>org.openmrs.admin.list</point>
+	 *     <class>org.openmrs.module.reporting.web.extension.ManageAdminListExt</class>
+	 * </extension>
+	 * }
+	 * </pre>
+	 * </p>
 	 *
-	 * @param map from pointid to classname
+	 * @param map from pointid to classname of an extension
 	 * @see ModuleFileParser
 	 */
 	public void setExtensionNames(Map<String, String> map) {
@@ -517,24 +528,17 @@ public final class Module {
 		this.extensionNames = map;
 	}
 
-	/**
-	 * Tests whether extensions match the contents of extensionNames.  Used to determine
-	 * if expandExtensionNames should to be called.<br>
-	 *
-	 * @return a boolean for whether extensions match the contents of extensionNames
-	 */
-	private boolean extensionsMatchNames() {
-		if (extensionNames != null && extensionNames.size() != 0) {
-			for (Extension ext : extensions) {
-				if (extensionNames.get(ext.getPointId()) != ext.getClass().getName()) {
-					return false;
-				}
-			}
-
-			return extensions.size() == extensionNames.size();
+	private boolean isNoNeedToExpand() {
+		if (extensionNames == null || extensionNames.isEmpty()) {
+			return true;
 		}
 		
-		return true;
+		for (Extension ext : extensions) {
+			if (extensionNames.get(ext.getPointId()) != ext.getClass().getName()) {
+				return false;
+			}
+		}
+		return extensions.size() == extensionNames.size();
 	}
 	
 	/**
@@ -548,32 +552,27 @@ public final class Module {
 	private List<Extension> expandExtensionNames() {
 		ModuleClassLoader moduleClsLoader = ModuleFactory.getModuleClassLoader(this);
 		if (moduleClsLoader == null) {
-			log.debug(String.format("Module class loader is not available, maybe the module %s is stopped/stopping",
-			    getName()));
-		} else if (!extensionsMatchNames()) {
-			extensions.clear();
-			for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
-				String point = entry.getKey();
-				String className = entry.getValue();
-				final String errorLoadClassString = "Unable to load class for extension: ";
-				log.debug("expanding extension names: " + point + " : " + className);
-				try {
-					Class<?> cls = moduleClsLoader.loadClass(className);
-					Extension ext = (Extension) cls.newInstance();
-					ext.setPointId(point);
-					ext.setModuleId(this.getModuleId());
-					extensions.add(ext);
-					log.debug("Added extension: " + ext.getExtensionId() + " : " + ext.getClass());
-				}
-				catch (NoClassDefFoundError e) {
-					log.warn(getModuleId() + ": Unable to find class definition for extension: " + point, e);
-				}
-				catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-					log.warn(errorLoadClassString + point, e);
-				}
-			}
+			log.debug("Module class loader is not available, maybe the module {} is stopped/stopping", getName());
+			return extensions;
 		}
 		
+		extensions.clear();
+		for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
+			String point = entry.getKey();
+			String className = entry.getValue();
+			log.debug(getModuleId() + ": Expanding extension name (point|class): {}|{}", point, className);
+			try {
+				Class<?> cls = moduleClsLoader.loadClass(className);
+				Extension ext = (Extension) cls.newInstance();
+				ext.setPointId(point);
+				ext.setModuleId(this.getModuleId());
+				extensions.add(ext);
+				log.debug(getModuleId() + ": Added extension: {}|{}", ext.getExtensionId(), ext.getClass());
+			}
+			catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoClassDefFoundError e) {
+				log.warn(getModuleId() + ": Unable to create instance of class defined for extension point: " + point, e);
+			}
+		}
 		return extensions;
 	}
 	
