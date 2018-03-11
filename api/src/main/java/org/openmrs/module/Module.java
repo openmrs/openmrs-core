@@ -476,6 +476,8 @@ public final class Module {
 	}
 	
 	/**
+	 * Expands (i.e. creates instances of) {@code Extension}s defined by their class name in {@link #setExtensionNames(Map)}.
+	 * 
 	 * @return the extensions
 	 *
 	 * @should not expand extensionNames if extensionNames is null
@@ -498,13 +500,23 @@ public final class Module {
 	}
 	
 	/**
-	 * A map of pointid to classname. The classname is expected to be a class that extends the
-	 * {@link Extension} object. <br>
+	 * A map of pointId to classname. The classname is expected to be a class that extends the
+	 * {@link Extension} object.
 	 * <br>
 	 * This map will be expanded into full Extension objects the first time {@link #getExtensions()}
-	 * is called
+	 * is called.
+	 * <p>
+	 * The map is a direct representation of {@code extension} tags in a module's config.xml. For example
+	 * <pre>{@code
+	 * <extension>
+	 *     <point>org.openmrs.admin.list</point>
+	 *     <class>org.openmrs.module.reporting.web.extension.ManageAdminListExt</class>
+	 * </extension>
+	 * }
+	 * </pre>
+	 * </p>
 	 *
-	 * @param map from pointid to classname
+	 * @param map from pointid to classname of an extension
 	 * @see ModuleFileParser
 	 */
 	public void setExtensionNames(Map<String, String> map) {
@@ -516,12 +528,6 @@ public final class Module {
 		this.extensionNames = map;
 	}
 
-	/**
-	 * Tests whether extensions match the contents of extensionNames.  Used to determine
-	 * if expandExtensionNames should to be called.<br>
-	 *
-	 * @return a boolean for whether extensions match the contents of extensionNames
-	 */
 	private boolean isNoNeedToExpand() {
 		if (extensionNames == null || extensionNames.isEmpty()) {
 			return true;
