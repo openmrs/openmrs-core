@@ -486,9 +486,8 @@ public final class Module {
 	public List<Extension> getExtensions() {
 		if (isNoNeedToExpand()) {
 			return extensions;
-		} else {
-			return expandExtensionNames();
 		}
+		return expandExtensionNames();
 	}
 	
 	/**
