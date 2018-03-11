@@ -552,8 +552,7 @@ public final class Module {
 	private List<Extension> expandExtensionNames() {
 		ModuleClassLoader moduleClsLoader = ModuleFactory.getModuleClassLoader(this);
 		if (moduleClsLoader == null) {
-			log.debug(String.format("Module class loader is not available, maybe the module %s is stopped/stopping",
-			    getName()));
+			log.debug("Module class loader is not available, maybe the module {} is stopped/stopping", getName());
 			return extensions;
 		}
 		
@@ -561,20 +560,17 @@ public final class Module {
 		for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
 			String point = entry.getKey();
 			String className = entry.getValue();
-			log.debug("expanding extension names: " + point + " : " + className);
+			log.debug(getModuleId() + ": Expanding extension name (point|class): {}|{}", point, className);
 			try {
 				Class<?> cls = moduleClsLoader.loadClass(className);
 				Extension ext = (Extension) cls.newInstance();
 				ext.setPointId(point);
 				ext.setModuleId(this.getModuleId());
 				extensions.add(ext);
-				log.debug("Added extension: " + ext.getExtensionId() + " : " + ext.getClass());
+				log.debug(getModuleId() + ": Added extension: {}|{}", ext.getExtensionId(), ext.getClass());
 			}
-			catch (NoClassDefFoundError e) {
-				log.warn(getModuleId() + ": Unable to find class definition for extension: " + point, e);
-			}
-			catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-				log.warn("Unable to load class for extension: " + point, e);
+			catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoClassDefFoundError e) {
+				log.warn(getModuleId() + ": Unable to create instance of class defined for extension point: " + point, e);
 			}
 		}
 		return extensions;
