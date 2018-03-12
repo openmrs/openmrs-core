@@ -536,6 +536,8 @@ public class ModuleFactory {
 			module = new ModuleFileParser(moduleFile).parse();
 		}
 		catch (ModuleException e) {
+			// TODO we should add a guard clause at the beginning and not even call parse() when the
+			// file is null
 			if (moduleFile != null) {
 				log.error("Error getting module object from file " + moduleFile.getName(), e);
 			} else {
