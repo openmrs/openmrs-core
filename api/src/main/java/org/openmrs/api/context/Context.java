@@ -37,6 +37,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DatatypeService;
+import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.LocationService;
@@ -428,6 +429,15 @@ public class Context {
 		return getServiceContext().getConditionService();
 	}
 
+	/**
+	 * @return diagnosis-related services
+	 *
+	 * @since 2.2
+	 */
+	public static DiagnosisService getDiagnosisService(){
+		return getServiceContext().getDiagnosisService();
+	}
+	
 	/**
 	 * @return Returns the hl7Service.
 	 */
