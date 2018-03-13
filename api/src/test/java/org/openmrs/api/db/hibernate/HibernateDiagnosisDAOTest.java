@@ -9,7 +9,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -92,14 +94,32 @@ public class HibernateDiagnosisDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void shouldGetActiveDiagnoses() {
-		assertEquals(2, diagnosisDAO.getActiveDiagnoses(new Patient(2)).size()); 
+	public void shouldGetActiveDiagnosesWithFromDate() {
+		Calendar calendar = new GregorianCalendar(2014,1,1,13,24,56);
+		assertEquals(1, diagnosisDAO.getActiveDiagnoses(new Patient(2), calendar.getTime()).size()); 
+	}
+
+	@Test
+	public void shouldGetActiveDiagnosesWithDifferentFromDate() {
+		Calendar calendar = new GregorianCalendar(2012,1,3,13,32,36);
+		assertEquals(2, diagnosisDAO.getActiveDiagnoses(new Patient(2), calendar.getTime()).size());
+	}
+
+	@Test
+	public void shouldGetActiveDiagnosesWithoutFromDate() {
+		assertEquals(2, diagnosisDAO.getActiveDiagnoses(new Patient(2), null).size());
 	}
 
 	@Test
 	public void shouldGetDiagnoses() {
 		assertEquals(2, diagnosisDAO.getDiagnoses(new Encounter(3)).size());
 		assertEquals(0, diagnosisDAO.getDiagnoses(new Encounter(9)).size());
+	}
+
+	@Test
+	public void shouldGetPrimaryDiagnoses() {
+		assertEquals(2, diagnosisDAO.getPrimaryDiagnoses(new Encounter(3)).size());
+		assertEquals(0, diagnosisDAO.getPrimaryDiagnoses(new Encounter(4)).size());
 	}
 
 	@Test

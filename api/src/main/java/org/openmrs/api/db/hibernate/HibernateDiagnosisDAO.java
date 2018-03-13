@@ -9,10 +9,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.openmrs.Diagnosis;
@@ -20,7 +19,6 @@ import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.DiagnosisDAO;
-import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -36,6 +34,11 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
+
+	/**
+	 * The rank for a primary diagnosis
+	 */
+	private static final Integer PRIMARY_RANK = 1;
 
 	/**
 	 * Set session factory
@@ -66,11 +69,19 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Diagnosis> getActiveDiagnoses(Patient patient) {
+	public List<Diagnosis> getActiveDiagnoses(Patient patient, Date fromDate) {
+		String fromDateCriteria = "";
+		if(fromDate != null){
+			fromDateCriteria = " and d.dateCreated >= :fromDate ";
+		}
 		Query query = sessionFactory.getCurrentSession().createQuery(
-			"from Diagnosis d where d.patient.patientId = :patientId and d.voided = false order "
-				+ "by d.dateCreated desc");
+			"from Diagnosis d where d.patient.patientId = :patientId and d.voided = false " 
+				+ fromDateCriteria  
+				+ " order by d.dateCreated desc");
 		query.setInteger("patientId", patient.getId());
+		if(fromDate != null){
+			query.setDate("fromDate", fromDate);
+		}
 		return query.list();
 	}
 
@@ -86,6 +97,21 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 			"from Diagnosis d where d.encounter.encounterId = :encounterId order by dateCreated desc");
 		query.setInteger("encounterId", encounter.getId());
 		return query.list();	
+	}
+
+	/**
+	 * Gets primary diagnoses for a given encounter
+	 *
+	 * @param encounter the specific encounter to get the primary diagnoses for.
+	 * @return list of primary diagnoses for an encounter
+	 */
+	@Override
+	public List<Diagnosis> getPrimaryDiagnoses(Encounter encounter) {
+		Query query = sessionFactory.getCurrentSession().createQuery(
+			"from Diagnosis d where d.encounter.encounterId = :encounterId and d.rank = :rankId order by dateCreated desc");
+		query.setInteger("encounterId", encounter.getId());
+		query.setInteger("rankId", PRIMARY_RANK);
+		return query.list();
 	}
 
 	/**
