@@ -27,8 +27,10 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ProviderService;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
@@ -1260,6 +1262,45 @@ public class EncounterTest extends BaseContextSensitiveTest {
 		encounter.removeProvider(role, provider);
 		Assert.assertEquals(0, encounter.getProvidersByRole(role).size());
 
+	}
+
+	/**
+	 * @see Encounter#hasDiagnosis(Diagnosis)
+	 */
+	@Test
+	public void hasDiagnosis_shouldReturnTrueIfEncounterHasDiagnosis(){
+		Encounter encounter = new Encounter();
+		Diagnosis diagnosis = new Diagnosis();
+		diagnosis.setEncounter(encounter);
+		diagnosis.setCondition(new Condition());
+		diagnosis.setCertainty(ConditionVerificationStatus.CONFIRMED);
+		diagnosis.setPatient(new Patient());
+		diagnosis.setRank(2);
+		
+		Set<Diagnosis> diagnoses = new HashSet<>();
+		diagnoses.add(diagnosis);
+		
+		encounter.setDiagnoses(diagnoses);
+		
+		Assert.assertTrue(encounter.hasDiagnosis(diagnosis));
+	}
+
+	/**
+	 * @see Encounter#hasDiagnosis(Diagnosis)
+	 */
+	@Test
+	public void hasDiagnosis_shouldReturnFalseIfEncounterDoesNotHaveDiagnosis(){
+		Encounter encounter = new Encounter();
+		Diagnosis diagnosis = new Diagnosis();
+		diagnosis.setEncounter(encounter);
+		diagnosis.setCondition(new Condition());
+		diagnosis.setCertainty(ConditionVerificationStatus.PROVISIONAL);
+		diagnosis.setPatient(new Patient());
+		diagnosis.setRank(1);
+		Set<Diagnosis> diagnoses = new HashSet<>();
+		encounter.setDiagnoses(diagnoses);
+
+		Assert.assertFalse(encounter.hasDiagnosis(diagnosis));
 	}
 
 }

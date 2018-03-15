@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Diagnosis;
@@ -65,10 +66,20 @@ public interface DiagnosisDAO {
 	List<Diagnosis> getDiagnoses(Encounter encounter);
 
 	/**
+	 * Gets primary diagnoses for a given encounter
+	 *
+	 * @param encounter the specific encounter to get the primary diagnoses for.
+	 * @return list of primary diagnoses for an encounter
+	 */
+	List<Diagnosis> getPrimaryDiagnoses(Encounter encounter);
+
+	/**
 	 * Gets all active diagnoses related to the specified patient.
 	 *
 	 * @param patient the patient whose active diagnoses are being queried.
+	 * @param fromDate the start date for the check of active diagnosis
+	 *                    
 	 * @return all active diagnoses associated with the specified patient.
 	 */
-	List<Diagnosis> getActiveDiagnoses(Patient patient);
+	List<Diagnosis> getActiveDiagnoses(Patient patient, Date fromDate);
 }

@@ -39,6 +39,7 @@ import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.ConditionService;
+import org.openmrs.api.DiagnosisService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
@@ -224,6 +225,24 @@ public class ServiceContext implements ApplicationContextAware {
 		setService(ConditionService.class, conditionService);
 	}
 
+	/**
+	 * @return diagnosis related service
+	 *
+	 * @since 2.2
+	 */
+	public DiagnosisService getDiagnosisService() {
+		return getService(DiagnosisService.class);
+	}
+
+	/**
+	 * @param diagnosisService diagnosis related service
+	 *
+	 * @since 2.2
+	 */
+	public void setDiagnosisService(DiagnosisService diagnosisService) {
+		setService(DiagnosisService.class, diagnosisService);
+	}
+	
 	/**
 	 * @return cohort related service
 	 */

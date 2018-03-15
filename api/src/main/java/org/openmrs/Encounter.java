@@ -738,4 +738,22 @@ public class Encounter extends BaseChangeableOpenmrsData {
 				.filter(o -> o.getOrderGroup() == null)
 				.collect(Collectors.toList());
 	}
+
+	/**
+	 * Check if encounter has a particular diagnosis
+	 *
+	 * @since 2.2
+	 * 
+	 * @param diagnosis the diagnosis to check if it belongs to this given encounter
+	 *                     
+	 * @return true if this encounter has the given diagnosis, else false
+	 */
+	public Boolean hasDiagnosis(Diagnosis diagnosis) {
+		for (Diagnosis diagnosis1 : getDiagnoses()) {
+			if (diagnosis.equals(diagnosis1)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

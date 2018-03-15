@@ -63,6 +63,11 @@
 			<key column="encounter_id" />
 			<one-to-many class="Order" />
 		</set>
+		<!-- bi-directional one-to-many association to Diagnosis -->
+		<set name="diagnoses" inverse="true">
+			<key column="encounter_id" />
+			<one-to-many class="org.openmrs.Diagnosis" />
+		</set>
 		<!-- bi-directional one-to-many association to Ob -->
 		<set name="obs" inverse="true" order-by="concept_id" access="field" batch-size="25">
 			<key column="encounter_id" />

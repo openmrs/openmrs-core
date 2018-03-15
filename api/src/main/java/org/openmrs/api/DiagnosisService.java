@@ -76,15 +76,6 @@ public interface DiagnosisService extends OpenmrsService {
 	List<Diagnosis> getPrimaryDiagnoses(Encounter encounter);
 
 	/**
-	 * Determines whether or not an encounter contains a given diagnosis
-	 * 
-	 * @param encounter the encounter whose diagnoses we are to get
-	 * @param diagnosis the diagnosis to check if it belongs to a given encounter
-	 * @return true if the encounter has the given diagnosis, else false
-	 */
-	boolean hasDiagnosis(Encounter encounter, Diagnosis diagnosis);
-
-	/**
 	 * Gets unique diagnoses since date, sorted in reverse chronological order
 	 *
 	 * @param patient the patient whose diagnosis we are to get
