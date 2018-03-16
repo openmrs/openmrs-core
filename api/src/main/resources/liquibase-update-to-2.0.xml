@@ -8774,7 +8774,7 @@
             </column>
             <column name="allergen_type" type="varchar(50)">
             <constraints nullable="false"/></column>
-            <column name="comment" type="varchar(1024)"></column>
+            <column name="comments" type="varchar(1024)"></column>
             <column name="creator" type="int">
                 <constraints nullable="false"/>
             </column>
