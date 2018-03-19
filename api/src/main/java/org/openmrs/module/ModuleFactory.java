@@ -106,7 +106,7 @@ public class ModuleFactory {
 	 * @return Module
 	 */
 	public static Module loadModule(File moduleFile, Boolean replaceIfExists) throws ModuleException {
-		Module module = getModuleFromFile(moduleFile);
+		Module module = new ModuleFileParser(moduleFile).parse();
 		
 		if (module != null) {
 			loadModule(module, replaceIfExists);
@@ -520,33 +520,6 @@ public class ModuleFactory {
 		}
 		
 		return startedModules;
-	}
-	
-	/**
-	 * Creates a Module object from the (jar)file pointed to by <code>moduleFile</code> returns null
-	 * if an error occurred during processing
-	 * 
-	 * @param moduleFile
-	 * @return module Module
-	 */
-	private static Module getModuleFromFile(File moduleFile) throws ModuleException {
-		
-		Module module;
-		try {
-			module = new ModuleFileParser(moduleFile).parse();
-		}
-		catch (ModuleException e) {
-			// TODO we should add a guard clause at the beginning and not even call parse() when the
-			// file is null
-			if (moduleFile != null) {
-				log.error("Error getting module object from file " + moduleFile.getName(), e);
-			} else {
-				log.error("Module was null.", e);
-			}
-			throw e;
-		}
-		
-		return module;
 	}
 	
 	/**
