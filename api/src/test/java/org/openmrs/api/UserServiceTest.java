@@ -1351,4 +1351,21 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		userService.changePasswordUsingSecretAnswer("wrong answer", "userServiceTest2");
 	}
+
+	@Test
+	public void saveRole_shouldAvoidUniqueIndexIfRolePutRelationshipTwice(){
+		Role anonymous = userService.getRole("Anonymous");
+		Role sysdev = userService.getRole("System Developer");
+		assertEquals(anonymous.getChildRoles().contains(sysdev), false);
+		assertEquals(sysdev.getInheritedRoles().contains(anonymous), false);
+		anonymous.getChildRoles().add(sysdev);
+		sysdev.getInheritedRoles().add(anonymous);
+		userService.saveRole(anonymous);
+		userService.saveRole(sysdev);
+		
+		anonymous = userService.getRole("Anonymous");
+		sysdev = userService.getRole("System Developer");
+		assertEquals(anonymous.getChildRoles().contains(sysdev), true);
+		assertEquals(sysdev.getInheritedRoles().contains(anonymous), true);
+	}
 }
