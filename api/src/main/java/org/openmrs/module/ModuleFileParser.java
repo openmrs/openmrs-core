@@ -51,8 +51,6 @@ public class ModuleFileParser {
 	
 	private static final Logger log = LoggerFactory.getLogger(ModuleFileParser.class);
 	
-	private File moduleFile = null;
-	
 	/**
 	 * List out all of the possible version numbers for config files that openmrs has DTDs for.
 	 * These are usually stored at http://resources.openmrs.org/doctype/config-x.x.dt
@@ -68,6 +66,8 @@ public class ModuleFileParser {
 		validConfigVersions.add("1.5");
 		validConfigVersions.add("1.6");
 	}
+	
+	private File moduleFile;
 	
 	/**
 	 * Constructor
