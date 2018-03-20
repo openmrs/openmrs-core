@@ -338,8 +338,11 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	@Deprecated
 	public void setMemberIds(Set<Integer> memberIds) {
 		if (getMemberships().isEmpty()) {
+		    Date startDate = new Date();
 			for (Integer id : memberIds) {
-				addMembership(new CohortMembership(id));
+			    CohortMembership membership = new CohortMembership(id, startDate);
+                membership.setCohort(this);
+                getMemberships().add(membership);
 			}
 		}
 		else {
