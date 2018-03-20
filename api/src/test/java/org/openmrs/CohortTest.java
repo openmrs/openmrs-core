@@ -9,17 +9,20 @@
  */
 package org.openmrs;
 
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Behavior-driven tests of the Cohort class.
@@ -147,4 +150,19 @@ public class CohortTest {
 			assertTrue(m.getVoided() && m.getEndDate() != null);
 		});
 	}
+
+    @Test
+    public void setMemberIds_shouldSupportLargeCohorts() {
+	    int cohortSize = 100000;
+        Cohort c = new Cohort();
+        Set<Integer> ids = new HashSet<Integer>();
+        for (int i=0; i<cohortSize; i++) {
+            ids.add(i);
+        }
+        long startTime = System.currentTimeMillis();
+        c.setMemberIds(ids);
+        long endTime = System.currentTimeMillis();
+        double secondsToSet = (endTime - startTime)/1000;
+        Assert.assertTrue("Setting cohort of size " + cohortSize + " took " + secondsToSet + " seconds", secondsToSet < 5);
+    }
 }
