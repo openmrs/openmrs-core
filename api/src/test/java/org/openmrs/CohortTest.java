@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
@@ -145,6 +146,92 @@ public class CohortTest {
 		intersectOfMemberships.forEach(m -> {
 			assertTrue(m.getPatientId().equals(7));
 			assertTrue(m.getVoided() && m.getEndDate() != null);
+		});
+	}
+	
+	@Test
+	public void intersect_shouldReturnIntersectionOfTwoCohorts() throws Exception {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date cohortOneMemberstartDate = dateFormat.parse("2017-01-01 00:00:00");
+		Date cohortTwoMemberstartDate = dateFormat.parse("2017-02-01 00:00:00");
+		Date endDate = dateFormat.parse("2017-02-01 00:00:00");
+
+		Cohort cohortOne = new Cohort(3);
+		CohortMembership membershipOne = new CohortMembership(7, cohortOneMemberstartDate);
+		membershipOne.setVoided(true);
+		membershipOne.setEndDate(endDate);
+		cohortOne.addMembership(membershipOne);
+
+		Cohort cohortTwo = new Cohort(4);
+		CohortMembership membershipTwo = new CohortMembership(7, cohortTwoMemberstartDate);
+		membershipTwo.setVoided(true);
+		membershipTwo.setEndDate(endDate);
+		cohortTwo.addMembership(membershipTwo);
+
+		Cohort cohortIntersect = Cohort.intersect(cohortOne, cohortTwo);
+		Collection<CohortMembership> intersectOfMemberships = cohortIntersect.getMemberships();
+		assertTrue(intersectOfMemberships.stream().anyMatch(m -> m.getVoided() || m.getEndDate() != null));
+		intersectOfMemberships.forEach(m -> {
+			assertTrue(m.getPatientId().equals(7));
+			assertTrue(m.getStartDate().equals(cohortTwoMemberstartDate));
+		});
+	}
+
+	@Test
+	public void intersect_shouldReturnIntersectionWithLaterStartdate() throws Exception {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date cohortOneMemberstartDate = dateFormat.parse("2017-02-01 00:00:00");
+		Date cohortTwoMemberstartDate = dateFormat.parse("2017-01-01 00:00:00");
+		Date endDate = dateFormat.parse("2017-02-01 00:00:00");
+
+		Cohort cohortOne = new Cohort(3);
+		CohortMembership membershipOne = new CohortMembership(7, cohortOneMemberstartDate);
+		membershipOne.setVoided(true);
+		membershipOne.setEndDate(endDate);
+		cohortOne.addMembership(membershipOne);
+
+		Cohort cohortTwo = new Cohort(4);
+		CohortMembership membershipTwo = new CohortMembership(7, cohortTwoMemberstartDate);
+		membershipTwo.setVoided(true);
+		membershipTwo.setEndDate(endDate);
+		cohortTwo.addMembership(membershipTwo);
+
+		Cohort cohortIntersect = Cohort.intersect(cohortOne, cohortTwo);
+		Collection<CohortMembership> intersectOfMemberships = cohortIntersect.getMemberships();
+		assertTrue(intersectOfMemberships.stream().anyMatch(m -> m.getVoided() || m.getEndDate() != null));
+		intersectOfMemberships.forEach(m -> {
+			assertTrue(m.getPatientId().equals(7));
+			assertTrue(m.getStartDate().equals(cohortOneMemberstartDate));
+		});
+	}
+
+	@Test
+	public void intersect_shouldReturnDateWhichIsNull() throws Exception {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date cohortOneMemberstartDate = null;
+		Date cohortTwoMemberstartDate = dateFormat.parse("2017-01-01 00:00:00");
+		Date endDate = dateFormat.parse("2017-02-01 00:00:00");
+
+		Cohort cohortOne = new Cohort(3);
+		CohortMembership membershipOne = new CohortMembership(7, cohortOneMemberstartDate);
+		membershipOne.setVoided(true);
+		membershipOne.setEndDate(endDate);
+		cohortOne.addMembership(membershipOne);
+
+		Cohort cohortTwo = new Cohort(4);
+		CohortMembership membershipTwo = new CohortMembership(7, cohortTwoMemberstartDate);
+		membershipTwo.setVoided(true);
+		membershipTwo.setEndDate(endDate);
+		cohortTwo.addMembership(membershipTwo);
+
+		Cohort cohortIntersect = Cohort.intersect(cohortOne, cohortTwo);
+		Collection<CohortMembership> intersectOfMemberships = cohortIntersect.getMemberships();
+		assertTrue(intersectOfMemberships.stream().anyMatch(m -> m.getVoided() || m.getEndDate() != null));
+		intersectOfMemberships.forEach(m -> {
+			assertTrue(m.getPatientId().equals(7));
+			System.out.println(m.getStartDate());
+			System.out.println(cohortOneMemberstartDate);
+			assertEquals(cohortOneMemberstartDate, m.getStartDate());
 		});
 	}
 }
