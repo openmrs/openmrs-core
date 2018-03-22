@@ -10,6 +10,7 @@
 package org.openmrs.obs;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -18,10 +19,11 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.openmrs.Obs;
@@ -37,15 +39,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest({ AbstractHandler.class, OpenmrsUtil.class, Context.class })
 
 public class MediaHandlerTest {
-	
-	private String filename;
-	
-	private File sourceFile;
-	
-	private String filepath;
-	
+		
 	@Mock
 	private AdministrationService administrationService;
+	
+    @Rule
+    public TemporaryFolder complexObsTestFolder = new TemporaryFolder();
 
     @Test
     public void shouldReturnSupportedViews() {
@@ -75,19 +74,13 @@ public class MediaHandlerTest {
         assertFalse(handler.supportsView(""));
         assertFalse(handler.supportsView((String) null));
     }
-    
-	/** This method sets up the test data's parameters for the mime type tests  **/
-	@Before
-	public void initVariablesForMimetypeTests() {
-		filename = "TestingComplexObsSaving.mp3";
-		filepath = new File("target" + File.separator + "test-classes").getAbsolutePath();
-		sourceFile = new File(
-		        "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestAudio.mp3");
-	}
-    
+     
 	@Test
-	public void shouldRetrieveCorrectMimetype() throws FileNotFoundException {
-		final String mimetype = "audio/mpeg";
+	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
+		String mimetype = "audio/mpeg";
+		String filename = "TestingComplexObsSaving.mp3";
+		File sourceFile = new File(
+	        "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestAudio.mp3");
 		
 		FileInputStream in1 = new FileInputStream(sourceFile);
 		FileInputStream in2 = new FileInputStream(sourceFile);
@@ -105,7 +98,7 @@ public class MediaHandlerTest {
 		// Mocked methods
 		mockStatic(Context.class);
 		when(Context.getAdministrationService()).thenReturn(administrationService);
-		when(administrationService.getGlobalProperty(any())).thenReturn(filepath);
+		when(administrationService.getGlobalProperty(any())).thenReturn(complexObsTestFolder.newFolder().getAbsolutePath());
 		
 		MediaHandler handler = new MediaHandler();
 		
@@ -114,17 +107,11 @@ public class MediaHandlerTest {
 		handler.saveObs(obs2);
 		
 		// Get observation
-		Obs complexObs = handler.getObs(obs1, "RAW_VIEW");
+		Obs complexObs1 = handler.getObs(obs1, "RAW_VIEW");
 		Obs complexObs2 = handler.getObs(obs2, "RAW_VIEW");
 		
-		assertTrue(complexObs.getComplexData().getMimeType().equals(mimetype));
-		assertTrue(complexObs2.getComplexData().getMimeType().equals(mimetype));
-		
-		// Delete created files to avoid cluttering
-		File obsFile1 = MediaHandler.getComplexDataFile(obs1);
-		File obsFile2 = MediaHandler.getComplexDataFile(obs2);
-		obsFile1.delete();
-		obsFile2.delete();
+		assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
+		assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
 	}
 	
 }

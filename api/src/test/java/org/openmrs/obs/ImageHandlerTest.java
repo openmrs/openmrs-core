@@ -10,6 +10,7 @@
 package org.openmrs.obs;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -22,8 +23,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.openmrs.Obs;
@@ -40,15 +42,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 public class ImageHandlerTest {
 	
-	private final String FILENAME = "TestingComplexObsSaving.png";
-	
-	private File sourceFile;
-	
-	private String filepath;
-	
 	@Mock
 	private AdministrationService administrationService;
-
+	
+    @Rule
+    public TemporaryFolder complexObsTestFolder = new TemporaryFolder();
+    
     @Test
     public void shouldReturnSupportedViews() {
         ImageHandler handler = new ImageHandler();
@@ -78,21 +77,16 @@ public class ImageHandlerTest {
         assertFalse(handler.supportsView((String) null));
     }
 	
-	/** This method sets up the test data's parameters for the mime type tests  **/
-	@Before
-	public void initVariablesForMimetypeTests() {
-		filepath = new File("target" + File.separator + "test-classes").getAbsolutePath();
-		sourceFile = new File(
-		        "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestImage.png");
-	}
-	
 	@Test
-	public void shouldRetrieveCorrectMimetype() throws IOException {
-		final String mimetype = "image/png";
+	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
+		String mimetype = "image/png";
+		String filename = "TestingComplexObsSaving.png";
+		File sourceFile = new File(
+	        "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestImage.png");
 		
 		BufferedImage img = ImageIO.read(sourceFile);
 		
-		ComplexData complexData = new ComplexData(FILENAME, img);
+		ComplexData complexData = new ComplexData(filename, img);
 		
 		// Construct 2 Obs to also cover the case where the filename exists already
 		Obs obs1 = new Obs();
@@ -104,7 +98,7 @@ public class ImageHandlerTest {
 		// Mocked methods
 		mockStatic(Context.class);
 		when(Context.getAdministrationService()).thenReturn(administrationService);
-		when(administrationService.getGlobalProperty(any())).thenReturn(filepath);
+		when(administrationService.getGlobalProperty(any())).thenReturn(complexObsTestFolder.newFolder().getAbsolutePath());
 		
 		ImageHandler handler = new ImageHandler();
 		
@@ -113,17 +107,11 @@ public class ImageHandlerTest {
 		handler.saveObs(obs2);
 		
 		// Get observation
-		Obs complexObs = handler.getObs(obs1, "RAW_VIEW");
+		Obs complexObs1 = handler.getObs(obs1, "RAW_VIEW");
 		Obs complexObs2 = handler.getObs(obs2, "RAW_VIEW");
 		
-		assertTrue(complexObs.getComplexData().getMimeType().equals(mimetype));
-		assertTrue(complexObs2.getComplexData().getMimeType().equals(mimetype));
-		
-		// Delete created files to avoid cluttering
-		File obsFile1 = ImageHandler.getComplexDataFile(obs1);
-		File obsFile2 = ImageHandler.getComplexDataFile(obs2);
-		obsFile1.delete();
-		obsFile2.delete();
+		assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
+		assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
 	}
 	
 }
