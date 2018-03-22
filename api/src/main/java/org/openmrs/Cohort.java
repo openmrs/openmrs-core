@@ -9,14 +9,14 @@
  */
 package org.openmrs;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class represents a list of patientIds.
@@ -160,7 +160,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 * @since 2.1.0
 	 */
 	public boolean addMembership(CohortMembership cohortMembership) {
-		if (cohortMembership != null && !this.contains(cohortMembership.getPatientId())) {
+		if (cohortMembership != null) {
 			cohortMembership.setCohort(this);
 			return getMemberships().add(cohortMembership);
 		}
@@ -338,11 +338,8 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	@Deprecated
 	public void setMemberIds(Set<Integer> memberIds) {
 		if (getMemberships().isEmpty()) {
-		    Date startDate = new Date();
 			for (Integer id : memberIds) {
-			    CohortMembership membership = new CohortMembership(id, startDate);
-                membership.setCohort(this);
-                getMemberships().add(membership);
+				addMembership(new CohortMembership(id));
 			}
 		}
 		else {
