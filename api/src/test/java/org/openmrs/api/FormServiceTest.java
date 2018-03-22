@@ -999,4 +999,143 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Form duplicateForm = fs.duplicateForm(form);
 		assertEquals(form, duplicateForm);
 	}
+
+	private Form createMockForm(Boolean retried) {
+		Form form1 = new Form();
+		form1.setName("form_name_2");
+		form1.setVersion("2.0");
+		form1.setDescription("description_2");
+		if (retried) {
+			form1.setRetired(true);
+			form1.setRetireReason("For testing");
+		}
+		else {
+			form1.setRetired(false);
+		}
+		return form1;
+	}
+
+	/**
+	 * @see FormService#getAllForms()
+	 */
+	@Test
+	public void getAllForms_shouldReturnAllForms() {
+		List<Form> forms = Context.getFormService().getAllForms();
+		int currentFormsSize = forms.size();
+		assertEquals(1, currentFormsSize);
+		
+		Context.getFormService().saveForm(createMockForm(false));
+		
+		forms = Context.getFormService().getAllForms();
+		assertEquals(currentFormsSize + 1, forms.size());
+	}
+
+	/**
+	 * @see FormService#getAllForms()
+	 */
+	@Test
+	public void getAllForms_shouldReturnAllFormsWithRetiredForms() {
+		List<Form> forms = Context.getFormService().getAllForms();
+		int currentFormsSize = forms.size();
+		assertEquals(1, currentFormsSize);
+
+		Context.getFormService().saveForm(createMockForm(true));
+
+		forms = Context.getFormService().getAllForms();
+		assertEquals(currentFormsSize + 1, forms.size());
+	}
+
+	/**
+	 * @see FormService#getAllForms(boolean)
+	 */
+	@Test
+	public void getAllForms_shouldReturnAllFormsWithRetiredIfParameterMentionedAsTrue() {
+		List<Form> forms = Context.getFormService().getAllForms(true);
+		int currentFormsSize = forms.size();
+		assertEquals(1, currentFormsSize);
+
+		Context.getFormService().saveForm(createMockForm(true));
+
+		forms = Context.getFormService().getAllForms(true);
+		assertEquals(currentFormsSize + 1 , forms.size());
+	}
+
+	/**
+	 * @see FormService#getAllForms(boolean)
+	 */
+	@Test
+	public void getAllForms_shouldReturnAllFormsWithOutRetiredIfParameterMentionedAsFalse() {
+		List<Form> forms = Context.getFormService().getAllForms(false);
+		int currentFormsSize = forms.size();
+		assertEquals(1, currentFormsSize);
+
+		Context.getFormService().saveForm(createMockForm(true));
+
+		forms = Context.getFormService().getAllForms(false);
+		assertEquals(currentFormsSize , forms.size());
+	}
+
+	/**
+	 * @see FormService#getForm(String)
+	 */
+	@Test
+	public void getForm_shouldReturnNullIfFormNotFound() {
+		List<Form> forms = Context.getFormService().getAllForms();
+		boolean formNameFound = false;
+		final String formName = "Sample_Form_Not_In_List";
+		for (Form node:forms) {
+			if (node.getName().equals(formName)) {
+				formNameFound = true;
+			}
+		}
+		assertFalse(formNameFound);
+		
+		Form form = Context.getFormService().getForm(formName);
+		assertNull(form);
+	}
+
+	/**
+	 * @see FormService#getForm(String)
+	 */
+	@Test
+	public void getForm_shouldReturnFormIfFormFound() {
+		Form form = Context.getFormService().getForm("form_name_2");
+		assertNull(form);
+
+		// create Form with form_name_2 and version 2.0
+		Context.getFormService().saveForm(createMockForm(false));
+		form = Context.getFormService().getForm("form_name_2");
+		assertNotNull(form);
+	}
+
+	@Test
+	public void getForm_shouldReturnFormIfFormFoundWithNameAndVersion() {
+		Form form = Context.getFormService().getForm("form_name_2", "2.0");
+		assertNull(form);
+
+		// create Form with form_name_2 and version 2.0
+		Context.getFormService().saveForm(createMockForm(false));
+		form = Context.getFormService().getForm("form_name_2", "2.0");
+		assertNotNull(form);
+	}
+
+	@Test
+	public void getForm_shouldReturnNullIfFormNotFoundWithNameOrVersion() {
+		Form form = Context.getFormService().getForm("form_name_2", "2.0");
+		assertNull(form);
+
+		// create Form with form_name_2 and version 2.0
+		Context.getFormService().saveForm(createMockForm(false));
+		form = Context.getFormService().getForm("form_name_2", "2.0");
+		assertNotNull(form);
+
+		form = Context.getFormService().getForm("form_name_3", "2.0");
+		assertNull(form);
+
+		form = Context.getFormService().getForm("form_name_2", "3.0");
+		assertNull(form);
+
+		form = Context.getFormService().getForm("form_name_3", "3.0");
+		assertNull(form);
+	}
 }
