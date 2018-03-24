@@ -516,6 +516,29 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertTrue(TestUtil.containsId(people, 5));
 	}
 	
+	@Test
+	public void getPeople_shouldMatchSearchToFamilyName2DeadAndIncludeVoided() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
+		updateSearchIndex();
+		
+		List<Person> people = Context.getPersonService().getPeople("Johnson", true, true);
+		
+		Assert.assertEquals(1, people.size());
+	}
+	
+	@Test
+	public void getPeople_shouldMatchSearchToFamilyName2DeadAndVoided() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
+		updateSearchIndex();
+		
+		List<Person> people = Context.getPersonService().getPeople("Johnson", false , false);
+		
+		Assert.assertEquals(3, people.size());
+		assertTrue(TestUtil.containsId(people, 2));
+		assertTrue(TestUtil.containsId(people, 4));
+		assertTrue(TestUtil.containsId(people, 5));
+	}
+	
 	/**
 	 * @see PersonService#getSimilarPeople(String,Integer,String)
 	 */
