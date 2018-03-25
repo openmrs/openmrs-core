@@ -207,7 +207,7 @@ public class ModuleFileParser {
 			
 			if (!validConfigVersions.contains(configVersion)) {
 				throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.invalidConfigVersion",
-				    new Object[] { configVersion }, Context.getLocale()), moduleFile.getName());
+				    new Object[] { configVersion, String.join(", ", validConfigVersions) }, Context.getLocale()), moduleFile.getName());
 			}
 			
 			String name = getElement(rootNode, configVersion, "name").trim();
