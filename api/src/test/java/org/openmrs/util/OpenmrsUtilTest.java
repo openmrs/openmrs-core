@@ -36,11 +36,13 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Collection;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -76,7 +78,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * test the collection contains method
 	 * 
-	 * @see OpenmrsUtil#collectionContains(Collection<*>,Object)
+	 * @see OpenmrsUtil#collectionContains(Collection,Object)
 	 */
 	@Test
 	public void collectionContains_shouldUseEqualsMethodForComparisonInsteadOfCompareToGivenListCollection()
@@ -106,7 +108,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * test the collection contains method
 	 * 
-	 * @see OpenmrsUtil#collectionContains(Collection<*>,Object)
+	 * @see OpenmrsUtil#collectionContains(Collection,Object)
 	 */
 	@Test
 	public void collectionContains_shouldUseEqualsMethodForComparisonInsteadOfCompareToGivenSortedSetCollection()
@@ -754,5 +756,5 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		assertTrue(IOUtils.contentEquals(expectedByteArrayInputStream, byteArrayInputStreamFromOutputStream));
 		verify(output, times(1)).close();
 	}
-
+	
 }
