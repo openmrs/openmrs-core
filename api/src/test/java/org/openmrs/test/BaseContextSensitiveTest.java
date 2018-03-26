@@ -68,6 +68,8 @@ import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
+import org.openmrs.ConceptName;
+import org.openmrs.Drug;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsClassLoader;
@@ -129,6 +131,11 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * of tests already run)
 	 */
 	private static Integer loadCount = 0;
+	
+	/**
+	 * Allows to determine if the DB is initialized with standard data
+	 */
+	private static boolean isBaseSetup;
 	
 	/**
 	 * Allows mocking services returned by Context. See {@link ContextMockHelper}
@@ -287,6 +294,26 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			
 			// automatically create the tables defined in the hbm files
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
+		} else {
+			String url = System.getProperty("databaseUrl");
+			String username = System.getProperty("databaseUsername");
+			String password = System.getProperty("databasePassword");
+			
+			runtimeProperties.setProperty(Environment.URL, url);
+			runtimeProperties.setProperty(Environment.DRIVER, System.getProperty("databaseDriver"));
+			runtimeProperties.setProperty(Environment.USER, username);
+			runtimeProperties.setProperty(Environment.PASS, password);
+			runtimeProperties.setProperty(Environment.DIALECT, System.getProperty("databaseDialect"));
+			
+			// these properties need to be set in case the user has this exact
+			// phrasing in their runtime file.
+			runtimeProperties.setProperty("connection.username", username);
+			runtimeProperties.setProperty("connection.password", password);
+			runtimeProperties.setProperty("connection.url", url);
+			
+			//for the first time, automatically create the tables defined in the hbm files
+			//after that, just update, if there are any changes. This is for performance reasons.
+			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "update");
 		}
 		
 		// we don't want to try to load core modules in tests
@@ -481,7 +508,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @return true/false whether or not to use an in memory database
 	 */
 	public Boolean useInMemoryDatabase() {
-		return true;
+		return !"false".equals(System.getProperty("useInMemoryDatabase"));
 	}
 	
 	/**
@@ -753,15 +780,50 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			Context.openSession();
 		}
 		
-		// the skipBaseSetup flag is controlled by the @SkipBaseSetup
-		// annotation.  If it is deflagged or if the developer has
-		// marked this class as a non-inmemory database, skip these base steps
-		if (skipBaseSetup == false && useInMemoryDatabase()) {
-			initializeInMemoryDatabase();
-			
-			executeDataSet(EXAMPLE_XML_DATASET_PACKAGE_PATH);
+		// The skipBaseSetup flag is controlled by the @SkipBaseSetup annotation. 		if (useInMemoryDatabase()) {
+		if (!skipBaseSetup) {
+			if (!isBaseSetup) {
+				
+				deleteAllData();
+				
+				if (useInMemoryDatabase()) {
+					initializeInMemoryDatabase();
+				} else {
+					executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
+				}
+				
+				executeDataSet(EXAMPLE_XML_DATASET_PACKAGE_PATH);
+				
+				//Commit so that it is not rolled back after a test.
+				getConnection().commit();
+				
+				updateSearchIndex();
+				
+				isBaseSetup = true;
+			}
 			
 			authenticate();
+		} else {
+			if (isBaseSetup) {
+				deleteAllData();
+			}
+		}
+		
+		Context.clearSession();
+	}
+	
+	public Class<?>[] getIndexedTypes() {
+		return new Class<?>[] { ConceptName.class, Drug.class };
+	}
+	
+	/**
+	 * It needs to be call if you want to do a concept search after you modify a concept in a test.
+	 * It is because index is automatically updated only after transaction is committed, which
+	 * happens only at the end of a test in our transactional tests.
+	 */
+	public void updateSearchIndex() {
+		for (Class<?> indexType : getIndexedTypes()) {
+			Context.updateSearchIndexForType(indexType);
 		}
 		Context.clearSession();
 	}
