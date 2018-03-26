@@ -11,7 +11,11 @@ package org.openmrs.test;
 
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
@@ -22,7 +26,9 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleInteroperabilityTest;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.UrlResource;
 import org.springframework.test.context.TestContext;
@@ -41,6 +47,9 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 	// stores the last class that restarted the module system because we only 
 	// want it restarted once per class, not once per method
 	private static String lastClassRun = "";
+	
+	// storing the bean definitions that have been manually removed from the context
+	private Map<String, BeanDefinition> filteredDefinitions = new HashMap<String, BeanDefinition>();
 	
 	/**
 	 * called before @BeforeTransaction methods
@@ -87,6 +96,7 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 				 * loading beans from moduleApplicationContext into it and then calling ctx.refresh()
 				 * This approach ensures that the application context remains consistent
 				 */
+				removeFilteredBeanDefinitions(testContext.getApplicationContext());
 				GenericApplicationContext ctx = new GenericApplicationContext(testContext.getApplicationContext());
 				XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
 				
@@ -111,4 +121,49 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 		}
 	}
 	
+	/*
+	 * Starting modules may require to remove beans definitions that were initially loaded.
+	 */
+	protected void removeFilteredBeanDefinitions(ApplicationContext context) {
+		// first looking at a context loading the bean definitions "now"
+		GenericApplicationContext ctx = new GenericApplicationContext();
+		(new XmlBeanDefinitionReader(ctx)).loadBeanDefinitions("classpath:applicationContext-service.xml");
+		Set<String> filteredBeanNames = new HashSet<String>();
+		for (String beanName : ctx.getBeanDefinitionNames()) {
+			if (beanName.startsWith("openmrsProfile")) {
+				filteredBeanNames.add(beanName);
+			}
+		}
+		ctx.close();
+		
+		// looking at the context as it loaded the bean definitions before the module(s) were started
+		Set<String> originalBeanNames = new HashSet<String>();
+		for (String beanName : ((GenericApplicationContext) context).getBeanDefinitionNames()) {
+			if (beanName.startsWith("openmrsProfile")) {
+				originalBeanNames.add(beanName);
+			}
+		}
+		// removing the bean definitions that have been filtered out by starting the module(s)
+		for (String beanName : originalBeanNames) {
+			if (!filteredBeanNames.contains(beanName)) {
+				filteredDefinitions.put(beanName, ((GenericApplicationContext) context).getBeanDefinition(beanName));
+				((GenericApplicationContext) context).removeBeanDefinition(beanName);
+			}
+		}
+	}
+	
+	@Override
+	public void afterTestClass(TestContext testContext) throws Exception {
+		StartModule startModuleAnnotation = testContext.getTestClass().getAnnotation(StartModule.class);
+		
+		if (startModuleAnnotation != null) {
+			
+			// re-registering the bean definitions that we may have removed
+			for (String beanName : filteredDefinitions.keySet()) {
+				((GenericApplicationContext) testContext.getApplicationContext()).registerBeanDefinition(beanName,
+				    filteredDefinitions.get(beanName));
+			}
+			filteredDefinitions.clear();
+		}
+	}
 }

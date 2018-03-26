@@ -302,4 +302,39 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 		validator.validate(model, errors);
 		Assert.assertEquals(true, errors.hasErrors());
 	}
+
+	@Test
+	@Verifies(value = "should ignore duplicate voided address", method = "validate(Object,Errors)")
+	public void validate_shouldIgnoreDuplicateVoidedAddress() throws Exception {
+		Patient patient = ps.getPatient(2);
+		PersonAddress oldAddress = patient.getPersonAddress();
+		Assert.assertEquals(1, patient.getAddresses().size());//sanity check
+		oldAddress.setAddress1("Address1");
+		oldAddress.setAddress2("address1");
+		Context.getPatientService().savePatient(patient);
+
+		PersonAddress address = (PersonAddress) oldAddress.clone();
+		address.setPersonAddressId(null);
+		address.setUuid(null);
+		address.setAddress1("Address2");
+		address.setAddress2("address2");
+		patient.addAddress(address);
+		Context.getPatientService().savePatient(patient);
+		Assert.assertNotNull(address.getId());//should have been added
+		//void the first address
+		oldAddress.setVoided(true);
+		oldAddress.setVoidReason("test duplicate address");
+		Context.getPatientService().savePatient(patient);
+
+		ShortPatientModel model = new ShortPatientModel(patient);
+		//the second address should be now the active address
+		Assert.assertEquals(address.getId(), model.getPersonAddress().getId());
+		//change to a duplicate name
+		model.getPersonAddress().setAddress1("address1");//should be case insensitive
+		model.getPersonAddress().setAddress2("address1");
+
+		Errors errors = new BindException(model, "patientModel");
+		validator.validate(model, errors);
+		Assert.assertEquals(false, errors.hasErrors());
+	}
 }
