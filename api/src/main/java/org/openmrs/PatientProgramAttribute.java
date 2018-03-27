@@ -14,31 +14,31 @@ import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
 
 public class PatientProgramAttribute extends BaseAttribute<ProgramAttributeType, PatientProgram> implements Attribute<ProgramAttributeType, PatientProgram> {
-    private Integer patientProgramAttributeId;
+		private Integer patientProgramAttributeId;
 
-    @Override
-    public Integer getId() {
-        return getPatientProgramAttributeId();
-    }
+		@Override
+		public Integer getId() {
+				return getPatientProgramAttributeId();
+		}
 
-    @Override
-    public void setId(Integer id) {
-        setPatientProgramAttributeId(id);
-    }
+		@Override
+		public void setId(Integer id) {
+				setPatientProgramAttributeId(id);
+		}
 
-    public PatientProgram getPatientProgram() {
-        return getOwner();
-    }
+		public PatientProgram getPatientProgram() {
+				return getOwner();
+		}
 
-    public void setPatientProgram(PatientProgram patientProgram) {
-        setOwner(patientProgram);
-    }
+		public void setPatientProgram(PatientProgram patientProgram) {
+				setOwner(patientProgram);
+		}
 
-    public Integer getPatientProgramAttributeId() {
-        return patientProgramAttributeId;
-    }
+		public Integer getPatientProgramAttributeId() {
+				return patientProgramAttributeId;
+		}
 
-    public void setPatientProgramAttributeId(Integer id) {
-        this.patientProgramAttributeId = id;
-    }
+		public void setPatientProgramAttributeId(Integer id) {
+				this.patientProgramAttributeId = id;
+		}
 }
