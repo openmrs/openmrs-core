@@ -107,6 +107,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	private static final String PATIENT_MERGE_XML = "org/openmrs/api/include/PatientServiceTest-mergePatients.xml";
 
 	private static final String PATIENT_MERGE_OBS_WITH_GROUP_MEMBER = "org/openmrs/api/include/PatientServiceTest-mergePatientWithExistingObsHavingGroupMember.xml";
+
+	private static final String NULL_ERROR_MESSAGE_FOR_ATTRIBUTES_NULL = "here must be at least one attribute supplied to search on";
+	
+	private static  final String ERROR_MESSAGE_FOR_NULL_RETIRE_REASON = "A reason is required when retiring an identifier type";
 	
 	// Services
 	protected static PatientService patientService = null;
@@ -1568,6 +1572,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient voidedPatient = patientService.voidPatient(null, "No null patient should be voided");
 		Assert.assertNull(voidedPatient);
 	}
+	
 	
 	/**
 	 * @see PatientService#getPatientByUuid(String)
@@ -3097,8 +3102,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = PatientIdentifierTypeLockedException.class)
-	public void savePatientIdentifierType_shouldThrowErrorWhenTryingToSaveAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
-	    throws Exception {
+	public void savePatientIdentifierType_shouldThrowErrorWhenTryingToSaveAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked() {
 		PatientService ps = Context.getPatientService();
 		createPatientIdentifierTypeLockedGPAndSetValue("true");
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
@@ -3107,8 +3111,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = PatientIdentifierTypeLockedException.class)
-	public void retirePatientIdentifierType_shouldThrowErrorWhenTryingToRetireAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
-	    throws Exception {
+	public void retirePatientIdentifierType_shouldThrowErrorWhenTryingToRetireAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked() {
 		PatientService ps = Context.getPatientService();
 		createPatientIdentifierTypeLockedGPAndSetValue("true");
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
@@ -3116,7 +3119,16 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = APIException.class)
-	public void retirePatientIdentifierType_shouldThrowAPIExceptionWhenNullReasonIsPassed() throws Exception {
+	public void retirePatientIdentifierType_shouldThrowAPIExceptionWhenNullReasonIsPassed() {
+		PatientService ps = Context.getPatientService();
+		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
+		ps.retirePatientIdentifierType(pit, null);
+	}
+
+	@Test
+	public void retirePatientIdentifierType_shouldThrowGivenAPIExceptionIfNullReasonIsPassed() {
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(ERROR_MESSAGE_FOR_NULL_RETIRE_REASON);
 		PatientService ps = Context.getPatientService();
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
 		ps.retirePatientIdentifierType(pit, null);
@@ -3140,8 +3152,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test(expected = PatientIdentifierTypeLockedException.class)
-	public void unretirePatientIdentifierType_shouldThrowErrorWhenTryingToUnretireAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
-	    throws Exception {
+	public void unretirePatientIdentifierType_shouldThrowErrorWhenTryingToUnretireAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked() {
 		PatientService ps = Context.getPatientService();
 		createPatientIdentifierTypeLockedGPAndSetValue("true");
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
@@ -3237,5 +3248,35 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, encounterService.getEncounter(57).getObsAtTopLevel(false).size());
 		assertEquals(2, encounterService.getEncounter(57).getObsAtTopLevel(true).size());
 	}
+	
+	@Test
+	public void getDuplicatePatientsByAttributes_shouldThrowAnAPIExceptionIfAttributesIsNull() {
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(NULL_ERROR_MESSAGE_FOR_ATTRIBUTES_NULL);
+		patientService.getDuplicatePatientsByAttributes(null);
+	}
+	
+	@Test
+	public void getDuplicatePatientsByAttributes_shouldThrowAnAPIExceptionIfAttributesIsEmpty() {
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(NULL_ERROR_MESSAGE_FOR_ATTRIBUTES_NULL);
+		patientService.getDuplicatePatientsByAttributes(new ArrayList<>());
+	}
 
+	/**
+	 * @see PatientServiceImpl#getDuplicatePatientsByAttributes(List)
+	 * attributes on a Person or Patient object. similar to: [gender, givenName,
+	 *            middleName, familyName]
+	 */
+	@Test
+	public void getDuplicatePatientsByAttributes_shouldReturnPatients() {
+		List<PersonAttribute> activePersonAttributes = Context.getPatientService().getPatient(2).getActiveAttributes();
+		List<String> activeAttributes = new ArrayList<>();
+		for (PersonAttribute personAttribute : activePersonAttributes) {
+			activeAttributes.add(personAttribute.getValue());
+		}
+		List<Patient> receivedPatientList = patientService.getDuplicatePatientsByAttributes(activeAttributes);
+		assertNotNull(receivedPatientList);
+		assertEquals(receivedPatientList.size(), 0);
+	}
 }
