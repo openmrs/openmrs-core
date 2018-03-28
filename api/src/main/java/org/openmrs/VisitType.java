@@ -9,16 +9,29 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * Represents the assortment of visit types available to an implementation. These could include
  * items like "Initial HIV Clinic Visit", "Return TB Clinic Visit", and "Hospitalization".
  * 
  * @since 1.9
  */
+
+@Entity
+@Table(name = "visit_type")
 public class VisitType extends BaseChangeableOpenmrsMetadata{
 	
 	private static final long serialVersionUID = 1L;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "visit_type_id")
 	private Integer visitTypeId;
 	
 	/** default constructor */

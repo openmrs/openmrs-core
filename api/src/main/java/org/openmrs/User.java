@@ -20,6 +20,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.validator.constraints.Length;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -28,6 +34,17 @@ import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.Table;
+
 /**
  * Defines a User Account in the system. This account belongs to a {@link Person} in the system,
  * although that person may have other user accounts. Users have login credentials
@@ -35,6 +52,9 @@ import org.slf4j.LoggerFactory;
  * key-value pairs for either quick info or display specific info that needs to be persisted (like
  * locale preferences, search options, etc)
  */
+@Entity
+@Table(name = "users")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Attributable<User> {
 	
 	public static final long serialVersionUID = 2L;
@@ -43,16 +63,28 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	
 	// Fields
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "user_id")
 	private Integer userId;
 	
+	@ManyToOne
+	@Column(name = "person_id", nullable = false)
+	@Cascade(CascadeType.SAVE_UPDATE)
 	private Person person;
 	
+	@Column(name = "system_id", nullable = false, length = 50)
 	private String systemId;
 	
+	@Column(length = 50)
 	private String username;
 	
+	@ManyToMany
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+	@Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.EVICT})
 	private Set<Role> roles;
-	
+
+	@Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.EVICT})
 	private Map<String, String> userProperties;
 	
 	private List<Locale> proficientLocales = null;

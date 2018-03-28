@@ -16,6 +16,21 @@ import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * Encapsulates information about the clinical action of a provider requesting something for a
  * patient e.g requesting a test to be performed, prescribing a medication, requesting the patient
@@ -30,6 +45,9 @@ import org.openmrs.util.OpenmrsUtil;
  * 
  * @version 1.0
  */
+@Entity
+@Table(name = "orders")
+@Inheritance(strategy= InheritanceType.JOINED)
 public class Order extends BaseOpenmrsData {
 	
 	
@@ -54,40 +72,68 @@ public class Order extends BaseOpenmrsData {
 		RENEW
 	}
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "order_id")
 	private Integer orderId;
 	
+	@ManyToOne
+	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 	
+	@ManyToOne
+	@JoinColumn(name = "order_type_id", nullable = false)
 	private OrderType orderType;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "order_type_id", nullable = false)
 	private Concept concept;
 	
+	@Column(name = "instructions", length = 65535)
 	private String instructions;
 	
+	@Column(name = "date_activated", length = 19, nullable = false)
 	private Date dateActivated;
 	
+	@Column(name = "auto_expire_date", length = 19)
 	private Date autoExpireDate;
 	
+	@ManyToOne
+	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
-	
+
+	@ManyToOne
+	@JoinColumn(nullable = false)
 	private Provider orderer;
-	
+
+	@Column(name = "date_stopped", length = 19)
+	@Access(value = AccessType.FIELD)
 	private Date dateStopped;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "order_reason")
 	private Concept orderReason;
 	
+	@Column(name = "accession_number")
 	private String accessionNumber;
 	
+	@Column(name = "order_reason_non_coded")
 	private String orderReasonNonCoded;
 	
 	private Urgency urgency = Urgency.ROUTINE;
 	
+	@Column(name = "order_number", length = 50, nullable = false)
+	@Access(value = AccessType.FIELD)
 	private String orderNumber;
 	
+	@Column(name = "comment_to_fullfiller", length = 1024)
 	private String commentToFulfiller;
 	
+	@ManyToOne
+	@JoinColumn(name = "care_setting", nullable = false)
 	private CareSetting careSetting;
 	
+	@Column(name = "scheduled_date", length = 19)
 	private Date scheduledDate;
 	
 	/**
@@ -95,12 +141,15 @@ public class Order extends BaseOpenmrsData {
 	 * added in the group ex - for two orders of isoniazid and ampicillin, the sequence of 1 and 2
 	 * needed to be maintained
 	 */
+	@Column(name = "sort_weight")
 	private Double sortWeight;
 	
 	/**
 	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
 	 * to the original ampicillin order (the D/C gets its own order number)
 	 */
+	@ManyToOne
+	@JoinColumn(name = "previous_order_id")
 	private Order previousOrder;
 	
 	/**
@@ -108,11 +157,15 @@ public class Order extends BaseOpenmrsData {
 	 * 
 	 * @see org.openmrs.Order.Action
 	 */
+	@Column(name = "action", length = 50, nullable = false)
+	@Enumerated(EnumType.STRING)
 	private Action action = Action.NEW;
 	
 	/**
 	 * {@link org.openmrs.OrderGroup}
 	 */
+	@ManyToOne
+	@JoinColumn(name = "order_group_id")
 	private OrderGroup orderGroup;
 	
 	// Constructors

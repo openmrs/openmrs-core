@@ -13,6 +13,17 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * The FormField object relates/orders the <code>fields</code> on a <code>form</code> A form can
@@ -22,32 +33,52 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * @see org.openmrs.Form
  * @see org.openmrs.Field
  */
+@Entity
+@Table(name = "form_field")
 public class FormField extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Comparable<FormField> {
 	
 	public static final long serialVersionUID = 3456L;
 	
 	// Fields
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "form_field_id")
 	protected Integer formFieldId;
 	
+	@ManyToOne
+	@JoinColumn(name = "parent_form_field")
+	@Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.EVICT})
 	protected FormField parent;
 	
+	@ManyToOne
+	@JoinColumn(name = "form_id", nullable = false)
 	protected Form form;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "field_id")
+	@Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.EVICT})
 	protected Field field;
 	
+	@Column(name = "field_number", length = 11)
 	protected Integer fieldNumber;
 	
+	@Column(name = "field_part", length = 5)
 	protected String fieldPart;
 	
+	@Column(name = "page_number", length = 11)
 	protected Integer pageNumber;
 	
+	@Column(name = "min_occurs", length = 11)
 	protected Integer minOccurs;
-	
+
+	@Column(name = "max_occurs", length = 11)
 	protected Integer maxOccurs;
 	
+	@Column(name = "required", length = 1)
 	protected Boolean required = false;
 	
+	@Column(name = "sort_weight", length = 5)
 	protected Float sortWeight;
 	
 	// Constructors

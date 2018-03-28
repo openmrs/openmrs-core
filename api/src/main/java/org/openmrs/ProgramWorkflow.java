@@ -17,11 +17,26 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.openmrs.util.NaturalStrings;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  * ProgramWorkflow
  */
+@Entity
+@Table(name = "program_workflow")
 public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
@@ -30,12 +45,22 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	// Properties
 	// ******************
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "program_workflow_id")
 	private Integer programWorkflowId;
 	
+	@ManyToOne
+	@JoinColumn(name = "program_id", nullable = false)
 	private Program program;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
+	@OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
+	@JoinColumn(name = "program_workflow_id", nullable = false)
+	@Cascade(value = CascadeType.ALL)
 	private Set<ProgramWorkflowState> states = new HashSet<>();
 	
 	// ******************

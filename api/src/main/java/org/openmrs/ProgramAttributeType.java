@@ -13,7 +13,19 @@ package org.openmrs;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "program_attribute_type")
 public class ProgramAttributeType extends BaseAttributeType<PatientProgram> implements AttributeType<PatientProgram> {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "program_attribute_type_id")
     private Integer programAttributeTypeId;
 
     @Override

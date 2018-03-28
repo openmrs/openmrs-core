@@ -16,24 +16,41 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.search.annotations.Field;
 import org.openmrs.util.OpenmrsUtil;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * PersonAttributeType
  */
+@Entity
+@Table(name = "person_attribute_type")
 public class PersonAttributeType extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Comparable<PersonAttributeType> {
 	
 	public static final long serialVersionUID = 2112313431211L;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "person_attribute_type_id", nullable = false)
 	private Integer personAttributeTypeId;
 	
+	@Column(name = "format", length = 50)
 	private String format;
 	
+	@Column(name = "foreign_key")
 	private Integer foreignKey;
 	
+	@Column(name = "sort_weight", nullable = false)
 	private Double sortWeight;
 
 	@Field
+	@Column(nullable = false)
 	private Boolean searchable = false;
 	
+	@Column(name = "edit_privilege")
 	private Privilege editPrivilege;
 	
 	/** default constructor */

@@ -14,9 +14,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
 /**
  * A Location is a physical place, such as a hospital, a room, a clinic, or a district. Locations
@@ -25,6 +43,9 @@ import org.openmrs.api.context.Context;
  * and should be modeled using {@link LocationTag}s.
  * Note: Prior to version 1.9 this class extended BaseMetadata
  */
+@Entity
+@Table(name = "location")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Location extends BaseCustomizableMetadata<LocationAttribute> implements java.io.Serializable, Attributable<Location>, Address {
 	
 	public static final long serialVersionUID = 455634L;
@@ -33,57 +54,94 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	
 	// Fields
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "location_id")
 	private Integer locationId;
 	
+	@Column(name = "address1")
 	private String address1;
-	
+
+	@Column(name = "address2")
 	private String address2;
-	
+
+	@Column(name = "city_village")
 	private String cityVillage;
 	
+	@Column(name = "state_province")
 	private String stateProvince;
 	
+	@Column(name = "country", length = 50)
 	private String country;
 	
+	@Column(name = "postal_code", length = 50)
 	private String postalCode;
 	
+	@Column(name = "latitude", length = 50)
 	private String latitude;
-	
+
+	@Column(name = "longitude", length = 50)
 	private String longitude;
 	
+	@Column(name = "country_district")
 	private String countyDistrict;
-	
+
+	@Column(name = "address3")
 	private String address3;
-	
+
+	@Column(name = "address4")
 	private String address4;
-	
+
+	@Column(name = "address6")
 	private String address6;
-	
+
+	@Column(name = "address5")
 	private String address5;
-	
+
+	@Column(name = "address7")
 	private String address7;
-	
+
+	@Column(name = "address8")
 	private String address8;
-	
+
+	@Column(name = "address9")
 	private String address9;
-	
+
+	@Column(name = "address10")
 	private String address10;
-	
+
+	@Column(name = "address11")
 	private String address11;
-	
+
+	@Column(name = "address12")
 	private String address12;
-	
+
+	@Column(name = "address13")
 	private String address13;
-	
+
+	@Column(name = "address14")
 	private String address14;
 
+	@Column(name = "address15")
 	private String address15;
 
+	@ManyToOne
+	@JoinColumn(name = "parent_location")
 	private Location parentLocation;
 	
+	@OneToMany
+	@JoinColumn(name = "parent_location")
+	@OrderBy("name")
+	@BatchSize(size = 100)
+	@Cascade(value = CascadeType.ALL)
 	private Set<Location> childLocations;
 	
 	@Independent
+	@ManyToMany
+	@JoinTable(name = "location_tag_map",
+		joinColumns = @JoinColumn(name = "location_tag_id"),
+		inverseJoinColumns = @JoinColumn(name = "location_id")
+	)
 	private Set<LocationTag> tags;
 	
 	// Constructors

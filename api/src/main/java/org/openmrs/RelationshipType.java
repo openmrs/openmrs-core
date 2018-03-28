@@ -11,6 +11,15 @@ package org.openmrs;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * Defines a type of relationship between two people in the database. <br>
  * <br>
@@ -32,20 +41,32 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * In English, we run into a tricky RelationshipType with aunts and uncles. We have chosen to define
  * them as aunt/uncle-niece/nephew.
  */
+@Entity
+@Table(name = "relationship_type")
 public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 	
 	public static final long serialVersionUID = 4223L;
 	
 	// Fields
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "relationship_type_id")
 	private Integer relationshipTypeId;
 	
+	@Column(name = "a_is_to_b", length = 50, nullable = false)
+	@Access(AccessType.FIELD)
 	private String aIsToB;
-	
+
+	@Column(name = "b_is_to_a", length = 50, nullable = false)
+	@Access(AccessType.FIELD)
 	private String bIsToA;
 	
+//	@Column(name = "weight", nullable = "false")
+//  TODO: Fix the error
 	private Integer weight = 0;
 	
+	@Column(name = "preferred", nullable = false)
 	private Boolean preferred = false;
 	
 	// Constructors

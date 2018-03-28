@@ -12,13 +12,25 @@ package org.openmrs;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * A value for a user-defined {@link LocationAttributeType} that is stored on a {@link Location}.
  * @see Attribute
  * @since 1.9
  */
+@Entity
+@Table(name = "location_attribute")
 public class LocationAttribute extends BaseAttribute<LocationAttributeType, Location> implements Attribute<LocationAttributeType, Location> {
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "location_attribute_id")
 	private Integer locationAttributeId;
 	
 	// BaseAttribute<Location> has an "owner" property of type Location, which we re-expose as "location"

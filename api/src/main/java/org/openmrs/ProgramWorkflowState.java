@@ -9,9 +9,18 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * ProgramWorkflowState
  */
+@Entity
+@Table(name = "program_workflow_state")
 public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	
 	private static final long serialVersionUID = 1L;
@@ -20,14 +29,20 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	// Properties
 	// ******************
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "program_workflow_state_id")
 	private Integer programWorkflowStateId;
 	
 	private ProgramWorkflow programWorkflow;
 	
+	@Column(name = "concept", length = 1, nullable = false)
 	private Concept concept;
-	
+
+	@Column(name = "initial", length = 1, nullable = false)
 	private Boolean initial;
-	
+
+	@Column(name = "terminal", length = 1, nullable = false)
 	private Boolean terminal;
 	
 	// ******************
