@@ -210,12 +210,12 @@ public class ModuleFileParser {
 				    new Object[] { configVersion, String.join(", ", validConfigVersions) }, Context.getLocale()), moduleFile.getName());
 			}
 			
-			String name = getElement(rootNode, configVersion, "name").trim();
-			String moduleId = getElement(rootNode, configVersion, "id").trim();
-			String packageName = getElement(rootNode, configVersion, "package").trim();
-			String author = getElement(rootNode, configVersion, "author").trim();
-			String desc = getElement(rootNode, configVersion, "description").trim();
-			String version = getElement(rootNode, configVersion, "version").trim();
+			String name = getElement(rootNode, "name").trim();
+			String moduleId = getElement(rootNode,"id").trim();
+			String packageName = getElement(rootNode,"package").trim();
+			String author = getElement(rootNode,"author").trim();
+			String desc = getElement(rootNode, "description").trim();
+			String version = getElement(rootNode, "version").trim();
 			
 			// do some validation
 			if (name == null || name.length() == 0) {
@@ -234,27 +234,27 @@ public class ModuleFileParser {
 			module = new Module(name, moduleId, packageName, author, desc, version);
 			
 			// find and load the activator class
-			module.setActivatorName(getElement(rootNode, configVersion, "activator").trim());
+			module.setActivatorName(getElement(rootNode, "activator").trim());
 			
-			module.setRequireDatabaseVersion(getElement(rootNode, configVersion, "require_database_version").trim());
-			module.setRequireOpenmrsVersion(getElement(rootNode, configVersion, "require_version").trim());
-			module.setUpdateURL(getElement(rootNode, configVersion, "updateURL").trim());
-			module.setRequiredModulesMap(getRequiredModules(rootNode, configVersion));
-			module.setAwareOfModulesMap(getAwareOfModules(rootNode, configVersion));
-			module.setStartBeforeModulesMap(getStartBeforeModules(rootNode, configVersion));
+			module.setRequireDatabaseVersion(getElement(rootNode, "require_database_version").trim());
+			module.setRequireOpenmrsVersion(getElement(rootNode, "require_version").trim());
+			module.setUpdateURL(getElement(rootNode, "updateURL").trim());
+			module.setRequiredModulesMap(getRequiredModules(rootNode));
+			module.setAwareOfModulesMap(getAwareOfModules(rootNode));
+			module.setStartBeforeModulesMap(getStartBeforeModules(rootNode));
 			
-			module.setAdvicePoints(getAdvice(rootNode, configVersion, module));
-			module.setExtensionNames(getExtensions(rootNode, configVersion));
+			module.setAdvicePoints(getAdvice(rootNode,  module));
+			module.setExtensionNames(getExtensions(rootNode));
 			
-			module.setPrivileges(getPrivileges(rootNode, configVersion));
-			module.setGlobalProperties(getGlobalProperties(rootNode, configVersion));
+			module.setPrivileges(getPrivileges(rootNode));
+			module.setGlobalProperties(getGlobalProperties(rootNode));
 			
-			module.setMappingFiles(getMappingFiles(rootNode, configVersion, jarfile));
-			module.setPackagesWithMappedClasses(getPackagesWithMappedClasses(rootNode, configVersion));
+			module.setMappingFiles(getMappingFiles(rootNode));
+			module.setPackagesWithMappedClasses(getPackagesWithMappedClasses(rootNode));
 			
 			module.setConfig(configDoc);
 			
-			module.setMandatory(getMandatory(rootNode, configVersion, jarfile));
+			module.setMandatory(getMandatory(rootNode, configVersion));
 			
 			module.setFile(moduleFile);
 			
@@ -276,7 +276,6 @@ public class ModuleFileParser {
 				}
 			}
 		}
-		
 		return module;
 	}
 	
@@ -366,11 +365,10 @@ public class ModuleFileParser {
 	 * Generic method to get a module tag
 	 *
 	 * @param root
-	 * @param version
 	 * @param tag
 	 * @return
 	 */
-	private String getElement(Element root, String version, String tag) {
+	private String getElement(Element root, String tag) {
 		if (root.getElementsByTagName(tag).getLength() > 0) {
 			return root.getElementsByTagName(tag).item(0).getTextContent();
 		}
@@ -381,11 +379,10 @@ public class ModuleFileParser {
 	 * load in required modules list
 	 *
 	 * @param root element in the xml doc object
-	 * @param version of the config file
 	 * @return map from module package name to required version
 	 * @since 1.5
 	 */
-	private Map<String, String> getRequiredModules(Element root, String version) {
+	private Map<String, String> getRequiredModules(Element root) {
 		return getModuleToVersionMap("require_modules", "require_module", root);
 	}
 	
@@ -396,11 +393,11 @@ public class ModuleFileParser {
 	 * @return map from module package name to aware of version
 	 * @since 1.9
 	 */
-	private Map<String, String> getAwareOfModules(Element root, String version) {
+	private Map<String, String> getAwareOfModules(Element root) {
 		return getModuleToVersionMap("aware_of_modules", "aware_of_module", root);
 	}
 	
-	private Map<String, String> getStartBeforeModules(Element root, String version) {
+	private Map<String, String> getStartBeforeModules(Element root) {
 		return getModuleToVersionMap("start_before_modules", "module", root);
 	}
 	
@@ -434,10 +431,9 @@ public class ModuleFileParser {
 	 * load in advicePoints
 	 *
 	 * @param root
-	 * @param version
 	 * @return
 	 */
-	private List<AdvicePoint> getAdvice(Element root, String version, Module mod) {
+	private List<AdvicePoint> getAdvice(Element root, Module mod) {
 		
 		List<AdvicePoint> advicePoints = new ArrayList<>();
 		
@@ -479,10 +475,9 @@ public class ModuleFileParser {
 	 * load in extensions
 	 *
 	 * @param root
-	 * @param configVersion
 	 * @return
 	 */
-	private IdentityHashMap<String, String> getExtensions(Element root, String configVersion) {
+	private IdentityHashMap<String, String> getExtensions(Element root) {
 		
 		IdentityHashMap<String, String> extensions = new IdentityHashMap<>();
 		
@@ -530,10 +525,9 @@ public class ModuleFileParser {
 	 * load in required privileges
 	 *
 	 * @param root
-	 * @param version
 	 * @return
 	 */
-	private List<Privilege> getPrivileges(Element root, String version) {
+	private List<Privilege> getPrivileges(Element root) {
 		
 		List<Privilege> privileges = new ArrayList<>();
 		
@@ -576,10 +570,9 @@ public class ModuleFileParser {
 	 * load in required global properties and defaults
 	 *
 	 * @param root
-	 * @param version
 	 * @return
 	 */
-	private List<GlobalProperty> getGlobalProperties(Element root, String version) {
+	private List<GlobalProperty> getGlobalProperties(Element root) {
 		
 		List<GlobalProperty> properties = new ArrayList<>();
 		
@@ -649,12 +642,10 @@ public class ModuleFileParser {
 	 * Load in the defined mapping file names
 	 *
 	 * @param rootNode
-	 * @param configVersion
-	 * @param jarfile
 	 * @return
 	 */
-	private List<String> getMappingFiles(Element rootNode, String configVersion, JarFile jarfile) {
-		String mappingString = getElement(rootNode, configVersion, "mappingFiles");
+	private List<String> getMappingFiles(Element rootNode) {
+		String mappingString = getElement(rootNode, "mappingFiles");
 		List<String> mappings = new ArrayList<>();
 		for (String s : mappingString.split("\\s")) {
 			String s2 = s.trim();
@@ -665,8 +656,8 @@ public class ModuleFileParser {
 		return mappings;
 	}
 	
-	private Set<String> getPackagesWithMappedClasses(Element rootNode, String configVersion) {
-		String element = getElement(rootNode, configVersion, "packagesWithMappedClasses");
+	private Set<String> getPackagesWithMappedClasses(Element rootNode) {
+		String element = getElement(rootNode, "packagesWithMappedClasses");
 		Set<String> packages = new HashSet<>();
 		for (String s : element.split("\\s")) {
 			String s2 = s.trim();
@@ -683,12 +674,11 @@ public class ModuleFileParser {
 	 *
 	 * @param rootNode
 	 * @param configVersion
-	 * @param jarfile
 	 * @return true if the mandatory element is set to true
 	 */
-	private boolean getMandatory(Element rootNode, String configVersion, JarFile jarfile) {
+	private boolean getMandatory(Element rootNode, String configVersion) {
 		if (Double.parseDouble(configVersion) >= 1.3) {
-			String mandatory = getElement(rootNode, configVersion, "mandatory").trim();
+			String mandatory = getElement(rootNode, "mandatory").trim();
 			return "true".equalsIgnoreCase(mandatory);
 		}
 		
