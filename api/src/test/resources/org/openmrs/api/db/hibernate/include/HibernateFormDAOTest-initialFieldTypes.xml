@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+  <concept concept_id="1" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2018-03-16 09:13:00.0" uuid="225b6937-6d47-4cf3-9735-2501f21bdb96"/>
+  <concept concept_id="2" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2018-03-16 09:13:00.0" uuid="95a8585d-fe14-4821-b238-9b781718efa5"/>
+  <concept_description concept_description_id="1" concept_id="2" description="this is a description 2" locale="en" creator="1" date_created="2018-03-16 09:13:00.0" uuid="6f94902e-4947-4579-994b-402f7ec32a42"/>
+  <concept_name concept_id="2" name="Some concept name 2" locale="en" creator="1" date_created="2018-03-16 09:13:00.0" concept_name_id="1" voided="false" uuid="69351e4a-74c0-4979-9785-616245689f68" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <field_type field_type_id="1" name="some field type" is_set="false" creator="1" date_created="2018-03-16 09:13:00.0" uuid="3bb44f69-e162-419a-a5f5-19bd1eaa0f3b"/>
+  <field_type field_type_id="2" name="some field type 2" is_set="false" creator="1" date_created="2018-03-16 09:13:00.0" uuid="145773d4-a682-4c82-9180-6dfe7d7a63c9"/>
+  <encounter_type encounter_type_id="1" name="Test Enc Type 1" description="Some desc 1" creator="1" date_created="2018-03-16 09:13:00.0" retired="false" uuid="759799ab-c9a5-435e-b671-77773ada74e4"/>
+  <encounter_type encounter_type_id="2" name="Test Enc Type 2" description="Some desc 2" creator="1" date_created="2018-03-16 09:13:00.0" retired="false" uuid="4ee21921-01cc-4720-a6bf-a61a17c4d05b"/>
+  <encounter_type encounter_type_id="3" name="Test Enc Type 3" description="Some desc 3" creator="1" date_created="2018-03-16 09:13:00.0" retired="false" uuid="070ac0c2-9b3b-485c-8e74-4bd81130c4f8"/>
+  <patient patient_id="1" creator="1" date_created="2018-03-16 09:13:00.0" voided="false"/>
+  <patient_identifier patient_identifier_id="1" patient_id="1" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2018-03-16 09:13:00.0" voided="false" uuid="cf62c4b2-39d2-4c8e-befa-630f9387a748"/>
+</dataset>
