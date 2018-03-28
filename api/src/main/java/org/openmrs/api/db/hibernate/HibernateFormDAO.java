@@ -234,7 +234,7 @@ public class HibernateFormDAO implements FormDAO {
 			}
 		} else {
 			// if formFields.size() is still greater than 0
-			return (FormField) formFields.get(0);
+			return formFields.get(0);
 		}
 	}
 	
@@ -452,7 +452,6 @@ public class HibernateFormDAO implements FormDAO {
 			crit.add(Restrictions.eq("retired", retired));
 		}
 		
-		// TODO junit test
 		if (!containingAnyFormField.isEmpty()) {
 			// Convert form field persistents to integers
 			Set<Integer> anyFormFieldIds = new HashSet<>();
