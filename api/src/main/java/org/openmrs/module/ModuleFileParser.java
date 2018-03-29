@@ -128,7 +128,6 @@ public class ModuleFileParser {
 		
 		Module module;
 		JarFile jarfile = null;
-		InputStream configStream = null;
 		
 		try {
 			try {
@@ -145,16 +144,15 @@ public class ModuleFileParser {
 				throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.noConfigFile"),
 				        moduleFile.getName());
 			}
-			
-			// get a config file stream
-			try {
-				configStream = jarfile.getInputStream(config);
+
+			Document configDoc;
+			try (InputStream configStream = jarfile.getInputStream(config)) {
+				configDoc = parseConfig(configStream);
 			}
 			catch (IOException e) {
 				throw new ModuleException(Context.getMessageSourceService().getMessage(
 				    "Module.error.cannotGetConfigFileStream"), moduleFile.getName(), e);
 			}
-			Document configDoc = parseConfig(configStream);
 			module = createModule(configDoc);
 		}
 		finally {
@@ -163,14 +161,6 @@ public class ModuleFileParser {
 			}
 			catch (Exception e) {
 				log.warn("Unable to close jarfile: " + jarfile, e);
-			}
-			if (configStream != null) {
-				try {
-					configStream.close();
-				}
-				catch (Exception io) {
-					log.error("Error while closing config stream for module: " + moduleFile.getAbsolutePath(), io);
-				}
 			}
 		}
 		return module;
