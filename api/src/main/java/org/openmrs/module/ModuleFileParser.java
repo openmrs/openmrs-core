@@ -154,53 +154,8 @@ public class ModuleFileParser {
 				throw new ModuleException(Context.getMessageSourceService().getMessage(
 				    "Module.error.cannotGetConfigFileStream"), moduleFile.getName(), e);
 			}
-			
-			// turn the config file into an xml document
-			Document configDoc;
-			try {
-				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-				DocumentBuilder db = dbf.newDocumentBuilder();
-				db.setEntityResolver((publicId, systemId) -> {
-					// When asked to resolve external entities (such as a
-					// DTD) we return an InputSource
-					// with no data at the end, causing the parser to ignore
-					// the DTD.
-					return new InputSource(new StringReader(""));
-				});
-				
-				configDoc = db.parse(configStream);
-			}
-			catch (Exception e) {
-				log.error("Error parsing config.xml: " + configStream.toString(), e);
-				
-				ByteArrayOutputStream out = null;
-				String output = "";
-				try {
-					out = new ByteArrayOutputStream();
-					// Now copy bytes from the URL to the output stream
-					byte[] buffer = new byte[4096];
-					int bytesRead;
-					while ((bytesRead = configStream.read(buffer)) != -1) {
-						out.write(buffer, 0, bytesRead);
-					}
-					output = out.toString(StandardCharsets.UTF_8.name());
-				}
-				catch (Exception e2) {
-					log.warn("Another error parsing config.xml", e2);
-				}
-				finally {
-					try {
-						out.close();
-					}
-					catch (Exception e3) {}
-				}
-				
-				log.error("config.xml content: " + output);
-				throw new ModuleException(
-				        Context.getMessageSourceService().getMessage("Module.error.cannotParseConfigFile"), moduleFile
-				                .getName(), e);
-			}
-			
+			Document configDoc = parseConfig(configStream);
+
 			Element rootNode = configDoc.getDocumentElement();
 			
 			String configVersion = rootNode.getAttribute("configVersion").trim();
@@ -278,7 +233,55 @@ public class ModuleFileParser {
 		}
 		return module;
 	}
-	
+
+	private Document parseConfig(InputStream configStream) {
+		Document configDoc;
+		try {
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			db.setEntityResolver((publicId, systemId) -> {
+				// When asked to resolve external entities (such as a
+				// DTD) we return an InputSource
+				// with no data at the end, causing the parser to ignore
+				// the DTD.
+				return new InputSource(new StringReader(""));
+			});
+			
+			configDoc = db.parse(configStream);
+		}
+		catch (Exception e) {
+			log.error("Error parsing config.xml: " + configStream.toString(), e);
+			
+			ByteArrayOutputStream out = null;
+			String output = "";
+			try {
+				out = new ByteArrayOutputStream();
+				// Now copy bytes from the URL to the output stream
+				byte[] buffer = new byte[4096];
+				int bytesRead;
+				while ((bytesRead = configStream.read(buffer)) != -1) {
+					out.write(buffer, 0, bytesRead);
+				}
+				output = out.toString(StandardCharsets.UTF_8.name());
+			}
+			catch (Exception e2) {
+				log.warn("Another error parsing config.xml", e2);
+			}
+			finally {
+				try {
+					out.close();
+				}
+				catch (Exception e3) {}
+			}
+			
+			log.error("config.xml content: " + output);
+			throw new ModuleException(
+			        Context.getMessageSourceService().getMessage("Module.error.cannotParseConfigFile"), moduleFile
+			                .getName(), e);
+		}
+		return configDoc;
+	}
+
 	/**
 	 * Parses conditionalResources tag.
 	 * @param rootNode
