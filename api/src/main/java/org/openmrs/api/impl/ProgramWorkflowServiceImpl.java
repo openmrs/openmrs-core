@@ -261,7 +261,17 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 				}
 			}
 		}
-		
+		// Makes sure that the end dates of most recent states in each workflow
+		// and the program end date are consistent
+		if (patientProgram.getDateCompleted() != null) {
+			for (PatientState state : patientProgram.getMostRecentStateInEachWorkflow()) {
+				// The EndDate of active states only should be updated
+				if (state.getEndDate() == null) {
+					state.setEndDate(patientProgram.getDateCompleted());
+				}
+			}
+		}
+
 		return dao.savePatientProgram(patientProgram);
 	}
 	
