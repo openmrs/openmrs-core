@@ -126,9 +126,9 @@ public class ModuleFileParser {
 	 */
 	public Module parse() throws ModuleException {
 		
-		Module module;
 		JarFile jarfile = null;
-		
+		Document configDoc;
+
 		try {
 			try {
 				jarfile = new JarFile(moduleFile);
@@ -137,7 +137,7 @@ public class ModuleFileParser {
 				throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.cannotGetJarFile"),
 				        moduleFile.getName(), e);
 			}
-			
+
 			// look for config.xml in the root of the module
 			ZipEntry config = jarfile.getEntry("config.xml");
 			if (config == null) {
@@ -145,7 +145,6 @@ public class ModuleFileParser {
 				        moduleFile.getName());
 			}
 
-			Document configDoc;
 			try (InputStream configStream = jarfile.getInputStream(config)) {
 				configDoc = parseConfig(configStream);
 			}
@@ -153,7 +152,6 @@ public class ModuleFileParser {
 				throw new ModuleException(Context.getMessageSourceService().getMessage(
 				    "Module.error.cannotGetConfigFileStream"), moduleFile.getName(), e);
 			}
-			module = createModule(configDoc);
 		}
 		finally {
 			try {
@@ -163,7 +161,7 @@ public class ModuleFileParser {
 				log.warn("Unable to close jarfile: " + jarfile, e);
 			}
 		}
-		return module;
+		return createModule(configDoc);
 	}
 
 	private Module createModule(Document configDoc) {
