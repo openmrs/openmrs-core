@@ -210,18 +210,13 @@ public class ModuleFileParser {
 
 		String configVersion = ensureValidModuleConfigVersion(rootNode);
 
-		String name = getElementTrimmed(rootNode, "name");
+		String name = ensureNonEmptyName(rootNode);
 		String moduleId = getElementTrimmed(rootNode, "id");
 		String packageName = getElementTrimmed(rootNode, "package");
 		String author = getElementTrimmed(rootNode, "author");
 		String desc = getElementTrimmed(rootNode, "description");
 		String version = getElementTrimmed(rootNode, "version");
 
-		// do some validation
-		if (name == null || name.length() == 0) {
-			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.nameCannotBeEmpty"),
-			        moduleFile.getName());
-		}
 		if (moduleId == null || moduleId.length() == 0) {
 			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.idCannotBeEmpty"), name);
 		}
@@ -274,7 +269,16 @@ public class ModuleFileParser {
 			    new Object[] { version, String.join(", ", validConfigVersions) }, Context.getLocale()), moduleFile.getName());
 		}
 	}
-
+	
+	private String ensureNonEmptyName(Element rootNode) {
+		String name = getElementTrimmed(rootNode, "name");
+		if (name == null || name.length() == 0) {
+			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.nameCannotBeEmpty"),
+				moduleFile.getName());
+		}
+		return name;
+	}
+	
 	/**
 	 * Parses conditionalResources tag.
 	 * @param rootNode
