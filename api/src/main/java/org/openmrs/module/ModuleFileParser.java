@@ -208,9 +208,7 @@ public class ModuleFileParser {
 		Module module;
 		Element rootNode = config.getDocumentElement();
 
-		String configVersion = rootNode.getAttribute("configVersion").trim();
-
-		validateModuleConfigVersion(configVersion);
+		String configVersion = ensureValidModuleConfigVersion(rootNode);
 
 		String name = getElementTrimmed(rootNode, "name");
 		String moduleId = getElementTrimmed(rootNode, "id");
@@ -262,6 +260,12 @@ public class ModuleFileParser {
 
 		module.setConditionalResources(getConditionalResources(rootNode));
 		return module;
+	}
+
+	private String ensureValidModuleConfigVersion(Element rootNode) {
+		String configVersion = rootNode.getAttribute("configVersion").trim();
+		validateModuleConfigVersion(configVersion);
+		return configVersion;
 	}
 
 	private void validateModuleConfigVersion(String version) {
