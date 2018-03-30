@@ -209,26 +209,17 @@ public class ModuleFileParser {
 		Element rootNode = config.getDocumentElement();
 
 		String configVersion = ensureValidModuleConfigVersion(rootNode);
-
+		
 		String name = ensureNonEmptyName(rootNode);
-		String moduleId = getElementTrimmed(rootNode, "id");
-		String packageName = getElementTrimmed(rootNode, "package");
+		String moduleId = ensureNonEmptyId(rootNode, name);
+		String packageName = ensureNonEmptyPackage(rootNode, name);
+		
 		String author = getElementTrimmed(rootNode, "author");
 		String desc = getElementTrimmed(rootNode, "description");
 		String version = getElementTrimmed(rootNode, "version");
 
-		if (moduleId == null || moduleId.length() == 0) {
-			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.idCannotBeEmpty"), name);
-		}
-		if (packageName == null || packageName.length() == 0) {
-			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.packageCannotBeEmpty"),
-			        name);
-		}
-
-		// create the module object
 		module = new Module(name, moduleId, packageName, author, desc, version);
 
-		// find and load the activator class
 		module.setActivatorName(getElementTrimmed(rootNode, "activator"));
 
 		module.setRequireDatabaseVersion(getElementTrimmed(rootNode, "require_database_version"));
@@ -256,13 +247,13 @@ public class ModuleFileParser {
 		module.setConditionalResources(getConditionalResources(rootNode));
 		return module;
 	}
-
+	
 	private String ensureValidModuleConfigVersion(Element rootNode) {
 		String configVersion = rootNode.getAttribute("configVersion").trim();
 		validateModuleConfigVersion(configVersion);
 		return configVersion;
 	}
-
+	
 	private void validateModuleConfigVersion(String version) {
 		if (!validConfigVersions.contains(version)) {
 			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.invalidConfigVersion",
@@ -277,6 +268,23 @@ public class ModuleFileParser {
 				moduleFile.getName());
 		}
 		return name;
+	}
+	
+	private String ensureNonEmptyId(Element rootNode, String name) {
+		String moduleId = getElementTrimmed(rootNode, "id");
+		if (moduleId == null || moduleId.length() == 0) {
+			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.idCannotBeEmpty"), name);
+		}
+		return moduleId;
+	}
+	
+	private String ensureNonEmptyPackage(Element rootNode, String name) {
+		String packageName = getElementTrimmed(rootNode, "package");
+		if (packageName == null || packageName.length() == 0) {
+			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.packageCannotBeEmpty"),
+			        name);
+		}
+		return packageName;
 	}
 	
 	/**
