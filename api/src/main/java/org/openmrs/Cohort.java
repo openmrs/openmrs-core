@@ -152,8 +152,8 @@ public class Cohort extends BaseOpenmrsData {
 		return sb.toString();
 	}
 	
-	public boolean addMember(Integer memberId) {
-		return this.addMembership(new CohortMembership(memberId));
+	public void addMember(Integer memberId) {
+		this.addMembership(new CohortMembership(memberId));
 	}
 	
 	/**
