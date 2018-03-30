@@ -205,7 +205,6 @@ public class ModuleFileParser {
 	}
 
 	private Module createModule(Document config) {
-		Module module;
 		Element rootNode = config.getDocumentElement();
 
 		String configVersion = ensureValidModuleConfigVersion(rootNode);
@@ -218,23 +217,20 @@ public class ModuleFileParser {
 		String desc = getElementTrimmed(rootNode, "description");
 		String version = getElementTrimmed(rootNode, "version");
 
-		module = new Module(name, moduleId, packageName, author, desc, version);
+		Module module = new Module(name, moduleId, packageName, author, desc, version);
 
 		module.setActivatorName(getElementTrimmed(rootNode, "activator"));
-
 		module.setRequireDatabaseVersion(getElementTrimmed(rootNode, "require_database_version"));
 		module.setRequireOpenmrsVersion(getElementTrimmed(rootNode, "require_version"));
 		module.setUpdateURL(getElementTrimmed(rootNode, "updateURL"));
+		
 		module.setRequiredModulesMap(getRequiredModules(rootNode));
 		module.setAwareOfModulesMap(getAwareOfModules(rootNode));
 		module.setStartBeforeModulesMap(getStartBeforeModules(rootNode));
-
 		module.setAdvicePoints(getAdvice(rootNode,  module));
 		module.setExtensionNames(getExtensions(rootNode));
-
 		module.setPrivileges(getPrivileges(rootNode));
 		module.setGlobalProperties(getGlobalProperties(rootNode));
-
 		module.setMappingFiles(getMappingFiles(rootNode));
 		module.setPackagesWithMappedClasses(getPackagesWithMappedClasses(rootNode));
 
