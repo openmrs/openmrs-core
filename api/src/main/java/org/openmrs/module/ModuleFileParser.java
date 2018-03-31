@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -243,7 +242,7 @@ public class ModuleFileParser {
 		module.setRequiredModulesMap(getRequiredModules(rootNode));
 		module.setAwareOfModulesMap(getAwareOfModules(rootNode));
 		module.setStartBeforeModulesMap(getStartBeforeModules(rootNode));
-		module.setAdvicePoints(getAdvice(rootNode,  module));
+		module.setAdvicePoints(extractAdvice(rootNode,  module));
 		module.setExtensionNames(getExtensions(rootNode));
 		module.setPrivileges(getPrivileges(rootNode));
 		module.setGlobalProperties(extractGlobalProperties(rootNode));
@@ -415,49 +414,33 @@ public class ModuleFileParser {
 		}
 		return result;
 	}
-	
-	/**
-	 * load in advicePoints
-	 *
-	 * @param root
-	 * @return
-	 */
-	private List<AdvicePoint> getAdvice(Element root, Module mod) {
-		
-		List<AdvicePoint> advicePoints = new ArrayList<>();
-		
+
+	private List<AdvicePoint> extractAdvice(Element root, Module module) {
+
+		List<AdvicePoint> result = new ArrayList<>();
+
 		NodeList advice = root.getElementsByTagName("advice");
-		if (advice.getLength() > 0) {
-			log.debug("# advice: " + advice.getLength());
-			int i = 0;
-			while (i < advice.getLength()) {
-				Node node = advice.item(i);
-				NodeList nodes = node.getChildNodes();
-				int x = 0;
-				String point = "", adviceClass = "";
-				while (x < nodes.getLength()) {
-					Node childNode = nodes.item(x);
-					if ("point".equals(childNode.getNodeName())) {
-						point = childNode.getTextContent().trim();
-					} else if ("class".equals(childNode.getNodeName())) {
-						adviceClass = childNode.getTextContent().trim();
-					}
-					x++;
-				}
-				log.debug("point: " + point + " class: " + adviceClass);
-				
-				// point and class are required
-				if (point.length() > 0 && adviceClass.length() > 0) {
-					advicePoints.add(new AdvicePoint(mod, point, adviceClass));
-				} else {
-					log.warn("'point' and 'class' are required for advice. Given '" + point + "' and '" + adviceClass + "'");
-				}
-				
-				i++;
-			}
+		if (advice.getLength() == 0) {
+			return result;
 		}
-		
-		return advicePoints;
+
+		log.debug("# advice: {}", advice.getLength());
+		int i = 0;
+		while (i < advice.getLength()) {
+			Element element = (Element) advice.item(i);
+			String point = getElementTrimmed(element, "point");
+			String adviceClass = getElementTrimmed(element, "class");
+			log.debug("advice point: {}, class: {}", point, adviceClass);
+
+			if (point.isEmpty() || adviceClass.isEmpty()) {
+				log.warn("'point' and 'class' are required for advice. Given '{}' and '{}'", point, adviceClass);
+			} else {
+				result.add(new AdvicePoint(module, point, adviceClass));
+			}
+			i++;
+		}
+
+		return result;
 	}
 	
 	/**
