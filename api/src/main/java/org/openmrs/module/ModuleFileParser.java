@@ -576,59 +576,68 @@ public class ModuleFileParser {
 		int i = 0;
 		while (i < propNodes.getLength()) {
 			Node node = propNodes.item(i);
-			NodeList nodes = node.getChildNodes();
-			int x = 0;
-			String property = "", defaultValue = "", description = "", datatypeClassname = "", datatypeConfig = "";
-			while (x < nodes.getLength()) {
-				Node childNode = nodes.item(x);
-				if ("property".equals(childNode.getNodeName())) {
-					property = childNode.getTextContent().trim();
-				} else if ("defaultValue".equals(childNode.getNodeName())) {
-					defaultValue = childNode.getTextContent();
-				} else if ("description".equals(childNode.getNodeName())) {
-					description = childNode.getTextContent().trim();
-				} else if ("datatypeClassname".equals(childNode.getNodeName())) {
-					datatypeClassname = childNode.getTextContent().trim();
-				} else if ("datatypeConfig".equals(childNode.getNodeName())) {
-					datatypeConfig = childNode.getTextContent().trim();
-				}
-				
-				x++;
-			}
-			log.debug("property: " + property + " defaultValue: " + defaultValue + " description: " + description);
-			log.debug("datatypeClassname: " + datatypeClassname + " datatypeConfig: " + datatypeConfig);
+			GlobalProperty globalProperty = extractGlobalProperty(node);
 			
-			// remove tabs from description and trim start/end whitespace
-			if (description != null) {
-				description = description.replaceAll("	", "").trim();
-			}
-			
-			// name is required
-			if (datatypeClassname.length() > 0 && property.length() > 0) {
-				try {
-					Class<CustomDatatype<?>> datatypeClazz = (Class<CustomDatatype<?>>) Class.forName(datatypeClassname)
-							.asSubclass(CustomDatatype.class);
-					result
-							.add(new GlobalProperty(property, defaultValue, description, datatypeClazz, datatypeConfig));
-				}
-				catch (ClassCastException ex) {
-					log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
-							+ ") must be a subtype of 'org.openmrs.customdatatype.CustomDatatype<?>'.", ex);
-				}
-				catch (ClassNotFoundException ex) {
-					log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
-							+ ") could not be found.", ex);
-				}
-			} else if (property.length() > 0) {
-				result.add(new GlobalProperty(property, defaultValue, description));
-			} else {
-				log.warn("'property' is required for global properties. Given '" + property + "'");
+			if (globalProperty != null) {
+				result.add(globalProperty);
 			}
 			
 			i++;
 		}
 		
 		return result;
+	}
+
+	private GlobalProperty extractGlobalProperty(Node node) {
+		GlobalProperty globalProperty = null;
+		NodeList nodes = node.getChildNodes();
+		int x = 0;
+		String property = "", defaultValue = "", description = "", datatypeClassname = "", datatypeConfig = "";
+		while (x < nodes.getLength()) {
+			Node childNode = nodes.item(x);
+			if ("property".equals(childNode.getNodeName())) {
+				property = childNode.getTextContent().trim();
+			} else if ("defaultValue".equals(childNode.getNodeName())) {
+				defaultValue = childNode.getTextContent();
+			} else if ("description".equals(childNode.getNodeName())) {
+				description = childNode.getTextContent().trim();
+			} else if ("datatypeClassname".equals(childNode.getNodeName())) {
+				datatypeClassname = childNode.getTextContent().trim();
+			} else if ("datatypeConfig".equals(childNode.getNodeName())) {
+				datatypeConfig = childNode.getTextContent().trim();
+			}
+
+			x++;
+		}
+		log.debug("property: " + property + " defaultValue: " + defaultValue + " description: " + description);
+		log.debug("datatypeClassname: " + datatypeClassname + " datatypeConfig: " + datatypeConfig);
+
+		// remove tabs from description and trim start/end whitespace
+		if (description != null) {
+			description = description.replaceAll("	", "").trim();
+		}
+
+		// name is required
+		if (datatypeClassname.length() > 0 && property.length() > 0) {
+			try {
+				Class<CustomDatatype<?>> datatypeClazz = (Class<CustomDatatype<?>>) Class.forName(datatypeClassname)
+					.asSubclass(CustomDatatype.class);
+				globalProperty = new GlobalProperty(property, defaultValue, description, datatypeClazz, datatypeConfig);
+			}
+			catch (ClassCastException ex) {
+				log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
+					+ ") must be a subtype of 'org.openmrs.customdatatype.CustomDatatype<?>'.", ex);
+			}
+			catch (ClassNotFoundException ex) {
+				log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
+					+ ") could not be found.", ex);
+			}
+		} else if (property.length() > 0) {
+			globalProperty = new GlobalProperty(property, defaultValue, description);
+		} else {
+			log.warn("'property' is required for global properties. Given '" + property + "'");
+		}
+		return globalProperty;
 	}
 
 	private List<String> getMappingFiles(Element rootNode) {
