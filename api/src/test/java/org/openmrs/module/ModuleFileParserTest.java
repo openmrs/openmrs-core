@@ -58,17 +58,17 @@ import org.w3c.dom.ls.LSSerializer;
 public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 	private static final String LOGIC_MODULE_PATH = "org/openmrs/module/include/logic-0.2.omod";
-	
+
 	private static DocumentBuilderFactory documentBuilderFactory;
 
 	private static DocumentBuilder documentBuilder;
-	
+
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
-	
+
 	@Autowired
 	MessageSourceService messageSourceService;
 
@@ -77,7 +77,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		documentBuilder = documentBuilderFactory.newDocumentBuilder();
 	}
-	
+
 	@After
 	public void after() {
 		// needed so other are not affected by tests registering a ModuleClassLoader
@@ -347,7 +347,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void parse_shouldParseValidXmlConfigAndEmptyRequireModules() throws IOException{
+	public void parse_shouldParseValidXmlConfigAndEmptyRequireModules() throws IOException {
 
 		Document config = new ModuleConfigXmlBuilder(documentBuilder)
 			.withModuleRoot()
@@ -366,12 +366,12 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void parse_shouldParseRequireModulesContainingMultipleChildren() throws IOException{
+	public void parse_shouldParseRequireModulesContainingMultipleChildren() throws IOException {
 
 		Document config = buildOnValidConfigXml()
 			.withRequireModules(
-				new String[]{"org.openmrs.module.serialization.xstream", "1.0.3"},
-				new String[]{"org.openmrs.module.htmlwidgets", "2.0.4"}
+				new String[] { "org.openmrs.module.serialization.xstream", "1.0.3" },
+				new String[] { "org.openmrs.module.htmlwidgets", "2.0.4" }
 			)
 			.build();
 
@@ -387,11 +387,11 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void parse_shouldParseRequireModulesContainingModuleWithoutVersionAttribute()
-		throws IOException{
+		throws IOException {
 
 		Document config = buildOnValidConfigXml()
 			.withRequireModules(
-				new String[]{"org.openmrs.module.htmlwidgets"}
+				new String[] { "org.openmrs.module.htmlwidgets" }
 			)
 			.build();
 
@@ -405,11 +405,11 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void parse_shouldParseRequireModulesContainingModuleWithEmptyVersionAttribute()
-		throws IOException{
+		throws IOException {
 
 		Document config = buildOnValidConfigXml()
 			.withRequireModules(
-				new String[]{"org.openmrs.module.htmlwidgets", ""}
+				new String[] { "org.openmrs.module.htmlwidgets", "" }
 			)
 			.build();
 
@@ -427,9 +427,9 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 		Document config = buildOnValidConfigXml()
 			.withRequireModules(
-				new String[]{"org.openmrs.module.serialization.xstream", "1.0.3"},
-				new String[]{"org.openmrs.module.serialization.xstream", "3.1.4"},
-				new String[]{"org.openmrs.module.serialization.xstream", "2.0.3"}
+				new String[] { "org.openmrs.module.serialization.xstream", "1.0.3" },
+				new String[] { "org.openmrs.module.serialization.xstream", "3.1.4" },
+				new String[] { "org.openmrs.module.serialization.xstream", "2.0.3" }
 			)
 			.build();
 
@@ -447,13 +447,13 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 		Document config = buildOnValidConfigXml()
 			.withRequireModules(
-				new String[]{"org.openmrs.module.serialization.xstream", "1.0.3"}
+				new String[] { "org.openmrs.module.serialization.xstream", "1.0.3" }
 			)
 			.withRequireModules(
-				new String[]{"org.openmrs.module.htmlwidgets", "2.0.4"}
+				new String[] { "org.openmrs.module.htmlwidgets", "2.0.4" }
 			)
 			.build();
-		
+
 		ModuleFileParser parser = new ModuleFileParser(writeConfigXmlToFile(config));
 
 		Module module = parser.parse();
@@ -518,7 +518,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 				"org.openmrs.module.legacyui"
 			)
 			.build();
-		
+
 		ModuleFileParser parser = new ModuleFileParser(writeConfigXmlToFile(config));
 
 		Module module = parser.parse();
@@ -538,13 +538,13 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		ModuleFileParser parser = new ModuleFileParser(writeConfigXmlToFile(config));
 
 		Module module = parser.parse();
-		
+
 		registerModuleClassloader(module);
 		assertThat(module.getExtensions().size(), is(1));
 		assertThat(module.getExtensions().get(0).getPointId(), is("org.openmrs.admin.list"));
 		assertThat(module.getExtensions().get(0), is(instanceOf(AccessibleExtension.class)));
 	}
-	
+
 	@Test
 	public void parse_shouldIgnoreExtensionWithExtensionIdSeparatorInPoint() throws IOException {
 
@@ -588,7 +588,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		registerModuleClassloader(module);
 		assertThat(module.getExtensions(), is(equalTo(Collections.EMPTY_LIST)));
 	}
-	
+
 	@Test
 	public void parse_shouldIgnoreExtensionWithoutClass() throws IOException {
 
@@ -603,7 +603,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		registerModuleClassloader(module);
 		assertThat(module.getExtensions(), is(equalTo(Collections.EMPTY_LIST)));
 	}
-	
+
 	@Test
 	public void parse_shouldIgnoreExtensionWithoutPoint() throws IOException {
 
@@ -618,7 +618,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		registerModuleClassloader(module);
 		assertThat(module.getExtensions(), is(equalTo(Collections.EMPTY_LIST)));
 	}
-	
+
 	@Test
 	public void parse_shouldParsePrivileges() throws IOException {
 
@@ -657,7 +657,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		assertThat(module.getPrivileges().get(0).getPrivilege(), is(p1.getPrivilege()));
 		assertThat(module.getPrivileges().get(0).getDescription(), is(p1.getDescription()));
 	}
-	
+
 	@Test
 	public void parse_shouldIgnorePrivilegeWithoutChildren() throws IOException {
 
@@ -670,7 +670,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 		assertThat(module.getPrivileges(), is(equalTo(Collections.EMPTY_LIST)));
 	}
-	
+
 	@Test
 	public void parse_shouldIgnorePrivilegeOnlyContainingText() throws IOException {
 
@@ -684,7 +684,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 		assertThat(module.getPrivileges(), is(equalTo(Collections.EMPTY_LIST)));
 	}
-	
+
 	@Test
 	public void parse_shouldIgnorePrivilegeWithoutDescription() throws IOException {
 
@@ -712,15 +712,17 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 		assertThat(module.getPrivileges(), is(equalTo(Collections.EMPTY_LIST)));
 	}
-	
+
 	@Test
 	public void parse_shouldParseGlobalProperty() throws IOException {
 
 		GlobalProperty gp1 = new GlobalProperty("report.deleteReportsAgeInHours", "72", "delete reports after hours");
-		GlobalProperty gp2 = new GlobalProperty("report.validateInput", "2", "to validate input", RegexValidatedTextDatatype.class, "^\\d+$");
+		GlobalProperty gp2 = new GlobalProperty("report.validateInput", "2", "to validate input",
+			RegexValidatedTextDatatype.class, "^\\d+$");
 		Document config = buildOnValidConfigXml()
 			.withGlobalProperty(gp1.getProperty(), gp1.getPropertyValue(), gp1.getDescription(), null, null)
-			.withGlobalProperty(gp2.getProperty(), gp2.getPropertyValue(), gp2.getDescription(), gp2.getDatatypeClassname(), gp2.getDatatypeConfig())
+			.withGlobalProperty(gp2.getProperty(), gp2.getPropertyValue(), gp2.getDescription(), gp2.getDatatypeClassname(),
+				gp2.getDatatypeConfig())
 			.build();
 
 		ModuleFileParser parser = new ModuleFileParser(writeConfigXmlToFile(config));
@@ -739,7 +741,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		assertThat(module.getGlobalProperties().get(1).getDatatypeClassname(), is(gp2.getDatatypeClassname()));
 		assertThat(module.getGlobalProperties().get(1).getDatatypeConfig(), is(gp2.getDatatypeConfig()));
 	}
-	
+
 	@Test
 	public void parse_shouldParseGlobalPropertyAndTrimWhitespacesFromDescription() throws IOException {
 
@@ -800,7 +802,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 		assertThat(module.getGlobalProperties(), is(equalTo(Collections.EMPTY_LIST)));
 	}
-	
+
 	@Test
 	public void parse_shouldIgnoreGlobalPropertyWithoutEmptyProperty() throws IOException {
 
@@ -814,7 +816,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 		assertThat(module.getGlobalProperties(), is(equalTo(Collections.EMPTY_LIST)));
 	}
-	
+
 	@Test
 	public void parse_shouldIgnoreGlobalPropertyWithDatatypeClassThatIsNotSubclassingCustomDatatype() throws IOException {
 
@@ -857,7 +859,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		assertThat(module.getMappingFiles().size(), is(3));
 		assertThat(module.getMappingFiles(), hasItems("ReportDesign.hbm.xml", "ReportRequest.hbm.xml"));
 	}
-	
+
 	@Test
 	public void parse_shouldIgnoreMappingFilesOnlyContainingWhitespaces() throws IOException {
 
@@ -886,7 +888,8 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		Module module = parser.parse();
 
 		assertThat(module.getPackagesWithMappedClasses().size(), is(2));
-		assertThat(module.getPackagesWithMappedClasses(), hasItems("org.openmrs.module.openconceptlab", "org.openmrs.module.systemmetrics"));
+		assertThat(module.getPackagesWithMappedClasses(),
+			hasItems("org.openmrs.module.openconceptlab", "org.openmrs.module.systemmetrics"));
 	}
 
 	@Test
@@ -902,7 +905,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 		assertThat(module.getPackagesWithMappedClasses(), is(equalTo(Collections.EMPTY_SET)));
 	}
-	
+
 	@Test
 	public void parse_shouldParseMandatoryAtSpecificConfigVersion() throws IOException {
 
@@ -930,7 +933,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 		assertThat(module.isMandatory(), is(true));
 	}
-	
+
 	@Test
 	public void parse_shouldParseMandatoryAndSetToFalse() throws IOException {
 
@@ -944,7 +947,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 		assertThat(module.isMandatory(), is(false));
 	}
-	
+
 	@Test
 	public void parse_shouldIgnoreEmptyMandatory() throws IOException {
 
@@ -958,7 +961,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 		assertThat(module.isMandatory(), is(false));
 	}
-	
+
 	@Test
 	public void parse_shouldIgnoreMandatoryBeforeSpecificConfigVersion() throws IOException {
 
@@ -972,6 +975,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
 		assertThat(module.isMandatory(), is(false));
 	}
+
 	@Test
 	public void parse_shouldParseAdvice() throws IOException {
 
@@ -992,7 +996,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		assertThat(module.getAdvicePoints().get(1).getPoint(), is(a2.getPoint()));
 		assertThat(module.getAdvicePoints().get(1).getClassName(), is("String"));
 	}
-	
+
 	@Test
 	public void parse_shouldParseAdviceContainingElementsOtherThanPointAndClass() throws IOException {
 
@@ -1096,7 +1100,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		public ModuleConfigXmlBuilder(DocumentBuilder documentBuilder) {
 			this.configXml = documentBuilder.newDocument();
 		}
-		
+
 		public ModuleConfigXmlBuilder withDoctype(String configVersion) {
 			DOMImplementation domImpl = this.configXml.getImplementation();
 			DocumentType doctype = domImpl.createDocumentType(
@@ -1176,7 +1180,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 			}
 			return withElements("privilege", children);
 		}
-		
+
 		public ModuleConfigXmlBuilder withExtension(String point, String className) {
 			Map<String, String> children = new HashMap<>();
 			if (point != null) {
@@ -1199,7 +1203,8 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 			return withElements("advice", children);
 		}
 
-		public ModuleConfigXmlBuilder withGlobalProperty(String property, String defaultValue, String description, String datatypeClassname, String datatypeConfig) {
+		public ModuleConfigXmlBuilder withGlobalProperty(String property, String defaultValue, String description,
+			String datatypeClassname, String datatypeConfig) {
 			Map<String, String> children = new HashMap<>();
 			if (property != null) {
 				children.put("property", property);
@@ -1267,7 +1272,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 	private byte[] getByteArray(Document config) {
 		return getString(config).getBytes();
 	}
-	
+
 	private String getString(Document config) {
 		DOMImplementationLS impl = (DOMImplementationLS) config.getImplementation();
 		LSSerializer serializer = impl.createLSSerializer();
@@ -1278,8 +1283,9 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		serializer.write(config, out);
 		return stringWriter.toString();
 	}
-	
+
 	static class AccessibleExtension extends Extension {
+
 		@Override
 		public Extension.MEDIA_TYPE getMediaType() {
 			return null;
