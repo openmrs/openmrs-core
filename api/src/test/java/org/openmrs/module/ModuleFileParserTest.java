@@ -137,6 +137,17 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void parse_shouldFailIfModuleHasConfigXmlInRootWhichCannotBeParsedBecauseOfInvalidXml() throws Exception {
+
+		expectModuleExceptionWithTranslatedMessage("Module.error.cannotParseConfigFile");
+
+		File file = writeConfigXmlToFile("<?xml version='1.0' encoding='UTF-8'?><module configVersion='1.5'>");
+		ModuleFileParser parser = new ModuleFileParser(file);
+
+		parser.parse();
+	}
+
+	@Test
 	public void parse_shouldFailIfModuleHasConfigInvalidConfigVersion() throws Exception {
 
 		String invalidConfigVersion = "0.0.1";
@@ -1222,6 +1233,15 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		public Document build() {
 			return configXml;
 		}
+	}
+
+	private File writeConfigXmlToFile(String config) throws IOException {
+		File file = temporaryFolder.newFile("modulefileparsertest.omod");
+		JarOutputStream jar = createJarWithConfigXmlEntry(file);
+		jar.write(config.getBytes());
+		jar.closeEntry();
+		jar.close();
+		return file;
 	}
 
 	private File writeConfigXmlToFile(Document config) throws IOException {
