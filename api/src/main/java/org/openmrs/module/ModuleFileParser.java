@@ -97,11 +97,23 @@ public class ModuleFileParser {
 	 * @param inputStream the inputStream pointing to an omod file
 	 */
 	public ModuleFileParser(InputStream inputStream) {
-		
-		FileOutputStream outputStream = null;
+		moduleFile = createTempFile("moduleUpgrade", "omod");
+		copyInputStreamToFile(inputStream, moduleFile);
+	}
+
+	private File createTempFile(String prefix, String suffix) {
+		File file;
 		try {
-			moduleFile = File.createTempFile("moduleUpgrade", "omod");
-			outputStream = new FileOutputStream(moduleFile);
+			file = File.createTempFile(prefix, suffix);
+		}
+		catch (IOException e) {
+			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.cannotCreateFile"), e);
+		}
+		return file;
+	}
+
+	private void copyInputStreamToFile(InputStream inputStream, File file) {
+		try (FileOutputStream outputStream = new FileOutputStream(file)) {
 			OpenmrsUtil.copyFile(inputStream, outputStream);
 		}
 		catch (IOException e) {
@@ -112,12 +124,9 @@ public class ModuleFileParser {
 				inputStream.close();
 			}
 			catch (Exception e) { /* pass */}
-			try {
-				outputStream.close();
-			}
-			catch (Exception e) { /* pass */}
 		}
 	}
+
 	
 	ModuleFileParser() {
 	}
