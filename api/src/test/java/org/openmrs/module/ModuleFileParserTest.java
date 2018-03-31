@@ -801,6 +801,21 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void parse_shouldIgnoreGlobalPropertyWithoutDescriptionElement() throws IOException {
+
+		Document config = buildOnValidConfigXml()
+			.withGlobalProperty("report.deleteReportsAgeInHours", "72", null, null, null)
+			.build();
+
+		ModuleFileParser parser = new ModuleFileParser(writeConfigXmlToFile(config));
+
+		Module module = parser.parse();
+
+		assertThat(module.getGlobalProperties().size(), is(1));
+		assertThat(module.getGlobalProperties().get(0).getDescription(), is(""));
+	}
+
+	@Test
 	public void parse_shouldParseGlobalPropertyContainingElementsNotIncludedInGlobalProperty() throws IOException {
 
 		GlobalProperty gp1 = new GlobalProperty("report.deleteReportsAgeInHours", "72", "delete reports after");
