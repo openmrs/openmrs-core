@@ -611,21 +611,29 @@ public class ModuleFileParser {
 		}
 
 		if (!datatypeClassname.isEmpty()) {
-			try {
-				Class<CustomDatatype<?>> datatypeClazz = (Class<CustomDatatype<?>>) Class.forName(datatypeClassname)
-					.asSubclass(CustomDatatype.class);
-				globalProperty = new GlobalProperty(property, defaultValue, description, datatypeClazz, datatypeConfig);
-			}
-			catch (ClassCastException ex) {
-				log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
-					+ ") must be a subtype of 'org.openmrs.customdatatype.CustomDatatype<?>'.", ex);
-			}
-			catch (ClassNotFoundException ex) {
-				log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
-					+ ") could not be found.", ex);
-			}
+			globalProperty = createGlobalPropertyWithDatatype(property, defaultValue, description, datatypeClassname,
+				datatypeConfig);
 		} else {
 			globalProperty = new GlobalProperty(property, defaultValue, description);
+		}
+		return globalProperty;
+	}
+
+	private GlobalProperty createGlobalPropertyWithDatatype(String property, String defaultValue, String description,
+		String datatypeClassname, String datatypeConfig) {
+		GlobalProperty globalProperty = null;
+		try {
+			Class<CustomDatatype<?>> datatypeClazz = (Class<CustomDatatype<?>>) Class.forName(datatypeClassname)
+				.asSubclass(CustomDatatype.class);
+			globalProperty = new GlobalProperty(property, defaultValue, description, datatypeClazz, datatypeConfig);
+		}
+		catch (ClassCastException ex) {
+			log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
+				+ ") must be a subtype of 'org.openmrs.customdatatype.CustomDatatype<?>'.", ex);
+		}
+		catch (ClassNotFoundException ex) {
+			log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
+				+ ") could not be found.", ex);
 		}
 		return globalProperty;
 	}
