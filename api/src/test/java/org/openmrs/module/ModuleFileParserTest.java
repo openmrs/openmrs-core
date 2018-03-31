@@ -833,6 +833,20 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void parse_shouldIgnoreGlobalPropertyOnlyContainingText() throws IOException {
+
+		Document config = buildOnValidConfigXml()
+			.withTextNode("globalProperty", "will be ignored")
+			.build();
+
+		ModuleFileParser parser = new ModuleFileParser(writeConfigXmlToFile(config));
+
+		Module module = parser.parse();
+
+		assertThat(module.getGlobalProperties(), is(equalTo(Collections.EMPTY_LIST)));
+	}
+
+	@Test
 	public void parse_shouldIgnoreGlobalPropertyWithoutPropertyElement() throws IOException {
 
 		Document config = buildOnValidConfigXml()
@@ -847,7 +861,7 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void parse_shouldIgnoreGlobalPropertyWithoutEmptyProperty() throws IOException {
+	public void parse_shouldIgnoreGlobalPropertyWithEmptyProperty() throws IOException {
 
 		Document config = buildOnValidConfigXml()
 			.withGlobalProperty("  ", "72", "some", null, null)
