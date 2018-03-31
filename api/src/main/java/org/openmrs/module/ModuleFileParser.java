@@ -38,6 +38,7 @@ import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -394,28 +395,25 @@ public class ModuleFileParser {
 	
 	private Map<String, String> getModuleToVersionMap(String elementParentName, String elementName, Element root) {
 		
-		NodeList modulesParents = root.getElementsByTagName(elementParentName);
+		NodeList parents = root.getElementsByTagName(elementParentName);
 		
-		Map<String, String> packageNamesToVersion = new HashMap<>();
-		
-		if (modulesParents.getLength() > 0) {
-			Node modulesParent = modulesParents.item(0);
-			
-			NodeList childModules = modulesParent.getChildNodes();
-			
-			int i = 0;
-			while (i < childModules.getLength()) {
-				Node n = childModules.item(i);
-				if (n != null && elementName.equals(n.getNodeName())) {
-					NamedNodeMap attributes = n.getAttributes();
-					Node versionNode = attributes.getNamedItem("version");
-					String moduleVersion = versionNode == null ? null : versionNode.getNodeValue();
-					packageNamesToVersion.put(n.getTextContent().trim(), moduleVersion);
-				}
-				i++;
-			}
+		Map<String, String> result = new HashMap<>();
+		if (parents.getLength() == 0) {
+			return result;
 		}
-		return packageNamesToVersion;
+		
+		Element firstParent = (Element) parents.item(0);
+		NodeList children = firstParent.getElementsByTagName(elementName);
+		
+		int i = 0;
+		while (i < children.getLength()) {
+			Element child = (Element) children.item(i);
+			Attr versionAttribute = child.getAttributeNode("version");
+			String version = versionAttribute == null ? null : versionAttribute.getValue();
+			result.put(child.getTextContent().trim(), version);
+			i++;
+		}
+		return result;
 	}
 	
 	/**
