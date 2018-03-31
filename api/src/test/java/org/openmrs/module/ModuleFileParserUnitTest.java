@@ -21,7 +21,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -30,6 +32,9 @@ import org.xml.sax.SAXException;
  * Unit tests {@link ModuleFileParser}.
  */
 public class ModuleFileParserUnitTest {
+
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Test
 	public void getConditionalResources_shouldParseOpenmrsVersionAndModules()
@@ -73,33 +78,45 @@ public class ModuleFileParserUnitTest {
 		return document.getDocumentElement();
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void getConditionalResources_shouldThrowExceptionIfMultipleConditionalResourcesTagsFound()
 	        throws ParserConfigurationException, SAXException, IOException {
+		
 		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><module configVersion=\"1.2\">"
 		        + "<conditionalResources></conditionalResources><conditionalResources></conditionalResources></module>";
 		Element documentElement = getRootElement(xml);
 		
-		new ModuleFileParser().getConditionalResources(documentElement);
-	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void getConditionalResources_shouldThrowExceptionIfConditionalResourcesContainsInvalidTag()
-	        throws ParserConfigurationException, SAXException, IOException {
-		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><module configVersion=\"1.2\">"
-		        + "<conditionalResources><invalidTag></invalidTag></conditionalResources></module>";
-		Element documentElement = getRootElement(xml);
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("Found multiple conditionalResources tags.");
 		
 		new ModuleFileParser().getConditionalResources(documentElement);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
+	public void getConditionalResources_shouldThrowExceptionIfConditionalResourcesContainsInvalidTag()
+	        throws ParserConfigurationException, SAXException, IOException {
+		
+		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><module configVersion=\"1.2\">"
+		        + "<conditionalResources><invalidTag></invalidTag></conditionalResources></module>";
+		Element documentElement = getRootElement(xml);
+
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("Found the invalidTag node under conditionalResources.");
+		
+		new ModuleFileParser().getConditionalResources(documentElement);
+	}
+	
+	@Test
 	public void getConditionalResources_shouldThrowExceptionIfPathIsBlank()
 	        throws ParserConfigurationException, SAXException, IOException {
+		
 		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><module configVersion=\"1.2\">"
 		        + "<conditionalResources><conditionalResource>" + "<path></path><openmrsVersion>1.10</openmrsVersion>"
 		        + "</conditionalResource>></conditionalResources></module>";
 		Element documentElement = getRootElement(xml);
+
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("The path of a conditional resource must not be blank");
 		
 		new ModuleFileParser().getConditionalResources(documentElement);
 	}
