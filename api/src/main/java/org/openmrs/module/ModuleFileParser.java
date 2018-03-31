@@ -569,8 +569,8 @@ public class ModuleFileParser {
 		log.debug("# global props: " + propNodes.getLength());
 		int i = 0;
 		while (i < propNodes.getLength()) {
-			Node node = propNodes.item(i);
-			GlobalProperty globalProperty = extractGlobalProperty(node);
+			Element gpElement = (Element) propNodes.item(i);
+			GlobalProperty globalProperty = extractGlobalProperty(gpElement);
 			
 			if (globalProperty != null) {
 				result.add(globalProperty);
@@ -582,27 +582,13 @@ public class ModuleFileParser {
 		return result;
 	}
 
-	private GlobalProperty extractGlobalProperty(Node node) {
-		GlobalProperty globalProperty = null;
-		NodeList nodes = node.getChildNodes();
-		int x = 0;
-		String property = "", defaultValue = "", description = "", datatypeClassname = "", datatypeConfig = "";
-		while (x < nodes.getLength()) {
-			Node childNode = nodes.item(x);
-			if ("property".equals(childNode.getNodeName())) {
-				property = childNode.getTextContent().trim();
-			} else if ("defaultValue".equals(childNode.getNodeName())) {
-				defaultValue = childNode.getTextContent();
-			} else if ("description".equals(childNode.getNodeName())) {
-				description = childNode.getTextContent().trim();
-			} else if ("datatypeClassname".equals(childNode.getNodeName())) {
-				datatypeClassname = childNode.getTextContent().trim();
-			} else if ("datatypeConfig".equals(childNode.getNodeName())) {
-				datatypeConfig = childNode.getTextContent().trim();
-			}
-
-			x++;
-		}
+	private GlobalProperty extractGlobalProperty(Element element) {
+		String property = getElementTrimmed(element, "property");
+		String defaultValue = getElementTrimmed(element, "defaultValue");
+		String description = getElementTrimmed(element, "description");
+		String datatypeClassname = getElementTrimmed(element, "datatypeClassname");
+		String datatypeConfig = getElementTrimmed(element, "datatypeConfig");
+		
 		log.debug("property: " + property + " defaultValue: " + defaultValue + " description: " + description);
 		log.debug("datatypeClassname: " + datatypeClassname + " datatypeConfig: " + datatypeConfig);
 
@@ -612,6 +598,7 @@ public class ModuleFileParser {
 		}
 
 		// name is required
+		GlobalProperty globalProperty = null;
 		if (datatypeClassname.length() > 0 && property.length() > 0) {
 			try {
 				Class<CustomDatatype<?>> datatypeClazz = (Class<CustomDatatype<?>>) Class.forName(datatypeClassname)
