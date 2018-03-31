@@ -20,8 +20,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -98,6 +100,47 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		expectModuleExceptionWithTranslatedMessage("Module.error.invalidFileExtension");
 
 		new ModuleFileParser(new File("reporting.jar"));
+	}
+	
+	@Test
+	public void moduleFileParser_shouldParseValidXmlConfigCreatedFromInputStream() throws IOException {
+
+		Document config = new ModuleConfigXmlBuilder(documentBuilder)
+			.withModuleRoot()
+			.withConfigVersion("1.6")
+			.withModuleName("Reporting")
+			.withModuleId("reporting")
+			.withPackage("org.openmrs.module.reporting")
+			.build();
+
+		File moduleFile = writeConfigXmlToFile(config);
+		InputStream inputStream = new FileInputStream(moduleFile);
+		ModuleFileParser parser = new ModuleFileParser(inputStream);
+
+		Module module = parser.parse();
+
+		assertThat(module.getModuleId(), is("reporting"));
+		assertThat(module.getName(), is("Reporting"));
+		assertThat(module.getPackageName(), is("org.openmrs.module.reporting"));
+	}
+
+	@Test
+	public void moduleFileParser_shouldFailCreatingParserFromFileIfInputStreamClosed() throws IOException {
+
+		expectModuleExceptionWithTranslatedMessage("Module.error.cannotCreateFile");
+		
+		Document config = new ModuleConfigXmlBuilder(documentBuilder)
+			.withModuleRoot()
+			.withConfigVersion("1.6")
+			.withModuleName("Reporting")
+			.withModuleId("reporting")
+			.withPackage("org.openmrs.module.reporting")
+			.build();
+
+		File moduleFile = writeConfigXmlToFile(config);
+		InputStream inputStream = new FileInputStream(moduleFile);
+		inputStream.close();
+		new ModuleFileParser(inputStream);
 	}
 
 	@Test
