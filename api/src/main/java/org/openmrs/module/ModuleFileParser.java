@@ -238,24 +238,22 @@ public class ModuleFileParser {
 		module.setRequireDatabaseVersion(getElementTrimmed(rootNode, "require_database_version"));
 		module.setRequireOpenmrsVersion(getElementTrimmed(rootNode, "require_version"));
 		module.setUpdateURL(getElementTrimmed(rootNode, "updateURL"));
-		
-		module.setRequiredModulesMap(getRequiredModules(rootNode));
-		module.setAwareOfModulesMap(getAwareOfModules(rootNode));
-		module.setStartBeforeModulesMap(getStartBeforeModules(rootNode));
-		module.setAdvicePoints(extractAdvice(rootNode,  module));
-		module.setExtensionNames(getExtensions(rootNode));
-		module.setPrivileges(getPrivileges(rootNode));
+
+		module.setRequiredModulesMap(extractRequiredModules(rootNode));
+		module.setAwareOfModulesMap(extractAwareOfModules(rootNode));
+		module.setStartBeforeModulesMap(extractStartBeforeModules(rootNode));
+		module.setAdvicePoints(extractAdvice(rootNode, module));
+		module.setExtensionNames(extractExtensions(rootNode));
+		module.setPrivileges(extractPrivileges(rootNode));
 		module.setGlobalProperties(extractGlobalProperties(rootNode));
-		module.setMappingFiles(getMappingFiles(rootNode));
-		module.setPackagesWithMappedClasses(getPackagesWithMappedClasses(rootNode));
+		module.setMappingFiles(extractMappingFiles(rootNode));
+		module.setPackagesWithMappedClasses(extractPackagesWithMappedClasses(rootNode));
+		module.setMandatory(extractMandatory(rootNode, configVersion));
+		module.setConditionalResources(extractConditionalResources(rootNode));
 
 		module.setConfig(config);
-
-		module.setMandatory(getMandatory(rootNode, configVersion));
-
 		module.setFile(moduleFile);
 
-		module.setConditionalResources(getConditionalResources(rootNode));
 		return module;
 	}
 	
@@ -295,7 +293,7 @@ public class ModuleFileParser {
 	 * @should throw exception if conditionalResources contains invalid tag
 	 * @should throw exception if path is blank
 	 */
-	List<ModuleConditionalResource> getConditionalResources(Element rootNode) {
+	List<ModuleConditionalResource> extractConditionalResources(Element rootNode) {
 		List<ModuleConditionalResource> conditionalResources = new ArrayList<>();
 		
 		NodeList parentConditionalResources = rootNode.getElementsByTagName("conditionalResources");
@@ -373,8 +371,8 @@ public class ModuleFileParser {
 	 * @return map from module package name to required version
 	 * @since 1.5
 	 */
-	private Map<String, String> getRequiredModules(Element root) {
-		return getModuleToVersionMap("require_modules", "require_module", root);
+	private Map<String, String> extractRequiredModules(Element root) {
+		return extractModulesWithVersionAttribute("require_modules", "require_module", root);
 	}
 	
 	/**
@@ -384,15 +382,15 @@ public class ModuleFileParser {
 	 * @return map from module package name to aware of version
 	 * @since 1.9
 	 */
-	private Map<String, String> getAwareOfModules(Element root) {
-		return getModuleToVersionMap("aware_of_modules", "aware_of_module", root);
+	private Map<String, String> extractAwareOfModules(Element root) {
+		return extractModulesWithVersionAttribute("aware_of_modules", "aware_of_module", root);
 	}
 	
-	private Map<String, String> getStartBeforeModules(Element root) {
-		return getModuleToVersionMap("start_before_modules", "module", root);
+	private Map<String, String> extractStartBeforeModules(Element root) {
+		return extractModulesWithVersionAttribute("start_before_modules", "module", root);
 	}
 	
-	private Map<String, String> getModuleToVersionMap(String elementParentName, String elementName, Element root) {
+	private Map<String, String> extractModulesWithVersionAttribute(String elementParentName, String elementName, Element root) {
 		
 		NodeList parents = root.getElementsByTagName(elementParentName);
 		
@@ -449,7 +447,7 @@ public class ModuleFileParser {
 	 * @param root
 	 * @return
 	 */
-	private IdentityHashMap<String, String> getExtensions(Element root) {
+	private IdentityHashMap<String, String> extractExtensions(Element root) {
 		
 		IdentityHashMap<String, String> extensions = new IdentityHashMap<>();
 		
@@ -499,7 +497,7 @@ public class ModuleFileParser {
 	 * @param root
 	 * @return
 	 */
-	private List<Privilege> getPrivileges(Element root) {
+	private List<Privilege> extractPrivileges(Element root) {
 		
 		List<Privilege> privileges = new ArrayList<>();
 		
@@ -619,13 +617,13 @@ public class ModuleFileParser {
 		return globalProperty;
 	}
 
-	private List<String> getMappingFiles(Element rootNode) {
+	private List<String> extractMappingFiles(Element rootNode) {
 		List<String> result = new ArrayList<>();
 		splitTagContentByWhitespace(rootNode, "mappingFiles", result);
 		return result;
 	}
 
-	private Set<String> getPackagesWithMappedClasses(Element rootNode) {
+	private Set<String> extractPackagesWithMappedClasses(Element rootNode) {
 		Set<String> result = new HashSet<>();
 		splitTagContentByWhitespace(rootNode, "packagesWithMappedClasses", result);
 		return result;
@@ -670,7 +668,7 @@ public class ModuleFileParser {
 	 * @param configVersion
 	 * @return true if the mandatory element is set to true
 	 */
-	private boolean getMandatory(Element rootNode, String configVersion) {
+	private boolean extractMandatory(Element rootNode, String configVersion) {
 		if (Double.parseDouble(configVersion) >= 1.3) {
 			String mandatory = getElementTrimmed(rootNode, "mandatory");
 			return "true".equalsIgnoreCase(mandatory);
