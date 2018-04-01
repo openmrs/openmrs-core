@@ -550,7 +550,7 @@ public class ModuleFileParser {
 
 		GlobalProperty globalProperty = null;
 		if (property.isEmpty()) {
-			log.warn("'property' is required for global properties. Given '" + property + "'");
+			log.warn("'property' is required for global properties. Given '{}'", property);
 			return globalProperty;
 		}
 
