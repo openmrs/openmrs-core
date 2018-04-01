@@ -440,100 +440,61 @@ public class ModuleFileParser {
 
 		return result;
 	}
-	
-	/**
-	 * load in extensions
-	 *
-	 * @param root
-	 * @return
-	 */
-	private IdentityHashMap<String, String> extractExtensions(Element root) {
-		
-		IdentityHashMap<String, String> extensions = new IdentityHashMap<>();
-		
-		NodeList extensionNodes = root.getElementsByTagName("extension");
-		if (extensionNodes.getLength() > 0) {
-			log.debug("# extensions: " + extensionNodes.getLength());
-			int i = 0;
-			while (i < extensionNodes.getLength()) {
-				Node node = extensionNodes.item(i);
-				NodeList nodes = node.getChildNodes();
-				int x = 0;
-				String point = "", extClass = "";
-				while (x < nodes.getLength()) {
-					Node childNode = nodes.item(x);
-					if ("point".equals(childNode.getNodeName())) {
-						point = childNode.getTextContent().trim();
-					} else if ("class".equals(childNode.getNodeName())) {
-						extClass = childNode.getTextContent().trim();
-					}
-					x++;
-				}
-				log.debug("point: " + point + " class: " + extClass);
-				
-				// point and class are required
-				if (point.length() > 0 && extClass.length() > 0) {
-					if (point.contains(Extension.extensionIdSeparator)) {
-						log.warn("Point id contains illegal character: '" + Extension.extensionIdSeparator + "'");
-					} else {
-						extensions.put(point, extClass);
-					}
-				} else {
-					log
-					        .warn("'point' and 'class' are required for extensions. Given '" + point + "' and '" + extClass
-					                + "'");
-				}
-				i++;
-			}
+
+	private Map<String, String> extractExtensions(Element root) {
+
+		Map<String, String> result = new IdentityHashMap<>();
+
+		NodeList extensions = root.getElementsByTagName("extension");
+		if (extensions.getLength() == 0) {
+			return result;
 		}
-		
-		return extensions;
-		
+
+		log.debug("# extensions: {}", extensions.getLength());
+		int i = 0;
+		while (i < extensions.getLength()) {
+			Element element = (Element) extensions.item(i);
+			String point = getElementTrimmed(element, "point");
+			String extClass = getElementTrimmed(element, "class");
+			log.debug("extension point: {}, class: {}", point, extClass);
+
+			if (point.isEmpty() || extClass.isEmpty()) {
+				log.warn("'point' and 'class' are required for extensions. Given '{}' and '{}'", point, extClass);
+			} else if (point.contains(Extension.extensionIdSeparator)) {
+				log.warn("Point id contains illegal character: '{}'", Extension.extensionIdSeparator);
+			} else {
+				result.put(point, extClass);
+			}
+			i++;
+		}
+		return result;
 	}
-		
-	/**
-	 * load in required privileges
-	 *
-	 * @param root
-	 * @return
-	 */
+
 	private List<Privilege> extractPrivileges(Element root) {
-		
-		List<Privilege> privileges = new ArrayList<>();
-		
-		NodeList privNodes = root.getElementsByTagName("privilege");
-		if (privNodes.getLength() > 0) {
-			log.debug("# privileges: " + privNodes.getLength());
-			int i = 0;
-			while (i < privNodes.getLength()) {
-				Node node = privNodes.item(i);
-				NodeList nodes = node.getChildNodes();
-				int x = 0;
-				String name = "", description = "";
-				while (x < nodes.getLength()) {
-					Node childNode = nodes.item(x);
-					if ("name".equals(childNode.getNodeName())) {
-						name = childNode.getTextContent().trim();
-					} else if ("description".equals(childNode.getNodeName())) {
-						description = childNode.getTextContent().trim();
-					}
-					x++;
-				}
-				log.debug("name: " + name + " description: " + description);
-				
-				// name and desc are required
-				if (name.length() > 0 && description.length() > 0) {
-					privileges.add(new Privilege(name, description));
-				} else {
-					log.warn("'name' and 'description' are required for privileges. Given '" + name + "' and '"
-					        + description + "'");
-				}
-				
-				i++;
-			}
+
+		List<Privilege> result = new ArrayList<>();
+
+		NodeList privileges = root.getElementsByTagName("privilege");
+		if (privileges.getLength() == 0) {
+			return result;
 		}
-		
-		return privileges;
+
+		log.debug("# privileges: {}", privileges.getLength());
+		int i = 0;
+		while (i < privileges.getLength()) {
+			Element element = (Element) privileges.item(i);
+			String name = getElementTrimmed(element, "name");
+			String description = getElementTrimmed(element, "description");
+			log.debug("extension name: {}, description: {}", name, description);
+
+			if (name.isEmpty() || description.isEmpty()) {
+				log.warn("'name' and 'description' are required for privilege. Given '{}' and '{}'", name, description);
+			} else {
+				result.add(new Privilege(name, description));
+			}
+			i++;
+		}
+		return result;
 	}
 	
 	private List<GlobalProperty> extractGlobalProperties(Element element) {
