@@ -287,86 +287,6 @@ public class ModuleFileParser {
 	}
 
 	/**
-	 * Parses conditionalResources tag.
-	 *
-	 * @should parse openmrsVersion and modules
-	 * @should parse conditionalResource with whitespace
-	 * @should throw exception if multiple conditionalResources tags found
-	 * @should throw exception if conditionalResources contains invalid tag
-	 * @should throw exception if path is blank
-	 */
-	List<ModuleConditionalResource> extractConditionalResources(Element configRoot) {
-		List<ModuleConditionalResource> conditionalResources = new ArrayList<>();
-		
-		NodeList parentConditionalResources = configRoot.getElementsByTagName("conditionalResources");
-		
-		if (parentConditionalResources.getLength() == 0) {
-			return new ArrayList<>();
-		} else if (parentConditionalResources.getLength() > 1) {
-			throw new IllegalArgumentException("Found multiple conditionalResources tags. There can be only one.");
-		}
-		
-		NodeList conditionalResourcesNode = parentConditionalResources.item(0).getChildNodes();
-		
-		for (int i = 0; i < conditionalResourcesNode.getLength(); i++) {
-			Node conditionalResourceNode = conditionalResourcesNode.item(i);
-			
-			if ("#text".equals(conditionalResourceNode.getNodeName())) {
-				continue; //ignore text and whitespace in particular
-			}
-			
-			if (!"conditionalResource".equals(conditionalResourceNode.getNodeName())) {
-				throw new IllegalArgumentException("Found the " + conditionalResourceNode.getNodeName()
-				        + " node under conditionalResources. Only conditionalResource is allowed.");
-			}
-			
-			NodeList resourceElements = conditionalResourceNode.getChildNodes();
-			
-			ModuleConditionalResource resource = new ModuleConditionalResource();
-			conditionalResources.add(resource);
-			
-			for (int j = 0; j < resourceElements.getLength(); j++) {
-				Node resourceElement = resourceElements.item(j);
-				
-				if ("path".equals(resourceElement.getNodeName())) {
-					if (StringUtils.isBlank(resourceElement.getTextContent())) {
-						throw new IllegalArgumentException("The path of a conditional resource must not be blank");
-					}
-					resource.setPath(resourceElement.getTextContent());
-				} else if ("openmrsVersion".equals(resourceElement.getNodeName())) {
-					if (StringUtils.isBlank(resource.getOpenmrsPlatformVersion())) {
-						resource.setOpenmrsPlatformVersion(resourceElement.getTextContent());
-					}
-				} else if ("openmrsPlatformVersion".equals(resourceElement.getNodeName())) {
-					resource.setOpenmrsPlatformVersion(resourceElement.getTextContent());
-				} else if ("modules".equals(resourceElement.getNodeName())) {
-					NodeList modulesNode = resourceElement.getChildNodes();
-					for (int k = 0; k < modulesNode.getLength(); k++) {
-						Node moduleNode = modulesNode.item(k);
-						if ("module".equals(moduleNode.getNodeName())) {
-							NodeList moduleElements = moduleNode.getChildNodes();
-							
-							ModuleConditionalResource.ModuleAndVersion module = new ModuleConditionalResource.ModuleAndVersion();
-							resource.getModules().add(module);
-							for (int m = 0; m < moduleElements.getLength(); m++) {
-								Node moduleElement = moduleElements.item(m);
-								
-								if ("moduleId".equals(moduleElement.getNodeName())) {
-									module.setModuleId(moduleElement.getTextContent());
-								} else if ("version".equals(moduleElement.getNodeName())) {
-									module.setVersion(moduleElement.getTextContent());
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		return conditionalResources;
-	}
-	
-	/**
 	 * load in required modules list
 	 *
 	 * @return map from module package name to required version
@@ -632,5 +552,85 @@ public class ModuleFileParser {
 		}
 
 		return false; // this module has an older config file
+	}
+
+	/**
+	 * Parses conditionalResources tag.
+	 *
+	 * @should parse openmrsVersion and modules
+	 * @should parse conditionalResource with whitespace
+	 * @should throw exception if multiple conditionalResources tags found
+	 * @should throw exception if conditionalResources contains invalid tag
+	 * @should throw exception if path is blank
+	 */
+	List<ModuleConditionalResource> extractConditionalResources(Element configRoot) {
+		List<ModuleConditionalResource> conditionalResources = new ArrayList<>();
+
+		NodeList parentConditionalResources = configRoot.getElementsByTagName("conditionalResources");
+
+		if (parentConditionalResources.getLength() == 0) {
+			return new ArrayList<>();
+		} else if (parentConditionalResources.getLength() > 1) {
+			throw new IllegalArgumentException("Found multiple conditionalResources tags. There can be only one.");
+		}
+
+		NodeList conditionalResourcesNode = parentConditionalResources.item(0).getChildNodes();
+
+		for (int i = 0; i < conditionalResourcesNode.getLength(); i++) {
+			Node conditionalResourceNode = conditionalResourcesNode.item(i);
+
+			if ("#text".equals(conditionalResourceNode.getNodeName())) {
+				continue; //ignore text and whitespace in particular
+			}
+
+			if (!"conditionalResource".equals(conditionalResourceNode.getNodeName())) {
+				throw new IllegalArgumentException("Found the " + conditionalResourceNode.getNodeName()
+					+ " node under conditionalResources. Only conditionalResource is allowed.");
+			}
+
+			NodeList resourceElements = conditionalResourceNode.getChildNodes();
+
+			ModuleConditionalResource resource = new ModuleConditionalResource();
+			conditionalResources.add(resource);
+
+			for (int j = 0; j < resourceElements.getLength(); j++) {
+				Node resourceElement = resourceElements.item(j);
+
+				if ("path".equals(resourceElement.getNodeName())) {
+					if (StringUtils.isBlank(resourceElement.getTextContent())) {
+						throw new IllegalArgumentException("The path of a conditional resource must not be blank");
+					}
+					resource.setPath(resourceElement.getTextContent());
+				} else if ("openmrsVersion".equals(resourceElement.getNodeName())) {
+					if (StringUtils.isBlank(resource.getOpenmrsPlatformVersion())) {
+						resource.setOpenmrsPlatformVersion(resourceElement.getTextContent());
+					}
+				} else if ("openmrsPlatformVersion".equals(resourceElement.getNodeName())) {
+					resource.setOpenmrsPlatformVersion(resourceElement.getTextContent());
+				} else if ("modules".equals(resourceElement.getNodeName())) {
+					NodeList modulesNode = resourceElement.getChildNodes();
+					for (int k = 0; k < modulesNode.getLength(); k++) {
+						Node moduleNode = modulesNode.item(k);
+						if ("module".equals(moduleNode.getNodeName())) {
+							NodeList moduleElements = moduleNode.getChildNodes();
+
+							ModuleConditionalResource.ModuleAndVersion module = new ModuleConditionalResource.ModuleAndVersion();
+							resource.getModules().add(module);
+							for (int m = 0; m < moduleElements.getLength(); m++) {
+								Node moduleElement = moduleElements.item(m);
+
+								if ("moduleId".equals(moduleElement.getNodeName())) {
+									module.setModuleId(moduleElement.getTextContent());
+								} else if ("version".equals(moduleElement.getNodeName())) {
+									module.setVersion(moduleElement.getTextContent());
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return conditionalResources;
 	}
 }
