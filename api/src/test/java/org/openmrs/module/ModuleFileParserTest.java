@@ -1145,6 +1145,21 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		assertThat(module.getConditionalResources().size(), is(1));
 		assertThat(module.getConditionalResources(), contains(conditionalResource));
 	}
+	
+	@Test
+	public void parse_shouldParseConditionalResourcesEvenIfPathAndVersionAreMissing() throws IOException {
+
+		Document config = buildOnValidConfigXml("1.2")
+			.withConditionalResource(null, null)
+			.build();
+
+		ModuleFileParser parser = new ModuleFileParser(writeConfigXmlToFile(config));
+
+		Module module = parser.parse();
+
+		assertThat(module.getConditionalResources().size(), is(1));
+		assertThat(module.getConditionalResources(), contains(new ModuleConditionalResource()));
+	}
 
 	@Test
 	public void parse_shouldFailIfMultipleConditionalResourcesTagsFound() throws IOException {
