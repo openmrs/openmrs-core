@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -35,6 +36,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +48,13 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 /**
- * This class will parse a file into an org.openmrs.module.Module object
+ * This class will parse an OpenMRS module, specifically its {@code config.xml} file into a {@link org.openmrs.module.Module} object.
+ * <p>Typical usage is:
+ * <ol>
+ * <li>Create a {@code ModuleFileParser} with {@link #ModuleFileParser(MessageSourceService)}.
+ * <li>Parse the module by passing the file to {@link #parse(File)}.</li>
+ * </ol>
+ * Note that the parser does not validate the {@code config.xml} file against the document type definition's (DTD).
  */
 public class ModuleFileParser {
 	
@@ -54,9 +62,7 @@ public class ModuleFileParser {
 
 	private static final String MODULE_CONFIG_XML_FILENAME = "config.xml";
 
-	private static final String OPENMRS_MODULE_FILE_EXTENSION_TEST = ".omod";
-	
-	private static final String OPENMRS_MODULE_FILE_EXTENSION = "omod";
+	private static final String OPENMRS_MODULE_FILE_EXTENSION = ".omod";
 	
 	/**
 	 * List out all of the possible version numbers for config files that openmrs has DTDs for.
@@ -74,24 +80,42 @@ public class ModuleFileParser {
 		validConfigVersions.add("1.6");
 	}
 	
+	// TODO - remove this field once ModuleFileParser(File), ModuleFileParser(InputStream) are removed.
+	// There is no need to keep the file as state since moduleFileParser.parse(File) does not need it.
+	// this is also why all private methods that need access to the file for parsing or error message get it as a parameter
 	private File moduleFile;
+
+	private MessageSourceService messageSourceService;
+
+	/**
+	 * Creates a ModuleFileParser.
+	 *
+	 * @param messageSourceService the message source used for error messages
+	 * @since 2.2.0
+	 */
+	public ModuleFileParser(MessageSourceService messageSourceService) {
+		this.messageSourceService = Objects.requireNonNull(messageSourceService, "messageSourceService must not be null");
+	}
 	
 	/**
 	 * Constructor
 	 *
 	 * @param moduleFile the module (jar)file that will be parsed
+	 * @deprecated since 2.2.0 use {@link #ModuleFileParser(MessageSourceService)}
 	 */
+	@Deprecated
 	public ModuleFileParser(File moduleFile) {
 		if (moduleFile == null) {
 			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.fileCannotBeNull"));
 		}
 
-		if (!moduleFile.getName().endsWith(OPENMRS_MODULE_FILE_EXTENSION_TEST)) {
+		if (!moduleFile.getName().endsWith(OPENMRS_MODULE_FILE_EXTENSION)) {
 			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.invalidFileExtension"),
-			        moduleFile.getName());
+				moduleFile.getName());
 		}
-		
+
 		this.moduleFile = moduleFile;
+		this.messageSourceService = Context.getMessageSourceService();
 	}
 	
 	/**
@@ -99,10 +123,26 @@ public class ModuleFileParser {
 	 * This copies the stream into a temporary file just so things can be parsed.<br>
 	 *
 	 * @param inputStream the inputStream pointing to an omod file
+	 * @deprecated since 2.2.0 use {@link #ModuleFileParser(MessageSourceService)}
 	 */
+	@Deprecated
 	public ModuleFileParser(InputStream inputStream) {
-		moduleFile = createTempFile("moduleUpgrade", OPENMRS_MODULE_FILE_EXTENSION);
+		this.messageSourceService = Context.getMessageSourceService();
+		this.moduleFile = createTempFile("moduleUpgrade", OPENMRS_MODULE_FILE_EXTENSION);
+		copyInputStreamToFile(inputStream, this.moduleFile);
+	}
+
+	/**
+	 * Parses the given {@code InputStream} of an OpenMRS module into a {@code Module}.
+	 * This copies the stream into a temporary file and close given {@code InputStream}.
+	 *
+	 * @param inputStream the inputStream pointing to an omod file
+	 * @since 2.2.0
+	 */
+	public Module parse(InputStream inputStream) {
+		File moduleFile = createTempFile("moduleUpgrade", OPENMRS_MODULE_FILE_EXTENSION);
 		copyInputStreamToFile(inputStream, moduleFile);
+		return parse(moduleFile);
 	}
 
 	private File createTempFile(String prefix, String suffix) {
@@ -111,7 +151,7 @@ public class ModuleFileParser {
 			file = File.createTempFile(prefix, suffix);
 		}
 		catch (IOException e) {
-			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.cannotCreateFile"), e);
+			throw new ModuleException(messageSourceService.getMessage("Module.error.cannotCreateFile"), e);
 		}
 		return file;
 	}
@@ -121,7 +161,7 @@ public class ModuleFileParser {
 			OpenmrsUtil.copyFile(inputStream, outputStream);
 		}
 		catch (IOException e) {
-			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.cannotCreateFile"), e);
+			throw new ModuleException(messageSourceService.getMessage("Module.error.cannotCreateFile"), e);
 		}
 		finally {
 			try {
@@ -131,55 +171,83 @@ public class ModuleFileParser {
 		}
 	}
 
-	
+	/**
+	 * This constructor was created for testing purposes and is now deprecated.
+	 * DO NOT USE.
+	 *
+	 * @deprecated since 2.2.0 use {@link #ModuleFileParser(MessageSourceService)}
+	 */
+	@Deprecated
 	ModuleFileParser() {
 	}
-	
+
 	/**
-	 * Get the module
+	 * Get the module.
+	 * If you use this method only do so together with {@link #ModuleFileParser(File)} or {@link #ModuleFileParser(InputStream)}.
+	 * Best use {@link #ModuleFileParser(MessageSourceService)} and {@link #parse(File)}
+	 * since this method is deprecated.
 	 *
 	 * @return new module object
+	 * @deprecated since 2.2.0 use {@link #parse(File)}
 	 */
+	@Deprecated
 	public Module parse() throws ModuleException {
-		
-		return createModule(getModuleConfigXml());
+		return parse(this.moduleFile);
 	}
 
-	private Document getModuleConfigXml() {
+	/**
+	 * Get the module from an OpenMRS module file.
+	 * 
+	 * @param moduleFile the module file to be parsed
+	 * @return new module object
+	 * @since 2.2.0
+	 */
+	public Module parse(File moduleFile) {
+		if (moduleFile == null) {
+			throw new ModuleException(messageSourceService.getMessage("Module.error.fileCannotBeNull"));
+		}
+		if (!moduleFile.getName().endsWith(".omod")) {
+			throw new ModuleException(messageSourceService.getMessage("Module.error.invalidFileExtension"),
+				moduleFile.getName());
+		}
+		return createModule(getModuleConfigXml(moduleFile), moduleFile);
+	}
+
+	private Document getModuleConfigXml(File moduleFile) {
 		Document config;
 		try (JarFile jarfile = new JarFile(moduleFile)) {
-			ZipEntry configEntry = getConfigXmlZipEntry(jarfile);
-			config = parseConfigXml(jarfile, configEntry);
+			ZipEntry configEntry = getConfigXmlZipEntry(jarfile, moduleFile);
+			config = parseConfigXml(jarfile, configEntry, moduleFile);
 		}
 		catch (IOException e) {
-			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.cannotGetJarFile"),
+			throw new ModuleException(messageSourceService.getMessage("Module.error.cannotGetJarFile"),
 				moduleFile.getName(), e);
 		}
 		return config;
 	}
 
-	private ZipEntry getConfigXmlZipEntry(JarFile jarfile) {
+	private ZipEntry getConfigXmlZipEntry(JarFile jarfile, File moduleFile) {
 		ZipEntry config = jarfile.getEntry(MODULE_CONFIG_XML_FILENAME);
 		if (config == null) {
-			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.noConfigFile"),
+			throw new ModuleException(messageSourceService.getMessage("Module.error.noConfigFile"),
 				moduleFile.getName());
 		}
 		return config;
 	}
-	
-	private Document parseConfigXml(JarFile jarfile, ZipEntry configEntry) {
+
+	private Document parseConfigXml(JarFile jarfile, ZipEntry configEntry, File moduleFile) {
 		Document config;
 		try (InputStream configStream = jarfile.getInputStream(configEntry)) {
-			config = parseConfigXmlStream(configStream);
+			config = parseConfigXmlStream(configStream, moduleFile);
 		}
 		catch (IOException e) {
-			throw new ModuleException(Context.getMessageSourceService().getMessage(
+			throw new ModuleException(messageSourceService.getMessage(
 				"Module.error.cannotGetConfigFileStream"), moduleFile.getName(), e);
 		}
 		return config;
 	}
-	
-	private Document parseConfigXmlStream(InputStream configStream) {
+
+	private Document parseConfigXmlStream(InputStream configStream, File moduleFile) {
 		Document config;
 		try {
 			DocumentBuilder db = newDocumentBuilder();
@@ -203,9 +271,8 @@ public class ModuleFileParser {
 			}
 
 			log.error("{} content: {}", MODULE_CONFIG_XML_FILENAME, output);
-			throw new ModuleException(
-				Context.getMessageSourceService().getMessage("Module.error.cannotParseConfigFile"), moduleFile
-				.getName(), e);
+			throw new ModuleException(messageSourceService.getMessage("Module.error.cannotParseConfigFile"),
+				moduleFile.getName(), e);
 		}
 		return config;
 	}
@@ -223,12 +290,12 @@ public class ModuleFileParser {
 		return db;
 	}
 
-	private Module createModule(Document config) {
+	private Module createModule(Document config, File moduleFile) {
 		Element configRoot = config.getDocumentElement();
 
-		String configVersion = ensureValidModuleConfigVersion(configRoot);
+		String configVersion = ensureValidModuleConfigVersion(configRoot, moduleFile);
 		
-		String name = ensureNonEmptyName(configRoot);
+		String name = ensureNonEmptyName(configRoot, moduleFile);
 		String moduleId = ensureNonEmptyId(configRoot, name);
 		String packageName = ensureNonEmptyPackage(configRoot, name);
 		
@@ -260,21 +327,22 @@ public class ModuleFileParser {
 
 		return module;
 	}
-	
-	private String ensureValidModuleConfigVersion(Element configRoot) {
+
+	private String ensureValidModuleConfigVersion(Element configRoot, File moduleFile) {
 		String configVersion = configRoot.getAttribute("configVersion").trim();
-		validateModuleConfigVersion(configVersion);
+		validateModuleConfigVersion(configVersion, moduleFile);
 		return configVersion;
 	}
-	
-	private void validateModuleConfigVersion(String version) {
+
+	private void validateModuleConfigVersion(String version, File moduleFile) {
 		if (!validConfigVersions.contains(version)) {
 			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.invalidConfigVersion",
-			    new Object[] { version, String.join(", ", validConfigVersions) }, Context.getLocale()), moduleFile.getName());
+				new Object[] { version, String.join(", ", validConfigVersions) }, Context.getLocale()),
+				moduleFile.getName());
 		}
 	}
 
-	private String ensureNonEmptyName(Element configRoot) {
+	private String ensureNonEmptyName(Element configRoot, File moduleFile) {
 		return getTrimmedElementOrFail(configRoot, "name", "Module.error.nameCannotBeEmpty", moduleFile.getName());
 	}
 
@@ -525,7 +593,7 @@ public class ModuleFileParser {
 	private String getTrimmedElementOrFail(Element rootNode, String elementName, String errorMessageKey, String moduleName) {
 		String element = getElementTrimmed(rootNode, elementName);
 		if (element == null || element.length() == 0) {
-			throw new ModuleException(Context.getMessageSourceService().getMessage(errorMessageKey),
+			throw new ModuleException(messageSourceService.getMessage(errorMessageKey),
 				moduleName);
 		}
 		return element;
