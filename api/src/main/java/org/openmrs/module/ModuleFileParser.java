@@ -293,7 +293,7 @@ public class ModuleFileParser {
 	 * @since 1.5
 	 */
 	private Map<String, String> extractRequiredModules(Element configRoot) {
-		return extractModulesWithVersionAttribute("require_modules", "require_module", configRoot);
+		return extractModulesWithVersionAttribute(configRoot, "require_module", "require_modules");
 	}
 	
 	/**
@@ -303,14 +303,15 @@ public class ModuleFileParser {
 	 * @since 1.9
 	 */
 	private Map<String, String> extractAwareOfModules(Element configRoot) {
-		return extractModulesWithVersionAttribute("aware_of_modules", "aware_of_module", configRoot);
+		return extractModulesWithVersionAttribute(configRoot, "aware_of_module", "aware_of_modules");
 	}
 	
 	private Map<String, String> extractStartBeforeModules(Element configRoot) {
-		return extractModulesWithVersionAttribute("start_before_modules", "module", configRoot);
+		return extractModulesWithVersionAttribute(configRoot, "module", "start_before_modules");
 	}
-	
-	private Map<String, String> extractModulesWithVersionAttribute(String elementParentName, String elementName, Element configRoot) {
+
+	private Map<String, String> extractModulesWithVersionAttribute(Element configRoot, String elementName,
+		String elementParentName) {
 		
 		NodeList parents = configRoot.getElementsByTagName(elementParentName);
 		
