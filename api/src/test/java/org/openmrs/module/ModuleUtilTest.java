@@ -9,9 +9,12 @@
  */
 package org.openmrs.module;
 
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,6 +23,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.JarFile;
@@ -28,7 +33,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -38,6 +45,9 @@ import org.openmrs.util.OpenmrsConstants;
  * Tests methods on the {@link org.openmrs.module.ModuleUtil} class
  */
 public class ModuleUtilTest extends BaseContextSensitiveTest {
+
+	@Rule
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 	
 	Properties initialRuntimeProperties;
 	
@@ -730,4 +740,40 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		}
 		return destinationFolder;
 	}
+	
+	@Test
+	public void file2url_shouldReturnNullIfFileIsNull() throws MalformedURLException {
+
+		assertNull(ModuleUtil.file2url(null));
+	}
+	
+	@Test
+	public void getPackagesFromFile_shouldReturnAnEmptyCollectionIfNonJarFile() {
+		
+		File f = new File(this.getClass()
+			.getResource("/org/openmrs/module/include/test1-1.0-SNAPSHOT.omod").getFile());
+		
+		assertThat(ModuleUtil.getPackagesFromFile(f), is(empty()));
+	}
+	
+	@Test
+	public void getPackagesFromFile_shouldReturnPackagesWithinJar() throws IOException{
+
+		String prefix = "org.openmrs.module.test1";
+		String[] expectedPackages = new String[]{ prefix+".api.impl", prefix+".api", prefix, prefix+".api.db.hibernate",
+			prefix+".api.db", prefix+".extension.html", prefix+".web.controller" };
+		
+		File srcFile = new File(this.getClass()
+			.getResource("/org/openmrs/module/include/test1-1.0-SNAPSHOT.omod").getFile());
+		
+		File destFile = temporaryFolder.newFile("test1-1.0-SNAPSHOT.jar");
+		FileUtils.copyFile(srcFile, destFile);
+				
+		HashSet<String> packages = (HashSet<String>)ModuleUtil.getPackagesFromFile(destFile);
+		
+		assertThat(packages.size(), is(expectedPackages.length));
+		assertThat(packages, hasItems(expectedPackages));
+	}
+	
 }
+
