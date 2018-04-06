@@ -245,4 +245,13 @@
 								 baseTableName="encounter_diagnosis" baseColumnNames="patient_id"
 								 referencedTableName="patient" referencedColumnNames="patient_id" />
 	</changeSet>
+
+	<changeSet id="20180405131015-TRUNK-5333" author="alicerowan">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="concept_numeric" columnName="precise"/>
+		</preConditions>
+		<comment>Rename concept_numeric.precise to concept_numeric.allow_decimal</comment>
+		<renameColumn oldColumnName="precise" newColumnName="allow_decimal" tableName="concept_numeric"  columnDataType="BOOLEAN"/>
+	</changeSet>
+
 </databaseChangeLog>

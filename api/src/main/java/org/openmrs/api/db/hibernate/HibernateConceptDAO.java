@@ -161,7 +161,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				//We need to add a delete line for each concept sub class that is not concept_numeric
 				deleteSubclassConcept("concept_complex", concept.getConceptId());
 				
-				String insert = "INSERT INTO concept_numeric (concept_id, precise) VALUES (:conceptId, false)";
+				String insert = "INSERT INTO concept_numeric (concept_id, allow_decimal) VALUES (:conceptId, false)";
 				query = sessionFactory.getCurrentSession().createSQLQuery(insert);
 				query.setInteger("conceptId", concept.getConceptId());
 				query.executeUpdate();

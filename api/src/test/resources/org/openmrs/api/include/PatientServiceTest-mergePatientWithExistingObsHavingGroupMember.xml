@@ -73,11 +73,11 @@
 
 	<concept concept_id="603" retired="false" datatype_id="1" class_id="11" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="juydg80f-1yz9-4da3-bb88-8122ctpulse"/>
 	<concept_name concept_id="603" concept_name_id="6013" name="Pulse" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="juydg80f-1yz9-4da3-bb88-8122ctuiopl"/>
-	<concept_numeric concept_id="603" precise="0"/>
+	<concept_numeric concept_id="603" allow_decimal="0"/>
 
 	<concept concept_id="605" retired="false" datatype_id="1" class_id="11" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="juydg80f-1yz9-4da3-bb88-8122ctdiast"/>
 	<concept_name concept_id="605" concept_name_id="6015" name="Diastolic" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="juydg80f-1yz9-4da3-bb88-812rrtdiast"/>
-	<concept_numeric concept_id="605" precise="0"/>
+	<concept_numeric concept_id="605" allow_decimal="0"/>
 
 
 	<obs obs_id="111" status="FINAL" encounter_id="57" person_id="11" location_id="2" obs_datetime="2008-08-18 15:09:05.0" date_created="2008-08-18 15:09:05.0"
