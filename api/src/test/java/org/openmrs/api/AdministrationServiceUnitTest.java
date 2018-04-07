@@ -83,4 +83,20 @@ public class AdministrationServiceUnitTest {
 		assertThat(listeners.size(), is(1));
 		assertThat(listeners, contains(listener));
 	}
+
+	@Test
+	public void removeGlobalPropertyListener_shouldRemoveListener() {
+
+		List<GlobalPropertyListener> listeners = new ArrayList<>();
+		when(eventListeners.getGlobalPropertyListeners()).thenReturn(listeners);
+
+		GlobalPropertyListener listener = mock(GlobalPropertyListener.class);
+		adminService.addGlobalPropertyListener(listener);
+		assertThat(listeners.size(), is(1));
+		assertThat(listeners, contains(listener));
+		
+		adminService.removeGlobalPropertyListener(listener);
+
+		assertThat(listeners.size(), is(0));
+	}
 }
