@@ -53,7 +53,7 @@ import org.springframework.validation.BindException;
  */
 public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	
-	private AdministrationService adminService = null;
+	private AdministrationService adminService;
 	
 	protected static final String ADMIN_INITIAL_DATA_XML = "org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml";
 	
@@ -63,13 +63,10 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	
 	@Before
 	public void runBeforeEachTest() {
-		if (adminService == null) {
-			adminService = Context.getAdministrationService();
-			implementationHttpClient = mock(HttpClient.class);
-			adminService.setImplementationIdHttpClient(implementationHttpClient);
-			cacheManager = Context.getRegisteredComponent("apiCacheManager", CacheManager.class);
-		}
-		
+		adminService = Context.getAdministrationService();
+		implementationHttpClient = mock(HttpClient.class);
+		adminService.setImplementationIdHttpClient(implementationHttpClient);
+		cacheManager = Context.getRegisteredComponent("apiCacheManager", CacheManager.class);
 	}
 	
 	@Test
