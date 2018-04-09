@@ -139,7 +139,7 @@
 				<constraints nullable="false" />
 			</column>
 			<column name="verification_status" type="varchar(50)" >
-				<constraints nullable="false"/>
+				<constraints nullable="true"/>
 			</column>
 			<column name="onset_date" type="datetime" />
 			<column name="date_created" type="datetime">
