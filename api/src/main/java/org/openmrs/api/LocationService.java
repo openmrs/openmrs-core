@@ -82,6 +82,18 @@ public interface LocationService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public Location getLocation(String name) throws APIException;
+
+	/**
+	 * Returns a location given the location's exact <code>name</code> or primary key <code>locationId</code> A null value is returned if
+	 * there is no location with this name or locationId
+	 *
+	 * @param name the exact value of the location's attribute to match on
+	 * @param nameOfAttribute exact type of attribute to match with
+	 * @return Location which matches the <code>name</code>
+	 * @should return null when no location match given location name or locationId
+	 */
+	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
+	public Location getLocation(String name,String nameOfAttribute) throws APIException;
 	
 	/**
 	 * Returns the default location for this implementation.

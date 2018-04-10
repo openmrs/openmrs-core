@@ -54,6 +54,14 @@ public interface LocationDAO {
 	 * @return the requested <code>Location</code>
 	 */
 	public Location getLocation(String name);
+
+	/**
+	 * Get a location by name or locationId
+	 *
+	 * @param name String name of the <code>Location</code> and String nameOfAttribute: <code>Attribute_Name</code> to get
+	 * @return the requested <code>Location</code>
+	 */
+	public Location getLocation(String name, String nameOfAttribute);
 	
 	/**
 	 * Get all locations

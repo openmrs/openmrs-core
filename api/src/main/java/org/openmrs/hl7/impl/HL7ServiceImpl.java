@@ -532,15 +532,10 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	@Override
 	@Transactional(readOnly = true)
 	public Integer resolveLocationId(PL pl) throws HL7Exception {
-		// TODO: Get rid of hack that allows first component to be an integer
-		// location.location_id
 		String pointOfCare = pl.getPointOfCare().getValue();
 		String facility = pl.getFacility().getUniversalID().getValue();
-		// HACK: try to treat the first component (which should be "Point of
-		// Care" as an internal openmrs location_id
 		try {
-			Integer locationId = Integer.valueOf(pointOfCare);
-			Location l = Context.getLocationService().getLocation(locationId);
+			Location l = Context.getLocationService().getLocation(pointOfCare,"locationId");
 			if (l != null) {
 				return l.getLocationId();
 			}
@@ -555,7 +550,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		
 		// Treat the 4th component "Facility" as location.name
 		try {
-			Location l = Context.getLocationService().getLocation(facility);
+			Location l = Context.getLocationService().getLocation(facility,"name");
 			if (l == null) {
 				log.debug("Couldn't find a location named '" + facility + "'");
 			}

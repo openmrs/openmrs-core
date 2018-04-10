@@ -88,6 +88,30 @@ public class HibernateLocationDAO implements LocationDAO {
 		}
 		return locations.get(0);
 	}
+
+	/**
+	 * org.openmrs.api.db.LocationDAO#getLocation(java.lang.String, java.lang.String)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public Location getLocation(String name,String nameOfAttribute) {
+		Criteria criteria = null;
+		if (nameOfAttribute.equals("name")) {
+			criteria = sessionFactory.getCurrentSession().createCriteria(Location.class).add(
+			Restrictions.eq(nameOfAttribute, name));
+		}
+		else {
+			Integer locationId = Integer.valueOf(name);
+			criteria = sessionFactory.getCurrentSession().createCriteria(Location.class).add(
+			Restrictions.eq(nameOfAttribute, locationId));
+		}
+		List<Location> locations = criteria.list();
+		if (null == locations || locations.isEmpty()) {
+			return null;
+		}
+		return locations.get(0);
+	}
+
 	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getAllLocations(boolean)

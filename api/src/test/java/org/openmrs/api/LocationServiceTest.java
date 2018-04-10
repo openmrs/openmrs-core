@@ -228,7 +228,23 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getLocation_shouldReturnNullWhenNoLocationMatchGivenLocationName() {
 		Assert.assertNull(Context.getLocationService().getLocation("Princeton Plainsboro"));
 	}
-	
+
+	/**
+	 * @see LocationService#getLocation(String,String)
+	 */
+	@Test
+	public void getLocationWithAttribute_shouldReturnNullWhenNoLocationMatchGivenLocationId() {
+		Assert.assertNull(Context.getLocationService().getLocation("1337","locationId"));
+	}
+
+	/**
+	 * @see LocationService#getLocation(String,String)
+	 */
+	@Test
+	public void getLocationWithAttribute_shouldReturnNullWhenNoLocationMatchGivenLocationName() {
+		Assert.assertNull(Context.getLocationService().getLocation("Princeton Plainsboro","name"));
+	}
+
 	/**
 	 * @see LocationService#getAllLocations()
 	 */
