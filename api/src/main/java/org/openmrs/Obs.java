@@ -1081,6 +1081,10 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @should set value as boolean if the datatype of the question concept is boolean
 	 * @should fail if the value of the string is null
 	 * @should fail if the value of the string is empty
+	 * @should fail if abbreviation is CWE
+	 * @should set value as numeric if the datatype of the question concept is numeric
+	 * @should set value as String if the datatype of the question concept is String
+	 * @should set value as Date if the datatype of the question concept is DateTime
 	 */
 	public void setValueAsString(String s) throws ParseException {
 		if (log.isDebugEnabled()) {
@@ -1095,21 +1099,27 @@ public class Obs extends BaseChangeableOpenmrsData {
 				throw new RuntimeException("Not Yet Implemented");
 			} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
 				setValueNumeric(Double.valueOf(s));
-			} else if ("DT".equals(abbrev)) {
-				DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
-				setValueDatetime(dateFormat.parse(s));
-			} else if ("TM".equals(abbrev)) {
-				DateFormat timeFormat = new SimpleDateFormat(TIME_PATTERN);
-				setValueDatetime(timeFormat.parse(s));
-			} else if ("TS".equals(abbrev)) {
-				DateFormat datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
-				setValueDatetime(datetimeFormat.parse(s));
 			} else if ("ST".equals(abbrev)) {
 				setValueText(s);
 			} else {
-				throw new RuntimeException("Don't know how to handle " + abbrev);
+				String[] supportedFormats = { "yyyy-MM-dd'T'HH:mm:ss.SSSZ", "yyyy-MM-dd'T'HH:mm:ss.SSS",
+				        "yyyy-MM-dd'T'HH:mm:ssZ", "yyyy-MM-dd'T'HH:mm:ssXXX", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss",
+				        "yyyy-MM-dd" };
+				boolean flag = false;
+				for (int i = 0; i < supportedFormats.length; i++) {
+					try {
+						DateFormat dateFormat = new SimpleDateFormat(supportedFormats[i]);
+						setValueDatetime(dateFormat.parse(s));
+						flag = false;
+						break;
+					}
+					catch (Exception ex) {
+						flag = true;
+					}
+				}
+				if (flag)
+					throw new RuntimeException("Don't know how to handle " + abbrev);
 			}
-			
 		} else {
 			throw new RuntimeException("concept is null for " + this);
 		}
