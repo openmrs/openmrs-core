@@ -9,20 +9,20 @@
  */
 package org.openmrs;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
 import org.openmrs.util.OpenmrsUtil;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * PatientProgram
@@ -191,6 +191,10 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 		newState.setPatientProgram(this);
 		newState.setState(programWorkflowState);
 		newState.setStartDate(onDate);
+
+		if (newState.getPatientProgram() != null && newState.getPatientProgram().getDateCompleted() != null) {
+			newState.setEndDate(newState.getPatientProgram().getDateCompleted());
+		}
 		
 		if (programWorkflowState.getTerminal()) {
 			setDateCompleted(onDate);
@@ -231,7 +235,9 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 			last.setVoidReason(voidReason);
 		}
 		if (nextToLast != null && nextToLast.getEndDate() != null) {
-			nextToLast.setEndDate(null);
+			nextToLast.setEndDate(nextToLast.getPatientProgram() != null
+			        && nextToLast.getPatientProgram().getDateCompleted() != null ? nextToLast.getPatientProgram()
+			        .getDateCompleted() : null);
 			nextToLast.setDateChanged(voidDate);
 			nextToLast.setChangedBy(voidBy);
 		}

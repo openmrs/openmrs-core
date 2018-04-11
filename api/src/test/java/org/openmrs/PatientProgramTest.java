@@ -9,14 +9,14 @@
  */
 package org.openmrs;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 public class PatientProgramTest {
 	
@@ -30,7 +30,7 @@ public class PatientProgramTest {
 	 * @see PatientProgram#voidLastState(ProgramWorkflow,User,Date,String)
 	 */
 	@Test
-	public void voidLastState_shouldVoidStateWithEndDateNullIfStartDatesEqual() {
+	public void voidLastState_shouldVoidStateWithEndDateNullIfStartDatesEqual() throws Exception {
 		//given
 		PatientProgram program = new PatientProgram();
 		ProgramWorkflow workflow = new ProgramWorkflow();
@@ -51,13 +51,97 @@ public class PatientProgramTest {
 		
 		program.getStates().add(state1);
 		program.getStates().add(state2);
+		state1.setPatientProgram(program);
+		state2.setPatientProgram(program);
 		
 		//when
 		program.voidLastState(workflow, new User(), new Date(), "");
 		
 		//then
-		Assert.assertTrue(state1.getVoided());
-		Assert.assertFalse(state2.getVoided());
+		Assert.assertTrue(state1.isVoided());
+		Assert.assertFalse(state2.isVoided());
+		Assert.assertTrue(state2.getEndDate() == null);
+	}
+	
+	/**
+	 * @see PatientProgram#voidLastState(ProgramWorkflow,User,Date,String)
+	 * @verifies void state with endDate null if startDates equal
+	 */
+	@Test
+	public void voidLastState_shouldVoidStateWithEndDateEqualToProgramCompletionDate() throws Exception {
+		//given
+		PatientProgram program = new PatientProgram();
+		program.setDateEnrolled(new Date());
+		program.setDateCompleted(new Date());
+		ProgramWorkflow workflow = new ProgramWorkflow();
+		ProgramWorkflowState workflowState = new ProgramWorkflowState();
+		workflowState.setProgramWorkflow(workflow);
+		
+		Date startDate = new Date();
+		
+		PatientState state1 = new PatientState();
+		state1.setStartDate(startDate);
+		state1.setEndDate(null);
+		state1.setState(workflowState);
+		
+		PatientState state2 = new PatientState();
+		state2.setStartDate(startDate);
+		state2.setEndDate(new Date());
+		state2.setState(workflowState);
+		
+		program.getStates().add(state1);
+		program.getStates().add(state2);
+		state1.setPatientProgram(program);
+		state2.setPatientProgram(program);
+		
+		//when
+		program.voidLastState(workflow, new User(), new Date(), "");
+		
+		//then
+		Assert.assertTrue(state1.isVoided());
+		Assert.assertFalse(state2.isVoided());
+		
+		Assert.assertTrue(program.getDateCompleted().equals(state2.getEndDate()));
+	}
+	
+	@Test
+	public void transitionToDate_shouldSetEndDateOfNewStateToProgramCompletionDateIfProgramCompleted() throws Exception {
+		
+		//given
+		PatientProgram program = new PatientProgram();
+		program.setDateEnrolled(new Date());
+		program.setDateCompleted(new Date());
+		ProgramWorkflow workflow = new ProgramWorkflow();
+		ProgramWorkflowState workflowState = new ProgramWorkflowState();
+		workflowState.setTerminal(false);
+		workflowState.setProgramWorkflow(workflow);
+		
+		//when
+		program.transitionToState(workflowState, new Date());
+		
+		//then
+		Assert.assertTrue(program.getStates().size() == 1);
+		Assert.assertTrue(program.getStates().iterator().next().getEndDate().equals(program.getDateCompleted()));
+		
+	}
+	
+	@Test
+	public void transitionToDate_shouldSetEndDateOfNewStateToNullIfProgramNotCompleted() throws Exception {
+		
+		//given
+		PatientProgram program = new PatientProgram();
+		program.setDateEnrolled(new Date());
+		ProgramWorkflow workflow = new ProgramWorkflow();
+		ProgramWorkflowState workflowState = new ProgramWorkflowState();
+		workflowState.setTerminal(false);
+		workflowState.setProgramWorkflow(workflow);
+		
+		//when
+		program.transitionToState(workflowState, new Date());
+		
+		//then
+		Assert.assertTrue(program.getStates().size() == 1);
+		Assert.assertNull(program.getStates().iterator().next().getEndDate());
 	}
 	
 	@Test
