@@ -23,9 +23,11 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
@@ -33,6 +35,15 @@ import org.openmrs.test.BaseContextSensitiveTest;
  * Behavior-driven tests of the Concept class.
  */
 public class ConceptTest extends BaseContextSensitiveTest {
+	protected static final String CONCEPT_XML_DATASET_PACKAGE_PATH = "org/openmrs/api/include/ConceptTest.xml";
+
+	private ConceptService service;
+
+	@Before
+	public void before() throws Exception {
+		service = Context.getConceptService(); //Context.getProviderService();
+		executeDataSet(CONCEPT_XML_DATASET_PACKAGE_PATH);
+	}
 	
 	/**
 	 * When asked for a collection of compatible names, the returned collection should not include
@@ -569,6 +580,65 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(1, setMembers.size());
 		setMembers.add(new Concept());
+	}
+
+	/**
+	 * @see Concept#getSetMembers()
+	 */
+	@Test
+	public void getSetMembers_shouldReturnTheSameAsgetSetMembersIfincludeRetiredIsTrue() throws Exception {
+		executeDataSet(CONCEPT_XML_DATASET_PACKAGE_PATH);
+
+		Concept c = new Concept();
+
+		Concept setMember1 = service.getConcept(867543);
+		c.addSetMember(setMember1);
+
+		Concept setMember2 = service.getConcept(1234567);
+		c.addSetMember(setMember2);
+
+		Concept setMember3 = service.getConcept(8675439);
+		c.addSetMember(setMember3);
+
+		Concept setMember4 = service.getConcept(12345679);
+		c.addSetMember(setMember4);
+
+
+		List<Concept> setMembers = c.getSetMembers(true);
+
+		Assert.assertEquals(4, setMembers.size());
+		Assert.assertEquals(setMember1, setMembers.get(0));
+		Assert.assertEquals(setMember2, setMembers.get(1));
+	}
+
+	/**
+	 * @see Concept#getSetMembers(boolean)
+	 */
+	@Test
+	public void getSetMembers_shouldNotReturnRetiredInSetMembersIfincludeRetiredIsFalse() throws Exception {
+		executeDataSet(CONCEPT_XML_DATASET_PACKAGE_PATH);
+
+		Concept c = new Concept();
+
+		Concept setMember1 = service.getConcept(867543);
+		c.addSetMember(setMember1);
+
+		Concept setMember2 = service.getConcept(1234567);
+		c.addSetMember(setMember2);
+
+		Concept setMember3 = service.getConcept(8675439);
+		c.addSetMember(setMember3);
+
+		Concept setMember4 = service.getConcept(12345679);
+		c.addSetMember(setMember4);
+
+		List<Concept> setMembers = c.getSetMembers(false);
+
+		Assert.assertEquals(2, setMembers.size());
+		Assert.assertEquals(setMember1, setMembers.get(0));
+		Assert.assertEquals(setMember2, setMembers.get(1));
+
+
 	}
 	
 	/**
