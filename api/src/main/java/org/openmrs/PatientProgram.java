@@ -17,6 +17,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
@@ -275,6 +277,30 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 		return ret;
 	}
 	
+	/**
+	 * Returns a Set&lt;PatientState&gt; of all recent {@link PatientState}s for each workflow of the
+	 * {@link PatientProgram}
+	 *
+	 * @return Set&lt;PatientState&gt; of all recent {@link PatientState}s for the {@link PatientProgram}
+	 */
+	public Set<PatientState> getMostRecentStateInEachWorkflow() {
+		HashMap<ProgramWorkflow,PatientState> map = new HashMap<ProgramWorkflow,PatientState>();
+
+		for (PatientState state : getSortedStates()) {
+			if (!state.isVoided()) {
+				ProgramWorkflow workflow = state.getState().getProgramWorkflow();
+				map.put(workflow,state);
+			}
+		}
+
+		Set<PatientState> ret = new HashSet<>();
+		for (Map.Entry<ProgramWorkflow, PatientState> entry : map.entrySet()) {
+			ret.add(entry.getValue());
+		}
+
+		return ret;
+	}
+
 	/**
 	 * Returns a List&lt;PatientState&gt; of all {@link PatientState}s in the passed
 	 * {@link ProgramWorkflow} for the {@link PatientProgram}
