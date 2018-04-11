@@ -41,7 +41,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 
 	@Before
 	public void before() throws Exception {
-		service = Context.getConceptService(); //Context.getProviderService();
+		service = Context.getConceptService();
 		executeDataSet(CONCEPT_XML_DATASET_PACKAGE_PATH);
 	}
 	
