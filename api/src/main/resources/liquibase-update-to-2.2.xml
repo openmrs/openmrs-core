@@ -245,7 +245,6 @@
 								 baseTableName="encounter_diagnosis" baseColumnNames="patient_id"
 								 referencedTableName="patient" referencedColumnNames="patient_id" />
 	</changeSet>
-
 	<changeSet id="20180405131015-TRUNK-5333" author="alicerowan">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="concept_numeric" columnName="precise"/>
@@ -253,5 +252,17 @@
 		<comment>Rename concept_numeric.precise to concept_numeric.allow_decimal</comment>
 		<renameColumn oldColumnName="precise" newColumnName="allow_decimal" tableName="concept_numeric"  columnDataType="BOOLEAN"/>
 	</changeSet>
-
+	<changeSet id="20180323-1000" author="Kelechi+iheanyi" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="condition" />
+			<tableExists tableName="conditions" />
+		</preConditions>
+		<comment>
+			Migrate data from the conditions table to the new condition table
+		</comment>
+		<sql>
+			INSERT into `condition` (condition_id, previous_version, patient_id, clinical_status, condition_non_coded, condition_coded, onset_date, additional_detail, end_date, creator, date_created, voided, voided_by, date_voided, void_reason, uuid)
+			SELECT condition_id, previous_condition_id, patient_id, status, condition_non_coded, concept_id, onset_date, additional_detail, end_date, creator, date_created, voided, voided_by, date_voided, void_reason, uuid FROM `conditions`;
+		</sql>
+	</changeSet>
 </databaseChangeLog>
