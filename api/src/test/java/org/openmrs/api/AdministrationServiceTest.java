@@ -9,10 +9,10 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -448,6 +448,18 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		
 		adminService.saveGlobalProperty(
 			new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, localeList));
+	}
+
+	@Test
+	public void saveGlobalProperty_shouldFailIfDefaultLocaleNotInAllowedLocaleList() {
+
+		Locale defaultLocale = new Locale("fr");
+
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("is not in allowed locales list");
+
+		adminService.saveGlobalProperty(
+			new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, defaultLocale.toString()));
 	}
 	
 	@Test
