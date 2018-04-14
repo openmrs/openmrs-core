@@ -105,19 +105,25 @@ public class ModuleFileParser {
 	 */
 	@Deprecated
 	public ModuleFileParser(File moduleFile) {
-		if (moduleFile == null) {
-			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.fileCannotBeNull"));
-		}
+		this.messageSourceService = Context.getMessageSourceService();
+		validateFileIsNotNull(moduleFile);
+		validateFileHasModuleFileExtension(moduleFile);
+		this.moduleFile = moduleFile;
+	}
 
+	private void validateFileIsNotNull(File moduleFile) {
+		if (moduleFile == null) {
+			throw new ModuleException(messageSourceService.getMessage("Module.error.fileCannotBeNull"));
+		}
+	}
+
+	private void validateFileHasModuleFileExtension(File moduleFile) {
 		if (!moduleFile.getName().endsWith(OPENMRS_MODULE_FILE_EXTENSION)) {
-			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.invalidFileExtension"),
+			throw new ModuleException(messageSourceService.getMessage("Module.error.invalidFileExtension"),
 				moduleFile.getName());
 		}
-
-		this.moduleFile = moduleFile;
-		this.messageSourceService = Context.getMessageSourceService();
 	}
-	
+
 	/**
 	 * Convenience constructor to parse the given inputStream file into an omod. <br>
 	 * This copies the stream into a temporary file just so things can be parsed.<br>
@@ -203,13 +209,8 @@ public class ModuleFileParser {
 	 * @since 2.2.0
 	 */
 	public Module parse(File moduleFile) {
-		if (moduleFile == null) {
-			throw new ModuleException(messageSourceService.getMessage("Module.error.fileCannotBeNull"));
-		}
-		if (!moduleFile.getName().endsWith(".omod")) {
-			throw new ModuleException(messageSourceService.getMessage("Module.error.invalidFileExtension"),
-				moduleFile.getName());
-		}
+		validateFileIsNotNull(moduleFile);
+		validateFileHasModuleFileExtension(moduleFile);
 		return createModule(getModuleConfigXml(moduleFile), moduleFile);
 	}
 
