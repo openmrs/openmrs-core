@@ -79,7 +79,7 @@ public class BinaryDataHandlerTest {
 	/** This method sets up the test data's filepath for the mime type tests  **/
 	@Before
 	public void initFilepathForMimetypeTests() {
-		filepath = new File("target" + File.separator + "test-classes").getAbsolutePath();
+		filepath = new File("target", "test-classes").getAbsolutePath();
 	}
 	
 	@Test

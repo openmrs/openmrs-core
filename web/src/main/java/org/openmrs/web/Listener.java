@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -287,7 +288,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			OpenmrsUtil.setApplicationDataDirectory(appDataDir);
 		} else if (!"openmrs".equalsIgnoreCase(WebConstants.WEBAPP_NAME)) {
 			OpenmrsUtil.setApplicationDataDirectory(
-			    OpenmrsUtil.getApplicationDataDirectory() + File.separator + WebConstants.WEBAPP_NAME);
+			    Paths.get(OpenmrsUtil.getApplicationDataDirectory(), WebConstants.WEBAPP_NAME).toString());
 		}
 	}
 	
@@ -338,7 +339,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	private void clearDWRFile(ServletContext servletContext) {
 		String realPath = servletContext.getRealPath("");
 		String absPath = realPath + "/WEB-INF/dwr-modules.xml";
-		File dwrFile = new File(absPath.replace("/", File.separator));
+		File dwrFile = Paths.get(absPath).toFile();
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
@@ -492,9 +493,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @param servletContext the current servlet context for the webapp
 	 */
 	public static void loadBundledModules(ServletContext servletContext) {
-		String path = servletContext.getRealPath("");
-		path += File.separator + "WEB-INF" + File.separator + "bundledModules";
-		File folder = new File(path);
+		File folder = Paths.get(servletContext.getRealPath(""),"WEB-INF","bundledModules").toFile();
 		
 		if (!folder.exists()) {
 			log.warn("Bundled module folder doesn't exist: " + folder.getAbsolutePath());

@@ -77,7 +77,7 @@ public class TextHandlerTest {
 	/** This method sets up the test data's parameters for the mime type tests  **/
 	@Before
 	public void initVariablesForMimetypeTests() {
-		filepath = new File("target" + File.separator + "test-classes").getAbsolutePath();
+		filepath = new File("target", "test-classes").getAbsolutePath();
 		content = "Teststring";
 	}
 	

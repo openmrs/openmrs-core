@@ -19,6 +19,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 
@@ -81,9 +82,8 @@ public class ImageHandlerTest {
 	/** This method sets up the test data's parameters for the mime type tests  **/
 	@Before
 	public void initVariablesForMimetypeTests() {
-		filepath = new File("target" + File.separator + "test-classes").getAbsolutePath();
-		sourceFile = new File(
-		        "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestImage.png");
+		filepath = Paths.get("target","test-classes").toAbsolutePath().toString();
+		sourceFile = Paths.get("src","test", "resources", "ComplexObsTestImage.png").toFile();
 	}
 	
 	@Test

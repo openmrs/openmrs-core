@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
+import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
@@ -117,7 +118,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				if (!file.isDirectory()) {
 					continue;
 				}
-				File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
+				File dir = Paths.get(devDir.getAbsolutePath(), file.getName() , "target" , "classes" ).toFile();
 				if (dir.exists()) {
 					Collection<File> files = FileUtils.listFiles(dir, new String[] { "class" }, true);
 					addClassFilePackages(files, dir.getAbsolutePath().length() + 1);
@@ -213,7 +214,7 @@ public class ModuleClassLoader extends URLClassLoader {
 						if (!file.isDirectory()) {
 							continue;
 						}
-						File dir = new File(devDir, file.getName() + File.separator + "target" + File.separator + "classes" + File.separator);
+						File dir = Paths.get(devDir.getAbsolutePath(),file.getName(), "target" , "classes" ).toFile();
 						if (dir.exists()) {
 							result.add(dir.toURI().toURL());
 							devFolderNames.add(file.getName());

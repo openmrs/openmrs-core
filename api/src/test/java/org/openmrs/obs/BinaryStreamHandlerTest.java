@@ -18,6 +18,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.nio.file.Paths;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -80,7 +81,7 @@ public class BinaryStreamHandlerTest {
 	/** This method sets up the test data's filepath for the mime type tests  **/
 	@Before
 	public void initFilepathForMimetypeTests() {
-		filepath = new File("target" + File.separator + "test-classes").getAbsolutePath();
+		filepath = Paths.get("target","test-classes").toAbsolutePath().toString();
 	}
 	
 	@Test
