@@ -13,6 +13,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +40,6 @@ public class CohortTest {
 		
 		Cohort cohort = new Cohort("name", "description", ids);
 		Arrays.stream(ids).forEach(id -> assertTrue(cohort.contains(id)));
-		
 	}
 	
 	@Test
@@ -165,4 +168,43 @@ public class CohortTest {
         double secondsToSet = (endTime - startTime)/1000;
         Assert.assertTrue("Setting cohort of size " + cohortSize + " took " + secondsToSet + " seconds", secondsToSet < 5);
     }
+
+	@Test
+	public void intersect_shouldNotContainDuplicatePatientIDs() throws Exception {
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = dateFormat.parse("2017-01-01 00:00:00");
+		Date startDate2 = dateFormat.parse("20017-02-15 00:00:00");
+		Date endDate = dateFormat.parse("2017-01-15 00:00:00");
+		Date endDate2 = dateFormat.parse("2017-02-20 00:00:00");
+		
+		Cohort cohortA = new Cohort(3);
+		Cohort cohortB = new Cohort (4);
+
+		CohortMembership membershipAOne = new CohortMembership(7, startDate);
+		membershipAOne.setEndDate(endDate);
+		
+		CohortMembership membershipATwo = new CohortMembership(7, startDate2);
+		membershipATwo.setEndDate(endDate2);
+		
+		CohortMembership membershipBOne = new CohortMembership(7, startDate);
+		membershipBOne.setEndDate(endDate);
+		
+		CohortMembership membershipBTwo = new CohortMembership(7, startDate2);
+		membershipBTwo.setEndDate(endDate2);
+		
+		cohortA.addMembership(membershipAOne);
+		cohortA.addMembership(membershipATwo);
+
+		cohortB.addMembership(membershipBOne);
+		cohortB.addMembership(membershipBTwo);
+
+		Cohort cohortIntersect = Cohort.intersect(cohortA,cohortB);
+		cohortIntersect.getMemberships().forEach(m -> {
+			assertTrue(m.getPatientId().equals(7));
+			assertNull(m.getStartDate());
+		});
+		assertEquals(1, cohortIntersect.getMemberships().size());
+
+	}
 }
