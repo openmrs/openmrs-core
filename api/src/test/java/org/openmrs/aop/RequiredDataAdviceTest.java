@@ -347,6 +347,26 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		@Override
 		public void setId(Integer id) {
 		}
+
+		@Override
+		public User getChangedBy() {
+			return null;
+		}
+
+		@Override
+		public void setChangedBy(User changedBy) {
+
+		}
+
+		@Override
+		public Date getDateChanged() {
+			return null;
+		}
+
+		@Override
+		public void setDateChanged(Date dateChanged) {
+
+		}
 	}
 	
 	/**
@@ -436,6 +456,26 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		@Override
 		public void setId(Integer id) {
 		}
+
+		@Override
+		public User getChangedBy() {
+			return null;
+		}
+
+		@Override
+		public void setChangedBy(User changedBy) {
+
+		}
+
+		@Override
+		public Date getDateChanged() {
+			return null;
+		}
+
+		@Override
+		public void setDateChanged(Date dateChanged) {
+
+		}
 	}
 	
 	/**
@@ -483,6 +523,26 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		
 		@Override
 		public void setId(Integer id) {
+		}
+
+		@Override
+		public User getChangedBy() {
+			return null;
+		}
+
+		@Override
+		public void setChangedBy(User changedBy) {
+
+		}
+
+		@Override
+		public Date getDateChanged() {
+			return null;
+		}
+
+		@Override
+		public void setDateChanged(Date dateChanged) {
+
 		}
 	}
 	
@@ -666,6 +726,26 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 		
 		@Override
 		public void setId(Integer id) {
+		}
+
+		@Override
+		public User getChangedBy() {
+			return null;
+		}
+
+		@Override
+		public void setChangedBy(User changedBy) {
+
+		}
+
+		@Override
+		public Date getDateChanged() {
+			return null;
+		}
+
+		@Override
+		public void setDateChanged(Date dateChanged) {
+
 		}
 	}
 	

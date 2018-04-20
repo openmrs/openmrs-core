@@ -30,10 +30,25 @@ import org.openmrs.util.OpenmrsUtil;
  * 
  * @version 1.0
  */
-public class Order extends BaseOpenmrsData {
-	
+public class Order extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 4334343L;
+
+	/*
+		Retrieves changedBy from parent class BaseChangeableOpenmrsData
+	 */
+	@Override
+	public User getChangedBy() {
+		return super.getChangedBy();
+	}
+	
+	/*
+		Retrieves dateChanged from parent class BaseChangeableOpenmrsData
+	 */
+	@Override
+	public  Date getDateChanged(){
+		return super.getDateChanged();
+	}
 	
 	/**
 	 * @since 1.9.2, 1.10
