@@ -473,10 +473,6 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	}
 	
 	/**
-	 * TODO: the behaviour of this method needs to be controlled by some sort of global property
-	 * because an implementation can define how they want their names to look (which fields to
-	 * show/hide)
-	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 * @should return negative if other name is voided
 	 * @should return negative if this name is preferred
