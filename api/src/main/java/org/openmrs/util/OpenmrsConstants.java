@@ -1081,6 +1081,8 @@ public final class OpenmrsConstants {
 		
 		props
 				.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "", "Specifies the uuid of the concept which represents drug other non coded"));
+		props.add(new GlobalProperty(GP_LOGIN_URL, LOGIN_URL,
+			"Responsible for defining the Authentication URL "));
 		props.addAll(ModuleFactory.getGlobalProperties());
 		
 		return props;
@@ -1234,6 +1236,21 @@ public final class OpenmrsConstants {
 	public static final String LOG_LEVEL_ERROR = "error";
 	
 	public static final String LOG_LEVEL_FATAL = "fatal";
+
+	/**
+	 * Default url responsible for authentication if a user is not logged in.
+	 * 
+	 * @see  #GP_LOGIN_URL
+	 */
+	public static final String LOGIN_URL = "login.htm";
+	
+	/**
+	 * Global property name that defines the default url 
+	 * responsible for authentication if user is not logged in.
+	 *
+	 *  @see #LOGIN_URL
+	 */
+	public static final String GP_LOGIN_URL = "login.url";
 	
 	/**
 	 * These enumerations should be used in ObsService and PersonService getters to help determine
