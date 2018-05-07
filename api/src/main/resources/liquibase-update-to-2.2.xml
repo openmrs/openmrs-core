@@ -201,7 +201,7 @@
 			<column name="diagnosis_coded_name" type="int" />
 			<column name="encounter_id" type="int"><constraints nullable="false" /></column>
 			<column name="patient_id" type="int"><constraints nullable="false" /></column>
-			<column name="condition_id" type="int"><constraints nullable="false" /></column>
+			<column name="condition_id" type="int"><constraints nullable="true" /></column>
 			<column name="certainty" type="varchar(255)"><constraints nullable="false" /></column>
 			<column name="rank" type="int"><constraints nullable="false" /></column>
 			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
