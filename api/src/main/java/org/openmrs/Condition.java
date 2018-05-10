@@ -43,6 +43,8 @@ public class Condition extends BaseChangeableOpenmrsData {
 	private Date onsetDate;
 
 	private Date endDate;
+	
+	private String endReason;
 
 	private Patient patient;
 
@@ -71,6 +73,26 @@ public class Condition extends BaseChangeableOpenmrsData {
 		this.onsetDate = onsetDate;
 		this.endDate = endDate;
 		this.patient = patient;
+	}
+
+	public static Condition newInstance(Condition condition) {
+		return copy(condition, new Condition());
+	}
+
+	public static Condition copy(Condition fromCondition, Condition toCondition) {
+		toCondition.setPreviousVersion(fromCondition.getPreviousVersion());
+		toCondition.setPatient(fromCondition.getPatient());
+		toCondition.setClinicalStatus(fromCondition.getClinicalStatus());
+		toCondition.setVerificationStatus(fromCondition.getVerificationStatus());
+		toCondition.setCondition(fromCondition.getCondition());
+		toCondition.setOnsetDate(fromCondition.getOnsetDate());
+		toCondition.setAdditionalDetail(fromCondition.getAdditionalDetail());
+		toCondition.setEndDate(fromCondition.getEndDate());
+		toCondition.setVoided(fromCondition.getVoided());
+		toCondition.setVoidedBy(fromCondition.getVoidedBy());
+		toCondition.setVoidReason(fromCondition.getVoidReason());
+		toCondition.setDateVoided(fromCondition.getDateVoided());
+		return toCondition;
 	}
 
 	/**
@@ -215,6 +237,24 @@ public class Condition extends BaseChangeableOpenmrsData {
 	 */
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	/**
+	 * Gets the condition end reason
+	 *
+	 * @return endReason - a string that shows the end reason of the condition
+	 */
+	public String getEndReason() {
+		return endReason;
+	}
+
+	/**
+	 * Sets the end reason
+	 *
+	 * @param endReason the end reason to be set for the condition
+	 */
+	public void setEndReason(String endReason) {
+		this.endReason = endReason;
 	}
 
 	/**
