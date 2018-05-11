@@ -9,10 +9,6 @@
  */
 package org.openmrs;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
 import java.util.Date;
 
 /**
@@ -291,4 +287,48 @@ public class Condition extends BaseChangeableOpenmrsData {
 		this.patient = patient;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		if (!super.equals(o)) {
+			return false;
+		}
+		
+		Condition condition = (Condition) o;
+		
+		if (!patient.equals(condition.patient)) {
+			return false;
+		}
+		if (clinicalStatus != condition.clinicalStatus) {
+			return false;
+		}
+		if (verificationStatus != condition.verificationStatus) {
+			return false;
+		}
+		if (!this.condition.getCoded().equals(condition.getCondition().getCoded())) {
+			return false;
+		}
+		if (this.condition.getNonCoded() != null ?
+				!this.condition.getNonCoded().equals(condition.getCondition().getNonCoded()) :
+					condition.getCondition().getNonCoded() != null) {
+			return false;
+		}
+		if (onsetDate != null ? !onsetDate.equals(condition.onsetDate) : condition.onsetDate != null) {
+			return false;
+		}
+		if (additionalDetail != null ?
+				!additionalDetail.equals(condition.additionalDetail) :
+				condition.additionalDetail != null) {
+			return false;
+		}
+		if (endDate != null ? !endDate.equals(condition.endDate) : condition.endDate != null) {
+			return false;
+		}
+		return endReason != null ? endReason.equals(condition.endReason) : condition.endReason == null;
+	}
 }
