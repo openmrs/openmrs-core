@@ -20,11 +20,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -40,19 +47,9 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientServiceTest;
-import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.api.db.PatientDAO;
-import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.validator.PatientIdentifierValidator;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import org.openmrs.test.BaseContextMockTest;
 
 /**
  * This class tests org.openmrs.{@link PatientServiceImpl}
@@ -60,37 +57,30 @@ import java.util.List;
  *
  * If you need an integration test with application context and DB, have a look at @see org.openmrs.api.{@link PatientServiceTest}
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ PatientIdentifierValidator.class, Context.class })
-public class PatientServiceImplTest {
+public class PatientServiceImplTest extends BaseContextMockTest {
 
     private PatientServiceImpl patientService;
+
+	@Mock
+	AdministrationService administrationService;
+	
+	@Mock
+	ConceptService conceptService;
+	
+	@Mock
+	ObsService obsService;
+	
+	@Mock
+	LocationService locationService;
+	
+    @Mock
     private PatientDAO patientDaoMock;
-    private AdministrationService administrationServiceMock;
-    private ConceptService conceptServiceMock;
-    private ObsService obsServiceMock;
-    private LocationService locationServiceMock;
 
     @Before
     public void before() {
         patientService = new PatientServiceImpl();
-        patientDaoMock = mock(PatientDAO.class);
         patientService.setPatientDAO(patientDaoMock);
-
-        PowerMockito.mockStatic(PatientIdentifierValidator.class);
-
-        administrationServiceMock = mock(AdministrationService.class);
-        conceptServiceMock = mock(ConceptService.class);
-        obsServiceMock = mock(ObsService.class);
-        locationServiceMock = mock(LocationService.class);
-
-        PowerMockito.mockStatic(Context.class);
-        when(Context.getMessageSourceService()).thenReturn(mock(MessageSourceService.class));
-        when(Context.getAdministrationService()).thenReturn(administrationServiceMock);
-        when(Context.getConceptService()).thenReturn(conceptServiceMock);
-        when(Context.getObsService()).thenReturn(obsServiceMock);
-        when(Context.getLocationService()).thenReturn(locationServiceMock);
-
+        this.contextMockHelper.setPatientService(patientService);
     }
 
     @Test
@@ -286,8 +276,12 @@ public class PatientServiceImplTest {
         final Date dateDied = new Date();
         final Concept causeOfDeath = new Concept(2);
 
-        when(conceptServiceMock.getConcept(anyString())).thenReturn(new Concept());
-        when(locationServiceMock.getDefaultLocation()).thenReturn(new Location());
+        when(conceptService.getConcept(anyString())).thenReturn(new Concept());
+        when(locationService.getDefaultLocation()).thenReturn(new Location());
+        
+	    UserContext userContext = mock(UserContext.class);
+	    this.contextMockHelper.setUserContext(userContext);
+	    when(userContext.hasPrivilege(anyString())).thenReturn(true);
 
         ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
         when(patientDaoMock.savePatient(argumentCaptor.capture())).thenReturn(new Patient());
@@ -302,7 +296,6 @@ public class PatientServiceImplTest {
         assertEquals(true, savedPatient.getDead());
         assertEquals(dateDied, savedPatient.getDeathDate());
         assertEquals(causeOfDeath, savedPatient.getCauseOfDeath());
-
     }
 
     private PatientIdentifier createVoidedPatientIdentifier() {
@@ -313,5 +306,4 @@ public class PatientServiceImplTest {
         patientIdentifier.setVoidReason("Testing whether voided identifiers are ignored");
         return patientIdentifier;
     }
-
 }
