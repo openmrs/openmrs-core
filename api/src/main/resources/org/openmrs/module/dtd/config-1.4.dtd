@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+	<!--
+	Top level configuration element.
+	-->
+	<!ELEMENT module (
+		(id),
+		(name),
+		(version),
+		(package),
+		(author),
+		(description),
+		(activator),
+		(updateURL?),
+		(require_version?),
+		(require_database_version?),
+		(require_modules?),
+		(aware_of_modules?),
+		(mandatory?),
+		(library*),
+		(extension*),
+		(advice*),
+		(privilege*),
+		(globalProperty*),
+		(dwr?),
+		(servlet*),
+		(filter*),
+		(filter-mapping*),
+		(messages*),
+		(mappingFiles?)
+		)>
+	<!ATTLIST module configVersion CDATA #FIXED "1.4">
+
+	<!ELEMENT id (#PCDATA)>
+	<!ELEMENT name (#PCDATA)>
+	<!ELEMENT version (#PCDATA)>
+	<!ELEMENT package (#PCDATA)>
+	<!ELEMENT author (#PCDATA)>
+	<!ELEMENT description (#PCDATA)>
+	<!ELEMENT activator (#PCDATA)>
+	<!ELEMENT updateURL (#PCDATA)>
+	<!ELEMENT require_version (#PCDATA)>
+	<!ELEMENT require_database_version (#PCDATA)>
+
+	<!ELEMENT require_modules (require_module+)>
+	<!ELEMENT require_module (#PCDATA)>
+	<!ATTLIST require_module version CDATA #IMPLIED>
+
+	<!ELEMENT aware_of_modules (aware_of_module+)>
+	<!ELEMENT aware_of_module (#PCDATA)>
+	<!ATTLIST aware_of_module version CDATA #IMPLIED>
+
+	<!ELEMENT mandatory (#PCDATA)>
+
+	<!ELEMENT library EMPTY>
+	<!ATTLIST library
+		id CDATA #REQUIRED
+		path CDATA #REQUIRED
+		type (resources|library) #REQUIRED
+		>
+
+	<!ELEMENT extension (point, class)>
+	<!ELEMENT advice (point, class)>
+	<!ELEMENT point (#PCDATA)>
+	<!ELEMENT class (#PCDATA)>
+
+	<!ELEMENT privilege (name, description)>
+
+	<!ELEMENT globalProperty (property, defaultValue?, description)>
+	<!ELEMENT property (#PCDATA)>
+	<!ELEMENT defaultValue (#PCDATA)>
+
+	<!ELEMENT dwr (allow, signatures?)>
+	<!ELEMENT allow (create*, convert*)>
+
+	<!ELEMENT create (param, include*)>
+	<!ATTLIST create creator CDATA #REQUIRED javascript CDATA #REQUIRED>
+
+	<!ELEMENT param EMPTY>
+	<!ATTLIST param name CDATA #REQUIRED value CDATA #REQUIRED>
+
+	<!ELEMENT include EMPTY>
+	<!ATTLIST include method CDATA #REQUIRED>
+
+	<!ELEMENT convert (param?)>
+	<!ATTLIST convert converter CDATA #REQUIRED match CDATA #REQUIRED>
+
+	<!ELEMENT signatures (#PCDATA)>
+
+	<!ELEMENT servlet (servlet-name, servlet-class)>
+	<!ELEMENT servlet-name (#PCDATA)>
+	<!ELEMENT servlet-class (#PCDATA)>
+
+	<!ELEMENT filter (filter-name, filter-class, init-param*)>
+	<!ELEMENT filter-name (#PCDATA)>
+	<!ELEMENT filter-class (#PCDATA)>
+	<!ELEMENT init-param (param-name, param-value)>
+	<!ELEMENT param-name (#PCDATA)>
+	<!ELEMENT param-value (#PCDATA)>
+
+	<!ELEMENT filter-mapping (filter-name, (url-pattern | servlet-name))>
+	<!ELEMENT url-pattern (#PCDATA)>
+
+	<!ELEMENT messages (lang, file)>
+	<!ELEMENT lang (#PCDATA)>
+	<!ELEMENT file (#PCDATA)>
+
+	<!ELEMENT mappingFiles (#PCDATA)>
