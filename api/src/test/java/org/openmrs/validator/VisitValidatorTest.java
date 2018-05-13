@@ -9,9 +9,12 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.openmrs.test.matchers.HasFieldErrors.hasFieldErrors;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,6 +47,8 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	
 	private VisitService visitService;
 	
+	private Calendar calendar;
+	
 	private static long DATE_TIME_2014_01_04_00_00_00_0 = 1388790000000L;
 	
 	private static long DATE_TIME_2014_02_05_00_00_00_0 = 1391554800000L;
@@ -66,6 +71,8 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		//
 		globalPropertiesTestHelper = new GlobalPropertiesTestHelper(Context.getAdministrationService());
 		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "false");
+		
+		calendar = Calendar.getInstance();
 	}
 	
 	@After
@@ -447,5 +454,132 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
 		assertEquals(true, errors.hasFieldErrors("voidReason"));
+	}
+	
+	@Test
+	public void validate_shouldFailValidationIfVisitDateBeforeBirthDate() {
+		Visit visit = new Visit();
+		Patient patient = new Patient();
+		calendar.set(1974, 4, 8);
+		patient.setBirthdate(calendar.getTime());
+		patient.setBirthdateEstimated(false);
+		visit.setPatient(patient);
+		calendar.set(1974, 4, 7);
+		visit.setStartDatetime(calendar.getTime());
+		Errors errors = new BindException(visit, "visit");
+		
+		new VisitValidator().validate(visit, errors);
+		
+		assertThat(errors, hasFieldErrors("startDatetime", "Visit.startDateCannotFallBeforeTheBirthDateOfTheSamePatient"));
+	}
+	
+	@Test
+	public void validate_shouldPassValidationIfVisitDateOnBirthDate() {
+		Visit visit = new Visit();
+		Patient patient = new Patient();
+		calendar.set(1974, 4, 8);
+		patient.setBirthdate(calendar.getTime());
+		patient.setBirthdateEstimated(false);
+		visit.setPatient(patient);
+		calendar.set(1974, 4, 8);
+		visit.setStartDatetime(calendar.getTime());
+		Errors errors = new BindException(visit, "visit");
+		
+		new VisitValidator().validate(visit, errors);
+		
+		assertThat(errors, not(hasFieldErrors("startDatetime")));
+	}
+	
+	@Test
+	public void validate_shouldPassValidationIfVisitDateAfterBirthDate() {
+		Visit visit = new Visit();
+		Patient patient = new Patient();
+		calendar.set(1974, 4, 8);
+		patient.setBirthdate(calendar.getTime());
+		patient.setBirthdateEstimated(false);
+		visit.setPatient(patient);
+		calendar.set(1974, 4, 9);
+		visit.setStartDatetime(calendar.getTime());
+		Errors errors = new BindException(visit, "visit");
+		
+		new VisitValidator().validate(visit, errors);
+		
+		assertThat(errors, not(hasFieldErrors("startDatetime")));
+	}
+	
+	@Test
+	public void validate_shouldPassValidationIfVisitDateOnEstimatedBirthDatesGracePeriod() {
+		Visit visit = new Visit();
+		Patient patient = new Patient();
+		calendar.set(2000, 7, 25);
+		patient.setBirthdate(calendar.getTime());
+		patient.setBirthdateEstimated(true);
+		calendar.set(2010, 7, 25);
+		patient.setDeathDate(calendar.getTime());
+		visit.setPatient(patient);
+		calendar.set(1995, 7, 25);
+		visit.setStartDatetime(calendar.getTime());
+		Errors errors = new BindException(visit, "visit");
+		
+		new VisitValidator().validate(visit, errors);
+		
+		assertThat(errors, not(hasFieldErrors("startDatetime")));
+	}
+	
+	@Test
+	public void validate_shouldFailValidationIfVisitDateBeforeEstimatedBirthDatesGracePeriod() {
+		Visit visit = new Visit();
+		Patient patient = new Patient();
+		calendar.set(2000, 7, 25);
+		patient.setBirthdate(calendar.getTime());
+		patient.setBirthdateEstimated(true);
+		calendar.set(2010, 7, 25);
+		patient.setDeathDate(calendar.getTime());
+		visit.setPatient(patient);
+		calendar.set(1995, 7, 24);
+		visit.setStartDatetime(calendar.getTime());
+		Errors errors = new BindException(visit, "visit");
+		
+		new VisitValidator().validate(visit, errors);
+		
+		assertThat(errors, hasFieldErrors("startDatetime", "Visit.startDateCannotFallBeforeTheBirthDateOfTheSamePatient"));
+	}
+	
+	@Test
+	public void validate_shouldPassValidationIfVisitDateOnEstimatedBirthDatesMinimumOneYearGracePeriod() {
+		Visit visit = new Visit();
+		Patient patient = new Patient();
+		calendar.set(2000, 7, 25);
+		patient.setBirthdate(calendar.getTime());
+		patient.setBirthdateEstimated(true);
+		calendar.set(2000, 8, 25);
+		patient.setDeathDate(calendar.getTime());
+		visit.setPatient(patient);
+		calendar.set(1999, 7, 25);
+		visit.setStartDatetime(calendar.getTime());
+		Errors errors = new BindException(visit, "visit");
+		
+		new VisitValidator().validate(visit, errors);
+		
+		assertThat(errors, not(hasFieldErrors("startDatetime")));
+	}
+	
+	@Test
+	public void validate_shouldFailValidationIfVisitDateBeforeEstimatedBirthDatesMinimumOneYearGracePeriod() {
+		Visit visit = new Visit();
+		Patient patient = new Patient();
+		calendar.set(2000, 7, 25);
+		patient.setBirthdate(calendar.getTime());
+		patient.setBirthdateEstimated(true);
+		calendar.set(2000, 8, 25);
+		patient.setDeathDate(calendar.getTime());
+		visit.setPatient(patient);
+		calendar.set(1999, 7, 24);
+		visit.setStartDatetime(calendar.getTime());
+		Errors errors = new BindException(visit, "visit");
+		
+		new VisitValidator().validate(visit, errors);
+		
+		assertThat(errors, hasFieldErrors("startDatetime", "Visit.startDateCannotFallBeforeTheBirthDateOfTheSamePatient"));
 	}
 }
