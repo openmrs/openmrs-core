@@ -441,11 +441,42 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Visit visit = makeVisit(42);
-		visit
-		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		
+		visit.setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
 		assertEquals(true, errors.hasFieldErrors("voidReason"));
 	}
+
+	@Test
+	public void validate_shouldFailIfStartDateTimeIsBeforeBirthDateWhereBirthDateIsNotEstimated() {
+		Calendar calendar = Calendar.getInstance();
+		Visit visit = new Visit();
+		visit.setPatient(Context.getPatientService().getPatient(2));
+		visit.getPatient().setBirthdate(calendar.getTime());
+		calendar.set(2000, 9,8);
+		visit.setStartDatetime(calendar.getTime());
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validateBirthDate(visit, errors);
+		assertEquals(true, errors.hasFieldErrors("startDatetime"));
+	}
+
+	@Test
+	public void validate_shouldFailIfStartDateTimeIsBeforeIsAboveAllowableErrorMarginOnBirthDateWhereBirthDateIsEstimated() {
+		Visit visit = new Visit();
+		visit.setVisitType(visitService.getVisitType(1));
+		visit.setPatient(Context.getPatientService().getPatient(2));
+		visit.getPatient().setBirthdateEstimated(true);
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(calendar.YEAR, -20);
+		visit.getPatient().setBirthdate(calendar.getTime());
+		Calendar calendar1 = Calendar.getInstance();
+		calendar1.add(calendar1.YEAR, -31);
+		visit.setStartDatetime(calendar1.getTime());
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validateBirthDate(visit, errors);
+		assertEquals(true, errors.hasFieldErrors("startDatetime"));
+
+	}
 }
+
+

@@ -135,6 +135,7 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 			errors.rejectValue("startDatetime", "Visit.startDateCannotFallIntoAnotherVisitOfTheSamePatient",
 			    "This visit has a start date that falls into another visit of the same patient.");
 		}
+
 	}
 	
 	private void validateStopDatetime(Visit visit, Visit otherVisit, Errors errors) {
@@ -144,7 +145,7 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 		        && visit.getStopDatetime().before(otherVisit.getStopDatetime())) {
 			errors.rejectValue("stopDatetime", "Visit.stopDateCannotFallIntoAnotherVisitOfTheSamePatient",
 			    "This visit has a stop date that falls into another visit of the same patient.");
-			
+
 		}
 		
 		if (visit.getStartDatetime() != null && visit.getStopDatetime() != null && otherVisit.getStartDatetime() != null
@@ -158,5 +159,26 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 			errors.rejectValue("stopDatetime", "Visit.visitCannotContainAnotherVisitOfTheSamePatient", message);
 		}
 		
+	}
+
+	/**
+	 * Validate Birthdate in case where it is estimated
+	 */
+	public void validateBirthDate(Visit visit, Errors errors) {
+		if (visit.getStartDatetime() != null && !visit.getPatient().getBirthdateEstimated()
+				&& visit.getPatient().getBirthdate() != null && visit.getStartDatetime()
+				.before(visit.getPatient().getBirthdate())) {
+			errors.rejectValue("startDatetime", "Visit.startDateCannotFallBeforeTheBirthDateOfTheSamePatient",
+					"This visit has a start date that falls before the birthdate of the same patient.");
+		}
+
+		if (visit.getStartDatetime() != null && visit.getPatient().getBirthdateEstimated()
+				&& visit.getPatient().getBirthdate() != null && visit.getPatient()
+				.getAge(visit.getStartDatetime()) < -0.5 * visit.getPatient().getAge()) {
+			errors.rejectValue("startDatetime", "Visit.startDateCannotFallAboveTheAllowable50%ErrorMargin"
+							+ "OnTheBirthDateOfTheSamePatient",
+					"This visit has a start date that falls before the allowable 50% "
+							+ " margin on the birthdate of the same patient.");
+		}
 	}
 }
