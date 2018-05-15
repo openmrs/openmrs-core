@@ -17,6 +17,8 @@ import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
+import junit.framework.Assert;
+
 /**
  * Unit tests for the MessageService.
  */
@@ -111,6 +113,24 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 				fail();
 			}
 		}
+		Template template = new Template();
+		template.setRecipients("recipient@example.com,recipient2@example.com");
+		template.setSubject("Using a Template");
+		template.setSender("openmrs.emailer@gmail.com");
+		Message expectedMessage = new Message();
+		expectedMessage.setRecipients("recipient@example.com,recipient2@example.com");
+		expectedMessage.setSubject("Using a Template");
+		expectedMessage.setSender("openmrs.emailer@gmail.com");
+		try {
+	    Message message = ms.prepareMessage(template);
+	    assertEquals(message,expectedMessage);
+	    
+		}
+		catch (MessageException e) {
+			
+			e.printStackTrace();
+		}
+	 
 	}
 	
 }
