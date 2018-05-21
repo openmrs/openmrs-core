@@ -57,6 +57,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+/**
+ * The MigrationHelper will be removed from openmrs-core. If you need the code migrate it to your code base.
+ * 
+ * @deprecated since 2.2.0
+ */
 @Deprecated
 public class MigrationHelper {
 
@@ -68,8 +73,11 @@ public class MigrationHelper {
 	private static final Logger log = LoggerFactory.getLogger(MigrationHelper.class);
 	
 	static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	
-	
+
+	/**
+	 * @deprecated since 2.2.0 migrate the method to your code base if needed
+	 */
+	@Deprecated
 	public static Date parseDate(String s) throws ParseException {
 		if (s == null || s.length() == 0) {
 			return null;
@@ -81,7 +89,11 @@ public class MigrationHelper {
 			return df.parse(s);
 		}
 	}
-	
+
+	/**
+	 * @deprecated since 2.2.0 migrate the method to your code base if needed
+	 */
+	@Deprecated
 	public static Document parseXml(String xml) throws ParserConfigurationException {
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		try {
@@ -110,7 +122,10 @@ public class MigrationHelper {
 	 * Takes XML like: &lt;something&gt; &lt;user date_changed="2001-03-06 08:46:53.0"
 	 * date_created="2001-03-06 08:46:53.0" username="hamish@mit.edu" first_name="Hamish"
 	 * last_name="Fraser" user_id="2001"/&gt; &lt;/something&gt; Returns the number of users added
+	 * 
+	 * @deprecated since 2.2.0 migrate the method to your code base if needed
 	 */
+	@Deprecated
 	public static int importUsers(Document document) throws ParseException {
 		int ret = 0;
 		Random rand = new Random();
@@ -155,7 +170,10 @@ public class MigrationHelper {
 	/**
 	 * Takes XML like: &lt;something&gt; &lt;location name="Cerca-la-Source"/&gt; &lt;/something&gt; returns the
 	 * number of locations added
+	 * 
+	 * @deprecated since 2.2.0 migrate the method to your code base if needed
 	 */
+	@Deprecated
 	public static int importLocations(Document document) {
 		int ret = 0;
 		LocationService ls = Context.getLocationService();
@@ -188,7 +206,10 @@ public class MigrationHelper {
 	 * true, and no user exists with the given username, one will be created. If autoAddRole is
 	 * true, then whenever a user is auto-created, if a role exists with the same name as
 	 * relationshipType.name, then the user will be added to that role
+	 * 
+	 * @deprecated since 2.2.0 migrate the method to your code base if needed
 	 */
+	@Deprecated
 	public static int importRelationships(Collection<String> relationships, boolean autoCreateUsers, boolean autoAddRole) {
 		PatientService ps = Context.getPatientService();
 		UserService us = Context.getUserService();
@@ -281,7 +302,11 @@ public class MigrationHelper {
 		}
 		return addedSoFar;
 	}
-	
+
+	/**
+	 * @deprecated since 2.2.0 migrate the method to your code base if needed
+	 */
+	@Deprecated
 	public static int importProgramsAndStatuses(List<String> programWorkflow) throws ParseException {
 		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		PatientService ps = Context.getPatientService();
