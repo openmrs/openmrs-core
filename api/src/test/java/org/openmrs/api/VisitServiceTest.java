@@ -13,6 +13,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -142,7 +143,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		
 		visitTypes = visitService.getVisitTypes("Some Name");
 		assertEquals(1, visitTypes.size());
-		
+		assertTrue(visitTypes.contains(visitType));
 		//Should create a new visit type row.
 		assertEquals(4, visitService.getAllVisitTypes().size());
 	}
@@ -204,14 +205,18 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void purgeVisitType_shouldDeleteGivenVisitType() {
+		List<VisitType> visitTypes = visitService.getAllVisitTypes();
 		VisitType visitType = visitService.getVisitType(3);
 		assertNotNull(visitType);
+		assertTrue(visitTypes.contains(visitType));
 		
 		visitService.purgeVisitType(visitType);
+		visitTypes.remove(visitType);
 		
 		visitType = visitService.getVisitType(3);
 		assertNull(visitType);
-		
+		// Should remove the given
+		assertEquals(visitService.getAllVisitTypes() , visitTypes);
 		//Should reduce the existing number of visit types.
 		assertEquals(2, visitService.getAllVisitTypes().size());
 	}
@@ -241,7 +246,9 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void saveVisit_shouldAddANewVisitToTheDatabase() {
 		
 		Integer originalSize = visitService.getAllVisits().size();
-		Visit visit = new Visit(new Patient(2), new VisitType(1), new Date());
+		Patient patient = new Patient(2);
+		Visit visit = new Visit(patient, new VisitType(1), new Date());
+		assertFalse(visitService.getVisitsByPatient(patient).contains(visit));
 		
 		visit = visitService.saveVisit(visit);
 		
@@ -250,6 +257,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(visit.getCreator());
 		assertNotNull(visit.getDateCreated());
 		assertEquals(originalSize + 1, visitService.getAllVisits().size());
+		assertTrue(visitService.getVisitsByPatient(patient).contains(visit));
 	}
 	
 	/**
@@ -409,6 +417,18 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		
 		encountersByVisit = Context.getEncounterService().getEncountersByVisit(visit, false);
 		assertEquals(1, encountersByVisit.size());
+	}
+
+	/**
+	 * @see VisitService#getActiveVisitsByPatient(Patient) 
+	 */
+	@Test
+	public void getVisitsByPatient_shouldReturnEmptyCollection() {
+		assertEquals(visitService.getVisitsByPatient(null), Collections.emptyList());
+
+		Patient patient = Context.getPatientService().getPatient(2);
+		patient.setPatientId(null);
+		assertEquals(visitService.getVisitsByPatient(null), Collections.emptyList());
 	}
 	
 	@Test
@@ -786,12 +806,15 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void purgeVisit_shouldEraseTheVisitFromTheDatabase() {
-		
+		List<Visit> visits = visitService.getAllVisits();
 		int originalSize = getNumberOfAllVisitsIncludingVoided();
 		Visit visit = visitService.getVisit(1);
+		assertTrue(visits.contains(visit));
 		
 		visitService.purgeVisit(visit);
+		visits.remove(visit);
 		
+		assertEquals(visitService.getAllVisits(), visits);
 		assertEquals(originalSize - 1, getNumberOfAllVisitsIncludingVoided());
 	}
 
@@ -882,6 +905,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		
 		Integer originalSize = visitService.getAllVisits().size();
 		Visit visit = new Visit(new Patient(2), new VisitType(1), new Date());
+		assertFalse(visitService.getAllVisits().contains(visit));
 		
 		Encounter encounter = Context.getEncounterService().getEncounter(4);
 		visit.addEncounter(encounter);
@@ -903,6 +927,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(originalSize + 1, visitService.getAllVisits().size());
 		assertEquals(1, visit.getEncounters().size());
 		assertEquals(Integer.valueOf(4), ((Encounter) visit.getEncounters().toArray()[0]).getEncounterId());
+		assertTrue(visitService.getAllVisits().contains(visit));
 	}
 	
 	/**
@@ -955,6 +980,34 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 	}
 
+	/**
+	 * @see VisitService#purgeVisit(Visit) 
+	 */
+	@Test
+	public void purgeVisit_shouldPurge() {
+		Visit visit = visitService.getVisit(1);
+		assertNotNull(visit);
+
+		visitService.purgeVisit(visit);
+		visit = visitService.getVisit(1);
+		assertNull(visit);
+	}
+
+	/**
+	 * @see VisitService#purgeVisit(Visit)
+	 */
+	@Test(expected = APIException.class)
+	public void purgeVisit_shouldFailInUse() {
+		Visit visit = visitService.getVisit(1);
+		assertNotNull(visit);
+
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		encounter.setVisit(visit);
+		Context.getEncounterService().saveEncounter(encounter);
+
+		visitService.purgeVisit(visit);
+	}
+	
 	/**
 	 * @see VisitService#getAllVisitTypes(boolean)
 	 */
