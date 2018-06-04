@@ -175,18 +175,6 @@
          <groupId>org.liquibase</groupId>
          <artifactId>liquibase-core</artifactId>
       </dependency>
-      <dependency>
-         <groupId>org.openmrs.liquibase.ext</groupId>
-         <artifactId>modify-column</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.openmrs.liquibase.ext</groupId>
-         <artifactId>identity-insert</artifactId>
-      </dependency>
-       <dependency>
-         <groupId>org.openmrs.liquibase.ext</groupId>
-         <artifactId>type-converter</artifactId>
-      </dependency>
        <dependency>
            <groupId>xerces</groupId>
            <artifactId>xercesImpl</artifactId>
