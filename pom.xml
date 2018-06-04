@@ -54,6 +54,7 @@
 		<module>api</module>
 		<module>web</module>
 		<module>webapp</module>
+		<module>liquibase</module>
 	</modules>
 
 	<dependencyManagement>
@@ -276,26 +277,26 @@
 				<version>5.5.5</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-backward-codecs</artifactId>
+				<version>5.5.5</version>
+			</dependency>
+			<dependency>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
-				<version>2.0.5</version>
-			</dependency>
-			<dependency>
-				<groupId>org.openmrs.liquibase.ext</groupId>
-				<artifactId>modify-column</artifactId>
-				<version>2.0.2</version>
-			</dependency>
-			<dependency>
-				<groupId>org.openmrs.liquibase.ext</groupId>
-				<artifactId>identity-insert</artifactId>
-				<version>1.2.1</version>
+				<version>3.8.9</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openmrs.liquibase.ext</groupId>
 				<artifactId>type-converter</artifactId>
 				<version>1.0.1</version>
 			</dependency>
-
+			<dependency>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>0.9.12</version>
+				<scope>test</scope>
+			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-core</artifactId>
@@ -946,6 +947,27 @@
 								<configuration>
 									<includes>
 										<include>**/*IT.java</include>
+									</includes>
+									<excludes>
+										<exclude>**/*DatabaseIT.java</exclude>
+									</excludes>
+								</configuration>
+							</execution>
+							<execution>
+								<!-- 
+									Runs database integration tests that do not require the Spring context. The tests
+									are identified by the naming convention '*DatabaseIT.java'. They are run separately 
+									from integration tests that are based on BaseContextSensitiveTest as the 'IT2' tests 
+									drop the database at the end of each test which breaks BaseContextSensitiveTest. 
+								 -->
+								<id>integration-test-2</id>
+								<phase>test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>**/*DatabaseIT.java</include>
 									</includes>
 								</configuration>
 							</execution>

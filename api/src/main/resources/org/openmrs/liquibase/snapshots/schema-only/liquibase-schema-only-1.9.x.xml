@@ -1,0 +1,3592 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+    
+-->
+<databaseChangeLog
+	logicalFilePath="liquibase-schema-only.xml"
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
+    	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog 
+    	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet author="ben (generated)" id="1227303685425-1">
+		<createTable tableName="cohort">
+			<column autoIncrement="true" name="cohort_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="varchar(1000)"/>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-2">
+		<createTable tableName="cohort_member">
+			<column defaultValueNumeric="0" name="cohort_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="patient_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-4">
+		<createTable tableName="concept">
+			<column autoIncrement="true" name="concept_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="short_name" type="varchar(255)"/>
+			<column name="description" type="text"/>
+			<column name="form_text" type="text"/>
+			<column defaultValueNumeric="0" name="datatype_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="class_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="is_set" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="version" type="varchar(50)"/>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-5">
+		<createTable tableName="concept_answer">
+			<column autoIncrement="true" name="concept_answer_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="answer_concept" type="int"/>
+			<column name="answer_drug" type="int"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="sort_weight" type="double precision"></column>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-6">
+		<createTable tableName="concept_class">
+			<column autoIncrement="true" name="concept_class_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="description" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-7">
+		<createTable tableName="concept_datatype">
+			<column autoIncrement="true" name="concept_datatype_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="hl7_abbreviation" type="varchar(3)"/>
+			<column defaultValue="" name="description" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-9">
+		<createTable tableName="concept_description">
+			<column autoIncrement="true" name="concept_description_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="locale" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-10">
+		<createTable tableName="concept_reference_map">
+			<column autoIncrement="true" name="concept_map_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="concept_reference_term_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="concept_map_type_id" type="int" defaultValue="1">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-11">
+		<createTable tableName="concept_name">
+			<column autoIncrement="true" name="concept_name_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="concept_id" type="int"/>
+			<column defaultValue="" name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="locale" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="locale_preferred" type="BOOLEAN" defaultValueBoolean="false"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="concept_name_type" type="varchar(50)"/>
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-12">
+		<createTable tableName="concept_name_tag">
+			<column autoIncrement="true" name="concept_name_tag_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="tag" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-13">
+		<createTable tableName="concept_name_tag_map">
+			<column name="concept_name_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="concept_name_tag_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-14">
+		<createTable tableName="concept_numeric">
+			<column defaultValueNumeric="0" name="concept_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="hi_absolute" type="double precision"/>
+			<column name="hi_critical" type="double precision"/>
+			<column name="hi_normal" type="double precision"/>
+			<column name="low_absolute" type="double precision"/>
+			<column name="low_critical" type="double precision"/>
+			<column name="low_normal" type="double precision"/>
+			<column name="units" type="varchar(50)"/>
+			<column defaultValueBoolean="false" name="precise" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="display_precision" type="int" />
+		</createTable>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-15">
+		<createTable tableName="concept_proposal">
+			<column autoIncrement="true" name="concept_proposal_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="concept_id" type="int"/>
+			<column name="encounter_id" type="int"/>
+			<column defaultValue="" name="original_text" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="final_text" type="varchar(255)"/>
+			<column name="obs_id" type="int"/>
+			<column name="obs_concept_id" type="int"/>
+			<column defaultValue="UNMAPPED" name="state" remarks="Valid values are: UNMAPPED, SYNONYM, CONCEPT, REJECT" type="varchar(32)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="comments" remarks="Comment from concept admin/mapper" type="varchar(255)"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column defaultValue="" name="locale" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-16">
+		<createTable tableName="concept_proposal_tag_map">
+			<column name="concept_proposal_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="concept_name_tag_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-17">
+		<createTable tableName="concept_set">
+			<column name="concept_set_id" type="int" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="concept_set_pk" />
+			</column>
+			<column defaultValueNumeric="0" name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_set" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="sort_weight" type="double precision"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-18">
+		<createTable tableName="concept_set_derived">
+			<column defaultValueNumeric="0" name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_set" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="sort_weight" type="double precision"/>
+		</createTable>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-19">
+		<createTable tableName="concept_reference_source">
+			<column autoIncrement="true" name="concept_source_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="name" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="hl7_code" type="varchar(50)">
+				<constraints nullable="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-20">
+		<createTable tableName="concept_state_conversion">
+			<column autoIncrement="true" name="concept_state_conversion_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_id" type="int"/>
+			<column defaultValueNumeric="0" name="program_workflow_id" type="int"/>
+			<column defaultValueNumeric="0" name="program_workflow_state_id" type="int"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-21">
+		<createTable tableName="concept_word">
+			<column name="concept_word_id" type="int" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="concept_word_pk"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="word" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="locale" type="varchar(20)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="concept_name_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="weight" type="double precision" defaultValueNumeric="1"/>
+		</createTable>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-22">
+		<createTable tableName="drug">
+			<column autoIncrement="true" name="drug_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="name" type="varchar(50)"/>
+			<column defaultValueBoolean="false" name="combination" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="dosage_form" type="int"/>
+			<column name="dose_strength" type="double precision"/>
+			<column name="maximum_daily_dose" type="double precision"/>
+			<column name="minimum_daily_dose" type="double precision"/>
+			<column name="route" type="int"/>
+			<column name="units" type="varchar(50)"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-23">
+		<createTable tableName="drug_ingredient">
+			<column defaultValueNumeric="0" name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="ingredient_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-24">
+		<createTable tableName="drug_order">
+			<column defaultValueNumeric="0" name="order_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="drug_inventory_id" type="int"/>
+			<column name="dose" type="double precision"/>
+			<column name="equivalent_daily_dose" type="double precision"/>
+			<column name="units" type="varchar(255)"/>
+			<column name="frequency" type="varchar(255)"/>
+			<column defaultValueBoolean="false" name="prn" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="complex" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="quantity" type="int"/>
+		</createTable>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-25">
+		<createTable tableName="encounter">
+			<column autoIncrement="true" name="encounter_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="encounter_type" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="patient_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="provider_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="location_id" type="int"/>
+			<column name="form_id" type="int"/>
+			<column name="encounter_datetime" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="visit_id" type="int"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-26">
+		<createTable tableName="encounter_type">
+			<column autoIncrement="true" name="encounter_type_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="name" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+			<column name="edit_privilege" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+			<column name="view_privilege" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-27">
+		<createTable tableName="field">
+			<column autoIncrement="true" name="field_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="text"/>
+			<column name="field_type" type="int"/>
+			<column name="concept_id" type="int"/>
+			<column name="table_name" type="varchar(50)"/>
+			<column name="attribute_name" type="varchar(50)"/>
+			<column name="default_value" type="text"/>
+			<column defaultValueBoolean="false" name="select_multiple" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-28">
+		<createTable tableName="field_answer">
+			<column defaultValueNumeric="0" name="field_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="answer_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-29">
+		<createTable tableName="field_type">
+			<column autoIncrement="true" name="field_type_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="name" type="varchar(50)"/>
+			<column name="description" type="text"/>
+			<column defaultValueBoolean="false" name="is_set" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-30">
+		<createTable tableName="form">
+			<column autoIncrement="true" name="form_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="version" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="build" type="int"/>
+			<column defaultValueBoolean="false" name="published" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="xslt" type="text"/>
+			<column name="template" type="text"/>
+			<column name="description" type="text"/>
+			<column name="encounter_type" type="int"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retired_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-31">
+		<createTable tableName="form_field">
+			<column autoIncrement="true" name="form_field_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="form_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="field_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="field_number" type="int"/>
+			<column name="field_part" type="varchar(5)"/>
+			<column name="page_number" type="int"/>
+			<column name="parent_form_field" type="int"/>
+			<column name="min_occurs" type="int"/>
+			<column name="max_occurs" type="int"/>
+			<column name="required" defaultValueBoolean="false" type="BOOLEAN">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="sort_weight" type="FLOAT"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-32">
+		<createTable tableName="global_property">
+			<column defaultValue="" name="property" type="varchar(255)">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="property_value" type="text"/>
+			<column name="description" type="text"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-33">
+		<createTable tableName="hl7_in_archive">
+			<column autoIncrement="true" name="hl7_in_archive_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="hl7_source" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="hl7_source_key" type="varchar(255)"/>
+			<column name="hl7_data" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="message_state" type="int" defaultValueNumeric="2" remarks="2=processed, 4=deleted"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-34">
+		<createTable tableName="hl7_in_error">
+			<column autoIncrement="true" name="hl7_in_error_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="hl7_source" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="hl7_source_key" type="text"/>
+			<column name="hl7_data" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="error" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="error_details" type="text"/>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-35">
+		<createTable tableName="hl7_in_queue">
+			<column autoIncrement="true" name="hl7_in_queue_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="hl7_source" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="hl7_source_key" type="text"/>
+			<column name="hl7_data" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column name="message_state" defaultValueNumeric="0" remarks="0=pending, 1=processing, 2=processed, 3=error" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_processed" type="DATETIME"/>
+			<column name="error_msg" type="text"/>
+			<column name="date_created" type="DATETIME"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-36">
+		<createTable tableName="hl7_source">
+			<column autoIncrement="true" name="hl7_source_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="text"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-37">
+		<createTable tableName="location">
+			<column autoIncrement="true" name="location_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="varchar(255)"/>
+			<column name="address1" type="varchar(255)"/>
+			<column name="address2" type="varchar(255)"/>
+			<column name="city_village" type="varchar(255)"/>
+			<column name="state_province" type="varchar(255)"/>
+			<column name="postal_code" type="varchar(50)"/>
+			<column name="country" type="varchar(50)"/>
+			<column name="latitude" type="varchar(50)"/>
+			<column name="longitude" type="varchar(50)"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="county_district" type="varchar(50)"/>
+			<column name="address3" type="varchar(255)"/>
+			<column name="address4" type="varchar(255)"/>
+			<column name="address5" type="varchar(255)"/>
+			<column name="address6" type="varchar(255)"/>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="parent_location" type="int"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-39">
+		<createTable tableName="note">
+			<column defaultValueNumeric="0" name="note_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="note_type" type="varchar(50)"/>
+			<column name="patient_id" type="int"/>
+			<column name="obs_id" type="int"/>
+			<column name="encounter_id" type="int"/>
+			<column name="text" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column name="priority" type="int"/>
+			<column name="parent" type="int"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-40">
+		<createTable tableName="notification_alert">
+			<column autoIncrement="true" name="alert_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="text" type="varchar(512)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="satisfied_by_any" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="alert_read" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_to_expire" type="DATETIME"/>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-41">
+		<createTable tableName="notification_alert_recipient">
+			<column name="alert_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="user_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="alert_read" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_changed" type="timestamp"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-42">
+		<createTable tableName="notification_template">
+			<column autoIncrement="true" name="template_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="name" type="varchar(50)"/>
+			<column name="template" type="text"/>
+			<column name="subject" type="varchar(100)"/>
+			<column name="sender" type="varchar(255)"/>
+			<column name="recipients" type="varchar(512)"/>
+			<column defaultValueNumeric="0" name="ordinal" type="int"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-43">
+		<createTable tableName="obs">
+			<column autoIncrement="true" name="obs_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="person_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="encounter_id" type="int"/>
+			<column name="order_id" type="int"/>
+			<column name="obs_datetime" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="location_id" type="int"/>
+			<column name="obs_group_id" type="int"/>
+			<column name="accession_number" type="varchar(255)"/>
+			<column name="value_group_id" type="int"/>
+			<column name="value_boolean" type="BOOLEAN"/>
+			<column name="value_coded" type="int"/>
+			<column name="value_coded_name_id" type="int"/>
+			<column name="value_drug" type="int"/>
+			<column name="value_datetime" type="DATETIME"/>
+			<column name="value_numeric" type="double precision"/>
+			<column name="value_modifier" type="varchar(2)"/>
+			<column name="value_text" type="text"/>
+			<column name="value_complex" type="varchar(255)"/>
+			<column name="comments" type="varchar(255)"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-44">
+		<createTable tableName="order_type">
+			<column autoIncrement="true" name="order_type_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="description" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-45">
+		<createTable tableName="orders">
+			<column autoIncrement="true" name="order_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="order_type_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="orderer" type="int"/>
+			<column name="encounter_id" type="int"/>
+			<column name="instructions" type="text"/>
+			<column name="start_date" type="DATETIME"/>
+			<column name="auto_expire_date" type="DATETIME"/>
+			<column defaultValueBoolean="false" name="discontinued" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="discontinued_date" type="DATETIME"/>
+			<column name="discontinued_by" type="int"/>
+			<column name="discontinued_reason" type="int"/>
+			<column name="discontinued_reason_non_coded" type="varchar(255)"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="patient_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="accession_number" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-46">
+		<createTable tableName="patient">
+			<column name="patient_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+		</createTable>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-47">
+		<createTable tableName="patient_identifier">
+			<column name="patient_identifier_id" type="int" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="patient_identifier_pk" />
+			</column>
+			<column defaultValueNumeric="0" name="patient_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="identifier" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="identifier_type" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="preferred" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="location_id" type="int"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="changed_by" type="int" />
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-48">
+		<createTable tableName="patient_identifier_type">
+			<column autoIncrement="true" name="patient_identifier_type_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="name" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column name="format" type="varchar(255)"/>
+			<column defaultValueBoolean="false" name="check_digit" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="required" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="format_description" type="varchar(255)"/>
+			<column name="validator" type="varchar(200)"/>
+			<column name="location_behavior" type="varchar(50)">
+				<constraints nullable="true"/>
+			</column>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-49">
+		<createTable tableName="patient_program">
+			<column autoIncrement="true" name="patient_program_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="patient_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="program_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_enrolled" type="DATETIME"/>
+			<column name="date_completed" type="DATETIME"/>
+			<column name="location_id" type="int"/>
+			<column name="outcome_concept_id" type="int"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-50">
+		<createTable tableName="patient_state">
+			<column autoIncrement="true" name="patient_state_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="patient_program_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="state" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="start_date" type="DATE"/>
+			<column name="end_date" type="DATE"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-51">
+		<createTable tableName="person">
+			<column autoIncrement="true" name="person_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="gender" type="varchar(50)"/>
+			<column name="birthdate" type="DATE"/>
+			<column defaultValueBoolean="false" name="birthdate_estimated" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="dead" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="death_date" type="DATETIME"/>
+			<column name="cause_of_death" type="int"/>
+			<column name="creator" type="int">
+				<constraints nullable="true"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-52">
+		<createTable tableName="person_address">
+			<column autoIncrement="true" name="person_address_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="person_id" type="int"/>
+			<column defaultValueBoolean="false" name="preferred" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="address1" type="varchar(255)"/>
+			<column name="address2" type="varchar(255)"/>
+			<column name="city_village" type="varchar(255)"/>
+			<column name="state_province" type="varchar(255)"/>
+			<column name="postal_code" type="varchar(50)"/>
+			<column name="country" type="varchar(50)"/>
+			<column name="latitude" type="varchar(50)"/>
+			<column name="longitude" type="varchar(50)"/>
+			<column name="start_date" type="DATETIME"/>
+			<column name="end_date" type="DATETIME"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="county_district" type="varchar(255)"/>
+			<column name="address3" type="varchar(255)"/>
+			<column name="address4" type="varchar(255)"/>
+			<column name="address5" type="varchar(255)"/>
+			<column name="address6" type="varchar(255)"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="changed_by" type="int"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-53">
+		<createTable tableName="person_attribute">
+			<column autoIncrement="true" name="person_attribute_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="person_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="value" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="person_attribute_type_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-54">
+		<createTable tableName="person_attribute_type">
+			<column autoIncrement="true" name="person_attribute_type_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="name" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column name="format" type="varchar(50)"/>
+			<column name="foreign_key" type="int"/>
+			<column defaultValueBoolean="false" name="searchable" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="edit_privilege" type="varchar(255)"/>
+			<column name="sort_weight" type="double precision"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-55">
+		<createTable tableName="person_name">
+			<column autoIncrement="true" name="person_name_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueBoolean="false" name="preferred" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="person_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="prefix" type="varchar(50)"/>
+			<column name="given_name" type="varchar(50)"/>
+			<column name="middle_name" type="varchar(50)"/>
+			<column name="family_name_prefix" type="varchar(50)"/>
+			<column name="family_name" type="varchar(50)"/>
+			<column name="family_name2" type="varchar(50)"/>
+			<column name="family_name_suffix" type="varchar(50)"/>
+			<column name="degree" type="varchar(50)"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-56">
+		<createTable tableName="privilege">
+			<column defaultValue="" name="privilege" type="varchar(255)">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="description" type="varchar(250)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-57">
+		<createTable tableName="program">
+			<column autoIncrement="true" name="program_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="outcomes_concept_id" type="int"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="name" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="varchar(500)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-58">
+		<createTable tableName="program_workflow">
+			<column autoIncrement="true" name="program_workflow_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="program_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-59">
+		<createTable tableName="program_workflow_state">
+			<column autoIncrement="true" name="program_workflow_state_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValueNumeric="0" name="program_workflow_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="initial" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="terminal" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="retired" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-60">
+		<createTable tableName="relationship">
+			<column autoIncrement="true" name="relationship_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="person_a" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="relationship" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="person_b" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="start_date" type="DATETIME" defaultValue="null"/>
+			<column name="end_date" type="DATETIME" defaultValue="null"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="changed_by" type="int"/>
+			<column defaultValueBoolean="false" name="voided" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-61">
+		<createTable tableName="relationship_type">
+			<column autoIncrement="true" name="relationship_type_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="a_is_to_b" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="b_is_to_a" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="preferred" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="weight" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="description" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-62">
+		<createTable tableName="report_object">
+			<column autoIncrement="true" name="report_object_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="varchar(1000)"/>
+			<column name="report_object_type" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="report_object_sub_type" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="xml_data" type="text"/>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="voided" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-63">
+		<createTable tableName="report_schema_xml">
+			<column autoIncrement="true" name="report_schema_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column name="xml_data" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-64">
+		<createTable tableName="role">
+			<column defaultValue="" name="role" type="varchar(50)">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="description" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-65">
+		<createTable tableName="role_privilege">
+			<column defaultValue="" name="role" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="privilege" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-66">
+		<createTable tableName="role_role">
+			<column defaultValue="" name="parent_role" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="child_role" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-67">
+		<createTable tableName="scheduler_task_config">
+			<column autoIncrement="true" name="task_config_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="varchar(1024)"/>
+			<column name="schedulable_class" type="text"/>
+			<column name="start_time" type="DATETIME"/>
+			<column name="start_time_pattern" type="varchar(50)"/>
+			<column defaultValueNumeric="0" name="repeat_interval" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="start_on_startup" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueBoolean="false" name="started" type="BOOLEAN">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValueNumeric="0" name="created_by" type="int"/>
+			<column name="date_created" type="DATETIME"/>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="last_execution_time" type="DATETIME">
+				<constraints nullable="true"/>
+			</column>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-68">
+		<createTable tableName="scheduler_task_config_property">
+			<column autoIncrement="true" name="task_config_property_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="value" type="text"/>
+			<column name="task_config_id" type="int"/>
+		</createTable>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-70">
+		<createTable tableName="user_property">
+			<column defaultValueNumeric="0" name="user_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="property" type="varchar(100)">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="property_value" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-71">
+		<createTable tableName="user_role">
+			<column defaultValueNumeric="0" name="user_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column defaultValue="" name="role" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-72">
+		<createTable tableName="users">
+			<column autoIncrement="true" name="user_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column defaultValue="" name="system_id" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="username" type="varchar(50)"/>
+			<column name="password" type="varchar(128)"/>
+			<column name="salt" type="varchar(128)"/>
+			<column name="secret_question" type="varchar(255)"/>
+			<column name="secret_answer" type="varchar(255)"/>
+			<column defaultValueNumeric="0" name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="person_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)" defaultValue="null"/>
+			<column name="uuid" type="char(38)"/>
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet author="sunbiz" id="20110914-0114">
+		<createTable tableName="concept_complex">
+			<column name="concept_id" type="int">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="handler" type="varchar(255)"/>
+		</createTable>
+	</changeSet>
+	<changeSet author="sunbiz" id="20110914-0306">
+		<createTable tableName="location_tag">
+			<column name="location_tag_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="name" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="varchar(255)" defaultValue="null"/>
+			<column name="creator" type="int" >
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime" >
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" defaultValue="null"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110914-0312" author="sunbiz">
+		<createTable tableName="location_tag_map">
+			<column name="location_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="location_tag_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="20110914-0448" author="sunbiz">
+		<createTable tableName="serialized_object">
+			<column name="serialized_object_id" type="int" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="varchar(5000)"/>
+			<column name="type" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="subtype" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="serialization_class" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="serialized_data" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_changed" type="DATETIME" />
+			<column name="changed_by" type="int"/>
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retired_by" type="int"/>
+			<column name="retire_reason" type="varchar(1000)"/>
+			<column name="uuid" type="char(38)" />
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110915-1215" author="sunbiz">
+		<createTable tableName="active_list_type">
+			<column name="active_list_type_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="name" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="varchar(255)"/>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110915-0825" author="sunbiz">
+		<createTable tableName="active_list">
+			<column name="active_list_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="active_list_type_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="person_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="start_obs_id" type="int"/>
+			<column name="stop_obs_id" type="int"/>
+			<column name="start_date" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+			<column name="end_date" type="datetime"/>
+			<column name="comments" type="varchar(255)"/>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="datetime"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110915-0845" author="sunbiz">
+		<createTable tableName="active_list_allergy">
+			<column name="active_list_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="allergy_type" type="varchar(50)"/>
+			<column name="reaction_concept_id" type="int"/>
+			<column name="severity" type="varchar(50)"/>
+		</createTable>
+	</changeSet>
+	<changeSet id="20110915-0847" author="sunbiz">
+		<createTable tableName="active_list_problem">
+			<column name="active_list_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="status" type="varchar(50)"/>
+			<column name="sort_weight" type="double precision"/>
+		</createTable>
+	</changeSet>
+	<changeSet id="20110915-0848" author="sunbiz">
+		<createTable tableName="concept_stop_word">
+			<column name="concept_stop_word_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="word" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="locale" type="varchar(20)" defaultValue="en">
+				<constraints nullable="false"/>
+			</column>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110915-1222" author="sunbiz">
+		<createTable tableName="visit_type">
+			<column name="visit_type_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="varchar(1024)"/>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)" defaultValue="null"/>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110915-1231" author="sunbiz">
+		<createTable tableName="visit">
+			<column name="visit_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="patient_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="visit_type_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_started" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_stopped" type="datetime"/>
+			<column name="indication_concept_id" type="int"/>
+			<column name="location_id" type="int"/>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="voided" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="DATETIME"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()" />
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110915-1258" author="sunbiz">
+		<createTable tableName="visit_attribute_type">
+			<column name="visit_attribute_type_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="name" type="varchar(255)"><constraints nullable="false"/></column>
+			<column name="description" type="varchar(1024)"/>
+			<column name="datatype" type="varchar(255)" />
+			<column name="datatype_config" type="text" />
+			<column name="preferred_handler" type="varchar(255)" />
+			<column name="handler_config" type="text" />
+			<column name="min_occurs" type="int"><constraints nullable="false" /></column>
+			<column name="max_occurs" type="int"></column>
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="datetime"><constraints nullable="false"/></column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="datetime" />
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" defaultValue="null"/>
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110915-1307" author="sunbiz">
+		<createTable tableName="visit_attribute">
+			<column name="visit_attribute_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="visit_id" type="int"><constraints nullable="false" /></column>
+			<column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+			<column name="value_reference" type="text"><constraints nullable="false" /></column>
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="datetime"><constraints nullable="false"/></column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="datetime" />
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int" />
+			<column name="date_voided" type="datetime" />
+			<column name="void_reason" type="varchar(255)" defaultValue="null"/>
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110915-1325" author="sunbiz">
+		<createTable tableName="location_attribute_type">
+			<column name="location_attribute_type_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="description" type="varchar(1024)" />
+			<column name="datatype" type="varchar(255)" />
+			<column name="datatype_config" type="text" />
+			<column name="preferred_handler" type="varchar(255)" />
+			<column name="handler_config" type="text" />
+			<column name="min_occurs" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="max_occurs" type="int"></column>
+			<column name="creator" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int" />
+			<column name="date_changed" type="datetime" />
+			<column name="retired" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired_by" type="int" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" defaultValue="null" />
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110915-1337" author="sunbiz">
+		<createTable tableName="location_attribute">
+			<column name="location_attribute_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="location_id" type="int"><constraints nullable="false" /></column>
+			<column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+			<column name="value_reference" type="text"><constraints nullable="false" /></column>
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="datetime"><constraints nullable="false"/></column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="datetime" />
+			<column name="voided" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int" />
+			<column name="date_voided" type="datetime" />
+			<column name="void_reason" type="varchar(255)" defaultValue="null"/>
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110915-1435" author="sunbiz">
+		<createTable tableName="concept_reference_term">
+			<column name="concept_reference_term_id" type="int" autoIncrement="true" >
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="concept_source_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="name" type="varchar(255)"/>
+			<column name="code" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="version" type="varchar(255)"/>
+			<column name="description" type="varchar(255)"/>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_changed" type="DATETIME"/>
+			<column name="changed_by" type="int"/>
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int"/>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110915-1450" author="sunbiz">
+		<createTable tableName="concept_map_type">
+			<column name="concept_map_type_id" type="int" autoIncrement="true" >
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="description" type="varchar(255)"/>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME" />
+			<column name="is_hidden" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int" />
+			<column name="date_retired" type="DATETIME" />
+			<column name="retire_reason" type="varchar(255)" />
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110915-1528" author="sunbiz">
+		<createTable tableName="concept_reference_term_map">
+			<column name="concept_reference_term_map_id" type="int" autoIncrement="true" >
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="term_a_id" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="term_b_id" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="a_is_to_b_id" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME" />
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+		</createTable>
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110426-11701-create-provider-table" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="provider" />
+			</not>
+		</preConditions>
+		<comment>
+			Create provider table
+		</comment>
+		<createTable tableName="provider">
+			<column name="provider_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="person_id" type="int">
+				<constraints nullable="true" />
+			</column>
+			<column name="name" type="varchar(255)"></column>
+			<column name="identifier" type="varchar(255)"><constraints nullable="false" /></column>
+			<column name="creator" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int" />
+			<column name="date_changed" type="datetime" />
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired_by" type="int" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" defaultValue="null" />
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="provider_changed_by_fk"
+								 baseTableName="provider" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="provider_person_id_fk"
+								 baseTableName="provider" baseColumnNames="person_id"
+								 referencedTableName="person" referencedColumnNames="person_id" />
+
+		<addForeignKeyConstraint constraintName="provider_retired_by_fk"
+								 baseTableName="provider" baseColumnNames="retired_by"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="provider_creator_fk"
+								 baseTableName="provider" baseColumnNames="creator"
+								 referencedTableName="users" referencedColumnNames="user_id" />
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
+		</modifySql>
+	</changeSet>
+	<changeSet id="20110705-2311-create-encounter-role-table" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="encounter_role"/></not>
+		</preConditions>
+		<comment>Creating encounter_role table</comment>
+		<createTable tableName="encounter_role">
+			<column name="encounter_role_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="name" type="varchar(255)"><constraints nullable="false"/></column>
+			<column name="description" type="varchar(1024)"/>
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="datetime"><constraints nullable="false"/></column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="datetime" />
+			<column name="retired" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" defaultValue="null"/>
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="encounter_role_creator_fk"
+								 baseTableName="encounter_role" baseColumnNames="creator" referencedTableName="users"
+								 referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="encounter_role_changed_by_fk"
+								 baseTableName="encounter_role" baseColumnNames="changed_by" referencedTableName="users"
+								 referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="encounter_role_retired_by_fk"
+								 baseTableName="encounter_role" baseColumnNames="retired_by" referencedTableName="users"
+								 referencedColumnNames="user_id" />
+		<modifySql dbms="mssql">
+			<replace replace="CHAR(38)" with="UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID()"/>
+		</modifySql>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-73">
+		<addPrimaryKey columnNames="cohort_id, patient_id" tableName="cohort_member"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-75">
+		<addPrimaryKey columnNames="concept_id, concept_set" tableName="concept_set_derived"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-77">
+		<addPrimaryKey columnNames="ingredient_id, concept_id" tableName="drug_ingredient"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-78">
+		<addPrimaryKey columnNames="field_id, answer_id" tableName="field_answer"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-79">
+		<addPrimaryKey columnNames="alert_id, user_id" tableName="notification_alert_recipient"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-81">
+		<addPrimaryKey columnNames="privilege, role" tableName="role_privilege"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-82">
+		<addPrimaryKey columnNames="parent_role, child_role" tableName="role_role"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-83">
+		<addPrimaryKey columnNames="user_id, property" tableName="user_property"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-84">
+		<addPrimaryKey columnNames="role, user_id" tableName="user_role"/>
+	</changeSet>
+	<changeSet id="20110914-0317" author="sunbiz">
+		<addPrimaryKey tableName="location_tag_map" columnNames="location_id,location_tag_id" constraintName="key_for_location_tag_map"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-85">
+		<createIndex indexName="concept_class_retired_status" tableName="concept_class" unique="false">
+			<column name="retired"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-86">
+		<createIndex indexName="concept_datatype_retired_status" tableName="concept_datatype" unique="false">
+			<column name="retired"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-87">
+		<createIndex indexName="name_of_concept" tableName="concept_name" unique="false">
+			<column name="name"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-88">
+		<createIndex indexName="user_who_created_name_tag" tableName="concept_name_tag" unique="false">
+			<column name="creator"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-89">
+		<createIndex indexName="user_who_voided_name_tag" tableName="concept_name_tag" unique="false">
+			<column name="voided_by"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-90">
+		<createIndex indexName="unique_hl7_code" tableName="concept_reference_source" unique="false">
+			<column name="hl7_code"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-91">
+		<createIndex indexName="unique_workflow_concept_in_conversion" tableName="concept_state_conversion" unique="true">
+			<column name="program_workflow_id"/>
+			<column name="concept_id"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-92">
+		<createIndex indexName="word_in_concept_name" tableName="concept_word" unique="false">
+			<column name="word"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-93">
+		<createIndex indexName="encounter_type_retired_status" tableName="encounter_type" unique="false">
+			<column name="retired"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-94">
+		<createIndex indexName="field_retired_status" tableName="field" unique="false">
+			<column name="retired"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-95">
+		<createIndex indexName="name_of_location" tableName="location" unique="false">
+			<column name="name"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-96">
+		<createIndex indexName="location_retired_status" tableName="location" unique="false">
+			<column name="retired"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-97">
+		<createIndex indexName="order_type_retired_status" tableName="order_type" unique="false">
+			<column name="retired"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-98">
+		<createIndex indexName="identifier_name" tableName="patient_identifier" unique="false">
+			<column name="identifier"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-99">
+		<createIndex indexName="patient_identifier_type_retired_status" tableName="patient_identifier_type" unique="false">
+			<column name="retired"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-100">
+		<createIndex indexName="person_birthdate" tableName="person" unique="false">
+			<column name="birthdate"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-101">
+		<createIndex indexName="person_death_date" tableName="person" unique="false">
+			<column name="death_date"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-102">
+		<createIndex indexName="attribute_is_searchable" tableName="person_attribute_type" unique="false">
+			<column name="searchable"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-103">
+		<createIndex indexName="name_of_attribute" tableName="person_attribute_type" unique="false">
+			<column name="name"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-104">
+		<createIndex indexName="person_attribute_type_retired_status" tableName="person_attribute_type" unique="false">
+			<column name="retired"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-105">
+		<createIndex indexName="first_name" tableName="person_name" unique="false">
+			<column name="given_name"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-106">
+		<createIndex indexName="last_name" tableName="person_name" unique="false">
+			<column name="family_name"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-107">
+		<createIndex indexName="middle_name" tableName="person_name" unique="false">
+			<column name="middle_name"/>
+		</createIndex>
+	</changeSet>
+	<changeSet id="20110914-0509" author="sunbiz">
+		<createIndex tableName="concept_word" indexName="concept_word_concept_idx">
+			<column name="concept_id" />
+		</createIndex>
+	</changeSet>
+	<changeSet id="20110914-0943" author="sunbiz">
+		<createIndex tableName="concept_set" indexName="idx_concept_set_concept">
+			<column name="concept_id"/>
+		</createIndex>
+	</changeSet>
+	<changeSet id="20110914-0956" author="sunbiz">
+		<createIndex tableName="patient_identifier" indexName="idx_patient_identifier_patient">
+			<column name="patient_id"/>
+		</createIndex>
+	</changeSet>
+	<changeSet id="2011091-0749" author="sunbiz">
+		<createIndex tableName="encounter" indexName="encounter_datetime_idx">
+			<column name="encounter_datetime"/>
+		</createIndex>
+	</changeSet>
+	<changeSet id="2011091-0750" author="sunbiz">
+		<createIndex tableName="obs" indexName="obs_datetime_idx">
+			<column name="obs_datetime"/>
+		</createIndex>
+	</changeSet>
+	<changeSet id="20110915-1045" author="sunbiz">
+		<createIndex tableName="person_name" indexName="family_name2">
+			<column name="family_name2"/>
+		</createIndex>
+	</changeSet>
+	<changeSet id="20110915-1051" author="sunbiz">
+		<createIndex tableName="form" indexName="form_published_index">
+			<column name="published"/>
+		</createIndex>
+	</changeSet>
+	<changeSet id="20110915-1052" author="sunbiz">
+		<createIndex tableName="form" indexName="form_retired_index">
+			<column name="retired"/>
+		</createIndex>
+	</changeSet>
+	<changeSet id="20110915-1053" author="sunbiz">
+		<createIndex tableName="form" indexName="form_published_and_retired_index">
+			<column name="published"/>
+			<column name="retired"/>
+		</createIndex>
+	</changeSet>
+	<changeSet id="20110915-1103" author="sunbiz">
+		<createIndex tableName="hl7_in_archive" indexName="hl7_in_archive_message_state_idx">
+			<column name="message_state"/>
+		</createIndex>
+	</changeSet>
+	<changeSet id="20110915-1104" author="sunbiz">
+		<createIndex tableName="concept_word" indexName="concept_word_weight_index">
+			<column name="weight"/>
+		</createIndex>
+	</changeSet>
+	<changeSet id="20110915-1133" author="sunbiz">
+		<createIndex tableName="notification_alert" indexName="alert_date_to_expire_idx">
+			<column name="date_to_expire"/>
+		</createIndex>
+	</changeSet>
+	<changeSet id="20110915-1247" author="sunbiz">
+		<createIndex tableName="visit" indexName="visit_patient_index">
+			<column name="patient_id"/>
+		</createIndex>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-108">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="cohort" constraintName="user_who_changed_cohort" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-109">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="cohort" constraintName="cohort_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-110">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="cohort" constraintName="user_who_voided_cohort" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-111">
+		<addForeignKeyConstraint baseColumnNames="cohort_id" baseTableName="cohort_member" constraintName="parent_cohort" deferrable="false" initiallyDeferred="false" referencedColumnNames="cohort_id" referencedTableName="cohort"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-112">
+		<addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="cohort_member" constraintName="member_patient" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="patient_id" referencedTableName="patient"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-115">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="concept" constraintName="user_who_changed_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-116">
+		<addForeignKeyConstraint baseColumnNames="class_id" baseTableName="concept" constraintName="concept_classes" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_class_id" referencedTableName="concept_class"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-117">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept" constraintName="concept_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-118">
+		<addForeignKeyConstraint baseColumnNames="datatype_id" baseTableName="concept" constraintName="concept_datatypes" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_datatype_id" referencedTableName="concept_datatype"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-119">
+		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="concept" constraintName="user_who_retired_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-120">
+		<addForeignKeyConstraint baseColumnNames="answer_concept" baseTableName="concept_answer" constraintName="answer" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-121">
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_answer" constraintName="answers_for_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-122">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_answer" constraintName="answer_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-123">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_class" constraintName="concept_class_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-124">
+		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="concept_class" constraintName="user_who_retired_concept_class" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-125">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_datatype" constraintName="concept_datatype_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-126">
+		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="concept_datatype" constraintName="user_who_retired_concept_datatype" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-128">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="concept_description" constraintName="user_who_changed_description" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-129">
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_description" constraintName="description_for_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-130">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_description" constraintName="user_who_created_description" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-131">
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_reference_map" constraintName="map_for_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-132">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_reference_map" constraintName="map_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-134">
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_name" constraintName="name_for_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-135">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_name" constraintName="user_who_created_name" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-136">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="concept_name" constraintName="user_who_voided_this_name" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-137">
+		<addForeignKeyConstraint baseColumnNames="concept_name_id" baseTableName="concept_name_tag_map" constraintName="mapped_concept_name" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_name_id" referencedTableName="concept_name"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-139">
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_numeric" constraintName="numeric_attributes" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-140">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="concept_proposal" constraintName="user_who_changed_proposal" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-141">
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_proposal" constraintName="concept_for_proposal" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-142">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_proposal" constraintName="user_who_created_proposal" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-143">
+		<addForeignKeyConstraint baseColumnNames="encounter_id" baseTableName="concept_proposal" constraintName="encounter_for_proposal" deferrable="false" initiallyDeferred="false" referencedColumnNames="encounter_id" referencedTableName="encounter"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-144">
+		<addForeignKeyConstraint baseColumnNames="obs_concept_id" baseTableName="concept_proposal" constraintName="proposal_obs_concept_id" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-145">
+		<addForeignKeyConstraint baseColumnNames="obs_id" baseTableName="concept_proposal" constraintName="proposal_obs_id" deferrable="false" initiallyDeferred="false" referencedColumnNames="obs_id" referencedTableName="obs"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-146">
+		<addForeignKeyConstraint baseColumnNames="concept_name_tag_id" baseTableName="concept_proposal_tag_map" constraintName="mapped_concept_proposal_tag" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_name_tag_id" referencedTableName="concept_name_tag"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-147">
+		<addForeignKeyConstraint baseColumnNames="concept_proposal_id" baseTableName="concept_proposal_tag_map" constraintName="mapped_concept_proposal" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_proposal_id" referencedTableName="concept_proposal"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-149">
+		<addForeignKeyConstraint baseColumnNames="concept_set" baseTableName="concept_set" constraintName="has_a" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-150">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_set" constraintName="user_who_created" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-151">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="concept_reference_source" constraintName="concept_source_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-153">
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="concept_state_conversion" constraintName="concept_triggers_conversion" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-154">
+		<addForeignKeyConstraint baseColumnNames="program_workflow_id" baseTableName="concept_state_conversion" constraintName="conversion_involves_workflow" deferrable="false" initiallyDeferred="false" referencedColumnNames="program_workflow_id" referencedTableName="program_workflow"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-155">
+		<addForeignKeyConstraint baseColumnNames="program_workflow_state_id" baseTableName="concept_state_conversion" constraintName="conversion_to_state" deferrable="false" initiallyDeferred="false" referencedColumnNames="program_workflow_state_id" referencedTableName="program_workflow_state"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-158">
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="drug" constraintName="primary_drug_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-159">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="drug" constraintName="drug_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="dkayiwa" id="1227123456789-100">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="drug" constraintName="drug_changed_by" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-160">
+		<addForeignKeyConstraint baseColumnNames="dosage_form" baseTableName="drug" constraintName="dosage_form_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-161">
+		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="drug" constraintName="drug_retired_by" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-162">
+		<addForeignKeyConstraint baseColumnNames="route" baseTableName="drug" constraintName="route_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-163">
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="drug_ingredient" constraintName="combination_drug" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-164">
+		<addForeignKeyConstraint baseColumnNames="ingredient_id" baseTableName="drug_ingredient" constraintName="ingredient" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-165">
+		<addForeignKeyConstraint baseColumnNames="drug_inventory_id" baseTableName="drug_order" constraintName="inventory_item" deferrable="false" initiallyDeferred="false" referencedColumnNames="drug_id" referencedTableName="drug"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-166">
+		<addForeignKeyConstraint baseColumnNames="order_id" baseTableName="drug_order" constraintName="extends_order" deferrable="false" initiallyDeferred="false" referencedColumnNames="order_id" referencedTableName="orders"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-167">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="encounter" constraintName="encounter_ibfk_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-168">
+		<addForeignKeyConstraint baseColumnNames="encounter_type" baseTableName="encounter" constraintName="encounter_type_id" deferrable="false" initiallyDeferred="false" referencedColumnNames="encounter_type_id" referencedTableName="encounter_type"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-169">
+		<addForeignKeyConstraint baseColumnNames="form_id" baseTableName="encounter" constraintName="encounter_form" deferrable="false" initiallyDeferred="false" referencedColumnNames="form_id" referencedTableName="form"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-170">
+		<addForeignKeyConstraint baseColumnNames="location_id" baseTableName="encounter" constraintName="encounter_location" deferrable="false" initiallyDeferred="false" referencedColumnNames="location_id" referencedTableName="location"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-171">
+		<addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="encounter" constraintName="encounter_patient" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="patient_id" referencedTableName="patient"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-173">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="encounter" constraintName="user_who_voided_encounter" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-174">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="encounter_type" constraintName="user_who_created_type" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-175">
+		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="encounter_type" constraintName="user_who_retired_encounter_type" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-176">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="field" constraintName="user_who_changed_field" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-177">
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="field" constraintName="concept_for_field" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-178">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="field" constraintName="user_who_created_field" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-179">
+		<addForeignKeyConstraint baseColumnNames="field_type" baseTableName="field" constraintName="type_of_field" deferrable="false" initiallyDeferred="false" referencedColumnNames="field_type_id" referencedTableName="field_type"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-180">
+		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="field" constraintName="user_who_retired_field" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-181">
+		<addForeignKeyConstraint baseColumnNames="answer_id" baseTableName="field_answer" constraintName="field_answer_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-182">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="field_answer" constraintName="user_who_created_field_answer" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-183">
+		<addForeignKeyConstraint baseColumnNames="field_id" baseTableName="field_answer" constraintName="answers_for_field" deferrable="false" initiallyDeferred="false" referencedColumnNames="field_id" referencedTableName="field"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-184">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="field_type" constraintName="user_who_created_field_type" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-185">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="form" constraintName="user_who_last_changed_form" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-186">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="form" constraintName="user_who_created_form" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-187">
+		<addForeignKeyConstraint baseColumnNames="encounter_type" baseTableName="form" constraintName="form_encounter_type" deferrable="false" initiallyDeferred="false" referencedColumnNames="encounter_type_id" referencedTableName="encounter_type"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-188">
+		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="form" constraintName="user_who_retired_form" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-189">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="form_field" constraintName="user_who_last_changed_form_field" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-190">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="form_field" constraintName="user_who_created_form_field" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-191">
+		<addForeignKeyConstraint baseColumnNames="field_id" baseTableName="form_field" constraintName="field_within_form" deferrable="false" initiallyDeferred="false" referencedColumnNames="field_id" referencedTableName="field"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-192">
+		<addForeignKeyConstraint baseColumnNames="form_id" baseTableName="form_field" constraintName="form_containing_field" deferrable="false" initiallyDeferred="false" referencedColumnNames="form_id" referencedTableName="form"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-193">
+		<addForeignKeyConstraint baseColumnNames="parent_form_field" baseTableName="form_field" constraintName="form_field_hierarchy" deferrable="false" initiallyDeferred="false" referencedColumnNames="form_field_id" referencedTableName="form_field"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-194">
+		<addForeignKeyConstraint baseColumnNames="hl7_source" baseTableName="hl7_in_queue" constraintName="hl7_source_with_queue" deferrable="false" initiallyDeferred="false" referencedColumnNames="hl7_source_id" referencedTableName="hl7_source"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-195">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="hl7_source" constraintName="user_who_created_hl7_source" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-196">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="location" constraintName="user_who_created_location" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-197">
+		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="location" constraintName="user_who_retired_location" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-198">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="note" constraintName="user_who_changed_note" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-199">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="note" constraintName="user_who_created_note" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-200">
+		<addForeignKeyConstraint baseColumnNames="encounter_id" baseTableName="note" constraintName="encounter_note" deferrable="false" initiallyDeferred="false" referencedColumnNames="encounter_id" referencedTableName="encounter"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-201">
+		<addForeignKeyConstraint baseColumnNames="obs_id" baseTableName="note" constraintName="obs_note" deferrable="false" initiallyDeferred="false" referencedColumnNames="obs_id" referencedTableName="obs"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-202">
+		<addForeignKeyConstraint baseColumnNames="parent" baseTableName="note" constraintName="note_hierarchy" deferrable="false" initiallyDeferred="false" referencedColumnNames="note_id" referencedTableName="note"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-203">
+		<addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="note" constraintName="patient_note" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="patient_id" referencedTableName="patient"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-204">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="notification_alert" constraintName="user_who_changed_alert" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-205">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="notification_alert" constraintName="alert_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-207">
+		<addForeignKeyConstraint baseColumnNames="alert_id" baseTableName="notification_alert_recipient" constraintName="id_of_alert" deferrable="false" initiallyDeferred="false" referencedColumnNames="alert_id" referencedTableName="notification_alert"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-208">
+		<addForeignKeyConstraint baseColumnNames="user_id" baseTableName="notification_alert_recipient" constraintName="alert_read_by_user" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-209">
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="obs" constraintName="obs_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-210">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="obs" constraintName="obs_enterer" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-211">
+		<addForeignKeyConstraint baseColumnNames="encounter_id" baseTableName="obs" constraintName="encounter_observations" deferrable="false" initiallyDeferred="false" referencedColumnNames="encounter_id" referencedTableName="encounter"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-212">
+		<addForeignKeyConstraint baseColumnNames="location_id" baseTableName="obs" constraintName="obs_location" deferrable="false" initiallyDeferred="false" referencedColumnNames="location_id" referencedTableName="location"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-213">
+		<addForeignKeyConstraint baseColumnNames="obs_group_id" baseTableName="obs" constraintName="obs_grouping_id" deferrable="false" initiallyDeferred="false" referencedColumnNames="obs_id" referencedTableName="obs"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-214">
+		<addForeignKeyConstraint baseColumnNames="order_id" baseTableName="obs" constraintName="obs_order" deferrable="false" initiallyDeferred="false" referencedColumnNames="order_id" referencedTableName="orders"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-215">
+		<addForeignKeyConstraint baseColumnNames="person_id" baseTableName="obs" constraintName="person_obs" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="person_id" referencedTableName="person"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-216">
+		<addForeignKeyConstraint baseColumnNames="value_coded" baseTableName="obs" constraintName="answer_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-217">
+		<addForeignKeyConstraint baseColumnNames="value_coded_name_id" baseTableName="obs" constraintName="obs_name_of_coded_value" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_name_id" referencedTableName="concept_name"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-218">
+		<addForeignKeyConstraint baseColumnNames="value_drug" baseTableName="obs" constraintName="answer_concept_drug" deferrable="false" initiallyDeferred="false" referencedColumnNames="drug_id" referencedTableName="drug"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-219">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="obs" constraintName="user_who_voided_obs" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-220">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="order_type" constraintName="type_created_by" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-221">
+		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="order_type" constraintName="user_who_retired_order_type" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-222">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="orders" constraintName="order_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-223">
+		<addForeignKeyConstraint baseColumnNames="discontinued_by" baseTableName="orders" constraintName="user_who_discontinued_order" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-224">
+		<addForeignKeyConstraint baseColumnNames="discontinued_reason" baseTableName="orders" constraintName="discontinued_because" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-225">
+		<addForeignKeyConstraint baseColumnNames="encounter_id" baseTableName="orders" constraintName="orders_in_encounter" deferrable="false" initiallyDeferred="false" referencedColumnNames="encounter_id" referencedTableName="encounter"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-226">
+		<addForeignKeyConstraint baseColumnNames="order_type_id" baseTableName="orders" constraintName="type_of_order" deferrable="false" initiallyDeferred="false" referencedColumnNames="order_type_id" referencedTableName="order_type"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-227">
+		<addForeignKeyConstraint baseColumnNames="orderer" baseTableName="orders" constraintName="orderer_not_drug" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-228">
+		<addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="orders" constraintName="order_for_patient" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="patient_id" referencedTableName="patient"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-229">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="orders" constraintName="user_who_voided_order" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-230">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="patient" constraintName="user_who_changed_pat" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-231">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="patient" constraintName="user_who_created_patient" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-232">
+		<addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient" constraintName="person_id_for_patient" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="person_id" referencedTableName="person"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-234">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="patient" constraintName="user_who_voided_patient" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-235">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="patient_identifier" constraintName="identifier_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-236">
+		<addForeignKeyConstraint baseColumnNames="identifier_type" baseTableName="patient_identifier" constraintName="defines_identifier_type" deferrable="false" initiallyDeferred="false" referencedColumnNames="patient_identifier_type_id" referencedTableName="patient_identifier_type"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-237">
+		<addForeignKeyConstraint baseColumnNames="location_id" baseTableName="patient_identifier" constraintName="patient_identifier_ibfk_2" deferrable="false" initiallyDeferred="false" referencedColumnNames="location_id" referencedTableName="location"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-239">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="patient_identifier" constraintName="identifier_voider" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-240">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="patient_identifier_type" constraintName="type_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-241">
+		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="patient_identifier_type" constraintName="user_who_retired_patient_identifier_type" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-242">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="patient_program" constraintName="user_who_changed" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-243">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="patient_program" constraintName="patient_program_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-244">
+		<addForeignKeyConstraint baseColumnNames="patient_id" baseTableName="patient_program" constraintName="patient_in_program" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="patient_id" referencedTableName="patient"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-245">
+		<addForeignKeyConstraint baseColumnNames="program_id" baseTableName="patient_program" constraintName="program_for_patient" deferrable="false" initiallyDeferred="false" referencedColumnNames="program_id" referencedTableName="program"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-246">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="patient_program" constraintName="user_who_voided_patient_program" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-247">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="patient_state" constraintName="patient_state_changer" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-248">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="patient_state" constraintName="patient_state_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-249">
+		<addForeignKeyConstraint baseColumnNames="patient_program_id" baseTableName="patient_state" constraintName="patient_program_for_state" deferrable="false" initiallyDeferred="false" referencedColumnNames="patient_program_id" referencedTableName="patient_program"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-250">
+		<addForeignKeyConstraint baseColumnNames="state" baseTableName="patient_state" constraintName="state_for_patient" deferrable="false" initiallyDeferred="false" referencedColumnNames="program_workflow_state_id" referencedTableName="program_workflow_state"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-251">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="patient_state" constraintName="patient_state_voider" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-252">
+		<addForeignKeyConstraint baseColumnNames="cause_of_death" baseTableName="person" constraintName="person_died_because" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-253">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="person" constraintName="user_who_changed_person" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-254">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="person" constraintName="user_who_created_person" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-255">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="person" constraintName="user_who_voided_person" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-256">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="person_address" constraintName="patient_address_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-257">
+		<addForeignKeyConstraint baseColumnNames="person_id" baseTableName="person_address" constraintName="address_for_person" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="person_id" referencedTableName="person"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-258">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="person_address" constraintName="patient_address_void" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-259">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="person_attribute" constraintName="attribute_changer" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-260">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="person_attribute" constraintName="attribute_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-261">
+		<addForeignKeyConstraint baseColumnNames="person_attribute_type_id" baseTableName="person_attribute" constraintName="defines_attribute_type" deferrable="false" initiallyDeferred="false" referencedColumnNames="person_attribute_type_id" referencedTableName="person_attribute_type"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-262">
+		<addForeignKeyConstraint baseColumnNames="person_id" baseTableName="person_attribute" constraintName="identifies_person" deferrable="false" initiallyDeferred="false" referencedColumnNames="person_id" referencedTableName="person"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-263">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="person_attribute" constraintName="attribute_voider" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-264">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="person_attribute_type" constraintName="attribute_type_changer" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-265">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="person_attribute_type" constraintName="attribute_type_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-266">
+		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="person_attribute_type" constraintName="user_who_retired_person_attribute_type" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-267">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="person_name" constraintName="user_who_made_name" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-268">
+		<addForeignKeyConstraint baseColumnNames="person_id" baseTableName="person_name" constraintName="name_for_person" deferrable="false" initiallyDeferred="false" onUpdate="CASCADE" referencedColumnNames="person_id" referencedTableName="person"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-269">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="person_name" constraintName="user_who_voided_name" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-270">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="program" constraintName="user_who_changed_program" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-271">
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="program" constraintName="program_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-272">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="program" constraintName="program_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-273">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="program_workflow" constraintName="workflow_changed_by" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-274">
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="program_workflow" constraintName="workflow_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-275">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="program_workflow" constraintName="workflow_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-276">
+		<addForeignKeyConstraint baseColumnNames="program_id" baseTableName="program_workflow" constraintName="program_for_workflow" deferrable="false" initiallyDeferred="false" referencedColumnNames="program_id" referencedTableName="program"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-277">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="program_workflow_state" constraintName="state_changed_by" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-278">
+		<addForeignKeyConstraint baseColumnNames="concept_id" baseTableName="program_workflow_state" constraintName="state_concept" deferrable="false" initiallyDeferred="false" referencedColumnNames="concept_id" referencedTableName="concept"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-279">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="program_workflow_state" constraintName="state_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-280">
+		<addForeignKeyConstraint baseColumnNames="program_workflow_id" baseTableName="program_workflow_state" constraintName="workflow_for_state" deferrable="false" initiallyDeferred="false" referencedColumnNames="program_workflow_id" referencedTableName="program_workflow"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-281">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="relationship" constraintName="relation_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-282">
+		<addForeignKeyConstraint baseColumnNames="person_a" baseTableName="relationship" constraintName="person_a_is_person" deferrable="false" initiallyDeferred="false" referencedColumnNames="person_id" referencedTableName="person"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-283">
+		<addForeignKeyConstraint baseColumnNames="person_b" baseTableName="relationship" constraintName="person_b_is_person" deferrable="false" initiallyDeferred="false" referencedColumnNames="person_id" referencedTableName="person"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-284">
+		<addForeignKeyConstraint baseColumnNames="relationship" baseTableName="relationship" constraintName="relationship_type_id" deferrable="false" initiallyDeferred="false" referencedColumnNames="relationship_type_id" referencedTableName="relationship_type"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-285">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="relationship" constraintName="relation_voider" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-286">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="relationship_type" constraintName="user_who_created_rel" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-287">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="report_object" constraintName="user_who_changed_report_object" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-288">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="report_object" constraintName="report_object_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-289">
+		<addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="report_object" constraintName="user_who_voided_report_object" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-290">
+		<addForeignKeyConstraint baseColumnNames="privilege" baseTableName="role_privilege" constraintName="privilege_definitons" deferrable="false" initiallyDeferred="false" referencedColumnNames="privilege" referencedTableName="privilege"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-291">
+		<addForeignKeyConstraint baseColumnNames="role" baseTableName="role_privilege" constraintName="role_privilege_to_role" deferrable="false" initiallyDeferred="false" referencedColumnNames="role" referencedTableName="role"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-292">
+		<addForeignKeyConstraint baseColumnNames="child_role" baseTableName="role_role" constraintName="inherited_role" deferrable="false" initiallyDeferred="false" referencedColumnNames="role" referencedTableName="role"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-293">
+		<addForeignKeyConstraint baseColumnNames="parent_role" baseTableName="role_role" constraintName="parent_role" deferrable="false" initiallyDeferred="false" referencedColumnNames="role" referencedTableName="role"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-294">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="scheduler_task_config" constraintName="scheduler_changer" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-295">
+		<addForeignKeyConstraint baseColumnNames="created_by" baseTableName="scheduler_task_config" constraintName="scheduler_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-296">
+		<addForeignKeyConstraint baseColumnNames="task_config_id" baseTableName="scheduler_task_config_property" constraintName="task_config_for_property" deferrable="false" initiallyDeferred="false" referencedColumnNames="task_config_id" referencedTableName="scheduler_task_config"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-297">
+		<addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_property" constraintName="user_property_to_users" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-298">
+		<addForeignKeyConstraint baseColumnNames="role" baseTableName="user_role" constraintName="role_definitions" deferrable="false" initiallyDeferred="false" referencedColumnNames="role" referencedTableName="role"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-299">
+		<addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_role" constraintName="user_role_to_users" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-300">
+		<addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="users" constraintName="user_who_changed_user" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="ben (generated)" id="1227303685425-301">
+		<addForeignKeyConstraint baseColumnNames="creator" baseTableName="users" constraintName="user_creator" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet author="sunbiz" id="20110914-0104">
+		<addForeignKeyConstraint constraintName="privilege_which_can_edit" baseTableName="person_attribute_type" baseColumnNames="edit_privilege" referencedTableName="privilege" referencedColumnNames="privilege"/>
+	</changeSet>
+	<changeSet author="sunbiz" id="20110914-0117">
+		<addForeignKeyConstraint constraintName="concept_attributes" baseTableName="concept_complex" baseColumnNames="concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
+	</changeSet>
+	<changeSet author="sunbiz" id="20110914-0245">
+		<addUniqueConstraint tableName="concept_name_tag" columnNames="tag" constraintName="concept_name_tag_unique_tags"/>
+	</changeSet>
+	<changeSet author="sunbiz" id="20110914-0308">
+		<addForeignKeyConstraint constraintName="location_tag_creator" baseTableName="location_tag" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet author="sunbiz" id="20110914-0310">
+		<addForeignKeyConstraint constraintName="location_tag_retired_by" baseTableName="location_tag" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110914-0314" author="sunbiz">
+		<addForeignKeyConstraint constraintName="location_tag_map_location" baseTableName="location_tag_map" baseColumnNames="location_id" referencedTableName="location" referencedColumnNames="location_id"/>
+	</changeSet>
+	<changeSet id="20110914-0315" author="sunbiz">
+		<addForeignKeyConstraint constraintName="location_tag_map_tag" baseTableName="location_tag_map" baseColumnNames="location_tag_id" referencedTableName="location_tag" referencedColumnNames="location_tag_id"/>
+	</changeSet>
+	<changeSet id="20110914-0321" author="sunbiz">
+		<addForeignKeyConstraint constraintName="parent_location" baseTableName="location" baseColumnNames="parent_location" referencedTableName="location" referencedColumnNames="location_id"/>
+	</changeSet>
+	<changeSet id="20110914-0453" author="sunbiz">
+		<addForeignKeyConstraint constraintName="serialized_object_creator" baseTableName="serialized_object" baseColumnNames="creator"	referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110914-0434" author="sunbiz">
+		<addForeignKeyConstraint constraintName="serialized_object_changed_by" baseTableName="serialized_object" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110914-0435" author="sunbiz">
+		<addForeignKeyConstraint constraintName="serialized_object_retired_by" baseTableName="serialized_object" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110914-0945" author="sunbiz">
+		<addForeignKeyConstraint baseTableName="concept_set" baseColumnNames="concept_id" constraintName="is_a" referencedTableName="concept" referencedColumnNames="concept_id"/>
+	</changeSet>
+	<changeSet id="20110914-0958" author="sunbiz">
+		<addForeignKeyConstraint baseTableName="patient_identifier" baseColumnNames="patient_id" constraintName="identifies_patient" referencedTableName="patient" referencedColumnNames="patient_id"/>
+	</changeSet>
+	<changeSet id="20110915-0258" author="sunbiz">
+		<addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_name_id" constraintName="word_for_name" referencedTableName="concept_name" referencedColumnNames="concept_name_id"/>
+	</changeSet>
+	<changeSet id="20110915-0259" author="sunbiz">
+		<addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_id" constraintName="word_for" referencedTableName="concept" referencedColumnNames="concept_id"/>
+	</changeSet>
+	<changeSet id="20110915-0357" author="sunbiz">
+		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="concept_reference_source" constraintName="user_who_retired_concept_source" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users"/>
+	</changeSet>
+	<changeSet id="20110915-0547" author="sunbiz">
+		<addForeignKeyConstraint constraintName="encounter_changed_by" baseTableName="encounter" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-0552" author="sunbiz">
+		<addForeignKeyConstraint baseTableName="encounter" baseColumnNames="provider_id" constraintName="encounter_provider" referencedTableName="person" referencedColumnNames="person_id"/>
+	</changeSet>
+	<changeSet id="20110915-0603" author="sunbiz">
+		<addForeignKeyConstraint constraintName="person_id_for_user" baseTableName="users" baseColumnNames="person_id" referencedTableName="person" referencedColumnNames="person_id"/>
+	</changeSet>
+	<changeSet id="20110915-0610" author="sunbiz">
+		<addForeignKeyConstraint constraintName="user_who_retired_this_user" baseTableName="users" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-0634" author="sunbiz">
+		<addForeignKeyConstraint constraintName="user_who_retired_relationship_type" baseTableName="relationship_type" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-0823" author="sunbiz">
+		<addForeignKeyConstraint constraintName="user_who_retired_active_list_type" baseTableName="active_list_type" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-0824" author="sunbiz">
+		<addForeignKeyConstraint constraintName="user_who_created_active_list_type" baseTableName="active_list_type" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-0836" author="sunbiz">
+		<addForeignKeyConstraint constraintName="user_who_voided_active_list" baseTableName="active_list" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-0837" author="sunbiz">
+		<addForeignKeyConstraint constraintName="user_who_created_active_list" baseTableName="active_list" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-0838" author="sunbiz">
+		<addForeignKeyConstraint constraintName="active_list_type_of_active_list" baseTableName="active_list" baseColumnNames="active_list_type_id" referencedTableName="active_list_type" referencedColumnNames="active_list_type_id"/>
+	</changeSet>
+	<changeSet id="20110915-0839" author="sunbiz">
+		<addForeignKeyConstraint constraintName="person_of_active_list" baseTableName="active_list" baseColumnNames="person_id" referencedTableName="person" referencedColumnNames="person_id" />
+	</changeSet>
+	<changeSet id="20110915-0840" author="sunbiz">
+		<addForeignKeyConstraint constraintName="concept_active_list" baseTableName="active_list" baseColumnNames="concept_id" referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
+	<changeSet id="20110915-0841" author="sunbiz">
+		<addForeignKeyConstraint constraintName="start_obs_active_list"	baseTableName="active_list" baseColumnNames="start_obs_id" referencedTableName="obs" referencedColumnNames="obs_id" />
+	</changeSet>
+	<changeSet id="20110915-0842" author="sunbiz">
+		<addForeignKeyConstraint constraintName="stop_obs_active_list" baseTableName="active_list" baseColumnNames="stop_obs_id" referencedTableName="obs" referencedColumnNames="obs_id" />
+	</changeSet>
+	<changeSet id="20110915-0846" author="sunbiz">
+		<addForeignKeyConstraint constraintName="reaction_allergy" baseTableName="active_list_allergy" baseColumnNames="reaction_concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
+	</changeSet>
+	<changeSet id="20110915-0903" author="sunbiz">
+		<addForeignKeyConstraint referencedTableName="concept_name_tag" baseColumnNames="concept_name_tag_id" baseTableName="concept_name_tag_map" referencedColumnNames="concept_name_tag_id" constraintName="mapped_concept_name_tag"/>
+	</changeSet>
+	<changeSet id="20110915-1049" author="sunbiz">
+		<addForeignKeyConstraint constraintName="patient_program_location_id" baseTableName="patient_program" baseColumnNames="location_id" referencedTableName="location" referencedColumnNames="location_id"/>
+	</changeSet>
+	<changeSet id="20110915-1135" author="sunbiz">
+		<addForeignKeyConstraint constraintName="person_address_changed_by" baseTableName="person_address" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1148" author="sunbiz">
+		<addUniqueConstraint tableName="concept_stop_word" columnNames="word,locale" constraintName="Unique_StopWord_Key"/>
+	</changeSet>
+	<changeSet id="20110915-1202" author="sunbiz">
+		<addForeignKeyConstraint constraintName="patient_identifier_changed_by"	baseTableName="patient_identifier" baseColumnNames="changed_by"	referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1203" author="sunbiz">
+		<addForeignKeyConstraint constraintName="relationship_changed_by" baseTableName="relationship" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1210" author="sunbiz">
+		<addForeignKeyConstraint baseTableName="concept_answer"	baseColumnNames="answer_drug" constraintName="answer_answer_drug_fk" referencedTableName="drug" referencedColumnNames="drug_id"/>
+	</changeSet>
+	<changeSet id="20110915-1225" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_type_creator" baseTableName="visit_type" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1226" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_type_changed_by" baseTableName="visit_type" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1227" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_type_retired_by" baseTableName="visit_type" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1240" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_type_fk"	baseTableName="visit" baseColumnNames="visit_type_id" referencedTableName="visit_type" referencedColumnNames="visit_type_id"/>
+	</changeSet>
+	<changeSet id="20110915-1241" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_location_fk" baseTableName="visit" baseColumnNames="location_id" referencedTableName="location" referencedColumnNames="location_id"/>
+	</changeSet>
+	<changeSet id="20110915-1242" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_patient_fk" baseTableName="visit" baseColumnNames="patient_id" referencedTableName="patient" referencedColumnNames="patient_id"/>
+	</changeSet>
+	<changeSet id="20110915-1243" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_creator_fk" baseTableName="visit" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1244" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_voided_by_fk" baseTableName="visit" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1245" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_changed_by_fk" baseTableName="visit" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1246" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_indication_concept_fk" baseTableName="visit" baseColumnNames="indication_concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
+	</changeSet>
+	<changeSet id="20110915-1248" author="sunbiz">
+		<addForeignKeyConstraint constraintName="encounter_visit_id_fk" baseTableName="encounter" baseColumnNames="visit_id" referencedTableName="visit" referencedColumnNames="visit_id"/>
+	</changeSet>
+	<changeSet id="20110915-1301" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_attribute_type_creator_fk" baseTableName="visit_attribute_type" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1302" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_attribute_type_changed_by_fk" baseTableName="visit_attribute_type" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1303" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_attribute_type_retired_by_fk" baseTableName="visit_attribute_type" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1312" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_attribute_visit_fk" baseTableName="visit_attribute" baseColumnNames="visit_id" referencedTableName="visit" referencedColumnNames="visit_id"/>
+	</changeSet>
+	<changeSet id="20110915-1313" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_attribute_attribute_type_id_fk" baseTableName="visit_attribute" baseColumnNames="attribute_type_id" referencedTableName="visit_attribute_type" referencedColumnNames="visit_attribute_type_id"/>
+	</changeSet>
+	<changeSet id="20110915-1314" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_attribute_creator_fk" baseTableName="visit_attribute" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1315" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_attribute_changed_by_fk" baseTableName="visit_attribute" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1316" author="sunbiz">
+		<addForeignKeyConstraint constraintName="visit_attribute_voided_by_fk" baseTableName="visit_attribute" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1317" author="sunbiz">
+		<addUniqueConstraint tableName="concept_reference_source" columnNames="hl7_code" constraintName="concept_source_unique_hl7_codes"/>
+	</changeSet>
+	<changeSet id="20110915-1320" author="sunbiz">
+		<addForeignKeyConstraint constraintName="program_outcomes_concept_id_fk" baseTableName="program" baseColumnNames="outcomes_concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
+	</changeSet>
+	<changeSet id="20110915-1323" author="sunbiz">
+		<addForeignKeyConstraint constraintName="patient_program_outcome_concept_id_fk" baseTableName="patient_program" baseColumnNames="outcome_concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
+	</changeSet>
+	<changeSet id="20110915-1327" author="sunbiz">
+		<addForeignKeyConstraint constraintName="location_attribute_type_creator_fk" baseTableName="location_attribute_type" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1328" author="sunbiz">
+		<addForeignKeyConstraint constraintName="location_attribute_type_changed_by_fk" baseTableName="location_attribute_type" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1329" author="sunbiz">
+		<addForeignKeyConstraint constraintName="location_attribute_type_retired_by_fk" baseTableName="location_attribute_type" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1342" author="sunbiz">
+		<addForeignKeyConstraint constraintName="location_attribute_location_fk" baseTableName="location_attribute" baseColumnNames="location_id" referencedTableName="location" referencedColumnNames="location_id"/>
+	</changeSet>
+	<changeSet id="20110915-1343" author="sunbiz">
+		<addForeignKeyConstraint constraintName="location_attribute_attribute_type_id_fk" baseTableName="location_attribute" baseColumnNames="attribute_type_id" referencedTableName="location_attribute_type" referencedColumnNames="location_attribute_type_id" />
+	</changeSet>
+	<changeSet id="20110915-1344" author="sunbiz">
+		<addForeignKeyConstraint constraintName="location_attribute_creator_fk" baseTableName="location_attribute" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1345" author="sunbiz">
+		<addForeignKeyConstraint constraintName="location_attribute_changed_by_fk" baseTableName="location_attribute" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1346" author="sunbiz">
+		<addForeignKeyConstraint constraintName="location_attribute_voided_by_fk" baseTableName="location_attribute" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20110915-1440" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_user_creator" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_reference_term" baseColumnNames="creator"/>
+	</changeSet>
+	<changeSet id="20110915-1441" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_user_changed" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_reference_term" baseColumnNames="changed_by"/>
+	</changeSet>
+	<changeSet id="20110915-1442" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_user_retired" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_reference_term" baseColumnNames="retired_by"/>
+	</changeSet>
+	<changeSet id="20110915-1443" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_concept_source" referencedTableName="concept_reference_source" referencedColumnNames="concept_source_id" baseTableName="concept_reference_term" baseColumnNames="concept_source_id"/>
+	</changeSet>
+	<changeSet id="20110915-1451" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_user_creator_concept_map_type" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_map_type" baseColumnNames="creator"/>
+	</changeSet>
+	<changeSet id="20110915-1452" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_user_changed_concept_map_type" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_map_type" baseColumnNames="changed_by"/>
+	</changeSet>
+	<changeSet id="20110915-1453" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_user_retired_concept_map_type" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_map_type" baseColumnNames="retired_by"/>
+	</changeSet>
+	<changeSet id="20110915-1311" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_concept_map_type" referencedTableName="concept_map_type" referencedColumnNames="concept_map_type_id" baseTableName="concept_reference_map" baseColumnNames="concept_map_type_id"/>
+	</changeSet>
+	<changeSet id="20110915-1524" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_user_changed_ref_term" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_reference_map" baseColumnNames="changed_by"/>
+	</changeSet>
+	<changeSet id="20110915-1530" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_term_a" referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" baseTableName="concept_reference_term_map" baseColumnNames="term_a_id"/>
+	</changeSet>
+	<changeSet id="20110915-1531" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_term_b" referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" baseTableName="concept_reference_term_map" baseColumnNames="term_b_id"/>
+	</changeSet>
+	<changeSet id="20110915-1532" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_concept_map_type_ref_term_map" referencedTableName="concept_map_type" referencedColumnNames="concept_map_type_id" baseTableName="concept_reference_term_map" baseColumnNames="a_is_to_b_id"/>
+	</changeSet>
+	<changeSet id="20110915-1533" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_user_creator_ref_term_map" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_reference_term_map" baseColumnNames="creator"/>
+	</changeSet>
+	<changeSet id="20110915-1534" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_user_changed_ref_term_map" referencedTableName="users" referencedColumnNames="user_id" baseTableName="concept_reference_term_map" baseColumnNames="changed_by"/>
+	</changeSet>
+	<changeSet id="20110915-1536" author="sunbiz">
+		<addForeignKeyConstraint constraintName="mapped_concept_reference_term" referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" baseTableName="concept_reference_map" baseColumnNames="concept_reference_term_id"/>
+	</changeSet>
+	<changeSet id="20120529-2230" author="mvorobey">
+		<addForeignKeyConstraint constraintName="privilege_which_can_view_encounter_type" baseTableName="encounter_type" baseColumnNames="view_privilege" referencedTableName="privilege" referencedColumnNames="privilege"/>
+	</changeSet>
+	<changeSet id="20120529-2231" author="mvorobey">
+		<addForeignKeyConstraint constraintName="privilege_which_can_edit_encounter_type" baseTableName="encounter_type" baseColumnNames="edit_privilege" referencedTableName="privilege" referencedColumnNames="privilege"/>
+	</changeSet>
+
+	<!-- Skip changesets from liquibase-update-to-2.0 when new installation -->
+	<!-- TODO: CustomChange to avoid replicated columns-->
+	<!-- TODO: Add all changesets that are not required. Only blockers now-->
+	<changeSet id="20110915-1700" author="sunbiz">
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="20090316-1008"/>
+			<column name="author" value="vanand"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10000"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="20090225-1551"/>
+			<column name="author" value="dthomas"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10001"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="20090402-1515-38-concept_map"/>
+			<column name="author" value="bwolfe"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10002"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="20090402-1515-38-concept_source"/>
+			<column name="author" value="bwolfe"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10003"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="20090402-1516-concept_map"/>
+			<column name="author" value="bwolfe"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10004"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="20090402-1516-concept_source"/>
+			<column name="author" value="bwolfe"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10005"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="20090402-1519-concept_map"/>
+			<column name="author" value="bwolfe"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10006"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="20090402-1519-concept_source"/>
+			<column name="author" value="bwolfe"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10007"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="200908291938-1"/>
+			<column name="author" value="dthomas"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10008"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="200908291938-2a"/>
+			<column name="author" value="dthomas"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10009"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="200912211118"/>
+			<column name="author" value="nribeka"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10010"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="20091215-0210"/>
+			<column name="author" value="jmiranda"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10011"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="200912091821"/>
+			<column name="author" value="djazayeri"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10012"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="20110218-1206"/>
+			<column name="author" value="rubailly"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10013"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="20110218-1210"/>
+			<column name="author" value="rubailly"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-15"/>
+			<column name="orderexecuted" value="10013"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="20110919-0638"/>
+			<column name="author" value="sunbiz"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-19"/>
+			<column name="orderexecuted" value="10015"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="20110301-1030c-fix"/>
+			<column name="author" value="sunbiz"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-19"/>
+			<column name="orderexecuted" value="10014"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+		<insert tableName="liquibasechangelog">
+			<column name="id" value="0"/>
+			<column name="author" value="bwolfe"/>
+			<column name="filename" value="liquibase-update-to-latest.xml"/>
+			<column name="dateexecuted" valueDate="2011-09-20"/>
+			<column name="orderexecuted" value="10016"/>
+			<column name="exectype" value="MARK_RAN"/>
+		</insert>
+	</changeSet>
+
+</databaseChangeLog>
