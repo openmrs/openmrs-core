@@ -126,6 +126,9 @@ public class UserValidator implements Validator {
 					errors.rejectValue("username", "error.username.pattern");
 				}
 			}
+			if(!isEmailValid(user.getEmail())) {
+				errors.rejectValue("email", "error.email.invalid");
+			}
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "username", "systemId", "retireReason");
 		}
 	}
@@ -191,6 +194,19 @@ public class UserValidator implements Validator {
 		}
 		
 		Matcher matcher = EMAIL_PATTERN.matcher(username);
+		return matcher.matches();
+	}
+	
+	/**
+	 * @return true if email is valid or null
+	 * @param email
+	 */
+	public boolean isEmailValid(String email) {
+		if (StringUtils.isBlank(email)) {
+			return true;
+		}
+		
+		Matcher matcher = EMAIL_PATTERN.matcher(email);
 		return matcher.matches();
 	}
 }

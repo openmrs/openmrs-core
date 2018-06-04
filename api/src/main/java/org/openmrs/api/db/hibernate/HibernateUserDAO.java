@@ -106,6 +106,16 @@ public class HibernateUserDAO implements UserDAO {
 		return users.get(0);
 	}
 	
+	
+	/**
+	 * @see org.openmrs.api.UserService#getUserByEmail(java.lang.String)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public User getUserByEmail(String email) {
+		return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.eq("email", email)).uniqueResult();	
+	}
+	
 	/**
 	 * @see org.openmrs.api.UserService#hasDuplicateUsername(org.openmrs.User)
 	 */
@@ -623,6 +633,19 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		
 		return query;
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#getUserByEmailOrUsername(java.lang.String)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public User getUserByEmailOrUsername(String emailOrName) throws DAOException {
+		return (User) sessionFactory.getCurrentSession().createCriteria(User.class)
+				 	.add(Restrictions.disjunction()
+				 		.add(Restrictions.eq("email", emailOrName))
+				 		.add(Restrictions.eq("name", emailOrName))			 		
+				 	).uniqueResult();	
 	}
 	
 }

@@ -41,6 +41,16 @@ public interface UserDAO {
 	public User getUserByUsername(String username) throws DAOException;
 	
 	/**
+	 * @see org.openmrs.api.UserService#getUserByEmail(java.lang.String)
+	 */
+	public User getUserByEmail(String email) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.UserService#getUserByEmailOrUsername(java.lang.String)
+	 */
+	public User getUserByEmailOrUsername(String emailOrName) throws DAOException;
+	
+	/**
 	 * @see org.openmrs.api.UserService#hasDuplicateUsername(org.openmrs.User)
 	 */
 	public boolean hasDuplicateUsername(String username, String systemId, Integer userId) throws DAOException;

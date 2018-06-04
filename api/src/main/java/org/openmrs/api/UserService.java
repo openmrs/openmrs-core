@@ -102,6 +102,25 @@ public interface UserService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.GET_USERS })
 	public User getUserByUsername(String username) throws APIException;
 	
+	
+	/**
+	 * @param email 
+	 * @return requested user
+	 * @throws APIException
+	 */
+	@Authorized( { PrivilegeConstants.GET_USERS })
+	public User getUserByEmail(String email) throws APIException;
+	
+	/**
+	 * gets the user with the specified username or email address
+	 * 
+	 * @param email Or username to look up user with
+	 * @return requested user
+	 * @throws APIException
+	 */
+	@Authorized( { PrivilegeConstants.GET_USERS })
+	public User getUserByEmailOrUsername(String emailOrName) throws APIException;
+	
 	/**
 	 * true/false if username or systemId is already in db in username or system_id columns
 	 * 
