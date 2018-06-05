@@ -310,7 +310,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 		if (verificationStatus != condition.verificationStatus) {
 			return false;
 		}
-		if (!this.condition.getCoded().equals(condition.getCondition().getCoded())) {
+		if (this.condition.getCoded() != null && !this.condition.getCoded().equals(condition.getCondition().getCoded())) {
 			return false;
 		}
 		if (this.condition.getNonCoded() != null ?
