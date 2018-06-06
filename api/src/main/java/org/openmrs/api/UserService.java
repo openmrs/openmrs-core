@@ -104,6 +104,7 @@ public interface UserService extends OpenmrsService {
 	
 	
 	/**
+	 * gets user by email
 	 * @param email 
 	 * @return requested user
 	 * @throws APIException

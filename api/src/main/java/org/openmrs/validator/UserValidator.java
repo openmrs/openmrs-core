@@ -126,9 +126,12 @@ public class UserValidator implements Validator {
 					errors.rejectValue("username", "error.username.pattern");
 				}
 			}
-			if(!isEmailValid(user.getEmail())) {
-				errors.rejectValue("email", "error.email.invalid");
+			if (!StringUtils.isBlank(user.getEmail())) {
+				if(!isEmailValid(user.getEmail())) {
+					errors.rejectValue("email", "error.email.invalid");
+				}
 			}
+
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "username", "systemId", "retireReason");
 		}
 	}
@@ -201,11 +204,7 @@ public class UserValidator implements Validator {
 	 * @return true if email is valid or null
 	 * @param email
 	 */
-	public boolean isEmailValid(String email) {
-		if (StringUtils.isBlank(email)) {
-			return true;
-		}
-		
+	private boolean isEmailValid(String email) {
 		Matcher matcher = EMAIL_PATTERN.matcher(email);
 		return matcher.matches();
 	}

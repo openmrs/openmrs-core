@@ -113,7 +113,7 @@ public class HibernateUserDAO implements UserDAO {
 	@Override
 	@SuppressWarnings("unchecked")
 	public User getUserByEmail(String email) {
-		return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.eq("email", email)).uniqueResult();	
+		return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.eq("email", email).ignoreCase()).uniqueResult();	
 	}
 	
 	/**
@@ -643,8 +643,8 @@ public class HibernateUserDAO implements UserDAO {
 	public User getUserByEmailOrUsername(String emailOrName) throws DAOException {
 		return (User) sessionFactory.getCurrentSession().createCriteria(User.class)
 				 	.add(Restrictions.disjunction()
-				 		.add(Restrictions.eq("email", emailOrName))
-				 		.add(Restrictions.eq("name", emailOrName))			 		
+				 		.add(Restrictions.eq("email", emailOrName).ignoreCase())
+				 		.add(Restrictions.eq("username", emailOrName).ignoreCase())			 		
 				 	).uniqueResult();	
 	}
 	
