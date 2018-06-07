@@ -1,0 +1,56 @@
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>org.openmrs</groupId>
+		<artifactId>openmrs</artifactId>
+		<version>2.1.4-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openmrs.liquibase</groupId>
+	<artifactId>openmrs-liquibase</artifactId>
+	<name>openmrs-liquibase</name>
+	<description>Generate and apply liquibase change sets from the console</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.api</groupId>
+			<artifactId>openmrs-api</artifactId>
+		</dependency>
+	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-maven-plugin</artifactId>
+				<version>3.6.1</version>
+				<configuration>
+					<changeLogFile>../api/src/main/resources/${changelogfile}</changeLogFile>
+					<diffTypes>${diffTypes}</diffTypes>
+					<driver>com.mysql.jdbc.Driver</driver>
+					<outputChangeLogFile>../api/src/main/resources/${outputChangelogfile}</outputChangeLogFile>
+					<password>${password}</password>
+					<url>jdbc:mysql://127.0.0.1:3306/openmrs</url>
+					<username>${username}</username>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
