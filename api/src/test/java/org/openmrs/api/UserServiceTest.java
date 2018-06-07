@@ -1362,17 +1362,5 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 		assertNotNull("User with email hank.williams@gmail not found in database", user);
 	}
-	
-	/*
-	 * @see UserService#getUserByEmailOrUsername(String)
-	 */
-	@Test
-	public void getUserByEmailOrUsername_shouldGetUserByUsingEitherEmailOrUsername() {
-		executeDataSet(XML_FILENAME);
-		User user = userService.getUserByEmailOrUsername("userWithSha512Hash");
-
-		assertNotNull("User with name userWithSha512Hash (email = hank.williams@gmail) not found in database", user);
-	}
-	
-	
+		
 }

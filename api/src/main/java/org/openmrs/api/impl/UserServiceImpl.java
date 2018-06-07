@@ -708,9 +708,4 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		return dao.getUserByEmail(email);
 	}
 
-	@Override
-	public User getUserByEmailOrUsername(String emailOrName) throws APIException {
-		return dao.getUserByEmailOrUsername(emailOrName);
-	}
-	
 }

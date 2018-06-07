@@ -635,17 +635,5 @@ public class HibernateUserDAO implements UserDAO {
 		return query;
 	}
 	
-	/**
-	 * @see org.openmrs.api.UserService#getUserByEmailOrUsername(java.lang.String)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public User getUserByEmailOrUsername(String emailOrName) throws DAOException {
-		return (User) sessionFactory.getCurrentSession().createCriteria(User.class)
-				 	.add(Restrictions.disjunction()
-				 		.add(Restrictions.eq("email", emailOrName).ignoreCase())
-				 		.add(Restrictions.eq("username", emailOrName).ignoreCase())			 		
-				 	).uniqueResult();	
-	}
 	
 }
