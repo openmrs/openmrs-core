@@ -55,6 +55,7 @@
 		<module>api</module>
 		<module>web</module>
 		<module>webapp</module>
+		<module>liquibase</module>
 	</modules>
 
 	<dependencyManagement>
