@@ -1018,43 +1018,9 @@ public class ModuleFactory {
 	 * @param module the module being executed on
 	 */
 	private static void runLiquibase(Module module) {
-		JarFile jarFile = null;
-		boolean liquibaseFileExists = false;
-		
-		try {
-			try {
-				jarFile = new JarFile(module.getFile());
-			}
-			catch (IOException e) {
-				throw new ModuleException("Unable to get jar file", module.getName(), e);
-			}
-			
-			//check whether module has a liquibase.xml
-			InputStream inStream = null;
-			ZipEntry entry = null;
-			try {
-				inStream = ModuleUtil.getResourceFromApi(jarFile, module.getModuleId(), module.getVersion(),
-				    MODULE_CHANGELOG_FILENAME);
-				if (inStream == null) {
-					// Try the old way. Loading from the root of the omod
-					entry = jarFile.getEntry(MODULE_CHANGELOG_FILENAME);
-				}
-				liquibaseFileExists = (inStream != null) || (entry != null);
-			}
-			finally {
-				IOUtils.closeQuietly(inStream);
-			}
-		}
-		finally {
-			try {
-				if (jarFile != null) {
-					jarFile.close();
-				}
-			}
-			catch (IOException e) {
-				log.warn("Unable to close jarfile: " + jarFile.getName());
-			}
-		}
+		ModuleClassLoader moduleClassLoader = ModuleFactory.getModuleClassLoaderMap().get(module);
+		InputStream inStream = moduleClassLoader.getResourceAsStream(MODULE_CHANGELOG_FILENAME);
+		boolean liquibaseFileExists = (inStream != null);
 		
 		if (liquibaseFileExists) {
 			try {
