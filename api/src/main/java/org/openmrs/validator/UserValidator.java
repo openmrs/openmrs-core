@@ -41,6 +41,8 @@ public class UserValidator implements Validator {
 	private static final Pattern EMAIL_PATTERN = Pattern
 	        .compile("^.+@.+\\..+$");
 	
+	private static final Pattern USER_ACTIVATION_KEY = Pattern.compile("^\\d+(.[A-Za-z0-9]+)$"); 
+	
 	@Autowired
 	private PersonValidator personValidator;
 
@@ -131,6 +133,13 @@ public class UserValidator implements Validator {
 					errors.rejectValue("email", "error.email.invalid");
 				}
 			}
+			
+			if (!StringUtils.isBlank(user.getUserActivationKey())) {
+				if(!isUserActivationKeyValid(user.getUserActivationKey())) {
+					errors.rejectValue("activationkey", "error.activationkey.invalid");
+				}
+			}
+
 
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "username", "systemId", "retireReason");
 		}
@@ -208,4 +217,10 @@ public class UserValidator implements Validator {
 		Matcher matcher = EMAIL_PATTERN.matcher(email);
 		return matcher.matches();
 	}
+	
+	private boolean isUserActivationKeyValid(String activationKey) {		
+		Matcher matcher = USER_ACTIVATION_KEY.matcher(activationKey);
+		return matcher.matches();
+	}
+	
 }
