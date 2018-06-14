@@ -1018,7 +1018,7 @@ public class ModuleFactory {
 	 * @param module the module being executed on
 	 */
 	private static void runLiquibase(Module module) {
-		ModuleClassLoader moduleClassLoader = ModuleFactory.getModuleClassLoaderMap().get(module);
+		ModuleClassLoader moduleClassLoader = ModuleFactory.getModuleClassLoader(module);
 		InputStream inStream = moduleClassLoader.getResourceAsStream(MODULE_CHANGELOG_FILENAME);
 		boolean liquibaseFileExists = (inStream != null);
 		
