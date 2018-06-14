@@ -117,14 +117,23 @@
                                      baseTableName="patient_program_attribute" baseColumnNames="voided_by"
             referencedTableName="users" referencedColumnNames="user_id" />
     </changeSet>
-	<changeSet id="20180214-1000" author="Kelechi+iheanyi">
+	<changeSet author="Kelechi+iheanyi" id="20180508-1000">
 		<preConditions onFail="MARK_RAN">
-			<not><tableExists tableName="condition"/></not>
+			<tableExists tableName="conditions"/>
 		</preConditions>
 		<comment>
-			Add condition table
+			Rename conditions table to emrapi_conditions
 		</comment>
-		<createTable tableName="condition">
+		<renameTable newTableName="emrapi_conditions" oldTableName="conditions" />
+	</changeSet>
+	<changeSet id="20180508-1001" author="Kelechi+iheanyi">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="conditions"/></not>
+		</preConditions>
+		<comment>
+			Add conditions table
+		</comment>
+		<createTable tableName="conditions">
 			<column name="condition_id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
@@ -162,26 +171,39 @@
 			<column name="end_date" type="datetime" />
 		</createTable>
 		<addForeignKeyConstraint constraintName="condition_previous_version_fk"
-								 baseTableName="condition" baseColumnNames="previous_version"
-								 referencedTableName="condition" referencedColumnNames="condition_id" />
+								 baseTableName="conditions" baseColumnNames="previous_version"
+								 referencedTableName="conditions" referencedColumnNames="condition_id" />
 		<addForeignKeyConstraint constraintName="condition_condition_coded_fk"
-								 baseTableName="condition" baseColumnNames="condition_coded"
+								 baseTableName="conditions" baseColumnNames="condition_coded"
 								 referencedTableName="concept" referencedColumnNames="concept_id " />
 		<addForeignKeyConstraint constraintName="condition_condition_coded_name_fk"
-								 baseTableName="condition" baseColumnNames="condition_coded_name"
+								 baseTableName="conditions" baseColumnNames="condition_coded_name"
 								 referencedTableName="concept_name" referencedColumnNames="concept_name_id " />
 		<addForeignKeyConstraint constraintName="condition_creator_fk"
-								 baseTableName="condition" baseColumnNames="creator"
+								 baseTableName="conditions" baseColumnNames="creator"
 								 referencedTableName="users" referencedColumnNames="user_id" />
 		<addForeignKeyConstraint constraintName="condition_changed_by_fk"
-								 baseTableName="condition" baseColumnNames="changed_by"
+								 baseTableName="conditions" baseColumnNames="changed_by"
 								 referencedTableName="users" referencedColumnNames="user_id" />
 		<addForeignKeyConstraint constraintName="condition_voided_by_fk"
-								 baseTableName="condition" baseColumnNames="voided_by"
+								 baseTableName="conditions" baseColumnNames="voided_by"
 								 referencedTableName="users" referencedColumnNames="user_id" />
 		<addForeignKeyConstraint constraintName="condition_patient_fk"
-								 baseTableName="condition" baseColumnNames="patient_id"
+								 baseTableName="conditions" baseColumnNames="patient_id"
 								 referencedTableName="patient" referencedColumnNames="patient_id" />
+	</changeSet>
+	<changeSet id="20180508-1002" author="Kelechi+iheanyi">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="emrapi_conditions" />
+			<tableExists tableName="conditions" />
+		</preConditions>
+		<comment>
+			Migrate data from the emrapi_conditions table to the new conditions table
+		</comment>
+		<sql>
+			INSERT into `conditions` (condition_id, previous_version, patient_id, clinical_status, condition_non_coded, condition_coded, onset_date, additional_detail, end_date, creator, date_created, voided, voided_by, date_voided, void_reason, uuid)
+			SELECT condition_id, previous_condition_id, patient_id, status, condition_non_coded, concept_id, onset_date, additional_detail, end_date, creator, date_created, voided, voided_by, date_voided, void_reason, uuid FROM `emrapi_conditions`;
+		</sql>
 	</changeSet>
 	<changeSet id="20181402-TRUNK-5339" author="esirkings">
 		<preConditions onFail="MARK_RAN">
@@ -191,7 +213,6 @@
 		</preConditions>
 
 		<comment>Creating encounter_diagnosis table</comment>
-
 		<createTable tableName="encounter_diagnosis">
 			<column name="diagnosis_id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false" />
@@ -225,7 +246,7 @@
 								 referencedTableName="patient" referencedColumnNames="patient_id" />
 		<addForeignKeyConstraint constraintName="encounter_diagnosis_condition_id_fk"
 								 baseTableName="encounter_diagnosis" baseColumnNames="condition_id"
-								 referencedTableName="condition" referencedColumnNames="condition_id" />
+								 referencedTableName="conditions" referencedColumnNames="condition_id" />
 		<addForeignKeyConstraint constraintName="encounter_diagnosis_creator_fk"
 								 baseTableName="encounter_diagnosis" baseColumnNames="creator"
 								 referencedTableName="users" referencedColumnNames="user_id" />
@@ -251,18 +272,5 @@
 		</preConditions>
 		<comment>Rename concept_numeric.precise to concept_numeric.allow_decimal</comment>
 		<renameColumn oldColumnName="precise" newColumnName="allow_decimal" tableName="concept_numeric"  columnDataType="BOOLEAN"/>
-	</changeSet>
-	<changeSet id="20180323-1000" author="Kelechi+iheanyi" dbms="mysql">
-		<preConditions onFail="MARK_RAN">
-			<tableExists tableName="condition" />
-			<tableExists tableName="conditions" />
-		</preConditions>
-		<comment>
-			Migrate data from the conditions table to the new condition table
-		</comment>
-		<sql>
-			INSERT into `condition` (condition_id, previous_version, patient_id, clinical_status, condition_non_coded, condition_coded, onset_date, additional_detail, end_date, creator, date_created, voided, voided_by, date_voided, void_reason, uuid)
-			SELECT condition_id, previous_condition_id, patient_id, status, condition_non_coded, concept_id, onset_date, additional_detail, end_date, creator, date_created, voided, voided_by, date_voided, void_reason, uuid FROM `conditions`;
-		</sql>
 	</changeSet>
 </databaseChangeLog>
