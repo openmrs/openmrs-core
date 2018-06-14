@@ -122,9 +122,15 @@
 			<tableExists tableName="conditions"/>
 		</preConditions>
 		<comment>
-			Rename conditions table to emrapi_conditions
+			Update  conditions to new design
 		</comment>
-		<renameTable newTableName="emrapi_conditions" oldTableName="conditions" />
+		 <renameColumn newColumnName="previous_version" oldColumnName="previous_condition_id" tableName="conditions"/>
+		 <renameColumn  newColumnName="clinical_status" oldColumnName="status" tableName="conditions"/>
+		 <renameColumn  newColumnName="condition_coded" oldColumnName="concept_id" tableName="conditions"/>
+		 <renameColumn  newColumnName="previous_version" oldColumnName="previous_condition_id" tableName="conditions"/>
+		 <renameColumn  newColumnName="previous_version" oldColumnName="previous_condition_id" tableName="conditions"/>
+		 <renameColumn  newColumnName="previous_version" oldColumnName="previous_condition_id" tableName="conditions"/>
+	
 	</changeSet>
 	<changeSet id="20180508-1001" author="Kelechi+iheanyi">
 		<preConditions onFail="MARK_RAN">
@@ -192,19 +198,7 @@
 								 baseTableName="conditions" baseColumnNames="patient_id"
 								 referencedTableName="patient" referencedColumnNames="patient_id" />
 	</changeSet>
-	<changeSet id="20180508-1002" author="Kelechi+iheanyi">
-		<preConditions onFail="MARK_RAN">
-			<tableExists tableName="emrapi_conditions" />
-			<tableExists tableName="conditions" />
-		</preConditions>
-		<comment>
-			Migrate data from the emrapi_conditions table to the new conditions table
-		</comment>
-		<sql>
-			INSERT into `conditions` (condition_id, previous_version, patient_id, clinical_status, condition_non_coded, condition_coded, onset_date, additional_detail, end_date, creator, date_created, voided, voided_by, date_voided, void_reason, uuid)
-			SELECT condition_id, previous_condition_id, patient_id, status, condition_non_coded, concept_id, onset_date, additional_detail, end_date, creator, date_created, voided, voided_by, date_voided, void_reason, uuid FROM `emrapi_conditions`;
-		</sql>
-	</changeSet>
+
 	<changeSet id="20181402-TRUNK-5339" author="esirkings">
 		<preConditions onFail="MARK_RAN">
 			<not>
