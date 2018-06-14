@@ -113,6 +113,15 @@ public interface UserService extends OpenmrsService {
 	public User getUserByEmail(String email) throws APIException;
 	
 	/**
+	 * gets user using user activation key
+	 * @param activation key 
+	 * @return requested user
+	 * @throws APIException
+	 */
+	@Authorized( { PrivilegeConstants.GET_USERS })
+	public User getUserByActivationKey(String activationKey) throws APIException;
+	
+	/**
 	 * true/false if username or systemId is already in db in username or system_id columns
 	 * 
 	 * @param user User to compare

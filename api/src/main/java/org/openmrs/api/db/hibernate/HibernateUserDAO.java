@@ -117,6 +117,15 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.UserService#getUserByActivationKey(java.lang.String)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public User getUserByActivationKey(String activationKey) {
+		return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.eq("user_activation_key", activationKey)).uniqueResult();	
+	}
+	
+	/**
 	 * @see org.openmrs.api.UserService#hasDuplicateUsername(org.openmrs.User)
 	 */
 	@Override

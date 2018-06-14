@@ -707,5 +707,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		return dao.getUserByEmail(email);
 	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#getUserByActivationKey(java.lang.String)
+	 * 
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public User getUserByActivationKey(String activationKey) throws APIException {
+		
+		return dao.getUserByActivationKey(activationKey);
+	}
+
 
 }
