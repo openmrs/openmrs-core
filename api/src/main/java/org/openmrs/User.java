@@ -53,7 +53,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	
 	private String email;
 	
-	private String userActivationKey;
+	private String activationKey;
 	
 	private Set<Role> roles;
 	
@@ -431,15 +431,15 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	/*
 	 * @return Returns the User's Activation key
 	 */
-	public String getUserActivationKey() {
-		return userActivationKey;
+	public String getActivationKey() {
+		return activationKey;
 	}
 	
 	/*
 	 * @param activationKey  The user activation key to set
 	 */
-	public void setUserActivationKey(String activationKey) {
-		this.userActivationKey = activationKey;
+	public void setActivationKey(String activationKey) {
+		this.activationKey = activationKey;
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Person;
@@ -122,7 +123,7 @@ public class HibernateUserDAO implements UserDAO {
 	@Override
 	@SuppressWarnings("unchecked")
 	public User getUserByActivationKey(String activationKey) {
-		return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.eq("user_activation_key", activationKey)).uniqueResult();	
+		return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.ilike("activation_key", activationKey, MatchMode.START)).uniqueResult();	
 	}
 	
 	/**
