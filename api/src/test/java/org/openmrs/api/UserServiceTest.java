@@ -1362,5 +1362,15 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 		assertNotNull("User with email hank.williams@gmail not found in database", user);
 	}
+	/*
+	 * @see UserService#getUserByActivationKey(String)
+	 */
+	@Test
+	public void getUserByActivationKey_shouldGetUserUsingActivationKey() {
+		executeDataSet(XML_FILENAME);
+		
+		User user = userService.getUserByActivationKey("XbklsieiskeuztecEnPf");
+		assertNotNull("User with activationKey ", user); 
+	}
 		
 }
