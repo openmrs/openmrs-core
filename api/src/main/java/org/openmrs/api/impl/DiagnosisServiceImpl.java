@@ -20,7 +20,6 @@ import org.openmrs.api.db.DiagnosisDAO;
 import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Iterator;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +30,7 @@ import java.util.HashSet;
 public class DiagnosisServiceImpl extends BaseOpenmrsService implements DiagnosisService {
 	
 	private DiagnosisDAO diagnosisDAO;
+	private static final Integer DIAGNOSIS_RANK_SECONDARY = 2;
 
 	/**
 	 * Saves a diagnosis
@@ -175,5 +175,67 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	 */
 	public void setDiagnosisDAO(DiagnosisDAO diagnosisDAO) {
 		this.diagnosisDAO = diagnosisDAO;
+	}
+
+	/**
+	 * Adds non coded diagnosis to a given list of diagnoses
+	 * 
+ 	 * @param nonCodedDiagnosis
+	 * @param diagnoses
+	 * @return diagnoses
+	 */	
+	public List<Diagnosis> codeNonCodedDiagnosis(Diagnosis nonCodedDiagnosis, List<Diagnosis> diagnoses){
+
+		if ( (nonCodedDiagnosis != null) && (diagnoses != null && diagnoses.size() > 0) ){
+
+			Encounter encounter = nonCodedDiagnosis.getEncounter();
+			List<Diagnosis> primaryDiagnoses = getPrimaryDiagnoses(encounter);
+			boolean havePrimary =false;
+			if (primaryDiagnoses !=null && primaryDiagnoses.size() > 0 ){
+				// the encounter already has a primary diagnosis
+				havePrimary = true;
+			}
+
+			for(Diagnosis diagnosis : diagnoses){
+				if (hasDiagnosis(encounter, diagnosis)){
+					// if this encounter already has this diagnosis skip it
+					continue;
+				}
+				if (havePrimary) {
+					diagnosis.setRank(DIAGNOSIS_RANK_SECONDARY);
+				}
+
+				if (diagnosis != null) {
+					diagnoses.add(diagnosis);
+				}
+			}
+
+			encounter.setDiagnoses(new HashSet(diagnoses));
+			Context.getEncounterService().saveEncounter(encounter);
+		}
+
+		return diagnoses;
+	}
+
+	/**
+	 * Checks if a diagnosis exists in an encounter
+	 * 
+	 * @param encounter
+	 * @param diagnosis
+	 * @return boolean
+	 */
+	public boolean hasDiagnosis(Encounter encounter, Diagnosis diagnosis) {
+		
+		if (encounter != null && !encounter.getVoided()) {
+
+			Set<Diagnosis> diagnoses = encounter.getDiagnoses();
+
+			for (Diagnosis diagnosis1 : diagnoses) {
+				if (diagnosis.equals(diagnosis1)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }
