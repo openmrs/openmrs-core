@@ -1168,7 +1168,9 @@ public class InitializationFilter extends StartupFilter {
 			connection = DriverManager.getConnection(tempDatabaseConnection, user, pw);
 			
 			for (String arg : args) {
-				arg = arg.replace(";", "&#094"); // to prevent any sql injection
+				arg = arg.replace(";", "&#094");	// This doesn't prevent sql injection by any means.
+													// Use prepared statements to correctly implement an SQLi protection
+													// https://docs.oracle.com/javase/7/docs/api/java/sql/Connection.html#prepareStatement(java.lang.String)
 				replacedSql = replacedSql.replaceFirst("\\?", arg);
 			}
 			
