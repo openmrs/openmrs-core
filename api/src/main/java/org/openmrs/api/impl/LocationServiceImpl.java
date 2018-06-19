@@ -107,6 +107,15 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
+	 * @see org.openmrs.api.LocationService#getLocation(java.lang.String, java.lang.String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Location getLocation(String name,String nameofAttribute) throws APIException {
+		return dao.getLocation(name,nameofAttribute);
+	}
+
+	/**
 	 * @see org.openmrs.api.LocationService#getDefaultLocation()
 	 */
 	@Override
