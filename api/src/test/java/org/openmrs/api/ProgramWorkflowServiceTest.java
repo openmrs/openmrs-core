@@ -128,6 +128,33 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ProgramWorkflowService#voidPatientProgram(PatientProgram, String)
+	 */
+	@Test
+	public  void voidPatientProgram_shouldVoidPatientProgram() {
+		PatientProgram patientProgram = Context.getProgramWorkflowService().getPatientProgram(1);
+		assertEquals(patientProgram.getVoided(), false);
+
+		PatientProgram voidedPatientProgram = Context.getProgramWorkflowService().voidPatientProgram(patientProgram,"for testing");
+		assertEquals(voidedPatientProgram.getVoided(), true);
+	}
+
+	/**
+	 * @see ProgramWorkflowService#unvoidPatientProgram(PatientProgram)
+	 */
+	@Test
+	public  void unvoidPatientProgram_shouldUnvoidPatientProgram() {
+		PatientProgram patientProgram = Context.getProgramWorkflowService().getPatientProgram(1);
+		assertEquals(patientProgram.getVoided(), false);
+
+		PatientProgram voidedPatientProgram = Context.getProgramWorkflowService().voidPatientProgram(patientProgram,"for testing");
+		assertEquals(voidedPatientProgram.getVoided(), true);
+
+		PatientProgram unVoidedPatientProgram = Context.getProgramWorkflowService().unvoidPatientProgram(voidedPatientProgram);
+		assertEquals(unVoidedPatientProgram.getVoided(), false);
+	}
+	
+	/**
 	 * Tests if the savePatientProgram(PatientProgram) sets the EndDate of recent state of each workflow
 	 * on calling the setDateCompleted(Date date) method.
 	 *
@@ -478,6 +505,100 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getProgramWorkflowService().getProgramByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see ProgramWorkflowService#getPrograms(String)
+	 */
+	@Test
+	public void getPrograms_shouldGetProgramByNameFragment() {
+		List<Program> allPrograms = Context.getProgramWorkflowService().getAllPrograms();
+		int programCount=0;
+		final String programName = "program name";
+		for(Program program:allPrograms) {
+			if(program.getName().equals(programName)) {
+				programCount +=1;
+			}
+		}
+		List<Program> programs= Context.getProgramWorkflowService().getPrograms(programName);
+		assertEquals(programCount, programs.size());
+	}
+
+	/**
+	 * @see ProgramWorkflowService#unretireProgram(Program)
+	 */
+	@Test
+	public void unretireProgram_shouldUnRetireProgram() {
+		Program program = Context.getProgramWorkflowService().getProgram(1);
+		assertEquals(program.getRetired(), false);
+
+		Program retiredProgram = Context.getProgramWorkflowService().retireProgram(program,"for testing");
+		assertEquals(program.getRetired(), true);
+
+		Program unretireProgram = Context.getProgramWorkflowService().unretireProgram(retiredProgram);
+		assertEquals(unretireProgram.getRetired(), false);
+	}
+
+	/**
+	 * @see ProgramWorkflowService#saveConceptStateConversion(ConceptStateConversion)
+	 */
+	@Test(expected = APIException.class)
+	public void saveConceptStateConversion_shouldFaileIfRequiredParametersMissing() {
+		ConceptStateConversion conceptStateConversion = new ConceptStateConversion(1);
+		// all required parameters are missing
+		Context.getProgramWorkflowService().saveConceptStateConversion(conceptStateConversion);
+
+		conceptStateConversion.setConcept(cs.getConcept(3));
+		// ProgramWorkflow, ProgramWorkflowState are missing
+		Context.getProgramWorkflowService().saveConceptStateConversion(conceptStateConversion);
+
+		conceptStateConversion.setProgramWorkflow(pws.getWorkflow(1));
+		// ProgramWorkflowState is missing
+		Context.getProgramWorkflowService().saveConceptStateConversion(conceptStateConversion);
+	}
+
+	/**
+	 * @see ProgramWorkflowService#saveConceptStateConversion(ConceptStateConversion)
+	 */
+	@Test
+	public void saveConceptStateConversion_shouldSaveIfAllRequiredParametersAreSatisfied() {
+		ConceptStateConversion conceptStateConversion = new ConceptStateConversion(1);
+		conceptStateConversion.setConcept(cs.getConcept(3));
+		conceptStateConversion.setProgramWorkflow(pws.getWorkflow(1));
+		conceptStateConversion.setProgramWorkflowState(pws.getWorkflow(1).getState(1));
+		Context.getProgramWorkflowService().saveConceptStateConversion(conceptStateConversion);
+	}
+
+	/**
+	 * @see ProgramWorkflowService#getAllConceptStateConversions()
+	 */
+	@Test
+	public  void getAllConceptStateConversions_shouldReturnAll() {
+		List<ConceptStateConversion> conceptStateConversions=Context.getProgramWorkflowService().getAllConceptStateConversions();
+		assertEquals(1,conceptStateConversions.size());
+	}
+
+	/**
+	 * @see ProgramWorkflowService#getConceptStateConversion(Integer)
+	 */
+	@Test
+	public void getConceptStateConversion_shouldGetById(){
+		ConceptStateConversion conceptStateConversion = Context.getProgramWorkflowService().getConceptStateConversion(1);
+		assertNotNull(conceptStateConversion);
+	}
+
+	/**
+	 * @see ProgramWorkflowService#purgeConceptStateConversion(ConceptStateConversion)
+	 */
+	@Test
+	public void purgeConceptStateConversion_shouldPurge() {
+		ConceptStateConversion conceptStateConversion = Context.getProgramWorkflowService().getConceptStateConversion(1);
+		assertNotNull(conceptStateConversion);
+
+		Context.getProgramWorkflowService().purgeConceptStateConversion(conceptStateConversion);
+
+		conceptStateConversion = Context.getProgramWorkflowService().getConceptStateConversion(1);
+		assertNull(conceptStateConversion);
 	}
 	
 	@Test
