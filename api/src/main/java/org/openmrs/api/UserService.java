@@ -104,7 +104,7 @@ public interface UserService extends OpenmrsService {
 	
 	
 	/**
-	 * gets user by email
+	 * Gets user by email
 	 * @param email 
 	 * @return requested user
 	 * @throws APIException
@@ -113,7 +113,7 @@ public interface UserService extends OpenmrsService {
 	public User getUserByEmail(String email) throws APIException;
 	
 	/**
-	 * gets user using user activation key
+	 * Gets user using user activation key
 	 * @param activation key 
 	 * @return requested user
 	 * @throws APIException

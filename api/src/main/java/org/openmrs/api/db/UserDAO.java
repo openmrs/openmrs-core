@@ -43,12 +43,12 @@ public interface UserDAO {
 	/**
 	 * @see org.openmrs.api.UserService#getUserByEmail(java.lang.String)
 	 */
-	public User getUserByEmail(String email) throws DAOException;
+	public User getUserByEmail(String email);
 	
 	/**
 	 * @see org.openmrs.api.UserService#getUserByActivationKey(java.lang.String)
 	 */
-	public User getUserByActivationKey(String activationKey) throws DAOException;
+	public User getUserByActivationKey(String activationKey);
 	
 	/**
 	 * @see org.openmrs.api.UserService#hasDuplicateUsername(org.openmrs.User)

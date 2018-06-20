@@ -204,7 +204,7 @@ public class UserValidator implements Validator {
 	 * @return true if email is valid or null
 	 * @param email
 	 */
-	private boolean isEmailValid(String email) {
+	public boolean isEmailValid(String email) {
 		Matcher matcher = EMAIL_PATTERN.matcher(email);
 		return matcher.matches();
 	}
