@@ -127,7 +127,7 @@ public class HibernateUserDAO implements UserDAO {
 		User user = (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.like("activationKey", activationKey, MatchMode.START)).uniqueResult();	
 		if(user != null) {
 			String[] tokens = user.getActivationKey().split(":");
-			if(tokens[0].compareTo(activationKey) == 0) {
+			if(tokens[0].equals(activationKey)) {
 				ret = user;
 			}
 		}	

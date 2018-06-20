@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
@@ -37,9 +38,6 @@ public class UserValidator implements Validator {
 	
 	/** Logger for this class and subclasses */
 	private static final Logger log = LoggerFactory.getLogger(UserValidator.class);
-	
-	private static final Pattern EMAIL_PATTERN = Pattern
-	        .compile("^.+@.+\\..+$");
 		
 	@Autowired
 	private PersonValidator personValidator;
@@ -192,21 +190,19 @@ public class UserValidator implements Validator {
 	 * @should return true if email valid
 	 */
 	public boolean isUserNameAsEmailValid(String username) {
-		if (StringUtils.isBlank(username)) {
-			return false;
-		}
+		EmailValidator emailValidator = EmailValidator.getInstance();
+		return emailValidator.isValid(username);
 		
-		Matcher matcher = EMAIL_PATTERN.matcher(username);
-		return matcher.matches();
 	}
 	
 	/**
-	 * @return true if email is valid or null
+	 * @return true if email is valid or false otherwise
 	 * @param email
 	 */
-	public boolean isEmailValid(String email) {
-		Matcher matcher = EMAIL_PATTERN.matcher(email);
-		return matcher.matches();
+	private boolean isEmailValid(String email) {
+		EmailValidator emailValidator = EmailValidator.getInstance();
+		return emailValidator.isValid(email);
+		
 	}
 	
 }

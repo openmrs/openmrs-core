@@ -94,32 +94,28 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * Get user by username (user's login identifier)
 	 * 
-	 * @param username user's identifier used for authentication
+	 * @param username User's identifier used for authentication
 	 * @return requested user
-	 * @throws APIException
-	 * @should get user by username
 	 */
 	@Authorized( { PrivilegeConstants.GET_USERS })
-	public User getUserByUsername(String username) throws APIException;
+	public User getUserByUsername(String username);
 	
 	
 	/**
 	 * Gets user by email
-	 * @param email 
+	 * @param email User's email address 
 	 * @return requested user
-	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.GET_USERS })
-	public User getUserByEmail(String email) throws APIException;
+	public User getUserByEmail(String email);
 	
 	/**
 	 * Gets user using user activation key
-	 * @param activation key 
+	 * @param activationKey User's activation(token) for password reset 
 	 * @return requested user
-	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.GET_USERS })
-	public User getUserByActivationKey(String activationKey) throws APIException;
+	public User getUserByActivationKey(String activationKey);
 	
 	/**
 	 * true/false if username or systemId is already in db in username or system_id columns
