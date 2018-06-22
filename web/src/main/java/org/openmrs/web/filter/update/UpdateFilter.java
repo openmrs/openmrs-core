@@ -9,28 +9,8 @@
  */
 package org.openmrs.web.filter.update;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import liquibase.changelog.ChangeSet;
+import liquibase.exception.LockException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Appender;
@@ -54,8 +34,26 @@ import org.openmrs.web.filter.util.FilterUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoader;
 
-import liquibase.changelog.ChangeSet;
-import liquibase.exception.LockException;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * This is the second filter that is processed. It is only active when OpenMRS has some liquibase
@@ -723,8 +721,10 @@ public class UpdateFilter extends StartupFilter {
 						
 						try {
 							setMessage("Updating the database to the latest version");
-							List<String> warnings = DatabaseUpdater.executeChangelog(null, null,
-							    new PrintingChangeSetExecutorCallback("Updating database tables to latest version "));
+							List<String> warnings = DatabaseUpdater.executeChangelog(
+								null,
+							    new PrintingChangeSetExecutorCallback("Updating database tables to latest version ")
+							);
 							executingChangesetId = null; // clear out the last changeset
 							
 							if (CollectionUtils.isNotEmpty(warnings)) {

@@ -9,6 +9,7 @@
  */
 package org.openmrs.util;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.slf4j.Logger;
