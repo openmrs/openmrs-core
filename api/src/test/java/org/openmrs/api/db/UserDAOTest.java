@@ -57,7 +57,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		userJoe.addName(name);
 		userJoe.setUsername("juser");
 		userJoe.setDateCreated(new Date());
-		
+
 		if (dao == null) {
 			// fetch the dao from the spring application context
 			// this bean name matches the name in /metadata/spring/applicationContext-service.xml

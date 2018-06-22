@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Person;
@@ -104,6 +105,33 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		
 		return users.get(0);
+	}
+	
+	
+	/**
+	 * @see org.openmrs.api.UserService#getUserByEmail(java.lang.String)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public User getUserByEmail(String email) {
+		return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.eq("email", email).ignoreCase()).uniqueResult();	
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#getUserByActivationKey(java.lang.String)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public User getUserByActivationKey(String activationKey) {
+		User user = (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.like("activationKey", activationKey, MatchMode.START)).uniqueResult();	
+		if(user != null) {
+			String[] tokens = user.getActivationKey().split(":");
+			if(tokens[0].equals(activationKey)) {
+				return user;
+			}
+		}	
+		return null;
+
 	}
 	
 	/**
@@ -624,5 +652,6 @@ public class HibernateUserDAO implements UserDAO {
 		
 		return query;
 	}
+	
 	
 }

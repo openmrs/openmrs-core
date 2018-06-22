@@ -1351,4 +1351,40 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		userService.changePasswordUsingSecretAnswer("wrong answer", "userServiceTest2");
 	}
+	
+	/*
+	 * @see UserService#getUserByEmail(String)
+	 */
+	@Test
+	public void getUserByEmail_shouldGetUserByUsingEmail() {
+		executeDataSet(XML_FILENAME);
+		User user = userService.getUserByEmail("hank.williams@gmail.com");
+		assertNotNull("User with email hank.williams@gmail not found in database", user);
+	}
+	/*
+	 * @see UserService#getUserByActivationKey(String)
+	 */
+	@Test
+	public void getUserByActivationKey_shouldGetUserUsingActivationKey() {
+		executeDataSet(XML_FILENAME);
+		String key="XbklsieiskeuztecEnPf";
+		User user = userService.getUserByActivationKey(key);	
+		assertNotNull("User with activationKey ", user); 
+		String[] tokens = user.getActivationKey().split(":");
+		assertEquals(key,tokens[0]);		
+
+	}
+	
+	/**
+	 * @see UserService#getUserByActivationKey(String)
+	 */
+	@Test
+	public void getUserByActivationKey_shouldReturnNullIfNoUserFoundWithGivenKey() {
+		executeDataSet(XML_FILENAME);
+		String key="XbklsieiskNoMatchKey";
+		User user = userService.getUserByActivationKey(key);			
+		assertNull(user);
+	}
+
+		
 }
