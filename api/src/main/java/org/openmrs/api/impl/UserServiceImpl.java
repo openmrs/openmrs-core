@@ -113,7 +113,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public User getUserByUsername(String username) throws APIException {
 		return dao.getUserByUsername(username);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.UserService#hasDuplicateUsername(org.openmrs.User)
 	 */
@@ -691,9 +691,31 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		if (user.getUserId() != null) {
 			LoginCredential loginCredential = dao.getLoginCredential(user);
 			return loginCredential.getSecretQuestion();
-		} else {
+		} 
+		else {
 			return null;
 		}
     }
 	
+	/**
+	 * @see org.openmrs.api.UserService#getUserByEmail(java.lang.String)
+	 * 
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public User getUserByEmail(String email) throws APIException {	
+		return dao.getUserByEmail(email);
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#getUserByActivationKey(java.lang.String)
+	 * 
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public User getUserByActivationKey(String activationKey) throws APIException {	
+		return dao.getUserByActivationKey(activationKey);
+	}
+
+
 }

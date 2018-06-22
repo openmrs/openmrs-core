@@ -35,6 +35,9 @@
                   column="system_id" length="50"/>
 
         <property name="username" type="java.lang.String" length="50"/>
+        
+        <property name="email" type="java.lang.String" length="255" unique="true"/>
+        <property name="activationKey" type="java.lang.String" column="activation_key" length="50" />
 
         <!--<many-to-one name="creator" class="User" not-null="true"/>
 

@@ -287,4 +287,30 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors("person.names[0].familyName"));
 		Assert.assertTrue(errors.hasFieldErrors("person.gender"));
 	}
+	
+	/**
+	 * @see UserValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfEmailIsInvalid() {
+		User user = new User();
+		user.setEmail("mkyong123@.com");
+		
+		Errors errors = new BindException(user, "user");
+		validator.validate(user, errors);		
+		Assert.assertTrue(errors.hasFieldErrors("email"));
+	}
+	
+	/**
+	 * @see UserValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfEmailIsValid() {
+		User user = new User();
+		user.setEmail("test@example.com");
+				
+		Errors errors = new BindException(user, "user");
+		validator.validate(user, errors);	
+		Assert.assertFalse(errors.hasFieldErrors("email"));
+	}
 }
