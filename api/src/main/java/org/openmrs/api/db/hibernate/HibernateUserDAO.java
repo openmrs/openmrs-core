@@ -123,15 +123,14 @@ public class HibernateUserDAO implements UserDAO {
 	@Override
 	@SuppressWarnings("unchecked")
 	public User getUserByActivationKey(String activationKey) {
-		User ret = null;
 		User user = (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.like("activationKey", activationKey, MatchMode.START)).uniqueResult();	
 		if(user != null) {
 			String[] tokens = user.getActivationKey().split(":");
 			if(tokens[0].equals(activationKey)) {
-				ret = user;
+				return user;
 			}
 		}	
-		return ret;
+		return null;
 
 	}
 	

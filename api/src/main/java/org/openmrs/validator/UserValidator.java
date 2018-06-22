@@ -190,9 +190,7 @@ public class UserValidator implements Validator {
 	 * @should return true if email valid
 	 */
 	public boolean isUserNameAsEmailValid(String username) {
-		EmailValidator emailValidator = EmailValidator.getInstance();
-		return emailValidator.isValid(username);
-		
+		return EmailValidator.getInstance().isValid(username);
 	}
 	
 	/**
@@ -200,9 +198,7 @@ public class UserValidator implements Validator {
 	 * @param email
 	 */
 	private boolean isEmailValid(String email) {
-		EmailValidator emailValidator = EmailValidator.getInstance();
-		return emailValidator.isValid(email);
-		
+		return EmailValidator.getInstance().isValid(email);
 	}
 	
 }
