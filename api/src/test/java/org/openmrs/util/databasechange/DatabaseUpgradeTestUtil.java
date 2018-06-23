@@ -225,7 +225,7 @@ public class DatabaseUpgradeTestUtil {
 		try {
 			Liquibase liquibase = new Liquibase(filename, new ClassLoaderResourceAccessor(getClass()
 			        .getClassLoader()), liqubaseConnection);
-			liquibase.update(null);
+			liquibase.update("");
 			
 			connection.commit();
 		}

@@ -9,39 +9,7 @@
  */
 package org.openmrs.web.filter.initialization;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Base64.Encoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.zip.ZipInputStream;
-
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import liquibase.changelog.ChangeSet;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
@@ -75,7 +43,37 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 
-import liquibase.changelog.ChangeSet;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Base64.Encoder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Random;
+import java.util.zip.ZipInputStream;
 
 /**
  * This is the first filter that is processed. It is only active when starting OpenMRS for the very
@@ -86,9 +84,9 @@ public class InitializationFilter extends StartupFilter {
 	
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(InitializationFilter.class);
 	
-	private static final String LIQUIBASE_SCHEMA_DATA = "liquibase-schema-only.xml";
+	private static final String LIQUIBASE_SCHEMA_DATA = "liquibase-schema-only-2.1.xml";
 	
-	private static final String LIQUIBASE_CORE_DATA = "liquibase-core-data.xml";
+	private static final String LIQUIBASE_CORE_DATA = "liquibase-core-data-2.1.xml";
 	
 	private static final String LIQUIBASE_DEMO_DATA = "liquibase-demo-data.xml";
 	
@@ -1546,15 +1544,19 @@ public class InitializationFilter extends StartupFilter {
 							try {
 								setMessage("Executing " + LIQUIBASE_SCHEMA_DATA);
 								setExecutingTask(WizardTask.CREATE_TABLES);
-								DatabaseUpdater.executeChangelog(LIQUIBASE_SCHEMA_DATA, null,
-								    new PrintingChangeSetExecutorCallback("OpenMRS schema file"));
+								DatabaseUpdater.executeChangelog(
+									LIQUIBASE_SCHEMA_DATA,
+								    new PrintingChangeSetExecutorCallback("OpenMRS schema file")
+								);
 								addExecutedTask(WizardTask.CREATE_TABLES);
 								
 								//reset for this task
 								setCompletedPercentage(0);
 								setExecutingTask(WizardTask.ADD_CORE_DATA);
-								DatabaseUpdater.executeChangelog(LIQUIBASE_CORE_DATA, null,
-								    new PrintingChangeSetExecutorCallback("OpenMRS core data file"));
+								DatabaseUpdater.executeChangelog(
+									LIQUIBASE_CORE_DATA,
+								    new PrintingChangeSetExecutorCallback("OpenMRS core data file")
+								);
 								wizardModel.workLog.add("Created database tables and added core data");
 								addExecutedTask(WizardTask.ADD_CORE_DATA);
 								
@@ -1623,8 +1625,10 @@ public class InitializationFilter extends StartupFilter {
 								setMessage("Adding demo data");
 								setCompletedPercentage(0);
 								setExecutingTask(WizardTask.ADD_DEMO_DATA);
-								DatabaseUpdater.executeChangelog(LIQUIBASE_DEMO_DATA, null,
-								    new PrintingChangeSetExecutorCallback("OpenMRS demo patients, users, and forms"));
+								DatabaseUpdater.executeChangelog(
+									LIQUIBASE_DEMO_DATA, 
+									new PrintingChangeSetExecutorCallback("OpenMRS demo patients, users, and forms")
+								);
 								wizardModel.workLog.add("Added demo data");
 								
 								addExecutedTask(WizardTask.ADD_DEMO_DATA);
@@ -1641,8 +1645,10 @@ public class InitializationFilter extends StartupFilter {
 							setMessage("Updating the database to the latest version");
 							setCompletedPercentage(0);
 							setExecutingTask(WizardTask.UPDATE_TO_LATEST);
-							DatabaseUpdater.executeChangelog(null, null, new PrintingChangeSetExecutorCallback(
-							        "Updating database tables to latest version "));
+							DatabaseUpdater.executeChangelog(
+								null, 
+								new PrintingChangeSetExecutorCallback( "Updating database tables to latest version ")
+							);
 							addExecutedTask(WizardTask.UPDATE_TO_LATEST);
 						}
 						catch (Exception e) {

@@ -9,6 +9,30 @@
  */
 package org.openmrs.module;
 
+import liquibase.Contexts;
+import org.aopalliance.aop.Advice;
+import org.apache.commons.io.IOUtils;
+import org.openmrs.GlobalProperty;
+import org.openmrs.Privilege;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.OpenmrsService;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
+import org.openmrs.module.Extension.MEDIA_TYPE;
+import org.openmrs.util.CycleException;
+import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.Graph;
+import org.openmrs.util.InputRequiredException;
+import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.aop.Advisor;
+import org.springframework.context.support.AbstractRefreshableApplicationContext;
+import org.springframework.util.StringUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,29 +56,6 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
-
-import org.aopalliance.aop.Advice;
-import org.apache.commons.io.IOUtils;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Privilege;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.OpenmrsService;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.context.Daemon;
-import org.openmrs.module.Extension.MEDIA_TYPE;
-import org.openmrs.util.CycleException;
-import org.openmrs.util.DatabaseUpdater;
-import org.openmrs.util.Graph;
-import org.openmrs.util.InputRequiredException;
-import org.openmrs.util.OpenmrsClassLoader;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.util.PrivilegeConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.aop.Advisor;
-import org.springframework.context.support.AbstractRefreshableApplicationContext;
-import org.springframework.util.StringUtils;
 
 /**
  * Methods for loading, starting, stopping, and storing OpenMRS modules
@@ -984,7 +985,7 @@ public class ModuleFactory {
 		if (liquibaseFileExists) {
 			try {
 				// run liquibase.xml by Liquibase API
-				DatabaseUpdater.executeChangelog(MODULE_CHANGELOG_FILENAME, null, null, null, getModuleClassLoader(module));
+				DatabaseUpdater.executeChangelog(MODULE_CHANGELOG_FILENAME, new Contexts(), null, getModuleClassLoader(module));
 			}
 			catch (InputRequiredException ire) {
 				// the user would be stepped through the questions returned here.
