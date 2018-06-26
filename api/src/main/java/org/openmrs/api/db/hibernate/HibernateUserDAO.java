@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -651,6 +652,23 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		
 		return query;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#createActivationKey(org.openmrs.User)
+	 */
+	@Override
+	public void createActivationKey(User user) {
+		log.info("Setting activationKey for " + user.getUsername());
+		
+			String activationKey = RandomStringUtils.random(20);
+			Date date = new Date();
+			String hashedKey = Security.encodeString(activationKey);
+			String token = hashedKey+":"+date;
+			user.setActivationKey(token);
+			saveUser(user,null);
+			//Send Email with unhashed  activation key and Date:
+		
 	}
 	
 	

@@ -566,5 +566,11 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Authorized
 	public void changePasswordUsingSecretAnswer(String secretAnswer, String pw) throws APIException;
+	
+	/*
+	 * Set A users activation key
+	 * @param User The user for which the activation key will be set
+	 */
+	public void setUserActivationKey(User user);
 
 }

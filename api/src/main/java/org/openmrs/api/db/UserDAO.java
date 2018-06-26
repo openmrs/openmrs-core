@@ -205,4 +205,9 @@ public interface UserDAO {
 	 */
 	public Integer getCountOfUsers(String name, List<Role> roles, boolean includeRetired);
 	
+	/**
+	 * @see UserService#setUserActivationKey(User)
+	 */
+	public void createActivationKey(User user);
+	
 }
