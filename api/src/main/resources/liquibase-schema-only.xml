@@ -1831,7 +1831,7 @@
             <column name="email" type="varchar(255)">
             	<constraints unique="true"/>
             </column>
-            <column name="activation_key" type="varchar(50)"/>
+            <column name="activation_key" type="varchar(150)"/>
             <column name="salt" type="varchar(128)"/>
             <column name="secret_question" type="varchar(255)"/>
             <column name="secret_answer" type="varchar(255)"/>

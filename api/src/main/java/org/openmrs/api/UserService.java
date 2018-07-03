@@ -20,6 +20,7 @@ import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.context.UserContext;
+import org.openmrs.api.db.LoginCredential;
 import org.openmrs.util.PersonByNameComparator;
 import org.openmrs.util.PrivilegeConstants;
 
@@ -110,12 +111,12 @@ public interface UserService extends OpenmrsService {
 	public User getUserByEmail(String email);
 	
 	/**
-	 * Gets user using user activation key
-	 * @param activationKey User's activation(token) for password reset 
-	 * @return requested user
+	 * Gets Login Credential using user activation key
+	 * @param token User's (token) for password reset 
+	 * @return requested LoginCredential with associated hashed of token as activation key
 	 */
 	@Authorized( { PrivilegeConstants.GET_USERS })
-	public User getUserByActivationKey(String activationKey);
+	public LoginCredential getLoginCredentialByToken(String token);
 	
 	/**
 	 * true/false if username or systemId is already in db in username or system_id columns

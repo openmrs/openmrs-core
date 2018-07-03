@@ -708,13 +708,13 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#getUserByActivationKey(java.lang.String)
+	 * @see org.openmrs.api.UserService#getLoginCredentialByToken(java.lang.String)
 	 * 
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public User getUserByActivationKey(String activationKey) throws APIException {	
-		return dao.getUserByActivationKey(activationKey);
+	public LoginCredential getLoginCredentialByToken(String token) throws APIException {	
+		return dao.getLoginCredentialByToken(token);
 	}
 	
 	/**

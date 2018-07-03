@@ -40,6 +40,8 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.LoginCredential;
+import org.openmrs.api.db.hibernate.HibernateUserDAO;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -1362,29 +1364,28 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertNotNull("User with email hank.williams@gmail not found in database", user);
 	}
 	/*
-	 * @see UserService#getUserByActivationKey(String)
+	 * @see UserService#getLoginCredentialByActivationKey(String)
 	 */
 	@Test
-	public void getUserByActivationKey_shouldGetUserUsingActivationKey() {
+	public void getLoginCredentialByActivationKey_shouldGetLoginCredentialUsingToken() {
 		executeDataSet(XML_FILENAME);
-		String key="XbklsieiskeuztecEnPf";
-		User user = userService.getUserByActivationKey(key);	
-		assertNotNull("User with activationKey ", user); 
-		String[] tokens = user.getActivationKey().split(":");
-		assertEquals(key,tokens[0]);		
+		String key="h4ph0fpNzQCIPSw8plJI";
+		LoginCredential loginCred = userService.getLoginCredentialByToken(key);	
+		assertNotNull("Login Credentials with activationKey ", loginCred); 
+		String[] tokens = loginCred.getActivationKey().split(":");
+		assertEquals(Security.encodeString(key),tokens[0]);		
 
 	}
 	
 	/**
-	 * @see UserService#getUserByActivationKey(String)
+	 * @see UserService#getLoginCredentialByActivationKey(String)
 	 */
 	@Test
-	public void getUserByActivationKey_shouldReturnNullIfNoUserFoundWithGivenKey() {
+	public void getLoginCredentialByActivationKey_shouldReturnNullIfNoLoginCredentialFoundWithGivenKey() {
 		executeDataSet(XML_FILENAME);
 		String key="XbklsieiskNoMatchKey";
-		User user = userService.getUserByActivationKey(key);			
-		assertNull(user);
+		LoginCredential loginCred = userService.getLoginCredentialByToken(key);
+		assertNull(loginCred);
 	}
-
-		
+	
 }

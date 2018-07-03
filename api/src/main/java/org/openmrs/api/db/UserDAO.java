@@ -46,9 +46,9 @@ public interface UserDAO {
 	public User getUserByEmail(String email);
 	
 	/**
-	 * @see org.openmrs.api.UserService#getUserByActivationKey(java.lang.String)
+	 * @see org.openmrs.api.UserService#getLoginCredentialByToken(java.lang.String)
 	 */
-	public User getUserByActivationKey(String activationKey);
+	public LoginCredential getLoginCredentialByToken(String token);
 	
 	/**
 	 * @see org.openmrs.api.UserService#hasDuplicateUsername(org.openmrs.User)
