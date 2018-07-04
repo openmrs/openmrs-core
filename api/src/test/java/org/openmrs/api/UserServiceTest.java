@@ -1364,15 +1364,15 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertNotNull("User with email hank.williams@gmail not found in database", user);
 	}
 	/*
-	 * @see UserService#getLoginCredentialByActivationKey(String)
+	 * @see UserService#getUserByActivationKey(String)
 	 */
 	@Test
-	public void getLoginCredentialByActivationKey_shouldGetLoginCredentialUsingToken() {
+	public void getUserByActivationKey_shouldGetUserUsingToken() {
 		executeDataSet(XML_FILENAME);
 		String key="h4ph0fpNzQCIPSw8plJI";
-		LoginCredential loginCred = userService.getLoginCredentialByToken(key);	
-		assertNotNull("Login Credentials with activationKey ", loginCred); 
-		String[] tokens = loginCred.getActivationKey().split(":");
+		User user = userService.getUserByActivationKey(key);	
+		assertNotNull("Login Credentials with activationKey ", user); 
+		String[] tokens = new HibernateUserDAO().getLoginCredential(user).getActivationKey().split(":");
 		assertEquals(Security.encodeString(key),tokens[0]);		
 
 	}
@@ -1381,11 +1381,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @see UserService#getLoginCredentialByActivationKey(String)
 	 */
 	@Test
-	public void getLoginCredentialByActivationKey_shouldReturnNullIfNoLoginCredentialFoundWithGivenKey() {
+	public void getUserByActivationKey_shouldReturnNullIfNoUserFoundWithGivenKey() {
 		executeDataSet(XML_FILENAME);
 		String key="XbklsieiskNoMatchKey";
-		LoginCredential loginCred = userService.getLoginCredentialByToken(key);
-		assertNull(loginCred);
+		User user = userService.getUserByActivationKey(key);
+		assertNull(user);
 	}
 	
 }

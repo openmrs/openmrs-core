@@ -111,12 +111,12 @@ public interface UserService extends OpenmrsService {
 	public User getUserByEmail(String email);
 	
 	/**
-	 * Gets Login Credential using user activation key
+	 * Gets User using user activation key(hash of token)
 	 * @param token User's (token) for password reset 
-	 * @return requested LoginCredential with associated hashed of token as activation key
+	 * @return requested User with associated hashed of token as activation key
 	 */
 	@Authorized( { PrivilegeConstants.GET_USERS })
-	public LoginCredential getLoginCredentialByToken(String token);
+	public User getUserByActivationKey(String token);
 	
 	/**
 	 * true/false if username or systemId is already in db in username or system_id columns

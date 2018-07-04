@@ -119,10 +119,18 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#getLoginCredentialByToken(java.lang.String)
+	 * @see org.openmrs.api.UserService#getUserByActivationKey(java.lang.String)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
+	public User getUserByActivationKey(String token) {
+		LoginCredential loginCred = getLoginCredentialByToken(token);
+		if(loginCred != null) {
+			User user = getUser(loginCred.getUserId());
+			return user;
+		}
+		return null;
+	}
 	public LoginCredential getLoginCredentialByToken(String token) {
 		String key = Security.encodeString(token);
 		LoginCredential loginCred = (LoginCredential) sessionFactory.getCurrentSession().createCriteria(LoginCredential.class).add(Restrictions.like("activationKey", key, MatchMode.START)).uniqueResult();	
@@ -671,7 +679,6 @@ public class HibernateUserDAO implements UserDAO {
 			LoginCredential credentials = getLoginCredential(user);
 			credentials.setActivationKey(activationKey);			
 			sessionFactory.getCurrentSession().merge(credentials);
-			saveUser(user,null);
 			//Send Email with unhashed  activation key and Date:
 			
 		
