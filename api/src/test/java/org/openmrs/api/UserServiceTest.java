@@ -1363,29 +1363,5 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = userService.getUserByEmail("hank.williams@gmail.com");
 		assertNotNull("User with email hank.williams@gmail not found in database", user);
 	}
-	/*
-	 * @see UserService#getUserByActivationKey(String)
-	 */
-	@Test
-	public void getUserByActivationKey_shouldGetUserUsingToken() {
-		executeDataSet(XML_FILENAME);
-		String key="h4ph0fpNzQCIPSw8plJI";
-		User user = userService.getUserByActivationKey(key);	
-		assertNotNull("Login Credentials with activationKey ", user); 
-		String[] tokens = new HibernateUserDAO().getLoginCredential(user).getActivationKey().split(":");
-		assertEquals(Security.encodeString(key),tokens[0]);		
-
-	}
-	
-	/**
-	 * @see UserService#getLoginCredentialByActivationKey(String)
-	 */
-	@Test
-	public void getUserByActivationKey_shouldReturnNullIfNoUserFoundWithGivenKey() {
-		executeDataSet(XML_FILENAME);
-		String key="XbklsieiskNoMatchKey";
-		User user = userService.getUserByActivationKey(key);
-		assertNull(user);
-	}
 	
 }

@@ -265,4 +265,9 @@
 			SELECT condition_id, previous_condition_id, patient_id, status, condition_non_coded, concept_id, onset_date, additional_detail, end_date, creator, date_created, voided, voided_by, date_voided, void_reason, uuid FROM `conditions`;
 		</sql>
 	</changeSet>
+	<changeSet id="20180706-passwordreset" author="harisu+fanyui">
+        <addColumn tableName="users">
+            <column name="activation_key" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

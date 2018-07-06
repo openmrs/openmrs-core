@@ -11,7 +11,9 @@ package org.openmrs.api.db;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -22,6 +24,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.HibernateUserDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.Security;
 
@@ -175,6 +178,48 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.saveUser(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		assertFalse(dao.isSecretAnswer(userJoe, "foo"));
+		
+	}
+	
+	@Test
+	public void verifyUserActivationKey_shouldReturnNullActivationKeyIsNotValid() {
+		String key="wrongActivationKey00";
+		int validTime = 10*60*1000; //equivalent to 10 minutes for token to be valid
+		Long tokenTime = System.currentTimeMillis() + validTime;
+		LoginCredential credentials = dao.getLoginCredential(userJoe);
+		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);			
+		dao.updateLoginCredential(credentials);	
+		User user = dao.getUserByActivationKey(key);	
+		String[] tokens = dao.getLoginCredential(userJoe).getActivationKey().split(":");
+		assertNull(user);
+		assertNotEquals(Security.encodeString(key),tokens[0]);		
+
+	}
+	
+	@Test
+	public void getUserByActivation_shouldGetUserByActivationKeyIfTimeHasNotExpired() {
+		String key="h4ph0fpNzQCIPSw8plJI";
+		int validTime = 10*60*1000; //equivalent to 10 minutes for token to be valid
+		Long tokenTime = System.currentTimeMillis() + validTime;
+		LoginCredential credentials = dao.getLoginCredential(userJoe);
+		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);			
+		dao.updateLoginCredential(credentials);	
+		User user = dao.getUserByActivationKey(key);
+		assertNotNull("User with activationKey ", user); 
+		
+	}
+	
+	@Test 
+	public void getUserByActivationKey_shouldReturnNullIfUserActivationKeyTimeHasExpired() {
+		String key="h4ph0fpNzQCIPSw8plJI";
+		int validTime = 15*60*1000; //equivalent to 15 minutes for token to be valid
+		Long tokenTime = System.currentTimeMillis() - validTime; //reverse time by 15 minutes so that token is no longer valid
+		LoginCredential credentials = dao.getLoginCredential(userJoe);
+		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);			
+		dao.updateLoginCredential(credentials);	
+		User user = dao.getUserByActivationKey(key);
+		assertNull(user);
+
 		
 	}
 	
