@@ -38,12 +38,6 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 	@Column(name = "date_created", nullable = false, updatable = false)
 	private Date dateCreated;
 	
-	@ManyToOne
-	@JoinColumn(name = "changed_by")
-	private User changedBy;
-	
-	@Column(name = "date_changed")
-	private Date dateChanged;
 	
 	@Column(name = "voided", nullable = false)
 	@Field
@@ -101,45 +95,6 @@ public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements Openm
 		this.dateCreated = dateCreated;
 	}
 	
-	/**
-	 * @deprecated as of version 2.2
-	 * @see org.openmrs.OpenmrsData#getChangedBy()
-	 */
-	@Override
-	@Deprecated
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	/**
-	 * @deprecated as of version 2.2
-	 * @see org.openmrs.OpenmrsData#setChangedBy(User)
-	 */
-	@Override
-	@Deprecated
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	/**
-	 * @deprecated as of version 2.2
-	 * @see org.openmrs.OpenmrsData#getDateChanged()
-	 */
-	@Override
-	@Deprecated
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	/**
-	 * @deprecated as of version 2.2
-	 * @see org.openmrs.OpenmrsData#setDateChanged(Date)
-	 */
-	@Override
-	@Deprecated
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
 	
 	/**
 	 * @deprecated as of 2.0, use {@link #getVoided()}

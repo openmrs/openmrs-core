@@ -19,6 +19,7 @@ import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 import org.openmrs.Auditable;
+import org.openmrs.Changeable;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
@@ -77,7 +78,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		
 		objectWasChanged = setCreatorAndDateCreatedIfNull(entity, currentState, propertyNames);
 		
-		if (entity instanceof Auditable && propertyNames != null) {
+		if (entity instanceof Changeable && propertyNames != null) {
 			if (log.isDebugEnabled()) {
 				log.debug("Setting changed by fields on " + entity.getClass());
 			}
