@@ -126,11 +126,16 @@ public class HibernateUserDAO implements UserDAO {
 	public User getUserByActivationKey(String token) {
 		LoginCredential loginCred = getLoginCredentialByToken(token);
 		if(loginCred != null) {
-			User user = getUser(loginCred.getUserId());
-			return user;
+			return getUser(loginCred.getUserId());
 		}
 		return null;
 	}
+	
+	/**
+	 * Gets User LoginCredential using token
+	 * @param token User's (token) for password reset 
+	 * @return LoginCredentail associated with token 
+	 */
 	public LoginCredential getLoginCredentialByToken(String token) {
 		String key = Security.encodeString(token);
 		LoginCredential loginCred = (LoginCredential) sessionFactory.getCurrentSession().createCriteria(LoginCredential.class).add(Restrictions.like("activationKey", key, MatchMode.START)).uniqueResult();	

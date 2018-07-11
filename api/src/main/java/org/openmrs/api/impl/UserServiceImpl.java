@@ -713,8 +713,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public User getUserByActivationKey(String token) throws APIException {	
-		return dao.getUserByActivationKey(token);
+	public User getUserByActivationKey(String activationKey) throws APIException {	
+		return dao.getUserByActivationKey(activationKey);
 	}
 	
 	/**
