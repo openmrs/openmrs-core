@@ -305,4 +305,40 @@
 								 referencedTableName="concept"
 								 referencedColumnNames="concept_id" />
 	</changeSet>
+	<changeSet id="TRUNK-4791-20180214-1" author="patrick">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="provider" columnName="role"/>
+			</not>
+		</preConditions>
+		<comment>Adding "role" column to provider table</comment>
+		<addColumn tableName="provider">
+			<column name="role_id" type="int">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint baseTableName="provider"
+								 baseColumnNames="role_id"
+								 constraintName="provider_role_id_fk"
+								 referencedTableName="concept"
+								 referencedColumnNames="concept_id" />
+	</changeSet>
+	<changeSet id="TRUNK-4791-20180214-2" author="patrick">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="provider" columnName="speciality"/>
+			</not>
+		</preConditions>
+		<comment>Adding "speciality" column to provider table</comment>
+		<addColumn tableName="provider">
+			<column name="speciality_id" type="int">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint baseTableName="provider"
+								 baseColumnNames="speciality_id"
+								 constraintName="provider_speciality_id_fk"
+								 referencedTableName="concept"
+								 referencedColumnNames="concept_id" />
+	</changeSet>
 </databaseChangeLog>
