@@ -273,17 +273,15 @@
 		<comment>Rename concept_numeric.precise to concept_numeric.allow_decimal</comment>
 		<renameColumn oldColumnName="precise" newColumnName="allow_decimal" tableName="concept_numeric"  columnDataType="BOOLEAN"/>
 	</changeSet>
-	<changeSet id="TRUNK-4791-20180214-1" author="patrick">
+	<changeSet id="TRUNK-4791-20180215" author="patrick">
 		<preConditions onFail="MARK_RAN">
 			<not>
-				<columnExists tableName="provider" columnName="role"/>
+				<columnExists tableName="provider" columnName="role_id"/>
 			</not>
 		</preConditions>
-		<comment>Adding "role" column to provider table</comment>
+		<comment>Adding role_id column to provider table</comment>
 		<addColumn tableName="provider">
-			<column name="role_id" type="int">
-				<constraints nullable="true"/>
-			</column>
+			<column name="role_id" type="int" />
 		</addColumn>
 		<addForeignKeyConstraint baseTableName="provider"
 								 baseColumnNames="role_id"
@@ -291,17 +289,15 @@
 								 referencedTableName="concept"
 								 referencedColumnNames="concept_id" />
 	</changeSet>
-	<changeSet id="TRUNK-4791-20180214-2" author="patrick">
+	<changeSet id="TRUNK-4791-20180216" author="patrick">
 		<preConditions onFail="MARK_RAN">
 			<not>
-				<columnExists tableName="provider" columnName="speciality"/>
+				<columnExists tableName="provider" columnName="speciality_id"/>
 			</not>
 		</preConditions>
-		<comment>Adding "speciality" column to provider table</comment>
+		<comment>Adding speciality_id column to provider table</comment>
 		<addColumn tableName="provider">
-			<column name="speciality_id" type="int">
-				<constraints nullable="true"/>
-			</column>
+			<column name="speciality_id" type="int" />
 		</addColumn>
 		<addForeignKeyConstraint baseTableName="provider"
 								 baseColumnNames="speciality_id"

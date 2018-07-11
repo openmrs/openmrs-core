@@ -34,6 +34,10 @@
 
 		<many-to-one name="creator" class="User" not-null="true" column="creator" />
 
+		<many-to-one name="role" class="Concept" column="role_id" />
+
+		<many-to-one name="speciality" class="Concept" column="speciality_id" />
+
 		<property name="dateCreated" type="java.util.Date" column="date_created"
 			not-null="true" length="19" />
 
