@@ -80,10 +80,10 @@ public class ProgramWorkflowServiceUnitTest {
 	}
 	
 	@Test
-	public void saveProgram_shouldFailIfProgramConceptIsNull() {
+	public void saveProgram_shouldFailIfProgramNameIsNull() {
 		
 		exception.expect(APIException.class);
-		exception.expectMessage("Program concept is required");
+		exception.expectMessage("Program name is required");
 		
 		Program program1 = new Program(1);
 		
@@ -91,33 +91,31 @@ public class ProgramWorkflowServiceUnitTest {
 	}
 	
 	@Test
-	public void saveProgram_shouldFailIfProgramWorkFlowConceptIsNull() {
+	public void saveProgram_shouldFailIfProgramWorkFlowNameIsNull() {
 		
 		exception.expect(APIException.class);
-		exception.expectMessage("ProgramWorkflow concept is required");
+		exception.expectMessage("ProgramWorkflow name is required");
 		
 		Program program = new Program();
 		program.setName("TEST PROGRAM");
 		program.setDescription("TEST PROGRAM DESCRIPTION");
-		program.setConcept(new Concept(1));
 		program.addWorkflow(new ProgramWorkflow());
 		
 		pws.saveProgram(program);
 	}
 	
 	@Test
-	public void saveProgram_shouldFailIfProgramWorkFlowStateConceptIsNull() {
+	public void saveProgram_shouldFailIfProgramWorkFlowStateNameIsNull() {
 		
 		exception.expect(APIException.class);
-		exception.expectMessage("ProgramWorkflowState concept, initial, terminal are required");
+		exception.expectMessage("ProgramWorkflowState name, initial, terminal are required");
 		
 		Program program = new Program();
 		program.setName("TEST PROGRAM");
 		program.setDescription("TEST PROGRAM DESCRIPTION");
-		program.setConcept(new Concept(1));
 		
 		ProgramWorkflow workflow = new ProgramWorkflow();
-		workflow.setConcept(new Concept(2));
+		workflow.setName("TEST WORKFLOW");
 		
 		ProgramWorkflowState state1 = new ProgramWorkflowState();
 		state1.setInitial(true);
@@ -133,18 +131,17 @@ public class ProgramWorkflowServiceUnitTest {
 	public void saveProgram_shouldFailIfProgramWorkFlowStateInitialIsNull() {
 		
 		exception.expect(APIException.class);
-		exception.expectMessage("ProgramWorkflowState concept, initial, terminal are required");
+		exception.expectMessage("ProgramWorkflowState name, initial, terminal are required");
 		
 		Program program = new Program();
 		program.setName("TEST PROGRAM");
 		program.setDescription("TEST PROGRAM DESCRIPTION");
-		program.setConcept(new Concept(1));
 		
 		ProgramWorkflow workflow = new ProgramWorkflow();
-		workflow.setConcept(new Concept(2));
+		workflow.setName("TEST WORKFLOW");
 		
 		ProgramWorkflowState state1 = new ProgramWorkflowState();
-		state1.setConcept(new Concept(3));
+		state1.setName("TEST STATE");
 		state1.setTerminal(false);
 		
 		workflow.addState(state1);
@@ -157,18 +154,17 @@ public class ProgramWorkflowServiceUnitTest {
 	public void saveProgram_shouldFailIfProgramWorkFlowStateTerminalIsNull() {
 		
 		exception.expect(APIException.class);
-		exception.expectMessage("ProgramWorkflowState concept, initial, terminal are required");
+		exception.expectMessage("ProgramWorkflowState name, initial, terminal are required");
 		
 		Program program = new Program();
 		program.setName("TEST PROGRAM");
 		program.setDescription("TEST PROGRAM DESCRIPTION");
-		program.setConcept(new Concept(1));
 		
 		ProgramWorkflow workflow = new ProgramWorkflow();
-		workflow.setConcept(new Concept(2));
+		workflow.setName("TEST WORKFLOW");
 		
 		ProgramWorkflowState state1 = new ProgramWorkflowState();
-		state1.setConcept(new Concept(3));
+		state1.setName("TEST STATE");
 		state1.setInitial(true);
 		
 		workflow.addState(state1);

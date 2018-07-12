@@ -571,5 +571,16 @@
 		<comment>Modify column length to 1000 from 255</comment>
 		<modifyDataType tableName="obs" columnName="value_complex" newDataType="varchar(1000)"/>
 	</changeSet>
-
+    
+    <changeSet id="2017-TRUNK-1748" author="samuel34">
+       <comment>Removing columns of conceptID as required to fix TRUNK-1748</comment>
+       <dropForeignKeyConstraint baseTableName="program_workflow" constraintName="workflow_concept"/>
+       <dropColumn tableName="program_workflow" columnName="concept_id"/>
+       <dropForeignKeyConstraint baseTableName="program" constraintName="program_concept"/>
+       <dropColumn tableName="program" columnName="concept_id"/>
+       <dropForeignKeyConstraint baseTableName="program_workflow_state" constraintName="state_concept"/>
+       <dropColumn tableName="program_workflow_state" columnName="concept_id"/>
+    </changeSet>
+     
+ 	
 </databaseChangeLog>

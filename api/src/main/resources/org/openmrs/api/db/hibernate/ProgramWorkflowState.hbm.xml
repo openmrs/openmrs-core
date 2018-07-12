@@ -23,10 +23,14 @@
 			</generator>
 		</id>
 		
-		
-		
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
+			
+		<property name="name" type="java.lang.String"
+			column="name" not-null="true" length="100" />
+			
+		<property name="description" type="java.lang.String"
+			column="description" length="500" />
 
 		<property name="initial" type="java.lang.Boolean" column="initial" length="1" not-null="true" />
 		
@@ -39,8 +43,6 @@
 		<property name="retired" type="java.lang.Boolean" column="retired" length="1" not-null="true" />
 
 		<many-to-one name="programWorkflow" class="ProgramWorkflow" column="program_workflow_id" not-null="true" />
-	
-		<many-to-one name="concept" class="Concept" column="concept_id" not-null="true" />
 	
 		<many-to-one name="creator" class="User" column="creator" not-null="true" />
 		

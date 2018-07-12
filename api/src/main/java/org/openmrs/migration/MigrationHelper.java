@@ -314,7 +314,7 @@ public class MigrationHelper {
 		Map<String, PatientProgram> knownPatientPrograms = new HashMap<>();
 		Map<String, Program> programsByName = new HashMap<>();
 		for (Program program : pws.getAllPrograms()) {
-			programsByName.put(program.getConcept().getName(Context.getLocale(), false).getName(), program);
+			programsByName.put(program.getName(), program);
 		}
 		for (String s : programWorkflow) {
 			// ENROLLMENT:HIVEMR-V1,9266,IMB HIV PROGRAM,2005-08-25,

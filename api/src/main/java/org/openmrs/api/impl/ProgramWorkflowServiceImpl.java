@@ -72,17 +72,17 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Override
 	public Program saveProgram(Program program) throws APIException {
 		// Program
-		if (program.getConcept() == null) {
-			throw new APIException("Program.concept.required", (Object[]) null);
+		if (program.getName() == null) {
+			throw new APIException("Program.name.required", (Object[]) null);
 		}
 		
 		for (ProgramWorkflow workflow : program.getAllWorkflows()) {
-			if (workflow.getConcept() == null) {
-				throw new APIException("ProgramWorkflow.concept.required", (Object[]) null);
+			if (workflow.getName() == null) {
+				throw new APIException("ProgramWorkflow.name.required", (Object[]) null);
 			}			
 			ensureProgramIsSet(workflow, program);						
 			for (ProgramWorkflowState state : workflow.getStates()) {
-				if (state.getConcept() == null || state.getInitial() == null || state.getTerminal() == null) {
+				if (state.getName() == null || state.getInitial() == null || state.getTerminal() == null||state.getName().isEmpty()) {
 					throw new APIException("ProgramWorkflowState.requires", (Object[]) null);
 				}				
 
@@ -468,7 +468,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 					// Should allow a transition from a null state to a terminal state
 					// Or we should require a user to ALWAYS add an initial workflow/state when a patient is added to a program
 					ProgramWorkflowState currentState = (patientState != null) ? patientState.getState() : null;
-					ProgramWorkflowState transitionState = workflow.getState(trigger);
+					ProgramWorkflowState transitionState = workflow.getState(trigger.getName().getName());
 					
 					log.debug("Transitioning from current state [" + currentState + "]");
 					log.debug("|---> Transitioning to final state [" + transitionState + "]");
@@ -504,6 +504,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getProgramsByConcept(org.openmrs.Concept)
 	 */
+	/*
 	@Override
 	@Transactional(readOnly = true)
 	public List<Program> getProgramsByConcept(Concept concept) {
@@ -512,7 +513,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getProgramWorkflowsByConcept(org.openmrs.Concept)
-	 */
+	 *
 	@Override
 	@Transactional(readOnly = true)
 	public List<ProgramWorkflow> getProgramWorkflowsByConcept(Concept concept) {
@@ -521,12 +522,13 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getProgramWorkflowStatesByConcept(org.openmrs.Concept)
-	 */
+	 *
 	@Override
 	@Transactional(readOnly = true)
 	public List<ProgramWorkflowState> getProgramWorkflowStatesByConcept(Concept concept) {
 		return dao.getProgramWorkflowStatesByConcept(concept);
 	}
+	*/
 	
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#getConceptStateConversionByUuid(java.lang.String)

@@ -33,8 +33,8 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() {
 		Program prog = new Program();
+		prog.initializeProgWithConcept(Context.getConceptService().getConcept(3));
 		prog.setName(null);
-		prog.setConcept(Context.getConceptService().getConcept(3));
 		
 		Errors errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
@@ -57,9 +57,8 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfProgramNameAlreadyInUse() {
 		Program prog = new Program();
+		prog.initializeProgWithConcept(Context.getConceptService().getConcept(3));
 		prog.setName("MDR-TB PROGRAM");
-		prog.setConcept(Context.getConceptService().getConcept(3));
-		
 		Errors errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
 		Assert.assertTrue(errors.hasFieldErrors("name"));
@@ -72,8 +71,8 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() {
 		
 		Program prog = new Program();
+		prog.initializeProgWithConcept(Context.getConceptService().getConcept(3));
 		prog.setDescription(null);
-		prog.setConcept(Context.getConceptService().getConcept(3));
 		
 		Errors errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
@@ -94,25 +93,10 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	 * @see ProgramValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfConceptIsNullOrEmptyOrWhitespace() {
-		Program prog = new Program();
-		prog.setName("Hypochondriasis program");
-		prog.setConcept(null);
-		
-		Errors errors = new BindException(prog, "prog");
-		programValidator.validate(prog, errors);
-		Assert.assertTrue(errors.hasFieldErrors("concept"));
-	}
-	
-	/**
-	 * @see ProgramValidator#validate(Object,Errors)
-	 */
-	@Test
 	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		Program prog = new Program();
 		prog.setName("Hypochondriasis program");
 		prog.setDescription("This is Hypochondriasis program");
-		prog.setConcept(Context.getConceptService().getConcept(3));
 		
 		Errors errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
@@ -146,7 +130,6 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Program prog = new Program();
 		prog.setName("Hypochondriasis program");
-		prog.setConcept(Context.getConceptService().getConcept(3));
 		
 		Errors errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);
@@ -160,9 +143,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Program prog = new Program();
-		prog
-		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text");
-		prog.setConcept(Context.getConceptService().getConcept(3));
+		prog.setName("too long text too long text too long text too long text too long text too long text too long text too long text");
 		
 		Errors errors = new BindException(prog, "prog");
 		programValidator.validate(prog, errors);

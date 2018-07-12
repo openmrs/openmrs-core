@@ -371,20 +371,19 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Program program = new Program();
 		program.setName("TEST PROGRAM");
 		program.setDescription("TEST PROGRAM DESCRIPTION");
-		program.setConcept(cs.getConcept(3));
-		
+	
 		ProgramWorkflow workflow = new ProgramWorkflow();
-		workflow.setConcept(cs.getConcept(4));
+		workflow.initializeWorkflowWithConcept(cs.getConcept(4));
 		program.addWorkflow(workflow);
 		
 		ProgramWorkflowState state1 = new ProgramWorkflowState();
-		state1.setConcept(cs.getConcept(5));
+		state1.initializeWorkflowStateWithConcept(cs.getConcept(5));
 		state1.setInitial(true);
 		state1.setTerminal(false);
 		workflow.addState(state1);
 		
 		ProgramWorkflowState state2 = new ProgramWorkflowState();
-		state2.setConcept(cs.getConcept(6));
+		state2.initializeWorkflowStateWithConcept(cs.getConcept(6));
 		state2.setInitial(false);
 		state2.setTerminal(true);
 		workflow.addState(state2);
@@ -402,7 +401,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		
 		List<String> names = new ArrayList<>();
 		for (ProgramWorkflowState s : wf.getStates()) {
-			names.add(s.getConcept().getName().getName());
+			names.add(s.getName());
 		}
 		TestUtil.assertCollectionContentsEquals(Arrays.asList("SINGLE", "MARRIED"), names);
 	}
@@ -566,23 +565,23 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Concept state1Concept = new Concept();
 		state1Concept.addName(state1ConceptName);
 		ProgramWorkflowState state1 = new ProgramWorkflowState();
-		state1.setConcept(state1Concept);
+		state1.initializeWorkflowStateWithConcept(state1Concept);
 		program.addState(state1);
 		
 		ConceptName state2ConceptName = new ConceptName("Group 2", Context.getLocale());
 		Concept state2Concept = new Concept();
 		state2Concept.addName(state2ConceptName);
 		ProgramWorkflowState state2 = new ProgramWorkflowState();
-		state2.setConcept(state2Concept);
+		state2.initializeWorkflowStateWithConcept(state2Concept);
 		program.addState(state2);
 		
 		Set<ProgramWorkflowState> sortedStates = program.getSortedStates();
 		int x = 1;
 		for (ProgramWorkflowState state : sortedStates) {
 			if (x == 1) {
-				Assert.assertEquals("Group 2", state.getConcept().getName(Context.getLocale()).getName());
+				assertEquals("Group 2", state.getName());
 			} else if (x == 2) {
-				Assert.assertEquals("Group 10", state.getConcept().getName(Context.getLocale()).getName());
+				assertEquals("Group 10", state.getName());
 			} else {
 				Assert.fail("Wha?!");
 			}
@@ -632,7 +631,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Context.evictFromSession(program);
 		
 		program = Context.getProgramWorkflowService().saveProgram(program);
-		Assert.assertEquals("new description", program.getDescription());
+		assertEquals("new description", program.getDescription());
 	}
 	
 	/**
@@ -649,12 +648,12 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		
 		Concept diedConcept = cs.getConcept(16);
 		//sanity check to ensure the patient died is a possible state in one of the work flows
-		Assert.assertNotNull(pp.getProgram().getWorkflow(1).getState(diedConcept));
+		assertNotNull(pp.getProgram().getWorkflow(1).getState(diedConcept.getName().getName()));
 		
 		Thread.sleep(10);//delay so that we have a time difference
 		
 		pp = pws.getPatientProgram(patientProgramId);
-		Assert.assertEquals(originalDateCompleted, pp.getDateCompleted());
+		assertEquals(originalDateCompleted, pp.getDateCompleted());
 	}
 	
 	@Test
