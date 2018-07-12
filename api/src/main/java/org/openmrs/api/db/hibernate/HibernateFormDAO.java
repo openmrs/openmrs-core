@@ -430,7 +430,7 @@ public class HibernateFormDAO implements FormDAO {
 	 * @param fields
 	 * @return
 	 */
-	private Criteria getFormCriteria(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
+	public Criteria getFormCriteria(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
 	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
 	        Collection<Field> fields) {
 		
@@ -452,7 +452,6 @@ public class HibernateFormDAO implements FormDAO {
 			crit.add(Restrictions.eq("retired", retired));
 		}
 		
-		// TODO junit test
 		if (!containingAnyFormField.isEmpty()) {
 			// Convert form field persistents to integers
 			Set<Integer> anyFormFieldIds = new HashSet<>();
