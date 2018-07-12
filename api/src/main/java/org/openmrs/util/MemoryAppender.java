@@ -12,9 +12,11 @@ package org.openmrs.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.buffer.BoundedFifoBuffer;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
@@ -24,8 +26,11 @@ import org.apache.log4j.spi.LoggingEvent;
 public class MemoryAppender extends AppenderSkeleton {
 	
 	private CircularFifoBuffer buffer;
+	// Used to store the errors from the startup
+	private BoundedFifoBuffer errorBuffer;
 	
 	private int bufferSize = 100;
+	private int errorBufferSize = 100;
 	
 	public MemoryAppender() {
 	}
@@ -33,6 +38,11 @@ public class MemoryAppender extends AppenderSkeleton {
 	@Override
 	protected void append(LoggingEvent loggingEvent) {
 		if (buffer != null) {
+			if (loggingEvent.getLevel().equals(Level.ERROR)) {
+				// Store only error logs up to errorBufferSize
+				errorBuffer.add(loggingEvent);
+			}
+			// replace the oldest logs with newest logs
 			buffer.add(loggingEvent);
 		}
 	}
@@ -40,6 +50,12 @@ public class MemoryAppender extends AppenderSkeleton {
 	@Override
 	public void close() {
 		buffer.clear();
+		errorBuffer.clear();
+	}
+	
+	// used to clear the errorBuffer manually
+	public void clearErrorBuffer() {
+		errorBuffer.clear();
 	}
 	
 	@Override
@@ -50,6 +66,7 @@ public class MemoryAppender extends AppenderSkeleton {
 	@Override
 	public void activateOptions() {
 		this.buffer = new CircularFifoBuffer(bufferSize);
+		this.errorBuffer = new BoundedFifoBuffer(errorBufferSize);
 	}
 	
 	public List<String> getLogLines() {
@@ -61,12 +78,31 @@ public class MemoryAppender extends AppenderSkeleton {
 		}
 		return logLines;
 	}
+
+	public List<String> getErrorLogLines() {
+		List<String> logLines = new ArrayList<>(errorBuffer.size());
+		Layout layout = this.getLayout();
+		for (Object bBuffer : errorBuffer) {
+			LoggingEvent loggingEvent = (LoggingEvent) bBuffer;
+			logLines.add(layout.format(loggingEvent));
+		}
+		return logLines;
+	}
 	
 	public int getBufferSize() {
 		return bufferSize;
 	}
 	
+	public int getErrorBufferSize() {
+		return errorBufferSize;
+	}
+	
 	public void setBufferSize(int bufferSize) {
 		this.bufferSize = bufferSize;
 	}
+
+	public void setErrorBufferSize(int errorBufferSize) {
+		this.errorBufferSize = errorBufferSize;
+	}
+	
 }
