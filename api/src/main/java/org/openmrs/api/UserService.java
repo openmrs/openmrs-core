@@ -20,7 +20,6 @@ import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.context.UserContext;
-import org.openmrs.api.db.LoginCredential;
 import org.openmrs.util.PersonByNameComparator;
 import org.openmrs.util.PrivilegeConstants;
 
@@ -112,7 +111,7 @@ public interface UserService extends OpenmrsService {
 	
 	/**
 	 * Gets User using user activation key
-	 * @param token User's (token) for password reset 
+	 * @param activationKey User's activation key for password reset 
 	 * @return requested User with associated  activation key
 	 */
 	@Authorized( { PrivilegeConstants.GET_USERS })

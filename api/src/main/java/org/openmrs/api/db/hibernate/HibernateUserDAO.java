@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -119,25 +118,11 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#getUserByActivationKey(java.lang.String)
+	 * @see org.openmrs.api.db.UserDAO#getLoginCredentialByActivationKey(java.lang.String)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public User getUserByActivationKey(String token) {
-		LoginCredential loginCred = getLoginCredentialByToken(token);
-		if(loginCred != null) {
-			return getUser(loginCred.getUserId());
-		}
-		return null;
-	}
-	
-	/**
-	 * Gets User LoginCredential using token
-	 * @param token User's (token) for password reset 
-	 * @return LoginCredentail associated with token 
-	 */
-	public LoginCredential getLoginCredentialByToken(String token) {
-		String key = Security.encodeString(token);
+	public LoginCredential getLoginCredentialByActivationKey(String activationKey) {
+		String key = Security.encodeString(activationKey);
 		LoginCredential loginCred = (LoginCredential) sessionFactory.getCurrentSession().createCriteria(LoginCredential.class).add(Restrictions.like("activationKey", key, MatchMode.START)).uniqueResult();	
 		if(loginCred != null) {
 			String[] credTokens = loginCred.getActivationKey().split(":");
@@ -672,20 +657,10 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.db.UserDAO#createActivationKey(org.openmrs.User)
 	 */
 	@Override
-	public void createActivationKey(User user) {
-		log.info("Setting activationKey for " + user.getUsername());
-			int validTime = 10*60*1000; //token should be valid for 10 minutes
-			String token = RandomStringUtils.randomAlphanumeric(20);
-			long time = System.currentTimeMillis() + validTime;
-			String hashedKey = Security.encodeString(token);
-			String activationKey = hashedKey+":"+time;
-			
+	public void createActivationKey(User user, String activationKey) {
 			LoginCredential credentials = getLoginCredential(user);
 			credentials.setActivationKey(activationKey);			
-			sessionFactory.getCurrentSession().merge(credentials);
-			//Send Email with unhashed  activation key and Date:
-			
-		
+			sessionFactory.getCurrentSession().merge(credentials);	
 	}
 	
 	

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
@@ -37,6 +38,7 @@ import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
+import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -712,9 +714,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * 
 	 */
 	@Override
-	@Transactional(readOnly = true)
-	public User getUserByActivationKey(String activationKey) throws APIException {	
-		return dao.getUserByActivationKey(activationKey);
+	public User getUserByActivationKey(String activationKey) {
+		LoginCredential loginCred = dao.getLoginCredentialByActivationKey(activationKey);
+		if(loginCred != null) {
+			return getUser(loginCred.getUserId());
+		}
+		return null;
 	}
 	
 	/**
@@ -723,7 +728,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Override
 	public void setUserActivationKey(User user) {
-		dao.createActivationKey(user);	
+		log.info("Setting activationKey for " + user.getUsername());
+		int validTime = 10*60*1000; //token should be valid for 10 minutes
+		String token = RandomStringUtils.randomAlphanumeric(20);
+		long time = System.currentTimeMillis() + validTime;
+		String hashedKey = Security.encodeString(token);
+		String activationKey = hashedKey+":"+time;	
+		dao.createActivationKey(user, activationKey);	
+		
+		
+		//Send Email with unhashed  activation key and Date:
+
 	}
 
 
