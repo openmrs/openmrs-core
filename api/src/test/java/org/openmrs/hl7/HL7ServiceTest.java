@@ -56,6 +56,7 @@ import ca.uhn.hl7v2.model.v25.segment.PV1;
 public class HL7ServiceTest extends BaseContextSensitiveTest {
 	
 	private static final Logger log = LoggerFactory.getLogger(HL7ServiceTest.class);
+	protected static final String XML_FILENAME = "org/openmrs/api/include/UserServiceTest.xml";
 	
 	/**
 	 * @see HL7Service#saveHL7InQueue(HL7InQueue)
@@ -736,6 +737,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void resolveUserId_shouldReturnNullForAmbiguousUsersUsingFirstAndLastNameGivenUserIDIsNull() throws HL7Exception {
 		HL7Service hl7service = Context.getHL7Service();
+		executeDataSet(XML_FILENAME);
 		//construct a message such that id Number at ORC is null
 		Message message = hl7service
 								  .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r" +
