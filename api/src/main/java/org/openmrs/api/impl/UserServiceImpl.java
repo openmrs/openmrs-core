@@ -59,6 +59,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	protected UserDAO dao;
 	
+	private static int validTime = 60*1000; //period of one minute
+	
 	@Autowired(required = false)
 	List<PrivilegeListener> privilegeListeners;
 	
@@ -69,6 +71,16 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		this.dao = dao;
 	}
 	
+	
+	/**
+	 *  @see org.openmrs.api.UserService#setValidTime(java.lang.Integer)
+	 */
+	@Override
+	public void setValidTime(int validTime) {
+		//if valid time is less that a minute or greater thatn 12hrs reset valid time to 1 minutes else set it to the required time.
+		UserServiceImpl.validTime = (validTime < 60*1000) || (validTime > 12*60*60*1000) ? 60*1000 : validTime;
+	}
+
 	/**
 	 * @see org.openmrs.api.UserService#createUser(org.openmrs.User, java.lang.String)
 	 */
@@ -716,7 +728,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Override
 	public User getUserByActivationKey(String activationKey) {
 		LoginCredential loginCred = dao.getLoginCredentialByActivationKey(activationKey);
-		if(loginCred != null) {
+		String[] credTokens = loginCred.getActivationKey().split(":");
+
+		if(loginCred != null  && (System.currentTimeMillis() <= Long.parseLong(credTokens[1]) )) {
 			return getUser(loginCred.getUserId());
 		}
 		return null;
@@ -729,7 +743,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Override
 	public void setUserActivationKey(User user) {
 		log.info("Setting activationKey for " + user.getUsername());
-		int validTime = 10*60*1000; //token should be valid for 10 minutes
 		String token = RandomStringUtils.randomAlphanumeric(20);
 		long time = System.currentTimeMillis() + validTime;
 		String hashedKey = Security.encodeString(token);

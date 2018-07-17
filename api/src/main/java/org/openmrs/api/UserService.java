@@ -110,7 +110,7 @@ public interface UserService extends OpenmrsService {
 	public User getUserByEmail(String email);
 	
 	/**
-	 * Gets User using user activation key
+	 * Gets a user with the specified activation key
 	 * @param activationKey User's activation key for password reset 
 	 * @return requested User with associated  activation key
 	 */
@@ -568,9 +568,15 @@ public interface UserService extends OpenmrsService {
 	public void changePasswordUsingSecretAnswer(String secretAnswer, String pw) throws APIException;
 	
 	/*
-	 * Set A users activation key
+	 * Sets a user's activation key
 	 * @param User The user for which the activation key will be set
 	 */
 	public void setUserActivationKey(User user);
-
+	
+	
+	/*
+	 * Sets the time in seconds for password reset activation key to be valid 
+	 * @param validTime time for which the token is valid
+	 */
+	public void setValidTime(int validTime);
 }

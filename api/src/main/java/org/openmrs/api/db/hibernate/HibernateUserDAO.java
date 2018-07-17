@@ -126,7 +126,7 @@ public class HibernateUserDAO implements UserDAO {
 		LoginCredential loginCred = (LoginCredential) sessionFactory.getCurrentSession().createCriteria(LoginCredential.class).add(Restrictions.like("activationKey", key, MatchMode.START)).uniqueResult();	
 		if(loginCred != null) {
 			String[] credTokens = loginCred.getActivationKey().split(":");
-			if(credTokens[0].equals(key) && (System.currentTimeMillis() <= Long.parseLong(credTokens[1]) )){
+			if(credTokens[0].equals(key)){
 				return loginCred;
 			}
 		}	

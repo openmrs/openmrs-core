@@ -1369,7 +1369,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void verifyCreateUserActivationKey_shouldCreateUserActivationKey() {
+	public void setUserActivationKey_shouldCreateUserActivationKey() {
 		User u = new User();
 		u.setPerson(new Person());
 		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
@@ -1377,8 +1377,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.getPerson().setGender("M");
 		User createdUser = userService.createUser(u, "Openmr5xy");
 		userService.setUserActivationKey(createdUser);
-		LoginCredential credential = dao.getLoginCredential(createdUser);
-		String activationKey = credential.getActivationKey();
+		String activationKey  = dao.getLoginCredential(createdUser).getActivationKey();
 		assertNotNull(activationKey);
 	}
 	

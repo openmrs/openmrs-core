@@ -13,7 +13,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -181,7 +180,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getLoginCredentialByActivation_shouldGetLoginCredentialByActivationKeyIfTimeHasNotExpired() {
+	public void getLoginCredentialByActivation_shouldGetLoginCredentialByActivationKey() {
 		String key="h4ph0fpNzQCIPSw8plJI";
 		int validTime = 10*60*1000; //equivalent to 10 minutes for token to be valid
 		Long tokenTime = System.currentTimeMillis() + validTime;
@@ -192,20 +191,6 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		assertNotNull("LoginCredential with activationKey ", loginCred); 
 		
 	}
-	
-	@Test 
-	public void getLoginCredentialByActivationKey_shouldReturnNullIfUserActivationKeyTimeHasExpired() {
-		String key="h4ph0fpNzQCIPSw8plJI";
-		int validTime = 15*60*1000; //equivalent to 15 minutes for token to be valid
-		Long tokenTime = System.currentTimeMillis() - validTime; //reverse time by 15 minutes so that token is no longer valid
-		LoginCredential credentials = dao.getLoginCredential(userJoe);
-		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);			
-		dao.updateLoginCredential(credentials);	
-		LoginCredential loginCred = dao.getLoginCredentialByActivationKey(key);
-		assertNull(loginCred);
-		
-	}
-	
 	
 	@Test
 	public void verifyUserActivationKey_shouldReturnNullIfActivationKeyIsNotValid() {
