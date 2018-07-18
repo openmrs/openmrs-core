@@ -28,6 +28,7 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
@@ -161,7 +162,9 @@ public class HibernateUserDAO implements UserDAO {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<User> getAllUsers() throws DAOException {
-		return sessionFactory.getCurrentSession().createQuery("from User u order by u.userId").list();
+		return sessionFactory.getCurrentSession().createQuery("from User where not uuid = :daemonUserUuid order by userId")
+				                                                     .setString("daemonUserUuid", Daemon.getDaemonUserUuid()).list();
+		
 	}
 	
 	/**
@@ -179,7 +182,7 @@ public class HibernateUserDAO implements UserDAO {
 	public List<User> getUsersByRole(Role role) throws DAOException {
 
 		return (List<User>) sessionFactory.getCurrentSession().createCriteria(User.class, "u").createCriteria("roles", "r")
-		        .add(Restrictions.like("r.role", role.getRole())).addOrder(Order.asc("u.username")).list();
+		        .add(Restrictions.like("r.role", role.getRole())).add(Restrictions.ne("u.uuid", Daemon.getDaemonUserUuid())).addOrder(Order.asc("u.username")).list();
 		
 	}
 	
@@ -440,6 +443,7 @@ public class HibernateUserDAO implements UserDAO {
 		crit.createAlias("person.names", "names");
 		crit.add(Restrictions.eq("names.givenName", givenName));
 		crit.add(Restrictions.eq("names.familyName", familyName));
+		crit.add(Restrictions.ne("uuid", Daemon.getDaemonUserUuid()));
 		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		if (!includeRetired) {
 			crit.add(Restrictions.eq("retired", false));
@@ -517,6 +521,7 @@ public class HibernateUserDAO implements UserDAO {
 	@SuppressWarnings("unchecked")
 	public List<User> getUsersByPerson(Person person, boolean includeRetired) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(User.class);
+		crit.add(Restrictions.ne("uuid", Daemon.getDaemonUserUuid()));
 		if (person != null) {
 			crit.add(Restrictions.eq("person", person));
 		}
@@ -593,9 +598,10 @@ public class HibernateUserDAO implements UserDAO {
 			hql.append("inner join user.roles as role ");
 			searchOnRoles = true;
 		}
+		hql.append("where user.uuid != :DAEMON_USER_UUID ");
 		
 		if (!criteria.isEmpty() || searchOnRoles) {
-			hql.append("where ");
+			hql.append("and ");
 		}
 		for (Iterator<String> i = criteria.iterator(); i.hasNext();) {
 			hql.append(i.next()).append(" ");
@@ -613,7 +619,7 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(hql.toString());
-		
+		query.setParameter("DAEMON_USER_UUID", Daemon.getDaemonUserUuid());
 		for (Map.Entry<String, String> e : namesMap.entrySet()) {
 			query.setString(e.getKey(), e.getValue());
 		}

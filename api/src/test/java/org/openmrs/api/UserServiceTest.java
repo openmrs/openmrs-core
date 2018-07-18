@@ -66,7 +66,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	private UserService userService;
 
 	private MessageSourceService messages;
-
+	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
@@ -162,7 +162,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.clearSession();
 		
 		List<User> allUsers = userService.getAllUsers();
-		assertEquals(11, allUsers.size());
+		assertEquals(10, allUsers.size());
 		
 		// there should still only be the one patient we created in the xml file
 		List<Patient> allPatientsSet = Context.getPatientService().getAllPatients();
@@ -575,7 +575,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllUsers_shouldFetchAllUsersInTheSystem() {
 		List<User> users = userService.getAllUsers();
-		Assert.assertEquals(4, users.size());
+		Assert.assertEquals(3, users.size());
 	}
 	
 	/**
@@ -585,7 +585,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getAllUsers_shouldNotContainsAnyDuplicateUsers() {
 		executeDataSet(XML_FILENAME);
 		List<User> users = userService.getAllUsers();
-		Assert.assertEquals(12, users.size());
+		assertEquals(11, users.size());
 		// TODO Need to test with duplicate data in the dataset (not sure if that's possible)
 		
 	}
@@ -733,8 +733,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getUsers_shouldFetchAllUsersIfNameSearchIsEmptyOrNull() {
-		Assert.assertEquals(4, userService.getUsers("", null, true).size());
-		Assert.assertEquals(4, userService.getUsers(null, null, true).size());
+		assertEquals(3, userService.getUsers("", null, true).size());
+		assertEquals(3, userService.getUsers(null, null, true).size());
 	}
 	
 	/**
