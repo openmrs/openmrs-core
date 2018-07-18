@@ -577,7 +577,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		requireNoActiveOrderOfSameType(preferred,notPreferred);
 		PersonMergeLogData mergedData = new PersonMergeLogData();
 		mergeVisits(preferred, notPreferred, mergedData);
-		mergeEncounters(preferred, notPreferred, mergedData);
+		mergeEncounters(preferred, notPreferred, mergedData);//merge the remaining encounter that don't have visit
 		mergeProgramEnrolments(preferred, notPreferred, mergedData);
 		mergeRelationships(preferred, notPreferred, mergedData);
 		mergeObservationsNotContainedInEncounters(preferred, notPreferred, mergedData);
@@ -647,17 +647,84 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		//TODO: this should be a copy, not a move
 		
 		VisitService visitService = Context.getVisitService();
+		EncounterService encounterService = Context.getEncounterService();
+
+		List<Visit> preferredVisits = visitService.getVisitsByPatient(preferred, true, true);
+		List<Visit> notPreferredVisits = visitService.getVisitsByPatient(notPreferred, true, false);
 		
-		for (Visit visit : visitService.getVisitsByPatient(notPreferred, true, true)) {
-			if (log.isDebugEnabled()) {
-				log.debug("Merging visit " + visit.getVisitId() + " to " + preferred.getPatientId());
-			}
-			visit.setPatient(preferred);
-			Visit persisted = visitService.saveVisit(visit);
-			mergedData.addMovedVisit(persisted.getUuid());
-		}
+		for (Visit losing : notPreferredVisits) {        
+            for (Visit winning : preferredVisits) {
+            // if the non-preferred patient has any visits that overlap with visits of the preferred patient, we need to merge them together
+                if (visitsOverlap(losing, winning)) {
+        			log.debug("Merging visit 	" + losing.getVisitId() + " to " + winning.getVisitId());
+                	//extend date range of winning
+                    if (OpenmrsUtil.compareWithNullAsEarliest(losing.getStartDatetime(), winning.getStartDatetime()) <= 0) {
+                        winning.setStartDatetime(losing.getStartDatetime());
+                    }
+                    if (winning.getStopDatetime() != null && OpenmrsUtil.compareWithNullAsLatest(winning.getStopDatetime(), losing.getStopDatetime()) <= 0) {
+                        winning.setStopDatetime(losing.getStopDatetime());
+                    }
+
+                   // move encounters from losing into winning
+			        if (losing.getEncounters() != null) {
+			            for (Encounter e : losing.getEncounters()) {
+			                e.setPatient(winning.getPatient());
+			                winning.addEncounter(e);
+			            	Encounter persistedEn = encounterService.saveEncounter(e);
+							mergedData.addMovedEncounter(persistedEn.getUuid());
+			            }
+			        }
+			        losing.setEncounters(null); //  manually set the encounters from the non-preferred visit before voiding or all the encounters we just moved will also get voided!
+
+			        visitService.voidVisit(losing, "EMR - Merge Patients: merged into visit " + winning.getVisitId());
+                     visitService.saveVisit(winning);
+
+        			break;                   
+                }
+                else {
+        			log.debug("Merging visit " + losing.getVisitId() + " to " + winning.getVisitId());
+        			losing.setPatient(winning.getPatient());
+        			if (losing.getEncounters() != null) {
+			            for (Encounter e : losing.getEncounters()) {
+			                e.setPatient(winning.getPatient());
+			                Encounter persistedEn = encounterService.saveEncounter(e);
+							mergedData.addMovedEncounter(persistedEn.getUuid());
+			            }
+			        }
+			        
+        			Visit persisted = visitService.saveVisit(losing);
+        			mergedData.addMovedVisit(persisted.getUuid());
+                	break;
+                }
+            }         
+        }
 	}
+	private boolean visitsOverlap(Visit v1, Visit v2) {
+        Location where1 = v1.getLocation();
+        Location where2 = v2.getLocation();
+        if ((where1 == null && where2 == null) ||
+                isSameOrAncestor(where1, where2) ||
+                isSameOrAncestor(where2, where1)) {
+            // "same" location, so check if date ranges overlap (assuming startDatetime is never null)
+            return (OpenmrsUtil.compareWithNullAsLatest(v1.getStartDatetime(), v2.getStopDatetime()) <= 0)
+                    && (OpenmrsUtil.compareWithNullAsLatest(v2.getStartDatetime(), v1.getStopDatetime()) <= 0);
+        }
+        return false;
+    }
 	
+	/**
+     * @param a
+     * @param b
+     * @return true if a.equals(b) or a is an ancestor of b.
+     */
+    private boolean isSameOrAncestor(Location a, Location b) {
+        if (a == null || b == null) {
+            return a == null && b == null;
+        }
+        return a.equals(b) || isSameOrAncestor(a, b.getParentLocation());
+    }
+
+	//this will merge remaining encounters that were not merged in merge visit(encounters that don't have visit)
 	private void mergeEncounters(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// change all encounters. This will cascade to obs and orders contained in those encounters
 		// TODO: this should be a copy, not a move

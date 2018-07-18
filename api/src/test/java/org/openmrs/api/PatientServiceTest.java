@@ -666,12 +666,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient merged = patientService.getPatient(preferred.getId());
 		List<Visit> mergedVisits = visitService.getVisitsByPatient(merged, true, true);
 		
-		assertThat(mergedVisits.size(), is(6));
-		// in order to keep this test passing when (someday?) we copy visits instead of moving them, use matchers here:
-		assertThat(mergedVisits, containsInAnyOrder(matchingVisit(visit1), matchingVisit(visit2), matchingVisit(visit3),
-		    matchingVisit(visit4), matchingVisit(visit5), matchingVisit(visit6)));
+		//Two visites have been merge (id = 2, 3) because they overlap while visit (id = 1) is moved
+		assertThat(mergedVisits.size(), is(3));
 
-		// be sure nothing slipped through without being assigned to the right patient (probably not necessary)
+		// be sure nothing slipped through without being assigned to the right patient 
 		for (Visit v : mergedVisits) {
 			for (Encounter e : v.getEncounters()) {
 				assertThat(e.getPatient(), is(v.getPatient()));
@@ -685,9 +683,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		// now check that moving visits and their contained encounters was audited correctly
 		PersonMergeLogData mergeLogData = mergeLog.getPersonMergeLogData();
-		assertThat(mergeLogData.getMovedVisits().size(), is(4));
-		assertThat(mergeLogData.getMovedVisits(), containsInAnyOrder(visit1.getUuid(), visit2.getUuid(), visit3.getUuid(),
-		    visit6.getUuid()));
+		assertThat(mergeLogData.getMovedVisits().size(), is(1)); //only one visit was moved the other two overlapped and where merged
+		assertThat(mergeLogData.getMovedVisits(), containsInAnyOrder(visit1.getUuid()));
 		
 		assertThat(mergeLogData.getMovedEncounters().size(), is(encounterUuidsThatShouldBeMoved.size()));
 		assertThat(mergeLogData.getMovedEncounters(), containsInAnyOrder(encounterUuidsThatShouldBeMoved.toArray()));
@@ -708,7 +705,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			}
 		};
 	}
-	
+
 	/**
 	 * @see PatientService#mergePatients(Patient,Patient)
 	 */
