@@ -123,7 +123,8 @@ public class HibernateUserDAO implements UserDAO {
 	@Override
 	public LoginCredential getLoginCredentialByActivationKey(String activationKey) {
 		String key = Security.encodeString(activationKey);
-		LoginCredential loginCred = (LoginCredential) sessionFactory.getCurrentSession().createCriteria(LoginCredential.class).add(Restrictions.like("activationKey", key, MatchMode.START)).uniqueResult();	
+		LoginCredential loginCred = (LoginCredential) sessionFactory.getCurrentSession().createCriteria(LoginCredential.class)
+									.add(Restrictions.like("activationKey", key, MatchMode.START)).uniqueResult();	
 		if(loginCred != null) {
 			String[] credTokens = loginCred.getActivationKey().split(":");
 			if(credTokens[0].equals(key)){
@@ -657,11 +658,8 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.db.UserDAO#createActivationKey(org.openmrs.User)
 	 */
 	@Override
-	public void createActivationKey(User user, String activationKey) {
-			LoginCredential credentials = getLoginCredential(user);
-			credentials.setActivationKey(activationKey);			
+	public void createActivationKey(LoginCredential credentials) {		
 			sessionFactory.getCurrentSession().merge(credentials);	
 	}
-	
 	
 }

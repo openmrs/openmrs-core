@@ -571,7 +571,7 @@ public interface UserService extends OpenmrsService {
 	 * Sets a user's activation key
 	 * @param User The user for which the activation key will be set
 	 */
-	public void setUserActivationKey(User user);
+	public User setUserActivationKey(User user);
 	
 	
 	/*

@@ -741,17 +741,20 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * 
 	 */
 	@Override
-	public void setUserActivationKey(User user) {
+	public User setUserActivationKey(User user) {
 		log.info("Setting activationKey for " + user.getUsername());
 		String token = RandomStringUtils.randomAlphanumeric(20);
 		long time = System.currentTimeMillis() + validTime;
 		String hashedKey = Security.encodeString(token);
-		String activationKey = hashedKey+":"+time;	
-		dao.createActivationKey(user, activationKey);	
+		String activationKey = hashedKey+":"+time;
+		LoginCredential credentials = dao.getLoginCredential(user);
+		credentials.setActivationKey(activationKey);	
+		dao.createActivationKey(credentials);	
 		
 		
 		//Send Email with unhashed  activation key and Date:
-
+		
+		return user;
 	}
 
 
