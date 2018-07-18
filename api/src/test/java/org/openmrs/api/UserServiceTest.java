@@ -70,7 +70,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 	private MessageSourceService messages;
 	
-	@Autowired(required = false)
+	@Autowired
 	private UserDAO dao;
 
 	@Rule
@@ -1376,9 +1376,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.setUsername("bwolfe");
 		u.getPerson().setGender("M");
 		User createdUser = userService.createUser(u, "Openmr5xy");
-		userService.setUserActivationKey(createdUser);
-		String activationKey  = dao.getLoginCredential(createdUser).getActivationKey();
-		assertNotNull(activationKey);
+		assertEquals(createdUser, userService.setUserActivationKey(createdUser));
 	}
 	
 	@Test 
@@ -1395,27 +1393,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		LoginCredential credentials = dao.getLoginCredential(createdUser);
 		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);			
 		dao.updateLoginCredential(credentials);
-		User user = userService.getUserByActivationKey(key);
-		assertEquals(createdUser, user); 
-		
-	}
-	
-	@Test
-	public void getUserByActivationKey_shouldReturnNullIfTokenTimeExpired(){
-		User u = new User();
-		u.setPerson(new Person());
-		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
-		u.setUsername("bwolfe");
-		u.getPerson().setGender("M");
-		User createdUser = userService.createUser(u, "Openmr5xy");
-		String key="h4ph0fpNzQCIPSw8plJI";
-		int validTime = 10*60*1000; //equivalent to 10 minutes for token to be valid
-		Long tokenTime = System.currentTimeMillis() - validTime;
-		LoginCredential credentials = dao.getLoginCredential(createdUser);
-		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);			
-		dao.updateLoginCredential(credentials);
-		User user = userService.getUserByActivationKey(key);
-		assertNull(user); 
+		assertEquals(createdUser, userService.getUserByActivationKey(key)); 	
 	}
 	
 }

@@ -573,10 +573,4 @@ public interface UserService extends OpenmrsService {
 	 */
 	public User setUserActivationKey(User user);
 	
-	
-	/*
-	 * Sets the time in seconds for password reset activation key to be valid 
-	 * @param validTime time for which the token is valid
-	 */
-	public void setValidTime(int validTime);
 }

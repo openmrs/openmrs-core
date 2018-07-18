@@ -188,8 +188,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);			
 		dao.updateLoginCredential(credentials);	
 		LoginCredential loginCred = dao.getLoginCredentialByActivationKey(key);
-		assertNotNull("LoginCredential with activationKey ", loginCred); 
-		
+		assertNotNull("LoginCredential with activationKey ", loginCred); 	
 	}
 	
 	@Test
@@ -202,8 +201,6 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.updateLoginCredential(credentials);	
 		String[] tokens = dao.getLoginCredential(userJoe).getActivationKey().split(":");
 		assertNotEquals(Security.encodeString(key),tokens[0]);
-
-
 	}
 	
 }
