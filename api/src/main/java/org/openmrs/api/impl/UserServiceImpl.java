@@ -78,7 +78,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @return the validTime for which the password reset activation key will be valid
 	 */
-	public int getValidTime() {
+	private int getValidTime() {
 		//if valid time is less that a minute or greater than 12hrs reset valid time to 1 minutes else set it to the required time.
 		return (validTime < MIN_VALID_TIME) || (validTime > MAX_VALID_TIME) ? DEFAULT_VALID_TIME : validTime;
 	}
@@ -731,7 +731,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Transactional(readOnly = true)
 	public User getUserByActivationKey(String activationKey) {
 		LoginCredential loginCred = dao.getLoginCredentialByActivationKey(activationKey);
-		if(loginCred != null ) {
+		String[] credTokens = loginCred.getActivationKey().split(":");
+		if(loginCred != null  && (System.currentTimeMillis() <= Long.parseLong(credTokens[1]) )) {
 			return getUser(loginCred.getUserId());
 		}
 		return null;

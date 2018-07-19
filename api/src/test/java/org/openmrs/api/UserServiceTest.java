@@ -1376,7 +1376,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.setUsername("bwolfe");
 		u.getPerson().setGender("M");
 		User createdUser = userService.createUser(u, "Openmr5xy");
+		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
 		assertEquals(createdUser, userService.setUserActivationKey(createdUser));
+		assertNotNull(dao.getLoginCredential(createdUser).getActivationKey());
 	}
 	
 	@Test 
