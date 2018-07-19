@@ -11,7 +11,6 @@ package org.openmrs.api.db;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -177,30 +176,6 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		assertFalse(dao.isSecretAnswer(userJoe, "foo"));
 		
-	}
-	
-	@Test
-	public void getLoginCredentialByActivation_shouldGetLoginCredentialByActivationKey() {
-		String key="h4ph0fpNzQCIPSw8plJI";
-		int validTime = 10*60*1000; //equivalent to 10 minutes for token to be valid
-		Long tokenTime = System.currentTimeMillis() + validTime;
-		LoginCredential credentials = dao.getLoginCredential(userJoe);
-		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);			
-		dao.updateLoginCredential(credentials);	
-		LoginCredential loginCred = dao.getLoginCredentialByActivationKey(key);
-		assertNotNull("LoginCredential with activationKey ", loginCred); 	
-	}
-	
-	@Test
-	public void verifyUserActivationKey_shouldReturnNullIfActivationKeyIsNotValid() {
-		String key="wrongActivationKey00";
-		int validTime = 10*60*1000; //equivalent to 10 minutes for token to be valid
-		Long tokenTime = System.currentTimeMillis() + validTime;
-		LoginCredential credentials = dao.getLoginCredential(userJoe);
-		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);			
-		dao.updateLoginCredential(credentials);	
-		String[] tokens = dao.getLoginCredential(userJoe).getActivationKey().split(":");
-		assertNotEquals(Security.encodeString(key),tokens[0]);
 	}
 	
 }

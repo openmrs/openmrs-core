@@ -658,7 +658,7 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.db.UserDAO#createActivationKey(org.openmrs.User)
 	 */
 	@Override
-	public void createActivationKey(LoginCredential credentials) {		
+	public void setUserActivationKey(LoginCredential credentials) {		
 			sessionFactory.getCurrentSession().merge(credentials);	
 	}
 	

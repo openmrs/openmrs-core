@@ -59,7 +59,11 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	protected UserDAO dao;
 	
-	private int validTime = 60*1000; //period of one minute
+	private static final int MAX_VALID_TIME = 12*60*60*1000; //Period of 12 hours
+	private static final int MIN_VALID_TIME = 60*1000; //Period of 1 minute
+	private static final int DEFAULT_VALID_TIME = 10*60*1000; //Default time of 10 minute
+	
+	private static int validTime = DEFAULT_VALID_TIME;
 	
 	@Autowired(required = false)
 	List<PrivilegeListener> privilegeListeners;
@@ -72,12 +76,11 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	/**
-	 * Sets the time in seconds for password reset activation key to be valid
-	 * @param validTime the validTime to set
+	 * @return the validTime for which the password reset activation key will be valid
 	 */
-	public void setValidTime(int validTime) {
-		//if valid time is less that a minute or greater thatn 12hrs reset valid time to 1 minutes else set it to the required time.
-		this.validTime = (validTime < 60*1000) || (validTime > 12*60*60*1000) ? 60*1000 : validTime;
+	public int getValidTime() {
+		//if valid time is less that a minute or greater than 12hrs reset valid time to 1 minutes else set it to the required time.
+		return (validTime < MIN_VALID_TIME) || (validTime > MAX_VALID_TIME) ? DEFAULT_VALID_TIME : validTime;
 	}
 
 	/**
@@ -741,12 +744,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Override
 	public User setUserActivationKey(User user) {
 		String token = RandomStringUtils.randomAlphanumeric(20);
-		long time = System.currentTimeMillis() + validTime;
+		long time = System.currentTimeMillis() + getValidTime();
 		String hashedKey = Security.encodeString(token);
 		String activationKey = hashedKey+":"+time;
 		LoginCredential credentials = dao.getLoginCredential(user);
 		credentials.setActivationKey(activationKey);	
-		dao.createActivationKey(credentials);	
+		dao.setUserActivationKey(credentials);	
 			
 		//Send Email with unhashed  activation key and Date:
 		

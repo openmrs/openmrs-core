@@ -210,6 +210,6 @@ public interface UserDAO {
 	/**
 	 * @see UserService#setUserActivationKey(LoginCredential)
 	 */
-	public void createActivationKey(LoginCredential credentials);
+	public void setUserActivationKey(LoginCredential credentials);
 	
 }
