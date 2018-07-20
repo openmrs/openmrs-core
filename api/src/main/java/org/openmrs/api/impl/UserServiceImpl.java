@@ -62,9 +62,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	private static final int MAX_VALID_TIME = 12*60*60*1000; //Period of 12 hours
 	private static final int MIN_VALID_TIME = 60*1000; //Period of 1 minute
 	private static final int DEFAULT_VALID_TIME = 10*60*1000; //Default time of 10 minute
-	
-	private static int validTime = DEFAULT_VALID_TIME;
-	
+		
 	@Autowired(required = false)
 	List<PrivilegeListener> privilegeListeners;
 	
@@ -75,10 +73,13 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		this.dao = dao;
 	}
 	
+	
 	/**
 	 * @return the validTime for which the password reset activation key will be valid
 	 */
 	private int getValidTime() {
+		final int validTime = Context.getAdministrationService().getGlobalProperty("validTime") == null ? DEFAULT_VALID_TIME :
+							Integer.parseInt(Context.getAdministrationService().getGlobalProperty("validTime"));
 		//if valid time is less that a minute or greater than 12hrs reset valid time to 1 minutes else set it to the required time.
 		return (validTime < MIN_VALID_TIME) || (validTime > MAX_VALID_TIME) ? DEFAULT_VALID_TIME : validTime;
 	}

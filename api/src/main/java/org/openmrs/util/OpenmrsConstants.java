@@ -597,6 +597,12 @@ public final class OpenmrsConstants {
 	 * Specifies the uuid of the concept which represents drug non coded
 	 */
 	public static final String GP_DRUG_ORDER_DRUG_OTHER = "drugOrder.drugOther";
+	
+	/**
+	 * Name of property that stores the duration for which the password reset token is valid
+	 */
+	public static final String GP_PASSWORD_RESET_VALIDTIME = "validTime";
+
 
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
@@ -1081,6 +1087,8 @@ public final class OpenmrsConstants {
 		
 		props
 				.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "", "Specifies the uuid of the concept which represents drug other non coded"));
+		props.add(new GlobalProperty(GP_PASSWORD_RESET_VALIDTIME, "600000", "Default of 10 minutes for which the password reset is valid"));
+		
 		props.add(new GlobalProperty(GP_LOGIN_URL, LOGIN_URL,
 			"Responsible for defining the Authentication URL "));
 		props.addAll(ModuleFactory.getGlobalProperties());
