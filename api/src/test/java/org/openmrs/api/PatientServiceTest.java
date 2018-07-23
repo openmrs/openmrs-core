@@ -51,6 +51,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.api.impl.PatientServiceImplTest;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
@@ -77,6 +78,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -116,6 +118,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	protected static AdministrationService adminService = null;
 	
 	protected static LocationService locationService = null;
+	
+	private static AtomicBoolean isSavePatientThreadUnSafe;
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -1846,6 +1850,56 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertTrue("The updated patient and the orig patient should still be equal", patient.equals(patient2));
 		
 		assertTrue("The gender should be new", patient2.getGender().equals("F"));
+	}
+	
+	@Test
+	public void savePatient_shouldFailSaveIfPatientsWithSameIdentifierAreSaved() {
+		isSavePatientThreadUnSafe = new AtomicBoolean(false);
+		UserContext ctx = Context.getUserContext();
+		
+		Patient patient1 = new Patient();
+		patient1.setGender("M");
+		patient1.addName(new PersonName("Test1", "Sam", "Test"));
+		
+		Patient patient2 = new Patient();
+		patient2.setGender("M");
+		patient2.addName(new PersonName("Test2", "Samuel", "Test"));
+		
+		Runnable r1 = () -> savePatientOnThread(ctx, patient1);
+		       
+		Runnable r2 = () -> savePatientOnThread(ctx, patient2);
+				
+		Thread t1 = new Thread(r1);
+		Thread t2 = new Thread(r2);
+		
+		t1.start();
+		t2.start();
+		
+		try {
+			t1.join();
+		} catch (InterruptedException e) {
+			//Just Ignore
+		}	
+		
+		assertTrue("IdentifierNotUniqueException not thrown, method not Threadsafe", isSavePatientThreadUnSafe.get());
+		
+		//Cleans up the unrolled back Thread transactions.
+		deleteAllData();
+	}
+	public void savePatientOnThread(UserContext ctx, Patient patient) {
+		Context.setUserContext(ctx);
+        Context.openSessionWithCurrentUser();
+        authenticate();
+		PatientIdentifier patientIdentifier = new PatientIdentifier("103-9", new PatientIdentifierType(1), new Location(1));
+		patientIdentifier.setPreferred(true);
+		patient.addIdentifier(patientIdentifier);
+		try {
+		   patientService.savePatient(patient);
+		}
+		catch(org.openmrs.api.IdentifierNotUniqueException e) {
+			isSavePatientThreadUnSafe.set(true);
+		}
+        Context.closeSessionWithCurrentUser();
 	}
 	
 	@Test
