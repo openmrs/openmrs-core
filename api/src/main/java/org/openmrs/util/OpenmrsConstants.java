@@ -11,10 +11,10 @@ package org.openmrs.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -406,6 +406,11 @@ public final class OpenmrsConstants {
 	public static final String GP_PASSWORD_MINIMUM_LENGTH = "security.passwordMinimumLength";
 	
 	/**
+	 * Global property that stores the duration for which the password reset token is valid
+	 */
+	public static final String GP_PASSWORD_RESET_VALIDTIME = "validTime";
+	
+	/**
 	 * Global property name that allows specification of a regular expression that passwords must
 	 * adhere to
 	 */
@@ -597,11 +602,6 @@ public final class OpenmrsConstants {
 	 * Specifies the uuid of the concept which represents drug non coded
 	 */
 	public static final String GP_DRUG_ORDER_DRUG_OTHER = "drugOrder.drugOther";
-	
-	/**
-	 * Name of property that stores the duration for which the password reset token is valid
-	 */
-	public static final String GP_PASSWORD_RESET_VALIDTIME = "validTime";
 
 
 	/**
@@ -860,6 +860,8 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_PASSWORD_MINIMUM_LENGTH, "8",
 		        "Configure the minimum length required of all passwords"));
 		
+		props.add(new GlobalProperty(GP_PASSWORD_RESET_VALIDTIME, "600000", "Default of 10 minutes for which the password reset is valid"));
+		
 		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_DIGIT, "true",
 		        "Configure whether passwords must contain at least one digit", BooleanDatatype.class, null));
 		
@@ -1087,7 +1089,6 @@ public final class OpenmrsConstants {
 		
 		props
 				.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "", "Specifies the uuid of the concept which represents drug other non coded"));
-		props.add(new GlobalProperty(GP_PASSWORD_RESET_VALIDTIME, "600000", "Default of 10 minutes for which the password reset is valid"));
 		
 		props.add(new GlobalProperty(GP_LOGIN_URL, LOGIN_URL,
 			"Responsible for defining the Authentication URL "));
