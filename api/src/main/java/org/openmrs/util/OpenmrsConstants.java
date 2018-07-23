@@ -408,7 +408,7 @@ public final class OpenmrsConstants {
 	/**
 	 * Global property that stores the duration for which the password reset token is valid
 	 */
-	public static final String GP_PASSWORD_RESET_VALIDTIME = "validTime";
+	public static final String GP_PASSWORD_RESET_VALIDTIME = "security.validTime";
 	
 	/**
 	 * Global property name that allows specification of a regular expression that passwords must
@@ -860,7 +860,8 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_PASSWORD_MINIMUM_LENGTH, "8",
 		        "Configure the minimum length required of all passwords"));
 		
-		props.add(new GlobalProperty(GP_PASSWORD_RESET_VALIDTIME, "600000", "Default of 10 minutes for which the password reset is valid"));
+		props.add(new GlobalProperty(GP_PASSWORD_RESET_VALIDTIME, "600000",
+		        " Specifies the duration of time in seconds for which a password reset token is valid, the default value is 10 minutes and the allowed values range from 1 minute to 12hrs"));
 		
 		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_DIGIT, "true",
 		        "Configure whether passwords must contain at least one digit", BooleanDatatype.class, null));
@@ -1058,7 +1059,6 @@ public final class OpenmrsConstants {
 
 		props.add(new GlobalProperty(GP_DISABLE_VALIDATION, "false",
 				"Disables validation of OpenMRS Objects. Only takes affect on next restart. Warning: only do this is you know what you are doing!"));
-
 
 		props.add(new GlobalProperty("allergy.concept.severity.mild", "1498AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 		        "UUID for the MILD severity concept"));
