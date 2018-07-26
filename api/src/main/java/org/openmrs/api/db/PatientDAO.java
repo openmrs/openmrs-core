@@ -17,6 +17,7 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.api.PatientService;
 
 /**
  * Database methods for the PatientService
@@ -122,6 +123,14 @@ public interface PatientDAO {
 	 * @should get no voided person when voided false is passed
 	 */
 	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws DAOException;
+	
+	/**
+	 * @see PatientService#getPatients(String, String, List, boolean, Integer, Integer)
+	 */
+	public List<Patient> getPatients(String name, List<PatientIdentifierType> identifierTypes,
+		boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException;
+	
+	
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List,

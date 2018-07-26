@@ -146,6 +146,7 @@ public class PatientServiceImplTest extends BaseContextMockTest {
 		patientService.checkPatientIdentifiers(patientWithIdentifiers);
 
 		// then no exception
+		assertNotNull(patientWithIdentifiers);
 	}
 
 	@Test

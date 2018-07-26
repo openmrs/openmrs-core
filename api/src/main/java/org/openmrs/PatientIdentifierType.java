@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 
 /**
@@ -56,7 +57,8 @@ public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 		LOCATION
 	}
 	
-	// Fields	
+	// Fields
+	@DocumentId
 	private Integer patientIdentifierTypeId;
 	
 	private String format;
