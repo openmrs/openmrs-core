@@ -17,6 +17,7 @@ import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
@@ -25,7 +26,8 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Default implementation of the {@link ProviderService}. This class should not be used on its own.
  * The current OpenMRS implementation should be fetched from the Context.
@@ -36,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderService {
 	
 	private ProviderDAO dao;
-	
+	private static final Logger log = LoggerFactory.getLogger(ProviderServiceImpl.class);
 	/**
 	 * Sets the data access object for Concepts. The dao is used for saving and getting concepts
 	 * to/from the database
@@ -292,5 +294,19 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	public Provider getUnknownProvider() {
 		return getProviderByUuid(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID));
+	}
+
+	@Override
+	public Provider createProviderFromUser(User user) {
+		Provider p = new Provider();
+		if (user == null || user.getPerson() == null) {
+			throw new APIException("User can not be null");
+		} else if (Context.getProviderService().getProvidersByPerson(user.getPerson()).isEmpty()) {
+			p.setPerson(user.getPerson());
+			return Context.getProviderService().saveProvider(p);
+		} else {
+			log.warn("Provider already exists for user");
+			return Context.getProviderService().getProvidersByPerson(user.getPerson()).iterator().next();
+		}
 	}
 }
