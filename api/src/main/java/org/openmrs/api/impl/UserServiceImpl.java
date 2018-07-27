@@ -35,6 +35,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
@@ -78,9 +79,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @return the validTime for which the password reset activation key will be valid
 	 */
 	private int getValidTime() {
-		final int validTime = StringUtils.isBlank(Context.getAdministrationService().getGlobalProperty("security.validTime"))
-		        ? DEFAULT_VALID_TIME
-		        : Integer.parseInt(Context.getAdministrationService().getGlobalProperty("security.validTime"));
+		String contexTime = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_VALIDTIME);
+		final int validTime = StringUtils.isBlank(contexTime) ? DEFAULT_VALID_TIME : Integer.parseInt(contexTime);
 		//if valid time is less that a minute or greater than 12hrs reset valid time to 1 minutes else set it to the required time.
 		return (validTime < MIN_VALID_TIME) || (validTime > MAX_VALID_TIME) ? DEFAULT_VALID_TIME : validTime;
 	}
