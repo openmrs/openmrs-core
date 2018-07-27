@@ -72,6 +72,20 @@ public class Patient extends Person {
 		this.patientId = patientId;
 		setPatient(true);
 	}
+
+	/**
+	 * This constructor creates a new Patient object from the given {@link Patient} object. All
+	 * attributes are copied over to the new object. In effect creating a clone/duplicate.
+	 * <br>
+	 *
+	 * @param patient the person object to copy onto a new Patient
+	 */
+	public Patient(Patient patient){
+		super(patient);
+		this.patientId = patient.getPatientId();
+		this.allergyStatus = patient.getAllergyStatus();
+		this.identifiers = patient.getIdentifiers();
+	}
 	
 	// Property accessors
 	
