@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -26,6 +27,29 @@ import org.junit.Test;
  * by testing all other non getter/setters in the patient object
  */
 public class PatientTest {
+	
+	/**
+	 * Regression test for TRUNK-3118
+	 */
+	@Test
+	public void patient_shouldConstructCloneWhenPassedPatient() {
+		Patient p = new Patient();
+		PatientIdentifier pa1 = new PatientIdentifier();
+		PatientIdentifierType identifierType = new PatientIdentifierType(1);
+		Location location = new Location(1);
+
+		pa1.setIdentifier("theid");
+		pa1.setIdentifierType(identifierType);
+		pa1.setLocation(location);
+		pa1.setVoided(true);
+		p.addIdentifier(pa1);
+		p.setAllergyStatus("TestAllergy");
+		p.setId(1);
+		
+		Patient p2 = new Patient(p);
+
+		assertEquals(p, p2);
+	}
 	
 	/**
 	 * Test the add/removeIdentifiers method in the patient object
