@@ -445,8 +445,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	@SkipBaseSetup
-	public void shouldGetPatientsByIdentifierAndIdentifierType() throws Exception {
+	public void shouldGetPatientsByIdegntifierAndIdentifierType() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
 		authenticate();
@@ -455,8 +454,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<PatientIdentifierType> types = new ArrayList<>();
 		types.add(new PatientIdentifierType(1));
 		// make sure we get back only one patient
-		List<Patient> patients = patientService.getPatients("1234", null, types, false);
+		List<Patient> patients = patientService.getPatients("4567", null, types, false);
 		assertEquals(1, patients.size());
+		
+		// make sure error cases are found & catched
+		patients = patientService.getPatients("4567", null, null, false);
+		assertTrue(patients.isEmpty());
+		patients = patientService.getPatients("4567", null, null, false, -2, -2);
+		assertTrue(patients.isEmpty());		
 		
 		// make sure we get back only one patient
 		patients = patientService.getPatients("1234", null, null, false);
@@ -465,6 +470,22 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// make sure we can search a padded identifier
 		patients = patientService.getPatients("00000001234", null, null, false);
 		assertEquals(1, patients.size());
+		patients = patientService.getPatients("123", null, types, false);
+		assertEquals(1, patients.size());
+		patients = patientService.getPatients("123", null, types, true);
+		assertEquals(0, patients.size());
+		patients = patientService.getPatients("123", null, types, false);
+		assertEquals(1, patients.size());		
+		
+		// change to use another identifier type
+		// THESE TWO TESTS CURRENTLY FAIL
+		types = new ArrayList<>();
+		types.add(new PatientIdentifierType(2));
+		patients = patientService.getPatients("1234", null, types, false);
+		assertEquals(0, patients.size());
+		
+		patients = patientService.getPatients(null, "1234", types, false);
+		assertEquals(0, patients.size());
 	}
 	
 	/**
