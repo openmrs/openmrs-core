@@ -305,4 +305,15 @@
 								 referencedTableName="concept"
 								 referencedColumnNames="concept_id" />
 	</changeSet>
+	<changeSet id="20180706-passwordreset" author="harisu+fanyui">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="users" columnName="activation_key"/>
+			</not>
+		</preConditions>
+		<comment>Adding column users.activation_key</comment>
+        <addColumn tableName="users">
+            <column name="activation_key" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

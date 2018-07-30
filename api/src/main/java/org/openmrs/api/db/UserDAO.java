@@ -46,11 +46,6 @@ public interface UserDAO {
 	public User getUserByEmail(String email);
 	
 	/**
-	 * @see org.openmrs.api.UserService#getUserByActivationKey(java.lang.String)
-	 */
-	public User getUserByActivationKey(String activationKey);
-	
-	/**
 	 * @see org.openmrs.api.UserService#hasDuplicateUsername(org.openmrs.User)
 	 */
 	public boolean hasDuplicateUsername(String username, String systemId, Integer userId) throws DAOException;
@@ -185,6 +180,13 @@ public interface UserDAO {
 	public void updateLoginCredential(LoginCredential credential);
 	
 	/**
+	 * Gets User LoginCredential using activationKey
+	 * @param activationKey User's activation key for password reset 
+	 * @return LoginCredentail associated with activationKey 
+	 */
+	public LoginCredential getLoginCredentialByActivationKey(String activationKey);
+	
+	/**
 	 * @see org.openmrs.api.UserService#generateSystemId()
 	 */
 	public Integer generateSystemId() throws DAOException;
@@ -204,5 +206,10 @@ public interface UserDAO {
 	 * @see UserService#getCountOfUsers(String, List, boolean)
 	 */
 	public Integer getCountOfUsers(String name, List<Role> roles, boolean includeRetired);
+	
+	/**
+	 * @see UserService#setUserActivationKey(LoginCredential)
+	 */
+	public void setUserActivationKey(LoginCredential credentials);
 	
 }

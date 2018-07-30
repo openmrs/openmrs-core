@@ -11,10 +11,10 @@ package org.openmrs.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -406,6 +406,11 @@ public final class OpenmrsConstants {
 	public static final String GP_PASSWORD_MINIMUM_LENGTH = "security.passwordMinimumLength";
 	
 	/**
+	 * Global property that stores the duration for which the password reset token is valid
+	 */
+	public static final String GP_PASSWORD_RESET_VALIDTIME = "security.validTime";
+	
+	/**
 	 * Global property name that allows specification of a regular expression that passwords must
 	 * adhere to
 	 */
@@ -597,6 +602,7 @@ public final class OpenmrsConstants {
 	 * Specifies the uuid of the concept which represents drug non coded
 	 */
 	public static final String GP_DRUG_ORDER_DRUG_OTHER = "drugOrder.drugOther";
+
 
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
@@ -854,6 +860,9 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_PASSWORD_MINIMUM_LENGTH, "8",
 		        "Configure the minimum length required of all passwords"));
 		
+		props.add(new GlobalProperty(GP_PASSWORD_RESET_VALIDTIME, "600000",
+		        " Specifies the duration of time in seconds for which a password reset token is valid, the default value is 10 minutes and the allowed values range from 1 minute to 12hrs"));
+		
 		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_DIGIT, "true",
 		        "Configure whether passwords must contain at least one digit", BooleanDatatype.class, null));
 		
@@ -1051,7 +1060,6 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_DISABLE_VALIDATION, "false",
 				"Disables validation of OpenMRS Objects. Only takes affect on next restart. Warning: only do this is you know what you are doing!"));
 
-
 		props.add(new GlobalProperty("allergy.concept.severity.mild", "1498AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 		        "UUID for the MILD severity concept"));
 		
@@ -1081,6 +1089,7 @@ public final class OpenmrsConstants {
 		
 		props
 				.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "", "Specifies the uuid of the concept which represents drug other non coded"));
+		
 		props.add(new GlobalProperty(GP_LOGIN_URL, LOGIN_URL,
 			"Responsible for defining the Authentication URL "));
 		props.addAll(ModuleFactory.getGlobalProperties());
