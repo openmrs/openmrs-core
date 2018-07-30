@@ -79,9 +79,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @return the validTime for which the password reset activation key will be valid
 	 */
 	private int getValidTime() {
-		String contexTime = Context.getAdministrationService()
+		String validTimeGp = Context.getAdministrationService()
 		        .getGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_VALIDTIME);
-		final int validTime = StringUtils.isBlank(contexTime) ? DEFAULT_VALID_TIME : Integer.parseInt(contexTime);
+		final int validTime = StringUtils.isBlank(validTimeGp) ? DEFAULT_VALID_TIME : Integer.parseInt(validTimeGp);
 		//if valid time is less that a minute or greater than 12hrs reset valid time to 1 minutes else set it to the required time.
 		return (validTime < MIN_VALID_TIME) || (validTime > MAX_VALID_TIME) ? DEFAULT_VALID_TIME : validTime;
 	}
