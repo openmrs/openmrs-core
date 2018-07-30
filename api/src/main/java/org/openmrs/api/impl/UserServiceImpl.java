@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
@@ -34,9 +35,11 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
+import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +60,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	protected UserDAO dao;
 	
+	private static final int MAX_VALID_TIME = 12*60*60*1000; //Period of 12 hours
+	private static final int MIN_VALID_TIME = 60*1000; //Period of 1 minute
+	private static final int DEFAULT_VALID_TIME = 10*60*1000; //Default time of 10 minute
+		
 	@Autowired(required = false)
 	List<PrivilegeListener> privilegeListeners;
 	
@@ -67,6 +74,18 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		this.dao = dao;
 	}
 	
+	
+	/**
+	 * @return the validTime for which the password reset activation key will be valid
+	 */
+	private int getValidTime() {
+		String validTimeGp = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_VALIDTIME);
+		final int validTime = StringUtils.isBlank(validTimeGp) ? DEFAULT_VALID_TIME : Integer.parseInt(validTimeGp);
+		//if valid time is less that a minute or greater than 12hrs reset valid time to 1 minutes else set it to the required time.
+		return (validTime < MIN_VALID_TIME) || (validTime > MAX_VALID_TIME) ? DEFAULT_VALID_TIME : validTime;
+	}
+
 	/**
 	 * @see org.openmrs.api.UserService#createUser(org.openmrs.User, java.lang.String)
 	 */
@@ -713,8 +732,32 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public User getUserByActivationKey(String activationKey) throws APIException {	
-		return dao.getUserByActivationKey(activationKey);
+	public User getUserByActivationKey(String activationKey) {
+		LoginCredential loginCred = dao.getLoginCredentialByActivationKey(activationKey);
+		String[] credTokens = loginCred.getActivationKey().split(":");
+		if(loginCred != null  && (System.currentTimeMillis() <= Long.parseLong(credTokens[1]) )) {
+			return getUser(loginCred.getUserId());
+		}
+		return null;
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#setUserActivationKey(org.openmrs.User)
+	 * 
+	 */
+	@Override
+	public User setUserActivationKey(User user) {
+		String token = RandomStringUtils.randomAlphanumeric(20);
+		long time = System.currentTimeMillis() + getValidTime();
+		String hashedKey = Security.encodeString(token);
+		String activationKey = hashedKey+":"+time;
+		LoginCredential credentials = dao.getLoginCredential(user);
+		credentials.setActivationKey(activationKey);	
+		dao.setUserActivationKey(credentials);	
+			
+		//Send Email with unhashed  activation key and Date:
+		
+		return user;
 	}
 
 

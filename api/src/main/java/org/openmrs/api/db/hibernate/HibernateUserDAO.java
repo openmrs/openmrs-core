@@ -118,16 +118,17 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#getUserByActivationKey(java.lang.String)
+	 * @see org.openmrs.api.db.UserDAO#getLoginCredentialByActivationKey(java.lang.String)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public User getUserByActivationKey(String activationKey) {
-		User user = (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.like("activationKey", activationKey, MatchMode.START)).uniqueResult();	
-		if(user != null) {
-			String[] tokens = user.getActivationKey().split(":");
-			if(tokens[0].equals(activationKey)) {
-				return user;
+	public LoginCredential getLoginCredentialByActivationKey(String activationKey) {
+		String key = Security.encodeString(activationKey);
+		LoginCredential loginCred = (LoginCredential) sessionFactory.getCurrentSession().createCriteria(LoginCredential.class)
+									.add(Restrictions.like("activationKey", key, MatchMode.START)).uniqueResult();	
+		if(loginCred != null) {
+			String[] credTokens = loginCred.getActivationKey().split(":");
+			if(credTokens[0].equals(key)){
+				return loginCred;
 			}
 		}	
 		return null;
@@ -652,6 +653,13 @@ public class HibernateUserDAO implements UserDAO {
 		
 		return query;
 	}
-	
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#createActivationKey(org.openmrs.User)
+	 */
+	@Override
+	public void setUserActivationKey(LoginCredential credentials) {		
+			sessionFactory.getCurrentSession().merge(credentials);	
+	}
 	
 }

@@ -40,6 +40,8 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.LoginCredential;
+import org.openmrs.api.db.UserDAO;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -47,6 +49,7 @@ import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * TODO add more tests to cover the methods in <code>UserService</code>
@@ -66,6 +69,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	private UserService userService;
 
 	private MessageSourceService messages;
+	
+	@Autowired
+	private UserDAO dao;
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -1361,30 +1367,52 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = userService.getUserByEmail("hank.williams@gmail.com");
 		assertNotNull("User with email hank.williams@gmail not found in database", user);
 	}
-	/*
-	 * @see UserService#getUserByActivationKey(String)
-	 */
+	
 	@Test
-	public void getUserByActivationKey_shouldGetUserUsingActivationKey() {
-		executeDataSet(XML_FILENAME);
-		String key="XbklsieiskeuztecEnPf";
-		User user = userService.getUserByActivationKey(key);	
-		assertNotNull("User with activationKey ", user); 
-		String[] tokens = user.getActivationKey().split(":");
-		assertEquals(key,tokens[0]);		
-
+	public void setUserActivationKey_shouldCreateUserActivationKey() {
+		User u = new User();
+		u.setPerson(new Person());
+		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
+		u.setUsername("bwolfe");
+		u.getPerson().setGender("M");
+		User createdUser = userService.createUser(u, "Openmr5xy");
+		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
+		assertEquals(createdUser, userService.setUserActivationKey(createdUser));
+		assertNotNull(dao.getLoginCredential(createdUser).getActivationKey());
 	}
 	
-	/**
-	 * @see UserService#getUserByActivationKey(String)
-	 */
-	@Test
-	public void getUserByActivationKey_shouldReturnNullIfNoUserFoundWithGivenKey() {
-		executeDataSet(XML_FILENAME);
-		String key="XbklsieiskNoMatchKey";
-		User user = userService.getUserByActivationKey(key);			
-		assertNull(user);
+	@Test 
+	public void getUserByActivationKey_shouldGetUserByActivationKey(){
+		User u = new User();
+		u.setPerson(new Person());
+		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
+		u.setUsername("bwolfe");
+		u.getPerson().setGender("M");
+		User createdUser = userService.createUser(u, "Openmr5xy");
+		String key="h4ph0fpNzQCIPSw8plJI";
+		int validTime = 10*60*1000; //equivalent to 10 minutes for token to be valid
+		Long tokenTime = System.currentTimeMillis() + validTime;
+		LoginCredential credentials = dao.getLoginCredential(createdUser);
+		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);			
+		dao.updateLoginCredential(credentials);
+		assertEquals(createdUser, userService.getUserByActivationKey(key)); 	
 	}
-
-		
+	
+	@Test
+	public void getUserByActivationKey_shouldReturnNullIfTokenTimeExpired(){
+		User u = new User();
+		u.setPerson(new Person());
+		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
+		u.setUsername("bwolfe");
+		u.getPerson().setGender("M");
+		User createdUser = userService.createUser(u, "Openmr5xy");
+		String key="h4ph0fpNzQCIPSw8plJI";
+		int validTime = 10*60*1000; //equivalent to 10 minutes for token to be valid
+		Long tokenTime = System.currentTimeMillis() - validTime;
+		LoginCredential credentials = dao.getLoginCredential(createdUser);
+		credentials.setActivationKey("b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"+tokenTime);			
+		dao.updateLoginCredential(credentials); 
+		assertNull(userService.getUserByActivationKey(key)); 
+	}
+	
 }
