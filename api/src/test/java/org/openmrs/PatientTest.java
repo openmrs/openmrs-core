@@ -16,6 +16,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,11 +31,19 @@ import org.junit.Test;
 public class PatientTest {
 	
 	/**
-	 * Regression test for TRUNK-3118
+	 * Test the constructor method in patient object that takes in a patient as object and creates a copy
 	 */
 	@Test
 	public void patient_shouldConstructCloneWhenPassedPatient() {
 		Patient p = new Patient();
+		
+		Set<PersonName> pnSet = new HashSet<>();
+		PersonName pn = new PersonName();
+		pn.setFamilyName("familyName");
+		pn.setGivenName("givenName");
+		pn.setMiddleName("middleName");
+		pnSet.add(pn);
+			
 		PatientIdentifier pa1 = new PatientIdentifier();
 		PatientIdentifierType identifierType = new PatientIdentifierType(1);
 		Location location = new Location(1);
@@ -42,6 +52,8 @@ public class PatientTest {
 		pa1.setIdentifierType(identifierType);
 		pa1.setLocation(location);
 		pa1.setVoided(true);
+		
+		p.setNames(pnSet);
 		p.addIdentifier(pa1);
 		p.setAllergyStatus("TestAllergy");
 		p.setId(1);
@@ -49,6 +61,13 @@ public class PatientTest {
 		Patient p2 = new Patient(p);
 
 		assertEquals(p, p2);
+		assertEquals(p.getAllergyStatus(), p2.getAllergyStatus());
+		assertEquals(p.getNames(), p2.getNames());
+		assertEquals(p.getGivenName(), p2.getGivenName());
+		assertEquals(p.getIdentifiers(),p2.getIdentifiers());
+		assertEquals(p.getPatientId(), p2.getPatientId());
+		assertEquals(p.getId(), p2.getId());
+		assertEquals(p.getPerson(), p2.getPerson());
 	}
 	
 	/**
