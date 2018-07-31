@@ -27,10 +27,10 @@ import java.util.Set;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.Before;
 import org.junit.rules.ExpectedException;
 import org.openmrs.Patient;
 import org.openmrs.Person;
@@ -1415,4 +1415,77 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertNull(userService.getUserByActivationKey(key)); 
 	}
 	
+	@Test
+	public void changeUserPasswordUsingActivationKey_shouldUpdatePasswordIfActivationKeyIsCorrect() {
+		User u = new User();
+		u.setPerson(new Person());
+		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
+		u.setUsername("bwolfe");
+		u.getPerson().setGender("M");
+		User createdUser = userService.createUser(u, "Openmr5xy");
+		String key = "h4ph0fpNzQCIPSw8plJI";
+		int validTime = 10 * 60 * 1000; //equivalent to 10 minutes for token to be valid
+		Long tokenTime = System.currentTimeMillis() + validTime;
+		LoginCredential credentials = dao.getLoginCredential(createdUser);
+		credentials.setActivationKey(
+		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
+		            + tokenTime);
+		dao.updateLoginCredential(credentials);
+		
+		assertFalse(createdUser.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
+		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
+		userService.changeUserPasswordUsingActivationKey(key, "Admin123");
+		Context.authenticate(createdUser.getUsername(), "Admin123");
+		
+	}
+	
+	@Test
+	public void changeUserPasswordUsingActivationKey_shouldNotUpdatePasswordIfActivationKeyIsIncorrect() {
+		User u = new User();
+		u.setPerson(new Person());
+		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
+		u.setUsername("bwolfe");
+		u.getPerson().setGender("M");
+		User createdUser = userService.createUser(u, "Openmr5xy");
+		String key = "wrongactivationkeyin";
+		int validTime = 10 * 60 * 1000; //equivalent to 10 minutes for token to be valid
+		Long tokenTime = System.currentTimeMillis() + validTime;
+		LoginCredential credentials = dao.getLoginCredential(createdUser);
+		credentials.setActivationKey(
+		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
+		            + tokenTime);
+		dao.updateLoginCredential(credentials);
+		assertFalse(createdUser.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
+		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(messages.getMessage("activation.key.not.correct"));
+		
+		userService.changeUserPasswordUsingActivationKey(key, "Pa55w0rd");
+	}
+	
+	@Test
+	public void changeUserPasswordUsingActivationKey_shouldNotUpdatePasswordIfActivationKeyExpired() {
+		User u = new User();
+		u.setPerson(new Person());
+		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
+		u.setUsername("bwolfe");
+		u.getPerson().setGender("M");
+		User createdUser = userService.createUser(u, "Openmr5xy");
+		String key = "h4ph0fpNzQCIPSw8plJI";
+		int validTime = 10 * 60 * 1000; //equivalent to 10 minutes for token to be valid
+		Long tokenTime = System.currentTimeMillis() - validTime;
+		LoginCredential credentials = dao.getLoginCredential(createdUser);
+		credentials.setActivationKey(
+		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
+		            + tokenTime);
+		dao.updateLoginCredential(credentials);
+		assertFalse(createdUser.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
+		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(messages.getMessage("activation.key.not.correct"));
+		
+		userService.changeUserPasswordUsingActivationKey(key, "Pa55w0rd");
+	}
 }

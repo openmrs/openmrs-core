@@ -734,9 +734,11 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Transactional(readOnly = true)
 	public User getUserByActivationKey(String activationKey) {
 		LoginCredential loginCred = dao.getLoginCredentialByActivationKey(activationKey);
-		String[] credTokens = loginCred.getActivationKey().split(":");
-		if(loginCred != null  && (System.currentTimeMillis() <= Long.parseLong(credTokens[1]) )) {
-			return getUser(loginCred.getUserId());
+		if (loginCred != null) {
+			String[] credTokens = loginCred.getActivationKey().split(":");
+			if (System.currentTimeMillis() <= Long.parseLong(credTokens[1])) {
+				return getUser(loginCred.getUserId());
+			}
 		}
 		return null;
 	}
@@ -760,5 +762,16 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		return user;
 	}
 
+	/**
+	 * @see org.openmrs.api.UserService#changeUserPasswordUsingActivationKey(String, String);
+	 */
+	@Override
+	public void changeUserPasswordUsingActivationKey(String activationKey, String newPassword) throws APIException {
+		User user = getUserByActivationKey(activationKey);
+		if (user == null) {
+			throw new APIException("activation.key.not.correct", (Object[]) null);
+		}
+		updatePassword(user, newPassword);
+	}
 
 }
