@@ -29,7 +29,7 @@ import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.CannotDeleteRoleWithChildrenException;
-import org.openmrs.api.InvalidTokenException;
+import org.openmrs.api.InvalidActivationKeyException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -770,7 +770,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public void changeUserPasswordUsingActivationKey(String activationKey, String newPassword) {
 		User user = getUserByActivationKey(activationKey);
 		if (user == null) {
-			throw new InvalidTokenException("activation.key.not.correct");
+			throw new InvalidActivationKeyException("activation.key.not.correct");
 		}
 		updatePassword(user, newPassword);
 	}

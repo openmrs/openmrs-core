@@ -1448,7 +1448,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User createdUser = userService.createUser(u, "Openmr5xy");
 		String key = "wrongactivationkeyin";
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
-		expectedException.expect(InvalidTokenException.class);
+		expectedException.expect(InvalidActivationKeyException.class);
 		expectedException.expectMessage(messages.getMessage("activation.key.not.correct"));
 		
 		userService.changeUserPasswordUsingActivationKey(key, "Pa55w0rd");
@@ -1472,7 +1472,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		dao.updateLoginCredential(credentials);
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
 		
-		expectedException.expect(InvalidTokenException.class);
+		expectedException.expect(InvalidActivationKeyException.class);
 		expectedException.expectMessage(messages.getMessage("activation.key.not.correct"));
 		
 		userService.changeUserPasswordUsingActivationKey(key, "Pa55w0rd");

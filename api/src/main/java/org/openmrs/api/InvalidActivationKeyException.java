@@ -15,26 +15,26 @@ import org.openmrs.api.context.Context;
  * Represents often fatal errors that occur when a user cannot be found due to incorrect, expired
  * token or wrong email and or username.
  */
-public class InvalidTokenException extends APIException {
+public class InvalidActivationKeyException extends APIException {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public InvalidTokenException() {
+	public InvalidActivationKeyException() {
 		
 	}
 	
-	public InvalidTokenException(String message) {
+	public InvalidActivationKeyException(String message) {
 		super(Context.getMessageSourceService().getMessage(message));
 	}
 	
-	public InvalidTokenException(String message, Throwable cause) {
+	public InvalidActivationKeyException(String message, Throwable cause) {
 		super(message, cause);
 	}
 	
-	public InvalidTokenException(Throwable cause) {
+	public InvalidActivationKeyException(Throwable cause) {
 		super(cause);
 	}
 	
