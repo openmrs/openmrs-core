@@ -1432,7 +1432,6 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		            + tokenTime);
 		dao.updateLoginCredential(credentials);
 		
-		assertFalse(createdUser.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
 		userService.changeUserPasswordUsingActivationKey(key, "Admin123");
 		Context.authenticate(createdUser.getUsername(), "Admin123");
@@ -1455,10 +1454,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
 		dao.updateLoginCredential(credentials);
-		assertFalse(createdUser.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(UserNotFoundException.class);
 		expectedException.expectMessage(messages.getMessage("activation.key.not.correct"));
 		
 		userService.changeUserPasswordUsingActivationKey(key, "Pa55w0rd");
@@ -1480,10 +1478,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
 		dao.updateLoginCredential(credentials);
-		assertFalse(createdUser.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
 		
-		expectedException.expect(APIException.class);
+		expectedException.expect(UserNotFoundException.class);
 		expectedException.expectMessage(messages.getMessage("activation.key.not.correct"));
 		
 		userService.changeUserPasswordUsingActivationKey(key, "Pa55w0rd");
