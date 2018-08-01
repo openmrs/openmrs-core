@@ -1447,16 +1447,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.getPerson().setGender("M");
 		User createdUser = userService.createUser(u, "Openmr5xy");
 		String key = "wrongactivationkeyin";
-		int validTime = 10 * 60 * 1000; //equivalent to 10 minutes for token to be valid
-		Long tokenTime = System.currentTimeMillis() + validTime;
-		LoginCredential credentials = dao.getLoginCredential(createdUser);
-		credentials.setActivationKey(
-		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
-		            + tokenTime);
-		dao.updateLoginCredential(credentials);
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
-		
-		expectedException.expect(UserNotFoundException.class);
+		expectedException.expect(InvalidTokenException.class);
 		expectedException.expectMessage(messages.getMessage("activation.key.not.correct"));
 		
 		userService.changeUserPasswordUsingActivationKey(key, "Pa55w0rd");
@@ -1480,7 +1472,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		dao.updateLoginCredential(credentials);
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
 		
-		expectedException.expect(UserNotFoundException.class);
+		expectedException.expect(InvalidTokenException.class);
 		expectedException.expectMessage(messages.getMessage("activation.key.not.correct"));
 		
 		userService.changeUserPasswordUsingActivationKey(key, "Pa55w0rd");

@@ -15,37 +15,27 @@ import org.openmrs.api.context.Context;
  * Represents often fatal errors that occur when a user cannot be found due to incorrect, expired
  * token or wrong email and or username.
  */
-public class UserNotFoundException extends APIException {
+public class InvalidTokenException extends APIException {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public UserNotFoundException() {
+	public InvalidTokenException() {
 		
 	}
 	
-	public UserNotFoundException(String message) {
-		super(message);
+	public InvalidTokenException(String message) {
+		super(Context.getMessageSourceService().getMessage(message));
 	}
 	
-	public UserNotFoundException(String message, Throwable cause) {
+	public InvalidTokenException(String message, Throwable cause) {
 		super(message, cause);
 	}
 	
-	public UserNotFoundException(Throwable cause) {
+	public InvalidTokenException(Throwable cause) {
 		super(cause);
-	}
-	
-	/**
-	 * Constructor to give the end user a helpful message that relates to why this error occurred.
-	 * 
-	 * @param messageKey message code to retrieve
-	 * @param parameters message parameters
-	 */
-	public UserNotFoundException(String messageKey, Object[] parameters) {
-		super(Context.getMessageSourceService().getMessage(messageKey, parameters, Context.getLocale()));
 	}
 	
 }
