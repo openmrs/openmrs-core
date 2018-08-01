@@ -29,6 +29,7 @@ import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.CannotDeleteRoleWithChildrenException;
+import org.openmrs.api.InvalidActivationKeyException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -734,9 +735,11 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Transactional(readOnly = true)
 	public User getUserByActivationKey(String activationKey) {
 		LoginCredential loginCred = dao.getLoginCredentialByActivationKey(activationKey);
-		String[] credTokens = loginCred.getActivationKey().split(":");
-		if(loginCred != null  && (System.currentTimeMillis() <= Long.parseLong(credTokens[1]) )) {
-			return getUser(loginCred.getUserId());
+		if (loginCred != null) {
+			String[] credTokens = loginCred.getActivationKey().split(":");
+			if (System.currentTimeMillis() <= Long.parseLong(credTokens[1])) {
+				return getUser(loginCred.getUserId());
+			}
 		}
 		return null;
 	}
@@ -760,5 +763,16 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		return user;
 	}
 
+	/**
+	 * @see org.openmrs.api.UserService#changeUserPasswordUsingActivationKey(String, String);
+	 */
+	@Override
+	public void changeUserPasswordUsingActivationKey(String activationKey, String newPassword) {
+		User user = getUserByActivationKey(activationKey);
+		if (user == null) {
+			throw new InvalidActivationKeyException("activation.key.not.correct");
+		}
+		updatePassword(user, newPassword);
+	}
 
 }
