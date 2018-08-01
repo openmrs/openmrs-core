@@ -12,14 +12,10 @@ package org.openmrs.api;
 import org.openmrs.api.context.Context;
 
 /**
- * Represents often fatal errors that occur when a user cannot be found due to incorrect, expired
- * token or wrong email and or username.
+ * Represents fatal errors that occur due to invalid or expired activation key.
  */
 public class InvalidActivationKeyException extends APIException {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	public InvalidActivationKeyException() {
