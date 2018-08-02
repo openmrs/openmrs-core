@@ -1369,10 +1369,24 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getUserByEmail_shouldNotGetUserIfEmailIsNotValid() {
+	public void getUserByEmail_shouldNotGetUserIfEmailIsEmpty() {
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage(messages.getMessage("error.email.invalid"));
 		userService.getUserByEmail("");
+	}
+	
+	@Test
+	public void getUserByEmail_shouldFailIfEmailIsWhiteSpace() {
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(messages.getMessage("error.email.invalid"));
+		userService.getUserByEmail("  ");
+	}
+	
+	@Test
+	public void getUserByEmail_shouldFailIfEmailIsNull() {
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(messages.getMessage("error.email.invalid"));
+		userService.getUserByEmail(null);
 	}
 	
 	@Test

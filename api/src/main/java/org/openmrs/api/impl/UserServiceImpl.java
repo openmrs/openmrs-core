@@ -19,7 +19,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.PrivilegeListener;
@@ -725,7 +724,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Override
 	@Transactional(readOnly = true)
 	public User getUserByEmail(String email) {
-		if (EmailValidator.getInstance().isValid(email)) {
+		if (StringUtils.isNotBlank(email)) {
 			return dao.getUserByEmail(email);
 		}
 		throw new APIException("error.email.invalid", (Object[]) null);
