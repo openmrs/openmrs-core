@@ -17,10 +17,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,7 +108,17 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		
 		// continue the filter chain (going on to spring, authorization, etc)
 		try {
-			chain.doFilter(httpRequest, httpResponse);
+			if (userContext.getAuthenticatedUser() == null) {
+				String loginUrl = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_LOGIN_URL);
+				if (StringUtils.isNotBlank(loginUrl) && httpRequest.getServletPath().equals("/")) {
+					httpResponse.sendRedirect(httpRequest.getContextPath() + "/" + loginUrl);
+				} else {
+					chain.doFilter(httpRequest, httpResponse);
+				}
+			}
+			else {
+				chain.doFilter(httpRequest, httpResponse);
+			}
 		}
 		finally {
 			Context.clearUserContext();
