@@ -727,7 +727,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		if (StringUtils.isNotBlank(email)) {
 			return dao.getUserByEmail(email);
 		}
-		throw new APIException("error.email.invalid", (Object[]) null);
+		throw new APIException("error.email.notNullOrBlank", (Object[]) null);
 		
 	}
 	
