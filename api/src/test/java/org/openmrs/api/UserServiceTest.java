@@ -1369,6 +1369,13 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	public void getUserByEmail_shouldNotGetUserIfEmailIsNotValid() {
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(messages.getMessage("error.email.invalid"));
+		userService.getUserByEmail("");
+	}
+	
+	@Test
 	public void setUserActivationKey_shouldCreateUserActivationKey() {
 		User u = new User();
 		u.setPerson(new Person());
@@ -1416,7 +1423,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void changeUserPasswordUsingActivationKey_shouldUpdatePasswordIfActivationKeyIsCorrect() {
+	public void changePasswordUsingActivationKey_shouldUpdatePasswordIfActivationKeyIsCorrect() {
 		User u = new User();
 		u.setPerson(new Person());
 		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
@@ -1433,13 +1440,13 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		dao.updateLoginCredential(credentials);
 		
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
-		userService.changeUserPasswordUsingActivationKey(key, "Admin123");
+		userService.changePasswordUsingActivationKey(key, "Admin123");
 		Context.authenticate(createdUser.getUsername(), "Admin123");
 		
 	}
 	
 	@Test
-	public void changeUserPasswordUsingActivationKey_shouldNotUpdatePasswordIfActivationKeyIsIncorrect() {
+	public void changePasswordUsingActivationKey_shouldNotUpdatePasswordIfActivationKeyIsIncorrect() {
 		User u = new User();
 		u.setPerson(new Person());
 		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
@@ -1451,11 +1458,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		expectedException.expect(InvalidActivationKeyException.class);
 		expectedException.expectMessage(messages.getMessage("activation.key.not.correct"));
 		
-		userService.changeUserPasswordUsingActivationKey(key, "Pa55w0rd");
+		userService.changePasswordUsingActivationKey(key, "Pa55w0rd");
 	}
 	
 	@Test
-	public void changeUserPasswordUsingActivationKey_shouldNotUpdatePasswordIfActivationKeyExpired() {
+	public void changePasswordUsingActivationKey_shouldNotUpdatePasswordIfActivationKeyExpired() {
 		User u = new User();
 		u.setPerson(new Person());
 		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
@@ -1475,6 +1482,6 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		expectedException.expect(InvalidActivationKeyException.class);
 		expectedException.expectMessage(messages.getMessage("activation.key.not.correct"));
 		
-		userService.changeUserPasswordUsingActivationKey(key, "Pa55w0rd");
+		userService.changePasswordUsingActivationKey(key, "Pa55w0rd");
 	}
 }
