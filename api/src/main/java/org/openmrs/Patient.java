@@ -92,9 +92,6 @@ public class Patient extends Person {
 			newIdentifiers.add(identifierClone);
 		}
 		this.identifiers = newIdentifiers;
-		for (PatientIdentifier pid : this.getIdentifiers()) {
-			pid.setPatient(this);
-		}
 	}
 	
 	// Property accessors
