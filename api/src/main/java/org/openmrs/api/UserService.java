@@ -579,6 +579,6 @@ public interface UserService extends OpenmrsService {
 	 * @param activationKey the activation for password reset
 	 * @param newPassword the new password
 	 */
-	public void changeUserPasswordUsingActivationKey(String activationKey, String newPassword);
+	public void changePasswordUsingActivationKey(String activationKey, String newPassword);
 	
 }

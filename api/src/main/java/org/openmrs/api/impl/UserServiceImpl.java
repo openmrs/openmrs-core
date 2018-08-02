@@ -723,8 +723,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public User getUserByEmail(String email) throws APIException {	
-		return dao.getUserByEmail(email);
+	public User getUserByEmail(String email) {
+		if (StringUtils.isNotBlank(email)) {
+			return dao.getUserByEmail(email);
+		}
+		throw new APIException("error.email.notNullOrBlank", (Object[]) null);
+		
 	}
 	
 	/**
@@ -767,7 +771,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#changeUserPasswordUsingActivationKey(String, String);
 	 */
 	@Override
-	public void changeUserPasswordUsingActivationKey(String activationKey, String newPassword) {
+	public void changePasswordUsingActivationKey(String activationKey, String newPassword) {
 		User user = getUserByActivationKey(activationKey);
 		if (user == null) {
 			throw new InvalidActivationKeyException("activation.key.not.correct");
