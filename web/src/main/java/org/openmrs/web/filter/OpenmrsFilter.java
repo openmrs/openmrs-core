@@ -110,8 +110,7 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		try {
 			if (userContext.getAuthenticatedUser() == null) {
 				String loginUrl = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_LOGIN_URL);
-				String path = httpRequest.getServletPath();
-				if (StringUtils.isNotBlank(loginUrl) && ("/".equals(path) || "/index.htm".equals(path) || "/login.htm".equals(path))) {
+				if (StringUtils.isNotBlank(loginUrl) && httpRequest.getServletPath().equals("/")) {
 					httpResponse.sendRedirect(httpRequest.getContextPath() + "/" + loginUrl);
 				} else {
 					chain.doFilter(httpRequest, httpResponse);
