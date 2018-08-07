@@ -353,9 +353,9 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
     public void loggedInOrOut(User user, Event event, Status status) {
       if(event != null && user != null) {
         if(Event.LOGIN.equals(event)) {
-          logins.add(user.getUsername());
+          logins.add(user.getUsername() + ":" + event + ":" + status);
         } else if(Event.LOGOUT.equals(event)) {
-          logouts.add(user.getUsername());
+          logouts.add(user.getUsername() + ":" + event + ":" + status);
         }
       }
     }
@@ -370,7 +370,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
   public void authenticate_shouldRightlyTriggerUserSessionListener_withSuccessfulLogin() {
     testUserSessionListener.clear();
     Context.authenticate("admin", "test");
-    assertThat(testUserSessionListener.logins, contains("admin"));
+    assertThat(testUserSessionListener.logins, contains("admin:LOGIN:SUCCESS"));
     assertThat(testUserSessionListener.logouts, empty());
   }
   
@@ -383,7 +383,8 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
     try {
       Context.authenticate("admin", "wrongPassword");
     } catch(ContextAuthenticationException e) {}
-    assertThat(testUserSessionListener.logins, contains("wrongUser", "admin"));
+    Context.authenticate("admin", "test");
+    assertThat(testUserSessionListener.logins, contains("wrongUser:LOGIN:FAIL", "admin:LOGIN:FAIL", "admin:LOGIN:SUCCESS"));
     assertThat(testUserSessionListener.logouts, empty());
   }
   
@@ -391,7 +392,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
   public void logout_shouldRightlyTriggerUserSessionListener() {
     testUserSessionListener.clear();
     Context.logout();
-    assertThat(testUserSessionListener.logouts, contains("admin"));
+    assertThat(testUserSessionListener.logouts, contains("admin:LOGOUT:SUCCESS"));
     assertThat(testUserSessionListener.logins, empty());
   }
 }

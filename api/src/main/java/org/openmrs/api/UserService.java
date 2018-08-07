@@ -553,7 +553,6 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Authorized
 	public void changePasswordUsingSecretAnswer(String secretAnswer, String pw) throws APIException;
-
-  void notifyUserSessionListener(User user, Event event, Status status);
-
+	
+	public void notifyUserSessionListener(User user, Event event, Status status);
 }

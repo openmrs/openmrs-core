@@ -9,14 +9,24 @@
  */
 package org.openmrs;
 
+import org.openmrs.api.context.Context;
+
+/**
+ * Allows tracking down both login and logout events including their status
+ * 
+ * Beans implementing this class are picked up by {@link Context#logout()} and
+ * {@link Context#authenticate(String, String)}
+ * 
+ * @since 2.2
+ */
 public interface UserSessionListener {
 
   public void loggedInOrOut(User user, Event event, Status status);
-  
+
   public enum Event {
     LOGIN, LOGOUT
   }
-  
+
   public enum Status {
     SUCCESS, FAIL
   }
