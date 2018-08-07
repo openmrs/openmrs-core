@@ -23,6 +23,9 @@ import org.openmrs.Privilege;
 import org.openmrs.PrivilegeListener;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.UserSessionListener;
+import org.openmrs.UserSessionListener.Event;
+import org.openmrs.UserSessionListener.Status;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIAuthenticationException;
@@ -59,6 +62,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	@Autowired(required = false)
 	List<PrivilegeListener> privilegeListeners;
+	
+	@Autowired(required = false)
+  List<UserSessionListener> userSessionListeners;
+  
 	
 	public UserServiceImpl() {
 	}
@@ -696,4 +703,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		}
     }
 	
+	@Override
+	public void notifyUserSessionListener(User user, Event event, Status status) {
+	  if(userSessionListeners != null) {
+	    for(UserSessionListener userSessionListener : userSessionListeners) {
+	      userSessionListener.loggedInOrOut(user, event, status);
+	    }
+	  }
+	}
 }

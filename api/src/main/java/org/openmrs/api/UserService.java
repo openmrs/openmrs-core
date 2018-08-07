@@ -17,6 +17,8 @@ import org.openmrs.Privilege;
 import org.openmrs.PrivilegeListener;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.UserSessionListener.Event;
+import org.openmrs.UserSessionListener.Status;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.context.UserContext;
@@ -551,5 +553,7 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Authorized
 	public void changePasswordUsingSecretAnswer(String secretAnswer, String pw) throws APIException;
+
+  void notifyUserSessionListener(User user, Event event, Status status);
 
 }

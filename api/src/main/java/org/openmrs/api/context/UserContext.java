@@ -20,6 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Location;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.UserSessionListener.Event;
+import org.openmrs.UserSessionListener.Status;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.LocaleUtility;
@@ -96,8 +98,15 @@ public class UserContext implements Serializable {
 		if (log.isDebugEnabled()) {
 			log.debug("Authenticating with username: " + username);
 		}
-		
-		this.user = contextDAO.authenticate(username, password);
+		try {
+		  this.user = contextDAO.authenticate(username, password);
+		  Context.getUserService().notifyUserSessionListener(this.user, Event.LOGIN, Status.SUCCESS);
+		} catch(ContextAuthenticationException e) {
+		  User loggingInUser = new User();
+	    loggingInUser.setUsername(username);
+	    Context.getUserService().notifyUserSessionListener(loggingInUser, Event.LOGIN, Status.FAIL);
+		  throw e;
+		}
 		setUserLocation();
 		if (log.isDebugEnabled()) {
 			log.debug("Authenticated as: " + this.user);
@@ -191,6 +200,7 @@ public class UserContext implements Serializable {
 	 */
 	public void logout() {
 		log.debug("setting user to null on logout");
+    Context.getUserService().notifyUserSessionListener(user, Event.LOGOUT, Status.SUCCESS);
 		user = null;
 	}
 	
