@@ -1828,9 +1828,6 @@
             </column>
             <column name="username" type="varchar(50)"/>
             <column name="password" type="varchar(128)"/>
-            <column name="email" type="varchar(255)">
-            	<constraints unique="true"/>
-            </column>
             <column name="salt" type="varchar(128)"/>
             <column name="secret_question" type="varchar(255)"/>
             <column name="secret_answer" type="varchar(255)"/>
