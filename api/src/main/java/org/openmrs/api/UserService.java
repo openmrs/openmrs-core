@@ -99,15 +99,15 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_USERS })
 	public User getUserByUsername(String username);
-	
-	
+
 	/**
-	 * Gets user by email
-	 * @param email User's email address 
-	 * @return requested user
+	 * Gets a user by username or email
+	 * 
+	 * @param usernameOrEmail User's email address or username
+	 * @return requested user or null if not found
 	 */
 	@Authorized( { PrivilegeConstants.GET_USERS })
-	public User getUserByEmail(String email);
+	public User getUserByUsernameOrEmail(String usernameOrEmail);
 	
 	/**
 	 * Gets a user with the specified activation key
