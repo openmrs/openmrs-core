@@ -727,9 +727,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			User user = dao.getUserByEmail(usernameOrEmail);
 			if (user == null) {
 				return getUserByUsername(usernameOrEmail);
-			} else {
-				return user;
 			}
+			return user;
 		}
 		throw new APIException("error.usernameOrEmail.notNullOrBlank", (Object[]) null);
 	}
