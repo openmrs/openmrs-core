@@ -1359,34 +1359,34 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/*
-	 * @see UserService#getUserByEmail(String)
+	 * @see UserService#getUserByUsernameOrEmail(String)
 	 */
 	@Test
-	public void getUserByEmail_shouldGetUserByUsingEmail() {
+	public void getUserByUsernameOrEmail_shouldGetUserByUsingEmail() {
 		executeDataSet(XML_FILENAME);
-		User user = userService.getUserByEmail("hank.williams@gmail.com");
+		User user = userService.getUserByUsernameOrEmail("hank.williams@gmail.com");
 		assertNotNull("User with email hank.williams@gmail not found in database", user);
 	}
 	
 	@Test
-	public void getUserByEmail_shouldNotGetUserIfEmailIsEmpty() {
+	public void ggetUserByUsernameOrEmail_shouldNotGetUserIfEmailIsEmpty() {
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(messages.getMessage("error.email.notNullOrBlank"));
-		userService.getUserByEmail("");
+		expectedException.expectMessage(messages.getMessage("error.usernameOrEmail.notNullOrBlank"));
+		userService.getUserByUsernameOrEmail("");
 	}
 	
 	@Test
-	public void getUserByEmail_shouldFailIfEmailIsWhiteSpace() {
+	public void getUserByUsernameOrEmail_shouldFailIfEmailIsWhiteSpace() {
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(messages.getMessage("error.email.notNullOrBlank"));
-		userService.getUserByEmail("  ");
+		expectedException.expectMessage(messages.getMessage("error.usernameOrEmail.notNullOrBlank"));
+		userService.getUserByUsernameOrEmail("  ");
 	}
 	
 	@Test
-	public void getUserByEmail_shouldFailIfEmailIsNull() {
+	public void getUserByUsernameOrEmail_shouldFailIfEmailIsNull() {
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(messages.getMessage("error.email.notNullOrBlank"));
-		userService.getUserByEmail(null);
+		expectedException.expectMessage(messages.getMessage("error.usernameOrEmail.notNullOrBlank"));
+		userService.getUserByUsernameOrEmail(null);
 	}
 	
 	@Test

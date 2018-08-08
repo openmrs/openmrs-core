@@ -718,17 +718,19 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
     }
 	
 	/**
-	 * @see org.openmrs.api.UserService#getUserByEmail(java.lang.String)
-	 * 
+	 * @see org.openmrs.api.UserService#getUserByUsernameOrEmail(java.lang.String)
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public User getUserByEmail(String email) {
-		if (StringUtils.isNotBlank(email)) {
-			return dao.getUserByEmail(email);
+	public User getUserByUsernameOrEmail(String usernameOrEmail) {
+		if (StringUtils.isNotBlank(usernameOrEmail)) {
+			User user = dao.getUserByEmail(usernameOrEmail);
+			if (user == null) {
+				return getUserByUsername(usernameOrEmail);
+			}
+			return user;
 		}
-		throw new APIException("error.email.notNullOrBlank", (Object[]) null);
-		
+		throw new APIException("error.usernameOrEmail.notNullOrBlank", (Object[]) null);
 	}
 	
 	/**
