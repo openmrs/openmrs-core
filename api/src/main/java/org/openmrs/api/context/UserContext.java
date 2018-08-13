@@ -31,7 +31,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Represents an OpenMRS <code>User Context</code> which stores the current user information. Only
@@ -469,27 +468,20 @@ public class UserContext implements Serializable {
    *            if it is a proxy privilege
    * @since 1.8.4, 1.9.1, 1.10
    */
-  @Transactional(readOnly = true)
   private void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
-    List<PrivilegeListener> privilegeListeners = Context.getRegisteredComponents(PrivilegeListener.class);
-    if (privilegeListeners != null) {
-      for (PrivilegeListener privilegeListener : privilegeListeners) {
-        try {
-          privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
-        }
-        catch (Exception e) {
-          log.error("Privilege listener has failed", e);
-        }
+    for (PrivilegeListener privilegeListener : Context.getRegisteredComponents(PrivilegeListener.class)) {
+      try {
+        privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
+      }
+      catch (Exception e) {
+        log.error("Privilege listener has failed", e);
       }
     }
   }
 	
 	private void notifyUserSessionListener(User user, Event event, Status status) {
-	  List<UserSessionListener> userSessionListeners = Context.getRegisteredComponents(UserSessionListener.class);
-    if(userSessionListeners != null) {
-      for(UserSessionListener userSessionListener : userSessionListeners) {
+	  for(UserSessionListener userSessionListener : Context.getRegisteredComponents(UserSessionListener.class)) {
         userSessionListener.loggedInOrOut(user, event, status);
-      }
     }
   }
 }
