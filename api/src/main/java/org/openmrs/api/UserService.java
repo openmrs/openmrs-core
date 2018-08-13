@@ -20,6 +20,7 @@ import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.context.UserContext;
+import org.openmrs.notification.MessageException;
 import org.openmrs.util.PersonByNameComparator;
 import org.openmrs.util.PrivilegeConstants;
 
@@ -571,7 +572,7 @@ public interface UserService extends OpenmrsService {
 	 * Sets a user's activation key
 	 * @param User The user for which the activation key will be set
 	 */
-	public User setUserActivationKey(User user);
+	public User setUserActivationKey(User user) throws MessageException;
 	
 	/**
 	 * Change user password given the activation key

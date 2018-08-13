@@ -15,7 +15,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
+
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +39,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.notification.Message;
+import org.openmrs.notification.MessageException;
+import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -751,8 +758,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	/**
+	 * @throws MessageException
 	 * @see org.openmrs.api.UserService#setUserActivationKey(org.openmrs.User)
-	 * 
 	 */
 	@Override
 	public User setUserActivationKey(User user) {
@@ -764,9 +771,58 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		credentials.setActivationKey(activationKey);	
 		dao.setUserActivationKey(credentials);	
 			
-		//Send Email with unhashed  activation key and Date:
-		
+		//Send Email with unhashed  activation key 
+		sendMail(user, token);
 		return user;
+	}
+	
+	public void sendMail(User user, String token) {
+		System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+		Properties props = new Properties();
+		String mailSmtpAuth = Context.getAdministrationService().getGlobalProperty("mail.smtp_auth");
+		props.put("mail.smtp.auth", mailSmtpAuth);
+		props.put(OpenmrsConstants.GP_MAIL_SMTP_STARTTLS_ENABLE,
+		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_MAIL_SMTP_STARTTLS_ENABLE));
+		props.put("mail.smtp.host", Context.getAdministrationService().getGlobalProperty("mail.smtp_host"));
+		props.put("mail.smtp.port", Context.getAdministrationService().getGlobalProperty("mail.smtp_port"));
+		
+		String link = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_HOST_URL) + token;
+		String msg = "Hi " + user.getUsername()
+		        + ", \n It looks like you like to change your password, click on the following link to do so.\n" + link
+		        + " please disregard this email if you didn't innitiate the password reset process  The openmrs Team";
+		Message mail = new Message();
+		mail.setId(20);
+		mail.setRecipients(user.getEmail());
+		mail.setSender(Context.getAdministrationService().getGlobalProperty("mail.from"));
+		mail.setContentType(Context.getAdministrationService().getGlobalProperty("mail.default_content_type"));
+		mail.setSubject("Password Reset Request");
+		mail.setContent(msg);
+		mail.setSentDate(new Date());
+		
+		Session session;
+		MailMessageSender mailMessageSender = new MailMessageSender();
+		if (mailSmtpAuth.equalsIgnoreCase("false")) {
+			session = Session.getInstance(props);
+		} else {
+			session = Session.getInstance(props, new javax.mail.Authenticator() {
+				
+				@Override
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(Context.getAdministrationService().getGlobalProperty("mail.user"),
+					        Context.getAdministrationService().getGlobalProperty("mail.password"));
+				}
+			});
+		}
+		
+		mailMessageSender.setMailSession(session);
+		try {
+			mailMessageSender.send(mail);
+		}
+		catch (MessageException e) {
+			// Prevent propagation of exception to the webservice should in case message was not sent  
+			//e.printStackTrace();
+		}
+		
 	}
 
 	/**
