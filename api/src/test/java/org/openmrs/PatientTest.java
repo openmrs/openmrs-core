@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -44,17 +45,27 @@ public class PatientTest {
 		pn.setMiddleName("middleName");
 		pnSet.add(pn);
 			
-		PatientIdentifier pa1 = new PatientIdentifier();
+		PatientIdentifier pi1 = new PatientIdentifier();
 		PatientIdentifierType identifierType = new PatientIdentifierType(1);
 		Location location = new Location(1);
 
-		pa1.setIdentifier("theid");
-		pa1.setIdentifierType(identifierType);
-		pa1.setLocation(location);
-		pa1.setVoided(true);
+		pi1.setIdentifier("theid");
+		pi1.setIdentifierType(identifierType);
+		pi1.setLocation(location);
+		pi1.setVoided(true);
+
+		PatientIdentifier pi2 = new PatientIdentifier();
+		PatientIdentifierType identifierType2 = new PatientIdentifierType(2);
+		Location location2 = new Location(2);
+
+		pi2.setIdentifier("theid2");
+		pi2.setIdentifierType(identifierType2);
+		pi2.setLocation(location2);
+		pi2.setVoided(false);
 		
 		p.setNames(pnSet);
-		p.addIdentifier(pa1);
+		p.addIdentifier(pi1);
+		p.addIdentifier(pi2);
 		p.setAllergyStatus("TestAllergy");
 		p.setId(1);
 		
@@ -65,6 +76,14 @@ public class PatientTest {
 		assertEquals(p.getNames(), p2.getNames());
 		assertEquals(p.getGivenName(), p2.getGivenName());
 		assertEquals(p.getIdentifiers(),p2.getIdentifiers());
+		// Check that each identifier refers to the correct patient object
+		for (PatientIdentifier pid : p2.getIdentifiers()) {
+			assertSame(p2, pid.getPatient());
+		}
+		// Make sure that the original patient hasn't been dirtied
+		for (PatientIdentifier pid : p.getIdentifiers()) {
+			assertSame(p, pid.getPatient());
+		}
 		assertEquals(p.getPatientId(), p2.getPatientId());
 		assertEquals(p.getId(), p2.getId());
 		assertEquals(p.getPerson(), p2.getPerson());

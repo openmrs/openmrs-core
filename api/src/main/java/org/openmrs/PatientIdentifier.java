@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @see org.openmrs.PatientIdentifierType
  */
 @Indexed
-public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Comparable<PatientIdentifier> {
+public class PatientIdentifier extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PatientIdentifier> {
 	
 	public static final long serialVersionUID = 1123121L;
 	
@@ -261,6 +261,24 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	 */
 	public void setPatientIdentifierId(Integer patientIdentifierId) {
 		this.patientIdentifierId = patientIdentifierId;
+	}
+
+	/**
+	 * bitwise copy of the PatientIdentifier object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
+	 * PatientIdentifier.patient object in this object AND the cloned object will point at the same
+	 * patient
+	 *
+	 * @return New PatientIdentifier object
+	 * @since 2.2.0
+	 */
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		}
+		catch (CloneNotSupportedException e) {
+			throw new InternalError("PatientIdentifier should be cloneable");
+		}
 	}
 	
 	/**
