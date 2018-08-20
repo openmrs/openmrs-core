@@ -230,6 +230,22 @@ public class HibernateOrderDAO implements OrderDAO {
 	public OrderGroup getOrderGroupById(Integer orderGroupId) throws DAOException {
 		return (OrderGroup) sessionFactory.getCurrentSession().get(OrderGroup.class, orderGroupId);
 	}
+
+	/**
+	 * @see OrderDAO#getOrderGroupsByPatientAndEncounter(Patient, Encounter)
+	 * @see org.openmrs.api.OrderService#getListOfOrderGroupsByPatientAndEncounter(Patient, Encounter)
+	 */
+	@Override
+	public List<OrderGroup> getOrderGroupsByPatientAndEncounter(Patient patient, Encounter encounter) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderGroup.class);
+		if (patient != null) {
+			criteria.add(Restrictions.eq("patient",patient));
+		}
+		if (encounter != null) {
+			criteria.add(Restrictions.eq("encounter", encounter));
+		}
+		return criteria.list();
+	}
 	
 	/**
 	 * Delete Obs that references (deleted) Order

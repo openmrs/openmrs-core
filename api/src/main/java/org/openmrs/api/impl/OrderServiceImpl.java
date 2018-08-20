@@ -1036,4 +1036,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		return Collections.emptyList();
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<OrderGroup> getListOfOrderGroupsByPatientAndEncounter(Patient patient, Encounter encounter) {
+		return dao.getOrderGroupsByPatientAndEncounter(patient, encounter);
+	}
 }
