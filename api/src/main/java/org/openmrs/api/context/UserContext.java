@@ -101,13 +101,13 @@ public class UserContext implements Serializable {
 			log.debug("Authenticating with username: " + username);
 		}
 		try {
-		  this.user = contextDAO.authenticate(username, password);
-		  notifyUserSessionListener(this.user, Event.LOGIN, Status.SUCCESS);
+			this.user = contextDAO.authenticate(username, password);
+			notifyUserSessionListener(this.user, Event.LOGIN, Status.SUCCESS);
 		} catch(ContextAuthenticationException e) {
-		  User loggingInUser = new User();
-	    loggingInUser.setUsername(username);
-	    notifyUserSessionListener(loggingInUser, Event.LOGIN, Status.FAIL);
-		  throw e;
+			User loggingInUser = new User();
+			loggingInUser.setUsername(username);
+			notifyUserSessionListener(loggingInUser, Event.LOGIN, Status.FAIL);
+			throw e;
 		}
 		setUserLocation();
 		if (log.isDebugEnabled()) {
@@ -202,7 +202,7 @@ public class UserContext implements Serializable {
 	 */
 	public void logout() {
 		log.debug("setting user to null on logout");
-    notifyUserSessionListener(user, Event.LOGOUT, Status.SUCCESS);
+		notifyUserSessionListener(user, Event.LOGOUT, Status.SUCCESS);
 		user = null;
 	}
 	
@@ -457,31 +457,31 @@ public class UserContext implements Serializable {
 	}
 	
 	/**
-   * Notifies privilege listener beans about any privilege check.
-   * <p>
-   * It is called by {@link UserContext#hasPrivilege(java.lang.String)}.
-   * 
-   * @see PrivilegeListener
-   * @param user the authenticated user or <code>null</code> if not authenticated
-   * @param privilege the checked privilege
-   * @param hasPrivilege <code>true</code> if the authenticated user has the required privilege or
-   *            if it is a proxy privilege
-   * @since 1.8.4, 1.9.1, 1.10
-   */
-  private void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
-    for (PrivilegeListener privilegeListener : Context.getRegisteredComponents(PrivilegeListener.class)) {
-      try {
-        privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
-      }
-      catch (Exception e) {
-        log.error("Privilege listener has failed", e);
-      }
+	 * Notifies privilege listener beans about any privilege check.
+     * <p>
+     * It is called by {@link UserContext#hasPrivilege(java.lang.String)}.
+     * 
+     * @see PrivilegeListener
+     * @param user the authenticated user or <code>null</code> if not authenticated
+     * @param privilege the checked privilege
+     * @param hasPrivilege <code>true</code> if the authenticated user has the required privilege or
+	 *            if it is a proxy privilege
+     * @since 1.8.4, 1.9.1, 1.10
+     */
+	private void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
+	    for (PrivilegeListener privilegeListener : Context.getRegisteredComponents(PrivilegeListener.class)) {
+		    try {
+			    privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
+		    }
+		    catch (Exception e) {
+			    log.error("Privilege listener has failed", e);
+		    }
+	    }
     }
-  }
 	
-	private void notifyUserSessionListener(User user, Event event, Status status) {
-	  for(UserSessionListener userSessionListener : Context.getRegisteredComponents(UserSessionListener.class)) {
-        userSessionListener.loggedInOrOut(user, event, status);
+    private void notifyUserSessionListener(User user, Event event, Status status) {
+	    for(UserSessionListener userSessionListener : Context.getRegisteredComponents(UserSessionListener.class)) {
+		    userSessionListener.loggedInOrOut(user, event, status);
+	    }
     }
-  }
 }

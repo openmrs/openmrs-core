@@ -21,13 +21,13 @@ import org.openmrs.api.context.Context;
  */
 public interface UserSessionListener {
 
-  public void loggedInOrOut(User user, Event event, Status status);
+	public void loggedInOrOut(User user, Event event, Status status);
 
-  public enum Event {
-    LOGIN, LOGOUT
-  }
+	public enum Event {
+		LOGIN, LOGOUT
+	}
 
-  public enum Status {
-    SUCCESS, FAIL
-  }
+	public enum Status {
+		SUCCESS, FAIL
+	}
 }

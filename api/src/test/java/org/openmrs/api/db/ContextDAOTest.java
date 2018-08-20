@@ -46,7 +46,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	private ContextDAO dao = null;
 	
 	@Resource(name = "testUserSessionListener")
-  TestUserSessionListener testUserSessionListener;
+	TestUserSessionListener testUserSessionListener;
   
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -343,56 +343,62 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(properties.getProperty("hibernate.key"));
 	}
 	
+	@Component("testUserSessionListener")
+	public static class TestUserSessionListener implements UserSessionListener {
+		public Set<String> logins = new LinkedHashSet<>();
+		public Set<String> logouts = new LinkedHashSet<>();
 
-  @Component("testUserSessionListener")
-  public static class TestUserSessionListener implements UserSessionListener {
-    public Set<String> logins = new LinkedHashSet<>();
-    public Set<String> logouts = new LinkedHashSet<>();
-    
-    @Override
-    public void loggedInOrOut(User user, Event event, Status status) {
-      if(event != null && user != null) {
-        if(Event.LOGIN.equals(event)) {
-          logins.add(user.getUsername() + ":" + event + ":" + status);
-        } else if(Event.LOGOUT.equals(event)) {
-          logouts.add(user.getUsername() + ":" + event + ":" + status);
-        }
-      }
-    }
-    
-    public void clear() {
-      logins.clear();
-      logouts.clear();
-    }
-  }
-  
-  @Test
-  public void authenticate_shouldRightlyTriggerUserSessionListener_withSuccessfulLogin() {
-    testUserSessionListener.clear();
-    Context.authenticate("admin", "test");
-    assertThat(testUserSessionListener.logins, contains("admin:LOGIN:SUCCESS"));
-    assertThat(testUserSessionListener.logouts, empty());
-  }
-  
-  @Test
-  public void authenticate_shouldRightlyTriggerUserSessionListener_withFailedLogin() {
-    testUserSessionListener.clear();
-    try {
-      Context.authenticate("wrongUser", "test");
-    } catch(ContextAuthenticationException e) {}
-    try {
-      Context.authenticate("admin", "wrongPassword");
-    } catch(ContextAuthenticationException e) {}
-    Context.authenticate("admin", "test");
-    assertThat(testUserSessionListener.logins, contains("wrongUser:LOGIN:FAIL", "admin:LOGIN:FAIL", "admin:LOGIN:SUCCESS"));
-    assertThat(testUserSessionListener.logouts, empty());
-  }
-  
-  @Test
-  public void logout_shouldRightlyTriggerUserSessionListener() {
-    testUserSessionListener.clear();
-    Context.logout();
-    assertThat(testUserSessionListener.logouts, contains("admin:LOGOUT:SUCCESS"));
-    assertThat(testUserSessionListener.logins, empty());
-  }
+		@Override
+		public void loggedInOrOut(User user, Event event, Status status) {
+			if (event != null && user != null) {
+				if (Event.LOGIN.equals(event)) {
+					logins.add(user.getUsername() + ":" + event + ":" + status);
+				} else if (Event.LOGOUT.equals(event)) {
+					logouts.add(
+							user.getUsername() + ":" + event + ":" + status);
+				}
+			}
+		}
+
+		public void clear() {
+			logins.clear();
+			logouts.clear();
+		}
+	}
+
+	@Test
+	public void authenticate_shouldRightlyTriggerUserSessionListener_withSuccessfulLogin() {
+		testUserSessionListener.clear();
+		Context.authenticate("admin", "test");
+		assertThat(testUserSessionListener.logins,
+				contains("admin:LOGIN:SUCCESS"));
+		assertThat(testUserSessionListener.logouts, empty());
+	}
+
+	@Test
+	public void authenticate_shouldRightlyTriggerUserSessionListener_withFailedLogin() {
+		testUserSessionListener.clear();
+		try {
+			Context.authenticate("wrongUser", "test");
+		} catch (ContextAuthenticationException e) {
+		}
+		try {
+			Context.authenticate("admin", "wrongPassword");
+		} catch (ContextAuthenticationException e) {
+		}
+		Context.authenticate("admin", "test");
+		assertThat(testUserSessionListener.logins,
+				contains("wrongUser:LOGIN:FAIL", "admin:LOGIN:FAIL",
+						"admin:LOGIN:SUCCESS"));
+		assertThat(testUserSessionListener.logouts, empty());
+	}
+
+	@Test
+	public void logout_shouldRightlyTriggerUserSessionListener() {
+		testUserSessionListener.clear();
+		Context.logout();
+		assertThat(testUserSessionListener.logouts,
+				contains("admin:LOGOUT:SUCCESS"));
+		assertThat(testUserSessionListener.logins, empty());
+	}
 }
