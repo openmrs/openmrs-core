@@ -694,8 +694,7 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_MAIL_SMTP_STARTTLS_ENABLE, "false",
 		        "Set to true to enable TLS encryption, else set to false"));
 		
-		props.add(new GlobalProperty(GP_HOST_URL,
-		        "http://localhost:8080/openmrs/admin/users/changePassword.form?activationkey=",
+		props.add(new GlobalProperty(GP_HOST_URL, "",
 		        "The activationKey is the parameter which will be generated and substituted. always make sure to provide a parameter name activationkey in the link you provide here "));
 		
 		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));

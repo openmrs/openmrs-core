@@ -1398,11 +1398,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
 		u.setUsername("bwolfe");
 		u.getPerson().setGender("M");
-		Context.getAdministrationService().setGlobalProperty("mail.smtp_auth", "false");
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_MAIL_SMTP_STARTTLS_ENABLE, "true");
-		Context.getAdministrationService().setGlobalProperty("mail.smtp_host", "localhost");
-		Context.getAdministrationService().setGlobalProperty("mail.smtp_port", "25");
-		
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_HOST_URL,
+		    "http://localhost:8080/openmrs/admin/users/changePassword.form?activationkey");
 		User createdUser = userService.createUser(u, "Openmr5xy");
 		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
 		assertEquals(createdUser, userService.setUserActivationKey(createdUser));

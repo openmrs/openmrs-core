@@ -761,25 +761,21 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		String token = RandomStringUtils.randomAlphanumeric(20);
 		long time = System.currentTimeMillis() + getValidTime();
 		String hashedKey = Security.encodeString(token);
-		String activationKey = hashedKey+":"+time;
+		String activationKey = hashedKey + ":" + time;
 		LoginCredential credentials = dao.getLoginCredential(user);
 		credentials.setActivationKey(activationKey);	
 		dao.setUserActivationKey(credentials);	
 		
-		String link = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_HOST_URL) + token;
+		String link = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_HOST_URL)
+		        .replace("activationkey", "activationkey=" + token);
 		String msg = "Hi " + user.getUsername()
-		        + ", \n It looks like you like to change your password, click on the following link to do so.\n" + link
-		        + " please disregard this email if you didn't innitiate the password reset process  The openmrs Team";
-		Message mail = new Message();
-		mail.setId(20);
-		mail.setRecipients(user.getEmail());
-		mail.setSender(Context.getAdministrationService().getGlobalProperty("mail.from"));
-		mail.setContentType(Context.getAdministrationService().getGlobalProperty("mail.default_content_type"));
-		mail.setSubject("Password Reset Request");
-		mail.setContent(msg);
-		mail.setSentDate(new Date());
+		        + ",\n It looks like you want to change your password, click on the following link to do so.\n"
+		        + link
+		        + "\n Please disregard this email if you didn't innitiate the password reset process.  \n The openmrs Team";
 		
 		try {
+			Message mail = Context.getMessageService().createMessage(user.getEmail(),
+			    Context.getAdministrationService().getGlobalProperty("mail.from"), "Password Reset Request", msg);
 			Context.getMessageService().sendMessage(mail);
 		}
 		catch (MessageException e) {
