@@ -9,12 +9,14 @@
  */
 package org.openmrs.api.impl;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang.RandomStringUtils;
@@ -35,9 +37,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
-import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
@@ -766,20 +768,22 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		credentials.setActivationKey(activationKey);	
 		dao.setUserActivationKey(credentials);	
 		
-		String link = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_HOST_URL)
-		        .replace("activationkey", "activationkey=" + token);
-		String msg = "Hi " + user.getUsername()
-		        + ",\n It looks like you want to change your password, click on the following link to do so.\n"
-		        + link
-		        + "\n Please disregard this email if you didn't innitiate the password reset process.  \n The openmrs Team";
+		Properties props = new Properties();
+		InputStream stream = OpenmrsClassLoader.getInstance().getResourceAsStream("emailTemplate.properties");
+		if (stream != null) {
+			OpenmrsUtil.loadProperties(props, stream);
+		}
 		
+		String link = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_HOST_URL)
+		        .replace("{activationKey}", token);
+		user.getUsername();
+		String msg = props.getProperty("mail.content").replaceAll(":name", user.getUsername()) + link;
 		try {
-			Message mail = Context.getMessageService().createMessage(user.getEmail(),
-			    Context.getAdministrationService().getGlobalProperty("mail.from"), "Password Reset Request", msg);
-			Context.getMessageService().sendMessage(mail);
+			Context.getMessageService().sendMessage(user.getEmail(),
+			    Context.getAdministrationService().getGlobalProperty("mail.from"), props.getProperty("mail.subject"), msg);
 		}
 		catch (MessageException e) {
-			// Prevent propagation of exception to the webservice should in case message was not sent  
+			log.debug(e.getMessage());
 		}
 		return user;
 	}

@@ -695,7 +695,7 @@ public final class OpenmrsConstants {
 		        "Set to true to enable TLS encryption, else set to false"));
 		
 		props.add(new GlobalProperty(GP_HOST_URL, "",
-		        "The activationKey is the parameter which will be generated and substituted. always make sure to provide a parameter name activationkey in the link you provide here "));
+		        "The URL to redirect to after requesting for a passwordreset. Always provide a place holder in this url with name {activationKey} so that it will be substituted by the actual activation key."));
 		
 		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
 		props.add(new GlobalProperty("concept.height", "5090", "Concept id of the concept defining the HEIGHT concept"));
