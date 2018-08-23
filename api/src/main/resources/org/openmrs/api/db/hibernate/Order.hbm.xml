@@ -42,7 +42,9 @@
         <property name="commentToFulfiller" type="string" column="comment_to_fulfiller" length="1024" />
         <property name="scheduledDate" type="java.util.Date" column="scheduled_date" length="19" />
         <property name="sortWeight" type="java.lang.Double" column="sort_weight"/>
-        <property name="urgency" column="urgency" length="50" not-null="true">
+        <property name="fulfillerComment" type="java.lang.String" column="fulfiller_comment" length="1024"/>
+
+		<property name="urgency" column="urgency" length="50" not-null="true">
             <type name="org.hibernate.type.EnumType">
                 <param name="enumClass">org.openmrs.Order$Urgency</param>
                 <param name="type">12</param>
@@ -55,6 +57,13 @@
                 <param name="type">12</param>
             </type>
         </property>
+
+		<property name="fulfillerStatus" column="fulfiller_status" length="50" not-null="false">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">org.openmrs.Order$FulfillerStatus</param>
+				<param name="type">12</param>
+			</type>
+		</property>
 
         <many-to-one name="careSetting" column="care_setting" class="org.openmrs.CareSetting" not-null="true" />
         
