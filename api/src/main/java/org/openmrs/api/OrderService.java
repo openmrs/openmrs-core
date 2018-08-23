@@ -266,6 +266,20 @@ public interface OrderService extends OpenmrsService {
 	public Order unvoidOrder(Order order) throws APIException;
 	
 	/**
+	 * Updates the fulfillerStatus of an order and the related comment and finally persists it
+	 *
+	 * @param order order whose fulfillerStatus should be changed
+	 * @param orderFulfillerStatus describes the new Order.FulfillerStatus the order should be set to
+	 * @param fullFillerComment is a string which describes a comment that is set while changing the FulfillerStatus               
+	 * @return the Order that is updated with an according fulfillerStataus and fulFillerComment
+	 * @should set the new fulfillerStatus
+	 * @should set the new fulFillerComment
+	 * @should save the changed order
+	 */
+	@Authorized(PrivilegeConstants.EDIT_ORDERS)
+	public Order updateOrderFulfillerStatus(Order order, Order.FulfillerStatus orderFulfillerStatus, String fullFillerComment);
+	
+	/**
 	 * Gets the order identified by a given order number
 	 * 
 	 * @param orderNumber the order number

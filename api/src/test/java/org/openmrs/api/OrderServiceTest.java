@@ -1174,6 +1174,23 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see OrderService#updateOrderFulfillerStatus(org.openmrs.Order, Order.FulfillerStatus, String)
+	 */
+	@Test
+	public void updateOrderFulfillerStatus_shouldEditFulfillerStatusInOrder() {
+		Order originalOrder = orderService.getOrder(111);
+		String commentText = "We got the new order";
+		assertNotEquals(originalOrder.getFulfillerStatus(), Order.FulfillerStatus.IN_PROGRESS);
+
+		orderService.updateOrderFulfillerStatus(originalOrder, Order.FulfillerStatus.IN_PROGRESS, commentText);
+		Context.flushSession();
+		Order updatedOrder = orderService.getOrder(111);
+		
+		assertEquals(updatedOrder.getFulfillerStatus(), Order.FulfillerStatus.IN_PROGRESS);
+		assertEquals(updatedOrder.getFulfillerComment(), commentText);
+	}
+	
+	/**
 	 * @see OrderService#saveOrder(Order,OrderContext)
 	 */
 	@Test

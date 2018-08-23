@@ -54,6 +54,17 @@ public class Order extends BaseOpenmrsData {
 		RENEW
 	}
 	
+	/**
+	 * Valid values for the status of an order that is received from a filler
+	 * @since 2.2.0
+	 */
+	public enum FulfillerStatus {
+		RECEIVED, 
+		IN_PROGRESS,
+		EXCEPTION,
+		COMPLETED
+	};
+	
 	private Integer orderId;
 	
 	private Patient patient;
@@ -115,6 +126,17 @@ public class Order extends BaseOpenmrsData {
 	 */
 	private OrderGroup orderGroup;
 	
+	/**
+	 * Represents the status of an order received from a fulfiller 
+	 * @see FulfillerStatus
+	 */
+	private FulfillerStatus fulfillerStatus;
+	
+	/**
+	 * Represents the comment that goes along with with fulfiller status
+	 */	
+	private String fulfillerComment;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -173,6 +195,8 @@ public class Order extends BaseOpenmrsData {
 		target.setScheduledDate(getScheduledDate());
 		target.setOrderGroup(getOrderGroup());
 		target.setSortWeight(getSortWeight());
+		target.setFulfillerComment(getFulfillerComment());
+		target.setFulfillerStatus(getFulfillerStatus());
 		return target;
 	}
 	
@@ -743,6 +767,8 @@ public class Order extends BaseOpenmrsData {
 		target.setOrderReasonNonCoded(getOrderReasonNonCoded());
 		target.setOrderGroup(getOrderGroup());
 		target.setSortWeight(getSortWeight());
+		target.setFulfillerStatus(getFulfillerStatus());
+		target.setFulfillerComment(getFulfillerComment());
 		
 		return target;
 	}
@@ -842,5 +868,46 @@ public class Order extends BaseOpenmrsData {
 	 */
 	public void setSortWeight(Double sortWeight) {
 		this.sortWeight = sortWeight;
+	}
+	
+	/**
+	 * Returns the current status that was received from a fulfiller for this order. It can either be RECEIVED, IN_PROGRESS,
+	 * EXCEPTION or COMPLETED.  
+	 * 
+	 * @since 2.2.0
+	 * @return the status that was received from a fulfiller
+	 */
+	public FulfillerStatus getFulfillerStatus() {
+		return fulfillerStatus;
+	}
+
+	/**
+	 * Sets the status of this order according to the value that was received from a fulfiller. 
+	 * 
+	 * @param fulfillerStatus the status that was received from a fulfiller. 
+	 * @since 2.2.0
+	*/
+	public void setFulfillerStatus(FulfillerStatus fulfillerStatus) {
+		this.fulfillerStatus = fulfillerStatus;
+	}
+	
+	/**
+	 * Returns the comment received from the fulfiller regarding this order.
+	 * 
+	 * @since 2.2.0
+	 * @return the comment of the fulfiller  
+	 */
+	public String getFulfillerComment() {
+		return fulfillerComment;
+	}
+	
+	/**
+	 * Sets the comment received from the fulfiller for this order.
+	 * 
+	 * @param fulfillerComment the comment received from the fulfiller
+	 * @since 2.2.0
+	 */
+	public void setFulfillerComment(String fulfillerComment) {
+		this.fulfillerComment = fulfillerComment;		
 	}
 }

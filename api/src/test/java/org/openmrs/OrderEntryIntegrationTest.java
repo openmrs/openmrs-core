@@ -140,6 +140,8 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setFrequency(orderService.getOrderFrequency(3000));
 		order.setSpecimenSource(conceptService.getConcept(22));
 		order.setNumberOfRepeats(3);
+		order.setFulfillerStatus(Order.FulfillerStatus.RECEIVED);
+		order.setFulfillerComment("A comment from the filler");
 		
 		orderService.saveOrder(order, null);
 		List<Order> activeOrders = orderService.getActiveOrders(patient, orderService.getOrderTypeByName("Test order"),
