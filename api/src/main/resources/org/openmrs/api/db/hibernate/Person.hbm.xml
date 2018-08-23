@@ -71,7 +71,8 @@
 		<property name="personVoidReason" type="java.lang.String"
 			column="void_reason" length="255" />
 
-
+		<property name="causeOfDeathNonCoded" type="java.lang.String"
+				  column="cause_of_death_non_coded" length="255" />
 		<!-- Associations -->
 
 		<!-- bi-directional one-to-many association to PersonAddress -->
