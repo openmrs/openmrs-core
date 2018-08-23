@@ -305,4 +305,17 @@
 								 referencedTableName="concept"
 								 referencedColumnNames="concept_id" />
 	</changeSet>
+
+	<changeSet id="TRUNK-4505-20180804" author="fruether">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="person" columnName="cause_of_death_non_coded"/>
+			</not>
+		</preConditions>
+		<comment>Adding cause_of_death_non_coded to the table person</comment>
+		<addColumn tableName="person">
+			<column name="cause_of_death_non_coded" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+	
 </databaseChangeLog>

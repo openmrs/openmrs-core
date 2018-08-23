@@ -14,6 +14,7 @@ import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
@@ -99,6 +100,8 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(pa, errors);
 		
 		Assert.assertTrue(errors.hasFieldErrors("causeOfDeath"));
+		Assert.assertEquals("Person.dead.causeOfDeathAndCauseOfDeathNonCodedNull", errors.getFieldError("causeOfDeath").getCode());
+		
 	}
 	
 	/**
@@ -197,5 +200,36 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors("deathDate"));
 	}
 
+	@Test
+	public void validate_shouldFailValidationWhenDeathCauseAndDeathCauseNonCodedAreSet() {
+		Patient pa = new Patient(1);
+		pa.setDead(true);
+		
+		pa.setCauseOfDeathNonCoded("Some text describing Cause of Death");
+		pa.setCauseOfDeath(new Concept());
+		
+		Errors errors = new BindException(pa, "patient");
+		validator.validate(pa, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("causeOfDeath"));
+		Assert.assertEquals("Person.dead.shouldHaveOnlyOneCauseOfDeathOrCauseOfDeathNonCodedSet", errors.getFieldError("causeOfDeath").getCode());
+	}
+	
+	@Test
+	public void validate_shouldNotFailWhenDeathCauseNotCodedIsSet() {
+		Person person = new Patient(1);
+		
+		person.setDead(true);
+		person.setCauseOfDeathNonCoded("Some text describing Cause of Death");
+		person.setPersonVoided(true);
+		person.setPersonVoidReason("voidReason");
+		person.setGender("g");
+		
+		Errors errors = new BindException(person, "patient");
+		PersonValidator personValidator = new PersonValidator();
+		personValidator.validate(person, errors);
+
+		Assert.assertFalse(errors.hasErrors());
+	}
 
 }
