@@ -317,5 +317,30 @@
 			<column name="cause_of_death_non_coded" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
-	
+
+	<changeSet id="TRUNK-5400-20180731-1" author="fruether">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="orders" columnName="fulfiller_comment"/>
+			</not>
+		</preConditions>
+		<comment>Adding fulfill_status and  fulfiller_comment column to provider table</comment>
+		<addColumn tableName="orders">
+			<column name="fulfiller_comment" type="varchar(1024)" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5400-201807311-2" author="fruether">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="orders" columnName="fulfiller_status"/>
+			</not>
+		</preConditions>
+		<comment>Adding fulfill_status and  fulfiller_comment column to provider table</comment>
+		<addColumn tableName="orders">
+			<column name="fulfiller_status" type="varchar(50)" >
+			</column>
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>

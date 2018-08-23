@@ -72,6 +72,27 @@ public class Patient extends Person {
 		this.patientId = patientId;
 		setPatient(true);
 	}
+
+	/**
+	 * This constructor creates a new Patient object from the given {@link Patient} object. All
+	 * attributes are copied over to the new object. In effect creating a clone/duplicate.
+	 * <br>
+	 *
+	 * @param patient the person object to copy onto a new Patient
+	 * @since 2.2.0
+	 */
+	public Patient(Patient patient){
+		super(patient);
+		this.patientId = patient.getPatientId();
+		this.allergyStatus = patient.getAllergyStatus();
+		Set<PatientIdentifier> newIdentifiers = new TreeSet<>();
+		for (PatientIdentifier pid : patient.getIdentifiers()) {
+			PatientIdentifier identifierClone = (PatientIdentifier) pid.clone();
+			identifierClone.setPatient(this);
+			newIdentifiers.add(identifierClone);
+		}
+		this.identifiers = newIdentifiers;
+	}
 	
 	// Property accessors
 	
@@ -367,7 +388,6 @@ public class Patient extends Person {
 	@Override
 	public void setId(Integer id) {
 		setPatientId(id);
-		
 	}
 	
 	/**
