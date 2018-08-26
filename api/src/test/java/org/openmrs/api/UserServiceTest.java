@@ -1399,7 +1399,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.setUsername("bwolfe");
 		u.getPerson().setGender("M");
 		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_HOST_URL,
-		    "http://localhost:8080/openmrs/admin/users/changePassword.form?activationkey");
+		    "http://localhost:8080/openmrs/admin/users/changePassword.form/{activationKey}");
 		User createdUser = userService.createUser(u, "Openmr5xy");
 		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
 		assertEquals(createdUser, userService.setUserActivationKey(createdUser));

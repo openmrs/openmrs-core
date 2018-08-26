@@ -9,14 +9,12 @@
  */
 package org.openmrs.api.impl;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang.RandomStringUtils;
@@ -30,6 +28,7 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CannotDeleteRoleWithChildrenException;
 import org.openmrs.api.InvalidActivationKeyException;
 import org.openmrs.api.UserService;
@@ -37,9 +36,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.MessageException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
-import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
@@ -68,7 +67,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	private static final int MAX_VALID_TIME = 12*60*60*1000; //Period of 12 hours
 	private static final int MIN_VALID_TIME = 60*1000; //Period of 1 minute
 	private static final int DEFAULT_VALID_TIME = 10*60*1000; //Default time of 10 minute
-		
+	
 	@Autowired(required = false)
 	List<PrivilegeListener> privilegeListeners;
 	
@@ -755,11 +754,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	/**
+	 * @throws APIException
 	 * @throws MessageException
 	 * @see org.openmrs.api.UserService#setUserActivationKey(org.openmrs.User)
 	 */
 	@Override
-	public User setUserActivationKey(User user) {
+	public User setUserActivationKey(User user) throws MessageException {
 		String token = RandomStringUtils.randomAlphanumeric(20);
 		long time = System.currentTimeMillis() + getValidTime();
 		String hashedKey = Security.encodeString(token);
@@ -768,23 +768,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		credentials.setActivationKey(activationKey);	
 		dao.setUserActivationKey(credentials);	
 		
-		Properties props = new Properties();
-		InputStream stream = OpenmrsClassLoader.getInstance().getResourceAsStream("emailTemplate.properties");
-		if (stream != null) {
-			OpenmrsUtil.loadProperties(props, stream);
-		}
-		
-		String link = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_HOST_URL)
+		MessageSourceService messages = Context.getMessageSourceService();
+		AdministrationService adminService = Context.getAdministrationService();
+		String link = adminService.getGlobalProperty(OpenmrsConstants.GP_HOST_URL)
 		        .replace("{activationKey}", token);
-		user.getUsername();
-		String msg = props.getProperty("mail.content").replaceAll(":name", user.getUsername()) + link;
-		try {
-			Context.getMessageService().sendMessage(user.getEmail(),
-			    Context.getAdministrationService().getGlobalProperty("mail.from"), props.getProperty("mail.subject"), msg);
-		}
-		catch (MessageException e) {
-			log.debug(e.getMessage());
-		}
+		String msg = messages.getMessage("mail.passwordreset.content").replace("{name}", user.getUsername())
+		        .replace("{link}", link)
+		        .replace("{time}", String.valueOf(getValidTime() / 60000));
+		Context.getMessageService().sendMessage(user.getEmail(),
+		    adminService.getGlobalProperty("mail.from"),
+		    messages.getMessage("mail.passwordreset.subject"), msg);
+		
 		return user;
 	}
 
