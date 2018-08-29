@@ -605,24 +605,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		return dao.getUsers(name, new ArrayList<>(allRoles), includeRetired, start, length);
 	}
 	
-	/**
-	 * @see UserService#notifyPrivilegeListeners(User, String, boolean)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
-		if (privilegeListeners != null) {
-			for (PrivilegeListener privilegeListener : privilegeListeners) {
-				try {
-					privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
-				}
-				catch (Exception e) {
-					log.error("Privilege listener has failed", e);
-				}
-			}
-		}
-	}
-	
 	@Override
 	public User saveUserProperty(String key, String value) {
 		User user = Context.getAuthenticatedUser();
@@ -695,5 +677,4 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			return null;
 		}
     }
-	
 }

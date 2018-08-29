@@ -9,18 +9,28 @@
  */
 package org.openmrs.api.db;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+
+import java.util.LinkedHashSet;
 import java.util.Properties;
+import java.util.Set;
+
+import javax.annotation.Resource;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.User;
+import org.openmrs.UserSessionListener;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.springframework.stereotype.Component;
 
 /**
  * This class tests the {@link ContextDAO} linked to from the Context. Currently that file is the
@@ -35,6 +45,9 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	
 	private ContextDAO dao = null;
 	
+	@Resource(name = "testUserSessionListener")
+	TestUserSessionListener testUserSessionListener;
+  
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
 	 * {@link BaseContextSensitiveTest} is run right before this method.
@@ -328,5 +341,64 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		properties.setProperty("key", "value");
 		dao.mergeDefaultRuntimeProperties(properties);
 		Assert.assertNotNull(properties.getProperty("hibernate.key"));
+	}
+	
+	@Component("testUserSessionListener")
+	public static class TestUserSessionListener implements UserSessionListener {
+		public Set<String> logins = new LinkedHashSet<>();
+		public Set<String> logouts = new LinkedHashSet<>();
+
+		@Override
+		public void loggedInOrOut(User user, Event event, Status status) {
+			if (event != null && user != null) {
+				if (Event.LOGIN.equals(event)) {
+					logins.add(user.getUsername() + ":" + event + ":" + status);
+				} else if (Event.LOGOUT.equals(event)) {
+					logouts.add(
+							user.getUsername() + ":" + event + ":" + status);
+				}
+			}
+		}
+
+		public void clear() {
+			logins.clear();
+			logouts.clear();
+		}
+	}
+
+	@Test
+	public void authenticate_shouldRightlyTriggerUserSessionListener_withSuccessfulLogin() {
+		testUserSessionListener.clear();
+		Context.authenticate("admin", "test");
+		assertThat(testUserSessionListener.logins,
+				contains("admin:LOGIN:SUCCESS"));
+		assertThat(testUserSessionListener.logouts, empty());
+	}
+
+	@Test
+	public void authenticate_shouldRightlyTriggerUserSessionListener_withFailedLogin() {
+		testUserSessionListener.clear();
+		try {
+			Context.authenticate("wrongUser", "test");
+		} catch (ContextAuthenticationException e) {
+		}
+		try {
+			Context.authenticate("admin", "wrongPassword");
+		} catch (ContextAuthenticationException e) {
+		}
+		Context.authenticate("admin", "test");
+		assertThat(testUserSessionListener.logins,
+				contains("wrongUser:LOGIN:FAIL", "admin:LOGIN:FAIL",
+						"admin:LOGIN:SUCCESS"));
+		assertThat(testUserSessionListener.logouts, empty());
+	}
+
+	@Test
+	public void logout_shouldRightlyTriggerUserSessionListener() {
+		testUserSessionListener.clear();
+		Context.logout();
+		assertThat(testUserSessionListener.logouts,
+				contains("admin:LOGOUT:SUCCESS"));
+		assertThat(testUserSessionListener.logins, empty());
 	}
 }
