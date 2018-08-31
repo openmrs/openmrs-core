@@ -59,6 +59,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -116,23 +117,23 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * @see org.openmrs.api.PatientService#savePatient(org.openmrs.Patient)
 	 */
+	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
 	public Patient savePatient(Patient patient) throws APIException {
-		requireAppropriatePatientModificationPrivilege(patient);
+		synchronized(this) {
+			requireAppropriatePatientModificationPrivilege(patient);
+			if (!patient.getVoided() && patient.getIdentifiers().size() == 1) {
+				patient.getPatientIdentifier().setPreferred(true);
+			} 
+			if (!patient.getVoided()) {
+				checkPatientIdentifiers(patient);
+			}
+			setPreferredPatientIdentifier(patient);
+			setPreferredPatientName(patient);
+			setPreferredPatientAddress(patient);
 
-		if (!patient.getVoided() && patient.getIdentifiers().size() == 1) {
-			patient.getPatientIdentifier().setPreferred(true);
+			return dao.savePatient(patient);
 		}
-
-		if (!patient.getVoided()) {
-			checkPatientIdentifiers(patient);
-		}
-
-		setPreferredPatientIdentifier(patient);
-		setPreferredPatientName(patient);
-		setPreferredPatientAddress(patient);
-
-		return dao.savePatient(patient);
 	}
 
 	private void requireAppropriatePatientModificationPrivilege(Patient patient) {
