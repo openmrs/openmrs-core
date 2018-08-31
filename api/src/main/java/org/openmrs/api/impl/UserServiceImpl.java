@@ -28,6 +28,7 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CannotDeleteRoleWithChildrenException;
 import org.openmrs.api.InvalidActivationKeyException;
 import org.openmrs.api.UserService;
@@ -35,6 +36,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.notification.MessageException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -64,7 +67,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	private static final int MAX_VALID_TIME = 12*60*60*1000; //Period of 12 hours
 	private static final int MIN_VALID_TIME = 60*1000; //Period of 1 minute
 	private static final int DEFAULT_VALID_TIME = 10*60*1000; //Default time of 10 minute
-		
+	
 	@Autowired(required = false)
 	List<PrivilegeListener> privilegeListeners;
 	
@@ -751,20 +754,30 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	/**
+	 * @throws APIException
+	 * @throws MessageException
 	 * @see org.openmrs.api.UserService#setUserActivationKey(org.openmrs.User)
-	 * 
 	 */
 	@Override
-	public User setUserActivationKey(User user) {
+	public User setUserActivationKey(User user) throws MessageException {
 		String token = RandomStringUtils.randomAlphanumeric(20);
 		long time = System.currentTimeMillis() + getValidTime();
 		String hashedKey = Security.encodeString(token);
-		String activationKey = hashedKey+":"+time;
+		String activationKey = hashedKey + ":" + time;
 		LoginCredential credentials = dao.getLoginCredential(user);
 		credentials.setActivationKey(activationKey);	
 		dao.setUserActivationKey(credentials);	
-			
-		//Send Email with unhashed  activation key and Date:
+		
+		MessageSourceService messages = Context.getMessageSourceService();
+		AdministrationService adminService = Context.getAdministrationService();
+		String link = adminService.getGlobalProperty(OpenmrsConstants.GP_HOST_URL)
+		        .replace("{activationKey}", token);
+		String msg = messages.getMessage("mail.passwordreset.content").replace("{name}", user.getUsername())
+		        .replace("{link}", link)
+		        .replace("{time}", String.valueOf(getValidTime() / 60000));
+		Context.getMessageService().sendMessage(user.getEmail(),
+		    adminService.getGlobalProperty("mail.from"),
+		    messages.getMessage("mail.passwordreset.subject"), msg);
 		
 		return user;
 	}

@@ -43,9 +43,11 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.notification.MessageException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
@@ -1390,12 +1392,14 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void setUserActivationKey_shouldCreateUserActivationKey() {
+	public void setUserActivationKey_shouldCreateUserActivationKey() throws MessageException {
 		User u = new User();
 		u.setPerson(new Person());
 		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
 		u.setUsername("bwolfe");
 		u.getPerson().setGender("M");
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_HOST_URL,
+		    "http://localhost:8080/openmrs/admin/users/changePassword.form/{activationKey}");
 		User createdUser = userService.createUser(u, "Openmr5xy");
 		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
 		assertEquals(createdUser, userService.setUserActivationKey(createdUser));
