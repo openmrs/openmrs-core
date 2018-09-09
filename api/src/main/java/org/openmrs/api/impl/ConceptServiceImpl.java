@@ -477,7 +477,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		} else {
 			List<Drug> drugs = dao.getDrugs(drugNameOrId, null, false);
 			if (drugs.size() > 1) {
-				log.warn("more than one drug name returned with name:" + drugNameOrId);
+				log.warn("more than one drug name returned with name: {}", drugNameOrId);
 			}
 			if (drugs.isEmpty()) {
 				return null;
@@ -1285,9 +1285,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			if (!(dao.getSavedConceptDatatype(concept).isBoolean() && concept.getDatatype().isCoded())) {
 				throw new ConceptInUseException();
 			}
-			if (log.isDebugEnabled()) {
-				log.debug("Converting datatype of concept with id " + concept.getConceptId() + " from Boolean to Coded");
-			}
+			log.debug("Converting datatype of concept with id {} from Boolean to Coded", concept.getConceptId());
 		}
 	}
 	

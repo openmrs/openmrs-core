@@ -64,7 +64,7 @@ public abstract class Extension {
 	 * @param parameterMap
 	 */
 	public void initialize(Map<String, String> parameterMap) {
-		log.debug("Initializing extension for point: " + pointId);
+		log.debug("Initializing extension for point: {}", pointId);
 		this.setPointId(pointId);
 		this.setParameterMap(parameterMap);
 	}

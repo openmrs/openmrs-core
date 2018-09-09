@@ -123,7 +123,7 @@ public final class Module {
 		this.author = author;
 		this.description = description;
 		this.version = version;
-		log.debug("Creating module " + name);
+		log.debug("Creating module {}", name);
 	}
 	
 	@Override
@@ -522,7 +522,7 @@ public final class Module {
 	public void setExtensionNames(Map<String, String> map) {
 		if (log.isDebugEnabled()) {
 			for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
-				log.debug("Setting extension names: " + entry.getKey() + " : " + entry.getValue());
+				log.debug("Setting extension names: {} : {}", entry.getKey(), entry.getValue());
 			}
 		}
 		this.extensionNames = map;

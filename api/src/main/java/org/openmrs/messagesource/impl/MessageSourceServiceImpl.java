@@ -66,7 +66,7 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	@Override
 	public void setActiveMessageSource(MutableMessageSource activeMessageSource) {
 		
-		log.debug("Setting activeMessageSource: " + activeMessageSource);
+		log.debug("Setting activeMessageSource: {}", activeMessageSource);
 		
 		this.activeMessageSource = activeMessageSource;
 		if (!availableMessageSources.contains(activeMessageSource)) {

@@ -905,9 +905,7 @@ public class OpenmrsUtil {
 			throw new IOException("Could not delete directory '" + dir.getAbsolutePath() + "' (not a directory)");
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Deleting directory " + dir.getAbsolutePath());
-		}
+		log.debug("Deleting directory {}", dir.getAbsolutePath());
 		
 		File[] fileList = dir.listFiles();
 		if (fileList == null) {
@@ -920,9 +918,7 @@ public class OpenmrsUtil {
 			}
 			boolean success = f.delete();
 			
-			if (log.isDebugEnabled()) {
-				log.debug("   deleting " + f.getName() + " : " + (success ? "ok" : "failed"));
-			}
+			log.debug("   deleting {} : {}", f.getName(), (success ? "ok" : "failed"));
 			
 			if (!success) {
 				f.deleteOnExit();
@@ -936,7 +932,7 @@ public class OpenmrsUtil {
 			dir.deleteOnExit();
 		}
 		
-		if (success && log.isDebugEnabled()) {
+		if (success) {
 			log.debug("   ...and directory itself");
 		}
 		
@@ -2073,7 +2069,7 @@ public class OpenmrsUtil {
 		
 		// first look in the current directory (that java was started from)
 		String pathName = fileNameInTestMode != null ? fileNameInTestMode : defaultFileName;
-		log.debug("Attempting to look for properties file in current directory: " + pathName);
+		log.debug("Attempting to look for properties file in current directory: {}", pathName);
 		if (new File(pathName).exists()) {
 			return pathName;
 		} else {
@@ -2084,7 +2080,7 @@ public class OpenmrsUtil {
 		String envVarName = applicationName.toUpperCase() + "_RUNTIME_PROPERTIES_FILE";
 		String envFileName = System.getenv(envVarName);
 		if (envFileName != null) {
-			log.debug("Atempting to look for runtime properties from: " + pathName);
+			log.debug("Atempting to look for runtime properties from: {}", pathName);
 			if (new File(envFileName).exists()) {
 				return envFileName;
 			} else {
@@ -2092,20 +2088,18 @@ public class OpenmrsUtil {
 				        + envVarName + ")");
 			}
 		} else {
-			log.info("Couldn't find an environment variable named " + envVarName);
-			if (log.isDebugEnabled()) {
-				log.debug("Available environment variables are named: " + System.getenv().keySet());
-			}
+			log.info("Couldn't find an environment variable named {}", envVarName);
+			log.debug("Available environment variables are named: {}", System.getenv().keySet());
 		}
 		
 		// next look in the OpenMRS application data directory
 		File file = new File(getApplicationDataDirectory(), pathName);
 		pathName = file.getAbsolutePath();
-		log.debug("Attempting to look for property file from: " + pathName);
+		log.debug("Attempting to look for property file from: {}", pathName);
 		if (file.exists()) {
 			return pathName;
 		} else {
-			log.warn("Unable to find properties file: " + pathName);
+			log.warn("Unable to find properties file: {}", pathName);
 		}
 		
 		return null;

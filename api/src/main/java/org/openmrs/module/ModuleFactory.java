@@ -129,10 +129,7 @@ public class ModuleFactory {
 	 *         version, the old module
 	 */
 	public static Module loadModule(Module module, Boolean replaceIfExists) throws ModuleException {
-		
-		if (log.isDebugEnabled()) {
-			log.debug("Adding module " + module.getName() + " to the module queue");
-		}
+		log.debug("Adding module {} to the module queue", module.getName());
 		
 		Module oldModule = getLoadedModulesMap().get(module.getModuleId());
 		if (oldModule != null) {
@@ -167,15 +164,13 @@ public class ModuleFactory {
 		// load modules from the user's module repository directory
 		File modulesFolder = ModuleUtil.getModuleRepository();
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Loading modules from: " + modulesFolder.getAbsolutePath());
-		}
+		log.debug("Loading modules from: {}", modulesFolder.getAbsolutePath());
 		
 		File[] files = modulesFolder.listFiles();
 		if (modulesFolder.isDirectory() && files != null) {
 			loadModules(Arrays.asList(files));
 		} else {
-			log.error("modules folder: '" + modulesFolder.getAbsolutePath() + "' is not a directory or IO error occurred");
+			log.error("modules folder: '{}' is not a directory or IO error occurred", modulesFolder.getAbsolutePath());
 		}
 	}
 	
@@ -195,7 +190,7 @@ public class ModuleFactory {
 				if (!f.getName().startsWith(".")) {
 					try {
 						Module mod = loadModule(f, true); // last module loaded wins
-						log.debug("Loaded module: " + mod + " successfully");
+						log.debug("Loaded module: {} successfully", mod);
 					} catch (Exception e) {
 						log.debug("Unable to load file in module directory: " + f + ". Skipping file.", e);
 					}
@@ -261,9 +256,7 @@ public class ModuleFactory {
 				}
 				
 				try {
-					if (log.isDebugEnabled()) {
-						log.debug("starting module: " + mod.getModuleId());
-					}
+					log.debug("starting module: {}", mod.getModuleId());
 					startModule(mod);
 				}
 				catch (Exception e) {
@@ -915,10 +908,8 @@ public class ModuleFactory {
 		// check given version against current version
 		if (gp != null && StringUtils.hasLength(gp.getPropertyValue())) {
 			String currentDbVersion = gp.getPropertyValue();
-			if (log.isDebugEnabled()) {
-				log.debug("version:column " + version + ":" + currentDbVersion);
-				log.debug("compare: " + ModuleUtil.compareVersion(version, currentDbVersion));
-			}
+			log.debug("version:column {}:{}", version, currentDbVersion);
+			log.debug("compare: {}", ModuleUtil.compareVersion(version, currentDbVersion));
 			if (ModuleUtil.compareVersion(version, currentDbVersion) > 0) {
 				executeSQL = true;
 			}

@@ -97,9 +97,7 @@ public class UserContext implements Serializable {
 	 * @throws ContextAuthenticationException
 	 */
 	public User authenticate(String username, String password, ContextDAO contextDAO) throws ContextAuthenticationException {
-		if (log.isDebugEnabled()) {
-			log.debug("Authenticating with username: " + username);
-		}
+		log.debug("Authenticating with username: {}", username);
 		try {
 			this.user = contextDAO.authenticate(username, password);
 			notifyUserSessionListener(this.user, Event.LOGIN, Status.SUCCESS);
@@ -110,9 +108,7 @@ public class UserContext implements Serializable {
 			throw e;
 		}
 		setUserLocation();
-		if (log.isDebugEnabled()) {
-			log.debug("Authenticated as: " + this.user);
-		}
+		log.debug("Authenticated as: {}", this.user);
 		
 		return this.user;
 	}
@@ -125,9 +121,7 @@ public class UserContext implements Serializable {
 	 * @since 1.5
 	 */
 	public void refreshAuthenticatedUser() {
-		if (log.isDebugEnabled()) {
-			log.debug("Refreshing authenticated user");
-		}
+		log.debug("Refreshing authenticated user");
 		
 		if (user != null) {
 			user = Context.getUserService().getUser(user.getUserId());
@@ -149,9 +143,7 @@ public class UserContext implements Serializable {
 			throw new APIAuthenticationException("You must be a superuser to assume another user's identity");
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Turning the authenticated user into user with systemId: " + systemId);
-		}
+		log.debug("Turning the authenticated user into user with systemId: {}", systemId);
 		
 		User userToBecome = Context.getUserService().getUserByUsername(systemId);
 		
@@ -174,9 +166,7 @@ public class UserContext implements Serializable {
 		//update the user's location
 		setUserLocation();
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Becoming user: " + user);
-		}
+		log.debug("Becoming user: {}", user);
 		
 		return userToBecome;
 	}
@@ -223,9 +213,7 @@ public class UserContext implements Serializable {
 	 * @param privilege to give to users
 	 */
 	public void addProxyPrivilege(String privilege) {
-		if (log.isDebugEnabled()) {
-			log.debug("Adding proxy privilege: " + privilege);
-		}
+		log.debug("Adding proxy privilege: {}", privilege);
 		
 		proxies.add(privilege);
 	}
@@ -236,9 +224,7 @@ public class UserContext implements Serializable {
 	 * @param privilege Privilege to remove in string form
 	 */
 	public void removeProxyPrivilege(String privilege) {
-		if (log.isDebugEnabled()) {
-			log.debug("Removing proxy privilege: " + privilege);
-		}
+		log.debug("Removing proxy privilege: {}", privilege);
 		
 		if (proxies.contains(privilege)) {
 			proxies.remove(privilege);
@@ -326,9 +312,7 @@ public class UserContext implements Serializable {
 			
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Checking '" + privilege + "' against proxies: " + proxies);
-		}
+		log.debug("Checking '{}' against proxies: {}", privilege, proxies);
 		
 		// check proxied privileges
 		for (String s : proxies) {

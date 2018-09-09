@@ -113,11 +113,9 @@ public class ModuleUtil {
 								log.error("Unable to expand classpath found module: " + modulePath, io);
 							}
 						} else {
-							log
-							        .error("Unable to load module at path: "
-							                + modulePath
-							                + " because no file exists there and it is not found on the classpath. (absolute path tried: "
-							                + file.getAbsolutePath() + ")");
+							log.error("Unable to load module at path: " + modulePath + 
+								" because no file exists there and it is not found on the classpath. (absolute path tried: "
+							    + file.getAbsolutePath() + ")");
 						}
 					}
 				}
@@ -135,7 +133,7 @@ public class ModuleUtil {
 			if (modules == null || modules.isEmpty()) {
 				log.debug("No modules loaded");
 			} else {
-				log.debug("Found and loaded " + modules.size() + " module(s)");
+				log.debug("Found and loaded {} module(s)", modules.size());
 			}
 		}
 		
@@ -154,9 +152,7 @@ public class ModuleUtil {
 		List<Module> modules = new ArrayList<>(ModuleFactory.getStartedModules());
 		
 		for (Module mod : modules) {
-			if (log.isDebugEnabled()) {
-				log.debug("stopping module: " + mod.getModuleId());
-			}
+			log.debug("stopping module: {}", mod.getModuleId());
 			
 			if (mod.isStarted()) {
 				ModuleFactory.stopModule(mod, true, true);
@@ -342,7 +338,7 @@ public class ModuleUtil {
 					}
 				} else {
 					if (compareVersion(version, range) < 0) {
-						log.debug("Version " + version + " is below " + range);
+						log.debug("Version {} is below {}", version, range);
 					} else {
 						return true;
 					}
@@ -592,7 +588,7 @@ public class ModuleUtil {
 				}
 			}
 			if (!foundName) {
-				log.debug("Unable to find: " + name + " in file " + fileToExpand.getAbsolutePath());
+				log.debug("Unable to find: {} in file {}", name, fileToExpand.getAbsolutePath());
 			}
 			
 		}
@@ -624,9 +620,7 @@ public class ModuleUtil {
 	 * @throws IOException if an error occurred while copying
 	 */
 	private static File expand(InputStream input, String fileDir, String name) throws IOException {
-		if (log.isDebugEnabled()) {
-			log.debug("expanding: " + name);
-		}
+		log.debug("expanding: {}", name);
 		
 		File file = new File(fileDir, name);
 		FileOutputStream outStream = null;
@@ -791,8 +785,8 @@ public class ModuleUtil {
 					UpdateFileParser parser = new UpdateFileParser(content);
 					parser.parse();
 					
-					log.debug("Update for mod: " + mod.getModuleId() + " compareVersion result: "
-					        + compareVersion(mod.getVersion(), parser.getCurrentVersion()));
+					log.debug("Update for mod: {} compareVersion result: {}", mod.getModuleId(),
+						compareVersion(mod.getVersion(), parser.getCurrentVersion()));
 					
 					// check the update.rdf version against the installed version
 					if (compareVersion(mod.getVersion(), parser.getCurrentVersion()) < 0) {
@@ -801,7 +795,7 @@ public class ModuleUtil {
 							mod.setUpdateVersion(parser.getCurrentVersion());
 							updateFound = true;
 						} else {
-							log.warn("Module id does not match in update.rdf:" + parser.getModuleId());
+							log.warn("Module id does not match in update.rdf: {}", parser.getModuleId());
 						}
 					} else {
 						mod.setDownloadURL(null);
@@ -900,9 +894,7 @@ public class ModuleUtil {
 		OpenmrsClassLoader.setThreadsToNewClassLoader();
 		
 		// reload the advice points that were lost when refreshing Spring
-		if (log.isDebugEnabled()) {
-			log.debug("Reloading advice for all started modules: " + startedModules.size());
-		}
+		log.debug("Reloading advice for all started modules: {}", startedModules.size());
 		
 		try {
 			//The call backs in this block may need lazy loading of objects
@@ -1150,8 +1142,8 @@ public class ModuleUtil {
 				
 				packageName = packageName.replaceAll("/", ".");
 				
-				if (packagesProvided.add(packageName) && log.isTraceEnabled()) {
-					log.trace("Adding module's jarentry with package: " + packageName);
+				if (packagesProvided.add(packageName)) {
+					log.trace("Adding module's jarentry with package: {}", packageName);
 				}
 			}
 			

@@ -51,7 +51,7 @@ public class ChainingInterceptor implements Interceptor {
 			return;
 		}
 		
-		log.debug("Adding " + interceptor + " to interceptor chain");
+		log.debug("Adding {} to interceptor chain", interceptor);
 		
 		if (interceptors == null) {
 			interceptors = new LinkedHashSet<>();

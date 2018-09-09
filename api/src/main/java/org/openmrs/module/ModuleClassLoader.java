@@ -89,9 +89,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			throw new IllegalArgumentException("Parent must not be ModuleClassLoader");
 		}
 		
-		if (log.isDebugEnabled()){
-			log.debug("URLs length: " + urls.size());
-		}
+		log.debug("URLs length: {}", urls.size());
 		this.module = module;
 		requiredModules = collectRequiredModuleImports(module);
 		awareOfModules = collectAwareOfModuleImports(module);
@@ -133,7 +131,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	private void addClassFilePackages(Collection<File> files, int dirLength) {
 		for (File file : files) {
 			String name = file.getAbsolutePath().substring(dirLength);
-			Integer indexOfLastSlash = name.lastIndexOf(File.separator);
+			int indexOfLastSlash = name.lastIndexOf(File.separator);
 			if (indexOfLastSlash > 0) {
 				String packageName = name.substring(0, indexOfLastSlash);
 				packageName = packageName.replace(File.separator, ".");
@@ -276,9 +274,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		// add each defined jar in the /lib folder, add as a url in the classpath of the classloader
 		try {
-			if (log.isDebugEnabled()) {
-				log.debug("Expanding /lib folder in module");
-			}
+			log.debug("Expanding /lib folder in module");
 			
 			ModuleUtil.expandJar(module.getFile(), tmpModuleDir, "lib", true);
 			File libdir = new File(tmpModuleDir, "lib");
@@ -319,14 +315,10 @@ public class ModuleClassLoader extends URLClassLoader {
 					    startedRelatedModules);
 					
 					if (include) {
-						if (log.isDebugEnabled()) {
-							log.debug("Including file in classpath: " + fileUrl);
-						}
+						log.debug("Including file in classpath: {}", fileUrl);
 						result.add(fileUrl);
 					} else {
-						if (log.isDebugEnabled()) {
-							log.debug("Excluding file from classpath: " + fileUrl);
-						}
+						log.debug("Excluding file from classpath: {}", fileUrl);
 					}
 				}
 			}
@@ -487,7 +479,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		for (String awareOfPackage : module.getAwareOfModules()) {
 			Module awareOfModule = ModuleFactory.getModuleByPackage(awareOfPackage);
-			if (ModuleFactory.isModuleStarted(awareOfModule)) {
+			if (awareOfModule != null && ModuleFactory.isModuleStarted(awareOfModule)) {
 				publicImportsMap.put(awareOfModule.getModuleId(), awareOfModule);
 			}
 		}
@@ -523,8 +515,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @see org.openmrs.module.ModuleFactory#stopModule(Module, boolean)
 	 */
 	public void dispose() {
-		if (log.isDebugEnabled())
-			log.debug("Disposing of ModuleClassLoader: " + this);
+		log.debug("Disposing of ModuleClassLoader: {}", this);
 
 		for (File file : libraryCache.values()) {
 			file.delete();
@@ -613,7 +604,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				output.append(element);
 				output.append("\n");
 			}
-			log.trace("Stacktrace: " + output.toString());
+			log.trace("Stacktrace: {}", output);
 		}
 		
 		// Check if we already tried this class loader
@@ -731,17 +722,11 @@ public class ModuleClassLoader extends URLClassLoader {
 			return null;
 		}
 		
-		if (log.isTraceEnabled()) {
-			log.trace("findLibrary(String): name=" + name + ", this=" + this);
-		}
+		log.trace("findLibrary(String): name={}, this={}", name, this);
 		String libname = System.mapLibraryName(name);
 		String result = null;
 		
-		if (log.isTraceEnabled()) {
-			log
-			        .trace("findLibrary(String): name=" + name + ", libname=" + libname + ", result=" + result + ", this="
-			                + this);
-		}
+		log.trace("findLibrary(String): name={}, libname={}, result={}, this={}", new Object[]{name, libname, result, this});
 		
 		return result;
 	}
@@ -815,11 +800,8 @@ public class ModuleClassLoader extends URLClassLoader {
 			// save a link to the cached file
 			libraryCache.put(libUri, result);
 			
-			if (log.isDebugEnabled()) {
-				log.debug("library " + libname + " successfully cached from URL " + libUrl + " and saved to local file "
-				        + result);
-			}
-			
+			log.debug("library {} successfully cached from URL {} and saved to local file {}", 
+					new Object[] {libname, libUrl, result});
 		}
 		catch (IOException ioe) {
 			log.error("can't cache library " + libname + " from URL " + libUrl, ioe);
@@ -871,11 +853,11 @@ public class ModuleClassLoader extends URLClassLoader {
 	protected URL findResource(final String name, final ModuleClassLoader requestor, Set<String> seenModules) {
 		if (log.isTraceEnabled() && name != null && name.contains("starter")) {
 			if (seenModules != null) {
-				log.trace("seenModules.size: " + seenModules.size());
+				log.trace("seenModules.size: {}", seenModules.size());
 			}
-			log.trace("name: " + name);
+			log.trace("name: {}", name);
 			for (URL url : getURLs()) {
-				log.trace("url: " + url);
+				log.trace("url: {}", url);
 			}
 		}
 		
