@@ -290,7 +290,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		catch (IOException e) {
 			log.error("Error generated", e);
 		}
-		if (log.isWarnEnabled() && (resourceSet.isEmpty())) {
+		if (resourceSet.isEmpty()) {
 			log.warn("No properties files found.");
 		}
 		return resourceSet.toArray(new Resource[resourceSet.size()]);

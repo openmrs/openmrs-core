@@ -49,7 +49,7 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 	}
 	
 	public T getLayoutTemplateByName(String templateName) {
-		log.debug("looking for template name: " + templateName);
+		log.debug("looking for template name: {}", templateName);
 		
 		if (this.layoutTemplates != null && templateName != null) {
 			T ret = null;
@@ -60,7 +60,7 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 				                || templateName.equalsIgnoreCase(at.getCodeName()) || templateName.equalsIgnoreCase(at
 				                .getCountry()))) {
 					ret = at;
-					log.debug("Found Layout Template named " + at.getDisplayName());
+					log.debug("Found Layout Template named {}", at.getDisplayName());
 				}
 			}
 			
@@ -78,7 +78,7 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 			for (T at : this.layoutTemplates) {
 				if (at != null && templateName.equalsIgnoreCase(at.getCodeName())) {
 					ret = at;
-					log.debug("Found Layout Template named " + at.getDisplayName());
+					log.debug("Found Layout Template named {}", at.getDisplayName());
 				}
 			}
 			
@@ -96,7 +96,7 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 			for (T at : this.layoutTemplates) {
 				if (at != null && templateName.equalsIgnoreCase(at.getCountry())) {
 					ret = at;
-					log.debug("Found Layout Template named " + at.getDisplayName());
+					log.debug("Found Layout Template named {}", at.getDisplayName());
 				}
 			}
 			
@@ -114,7 +114,7 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 			for (T at : this.layoutTemplates) {
 				if (at != null && templateName.equalsIgnoreCase(at.getDisplayName())) {
 					ret = at;
-					log.debug("Found Layout Template named " + at.getDisplayName());
+					log.debug("Found Layout Template named {}", at.getDisplayName());
 				}
 			}
 			

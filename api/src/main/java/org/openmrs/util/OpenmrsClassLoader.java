@@ -84,9 +84,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		
 		OpenmrsClassLoaderHolder.INSTANCE = this;
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Creating new OpenmrsClassLoader instance with parent: " + parent);
-		}
+		log.debug("Creating new OpenmrsClassLoader instance with parent: {}", parent);
 		
 		//disable caching so the jars aren't locked
 		//if performance is effected, this can be disabled in favor of
@@ -210,9 +208,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	@Override
 	public URL findResource(final String name) {
-		if (log.isTraceEnabled()) {
-			log.trace("finding resource: " + name);
-		}
+		log.trace("finding resource: {}", name);
 		
 		URL result;
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
@@ -544,24 +540,18 @@ public class OpenmrsClassLoader extends URLClassLoader {
 									}
 								} else {
 									field.set(null, null);
-									if (log.isDebugEnabled()) {
-										log.debug("Set field " + field.getName() + " to null in class " + clazz.getName());
-									}
+									log.debug("Set field {} to null in class {}", field.getName(), clazz.getName());
 								}
 							}
 							catch (Exception t) {
-								if (log.isDebugEnabled()) {
-									log.debug("Could not set field " + field.getName() + " to null in class "
+								log.debug("Could not set field " + field.getName() + " to null in class "
 											+ clazz.getName(), t);
-								}
 							}
 						}
 					}
 				}
 				catch (Exception t) {
-					if (log.isDebugEnabled()) {
-						log.debug("Could not clean fields for class " + clazz.getName(), t);
-					}
+					log.debug("Could not clean fields for class " + clazz.getName(), t);
 				}
 			}
 		}
@@ -599,26 +589,19 @@ public class OpenmrsClassLoader extends URLClassLoader {
 					if (null != value) {
 						Class<?> valueClass = value.getClass();
 						if (!loadedByThisOrChild(valueClass)) {
-							if (log.isDebugEnabled()) {
-								log.debug("Not setting field " + field.getName() + " to null in object of class "
-										+ instance.getClass().getName() + " because the referenced object was of type "
-										+ valueClass.getName() + " which was not loaded by this WebappClassLoader.");
-							}
+							log.debug("Not setting field {} to null in object of class {} because the referenced object was"
+									+ " of type {} which was not loaded by this WebappClassLoader.", 
+									new Object[] {field.getName(), instance.getClass().getName(), valueClass.getName() });
 						} else {
 							field.set(instance, null);
-							if (log.isDebugEnabled()) {
-								log.debug("Set field " + field.getName() + " to null in class "
-										+ instance.getClass().getName());
-							}
+							log.debug("Set field {} to null in class {}", field.getName(), instance.getClass().getName());
 						}
 					}
 				}
 			}
 			catch (Exception e) {
-				if (log.isDebugEnabled()) {
-					log.debug("Could not set field " + field.getName() + " to null in object instance of class "
+				log.debug("Could not set field " + field.getName() + " to null in object instance of class "
 							+ instance.getClass().getName(), e);
-				}
 			}
 		}
 	}
@@ -712,9 +695,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		synchronized (ModuleClassLoader.class) {
 			libCacheFolder = new File(OpenmrsUtil.getApplicationDataDirectory(), LIBCACHESUFFIX);
 			
-			if (log.isDebugEnabled()) {
-				log.debug("libraries cache folder is " + libCacheFolder);
-			}
+			log.debug("libraries cache folder is {}", libCacheFolder);
 			
 			if (libCacheFolder.exists()) {
 				// clean up and empty the folder if it exists (and is not locked)
@@ -757,24 +738,18 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			extForm = extForm.replaceFirst("jar:file:/", "").replaceAll("%20", " ");
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("url external form: " + extForm);
-		}
+		log.debug("url external form: {}", extForm);
 		
 		int i = extForm.indexOf("!");
 		String jarPath = extForm.substring(0, i);
 		String filePath = extForm.substring(i + 2); // skip over both the '!' and the '/'
 		
-		if (log.isDebugEnabled()) {
-			log.debug("jarPath: " + jarPath);
-			log.debug("filePath: " + filePath);
-		}
+		log.debug("jarPath: {}", jarPath);
+		log.debug("filePath: {}", filePath);
 		
 		File file = new File(folder, filePath);
 		
-		if (log.isDebugEnabled()) {
-			log.debug("absolute path: " + file.getAbsolutePath());
-		}
+		log.debug("absolute path: {}", file.getAbsolutePath());
 		
 		try {
 			// if the file has been expanded already, return that

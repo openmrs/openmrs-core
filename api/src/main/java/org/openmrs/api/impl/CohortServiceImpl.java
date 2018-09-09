@@ -63,9 +63,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 		if (cohort.getDescription() == null) {
 			throw new APIException("Cohort.save.descriptionRequired", (Object[]) null);
 		}
-		if (log.isInfoEnabled()) {
-			log.info("Saving cohort " + cohort);
-		}
+		log.info("Saving cohort {}", cohort);
 		
 		return dao.saveCohort(cohort);
 	}

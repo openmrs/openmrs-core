@@ -39,9 +39,7 @@ public class PatientValidator extends PersonValidator {
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
-		if (log.isDebugEnabled()) {
-			log.debug(this.getClass().getName() + ".supports: " + c.getName());
-		}
+		log.debug("{}.supports: {}", getClass().getName(), c.getName());
 		return Patient.class.isAssignableFrom(c);
 	}
 	
@@ -66,9 +64,7 @@ public class PatientValidator extends PersonValidator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
-		if (log.isDebugEnabled()) {
-			log.debug(this.getClass().getName() + ".validate...");
-		}
+		log.debug("{}.validate...", getClass().getName());
 		
 		if (obj == null) {
 			return;

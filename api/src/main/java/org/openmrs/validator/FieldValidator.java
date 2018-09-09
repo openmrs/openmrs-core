@@ -36,9 +36,7 @@ public class FieldValidator implements Validator {
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
-		if (log.isDebugEnabled()) {
-			log.debug(this.getClass().getName() + ".supports: " + c.getName());
-		}
+		log.debug("{}.supports: {}", getClass().getName(), c.getName());
 		return Field.class.isAssignableFrom(c);
 	}
 	
@@ -62,9 +60,7 @@ public class FieldValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException {
-		if (log.isDebugEnabled()) {
-			log.debug(this.getClass().getName() + ".validate...");
-		}
+		log.debug("{}.validate...", getClass().getName());
 		
 		if (obj == null || !(obj instanceof Field)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type " + Field.class);

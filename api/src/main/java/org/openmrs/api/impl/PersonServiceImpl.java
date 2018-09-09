@@ -810,8 +810,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		if (Context.getSerializationService().getDefaultSerializer() == null) {
 			throw new APIException("serializer.default.not.found", (Object[]) null);
 		}
-		log.debug("Auditing merging of non-preferred person " + personMergeLog.getLoser().getUuid()
-		        + " with preferred person " + personMergeLog.getWinner().getId());
+		log.debug("Auditing merging of non-preferred person {} with preferred person {}", 
+			personMergeLog.getLoser().getUuid(), personMergeLog.getWinner().getId());
 		//populate the mergedData XML from the PersonMergeLogData object
 		String serialized = Context.getSerializationService().getDefaultSerializer()
 		        .serialize(personMergeLog.getPersonMergeLogData());

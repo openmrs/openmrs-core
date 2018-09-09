@@ -562,8 +562,7 @@ public class ModuleFileParser {
 				+ ") must be a subtype of 'org.openmrs.customdatatype.CustomDatatype<?>'.", ex);
 		}
 		catch (ClassNotFoundException ex) {
-			log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
-				+ ") could not be found.", ex);
+			log.error("The class specified by 'datatypeClassname' (" + datatypeClassname + ") could not be found.", ex);
 		}
 		return globalProperty;
 	}

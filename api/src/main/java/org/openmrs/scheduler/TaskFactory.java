@@ -53,9 +53,7 @@ public class TaskFactory {
 			// Create a new instance of the schedulable class 
 			Task task = new TaskThreadedInitializationWrapper((Task) taskClass.newInstance());
 			
-			if (log.isDebugEnabled()) {
-				log.debug("initializing " + taskClass.getName());
-			}
+			log.debug("initializing {}", taskClass.getName());
 			// Initialize the schedulable object
 			task.initialize(taskDefinition);
 			
@@ -65,17 +63,13 @@ public class TaskFactory {
 			log.error("OpenmrsClassLoader could not load class: " + taskDefinition.getTaskClass()
 			        + ".  Probably due to a module not being loaded");
 			
-			if (log.isDebugEnabled()) {
-				log.debug("Full error trace of ClassNotFoundException", cnfe);
-			}
+			log.debug("Full error trace of ClassNotFoundException", cnfe);
 			
 			throw new SchedulerException("could not load class", cnfe);
 		}
 		catch (Exception e) {
-			if (log.isDebugEnabled()) {
-				// don't need to log errors here necessarily.  If its needed, the calling method can log it.
-				log.debug("Error creating new task for class " + taskDefinition.getTaskClass(), e);
-			}
+			// don't need to log errors here necessarily.  If its needed, the calling method can log it.
+			log.debug("Error creating new task for class " + taskDefinition.getTaskClass(), e);
 			
 			throw new SchedulerException("error creating new task for class " + taskDefinition.getTaskClass(), e);
 		}
