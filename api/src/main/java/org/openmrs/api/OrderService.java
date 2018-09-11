@@ -25,6 +25,7 @@ import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 
@@ -250,6 +251,18 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_ORDERS)
 	public List<Order> getAllOrdersByPatient(Patient patient);
+
+	/**
+	 * Get all orders that match a variety of (nullable) criteria contained in the parameter object.
+	 * Each extra value for a parameter that is provided acts as an "and" and will reduce the number of results returned
+	 *
+	 * @param orderSearchCriteria the object containing search parameters
+	 * @return a list of orders matching the search criteria
+	 * @since 2.2
+	 * @should get the order matching the search criteria
+	 */
+	@Authorized( { PrivilegeConstants.GET_ORDERS })
+	public List<Order> getOrders(OrderSearchCriteria orderSearchCriteria);
 	
 	/**
 	 * Unvoid order record. Reverse a previous call to {@link #voidOrder(Order, String)}

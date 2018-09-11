@@ -35,6 +35,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.GregorianCalendar;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
@@ -72,6 +73,8 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
+import org.openmrs.parameter.OrderSearchCriteria;
+import org.openmrs.parameter.OrderSearchCriteriaBuilder;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
 import org.openmrs.util.DateUtil;
@@ -2032,6 +2035,100 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(3, orderService.getOrders(patient, outPatient, labTestOrderType, false).size());
 		Order[] expectedOrder2 = { orderService.getOrder(101), orderService.getOrder(103), orderService.getOrder(104) };
 		assertThat(orders, hasItems(expectedOrder2));
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldGetOrdersByPatient() {
+		Patient patient = patientService.getPatient(2);
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setPatient(patient).createOrderSearchCriteria();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(11, orders.size());
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldGetOrdersByCareSetting() {
+		CareSetting outPatient = orderService.getCareSetting(1);
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setCareSetting(outPatient).createOrderSearchCriteria();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(12, orders.size());
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldGetOrdersByConcepts() {
+		List<Concept> concepts = new ArrayList<>();
+		concepts.add(conceptService.getConcept(88)); // aspirin
+		concepts.add(conceptService.getConcept(3)); // cough syrup
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setConcepts(concepts).createOrderSearchCriteria();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(6, orders.size());
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldGetOrdersByOrderTypes() {
+		List<OrderType> orderTypes = new ArrayList<>();
+		orderTypes.add(orderService.getOrderType(1)); // drug order
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setOrderTypes(orderTypes).createOrderSearchCriteria();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(10, orders.size());
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldGetOrdersByActivatedOnOrBeforeDate() {
+		// should get orders activated any time on this day
+		Date activatedOnOrBeforeDate = new GregorianCalendar(2008, 7, 19).getTime();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setActivatedOnOrBeforeDate(activatedOnOrBeforeDate).createOrderSearchCriteria();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(11, orders.size());
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldGetOrdersByActivatedOnOrAfterDate() {
+		// hour and minute should be ignored by search
+		Date activatedOnOrAfterDate = new GregorianCalendar(2008, 7, 19, 12, 0).getTime();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setActivatedOnOrAfterDate(activatedOnOrAfterDate).createOrderSearchCriteria();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(3, orders.size());
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldGetOrdersByIncludeVoided() {
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setIncludeVoided(true).createOrderSearchCriteria();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(14, orders.size());
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldGetTheOrdersByCareSettingAndOrderType() {
+		CareSetting outPatient = orderService.getCareSetting(1);
+		List<OrderType> orderTypes = new ArrayList<>();
+		orderTypes.add(orderService.getOrderType(2)); // test order type
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setCareSetting(outPatient).setOrderTypes(orderTypes).createOrderSearchCriteria();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(3, orders.size());
 	}
 	
 	/**
