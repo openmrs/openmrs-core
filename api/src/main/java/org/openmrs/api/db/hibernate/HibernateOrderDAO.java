@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Calendar;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
@@ -41,9 +42,12 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.print.attribute.standard.RequestingUserName;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderDAO that
@@ -143,6 +147,54 @@ public class HibernateOrderDAO implements OrderDAO {
 			crit.add(Restrictions.in("encounter", encounters));
 		}
 		
+		crit.addOrder(org.hibernate.criterion.Order.desc("dateActivated"));
+		
+		return crit.list();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrders(OrderSearchCriteria)
+	 */
+	@Override
+	public List<Order> getOrders(OrderSearchCriteria searchCriteria) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Order.class);
+		
+		if (searchCriteria.getPatient() != null && searchCriteria.getPatient().getPatientId() != null) {
+			crit.add(Restrictions.eq("patient", searchCriteria.getPatient()));
+		}
+		if (searchCriteria.getCareSetting() != null && searchCriteria.getCareSetting().getId() != null) {
+			crit.add(Restrictions.eq("careSetting", searchCriteria.getCareSetting()));
+		}
+		if (searchCriteria.getConcepts() != null && !searchCriteria.getConcepts().isEmpty()) {
+			crit.add(Restrictions.in("concept", searchCriteria.getConcepts()));
+		}
+		if (searchCriteria.getOrderTypes() != null && !searchCriteria.getOrderTypes().isEmpty()) {
+			crit.add(Restrictions.in("orderType", searchCriteria.getOrderTypes()));
+		}
+		if (searchCriteria.getActivatedOnOrBeforeDate() != null) {
+			// set the date's time to the last millisecond of the date
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(searchCriteria.getActivatedOnOrBeforeDate());
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 59);
+			cal.set(Calendar.SECOND, 59);
+			cal.set(Calendar.MILLISECOND, 999);
+			crit.add(Restrictions.le("dateActivated", cal.getTime()));
+		}
+		if (searchCriteria.getActivatedOnOrAfterDate() != null) {
+			// set the date's time to 00:00:00.000
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(searchCriteria.getActivatedOnOrAfterDate());
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			crit.add(Restrictions.ge("dateActivated", cal.getTime()));
+		}
+		if (!searchCriteria.getIncludeVoided()) {
+			crit.add(Restrictions.eq("voided", false));
+		}
+
 		crit.addOrder(org.hibernate.criterion.Order.desc("dateActivated"));
 		
 		return crit.list();

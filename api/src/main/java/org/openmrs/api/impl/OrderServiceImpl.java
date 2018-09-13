@@ -54,6 +54,7 @@ import org.openmrs.api.CannotUnvoidOrderException;
 import org.openmrs.api.EditedOrderDoesNotMatchPreviousException;
 import org.openmrs.api.OrderEntryException;
 import org.openmrs.order.OrderUtil;
+import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -530,6 +531,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			throw new IllegalArgumentException("Patient is required");
 		}
 		return dao.getOrders(patient, null, null, true, true);
+	}
+	
+	@Override
+	public List<Order> getOrders(OrderSearchCriteria orderSearchCriteria) {
+		return dao.getOrders(orderSearchCriteria);
 	}
 	
 	/**
