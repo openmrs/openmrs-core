@@ -2043,7 +2043,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getOrders_shouldGetOrdersByPatient() {
 		Patient patient = patientService.getPatient(2);
-		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setPatient(patient).createOrderSearchCriteria();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setPatient(patient).build();
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(11, orders.size());
 	}
@@ -2054,7 +2054,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getOrders_shouldGetOrdersByCareSetting() {
 		CareSetting outPatient = orderService.getCareSetting(1);
-		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setCareSetting(outPatient).createOrderSearchCriteria();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setCareSetting(outPatient).build();
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(12, orders.size());
 	}
@@ -2067,7 +2067,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Concept> concepts = new ArrayList<>();
 		concepts.add(conceptService.getConcept(88)); // aspirin
 		concepts.add(conceptService.getConcept(3)); // cough syrup
-		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setConcepts(concepts).createOrderSearchCriteria();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setConcepts(concepts).build();
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(6, orders.size());
 	}
@@ -2079,7 +2079,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrders_shouldGetOrdersByOrderTypes() {
 		List<OrderType> orderTypes = new ArrayList<>();
 		orderTypes.add(orderService.getOrderType(1)); // drug order
-		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setOrderTypes(orderTypes).createOrderSearchCriteria();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setOrderTypes(orderTypes).build();
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(10, orders.size());
 	}
@@ -2091,7 +2091,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrders_shouldGetOrdersByActivatedOnOrBeforeDate() {
 		// should get orders activated any time on this day
 		Date activatedOnOrBeforeDate = new GregorianCalendar(2008, 7, 19).getTime();
-		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setActivatedOnOrBeforeDate(activatedOnOrBeforeDate).createOrderSearchCriteria();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setActivatedOnOrBeforeDate(activatedOnOrBeforeDate).build();
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(11, orders.size());
 	}
@@ -2103,7 +2103,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrders_shouldGetOrdersByActivatedOnOrAfterDate() {
 		// hour and minute should be ignored by search
 		Date activatedOnOrAfterDate = new GregorianCalendar(2008, 7, 19, 12, 0).getTime();
-		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setActivatedOnOrAfterDate(activatedOnOrAfterDate).createOrderSearchCriteria();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setActivatedOnOrAfterDate(activatedOnOrAfterDate).build();
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(3, orders.size());
 	}
@@ -2113,7 +2113,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrders_shouldGetOrdersByIncludeVoided() {
-		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setIncludeVoided(true).createOrderSearchCriteria();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setIncludeVoided(true).build();
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(14, orders.size());
 	}
@@ -2126,7 +2126,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		CareSetting outPatient = orderService.getCareSetting(1);
 		List<OrderType> orderTypes = new ArrayList<>();
 		orderTypes.add(orderService.getOrderType(2)); // test order type
-		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setCareSetting(outPatient).setOrderTypes(orderTypes).createOrderSearchCriteria();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setCareSetting(outPatient).setOrderTypes(orderTypes).build();
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(3, orders.size());
 	}

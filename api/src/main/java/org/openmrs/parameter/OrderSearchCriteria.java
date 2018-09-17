@@ -50,8 +50,8 @@ public class OrderSearchCriteria {
 	 * Instead of calling this constructor directly, it is recommended to use {@link OrderSearchCriteriaBuilder}.
 	 * @param patient the patient the order is for
 	 * @param careSetting the care setting to match on
-	 * @param concepts the concepts defining the order must be in this collection
-	 * @param orderTypes the order types to match on must be in this collection
+	 * @param concepts the concepts to match on; if not specified, matches on all concepts
+	 * @param orderTypes the order types to match on; if not specified, matches all order types
 	 * @param activatedOnOrBeforeDate orders must have dateActivated on or before this date
 	 * @param activatedOnOrAfterDate orders must have dateActivated on or after this date
 	 * @param includeVoided whether to include the voided orders or not
