@@ -19,7 +19,7 @@ import java.util.Date;
 
 /**
  * A convenience builder for {@link OrderSearchCriteria}. Create a builder, set
- * its properties to desired values and finally call {@link #createOrderSearchCriteria()}
+ * its properties to desired values and finally call {@link #build()}
  * to create the actual search criteria instance.
  * @see OrderSearchCriteria
  */
@@ -105,7 +105,7 @@ public class OrderSearchCriteriaBuilder {
 	 * Create an {@link OrderSearchCriteria} with the properties of this builder instance.
 	 * @return a new search criteria instance
 	 */
-	public OrderSearchCriteria createOrderSearchCriteria() {
+	public OrderSearchCriteria build() {
 		return new OrderSearchCriteria(patient, careSetting, concepts, orderTypes, activatedOnOrBeforeDate,  
 			activatedOnOrAfterDate, includeVoided);
 	}
