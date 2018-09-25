@@ -147,7 +147,9 @@ public interface PatientService extends OpenmrsService {
 	 * 
 	 * @param name (optional) this is a slight break from the norm, patients with a partial match on
 	 *            this name will be returned
-	 * @param identifier (optional) only patients with a matching identifier are returned
+	 * @param identifier (optional) only patients with a matching identifier are returned. This
+	 * 			  however applies only if <code>name</code> argument is null. Otherwise, its 
+	 * 			  ignored.	
 	 * @param identifierTypes (optional) the PatientIdentifierTypes to restrict to
 	 * @param matchIdentifierExactly (required) if true, then the given <code>identifier</code> must
 	 *            equal the id in the database. if false, then the identifier is 'searched' for by
@@ -155,10 +157,12 @@ public interface PatientService extends OpenmrsService {
 	 * @return patients that matched the given criteria (and are not voided)
 	 * @throws APIException
 	 * @should fetch all patients that partially match given name
+	 * @should fetch all patients that partially match given identifier if <code>name</code> argument
+	 * 		   is null
 	 * @should fetch all patients that partially match given identifier when match identifier
-	 *         exactly equals false
+	 *         exactly equals false and if <code>name</code> argument is null
 	 * @should fetch all patients that exactly match given identifier when match identifier exactly
-	 *         equals true
+	 *         equals true and if <code>name</code> argument is null
 	 * @should fetch all patients that match given identifier types
 	 * @should not return duplicates
 	 * @should not return voided patients
