@@ -551,16 +551,22 @@ public class PrivilegeConstants {
 
 	public static final String PURGE_CONCEPT_ATTRIBUTE_TYPES = "Purge Concept Attribute Types";
 
+	@AddOnStartup(description = "Able to edit conditions")
 	public static final String EDIT_CONDITIONS = "Edit Conditions";
 
+	@AddOnStartup(description = "Able to get conditions")
 	public static final String GET_CONDITIONS = "Get Conditions";
-	
+
+	@AddOnStartup(description = "Able to delete conditions")
 	public static final String DELETE_CONDITIONS = "Delete Conditions";
 
+	@AddOnStartup(description = "Able to edit diagnoses")
 	public static final String EDIT_DIAGNOSES = "Edit Diagnoses";
 
+	@AddOnStartup(description = "Able to get diagnoses")
 	public static final String GET_DIAGNOSES = "Get Diagnoses";
 
+	@AddOnStartup(description = "Able to delete diagnoses")
 	public static final String DELETE_DIAGNOSES = "Delete Diagnoses";
 
 }
