@@ -27,6 +27,8 @@ import org.openmrs.api.PersonService;
  */
 public class PersonMergeLog extends BaseChangeableOpenmrsData {
 	
+	private static final long serialVersionUID = 1L;
+	
 	/**
 	 * The unique identifier of the person merge log entity
 	 */
