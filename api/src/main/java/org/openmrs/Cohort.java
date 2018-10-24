@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import java.util.NoSuchElementException;
+import java.util.function.Predicate;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -208,15 +210,29 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	public Collection<CohortMembership> getActiveMemberships() {
 		return getActiveMemberships(new Date());
 	}
-	
+
 	/**
+	 * Searches for the {@code patients} membership and returns it.
+	 * <p>
+	 * If the patient has no membership, an empty Optional is returned.
+	 *
+	 * @param patient Holder of the searched membership.
+	 * @return Optional membership of the given patient.
+	 * @throws NoSuchElementException Thrown if the patient has no active membership.
 	 * @since 2.1.0
 	 */
 	public CohortMembership getActiveMembership(Patient patient) {
-		return getMemberships().stream().filter(m -> m.isActive() && m.getPatientId().equals(patient.getPatientId()))
-		        .collect(Collectors.toList()).get(0);
+		Predicate<CohortMembership> patientMatcher =
+			membership -> membership.getPatientId().equals(patient.getPatientId());
+
+		return getMemberships().stream()
+			.filter(CohortMembership::isActive)
+			.filter(patientMatcher)
+			.findAny()
+			.orElseThrow(NoSuchElementException::new); // Same as calling get()
 	}
-	
+
+
 	public int size() {
 		return getMemberships().stream().filter(m -> !m.getVoided() && m.getEndDate() == null).collect(Collectors.toList())
 		        .size();
