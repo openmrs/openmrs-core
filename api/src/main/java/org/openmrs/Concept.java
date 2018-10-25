@@ -60,7 +60,7 @@ import org.springframework.util.ObjectUtils;
  * fetch an object. To get child objects off of that Concept, further calls to the
  * {@link ConceptService} or the database are not needed. e.g. To get the list of answers that are
  * stored to a concept, get the concept, then call {@link Concept#getAnswers()}
- * 
+ *
  * @see ConceptName
  * @see ConceptDescription
  * @see ConceptAnswer
@@ -70,56 +70,56 @@ import org.springframework.util.ObjectUtils;
  */
 @FullTextFilterDefs( { @FullTextFilterDef(name = "termsFilterFactory", impl = TermsFilterFactory.class) })
 public class Concept extends BaseOpenmrsObject implements Auditable, Retireable, Serializable, Attributable<Concept>,Customizable<ConceptAttribute> {
-	
+
 	public static final long serialVersionUID = 57332L;
-	
+
 	private static final Logger log = LoggerFactory.getLogger(Concept.class);
-	
+
 	// Fields
 	@DocumentId
 	private Integer conceptId;
-	
+
 	@Field
 	private Boolean retired = false;
-	
+
 	private User retiredBy;
-	
+
 	private Date dateRetired;
-	
+
 	private String retireReason;
-	
+
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private ConceptDatatype datatype;
-	
+
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private ConceptClass conceptClass;
-	
+
 	private Boolean set = false;
-	
+
 	private String version;
-	
+
 	private User creator;
-	
+
 	private Date dateCreated;
-	
+
 	private User changedBy;
-	
+
 	private Date dateChanged;
-	
+
 	@AllowDirectAccess
 	@ContainedIn
 	private Collection<ConceptName> names;
-	
+
 	@AllowDirectAccess
 	private Collection<ConceptAnswer> answers;
-	
+
 	private Collection<ConceptSet> conceptSets;
-	
+
 	private Collection<ConceptDescription> descriptions;
-	
+
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Collection<ConceptMap> conceptMappings;
-	
+
 	/**
 	 * A cache of locales to names which have compatible locales. Built on-the-fly by
 	 * getCompatibleNames().
@@ -136,21 +136,21 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		descriptions = new HashSet<>();
 		conceptMappings = new HashSet<>();
 	}
-	
+
 	/**
 	 * Convenience constructor with conceptid to save to {@link #setConceptId(Integer)}. This
 	 * effectively creates a concept stub that can be used to make other calls. Because the
 	 * {@link #equals(Object)} and {@link #hashCode()} methods rely on conceptId, this allows a stub
 	 * to masquerade as a full concept as long as other objects like {@link #getAnswers()} and
 	 * {@link #getNames()} are not needed/called.
-	 * 
+	 *
 	 * @param conceptId the concept id to set
 	 */
 	public Concept(Integer conceptId) {
 		this();
 		this.conceptId = conceptId;
 	}
-	
+
 	/**
 	 * @return Returns all answers (including retired answers).
 	 * @should return retired and non-retired answers
@@ -162,11 +162,11 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		return answers;
 	}
-	
+
 	/**
 	 * If <code>includeRetired</code> is true, then the returned object is the actual stored list of
 	 * {@link ConceptAnswer}s
-	 * 
+	 *
 	 * @param includeRetired true/false whether to also include the retired answers
 	 * @return Returns the answers for this Concept
 	 * @should return the same as getAnswers() if includeRetired is true
@@ -185,16 +185,16 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * Set this Concept as having the given <code>answers</code>; This method assumes that the
 	 * sort_weight has already been set.
-	 * 
+	 *
 	 * @param answers The answers to set.
 	 */
 	public void setAnswers(Collection<ConceptAnswer> answers) {
 		this.answers = answers;
 	}
-	
+
 	/**
 	 * Add the given ConceptAnswer to the list of answers for this Concept
-	 * 
+	 *
 	 * @param conceptAnswer
 	 * @should add the ConceptAnswer to Concept
 	 * @should not fail if answers list is null
@@ -207,7 +207,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				conceptAnswer.setConcept(this);
 				getAnswers().add(conceptAnswer);
 			}
-			
+
 			if ((conceptAnswer.getSortWeight() == null) || (conceptAnswer.getSortWeight() <= 0)) {
 				//find largest sort weight
 				ConceptAnswer a = Collections.max(answers);
@@ -216,10 +216,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			}
 		}
 	}
-	
+
 	/**
 	 * Remove the given answer from the list of answers for this Concept
-	 * 
+	 *
 	 * @param conceptAnswer answer to remove
 	 * @return true if the entity was removed, false otherwise
 	 * @should not fail if answers is empty
@@ -228,7 +228,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public boolean removeAnswer(ConceptAnswer conceptAnswer) {
 		return getAnswers().remove(conceptAnswer);
 	}
-	
+
 	/**
 	 * @return Returns the changedBy.
 	 */
@@ -236,7 +236,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public User getChangedBy() {
 		return changedBy;
 	}
-	
+
 	/**
 	 * @param changedBy The changedBy to set.
 	 */
@@ -244,24 +244,24 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
-	
+
 	/**
 	 * @return Returns the conceptClass.
 	 */
 	public ConceptClass getConceptClass() {
 		return conceptClass;
 	}
-	
+
 	/**
 	 * @param conceptClass The conceptClass to set.
 	 */
 	public void setConceptClass(ConceptClass conceptClass) {
 		this.conceptClass = conceptClass;
 	}
-	
+
 	/**
 	 * whether or not this concept is a set
-	 * 
+	 *
 	 * @deprecated as of 2.0, use {@link #getSet()}
 	 */
 	@Deprecated
@@ -269,46 +269,46 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public Boolean isSet() {
 		return getSet();
 	}
-	
+
 	/**
 	 * @param set whether or not this concept is a set
 	 */
 	public void setSet(Boolean set) {
 		this.set = set;
 	}
-	
+
 	public Boolean getSet() {
 		return set;
 	}
-	
+
 	/**
 	 * @return Returns the conceptDatatype.
 	 */
 	public ConceptDatatype getDatatype() {
 		return datatype;
 	}
-	
+
 	/**
 	 * @param conceptDatatype The conceptDatatype to set.
 	 */
 	public void setDatatype(ConceptDatatype conceptDatatype) {
 		this.datatype = conceptDatatype;
 	}
-	
+
 	/**
 	 * @return Returns the conceptId.
 	 */
 	public Integer getConceptId() {
 		return conceptId;
 	}
-	
+
 	/**
 	 * @param conceptId The conceptId to set.
 	 */
 	public void setConceptId(Integer conceptId) {
 		this.conceptId = conceptId;
 	}
-	
+
 	/**
 	 * @return Returns the creator.
 	 */
@@ -316,7 +316,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public User getCreator() {
 		return creator;
 	}
-	
+
 	/**
 	 * @param creator The creator to set.
 	 */
@@ -324,7 +324,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-	
+
 	/**
 	 * @return Returns the dateChanged.
 	 */
@@ -332,7 +332,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public Date getDateChanged() {
 		return dateChanged;
 	}
-	
+
 	/**
 	 * @param dateChanged The dateChanged to set.
 	 */
@@ -340,7 +340,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
-	
+
 	/**
 	 * @return Returns the dateCreated.
 	 */
@@ -348,7 +348,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-	
+
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
@@ -356,43 +356,43 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-	
+
 	/**
 	 * Sets the preferred name /in this locale/ to the specified conceptName and its Locale, if
 	 * there is an existing preferred name for this concept in the same locale, this one will
 	 * replace the old preferred name. Also, the name is added to the concept if it is not already
 	 * among the concept names.
-	 * 
+	 *
 	 * @param preferredName The name to be marked as preferred in its locale
 	 * @should only allow one preferred name
 	 * @should add the name to the list of names if it not among them before
 	 * @should fail if the preferred name to set to is an index term
 	 */
 	public void setPreferredName(ConceptName preferredName) {
-		
+
 		if (preferredName == null || preferredName.getVoided() || preferredName.isIndexTerm()) {
 			throw new APIException("Concept.error.preferredName.null", (Object[]) null);
 		} else if (preferredName.getLocale() == null) {
 			throw new APIException("Concept.name.locale.null", (Object[]) null);
 		}
-		
+
 		//first revert the current preferred name(if any) from being preferred
 		ConceptName oldPreferredName = getPreferredName(preferredName.getLocale());
 		if (oldPreferredName != null) {
 			oldPreferredName.setLocalePreferred(false);
 		}
-		
+
 		preferredName.setLocalePreferred(true);
 		//add this name, if it is new or not among this concept's names
 		if (preferredName.getConceptNameId() == null || !getNames().contains(preferredName)) {
 			addName(preferredName);
 		}
 	}
-	
+
 	/**
 	 * A convenience method to get the concept-name (if any) which has a particular tag. This does
 	 * not guarantee that the returned name is the only one with the tag.
-	 * 
+	 *
 	 * @param conceptNameTag the tag for which to look
 	 * @return the tagged name, or null if no name has the tag
 	 */
@@ -406,12 +406,12 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		return taggedName;
 	}
-	
+
 	/**
 	 * Returns a name in the given locale. If a name isn't found with an exact match, a compatible
 	 * locale match is returned. If no name is found matching either of those, the first name
 	 * defined for this concept is returned.
-	 * 
+	 *
 	 * @param locale the locale to fetch for
 	 * @return ConceptName attributed to the Concept in the given locale
 	 * @since 1.5
@@ -421,7 +421,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public ConceptName getName(Locale locale) {
 		return getName(locale, false);
 	}
-	
+
 	/**
 	 * Returns concept name, the look up for the appropriate name is done in the following order;
 	 * <ul>
@@ -434,7 +434,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * <li>The first synonym found while searching through all names for the concept.</li>
 	 * <li>The first random name found(except index terms) while searching through all names.</li>
 	 * </ul>
-	 * 
+	 *
 	 * @return {@link ConceptName} in the current locale or any locale if none found
 	 * @since 1.5
 	 * @see Concept#getNames(Locale) to get all the names for a locale
@@ -451,18 +451,18 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			}
 			return null;
 		}
-		
+
 		for (Locale currentLocale : LocaleUtility.getLocalesInOrder()) {
 			ConceptName preferredName = getPreferredName(currentLocale);
 			if (preferredName != null) {
 				return preferredName;
 			}
-			
+
 			ConceptName fullySpecifiedName = getFullySpecifiedName(currentLocale);
 			if (fullySpecifiedName != null) {
 				return fullySpecifiedName;
 			}
-			
+
 			//if the locale has an variants e.g en_GB, try names in the locale excluding the country code i.e en
 			if (!StringUtils.isBlank(currentLocale.getCountry()) || !StringUtils.isBlank(currentLocale.getVariant())) {
 				Locale broaderLocale = new Locale(currentLocale.getLanguage());
@@ -470,34 +470,34 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				if (prefNameInBroaderLoc != null) {
 					return prefNameInBroaderLoc;
 				}
-				
+
 				ConceptName fullySpecNameInBroaderLoc = getFullySpecifiedName(broaderLocale);
 				if (fullySpecNameInBroaderLoc != null) {
 					return fullySpecNameInBroaderLoc;
 				}
 			}
 		}
-		
+
 		for (ConceptName cn : getNames()) {
 			if (cn.isFullySpecifiedName()) {
 				return cn;
 			}
 		}
-		
+
 		if (!getSynonyms().isEmpty()) {
 			return getSynonyms().iterator().next();
 		}
-		
+
 		// we don't expect to get here since every concept name must have at least
 		// one fully specified name, but just in case (probably inconsistent data)
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Checks whether this concept has the given string in any of the names in the given locale
 	 * already.
-	 * 
+	 *
 	 * @param name the ConceptName.name to compare to
 	 * @param locale the locale to look in (null to check all locales)
 	 * @return true/false whether the name exists already
@@ -509,27 +509,27 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		if (name == null) {
 			return false;
 		}
-		
+
 		Collection<ConceptName> currentNames;
 		if (locale == null) {
 			currentNames = getNames();
 		} else {
 			currentNames = getNames(locale);
 		}
-		
+
 		for (ConceptName currentName : currentNames) {
 			if (name.equalsIgnoreCase(currentName.getName())) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Returns concept name depending of locale, type (short, fully specified, etc) and tag.
 	 * Searches in the locale, and then the locale's parent if nothing is found.
-	 * 
+	 *
 	 * @param ofType find a name of this type (optional)
 	 * @param havingTag find a name with this tag (optional)
 	 * @param locale find a name with this locale (required)
@@ -542,14 +542,14 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		Collection<ConceptName> namesInLocale = getNames(locale);
 		if (!namesInLocale.isEmpty()) {
 			List<ConceptName> matches = new ArrayList<>();
-			
+
 			for (ConceptName candidate : namesInLocale) {
 				if ((ofType == null || ofType.equals(candidate.getConceptNameType()))
 				        && (havingTag == null || candidate.hasTag(havingTag))) {
 					matches.add(candidate);
 				}
 			}
-			
+
 			// if we have any matches, we'll return one of them
 			if (matches.size() == 1) {
 				return matches.get(0);
@@ -563,7 +563,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				return matches.get(0);
 			}
 		}
-		
+
 		// if we reach here, there were no matching names, so try to look in the parent locale
 		Locale parent = new Locale(locale.getLanguage());
 		if (!parent.equals(locale)) {
@@ -572,12 +572,12 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Returns a name in the given locale. If a name isn't found with an exact match, a compatible
 	 * locale match is returned. If no name is found matching either of those, the first name
 	 * defined for this concept is returned.
-	 * 
+	 *
 	 * @param locale the language and country in which the name is used
 	 * @param exact true/false to return only exact locale (no default locale)
 	 * @return the closest name in the given locale, or the first name
@@ -590,7 +590,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return name in broader locale in case none is found in specific one
 	 */
 	public ConceptName getName(Locale locale, boolean exact) {
-		
+
 		// fail early if this concept has no names defined
 		if (getNames().isEmpty()) {
 			if (log.isDebugEnabled()) {
@@ -598,17 +598,17 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			}
 			return null;
 		}
-		
+
 		if (log.isDebugEnabled()) {
 			log.debug("Getting conceptName for locale: " + locale);
 		}
-		
+
 		ConceptName exactName = getNameInLocale(locale);
-		
+
 		if (exactName != null) {
 			return exactName;
 		}
-		
+
 		if (!exact) {
 			Locale broaderLocale = new Locale(locale.getLanguage());
 			ConceptName name = getNameInLocale(broaderLocale);
@@ -616,10 +616,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Gets the best name in the specified locale.
-	 * 
+	 *
 	 * @param locale
 	 * @return null if name in given locale doesn't exist
 	 */
@@ -628,27 +628,27 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		if (preferredName != null) {
 			return preferredName;
 		}
-		
+
 		ConceptName fullySpecifiedName = getFullySpecifiedName(locale);
 		if (fullySpecifiedName != null) {
 			return fullySpecifiedName;
 		} else if (!getSynonyms(locale).isEmpty()) {
 			return getSynonyms(locale).iterator().next();
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Returns the name which is explicitly marked as preferred for a given locale.
-	 * 
+	 *
 	 * @param forLocale locale for which to return a preferred name
 	 * @return preferred name for the locale, or null if no preferred name is specified
 	 * @should return the concept name explicitly marked as locale preferred
 	 * @should return the fully specified name if no name is explicitly marked as locale preferred
 	 */
 	public ConceptName getPreferredName(Locale forLocale) {
-		
+
 		if (log.isDebugEnabled()) {
 			log.debug("Getting preferred conceptName for locale: " + forLocale);
 		}
@@ -662,16 +662,16 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			log.warn("Locale cannot be null");
 			return null;
 		}
-		
+
 		for (ConceptName nameInLocale : getNames(forLocale)) {
 			if (ObjectUtils.nullSafeEquals(nameInLocale.getLocalePreferred(), true)) {
 				return nameInLocale;
 			}
 		}
-		
+
 		// look for partially locale match - any language matches takes precedence over country matches.
 		ConceptName bestMatch = null;
-		
+
 		for (ConceptName nameInLocale : getPartiallyCompatibleNames(forLocale)) {
 			if (ObjectUtils.nullSafeEquals(nameInLocale.getLocalePreferred(), true)) {
 				Locale nameLocale = nameInLocale.getLocale();
@@ -680,20 +680,20 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				} else {
 					bestMatch = nameInLocale;
 				}
-				
+
 			}
 		}
-		
+
 		if (bestMatch != null) {
 			return bestMatch;
 		}
-		
+
 		return getFullySpecifiedName(forLocale);
 	}
-	
+
 	/**
 	 * Convenience method that returns the fully specified name in the locale
-	 * 
+	 *
 	 * @param locale locale from which to look up the fully specified name
 	 * @return the name explicitly marked as fully specified for the locale
 	 * @should return the name marked as fully specified for the given locale
@@ -707,7 +707,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 					return conceptName;
 				}
 			}
-			
+
 			// look for partially locale match - any language matches takes precedence over country matches.
 			ConceptName bestMatch = null;
 			for (ConceptName conceptName : getPartiallyCompatibleNames(locale)) {
@@ -720,16 +720,16 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				}
 			}
 			return bestMatch;
-			
+
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns all names available in a specific locale. <br>
 	 * <br>
 	 * This is recommended when managing the concept dictionary.
-	 * 
+	 *
 	 * @param locale locale for which names should be returned
 	 * @return Collection of ConceptNames with the given locale
 	 */
@@ -738,30 +738,30 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				.filter(n -> n.getLocale().equals(locale))
 				.collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * Returns all names available for locale language "or" country. <br>
 	 * <br>
-	 * 
+	 *
 	 * @param locale locale for which names should be returned
 	 * @return Collection of ConceptNames with the given locale language or country
 	 */
 	private Collection<ConceptName> getPartiallyCompatibleNames(Locale locale) {
 		String language = locale.getLanguage();
 		String country = locale.getCountry();
-		
+
 		return getNames().stream()
-				.filter(n -> language.equals(n.getLocale().getLanguage()) || 
+				.filter(n -> language.equals(n.getLocale().getLanguage()) ||
 							StringUtils.isNotBlank(country) && country.equals(n.getLocale().getCountry()))
 				.collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * Returns all names from compatible locales. A locale is considered compatible if it is exactly
 	 * the same locale, or if either locale has no country specified and the language matches. <br>
 	 * <br>
 	 * This is recommended when presenting possible names to the use.
-	 * 
+	 *
 	 * @param desiredLocale locale with which the names should be compatible
 	 * @return Collection of compatible names
 	 * @should exclude incompatible country locales
@@ -775,7 +775,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		} else {
 			compatibleNames = compatibleCache.get(desiredLocale);
 		}
-		
+
 		if (compatibleNames == null) {
 			compatibleNames = new ArrayList<>();
 			for (ConceptName possibleName : getNames()) {
@@ -787,11 +787,11 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		return compatibleNames;
 	}
-	
+
 	/**
 	 * Sets the specified name as the fully specified name for the locale and the current fully
 	 * specified (if any) ceases to be the fully specified name for the locale.
-	 * 
+	 *
 	 * @param fullySpecifiedName the new fully specified name to set
 	 * @should set the concept name type of the specified name to fully specified
 	 * @should convert the previous fully specified name if any to a synonym
@@ -803,7 +803,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		} else if (fullySpecifiedName.getVoided()) {
 			throw new APIException("Concept.error.fullySpecifiedName.null", (Object[]) null);
 		}
-		
+
 		ConceptName oldFullySpecifiedName = getFullySpecifiedName(fullySpecifiedName.getLocale());
 		if (oldFullySpecifiedName != null) {
 			oldFullySpecifiedName.setConceptNameType(null);
@@ -814,11 +814,11 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			addName(fullySpecifiedName);
 		}
 	}
-	
+
 	/**
 	 * Sets the specified name as the short name for the locale and the current shortName(if any)
 	 * ceases to be the short name for the locale.
-	 * 
+	 *
 	 * @param shortName the new shortName to set
 	 * @should set the concept name type of the specified name to short
 	 * @should convert the previous shortName if any to a synonym
@@ -844,10 +844,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			throw new APIException("Concept.error.shortName.null", (Object[]) null);
 		}
 	}
-	
+
 	/**
 	 * Gets the explicitly specified short name for a locale.
-	 * 
+	 *
 	 * @param locale locale for which to find a short name
 	 * @return the short name, or null if none has been explicitly set
 	 */
@@ -870,10 +870,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		return bestMatch;
 	}
-	
+
 	/**
 	 * Gets a collection of short names for this concept from all locales.
-	 * 
+	 *
 	 * @return a collection of all short names for this concept
 	 */
 	public Collection<ConceptName> getShortNames() {
@@ -889,11 +889,11 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		return shortNames;
 	}
-	
+
 	/**
 	 * Returns the short form name for a locale, or if none has been identified, the shortest name
 	 * available in the locale. If exact is false, the shortest name from any locale is returned
-	 * 
+	 *
 	 * @param locale the language and country in which the short name is used
 	 * @param exact true/false to return only exact locale (no default locale)
 	 * @return the appropriate short name, or null if not found
@@ -906,15 +906,15 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		if (log.isDebugEnabled()) {
 			log.debug("Getting shortest conceptName for locale: " + locale);
 		}
-		
+
 		ConceptName shortNameInLocale = getShortNameInLocale(locale);
 		if (shortNameInLocale != null) {
 			return shortNameInLocale;
 		}
-		
+
 		ConceptName shortestNameForLocale = null;
 		ConceptName shortestNameForConcept = null;
-		
+
 		if (locale != null) {
 			for (ConceptName possibleName : getNames()) {
 				if (possibleName.getLocale().equals(locale)
@@ -928,7 +928,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				}
 			}
 		}
-		
+
 		if (exact) {
 			if (shortestNameForLocale == null) {
 				log.warn("No short concept name found for concept id " + conceptId + " for locale "
@@ -936,10 +936,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			}
 			return shortestNameForLocale;
 		}
-		
+
 		return shortestNameForConcept;
 	}
-	
+
 	/**
 	 * @param name A name
 	 * @return whether this concept has the given name in any locale
@@ -947,22 +947,22 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public boolean isNamed(String name) {
 		return getNames().stream().anyMatch(cn -> name.equals(cn.getName()));
 	}
-	
+
 	/**
 	 * Gets the list of all non-retired concept names which are index terms for this concept
-	 * 
+	 *
 	 * @return a collection of concept names which are index terms for this concept
 	 * @since 1.7
 	 */
 	public Collection<ConceptName> getIndexTerms() {
 		return getNames().stream()
 				.filter(ConceptName::isIndexTerm)
-				.collect(Collectors.toSet());		
+				.collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * Gets the list of all non-retired concept names which are index terms in a given locale
-	 * 
+	 *
 	 * @param locale the locale for the index terms to return
 	 * @return a collection of concept names which are index terms in the given locale
 	 * @since 1.7
@@ -972,14 +972,14 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				.filter(n -> n.getLocale().equals(locale))
 		        .collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * @return Returns the names.
 	 */
 	public Collection<ConceptName> getNames() {
 		return getNames(false);
 	}
-	
+
 	/**
 	 * @return Returns the names.
 	 * @param includeVoided Include voided ConceptNames if true.
@@ -993,17 +993,17 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				.filter(n -> includeVoided || !n.getVoided())
 				.collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * @param names The names to set.
 	 */
 	public void setNames(Collection<ConceptName> names) {
 		this.names = names;
 	}
-	
+
 	/**
 	 * Add the given ConceptName to the list of names for this Concept
-	 * 
+	 *
 	 * @param conceptName
 	 * @should replace the old preferred name with a current one
 	 * @should replace the old fully specified name with a current one
@@ -1041,15 +1041,16 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				}
 				names.add(conceptName);
 				if (compatibleCache != null) {
-					compatibleCache.clear(); // clear the locale cache, forcing it to be rebuilt
+					// clear the locale cache, forcing it to be rebuilt
+					compatibleCache.clear();
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Remove the given name from the list of names for this Concept
-	 * 
+	 *
 	 * @param conceptName
 	 * @return true if the entity was removed, false otherwise
 	 */
@@ -1060,30 +1061,30 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Finds the description of the concept using the current locale in Context.getLocale(). Returns
 	 * null if none found.
-	 * 
+	 *
 	 * @return ConceptDescription attributed to the Concept in the given locale
 	 */
 	public ConceptDescription getDescription() {
 		return getDescription(Context.getLocale());
 	}
-	
+
 	/**
 	 * Finds the description of the concept in the given locale. Returns null if none found.
-	 * 
+	 *
 	 * @param locale
 	 * @return ConceptDescription attributed to the Concept in the given locale
 	 */
 	public ConceptDescription getDescription(Locale locale) {
 		return getDescription(locale, false);
 	}
-	
+
 	/**
 	 * Returns the preferred description for a locale.
-	 * 
+	 *
 	 * @param locale the language and country in which the description is used
 	 * @param exact true/false to return only exact locale (no default locale)
 	 * @return the appropriate description, or null if not found
@@ -1094,21 +1095,22 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public ConceptDescription getDescription(Locale locale, boolean exact) {
 		log.debug("Getting ConceptDescription for locale: " + locale);
-		
+
 		ConceptDescription foundDescription = null;
-		
+
 		if (locale == null) {
 			locale = LocaleUtility.getDefaultLocale();
 		}
-		
+
 		Locale desiredLocale = locale;
-		
+
 		ConceptDescription defaultDescription = null;
 		for (ConceptDescription availableDescription : getDescriptions()) {
 			Locale availableLocale = availableDescription.getLocale();
 			if (availableLocale.equals(desiredLocale)) {
 				foundDescription = availableDescription;
-				break; // skip out now because we found an exact locale match
+				// skip out now because we found an exact locale match
+				break;
 			}
 			if (!exact && LocaleUtility.areCompatible(availableLocale, desiredLocale)) {
 				foundDescription = availableDescription;
@@ -1117,7 +1119,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				defaultDescription = availableDescription;
 			}
 		}
-		
+
 		if (foundDescription == null) {
 			// no description with the given locale was found.
 			// return null if exact match desired
@@ -1136,7 +1138,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		return foundDescription;
 	}
-	
+
 	/**
 	 * @return the retiredBy
 	 */
@@ -1144,7 +1146,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public User getRetiredBy() {
 		return retiredBy;
 	}
-	
+
 	/**
 	 * @param retiredBy the retiredBy to set
 	 */
@@ -1152,7 +1154,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setRetiredBy(User retiredBy) {
 		this.retiredBy = retiredBy;
 	}
-	
+
 	/**
 	 * @return the dateRetired
 	 */
@@ -1160,7 +1162,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public Date getDateRetired() {
 		return dateRetired;
 	}
-	
+
 	/**
 	 * @param dateRetired the dateRetired to set
 	 */
@@ -1168,7 +1170,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setDateRetired(Date dateRetired) {
 		this.dateRetired = dateRetired;
 	}
-	
+
 	/**
 	 * @return the retireReason
 	 */
@@ -1176,7 +1178,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public String getRetireReason() {
 		return retireReason;
 	}
-	
+
 	/**
 	 * @param retireReason the retireReason to set
 	 */
@@ -1184,7 +1186,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setRetireReason(String retireReason) {
 		this.retireReason = retireReason;
 	}
-	
+
 	/**
 	 * @return Returns the descriptions.
 	 */
@@ -1194,19 +1196,19 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		return descriptions;
 	}
-	
+
 	/**
 	 * Sets the collection of descriptions for this Concept.
-	 * 
+	 *
 	 * @param descriptions the collection of descriptions
 	 */
 	public void setDescriptions(Collection<ConceptDescription> descriptions) {
 		this.descriptions = descriptions;
 	}
-	
+
 	/**
 	 * Add the given description to the list of descriptions for this Concept
-	 * 
+	 *
 	 * @param description the description to add
 	 */
 	public void addDescription(ConceptDescription description) {
@@ -1215,10 +1217,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			descriptions.add(description);
 		}
 	}
-	
+
 	/**
 	 * Remove the given description from the list of descriptions for this Concept
-	 * 
+	 *
 	 * @param description the description to remove
 	 * @return true if the entity was removed, false otherwise
 	 * @Should should remove description passed from list of descriptions
@@ -1226,10 +1228,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public boolean removeDescription(ConceptDescription description) {
 		return descriptions.remove(description);
 	}
-	
+
 	/**
 	 * @return Returns the retired.
-	 * 
+	 *
 	 * @deprecated as of 2.0, use {@link #getRetired()}
 	 */
 	@Override
@@ -1238,19 +1240,19 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public Boolean isRetired() {
 		return getRetired();
 	}
-	
+
 	/**
 	 * This method delegates to {@link #isRetired()}. This is only needed for jstl syntax like
 	 * ${concept.retired} because the return type is a Boolean object instead of a boolean
 	 * primitive type.
-	 * 
+	 *
 	 * @see org.openmrs.Retireable#isRetired()
 	 */
 	@Override
 	public Boolean getRetired() {
 		return retired;
 	}
-	
+
 	/**
 	 * @param retired The retired to set.
 	 */
@@ -1258,16 +1260,16 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
-	
+
 	/**
 	 * Gets the synonyms in the given locale. Returns a list of names from the same language with
 	 * the preferred synonym sorted first, or an empty list if none found.
-	 * 
+	 *
 	 * @param locale
 	 * @return Collection of ConceptNames which are synonyms for the Concept in the given locale
 	 */
 	public Collection<ConceptName> getSynonyms(Locale locale) {
-		
+
 		List<ConceptName> syns = new ArrayList<>();
 		ConceptName preferredConceptName = null;
 		for (ConceptName possibleSynonymInLoc : getSynonyms()) {
@@ -1279,7 +1281,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				}
 			}
 		}
-		
+
 		// Add preferred name first in the list.
 		if (preferredConceptName != null) {
 			syns.add(0, preferredConceptName);
@@ -1287,10 +1289,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		log.debug("returning: " + syns);
 		return syns;
 	}
-	
+
 	/**
 	 * Gets all the non-retired synonyms.
-	 * 
+	 *
 	 * @return Collection of ConceptNames which are synonyms for the Concept or an empty list if
 	 *         none is found
 	 * @since 1.7
@@ -1300,45 +1302,45 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				.filter(ConceptName::isSynonym)
 				.collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * @return Returns the version.
 	 */
 	public String getVersion() {
 		return version;
 	}
-	
+
 	/**
 	 * @param version The version to set.
 	 */
 	public void setVersion(String version) {
 		this.version = version;
 	}
-	
+
 	/**
 	 * @return Returns the conceptSets.
 	 */
 	public Collection<ConceptSet> getConceptSets() {
 		return conceptSets;
 	}
-	
+
 	/**
 	 * @param conceptSets The conceptSets to set.
 	 */
 	public void setConceptSets(Collection<ConceptSet> conceptSets) {
 		this.conceptSets = conceptSets;
 	}
-	
+
 	/**
 	 * Whether this concept is numeric or not. This will <i>always</i> return false for concept
 	 * objects. ConceptNumeric.isNumeric() will then <i>always</i> return true.
-	 * 
+	 *
 	 * @return false
 	 */
 	public boolean isNumeric() {
 		return false;
 	}
-	
+
 	/**
 	 * @return the conceptMappings for this concept
 	 */
@@ -1348,19 +1350,19 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		return conceptMappings;
 	}
-	
+
 	/**
 	 * @param conceptMappings the conceptMappings to set
 	 */
 	public void setConceptMappings(Collection<ConceptMap> conceptMappings) {
 		this.conceptMappings = conceptMappings;
 	}
-	
+
 	/**
 	 * Add the given ConceptMap object to this concept's list of concept mappings. If there is
 	 * already a corresponding ConceptMap object for this concept already, this one will not be
 	 * added.
-	 * 
+	 *
 	 * @param newConceptMap
 	 */
 	public void addConceptMapping(ConceptMap newConceptMap) {
@@ -1374,29 +1376,29 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			getConceptMappings().add(newConceptMap);
 		}
 	}
-	
+
 	/**
 	 * Child Class ConceptComplex overrides this method and returns true. See
 	 * {@link org.openmrs.ConceptComplex#isComplex()}. Otherwise this method returns false.
-	 * 
+	 *
 	 * @return false
 	 * @since 1.5
 	 */
 	public boolean isComplex() {
 		return false;
 	}
-	
+
 	/**
 	 * Remove the given ConceptMap from the list of mappings for this Concept
-	 * 
+	 *
 	 * @param conceptMap
 	 * @return true if the entity was removed, false otherwise
-	 * @Should remove concept map passed from list of mappings 
+	 * @Should remove concept map passed from list of mappings
 	 */
 	public boolean removeConceptMapping(ConceptMap conceptMap) {
 		return getConceptMappings().remove(conceptMap);
 	}
-	
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
@@ -1404,7 +1406,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public String toString() {
 		return "Concept #" + conceptId;
 	}
-	
+
 	/**
 	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
 	 */
@@ -1412,7 +1414,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public List<Concept> findPossibleValues(String searchText) {
 		List<Concept> concepts = new ArrayList<>();
 		try {
-			
+
 			for (ConceptSearchResult searchResult : Context.getConceptService().getConcepts(searchText,
 			    Collections.singletonList(Context.getLocale()), false, null, null, null, null, null, null, null)) {
 				concepts.add(searchResult.getConcept());
@@ -1423,7 +1425,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		return concepts;
 	}
-	
+
 	/**
 	 * @see org.openmrs.Attributable#getPossibleValues()
 	 */
@@ -1437,7 +1439,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		return Collections.emptyList();
 	}
-	
+
 	/**
 	 * @see org.openmrs.Attributable#hydrate(java.lang.String)
 	 */
@@ -1451,10 +1453,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Turns this concept into a very simple serialized string
-	 * 
+	 *
 	 * @see org.openmrs.Attributable#serialize()
 	 */
 	@Override
@@ -1462,10 +1464,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		if (this.getConceptId() == null) {
 			return "";
 		}
-		
+
 		return "" + this.getConceptId();
 	}
-	
+
 	/**
 	 * @see org.openmrs.Attributable#getDisplayString()
 	 */
@@ -1477,32 +1479,32 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return getName().getName();
 		}
 	}
-	
+
 	/**
 	 * Convenience method that returns a set of all the locales in which names have been added for
 	 * this concept.
-	 * 
+	 *
 	 * @return a set of all locales for names for this concept
 	 * @since 1.7
 	 * @should return all locales for conceptNames for this concept without duplicates
 	 */
 	public Set<Locale> getAllConceptNameLocales() {
+		Set<Locale> locales = new HashSet<>();
+
 		if (getNames().isEmpty()) {
 			if (log.isDebugEnabled()) {
 				log.debug("The Concept with id: " + conceptId + " has no names");
 			}
-			return null;
+			return locales;
 		}
-		
-		Set<Locale> locales = new HashSet<>();
-		
+
 		for (ConceptName cn : getNames()) {
 			locales.add(cn.getLocale());
 		}
-		
+
 		return locales;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -1511,7 +1513,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public Integer getId() {
 		return getConceptId();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -1520,10 +1522,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setId(Integer id) {
 		setConceptId(id);
 	}
-	
+
 	/**
 	 * Sort the ConceptSet based on the weight
-	 * 
+	 *
 	 * @return sortedConceptSet Collection&lt;ConceptSet&gt;
 	 */
 	private List<ConceptSet> getSortedConceptSets() {
@@ -1532,13 +1534,13 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			cs.addAll(conceptSets);
 			Collections.sort(cs);
 		}
-		
+
 		return cs;
 	}
-	
+
 	/**
 	 * Get all the concept members of current concept
-	 * 
+	 *
 	 * @since 1.7
 	 * @return List&lt;Concept&gt; the Concepts that are members of this Concept's set
 	 * @should return concept set members sorted according to the sort weight
@@ -1548,18 +1550,18 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public List<Concept> getSetMembers() {
 		List<Concept> conceptMembers = new ArrayList<>();
-		
+
 		Collection<ConceptSet> sortedConceptSet = getSortedConceptSets();
-		
+
 		for (ConceptSet conceptSet : sortedConceptSet) {
 			conceptMembers.add(conceptSet.getConcept());
 		}
 		return Collections.unmodifiableList(conceptMembers);
 	}
-	
+
 	/**
 	 * Appends the concept to the end of the existing list of concept members for this Concept
-	 * 
+	 *
 	 * @since 1.7
 	 * @param setMember Concept to add to the
 	 * @should add concept as a conceptSet
@@ -1570,14 +1572,14 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void addSetMember(Concept setMember) {
 		addSetMember(setMember, -1);
 	}
-	
+
 	/**
 	 * Add the concept to the existing member to the list of set members in the given location. <br>
 	 * <br>
 	 * index of 0 is before the first concept<br>
 	 * index of -1 is after last.<br>
 	 * index of 1 is after the first but before the second, etc<br>
-	 * 
+	 *
 	 * @param setMember the Concept to add as a child of this Concept
 	 * @param index where in the list of set members to put this setMember
 	 * @since 1.7
@@ -1592,7 +1594,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void addSetMember(Concept setMember, int index) {
 		List<ConceptSet> sortedConceptSets = getSortedConceptSets();
 		int setsSize = sortedConceptSets.size();
-		
+
 		//after sorting, we need to reset the sort weights because retired
 		//sets have moved to the bottom and hence need to be reassigned
 		//higher sort weights than the non retired ones
@@ -1600,7 +1602,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		for (ConceptSet conceptSet : sortedConceptSets) {
 			conceptSet.setSortWeight(weight += 10.0);
 		}
-		
+
 		if (sortedConceptSets.isEmpty()) {
 			weight = 1000.0;
 		} else if (index == -1 || index >= setsSize) {
@@ -1614,7 +1616,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			double nextSortWeight = sortedConceptSets.get(index).getSortWeight();
 			weight = (prevSortWeight + nextSortWeight) / 2;
 		}
-		
+
 		ConceptSet conceptSet = new ConceptSet(setMember, weight);
 		conceptSet.setConceptSet(this);
 		conceptSets.add(conceptSet);
