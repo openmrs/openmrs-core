@@ -229,9 +229,8 @@ public class Cohort extends BaseChangeableOpenmrsData {
 			.filter(CohortMembership::isActive)
 			.filter(patientMatcher)
 			.findAny()
-			.orElseThrow(NoSuchElementException::new); // Same as calling get()
+			.orElseThrow(NoSuchElementException::new);
 	}
-
 
 	public int size() {
 		return getMemberships().stream().filter(m -> !m.getVoided() && m.getEndDate() == null).collect(Collectors.toList())
