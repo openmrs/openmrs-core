@@ -23,7 +23,9 @@ import org.openmrs.customdatatype.SingleCustomValue;
  * something similar to environment variables used in operating systems.
  */
 public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<GlobalProperty> {
-	
+
+	private static final long serialVersionUID = 1;
+
 	private String property = "";
 	
 	private String propertyValue = "";
