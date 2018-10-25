@@ -32,8 +32,6 @@ import org.openmrs.layout.name.NameSupport;
 import org.openmrs.layout.name.NameTemplate;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -44,7 +42,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	
 	public static final long serialVersionUID = 4353L;
 
-	private static final Logger log = LoggerFactory.getLogger(PersonName.class);
+	
 
 	// Fields
 	@DocumentId
@@ -408,7 +406,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 			nameTemplate = NameSupport.getInstance().getDefaultLayoutTemplate();
 		}
 		catch (APIException ex) {
-			log.warn("No name layout format set");
+			
 		}
 		
 		if (nameTemplate != null) {
