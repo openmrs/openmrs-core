@@ -167,9 +167,7 @@ public class TestInstallUtil {
 						fileName = new File(entry.getName()).getName();
 					}
 					
-					if (log.isDebugEnabled()) {
-						log.debug("Extracting module file: " + fileName);
-					}
+					log.debug("Extracting module file: {}", fileName);
 					
 					//use the module repository folder GP value if specified
 					String moduleRepositoryFolder = FilterUtil
@@ -195,9 +193,7 @@ public class TestInstallUtil {
 					OpenmrsUtil.copyFile(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(
 					        new File(moduleRepository, fileName))));
 				} else {
-					if (log.isDebugEnabled()) {
-						log.debug("Ignoring file that is not a .omod '" + fileName);
-					}
+					log.debug("Ignoring file that is not a .omod '{}'", fileName);
 				}
 			}
 		}
