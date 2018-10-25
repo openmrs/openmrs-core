@@ -28,10 +28,10 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.search.LuceneAnalyzers;
+import org.openmrs.layout.name.NameSupport;
+import org.openmrs.layout.name.NameTemplate;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
