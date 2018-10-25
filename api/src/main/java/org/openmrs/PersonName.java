@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
  * A Person can have zero to n PersonName(s).
  */
 @Indexed
-public class PersonName extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName> {
+public class PersonName extends BaseChangeableOpenmrsData implements Comparable<PersonName>{
 	
 	public static final long serialVersionUID = 4353L;
 
