@@ -548,20 +548,7 @@
     </bean>
 	
 	
-	<!--
-		Scheduler service bean pool.
-	--><!--
-	<bean id="schedulerServicePool" class="org.springframework.aop.target.CommonsPoolTargetSource">
-		<property name="targetBeanName"><value>schedulerServiceTarget</value></property>
-		<property name="maxSize"><value>10</value></property>
-	</bean>
-	--><!-- 
-		Scheduler service 
-	--><!--
-	<bean id="schedulerService" class="org.springframework.aop.framework.ProxyFactoryBean">
-		<property name="targetSource"><ref local="schedulerServicePool"/></property>
-	</bean>
-	-->
+	
 
 	<!--  **************************  SERVICE INTERCEPTORS  *************************  -->
 	<!-- AOP before advice that authorizes users according to annotations -->
