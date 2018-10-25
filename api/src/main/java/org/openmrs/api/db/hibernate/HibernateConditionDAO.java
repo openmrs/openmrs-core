@@ -27,8 +27,6 @@ import org.openmrs.api.db.DAOException;
  */
 public class HibernateConditionDAO implements ConditionDAO {
 	
-	private static final Log log = LogFactory.getLog(HibernateConditionDAO.class);
-	
 	/**
 	 * Hibernate session factory
 	 */

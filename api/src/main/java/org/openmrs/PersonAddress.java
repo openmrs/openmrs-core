@@ -29,8 +29,6 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	
 	public static final long serialVersionUID = 343333L;
 	
-	private static final Logger log = LoggerFactory.getLogger(PersonAddress.class);
-	
 	// Fields
 
 	private Integer personAddressId;

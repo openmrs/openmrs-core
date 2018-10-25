@@ -26,8 +26,6 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 57344L;
 	
-	private static final Logger log = LoggerFactory.getLogger(ConceptProposal.class);
-	
 	// Fields
 	
 	private Integer conceptProposalId;

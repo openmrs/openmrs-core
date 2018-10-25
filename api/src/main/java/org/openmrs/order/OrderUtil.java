@@ -23,8 +23,6 @@ public class OrderUtil {
 	private OrderUtil() {
 	}
 	
-	private static final Logger log = LoggerFactory.getLogger(OrderUtil.class);
-	
 	/**
 	 * Checks whether orderType2 matches or is a sub type of orderType1
 	 * 
