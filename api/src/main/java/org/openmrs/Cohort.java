@@ -218,8 +218,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	}
 	
 	public int size() {
-		return getMemberships().stream().filter(m -> !m.getVoided() && m.getEndDate() == null).collect(Collectors.toList())
-		        .size();
+		return getMemberships().stream().filter(m -> !m.getVoided() && m.getEndDate() == null).findFirst().get();//Need to find out what to do with the error. Might need to change type of error.
 	}
 	
 	/**
