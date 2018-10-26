@@ -111,19 +111,20 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 				getAttributes().add(attribute);
 				attribute.setOwner(this);
 			}
-		} else {
-			for (A existing : getActiveAttributes(attribute.getAttributeType())) {
-				if (existing.getAttributeType().equals(attribute.getAttributeType())) {
-					if (existing.getId() != null) {
-						existing.setVoided(true);
-					} else {
-						getAttributes().remove(existing);
-					}
+			return;
+		}
+		
+		for (A existing : getActiveAttributes(attribute.getAttributeType())) {
+			if (existing.getAttributeType().equals(attribute.getAttributeType())) {
+				if (existing.getId() != null) {
+					existing.setVoided(true);
+				} else {
+					getAttributes().remove(existing);
 				}
 			}
-			getAttributes().add(attribute);
-			attribute.setOwner(this);
 		}
+		getAttributes().add(attribute);
+		attribute.setOwner(this);
 	}
 	
 }

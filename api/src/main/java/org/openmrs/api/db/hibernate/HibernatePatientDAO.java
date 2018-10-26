@@ -166,7 +166,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	public List<Patient> getPatients(String query, List<PatientIdentifierType> identifierTypes,
 		boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException{
 		
-		if (StringUtils.isBlank(query) || (length != null && length < 1) || identifierTypes == null || identifierTypes.size() < 1)  {
+		if (StringUtils.isBlank(query) || (length != null && length < 1) || identifierTypes == null || identifierTypes.isEmpty())  {
 			return Collections.emptyList();
 		}
 		
