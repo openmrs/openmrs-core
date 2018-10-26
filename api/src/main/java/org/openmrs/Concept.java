@@ -542,14 +542,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public ConceptName getName(Locale locale, ConceptNameType ofType, ConceptNameTag havingTag) {
 		Collection<ConceptName> namesInLocale = getNames(locale);
 		if (!namesInLocale.isEmpty()) {
-			List<ConceptName> matches = new ArrayList<>();
-			
-			for (ConceptName candidate : namesInLocale) {
-				if ((ofType == null || ofType.equals(candidate.getConceptNameType()))
-				        && (havingTag == null || candidate.hasTag(havingTag))) {
-					matches.add(candidate);
-				}
-			}
+			//Pass the possible candidates through a stream and save the ones that match requirements to the list
+			List<ConceptName> matches = namesInLocale.stream().filter(
+				c->(ofType==null || ofType.equals(c.getConceptNameType())) && (havingTag==null || c.hasTag(havingTag))
+			).collect(Collectors.toList());
 			
 			// if we have any matches, we'll return one of them
 			if (matches.size() == 1) {
