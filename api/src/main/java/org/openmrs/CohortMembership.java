@@ -144,4 +144,36 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 		}
 		return ret;
 	}
+	
+	/**
+	* Checks if two CohortMemberships are equal based on the following fields:
+	* <ol>
+	*     <li>voided</li>
+	*     <li>endDate</li>
+	*     <li>startDate</li>
+	*     <li>patientId</li>
+	* </ol>
+	* @param o other membership to check equality against
+	* @return
+	*/
+	@Override
+	public boolean equals(Object obj){
+		CohortMembership o;
+		if(obj instanceof CohortMembership){
+			o=(CohortMembership) obj;
+		}else{
+			return false;
+		}
+		int ret = this.getVoided().compareTo(o.getVoided());
+		if (ret == 0) {
+			ret = -OpenmrsUtil.compareWithNullAsLatest(this.getEndDate(), o.getEndDate());
+		}
+		if (ret == 0) {
+			ret = -OpenmrsUtil.compareWithNullAsEarliest(this.getStartDate(), o.getStartDate());
+		}
+		if (ret == 0) {
+			ret = this.getPatientId().compareTo(o.getPatientId());
+		}
+		return ret==0;
+	}
 }
