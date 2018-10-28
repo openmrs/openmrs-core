@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -165,7 +164,7 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 			
 			return fieldList;
 		} else {
-			return Collections.EMPTY_LIST;
+			return null;
 		}
 	}
 	
