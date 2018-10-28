@@ -12,6 +12,8 @@ package org.openmrs;
 import java.util.Date;
 
 import org.openmrs.util.OpenmrsConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A ConceptProposal is a temporary holder for concept that should be in the system. When defining
@@ -23,7 +25,9 @@ import org.openmrs.util.OpenmrsConstants;
 public class ConceptProposal extends BaseOpenmrsObject {
 	
 	public static final long serialVersionUID = 57344L;
-		
+	
+	private static final Logger log = LoggerFactory.getLogger(ConceptProposal.class);
+	
 	// Fields
 	
 	private Integer conceptProposalId;
