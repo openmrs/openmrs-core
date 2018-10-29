@@ -78,6 +78,8 @@ import org.springframework.util.StringUtils;
  */
 public class RequiredDataAdvice implements MethodBeforeAdvice {
 	
+	private static final String UNABLE_GETTER_METHOD = "unable.getter.method";
+	
 	/**
 	 * @see org.springframework.aop.MethodBeforeAdvice#before(java.lang.reflect.Method,
 	 *      java.lang.Object[], java.lang.Object)
@@ -332,16 +334,16 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			if (field.isAnnotationPresent(AllowDirectAccess.class)) {
 				throw new APIException("unable.get.field", new Object[] { fieldName, openmrsObject.getClass() });
 			} else {
-				throw new APIException("unable.getter.method", new Object[] { "use", getterName, fieldName,
+				throw new APIException(UNABLE_GETTER_METHOD, new Object[] { "use", getterName, fieldName,
 				        openmrsObject.getClass() });
 			}
 		}
 		catch (InvocationTargetException e) {
-			throw new APIException("unable.getter.method", new Object[] { "run", getterName, fieldName,
+			throw new APIException(UNABLE_GETTER_METHOD, new Object[] { "run", getterName, fieldName,
 			        openmrsObject.getClass() });
 		}
 		catch (NoSuchMethodException e) {
-			throw new APIException("unable.getter.method", new Object[] { "find", getterName, fieldName,
+			throw new APIException(UNABLE_GETTER_METHOD, new Object[] { "find", getterName, fieldName,
 			        openmrsObject.getClass() });
 		}
 	}
