@@ -1041,7 +1041,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				}
 				names.add(conceptName);
 				if (compatibleCache != null) {
-					compatibleCache.clear(); // clear the locale cache, forcing it to be rebuilt
+					// clear the locale cache, forcing it to be rebuilt
+					compatibleCache.clear();
 				}
 			}
 		}
@@ -1108,7 +1109,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			Locale availableLocale = availableDescription.getLocale();
 			if (availableLocale.equals(desiredLocale)) {
 				foundDescription = availableDescription;
-				break; // skip out now because we found an exact locale match
+				// skip out now because we found an exact locale match
+				break;
 			}
 			if (!exact && LocaleUtility.areCompatible(availableLocale, desiredLocale)) {
 				foundDescription = availableDescription;

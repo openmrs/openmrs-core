@@ -621,7 +621,8 @@ public class ModuleFileParser {
 			return "true".equalsIgnoreCase(mandatory);
 		}
 
-		return false; // this module has an older config file
+		// this module has an older config file
+		return false;
 	}
 
 	/**
@@ -650,7 +651,8 @@ public class ModuleFileParser {
 			Node conditionalResourceNode = conditionalResourcesNode.item(i);
 
 			if ("#text".equals(conditionalResourceNode.getNodeName())) {
-				continue; //ignore text and whitespace in particular
+				//ignore text and whitespace in particular
+				continue;
 			}
 
 			if (!"conditionalResource".equals(conditionalResourceNode.getNodeName())) {
