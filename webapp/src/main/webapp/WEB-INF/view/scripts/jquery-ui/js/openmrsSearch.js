@@ -208,7 +208,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             if (showSearchButton) {
                 input.after("<input type='button' id='searchButton' name='searchButton' value='" + omsgs.searchLabel + "' />");
                 $j('#searchButton').click(function() {
-                    if ($j.trim(input.val()) != '' || self.options.doSearchWhenEmpty) {
+                    if ($j.trim(input.val()) !== '' || self.options.doSearchWhenEmpty) {
                         //if there is any delay in progress, cancel it
                         if(self._searchDelayTimer != null) {
                             window.clearTimeout(self._searchDelayTimer);
@@ -226,17 +226,17 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 
                 //when the user checks/unchecks the includeVoided checkbox, trigger a search
                 checkBox.click(function() {
-                    if($j.trim(input.val()) != '' || self.options.doSearchWhenEmpty)
+                    if($j.trim(input.val()) !== '' || self.options.doSearchWhenEmpty)
                         self._doSearch(input.val());
                     else{
-                        if(spinnerObj.css("visibility") == 'visible')
+                        if(spinnerObj.css("visibility") === 'visible')
                             spinnerObj.css("visibility", "hidden");
                         //if the user is viewing initial data, ignore
-                        if($j.trim(input.val()) != ''){
+                        if($j.trim(input.val()) !== ''){
                             $j("#minCharError").css("visibility", "visible");
                             $j(".openmrsSearchDiv").hide();
                         }
-                        if($j('#pageInfo').css("visibility") == 'visible')
+                        if($j('#pageInfo').css("visibility") === 'visible')
                             $j('#pageInfo').css("visibility", "hidden");
                     }
                     //to maintain keyDown and keyUp events since they are only fired when the input box has focus
@@ -267,11 +267,11 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                 //catch control keys
                 //LEFT(37), UP(38), RIGHT(39), DOWN(40), ENTER(13), HOME(36), END(35), PAGE UP(33), PAGE DOWN(34)
                 var kc = event.keyCode;
-                if(((kc >= 33) && (kc <= 40)) || (kc == 13)) {
-                    if(!(self._div.find(".openmrsSearchDiv").css("display") != 'none') && ($j.trim(input.val()) == '')) {
+                if(((kc >= 33) && (kc <= 40)) || (kc === 13)) {
+                    if(!(self._div.find(".openmrsSearchDiv").css("display") !== 'none') && ($j.trim(input.val()) === '')) {
                         return true;
                     }
-                    if(kc == 13) {
+                    if(kc === 13) {
                         //if there is any delay in progress, cancel it
                         if(self._searchDelayTimer != null) {
                             window.clearTimeout(self._searchDelayTimer);
@@ -285,7 +285,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                     return false;
                 }
                 //ignore the following keys SHIFT(16), ESC(27), CAPSLOCK(20), CTRL(17), ALT(18), SPACE(32), ALT_TAB(9)
-                else if((kc >= 16 && kc <= 18) || kc == 20 || kc == 27 || kc == 32 || kc == 9)
+                else if((kc >= 16 && kc <= 18) || kc === 20 || kc === 27 || kc === 32 || kc === 9)
                     return false;
 
                 $j(notification).html(" ");
@@ -298,7 +298,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                     window.clearTimeout(self._textInputTimer);
                 }
 
-                if(text == '' && !self.options.doSearchWhenEmpty){
+                if(text === '' && !self.options.doSearchWhenEmpty){
                     $j('#pageInfo').css("visibility", "hidden");
                     $j("#spinner").css("visibility", "hidden");
                     $j("#minCharError").css("visibility", "hidden");
@@ -323,10 +323,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                 //wait for a couple of milliseconds, if the user isn't typing anymore chars before triggering search
                 //this minimizes the number of un-necessary calls made to the server for first typists
                 self._searchDelayTimer = window.setTimeout(function(){
-                    if($j('#pageInfo').css("visibility") == 'visible')
+                    if($j('#pageInfo').css("visibility") === 'visible')
                         $j('#pageInfo').css("visibility", "hidden");
 
-                    if($j("#minCharError").css("visibility") == 'visible')
+                    if($j("#minCharError").css("visibility") === 'visible')
                         $j("#minCharError").css("visibility", "hidden");
 
                     //Once the very first search is triggered, we need to clear the initial data
@@ -344,8 +344,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             input.keydown(function(event) {
                 //UP(38), DOWN(40), PAGE UP(33), PAGE DOWN(34)
                 var kc = event.keyCode;
-                if(kc == 33 || kc == 34 || kc == 38 || kc == 40) {
-                    if(!(self._div.find(".openmrsSearchDiv").css("display") != 'none')) {
+                if(kc === 33 || kc === 34 || kc === 38 || kc === 40) {
+                    if(!(self._div.find(".openmrsSearchDiv").css("display") !== 'none')) {
                         return true;
                     }
 
@@ -380,8 +380,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             var numberOfTextInputs = 0;
             for(var x in inputs){
                 var inputField = inputs[x];
-                if(inputField && inputField.type == 'text' && $j(inputField).prop("disabled") == false &&
-                    $j(inputField).is(":visible") && $j(inputField).css("visibility") != "hidden")
+                if(inputField && inputField.type === 'text' && $j(inputField).prop("disabled") === false &&
+                    $j(inputField).is(":visible") && $j(inputField).css("visibility") !== "hidden")
                     numberOfTextInputs++;
             }
 
@@ -442,7 +442,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                 /* Called to toggle the verbose output */
                 fnDrawCallback : function(oSettings){
                     //we have nothing to hide
-                    if(!self.options.showIncludeVerbose || !self._table || self._table.fnGetNodes().length == 0)
+                    if(!self.options.showIncludeVerbose || !self._table || self._table.fnGetNodes().length === 0)
                         return;
                     pageRowCount = oSettings._iDisplayStart+oSettings._iDisplayLength;
                     for(var i = oSettings._iDisplayStart; i < pageRowCount; i++){
@@ -475,7 +475,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                                     dataRow = this.previousSibling;
                                     //If this is the current highlighted row with up/down arrows and at the sametime
                                     //was hovered over, keep it highlighted
-                                    if(self.curRowSelection != null && self._table.fnGetPosition(dataRow) == self.curRowSelection)
+                                    if(self.curRowSelection != null && self._table.fnGetPosition(dataRow) === self.curRowSelection)
                                         return;
                                     $j(dataRow).removeClass('row_highlight');
                                 }
@@ -519,7 +519,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                                     $j(currentNode.nextSibling).addClass('row_highlight');
                             }
                             self.hoverRowSelection = null;
-                            if(self.curRowSelection != null && self._table.fnGetPosition(this) == self.curRowSelection)
+                            if(self.curRowSelection != null && self._table.fnGetPosition(this) === self.curRowSelection)
                                 return;
                             if(self.options.showIncludeVerbose && $j(verboseCheckBox).prop('checked'))
                                 $j(this.nextSibling).removeClass('row_highlight');
@@ -548,10 +548,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             // Browser back button support, for preserve data
             if (lastSearchParams !== null) {
                 $j('#inputNode').val(lastSearchParams.lastSearchText);
-                if (lastSearchParams.includeVoided == 1) {
+                if (lastSearchParams.includeVoided === 1) {
                     $j('#includeVoided').attr('checked','checked');
                 }
-                if (lastSearchParams.includeVerbose == 1) {
+                if (lastSearchParams.includeVerbose === 1) {
                     $j('#includeVerbose').attr('checked','checked');
                 }
                 var keyEvent = jQuery.Event("keyup");
@@ -607,7 +607,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                     width = self.options.columnWidths[columnIndex];
                 if(self.options.columnRenderers && self.options.columnRenderers[columnIndex])
                     fnRenderer = self.options.columnRenderers[columnIndex];
-                if(self.options.columnVisibility && self.options.columnVisibility[columnIndex] == false )
+                if(self.options.columnVisibility && self.options.columnVisibility[columnIndex] === false )
                     visible = false;
 
                 var column = { sTitle: c.header, sWidth: width, fnRender: fnRenderer, bVisible: visible };
@@ -621,7 +621,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                 $j.each(self.options.attributes, function(index, a) {
                     attribColWidth = null;
                     attribColFnRenderer = null;
-                    attribColVisibility = (a.columnVisible != false);
+                    attribColVisibility = (a.columnVisible !== false);
 
                     if(a.columnWidth)
                         attribColWidth = a.columnWidth;
@@ -663,10 +663,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                 //than the minimum characters, this can arise when user presses backspace relatively fast
                 //yet there were some intermediate calls that might have returned results
                 var currInput = $j.trim($j("#inputNode").val());
-                if(currInput == '' && !self.options.doSearchWhenEmpty){
-                    if($j('#pageInfo').css("visibility") == 'visible')
+                if(currInput === '' && !self.options.doSearchWhenEmpty){
+                    if($j('#pageInfo').css("visibility") === 'visible')
                         $j('#pageInfo').css("visibility", "hidden");
-                    if($j('#spinner').css("visibility") == 'visible')
+                    if($j('#spinner').css("visibility") === 'visible')
                         $j("#spinner").css("visibility", "hidden");
                     $j(".openmrsSearchDiv").hide();
                     return;
@@ -684,7 +684,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                 //search should be triggered for the specified text
                 if(results["searchAgain"]){
                     newSearch = $j.trim(results["searchAgain"]);
-                    if(newSearch != '' && newSearch != searchText)
+                    if(newSearch !== '' && newSearch !== searchText)
                         self._doSearch(newSearch);
                     return;
                 }
@@ -706,7 +706,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                 if(matchCount > self._table.fnSettings()._iDisplayLength){
                     //if the user wishes to fetch all results in one call without polling
                     //i.e their MyDWRService.findCountAndMyObjects() method always returns all hits
-                    if(matchCount == self._results.length){
+                    if(matchCount === self._results.length){
                         spinnerObj.css("visibility", "hidden");
                         loadingMsgObj.html("");
                         if(self._results.length % self._table.fnSettings()._iDisplayLength == 0)
@@ -790,7 +790,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                 if($j('#openmrsSearchTable_paginate')){
                     $j('#openmrsSearchTable_paginate').hide();
                 }
-                if($j('#pageInfo').css("visibility") == 'visible')
+                if($j('#pageInfo').css("visibility") === 'visible')
                     $j('#pageInfo').css("visibility", "hidden");
                 if($j('#openmrsSearchTable_info').is(":visible"))
                     $j('#openmrsSearchTable_info').hide();
@@ -814,7 +814,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             }
 
             this._updatePageInfo(searchText);
-            if(matchCount == 0){
+            if(matchCount === 0){
                 if($j('#openmrsSearchTable_info').is(":visible"))
                     $j('#openmrsSearchTable_info').hide();
             }else if(!$j('#openmrsSearchTable_info').is(":visible"))
@@ -860,7 +860,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 
             var prevRow = this.curRowSelection;
             //if we are on the last page, and the last row is highlighted, do nothing
-            if(this._getCurrVisiblePage() == this._table.numberOfPages && prevRow >= (this._results.length-1) && this._results.length > 1)
+            if(this._getCurrVisiblePage() === this._table.numberOfPages && prevRow >= (this._results.length-1) && this._results.length > 1)
                 return;
 
             //only move the highlight to next row if it is currently on the visible page otherwise should be on first row
@@ -868,7 +868,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                 this.curRowSelection++;
 
                 //If the selected row is the first one on the next page, flip over to its page
-                if(this.curRowSelection != 0 && (this.curRowSelection % this._table.fnSettings()._iDisplayLength) == 0) {
+                if(this.curRowSelection !== 0 && (this.curRowSelection % this._table.fnSettings()._iDisplayLength) == 0) {
                     this._table.fnPageChange('next');
                 }
             }
@@ -885,7 +885,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                 return;
 
             //we are on the first page and the first row is already highlighted, do nothing
-            if(this._table.fnSettings()._iDisplayStart == 0 && this.curRowSelection == 0)
+            if(this._table.fnSettings()._iDisplayStart === 0 && this.curRowSelection === 0)
                 return;
 
             var prevRow = this.curRowSelection;
@@ -924,7 +924,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
         _doPageDown: function() {
             this._table.fnPageChange('next');
             //if this is the last page and we already have a selected row, do nothing
-            if( (this._getCurrVisiblePage() == this._table.numberOfPages) && this.curRowSelection > this._table.fnSettings()._iDisplayStart)
+            if( (this._getCurrVisiblePage() === this._table.numberOfPages) && this.curRowSelection > this._table.fnSettings()._iDisplayStart)
                 return;
 
             this._highlightRowOnPageFlip();
@@ -942,7 +942,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             if(selectedRowIndex != null) {
                 this._doSelected(selectedRowIndex, this._results[selectedRowIndex]);
             } else if (showSearchButton) {
-                if (($j.trim($j('#inputNode').val()) != '') || self.options.doSearchWhenEmpty) {
+                if (($j.trim($j('#inputNode').val()) !== '') || self.options.doSearchWhenEmpty) {
                     this._doSearch($j.trim($j('#inputNode').val()));
                 }
             }
@@ -1039,7 +1039,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             var count = 0;
             var columnIndex = 0;
             $j.map(self.options.fieldsAndHeaders, function(c) {
-                if(self.options.columnVisibility[columnIndex] == true )
+                if(self.options.columnVisibility[columnIndex] === true )
                     count++;
 
                 columnIndex++;
@@ -1054,12 +1054,12 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
         },
         _updatePageInfo: function(searchText) {
             textToDisplay = omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'");
-            if($j.trim(searchText) == '')
+            if($j.trim(searchText) === '')
                 textToDisplay = omsgs.viewingAll;
 
             $j('#pageInfo').html(sanitizeHtml(textToDisplay));
 
-            if($j('#pageInfo').css("visibility") != 'visible')
+            if($j('#pageInfo').css("visibility") !== 'visible')
                 $j('#pageInfo').css("visibility", "visible");
         },
 
@@ -1071,9 +1071,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                 //Don't display results from delayed ajax calls when the input box is blank or has less
                 //than the minimum characters
                 var currInput = $j.trim($j("#inputNode").val());
-                if(currInput == '' && !self.options.doSearchWhenEmpty){
+                if(currInput === '' && !self.options.doSearchWhenEmpty){
                     $j(notification).html(" ");
-                    if($j('#pageInfo').css("visibility") == 'visible')
+                    if($j('#pageInfo').css("visibility") === 'visible')
                         $j('#pageInfo').css("visibility", "hidden");
                     $j(".openmrsSearchDiv").hide();
                     if(currInput.length > 0)
@@ -1105,7 +1105,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                     $j(notification).html(results["notification"]);
 
                 //or if we are in serial mode
-                if(inSerialMode || (curSubCallCount == self._lastSubCallCount)){
+                if(inSerialMode || (curSubCallCount === self._lastSubCallCount)){
                     var newRows = new Array();
                     for(var x in data) {
                         currentData = data[x];
@@ -1129,7 +1129,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
                                 //Skip past the ones that come after those that are not yet returned by DWR calls e.g if we have ajax
                                 //calls 3 and 5 in the buffer, when 2 returns, then add only 3 and ignore 5 since it has to wait on 4
                                 bufferedData = buffer[subCallCounter];
-                                if(subCallCounter && (subCallCounter == nextSubCallCount) && bufferedData){
+                                if(subCallCounter && (subCallCounter === nextSubCallCount) && bufferedData){
                                     rowsToInsert = new Array();
                                     for(var j in bufferedData) {
                                         bufferedRowData = bufferedData[j];
