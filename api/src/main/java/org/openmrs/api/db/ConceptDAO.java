@@ -120,6 +120,31 @@ public interface ConceptDAO {
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
 	        throws DAOException;
 	
+	/**
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+	 *
+>>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
+=======
+>>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
+=======
+>>>>>>> 643416c85... TRUNK-3787: Refactor ConceptDAO.java
+=======
+	 *
+>>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
+=======
+>>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
+	 * Return the number of concepts matching a search phrase and the specified arguments
+	 * @param phrase matched to the start of any word in any of the names of a concept
+	 * @return the number of concepts matching the given search phrase
+	 * @throws APIException
+	 * @since 1.8
+	 * @should return a count of unique concepts
+	 */
 	public Integer getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) throws DAOException;
@@ -274,10 +299,39 @@ public interface ConceptDAO {
 	 */
 	public List<Concept> getConceptsWithDrugsInFormulary() throws DAOException;
 	
+	/**
+	 * Creates a new Concept name tag if none exists. If a tag exists with the same name then that
+	 * existing tag is returned.
+	 * 
+	 * @param nameTag the concept name tag to be saved
+	 * @return the newly created or existing concept name tag
+	 * @should save a concept name tag if tag does not exist
+	 * @should not save a concept name tag if tag exists
+	 * @should not save a concept name tag if tag is null, empty or whitespace
+	 * @should save a concept name tag if tag is supplied
+	 * @should save an edited concept name tag
+	 */
 	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag);
 	
+	/**
+	 * Gets the {@link ConceptNameTag} with the given database primary key
+	 * 
+	 * @param id the concept name tag id to find
+	 * @return the matching {@link ConceptNameTag} or null if none found
+	 * @since 1.5
+	 */
 	public ConceptNameTag getConceptNameTag(Integer i);
 	
+	/**
+	 * Search for a ConceptNameTag by name
+	 * 
+	 * @param tag String name of ConceptNameTag
+	 * @return ConceptNameTag matching the given String tag
+	 * @see Concept#getPreferredName(Locale)
+	 * @see Concept#getFullySpecifiedName(Locale)
+	 * @see Concept#getShortNameInLocale(Locale)
+	 * @see Concept#getShortestName(Locale, Boolean)
+	 */
 	public ConceptNameTag getConceptNameTagByName(String name);
 	
 	/**
@@ -337,12 +391,37 @@ public interface ConceptDAO {
 	 */
 	public ConceptClass getConceptClassByUuid(String uuid);
 	
+	/**
+	 * @param uuid
+	 * @return concept answer or null
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid
+	 */
 	public ConceptAnswer getConceptAnswerByUuid(String uuid);
 	
+	/**
+	 * @param uuid
+	 * @return concept name or null
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid
+	 */
 	public ConceptName getConceptNameByUuid(String uuid);
 	
+	
+	/**
+	 * @param uuid
+	 * @return concept set or null
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid
+	 */
 	public ConceptSet getConceptSetByUuid(String uuid);
 	
+	/**
+	 * @param uuid
+	 * @return concept source or null
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid
+	 */
 	public ConceptSource getConceptSourceByUuid(String uuid);
 	
 	/**
@@ -369,12 +448,70 @@ public interface ConceptDAO {
 	 */
 	public Drug getDrugByUuid(String uuid);
 	
+	/**
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+	 * 
+>>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
+=======
+>>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
+=======
+>>>>>>> 643416c85... TRUNK-3787: Refactor ConceptDAO.java
+=======
+	 * 
+>>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
+=======
+>>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
+	 * @param uuid the uuid for the drug ingredient to get
+	 * @return the drug ingredient if found, else null
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid
+	 */
 	public DrugIngredient getDrugIngredientByUuid(String uuid);
 	
 	public Map<Integer, String> getConceptUuids();
 	
+	/**
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+	 * @param uuid the uuid for the concept description to get
+=======
+	 * @param uuid
+>>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
+=======
+	 * @param uuid the uuid for the concept description to get
+>>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
+=======
+	 * @param uuid the uuid for the concept description to get
+>>>>>>> 643416c85... TRUNK-3787: Refactor ConceptDAO.java
+=======
+	 * @param uuid
+>>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
+=======
+	 * @param uuid the uuid for the concept description to get
+>>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
+	 * @return concept description or null
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid
+	 */	
 	public ConceptDescription getConceptDescriptionByUuid(String uuid);
 	
+	/**
+	 * @param uuid
+	 * @return the conceptNameTag with a matching uuid
+	 * @see Concept#setPreferredName(ConceptName)
+	 * @see Concept#setFullySpecifiedName(ConceptName)
+	 * @see Concept#setShortName(ConceptName)
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid
+	 */
 	public ConceptNameTag getConceptNameTagByUuid(String uuid);
 	
 	/**
