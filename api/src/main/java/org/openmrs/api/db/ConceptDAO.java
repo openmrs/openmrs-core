@@ -121,7 +121,6 @@ public interface ConceptDAO {
 	        throws DAOException;
 	
 	/**
-	 *
 	 * Return the number of concepts matching a search phrase and the specified arguments
 	 * @param phrase matched to the start of any word in any of the names of a concept
 	 * @return the number of concepts matching the given search phrase
@@ -433,7 +432,6 @@ public interface ConceptDAO {
 	public Drug getDrugByUuid(String uuid);
 	
 	/**
-	 * 
 	 * @param uuid the uuid for the drug ingredient to get
 	 * @return the drug ingredient if found, else null
 	 * @should find object given valid uuid
@@ -444,7 +442,7 @@ public interface ConceptDAO {
 	public Map<Integer, String> getConceptUuids();
 	
 	/**
-	 * @param uuid
+	 * @param uuid the uuid for the concept description to get
 	 * @return concept description or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
@@ -585,7 +583,6 @@ public interface ConceptDAO {
 	 * @see ConceptService#getConceptReferenceTermByUuid(String)
 	 */
 	public ConceptReferenceTerm getConceptReferenceTermByUuid(String uuid) throws DAOException;
-	
 	
 	public List<ConceptReferenceTerm> getConceptReferenceTermsBySource(ConceptSource conceptSource) throws DAOException;
 	
