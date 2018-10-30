@@ -120,7 +120,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 			location = Context.getLocationService().getLocation(locationGP);
 		}
 
-		if (location == null) {
+		if (location != null) {
 			location = getDefaultLocation(location, locationGP);
 		}
 		
