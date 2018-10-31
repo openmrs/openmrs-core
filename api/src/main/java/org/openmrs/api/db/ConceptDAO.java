@@ -121,23 +121,6 @@ public interface ConceptDAO {
 	        throws DAOException;
 	
 	/**
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	 *
->>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
-=======
->>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
-=======
->>>>>>> 643416c85... TRUNK-3787: Refactor ConceptDAO.java
-=======
-	 *
->>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
-=======
->>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
 	 * Return the number of concepts matching a search phrase and the specified arguments
 	 * @param phrase matched to the start of any word in any of the names of a concept
 	 * @return the number of concepts matching the given search phrase
@@ -451,16 +434,6 @@ public interface ConceptDAO {
 	/**
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	 * 
->>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
-=======
->>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
-=======
->>>>>>> 643416c85... TRUNK-3787: Refactor ConceptDAO.java
 =======
 	 * 
 >>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
@@ -478,19 +451,7 @@ public interface ConceptDAO {
 	/**
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	 * @param uuid the uuid for the concept description to get
-=======
-	 * @param uuid
->>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
-=======
-	 * @param uuid the uuid for the concept description to get
->>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
-=======
-	 * @param uuid the uuid for the concept description to get
->>>>>>> 643416c85... TRUNK-3787: Refactor ConceptDAO.java
 =======
 	 * @param uuid
 >>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
