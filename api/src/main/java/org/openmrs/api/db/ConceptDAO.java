@@ -121,6 +121,29 @@ public interface ConceptDAO {
 	        throws DAOException;
 	
 	/**
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+	 *
+>>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
+=======
+>>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
+=======
+>>>>>>> 643416c85... TRUNK-3787: Refactor ConceptDAO.java
+=======
+	 *
+>>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
+=======
+>>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
+=======
+>>>>>>> 07dbe6bd5ed3cfc0b9d08d5c990318675d625b72
+>>>>>>> 98ff6ede3688f26ced3c10a400aec5885dfee64e
 	 * Return the number of concepts matching a search phrase and the specified arguments
 	 * @param phrase matched to the start of any word in any of the names of a concept
 	 * @return the number of concepts matching the given search phrase
@@ -432,7 +455,6 @@ public interface ConceptDAO {
 	public Drug getDrugByUuid(String uuid);
 	
 	/**
-	 * 
 	 * @param uuid the uuid for the drug ingredient to get
 	 * @return the drug ingredient if found, else null
 	 * @should find object given valid uuid
