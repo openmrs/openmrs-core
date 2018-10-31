@@ -126,6 +126,7 @@ public interface ConceptDAO {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	 *
 >>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
@@ -138,6 +139,8 @@ public interface ConceptDAO {
 >>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
 =======
 >>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
+=======
+>>>>>>> 07dbe6bd5ed3cfc0b9d08d5c990318675d625b72
 	 * Return the number of concepts matching a search phrase and the specified arguments
 	 * @param phrase matched to the start of any word in any of the names of a concept
 	 * @return the number of concepts matching the given search phrase
@@ -454,6 +457,7 @@ public interface ConceptDAO {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	 * 
 >>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
@@ -466,6 +470,8 @@ public interface ConceptDAO {
 >>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
 =======
 >>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
+=======
+>>>>>>> 07dbe6bd5ed3cfc0b9d08d5c990318675d625b72
 	 * @param uuid the uuid for the drug ingredient to get
 	 * @return the drug ingredient if found, else null
 	 * @should find object given valid uuid
@@ -481,6 +487,7 @@ public interface ConceptDAO {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	 * @param uuid the uuid for the concept description to get
 =======
 	 * @param uuid
@@ -497,6 +504,9 @@ public interface ConceptDAO {
 =======
 	 * @param uuid the uuid for the concept description to get
 >>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
+=======
+	 * @param uuid the uuid for the concept description to get
+>>>>>>> 07dbe6bd5ed3cfc0b9d08d5c990318675d625b72
 	 * @return concept description or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
