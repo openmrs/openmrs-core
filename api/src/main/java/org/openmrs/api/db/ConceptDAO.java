@@ -432,13 +432,7 @@ public interface ConceptDAO {
 	public Drug getDrugByUuid(String uuid);
 	
 	/**
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 	 * 
->>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
-=======
->>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
 	 * @param uuid the uuid for the drug ingredient to get
 	 * @return the drug ingredient if found, else null
 	 * @should find object given valid uuid
@@ -449,15 +443,7 @@ public interface ConceptDAO {
 	public Map<Integer, String> getConceptUuids();
 	
 	/**
-<<<<<<< HEAD
-<<<<<<< HEAD
 	 * @param uuid the uuid for the concept description to get
-=======
-	 * @param uuid
->>>>>>> 90fbfb9f1... TRUNK-3787: Refactor ConceptDAO.java
-=======
-	 * @param uuid the uuid for the concept description to get
->>>>>>> d39b833b6... TRUNK-3787: Updated Concept.DAO
 	 * @return concept description or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
