@@ -211,7 +211,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			if ((conceptAnswer.getSortWeight() == null) || (conceptAnswer.getSortWeight() <= 0)) {
 				//find largest sort weight
 				ConceptAnswer a = Collections.max(answers);
-				Double sortWeight = (a == null) ? 1d : ((a.getSortWeight() == null) ? 1d : a.getSortWeight() + 1d);//a.sortWeight can be NULL
+				//a.sortWeight can be NULL
+				Double sortWeight = (a == null) ? 1d : ((a.getSortWeight() == null) ? 1d : a.getSortWeight() + 1d);
 				conceptAnswer.setSortWeight(sortWeight);
 			}
 		}

@@ -430,7 +430,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @see #hasGroupMembers()
 	 */
 	public Set<Obs> getGroupMembers() {
-		return getGroupMembers(false); //same as just returning groupMembers
+		//same as just returning groupMembers
+		return getGroupMembers(false); 
 	}
 	
 	/**
@@ -471,7 +472,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @should not mark the obs as dirty when the set is replaced with another with same members
 	 */
 	public void setGroupMembers(Set<Obs> groupMembers) {
-		this.groupMembers = groupMembers; //Copy over the entire list
+		//Copy over the entire list
+		this.groupMembers = groupMembers; 
 		
 	}
 	
@@ -967,7 +969,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 		// formatting for the return of numbers of type double
 		NumberFormat nf = NumberFormat.getNumberInstance(locale);
 		DecimalFormat df = (DecimalFormat) nf;
-		df.applyPattern("#0.0#####"); // formatting style up to 6 digits
+		// formatting style up to 6 digits
+		df.applyPattern("#0.0#####"); 
 		//branch on hl7 abbreviations
 		if (getConcept() != null) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
