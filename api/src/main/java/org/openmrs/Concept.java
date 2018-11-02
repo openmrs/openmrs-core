@@ -332,7 +332,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@Override
 	public Date getDateChanged() {
-		return dateChanged;
+		return this.dateChanged != null ? new Date(this.dateChanged.getTime()) : null;
 	}
 	
 	/**
@@ -340,7 +340,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@Override
 	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
+		this.dateChanged = dateChanged != null ? new Date(dateChanged.getTime()) : null;
 	}
 	
 	/**
@@ -348,7 +348,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@Override
 	public Date getDateCreated() {
-		return dateCreated;
+		return this.dateCreated != null ? new Date(this.dateCreated.getTime()) : null;
 	}
 	
 	/**
@@ -356,7 +356,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@Override
 	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+		this.dateCreated = dateCreated != null ? new Date(dateCreated.getTime()) : null;
 	}
 	
 	/**
@@ -1162,7 +1162,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@Override
 	public Date getDateRetired() {
-		return dateRetired;
+		return this.dateRetired != null ? new Date(this.dateRetired.getTime()) : null;
 	}
 	
 	/**
@@ -1170,7 +1170,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@Override
 	public void setDateRetired(Date dateRetired) {
-		this.dateRetired = dateRetired;
+		this.dateRetired = dateRetired != null ? new Date(dateRetired.getTime()) : null;
 	}
 	
 	/**
