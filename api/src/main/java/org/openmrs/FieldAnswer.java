@@ -98,7 +98,7 @@ public class FieldAnswer extends BaseOpenmrsObject {
 	 * @return Returns the dateCreated.
 	 */
 	public Date getDateCreated() {
-		return dateCreated;
+		return new Date(this.dateCreated.getTime());
 	}
 	
 	/**
@@ -106,7 +106,7 @@ public class FieldAnswer extends BaseOpenmrsObject {
 	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dirty = true;
-		this.dateCreated = dateCreated;
+		this.dateCreated = new Date(dateCreated.getTime());
 	}
 	
 	/**

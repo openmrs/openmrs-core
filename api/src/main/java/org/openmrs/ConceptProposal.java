@@ -109,28 +109,28 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	 * @return Returns the dateChanged.
 	 */
 	public Date getDateChanged() {
-		return dateChanged;
+		return new Date(this.dateChanged.getTime());
 	}
 	
 	/**
 	 * @param dateChanged The dateChanged to set.
 	 */
 	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
+		this.dateChanged = new Date(dateChanged.getTime());
 	}
 	
 	/**
 	 * @return Returns the dateCreated.
 	 */
 	public Date getDateCreated() {
-		return dateCreated;
+		return new Date(this.dateCreated.getTime());
 	}
 	
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+		this.dateCreated = new Date(dateCreated.getTime());
 	}
 	
 	/**

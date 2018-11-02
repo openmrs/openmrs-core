@@ -347,19 +347,19 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	}
 	
 	public Date getDateCompleted() {
-		return dateCompleted;
+		return new Date(this.dateCompleted.getTime());
 	}
 	
 	public void setDateCompleted(Date dateCompleted) {
-		this.dateCompleted = dateCompleted;
+		this.dateCompleted = new Date(dateCompleted.getTime());
 	}
 	
 	public Date getDateEnrolled() {
-		return dateEnrolled;
+		return new Date(this.dateEnrolled.getTime());
 	}
 	
 	public void setDateEnrolled(Date dateEnrolled) {
-		this.dateEnrolled = dateEnrolled;
+		this.dateEnrolled = new Date(dateEnrolled.getTime());
 	}
 	
 	public Patient getPatient() {

@@ -243,7 +243,7 @@ public class Order extends BaseOpenmrsData {
 	 * @since 1.10
 	 */
 	public void setScheduledDate(Date scheduledDate) {
-		this.scheduledDate = scheduledDate;
+		this.scheduledDate = new Date(scheduledDate.getTime());
 	}
 	
 	/**
@@ -251,7 +251,7 @@ public class Order extends BaseOpenmrsData {
 	 * @since 1.10
 	 */
 	public Date getDateStopped() {
-		return dateStopped;
+		return new Date(this.dateStopped.getTime());
 	}
 	
 	/**
@@ -342,14 +342,14 @@ public class Order extends BaseOpenmrsData {
 	 * @return Returns the dateActivated.
 	 */
 	public Date getDateActivated() {
-		return dateActivated;
+		return new Date(this.dateActivated.getTime());
 	}
 	
 	/**
 	 * @param dateActivated The dateActivated to set.
 	 */
 	public void setDateActivated(Date dateActivated) {
-		this.dateActivated = dateActivated;
+		this.dateActivated = new Date(dateActivated.getTime());
 	}
 	
 	/**
