@@ -199,9 +199,7 @@ public class Context {
 	 * @param ctx UserContext to set
 	 */
 	public static void setUserContext(UserContext ctx) {
-		if (log.isTraceEnabled()) {
-			log.trace("Setting user context " + ctx);
-		}
+		log.trace("Setting user context {}", ctx);
 
 		Object[] arr = new Object[] { ctx };
 		userContextHolder.set(arr);
@@ -211,9 +209,7 @@ public class Context {
 	 * Clears the user context from the threadlocal.
 	 */
 	public static void clearUserContext() {
-		if (log.isTraceEnabled()) {
-			log.trace("Clearing user context " + Arrays.toString(userContextHolder.get()));
-		}
+		log.trace("Clearing user context {}", Arrays.toString(userContextHolder.get()));
 
 		userContextHolder.remove();
 	}
@@ -227,10 +223,7 @@ public class Context {
 	 */
 	public static UserContext getUserContext() {
 		Object[] arr = userContextHolder.get();
-
-		if (log.isTraceEnabled()) {
-			log.trace("Getting user context " + Arrays.toString(arr) + " from userContextHolder " + userContextHolder);
-		}
+		log.trace("Getting user context {} from userContextHolder {}", Arrays.toString(arr), userContextHolder);
 
 		if (arr == null) {
 			log.trace("userContext is null.");
@@ -255,10 +248,7 @@ public class Context {
 				}
 			}
 		}
-
-		if (log.isTraceEnabled()) {
-			log.trace("serviceContext: " + serviceContext);
-		}
+		log.trace("serviceContext: {}", serviceContext);
 
 		return ServiceContext.getInstance();
 	}
@@ -289,9 +279,7 @@ public class Context {
 	 * @should not authenticate with null password and proper system id
 	 */
 	public static void authenticate(String username, String password) throws ContextAuthenticationException {
-		if (log.isDebugEnabled()) {
-			log.debug("Authenticating with username: " + username);
-		}
+		log.debug("Authenticating with username: {}", username);
 
 		if (Daemon.isDaemonThread()) {
 			log.error("Authentication attempted while operating on a "
@@ -314,10 +302,7 @@ public class Context {
 		if (Daemon.isDaemonThread()) {
 			return;
 		}
-
-		if (log.isDebugEnabled()) {
-			log.debug("Refreshing authenticated user");
-		}
+		log.debug("Refreshing authenticated user");
 
 		getUserContext().refreshAuthenticatedUser();
 	}
@@ -330,9 +315,7 @@ public class Context {
 	 * @should change locale when become another user
 	 */
 	public static void becomeUser(String systemId) throws ContextAuthenticationException {
-		if (log.isInfoEnabled()) {
-			log.info("systemId: " + systemId);
-		}
+		log.info("systemId: {}", systemId);
 
 		User user = getUserContext().becomeUser(systemId);
 
@@ -355,9 +338,7 @@ public class Context {
 	 * @return copy of the runtime properties
 	 */
 	public static Properties getRuntimeProperties() {
-		if (log.isTraceEnabled()) {
-			log.trace("getting runtime properties. size: " + runtimeProperties.size());
-		}
+		log.trace("getting runtime properties. size: {}", runtimeProperties.size());
 
 		Properties props = new Properties();
 		props.putAll(runtimeProperties);
@@ -638,10 +619,7 @@ public class Context {
 		if (!isSessionOpen()) {
 			return; // fail early if there isn't even a session open
 		}
-
-		if (log.isDebugEnabled()) {
-			log.debug("Logging out : " + getAuthenticatedUser());
-		}
+		log.debug("Logging out : {}", getAuthenticatedUser());
 
 		getUserContext().logout();
 
@@ -809,7 +787,7 @@ public class Context {
 	 * @param obj The object to refresh from the database in the session
 	 */
 	public static void refreshEntity(Object obj) {
-		log.trace("refreshing object: "+obj);
+		log.trace("refreshing object: {}", obj);
 		getContextDAO().refreshEntity(obj);
 	}
 

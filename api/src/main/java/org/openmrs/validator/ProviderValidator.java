@@ -38,9 +38,7 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
-		if (log.isDebugEnabled()) {
-			log.debug(this.getClass().getName() + ".supports: " + c.getName());
-		}
+		log.debug("{}.supports: {}", this.getClass().getName(), c.getName());
 		return Provider.class.isAssignableFrom(c);
 	}
 	
@@ -69,9 +67,7 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException {
-		if (log.isDebugEnabled()) {
-			log.debug(this.getClass().getName() + ".validate...");
-		}
+		log.debug("{}.validate...", this.getClass().getName());
 		
 		if (obj == null || !(obj instanceof Provider)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type " + Provider.class);

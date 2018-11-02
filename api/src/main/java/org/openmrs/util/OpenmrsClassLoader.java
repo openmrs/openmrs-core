@@ -85,7 +85,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		OpenmrsClassLoaderHolder.INSTANCE = this;
 		
 		if (log.isDebugEnabled()) {
-			log.debug("Creating new OpenmrsClassLoader instance with parent: " + parent);
+			log.debug("Creating new OpenmrsClassLoader instance with parent: {}", parent);
 		}
 		
 		//disable caching so the jars aren't locked
@@ -210,9 +210,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	@Override
 	public URL findResource(final String name) {
-		if (log.isTraceEnabled()) {
-			log.trace("finding resource: " + name);
-		}
+		log.trace("finding resource: {}", name);
 		
 		URL result;
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
@@ -360,7 +358,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			rootGroup = parent;
 		}
 		
-		log.info("this classloader hashcode: " + OpenmrsClassLoaderHolder.INSTANCE.hashCode());
+		log.info("this classloader hashcode: {}", OpenmrsClassLoaderHolder.INSTANCE.hashCode());
 		
 		//Shut down and remove all cache managers.
 		List<CacheManager> knownCacheManagers = CacheManager.ALL_CACHE_MANAGERS;
@@ -478,7 +476,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 						continue;
 					}
 					
-					log.info("onShutdown Stopping thread: " + thread.getName());
+					log.info("onShutdown Stopping thread: {}", thread.getName());
 					thread.stop();
 				}
 				catch (Exception ex) {
@@ -712,9 +710,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		synchronized (ModuleClassLoader.class) {
 			libCacheFolder = new File(OpenmrsUtil.getApplicationDataDirectory(), LIBCACHESUFFIX);
 			
-			if (log.isDebugEnabled()) {
-				log.debug("libraries cache folder is " + libCacheFolder);
-			}
+			log.debug("libraries cache folder is {}", libCacheFolder);
 			
 			if (libCacheFolder.exists()) {
 				// clean up and empty the folder if it exists (and is not locked)
@@ -724,7 +720,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 					libCacheFolder.mkdirs();
 				}
 				catch (IOException io) {
-					log.warn("Unable to delete: " + libCacheFolder.getName());
+					log.warn("Unable to delete: {}", libCacheFolder.getName());
 				}
 			} else {
 				// otherwise just create the dir structure
@@ -757,24 +753,18 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			extForm = extForm.replaceFirst("jar:file:/", "").replaceAll("%20", " ");
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("url external form: " + extForm);
-		}
+		log.debug("url external form: {}", extForm);
 		
 		int i = extForm.indexOf("!");
 		String jarPath = extForm.substring(0, i);
 		String filePath = extForm.substring(i + 2); // skip over both the '!' and the '/'
 		
-		if (log.isDebugEnabled()) {
-			log.debug("jarPath: " + jarPath);
-			log.debug("filePath: " + filePath);
-		}
+		log.debug("jarPath: {}", jarPath);
+		log.debug("filePath: {}", filePath);
 		
 		File file = new File(folder, filePath);
 		
-		if (log.isDebugEnabled()) {
-			log.debug("absolute path: " + file.getAbsolutePath());
-		}
+		log.debug("absolute path: {}", file.getAbsolutePath());
 		
 		try {
 			// if the file has been expanded already, return that
@@ -784,7 +774,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 				// expand the url and return a url to the temp file
 				File jarFile = new File(jarPath);
 				if (!jarFile.exists()) {
-					log.warn("Cannot find jar at: " + jarFile + " for url: " + result);
+					log.warn("Cannot find jar at: {} for url: {}", jarFile, result);
 					return null;
 				}
 				
@@ -793,7 +783,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			}
 		}
 		catch (IOException io) {
-			log.warn("Unable to expand url: " + result, io);
+			log.warn("Unable to expand url: {}", result, io);
 			return null;
 		}
 	}
