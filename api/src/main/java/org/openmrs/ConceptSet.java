@@ -117,7 +117,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	 */
 	@Override
 	public Date getDateCreated() {
-		return dateCreated;
+		return this.dateCreated != null ? new Date(this.dateCreated.getTime()) : null;
 	}
 	
 	/**
@@ -125,7 +125,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	 */
 	@Override
 	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+		this.dateCreated = dateCreated != null ? new Date(dateCreated.getTime()) : null;
 	}
 	
 	/**

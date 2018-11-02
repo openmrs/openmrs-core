@@ -151,7 +151,7 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	 */
 	@Override
 	public Date getDateCreated() {
-		return dateCreated;
+		return this.dateCreated != null ? new Date(this.dateCreated.getTime()) : null;
 	}
 	
 	/**
@@ -159,7 +159,7 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	 */
 	@Override
 	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+		this.dateCreated = dateCreated != null ?  new Date(dateCreated.getTime()) : null;
 	}
 	
 	/**
@@ -183,7 +183,7 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	 */
 	@Override
 	public Date getDateChanged() {
-		return this.dateChanged;
+		return this.dateChanged != null ? new Date(this.dateChanged.getTime()) : null;
 	}
 	
 	/**
@@ -191,6 +191,6 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	 */
 	@Override
 	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
+		this.dateChanged = dateChanged != null ? new Date(dateChanged.getTime()) : null;
 	}
 }
