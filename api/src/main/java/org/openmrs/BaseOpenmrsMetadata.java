@@ -130,7 +130,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 */
 	@Override
 	public Date getDateCreated() {
-		return dateCreated;
+		return this.dateCreated != null ? new Date(this.dateCreated.getTime()) : null;
 	}
 	
 	/**
@@ -138,7 +138,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 */
 	@Override
 	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+		this.dateCreated = dateCreated != null ? new Date(dateCreated.getTime()) : null;
 	}
 	
 	/**
@@ -168,7 +168,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@Override
 	@Deprecated
 	public Date getDateChanged() {
-		return dateChanged;
+		return this.dateChanged != null ? new Date(this.dateChanged.getTime()) : null;
 	}
 	
 	/**
@@ -178,7 +178,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@Override
 	@Deprecated
 	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
+		this.dateChanged = dateChanged != null ? new Date(dateChanged.getTime()) : null;
 	}
 	
 	/**
@@ -217,7 +217,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 */
 	@Override
 	public Date getDateRetired() {
-		return dateRetired;
+		return this.dateRetired != null ? new Date(this.dateRetired.getTime()) : null;
 	}
 	
 	/**
@@ -225,7 +225,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 */
 	@Override
 	public void setDateRetired(Date dateRetired) {
-		this.dateRetired = dateRetired;
+		this.dateRetired = dateRetired != null ? new Date(dateRetired.getTime()) : null;
 	}
 	
 	/**

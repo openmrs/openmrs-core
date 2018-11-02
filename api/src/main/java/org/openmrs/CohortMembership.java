@@ -36,7 +36,7 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	
 	public CohortMembership(Integer patientId, Date startDate) {
 		this.patientId = patientId;
-		this.startDate = startDate;
+		this.startDate = new Date(startDate.getTime());
 	}
 	
 	public CohortMembership(Integer patientId) {
@@ -93,15 +93,15 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	}
 	
 	public Date getStartDate() {
-		return startDate;
+		return this.startDate != null ? new Date(this.startDate.getTime()) : null;
 	}
 	
 	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+		this.startDate = startDate != null ? new Date(startDate.getTime()) : null;
 	}
 	
 	public Date getEndDate() {
-		return endDate;
+		return this.endDate != null ? new Date(this.endDate.getTime()) : null;
 	}
 	
 	/**
@@ -111,7 +111,7 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	 * @param endDate
 	 */
 	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+		this.endDate = endDate != null ? new Date(endDate.getTime()) : null;
 	}
 	
 	/**
