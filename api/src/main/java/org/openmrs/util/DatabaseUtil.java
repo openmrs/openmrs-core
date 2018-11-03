@@ -35,7 +35,7 @@ public class DatabaseUtil {
 	private DatabaseUtil() {
 	}
 	
-	private static final Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DatabaseUtil.class);
 
 	public static final String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
 
@@ -55,7 +55,7 @@ public class DatabaseUtil {
 	public static String loadDatabaseDriver(String connectionUrl, String connectionDriver) throws ClassNotFoundException {
 		if (StringUtils.hasText(connectionDriver)) {
 			Class.forName(connectionDriver);
-			log.debug("set user defined Database driver class: " + connectionDriver);
+			LOG.debug("set user defined Database driver class: " + connectionDriver);
 		} else {
 			if (connectionUrl.contains("mysql")) {
 				Class.forName("com.mysql.jdbc.Driver");
@@ -77,7 +77,7 @@ public class DatabaseUtil {
 				connectionDriver = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
 			}
 		}
-		log.info("Set database driver class as " + connectionDriver);
+		LOG.info("Set database driver class as " + connectionDriver);
 		return connectionDriver;
 	}
 	
@@ -151,7 +151,7 @@ public class DatabaseUtil {
 			}
 		}
 		catch (Exception e) {
-			log.debug("Error while running sql: " + sql, e);
+			LOG.debug("Error while running sql: " + sql, e);
 			throw new DAOException("Error while running sql: " + sql + " . Message: " + e.getMessage(), e);
 		}
 		finally {
@@ -160,7 +160,7 @@ public class DatabaseUtil {
 					ps.close();
 				}
 				catch (SQLException e) {
-					log.error("Error generated while closing statement", e);
+					LOG.error("Error generated while closing statement", e);
 				}
 			}
 		}

@@ -41,7 +41,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
 	
-	private static final Logger log = LoggerFactory.getLogger(Person.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Person.class);
 
 	@DocumentId
 	protected Integer personId;
@@ -258,7 +258,7 @@ public class Person extends BaseChangeableOpenmrsData {
             try {
                 return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(birthDateString + " " + birthTimeString);
             } catch (ParseException e) {
-				log.error("Failed to parse birth date string", e);
+				LOG.error("Failed to parse birth date string", e);
             }
         }
         return null;
@@ -642,8 +642,8 @@ public class Person extends BaseChangeableOpenmrsData {
 			return attributeMap;
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Current Person Attributes: \n" + printAttributes());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Current Person Attributes: \n" + printAttributes());
 		}
 		
 		attributeMap = new HashMap<>();
@@ -666,8 +666,8 @@ public class Person extends BaseChangeableOpenmrsData {
 			return allAttributeMap;
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Current Person Attributes: \n" + printAttributes());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Current Person Attributes: \n" + printAttributes());
 		}
 		
 		allAttributeMap = new HashMap<>();

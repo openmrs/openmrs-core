@@ -78,7 +78,7 @@ public class WebModuleUtil {
 	private WebModuleUtil() {
 	}
 	
-	private static final Logger log = LoggerFactory.getLogger(WebModuleUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(WebModuleUtil.class);
 	
 	private static DispatcherServlet dispatcherServlet = null;
 	
@@ -114,8 +114,8 @@ public class WebModuleUtil {
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
 		
-		if (log.isDebugEnabled()) {
-			log.debug("trying to start module " + mod);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("trying to start module " + mod);
 		}
 		
 		// only try and start this module if the api started it without a
@@ -150,7 +150,7 @@ public class WebModuleUtil {
 				while (entries.hasMoreElements()) {
 					JarEntry entry = entries.nextElement();
 					String name = entry.getName();
-					log.debug("Entry name: " + name);
+					LOG.debug("Entry name: " + name);
 					if (name.startsWith("web/module/")) {
 						// trim out the starting path of "web/module/"
 						String filepath = name.substring(11);
@@ -170,8 +170,8 @@ public class WebModuleUtil {
 						// if a module id has a . in it, we should treat that as a /, i.e. files in the module
 						// ui.springmvc should go in folder names like .../ui/springmvc/...
 						absPath.append(mod.getModuleIdAsPath()).append("/").append(filepath);
-						if (log.isDebugEnabled()) {
-							log.debug("Moving file from: " + name + " to " + absPath);
+						if (LOG.isDebugEnabled()) {
+							LOG.debug("Moving file from: " + name + " to " + absPath);
 						}
 						
 						// get the output file
@@ -202,7 +202,7 @@ public class WebModuleUtil {
 				}
 			}
 			catch (IOException io) {
-				log.warn("Unable to copy files from module " + mod.getModuleId() + " to the web layer", io);
+				LOG.warn("Unable to copy files from module " + mod.getModuleId() + " to the web layer", io);
 			}
 			finally {
 				if (jarFile != null) {
@@ -210,7 +210,7 @@ public class WebModuleUtil {
 						jarFile.close();
 					}
 					catch (IOException io) {
-						log.warn("Couldn't close jar file: " + jarFile.getName(), io);
+						LOG.warn("Couldn't close jar file: " + jarFile.getName(), io);
 					}
 				}
 				if (inStream != null) {
@@ -218,7 +218,7 @@ public class WebModuleUtil {
 						inStream.close();
 					}
 					catch (IOException io) {
-						log.warn("Couldn't close InputStream: " + io);
+						LOG.warn("Couldn't close InputStream: " + io);
 					}
 				}
 				if (outStream != null) {
@@ -226,7 +226,7 @@ public class WebModuleUtil {
 						outStream.close();
 					}
 					catch (IOException io) {
-						log.warn("Couldn't close OutputStream: " + io);
+						LOG.warn("Couldn't close OutputStream: " + io);
 					}
 				}
 			}
@@ -280,7 +280,7 @@ public class WebModuleUtil {
 						inputStream.close();
 					}
 					catch (IOException io) {
-						log.error("Error while closing input stream", io);
+						LOG.error("Error while closing input stream", io);
 					}
 				}
 			}
@@ -304,20 +304,20 @@ public class WebModuleUtil {
 			// refresh the spring web context to get the just-created xml
 			// files into it (if we copied an xml file)
 			if (moduleNeedsContextRefresh && !delayContextRefresh) {
-				if (log.isDebugEnabled()) {
-					log.debug("Refreshing context for module" + mod);
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Refreshing context for module" + mod);
 				}
 				
 				try {
 					refreshWAC(servletContext, false, mod);
-					log.debug("Done Refreshing WAC");
+					LOG.debug("Done Refreshing WAC");
 				}
 				catch (Exception e) {
 					String msg = "Unable to refresh the WebApplicationContext";
 					mod.setStartupErrorMessage(msg, e);
 					
-					if (log.isWarnEnabled()) {
-						log.warn(msg + " for module: " + mod.getModuleId(), e);
+					if (LOG.isWarnEnabled()) {
+						LOG.warn(msg + " for module: " + mod.getModuleId(), e);
 					}
 					
 					try {
@@ -326,8 +326,8 @@ public class WebModuleUtil {
 					}
 					catch (Exception e2) {
 						// exception expected with most modules here
-						if (log.isWarnEnabled()) {
-							log.warn("Error while stopping a module that had an error on refreshWAC", e2);
+						if (LOG.isWarnEnabled()) {
+							LOG.warn("Error while stopping a module that had an error on refreshWAC", e2);
 						}
 					}
 					
@@ -347,7 +347,7 @@ public class WebModuleUtil {
 				
 				// find and cache the module's servlets
 				//(only if the module started successfully previously)
-				log.debug("Loading servlets and filters for module: " + mod);
+				LOG.debug("Loading servlets and filters for module: " + mod);
 				loadServlets(mod, servletContext);
 				loadFilters(mod, servletContext);
 			}
@@ -377,7 +377,7 @@ public class WebModuleUtil {
 					schedulerService.shutdownTask(task);
 				}
 				catch (SchedulerException e) {
-					log.error("Couldn't stop task:" + task + " for module: " + mod);
+					LOG.error("Couldn't stop task:" + task + " for module: " + mod);
 				}
 			}
 		}
@@ -445,7 +445,7 @@ public class WebModuleUtil {
 				}
 			}
 			if (name.length() == 0 || className.length() == 0) {
-				log.warn("both 'servlet-name' and 'servlet-class' are required for the 'servlet' tag. Given '" + name
+				LOG.warn("both 'servlet-name' and 'servlet-class' are required for the 'servlet' tag. Given '" + name
 				        + "' and '" + className + "' for module " + mod.getName());
 				continue;
 			}
@@ -455,25 +455,25 @@ public class WebModuleUtil {
 				httpServlet = (HttpServlet) ModuleFactory.getModuleClassLoader(mod).loadClass(className).newInstance();
 			}
 			catch (ClassNotFoundException e) {
-				log.warn("Class not found for servlet " + name + " for module " + mod.getName(), e);
+				LOG.warn("Class not found for servlet " + name + " for module " + mod.getName(), e);
 				continue;
 			}
 			catch (IllegalAccessException e) {
-				log.warn("Class cannot be accessed for servlet " + name + " for module " + mod.getName(), e);
+				LOG.warn("Class cannot be accessed for servlet " + name + " for module " + mod.getName(), e);
 				continue;
 			}
 			catch (InstantiationException e) {
-				log.warn("Class cannot be instantiated for servlet " + name + " for module " + mod.getName(), e);
+				LOG.warn("Class cannot be instantiated for servlet " + name + " for module " + mod.getName(), e);
 				continue;
 			}
 			
 			try {
-				log.debug("Initializing " + name + " servlet. - " + httpServlet + ".");
+				LOG.debug("Initializing " + name + " servlet. - " + httpServlet + ".");
 				ServletConfig servletConfig = new ModuleServlet.SimpleServletConfig(name, servletContext);
 				httpServlet.init(servletConfig);
 			}
 			catch (Exception e) {
-				log.warn("Unable to initialize servlet: ", e);
+				LOG.warn("Unable to initialize servlet: ", e);
 				throw new ModuleException("Unable to initialize servlet: " + httpServlet, mod.getModuleId(), e);
 			}
 			
@@ -489,7 +489,7 @@ public class WebModuleUtil {
 				        + " modules to sort this out.");
 			}
 			
-			log.debug("Caching the " + name + " servlet.");
+			LOG.debug("Caching the " + name + " servlet.");
 			moduleServlets.put(name, httpServlet);
 		}
 	}
@@ -551,12 +551,12 @@ public class WebModuleUtil {
 		}
 		moduleFilters.put(module, filters.values());
 		moduleFiltersByName.putAll(filters);
-		log.debug("Module: " + module.getModuleId() + " successfully loaded " + filters.size() + " filters.");
+		LOG.debug("Module: " + module.getModuleId() + " successfully loaded " + filters.size() + " filters.");
 		
 		// Load Filter Mappings
 		List<ModuleFilterMapping> modMappings = ModuleFilterMapping.retrieveFilterMappings(module);
 		moduleFilterMappings.addAll(modMappings);
-		log.debug("Module: " + module.getModuleId() + " successfully loaded " + modMappings.size() + " filter mappings.");
+		LOG.debug("Module: " + module.getModuleId() + " successfully loaded " + modMappings.size() + " filter mappings.");
 	}
 	
 	/**
@@ -572,7 +572,7 @@ public class WebModuleUtil {
 			ModuleFilterMapping mapping = mapIter.next();
 			if (module.equals(mapping.getModule())) {
 				mapIter.remove();
-				log.debug("Removed ModuleFilterMapping: " + mapping);
+				LOG.debug("Removed ModuleFilterMapping: " + mapping);
 			}
 		}
 		
@@ -585,9 +585,9 @@ public class WebModuleUtil {
 				}
 			}
 			catch (Exception e) {
-				log.warn("An error occurred while trying to destroy and remove module Filter.", e);
+				LOG.warn("An error occurred while trying to destroy and remove module Filter.", e);
 			}
-			log.debug("Module: " + module.getModuleId() + " successfully unloaded " + filters.size() + " filters.");
+			LOG.debug("Module: " + module.getModuleId() + " successfully unloaded " + filters.size() + " filters.");
 			moduleFilters.remove(module);
 
 			moduleFiltersByName.values().removeIf(filters::contains);
@@ -637,7 +637,7 @@ public class WebModuleUtil {
 						if (passedFilter != null) {
 							filters.add(passedFilter);
 						} else {
-							log.warn("Unable to retrieve filter that has a name of " + filterMapping.getFilterName()
+							LOG.warn("Unable to retrieve filter that has a name of " + filterMapping.getFilterName()
 							        + " in filter mapping.");
 						}
 					}
@@ -740,7 +740,7 @@ public class WebModuleUtil {
 				OpenmrsUtil.deleteDirectory(moduleWebFolder);
 			}
 			catch (IOException io) {
-				log.warn("Couldn't delete: " + moduleWebFolder.getAbsolutePath(), io);
+				LOG.warn("Couldn't delete: " + moduleWebFolder.getAbsolutePath(), io);
 			}
 		}
 		
@@ -809,7 +809,7 @@ public class WebModuleUtil {
 					inputStream.close();
 				}
 				catch (IOException io) {
-					log.error("Error while closing input stream", io);
+					LOG.error("Error while closing input stream", io);
 				}
 			}
 		}
@@ -832,8 +832,8 @@ public class WebModuleUtil {
 	        Module startedModule) {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext) WebApplicationContextUtils
 		        .getWebApplicationContext(servletContext);
-		if (log.isDebugEnabled()) {
-			log.debug("Refreshing web application Context of class: " + wac.getClass().getName());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Refreshing web application Context of class: " + wac.getClass().getName());
 		}
 		
 		if (dispatcherServlet != null) {
@@ -859,7 +859,7 @@ public class WebModuleUtil {
 			}
 		}
 		catch (ServletException se) {
-			log.warn("Caught a servlet exception while refreshing the dispatcher servlet", se);
+			LOG.warn("Caught a servlet exception while refreshing the dispatcher servlet", se);
 		}
 		
 		return newAppContext;
@@ -871,7 +871,7 @@ public class WebModuleUtil {
 	 * @param ds
 	 */
 	public static void setDispatcherServlet(DispatcherServlet ds) {
-		log.debug("Setting dispatcher servlet: " + ds);
+		LOG.debug("Setting dispatcher servlet: " + ds);
 		dispatcherServlet = ds;
 	}
 	
@@ -881,7 +881,7 @@ public class WebModuleUtil {
 	 * @param ds
 	 */
 	public static void setStaticDispatcherServlet(StaticDispatcherServlet ds) {
-		log.debug("Setting dispatcher servlet for static content: " + ds);
+		LOG.debug("Setting dispatcher servlet for static content: " + ds);
 		staticDispatcherServlet = ds;
 	}
 	
@@ -949,10 +949,10 @@ public class WebModuleUtil {
 			
 		}
 		catch (ParserConfigurationException pce) {
-			log.error("Failed to parse document", pce);
+			LOG.error("Failed to parse document", pce);
 		}
 		catch (TransformerException tfe) {
-			log.error("Failed to transorm xml source", tfe);
+			LOG.error("Failed to transorm xml source", tfe);
 		}
 	}
 	

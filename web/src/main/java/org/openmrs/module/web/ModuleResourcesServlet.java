@@ -30,7 +30,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1239820102030344L;
 	
-	private static final Logger log = LoggerFactory.getLogger(ModuleResourcesServlet.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ModuleResourcesServlet.class);
 	
 	/**
 	 * Used for caching purposes
@@ -51,7 +51,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		log.debug("In service method for module servlet: " + request.getPathInfo());
+		LOG.debug("In service method for module servlet: " + request.getPathInfo());
 		
 		File f = getFile(request);
 		if (f == null) {
@@ -85,7 +85,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 		
 		Module module = ModuleUtil.getModuleForPath(path);
 		if (module == null) {
-			log.warn("No module handles the path: " + path);
+			LOG.warn("No module handles the path: " + path);
 			return null;
 		}
 		
@@ -103,7 +103,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 		
 		File f = new File(realPath);
 		if (!f.exists()) {
-			log.warn("No file with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
+			LOG.warn("No file with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
 			return null;
 		}
 		

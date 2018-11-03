@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public class TaskThreadedInitializationWrapper implements Task {
 	
 	// Logger 
-	private static final Logger log = LoggerFactory.getLogger(TaskThreadedInitializationWrapper.class);
+	private static final Logger LOG = LoggerFactory.getLogger(TaskThreadedInitializationWrapper.class);
 	
 	private Task task;
 	
@@ -58,7 +58,7 @@ public class TaskThreadedInitializationWrapper implements Task {
 			}
 		}
 		catch (InterruptedException e) {
-			log.error("Task could not be initialized hence not be executed.", e);
+			LOG.error("Task could not be initialized hence not be executed.", e);
 			return;
 		}
 		finally {

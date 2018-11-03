@@ -34,7 +34,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { PatientIdentifier.class }, order = 50)
 public class PatientIdentifierValidator implements Validator {
 	
-	private static final Logger log = LoggerFactory.getLogger(PatientIdentifierValidator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PatientIdentifierValidator.class);
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -120,7 +120,7 @@ public class PatientIdentifierValidator implements Validator {
 	 */
 	public static void validateIdentifier(String identifier, PatientIdentifierType pit) throws PatientIdentifierException {
 		
-		log.debug("Checking identifier: " + identifier + " for type: " + pit);
+		LOG.debug("Checking identifier: " + identifier + " for type: " + pit);
 		
 		// Validate input parameters
 		if (pit == null) {
@@ -137,7 +137,7 @@ public class PatientIdentifierValidator implements Validator {
 			IdentifierValidator validator = Context.getPatientService().getIdentifierValidator(pit.getValidator());
 			checkIdentifierAgainstValidator(identifier, validator);
 		}
-		log.debug("The identifier check was successful");
+		LOG.debug("The identifier check was successful");
 		
 	}
 	
@@ -158,24 +158,24 @@ public class PatientIdentifierValidator implements Validator {
 	public static void checkIdentifierAgainstFormat(String identifier, String format, String formatDescription)
 	        throws PatientIdentifierException {
 		
-		log.debug("Checking identifier: " + identifier + " against format: " + format);
+		LOG.debug("Checking identifier: " + identifier + " against format: " + format);
 		
 		if (StringUtils.isBlank(identifier)) {
 			throw new BlankIdentifierException("PatientIdentifier.error.nullOrBlank");
 		}
 		
 		if (StringUtils.isBlank(format)) {
-			log.debug("Format is blank, identifier passes.");
+			LOG.debug("Format is blank, identifier passes.");
 			return;
 		}
 		
 		// Check identifier against regular expression format
 		if (!identifier.matches(format)) {
-			log.debug("The two DO NOT match");
+			LOG.debug("The two DO NOT match");
 			throw new InvalidIdentifierFormatException(getMessage("PatientIdentifier.error.invalidFormat", identifier,
 			    StringUtils.isNotBlank(formatDescription) ? formatDescription : format));
 		}
-		log.debug("The two match!!");
+		LOG.debug("The two match!!");
 	}
 	
 	/**
@@ -192,14 +192,14 @@ public class PatientIdentifierValidator implements Validator {
 	public static void checkIdentifierAgainstValidator(String identifier, IdentifierValidator validator)
 	        throws PatientIdentifierException {
 		
-		log.debug("Checking identifier: " + identifier + " against validator: " + validator);
+		LOG.debug("Checking identifier: " + identifier + " against validator: " + validator);
 		
 		if (StringUtils.isBlank(identifier)) {
 			throw new BlankIdentifierException("PatientIdentifier.error.nullOrBlank");
 		}
 		
 		if (validator == null) {
-			log.debug("Validator is null, identifier passes.");
+			LOG.debug("Validator is null, identifier passes.");
 			return;
 		}
 		
@@ -214,7 +214,7 @@ public class PatientIdentifierValidator implements Validator {
 			throw new InvalidCheckDigitException(getMessage("PatientIdentifier.error.unallowedIdentifier", identifier,
 			    validator.getName()));
 		}
-		log.debug("The identifier passed validation.");
+		LOG.debug("The identifier passed validation.");
 		
 	}
 	

@@ -32,7 +32,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { Person.class }, order = 50)
 public class PersonValidator implements Validator {
 	
-	private static final Logger log = LoggerFactory.getLogger(PersonValidator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PersonValidator.class);
 	
 	@Autowired
 	private PersonNameValidator personNameValidator;
@@ -61,7 +61,7 @@ public class PersonValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
-		log.debug("{}.validate...", this.getClass().getName());
+		LOG.debug("{}.validate...", this.getClass().getName());
 		
 		if (target == null) {
 			return;

@@ -40,7 +40,7 @@ import org.springframework.validation.Validator;
 public class ConceptValidator extends BaseCustomizableValidator implements Validator {
 	
 	// Logger for this class
-	private static final Logger log = LoggerFactory.getLogger(ConceptValidator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ConceptValidator.class);
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
@@ -114,22 +114,22 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 			Collection<ConceptName> namesInLocale = conceptToValidate.getNames(conceptNameLocale);
 			for (ConceptName nameInLocale : namesInLocale) {
 				if (StringUtils.isBlank(nameInLocale.getName())) {
-					log.debug("Name in locale '" + conceptNameLocale.toString()
+					LOG.debug("Name in locale '" + conceptNameLocale.toString()
 					        + "' cannot be an empty string or white space");
 					errors.reject("Concept.name.empty");
 				}
 				if (nameInLocale.getLocalePreferred() != null) {
 					if (nameInLocale.getLocalePreferred() && !preferredNameForLocaleFound) {
 						if (nameInLocale.isIndexTerm()) {
-							log.warn("Preferred name in locale '" + conceptNameLocale.toString()
+							LOG.warn("Preferred name in locale '" + conceptNameLocale.toString()
 							        + "' shouldn't be an index term");
 							errors.reject("Concept.error.preferredName.is.indexTerm");
 						} else if (nameInLocale.isShort()) {
-							log.warn("Preferred name in locale '" + conceptNameLocale.toString()
+							LOG.warn("Preferred name in locale '" + conceptNameLocale.toString()
 							        + "' shouldn't be a short name");
 							errors.reject("Concept.error.preferredName.is.shortName");
 						} else if (nameInLocale.getVoided()) {
-							log.warn("Preferred name in locale '" + conceptNameLocale.toString()
+							LOG.warn("Preferred name in locale '" + conceptNameLocale.toString()
 							        + "' shouldn't be a voided name");
 							errors.reject("Concept.error.preferredName.is.voided");
 						}
@@ -138,7 +138,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 					}
 					//should have one preferred name per locale
 					else if (nameInLocale.getLocalePreferred() && preferredNameForLocaleFound) {
-						log.warn("Found multiple preferred names in locale '" + conceptNameLocale.toString() + "'");
+						LOG.warn("Found multiple preferred names in locale '" + conceptNameLocale.toString() + "'");
 						errors.reject("Concept.error.multipleLocalePreferredNames");
 					}
 				}
@@ -150,11 +150,11 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 					if (!fullySpecifiedNameForLocaleFound) {
 						fullySpecifiedNameForLocaleFound = true;
 					} else {
-						log.warn("Found multiple fully specified names in locale '" + conceptNameLocale.toString() + "'");
+						LOG.warn("Found multiple fully specified names in locale '" + conceptNameLocale.toString() + "'");
 						errors.reject("Concept.error.multipleFullySpecifiedNames");
 					}
 					if (nameInLocale.getVoided()) {
-						log.warn("Fully Specified name in locale '" + conceptNameLocale.toString()
+						LOG.warn("Fully Specified name in locale '" + conceptNameLocale.toString()
 						        + "' shouldn't be a voided name");
 						errors.reject("Concept.error.fullySpecifiedName.is.voided");
 					}
@@ -166,7 +166,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 					}
 					//should have one short name per locale
 					else {
-						log.warn("Found multiple short names in locale '" + conceptNameLocale.toString() + "'");
+						LOG.warn("Found multiple short names in locale '" + conceptNameLocale.toString() + "'");
 						errors.reject("Concept.error.multipleShortNames");
 					}
 				}
@@ -179,7 +179,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 				
 				//
 				if (errors.hasErrors()) {
-					log.debug("Concept name '" + nameInLocale.getName() + "' for locale '" + conceptNameLocale
+					LOG.debug("Concept name '" + nameInLocale.getName() + "' for locale '" + conceptNameLocale
 					        + "' is invalid");
 					//if validation fails for any conceptName in current locale, don't proceed
 					//This helps not to have multiple messages shown that are identical though they might be
@@ -194,15 +194,15 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 					        + "' is a duplicate name in locale '" + conceptNameLocale.toString() + "' for the same concept");
 				}
 				
-				if (log.isDebugEnabled()) {
-					log.debug("Valid name found: " + nameInLocale.getName());
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Valid name found: " + nameInLocale.getName());
 				}
 			}
 		}
 		
 		//Ensure that each concept has at least a fully specified name
 		if (!hasFullySpecifiedName) {
-			log.debug("Concept has no fully specified name");
+			LOG.debug("Concept has no fully specified name");
 			errors.reject("Concept.error.no.FullySpecifiedName");
 		}
 		

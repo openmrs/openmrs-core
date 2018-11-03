@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
 
 public class MailMessageSender implements MessageSender {
 	
-	private static final Logger log = LoggerFactory.getLogger(MailMessageSender.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MailMessageSender.class);
 	
 	/**
 	 * JavaMail session
@@ -69,7 +69,7 @@ public class MailMessageSender implements MessageSender {
 			Transport.send(mimeMessage);
 		}
 		catch (Exception e) {
-			log.error("failed to send message", e);
+			LOG.error("failed to send message", e);
 			
 			// catch mail-specific exception and re-throw it as app-specific exception
 			throw new MessageException(e);

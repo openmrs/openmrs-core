@@ -48,7 +48,7 @@ public class UserContext implements Serializable {
 	/**
 	 * Logger - shared by entire class
 	 */
-	private static final Logger log = LoggerFactory.getLogger(UserContext.class);
+	private static final Logger LOG = LoggerFactory.getLogger(UserContext.class);
 	
 	/**
 	 * User object containing details about the authenticated user
@@ -97,7 +97,7 @@ public class UserContext implements Serializable {
 	 * @throws ContextAuthenticationException
 	 */
 	public User authenticate(String username, String password, ContextDAO contextDAO) throws ContextAuthenticationException {
-		log.debug("Authenticating with username: {}", username);
+		LOG.debug("Authenticating with username: {}", username);
 		try {
 			this.user = contextDAO.authenticate(username, password);
 			notifyUserSessionListener(this.user, Event.LOGIN, Status.SUCCESS);
@@ -108,7 +108,7 @@ public class UserContext implements Serializable {
 			throw e;
 		}
 		setUserLocation();
-		log.debug("Authenticated as: {}", this.user);
+		LOG.debug("Authenticated as: {}", this.user);
 		
 		return this.user;
 	}
@@ -121,7 +121,7 @@ public class UserContext implements Serializable {
 	 * @since 1.5
 	 */
 	public void refreshAuthenticatedUser() {
-		log.debug("Refreshing authenticated user");
+		LOG.debug("Refreshing authenticated user");
 		
 		if (user != null) {
 			user = Context.getUserService().getUser(user.getUserId());
@@ -143,7 +143,7 @@ public class UserContext implements Serializable {
 			throw new APIAuthenticationException("You must be a superuser to assume another user's identity");
 		}
 		
-		log.debug("Turning the authenticated user into user with systemId: {}", systemId);
+		LOG.debug("Turning the authenticated user into user with systemId: {}", systemId);
 		
 		User userToBecome = Context.getUserService().getUserByUsername(systemId);
 		
@@ -166,7 +166,7 @@ public class UserContext implements Serializable {
 		//update the user's location
 		setUserLocation();
 		
-		log.debug("Becoming user: {}", user);
+		LOG.debug("Becoming user: {}", user);
 		
 		return userToBecome;
 	}
@@ -191,7 +191,7 @@ public class UserContext implements Serializable {
 	 * @see #authenticate
 	 */
 	public void logout() {
-		log.debug("setting user to null on logout");
+		LOG.debug("setting user to null on logout");
 		notifyUserSessionListener(user, Event.LOGOUT, Status.SUCCESS);
 		user = null;
 	}
@@ -213,7 +213,7 @@ public class UserContext implements Serializable {
 	 * @param privilege to give to users
 	 */
 	public void addProxyPrivilege(String privilege) {
-		log.debug("Adding proxy privilege: {}", privilege);
+		LOG.debug("Adding proxy privilege: {}", privilege);
 		
 		proxies.add(privilege);
 	}
@@ -224,7 +224,7 @@ public class UserContext implements Serializable {
 	 * @param privilege Privilege to remove in string form
 	 */
 	public void removeProxyPrivilege(String privilege) {
-		log.debug("Removing proxy privilege: {}", privilege);
+		LOG.debug("Removing proxy privilege: {}", privilege);
 		
 		if (proxies.contains(privilege)) {
 			proxies.remove(privilege);
@@ -312,7 +312,7 @@ public class UserContext implements Serializable {
 			
 		}
 		
-		log.debug("Checking '{}' against proxies: {}", privilege, proxies);
+		LOG.debug("Checking '{}' against proxies: {}", privilege, proxies);
 		
 		// check proxied privileges
 		for (String s : proxies) {
@@ -428,7 +428,7 @@ public class UserContext implements Serializable {
 						if (this.locationId != null) {
 							this.locationId = null;
 						}
-						log.warn("The value of the default Location property of the user with id:" + this.user.getUserId()
+						LOG.warn("The value of the default Location property of the user with id:" + this.user.getUserId()
 						        + " should be an integer", e);
 					}
 				}
@@ -458,7 +458,7 @@ public class UserContext implements Serializable {
 			    privilegeListener.privilegeChecked(user, privilege, hasPrivilege);
 		    }
 		    catch (Exception e) {
-			    log.error("Privilege listener has failed", e);
+			    LOG.error("Privilege listener has failed", e);
 		    }
 	    }
     }

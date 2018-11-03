@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
  */
 public class ProgramEditor extends PropertyEditorSupport {
 	
-	private static final Logger log = LoggerFactory.getLogger(ProgramEditor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ProgramEditor.class);
 	
 	public ProgramEditor() {
 	}
@@ -65,7 +65,7 @@ public class ProgramEditor extends PropertyEditorSupport {
 				
 				setValue(p);
 				if (p == null) {
-					log.error("Error setting text: " + text, ex);
+					LOG.error("Error setting text: " + text, ex);
 					throw new IllegalArgumentException("Program not found: " + text, ex);
 				}
 			}

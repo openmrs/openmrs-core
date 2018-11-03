@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
  */
 public class PrivilegeEditor extends PropertyEditorSupport {
 	
-	private static final Logger log = LoggerFactory.getLogger(PrivilegeEditor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PrivilegeEditor.class);
 	
 	public PrivilegeEditor() {
 	}
@@ -53,7 +53,7 @@ public class PrivilegeEditor extends PropertyEditorSupport {
 				Privilege p = es.getPrivilegeByUuid(text);
 				setValue(p);
 				if (p == null) {
-					log.error("Error setting text: " + text, ex);
+					LOG.error("Error setting text: " + text, ex);
 					throw new IllegalArgumentException("Privilege not found: " + ex.getMessage());
 				}
 			}

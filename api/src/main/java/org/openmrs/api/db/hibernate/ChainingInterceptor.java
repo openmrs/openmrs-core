@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ChainingInterceptor implements Interceptor {
 	
-	private static final Logger log = LoggerFactory.getLogger(ChainingInterceptor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ChainingInterceptor.class);
 	
 	// using a linkedhashset to preserve insert order and maintain a list of unique objects
 	public Collection<Interceptor> interceptors = new LinkedHashSet<>();
@@ -47,11 +47,11 @@ public class ChainingInterceptor implements Interceptor {
 	public void addInterceptor(Interceptor interceptor) {
 		// do nothing if adding ourself to the list. This would cause infinite looping
 		if (interceptor == this) {
-			log.error("Attempting to add self to chain.  This would result in epic failures.");
+			LOG.error("Attempting to add self to chain.  This would result in epic failures.");
 			return;
 		}
 		
-		log.debug("Adding " + interceptor + " to interceptor chain");
+		LOG.debug("Adding " + interceptor + " to interceptor chain");
 		
 		if (interceptors == null) {
 			interceptors = new LinkedHashSet<>();

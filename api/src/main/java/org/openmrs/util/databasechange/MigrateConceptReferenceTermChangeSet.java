@@ -38,7 +38,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 	
-	private static final Logger log = LoggerFactory.getLogger(MigrateConceptReferenceTermChangeSet.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MigrateConceptReferenceTermChangeSet.class);
 	
 	public static final String DEFAULT_CONCEPT_MAP_TYPE = "NARROWER-THAN";
 	
@@ -125,7 +125,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 				if (source == prevSource
 				        && (sourceCode == prevSourceCode || (sourceCode != null && sourceCode.equals(prevSourceCode)))) {
 					if (mapTypeId == null && comment != null && !comment.equals(prevComment)) {
-						log.warn("Lost comment '" + comment + "' for map " + conceptMapId + ". Preserved comment "
+						LOG.warn("Lost comment '" + comment + "' for map " + conceptMapId + ". Preserved comment "
 						        + prevComment);
 					}
 					
@@ -175,7 +175,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 				}
 			}
 			catch (Exception ex) {
-				log.error("Failed to rollback", ex);
+				LOG.error("Failed to rollback", ex);
 			}
 			
 			throw new CustomChangeException(e);
@@ -193,7 +193,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 					connection.setAutoCommit(prevAutoCommit);
 				}
 				catch (DatabaseException e) {
-					log.error("Failed to reset auto commit", e);
+					LOG.error("Failed to reset auto commit", e);
 				}
 			}
 		}
@@ -210,7 +210,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 				statement.close();
 			}
 			catch (SQLException e) {
-				log.error("Failed to close statement", e);
+				LOG.error("Failed to close statement", e);
 			}
 		}
 	}

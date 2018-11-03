@@ -50,7 +50,7 @@ public class TestInstallUtil {
 	private TestInstallUtil() {
 	}
 	
-	private static final Logger log = LoggerFactory.getLogger(TestInstallUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(TestInstallUtil.class);
 	
 	/**
 	 * Adds data to the test database from a sql dump file
@@ -91,7 +91,7 @@ public class TestInstallUtil {
 				errorMsg = sb.toString();
 			}
 			catch (IOException e) {
-				log.error("Failed to add test data:", e);
+				LOG.error("Failed to add test data:", e);
 			}
 			finally {
 				if (br != null) {
@@ -99,32 +99,32 @@ public class TestInstallUtil {
 						br.close();
 					}
 					catch (Exception e) {
-						log.error("Failed to close the inputstream:", e);
+						LOG.error("Failed to close the inputstream:", e);
 					}
 				}
 			}
 			
 			//print out the error messages from the process
 			if (StringUtils.isNotBlank(errorMsg)) {
-				log.error(errorMsg);
+				LOG.error(errorMsg);
 			}
 			
 			if (proc.waitFor() == 0) {
-				if (log.isDebugEnabled()) {
-					log.debug("Added test data successfully");
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Added test data successfully");
 				}
 				return true;
 			}
 			
-			log
+			LOG
 			        .error("The process terminated abnormally while adding test data. Please look under the Configuration section at: https://wiki.openmrs.org/display/docs/Release+Testing+Helper+Module");
 			
 		}
 		catch (IOException e) {
-			log.error("Failed to create the sql dump", e);
+			LOG.error("Failed to create the sql dump", e);
 		}
 		catch (InterruptedException e) {
-			log.error("The back up was interrupted while adding test data", e);
+			LOG.error("The back up was interrupted while adding test data", e);
 		}
 		
 		return false;
@@ -153,8 +153,8 @@ public class TestInstallUtil {
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = (ZipEntry) entries.nextElement();
 				if (entry.isDirectory()) {
-					if (log.isDebugEnabled()) {
-						log.debug("Skipping directory: " + entry.getName());
+					if (LOG.isDebugEnabled()) {
+						LOG.debug("Skipping directory: " + entry.getName());
 					}
 					continue;
 				}
@@ -167,7 +167,7 @@ public class TestInstallUtil {
 						fileName = new File(entry.getName()).getName();
 					}
 					
-					log.debug("Extracting module file: {}", fileName);
+					LOG.debug("Extracting module file: {}", fileName);
 					
 					//use the module repository folder GP value if specified
 					String moduleRepositoryFolder = FilterUtil
@@ -193,12 +193,12 @@ public class TestInstallUtil {
 					OpenmrsUtil.copyFile(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(
 					        new File(moduleRepository, fileName))));
 				} else {
-					log.debug("Ignoring file that is not a .omod '{}'", fileName);
+					LOG.debug("Ignoring file that is not a .omod '{}'", fileName);
 				}
 			}
 		}
 		catch (IOException e) {
-			log.error("An error occured while copying modules to the test system:", e);
+			LOG.error("An error occured while copying modules to the test system:", e);
 			successfullyAdded = false;
 		}
 		finally {
@@ -209,7 +209,7 @@ public class TestInstallUtil {
 					zipFile.close();
 				}
 				catch (IOException e) {
-					log.error("Failed to close zip file: ", e);
+					LOG.error("Failed to close zip file: ", e);
 				}
 			}
 			if (tempFile != null) {
@@ -238,8 +238,8 @@ public class TestInstallUtil {
 			return true;
 		}
 		catch (IOException e) {
-			if (log.isDebugEnabled()) {
-				log.debug("Error generated:", e);
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Error generated:", e);
 			}
 		}
 		
@@ -263,7 +263,7 @@ public class TestInstallUtil {
 		out.flush();
 		out.close();
 		
-		log.info("Http response message: {}, Code: {}", connection.getResponseMessage(), connection.getResponseCode());
+		LOG.info("Http response message: {}, Code: {}", connection.getResponseMessage(), connection.getResponseCode());
 		
 		if (connection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
 			throw new APIAuthenticationException("Invalid username or password");

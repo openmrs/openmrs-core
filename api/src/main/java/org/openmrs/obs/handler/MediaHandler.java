@@ -37,7 +37,7 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
 	
-	private static final Logger log = LoggerFactory.getLogger(MediaHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MediaHandler.class);
 	
 	public MediaHandler() {
 		super();
@@ -71,7 +71,7 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 				obs.setComplexData(complexData);
 			}
 			catch (FileNotFoundException e) {
-				log.error("Trying to create media file stream from " + file.getAbsolutePath(), e);
+				LOG.error("Trying to create media file stream from " + file.getAbsolutePath(), e);
 			}
 		}
 		// No other view supported

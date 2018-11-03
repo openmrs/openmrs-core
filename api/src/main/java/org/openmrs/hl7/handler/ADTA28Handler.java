@@ -94,7 +94,7 @@ import ca.uhn.hl7v2.model.v25.segment.PID;
  */
 public class ADTA28Handler implements Application {
 	
-	private static final Logger log = LoggerFactory.getLogger(ADTA28Handler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ADTA28Handler.class);
 	
 	/**
 	 * Always returns true, assuming that the router calling this handler will only call this
@@ -113,7 +113,7 @@ public class ADTA28Handler implements Application {
 	@Override
 	public Message processMessage(Message message) throws ApplicationException {
 		
-		log.debug("Processing ADT_A28 message");
+		LOG.debug("Processing ADT_A28 message");
 		
 		if (!(message instanceof ADT_A05)) {
 			throw new ApplicationException("Invalid message sent to ADT_A28 handler");
@@ -125,15 +125,15 @@ public class ADTA28Handler implements Application {
 			response = processADT_A28(adt);
 		}
 		catch (ClassCastException e) {
-			log.error("Error casting " + message.getClass().getName() + " to ADT_A28", e);
+			LOG.error("Error casting " + message.getClass().getName() + " to ADT_A28", e);
 			throw new ApplicationException("Invalid message type for handler");
 		}
 		catch (HL7Exception e) {
-			log.error("Error while processing ADT_A28 message", e);
+			LOG.error("Error while processing ADT_A28 message", e);
 			throw new ApplicationException(e);
 		}
 		
-		log.debug("Finished processing ADT_A28 message");
+		LOG.debug("Finished processing ADT_A28 message");
 		
 		return response;
 	}
@@ -150,18 +150,18 @@ public class ADTA28Handler implements Application {
 		// Obtain message control id (unique ID for message from sending
 		// application). Eventually avoid replaying the same message.
 		String messageControlId = msh.getMessageControlID().getValue();
-		log.debug("Found HL7 message in inbound queue with control id = " + messageControlId);
+		LOG.debug("Found HL7 message in inbound queue with control id = " + messageControlId);
 		
 		// Add creator of the patient to application
 		String sendingApp = msh.getSendingApplication().getComponent(0).toString();
-		log.debug("SendingApplication = " + sendingApp);
+		LOG.debug("SendingApplication = " + sendingApp);
 		
 		// Search for the patient  
 		Integer patientId = findPatientId(pid);
 		
 		// Create new patient if the patient id doesn't exist yet
 		if (patientId == null) {
-			log.info("Creating new patient in response to ADT_A28 " + messageControlId);
+			LOG.info("Creating new patient in response to ADT_A28 " + messageControlId);
 			Patient patient = createPatient(pid, sendingApp);
 			if (patient == null) {
 				throw new HL7Exception("Couldn't create Patient object from PID");
@@ -169,7 +169,7 @@ public class ADTA28Handler implements Application {
 			Context.getPatientService().savePatient(patient);
 			
 		} else {
-			log.info("Ignoring ADT_A28 message because patient (" + patientId + ") already exists.");
+			LOG.info("Ignoring ADT_A28 message because patient (" + patientId + ") already exists.");
 		}
 		
 		// Assumption: all observations (OBX) messages will be in the R01
@@ -213,7 +213,7 @@ public class ADTA28Handler implements Application {
 			String assigningAuthority = id.getAssigningAuthority().getNamespaceID().getValue();
 			String hl7PatientId = id.getIDNumber().getValue();
 			
-			log.debug("identifier has id=" + hl7PatientId + " assigningAuthority=" + assigningAuthority);
+			LOG.debug("identifier has id=" + hl7PatientId + " assigningAuthority=" + assigningAuthority);
 			
 			if (assigningAuthority != null && assigningAuthority.length() > 0) {
 				
@@ -221,7 +221,7 @@ public class ADTA28Handler implements Application {
 					PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierTypeByName(
 					    assigningAuthority);
 					if (pit == null) {
-						log.warn("Can't find PatientIdentifierType named '" + assigningAuthority + "'");
+						LOG.warn("Can't find PatientIdentifierType named '" + assigningAuthority + "'");
 						continue; // skip identifiers with unknown type
 					}
 					PatientIdentifier pi = new PatientIdentifier();
@@ -243,16 +243,16 @@ public class ADTA28Handler implements Application {
 						goodIdentifiers.add(pi);
 					}
 					catch (PatientIdentifierException ex) {
-						log.warn("Patient identifier in PID is invalid: " + pi, ex);
+						LOG.warn("Patient identifier in PID is invalid: " + pi, ex);
 					}
 					
 				}
 				catch (Exception e) {
-					log.error("Uncaught error parsing/creating patient identifier '" + hl7PatientId
+					LOG.error("Uncaught error parsing/creating patient identifier '" + hl7PatientId
 					        + "' for assigning authority '" + assigningAuthority + "'", e);
 				}
 			} else {
-				log.error("PID contains identifier with no assigning authority");
+				LOG.error("PID contains identifier with no assigning authority");
 				continue;
 			}
 		}
@@ -299,7 +299,7 @@ public class ADTA28Handler implements Application {
 		ID precisionTemp = dateOfBirth.getDegreeOfPrecision();
 		if (precisionTemp != null && precisionTemp.getValue() != null) {
 			String precision = precisionTemp.getValue().toUpperCase();
-			log.debug("The birthdate is estimated: " + precision);
+			LOG.debug("The birthdate is estimated: " + precision);
 			
 			if ("Y".equals(precision) || "L".equals(precision)) {
 				patient.setBirthdateEstimated(true);

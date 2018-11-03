@@ -47,7 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements ProgramWorkflowService {
 	
-	private static final Logger log = LoggerFactory.getLogger(ProgramWorkflowServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ProgramWorkflowServiceImpl.class);
 	
 	protected ProgramWorkflowDAO dao;
         
@@ -470,12 +470,12 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 					ProgramWorkflowState currentState = (patientState != null) ? patientState.getState() : null;
 					ProgramWorkflowState transitionState = workflow.getState(trigger);
 					
-					log.debug("Transitioning from current state [" + currentState + "]");
-					log.debug("|---> Transitioning to final state [" + transitionState + "]");
+					LOG.debug("Transitioning from current state [" + currentState + "]");
+					LOG.debug("|---> Transitioning to final state [" + transitionState + "]");
 					
 					if (transitionState != null && workflow.isLegalTransition(currentState, transitionState)) {
 						patientProgram.transitionToState(transitionState, dateConverted);
-						log.debug("State Conversion Triggered: patientProgram=" + patientProgram + " transition from "
+						LOG.debug("State Conversion Triggered: patientProgram=" + patientProgram + " transition from "
 						        + currentState + " to " + transitionState + " on " + dateConverted);
 					}
 				}

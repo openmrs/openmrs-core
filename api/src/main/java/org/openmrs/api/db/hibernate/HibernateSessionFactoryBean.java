@@ -36,7 +36,7 @@ import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 
 public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	
-	private static final Logger log = LoggerFactory.getLogger(HibernateSessionFactoryBean.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HibernateSessionFactoryBean.class);
 	
 	protected Set<String> mappingResources = new HashSet<>();
 	
@@ -102,7 +102,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	 */
 	@Override
 	public void afterPropertiesSet() throws IOException {
-		log.debug("Configuring hibernate sessionFactory properties");
+		LOG.debug("Configuring hibernate sessionFactory properties");
 		Properties config = getHibernateProperties();
 		
 		Properties moduleProperties = Context.getConfigProperties();
@@ -112,7 +112,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			Object key = entry.getKey();
 			String prop = (String) key;
 			String value = (String) entry.getValue();
-			log.trace("Setting module property: " + prop + ":" + value);
+			LOG.trace("Setting module property: " + prop + ":" + value);
 			config.setProperty(prop, value);
 			if (!prop.startsWith("hibernate")) {
 				config.setProperty("hibernate." + prop, value);
@@ -126,7 +126,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			Object key = entry.getKey();
 			String prop = (String) key;
 			String value = (String) entry.getValue();
-			log.trace("Setting property: " + prop + ":" + value);
+			LOG.trace("Setting property: " + prop + ":" + value);
 			config.setProperty(prop, value);
 			if (!prop.startsWith("hibernate")) {
 				config.setProperty("hibernate." + prop, value);
@@ -150,10 +150,10 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			
 		}
 		catch (IOException e) {
-			log.error(MarkerFactory.getMarker("FATAL"), "Unable to load default hibernate properties", e);
+			LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to load default hibernate properties", e);
 		}
 		
-		log.debug("Replacing variables in hibernate properties");
+		LOG.debug("Replacing variables in hibernate properties");
 		final String applicationDataDirectory = OpenmrsUtil.getApplicationDataDirectory();
 		for (Entry<Object, Object> entry : config.entrySet()) {
 			String value = (String) entry.getValue();
@@ -162,7 +162,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			entry.setValue(value);
 		}
 		
-		log.debug("Setting global Hibernate Session Interceptor for SessionFactory, Interceptor: " + chainingInterceptor);
+		LOG.debug("Setting global Hibernate Session Interceptor for SessionFactory, Interceptor: " + chainingInterceptor);
 		
 		// make sure all autowired interceptors are put onto our chaining interceptor
 		// sort on the keys so that the devs/modules have some sort of control over the order of the interceptors 

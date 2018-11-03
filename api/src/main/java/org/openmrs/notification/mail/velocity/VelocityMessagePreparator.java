@@ -25,7 +25,7 @@ public class VelocityMessagePreparator implements MessagePreparator {
 	/**
 	 * Logger
 	 */
-	private static final Logger log = LoggerFactory.getLogger(VelocityMessagePreparator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(VelocityMessagePreparator.class);
 	
 	/**
 	 * Velocity template engine
@@ -43,7 +43,7 @@ public class VelocityMessagePreparator implements MessagePreparator {
 			engine.init();
 		}
 		catch (Exception e) {
-			log.error("Failed to create velocity engine " + e.getMessage(), e);
+			LOG.error("Failed to create velocity engine " + e.getMessage(), e);
 			throw new MessageException(e);
 		}
 	}
@@ -61,7 +61,7 @@ public class VelocityMessagePreparator implements MessagePreparator {
 		}
 		catch (Exception e) {
 			// need better error handling
-			log.error("Failed to prepare message using template " + e.getMessage(), e);
+			LOG.error("Failed to prepare message using template " + e.getMessage(), e);
 			throw new MessageException(e);
 		}
 		

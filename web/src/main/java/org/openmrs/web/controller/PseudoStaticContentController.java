@@ -35,7 +35,7 @@ import org.springframework.web.servlet.mvc.LastModified;
  */
 public class PseudoStaticContentController implements Controller, LastModified, GlobalPropertyListener {
 	
-	private static final Logger log = LoggerFactory.getLogger(PseudoStaticContentController.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PseudoStaticContentController.class);
 	
 	private Boolean interpretJstl = false;
 	
@@ -81,8 +81,8 @@ public class PseudoStaticContentController implements Controller, LastModified, 
 		// through the jsp (.withjstl) servlet
 		// this allows the files to cache until we say so
 		if (interpretJstl) {
-			if (log.isDebugEnabled()) {
-				log.debug("returning last modified date of : " + lastModified + " for : " + request.getPathInfo());
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("returning last modified date of : " + lastModified + " for : " + request.getPathInfo());
 			}
 			return lastModified;
 		}

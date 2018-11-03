@@ -57,11 +57,11 @@ import org.springframework.util.StringUtils;
  * Methods for loading, starting, stopping, and storing OpenMRS modules
  */
 public class ModuleFactory {
-
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ModuleFactory.class);
+	
 	private ModuleFactory() {
 	}
-	
-	private static final Logger log = LoggerFactory.getLogger(ModuleFactory.class);
 	
 	protected static volatile Map<String, Module> loadedModules = new WeakHashMap<>();
 	
@@ -127,8 +127,8 @@ public class ModuleFactory {
 	 */
 	public static Module loadModule(Module module, Boolean replaceIfExists) throws ModuleException {
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Adding module " + module.getName() + " to the module queue");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Adding module " + module.getName() + " to the module queue");
 		}
 		
 		Module oldModule = getLoadedModulesMap().get(module.getModuleId());
@@ -164,15 +164,15 @@ public class ModuleFactory {
 		// load modules from the user's module repository directory
 		File modulesFolder = ModuleUtil.getModuleRepository();
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Loading modules from: " + modulesFolder.getAbsolutePath());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Loading modules from: " + modulesFolder.getAbsolutePath());
 		}
 		
 		File[] files = modulesFolder.listFiles();
 		if (modulesFolder.isDirectory() && files != null) {
 			loadModules(Arrays.asList(files));
 		} else {
-			log.error("modules folder: '" + modulesFolder.getAbsolutePath() + "' is not a directory or IO error occurred");
+			LOG.error("modules folder: '" + modulesFolder.getAbsolutePath() + "' is not a directory or IO error occurred");
 		}
 	}
 	
@@ -193,13 +193,13 @@ public class ModuleFactory {
 					try {
 						// last module loaded wins
 						Module mod = loadModule(f, true);
-						log.debug("Loaded module: " + mod + " successfully");
+						LOG.debug("Loaded module: " + mod + " successfully");
 					} catch (Exception e) {
-						log.debug("Unable to load file in module directory: " + f + ". Skipping file.", e);
+						LOG.debug("Unable to load file in module directory: " + f + ". Skipping file.", e);
 					}
 				}
 			} else {
-				log.debug("Could not find file in module directory: " + f);
+				LOG.debug("Could not find file in module directory: " + f);
 			}
 		}
 		
@@ -237,7 +237,7 @@ public class ModuleFactory {
 			}
 			catch (CycleException ex) {
 				String message = getCyclicDependenciesMessage(ex.getMessage());
-				log.error(message, ex);
+				LOG.error(message, ex);
 				notifySuperUsersAboutCyclicDependencies(ex);
 				modules = (List<Module>)ex.getExtraData();
 			}
@@ -253,20 +253,20 @@ public class ModuleFactory {
 				// Skip module if required ones are not started
 				if (!requiredModulesStarted(mod)) {
 					String message = getFailedToStartModuleMessage(mod);
-					log.error(message);
+					LOG.error(message);
 					mod.setStartupErrorMessage(message);
 					notifySuperUsersAboutModuleFailure(mod);
 					continue;
 				}
 				
 				try {
-					if (log.isDebugEnabled()) {
-						log.debug("starting module: " + mod.getModuleId());
+					if (LOG.isDebugEnabled()) {
+						LOG.debug("starting module: " + mod.getModuleId());
 					}
 					startModule(mod);
 				}
 				catch (Exception e) {
-					log.error("Error while starting module: " + mod.getName(), e);
+					LOG.error("Error while starting module: " + mod.getName(), e);
 					mod.setStartupErrorMessage("Error while starting module", e);
 					notifySuperUsersAboutModuleFailure(mod);
 				}
@@ -362,7 +362,7 @@ public class ModuleFactory {
 			Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", null, mod.getName());
 		}
 		catch (Exception e) {
-			log.error("Unable to send an alert to the super users", e);
+			LOG.error("Unable to send an alert to the super users", e);
 		}
 		finally {
 			// Remove added privileges
@@ -379,7 +379,7 @@ public class ModuleFactory {
 			Context.getAlertService().notifySuperUsers("Module.error.cyclicDependencies", ex, ex.getMessage());
 		}
 		catch (Exception e) {
-			log.error("Unable to send an alert to the super users", e);
+			LOG.error("Unable to send an alert to the super users", e);
 		}
 		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
@@ -595,7 +595,7 @@ public class ModuleFactory {
 			
 			if (missingModules > 0) {
 				String message = getFailedToStartModuleMessage(module);
-				log.error(message);
+				LOG.error(message);
 				module.setStartupErrorMessage(message);
 				notifySuperUsersAboutModuleFailure(module);
 				// instead of return null, i realized that Daemon.startModule() always returns a Module
@@ -691,7 +691,7 @@ public class ModuleFactory {
 					List<Extension> extensions = getExtensionMap()
 							.computeIfAbsent(moduleExtensionEntry.getKey(), k -> new ArrayList<>());
 					for (Extension ext : sortedModuleExtensions) {
-						log.debug("Adding to mapping ext: " + ext.getExtensionId() + " ext.class: " + ext.getClass());
+						LOG.debug("Adding to mapping ext: " + ext.getExtensionId() + " ext.class: " + ext.getClass());
 						extensions.add(ext);
 					}
 				}
@@ -744,7 +744,7 @@ public class ModuleFactory {
 					// pass over errors because this doesn't really concern startup
 					// passing over this also allows for multiple of the same-named modules
 					// to be loaded in junit tests that are run within one session
-					log.debug("Got an error when trying to set the global property on module startup", e);
+					LOG.debug("Got an error when trying to set the global property on module startup", e);
 				}
 				
 				// (this must be done after putting the module in the started
@@ -754,7 +754,7 @@ public class ModuleFactory {
 				// (Unfortunately, placing the call here will duplicate work
 				// done at initial app startup)
 				if (!module.getPrivileges().isEmpty() || !module.getGlobalProperties().isEmpty()) {
-					log.debug("Updating core dataset");
+					LOG.debug("Updating core dataset");
 					Context.checkCoreDataset();
 					// checkCoreDataset() currently doesn't throw an error. If
 					// it did, it needs to be
@@ -783,7 +783,7 @@ public class ModuleFactory {
 				module.clearStartupError();
 			}
 			catch (Exception e) {
-				log.warn("Error while trying to start module: " + moduleId, e);
+				LOG.warn("Error while trying to start module: " + moduleId, e);
 				module.setStartupErrorMessage("Error while trying to start module", e);
 				notifySuperUsersAboutModuleFailure(module);
 				// undo all of the actions in startup
@@ -799,7 +799,7 @@ public class ModuleFactory {
 				catch (Exception e2) {
 					// this will probably occur about the same place as the
 					// error in startup
-					log.debug("Error while stopping module: " + moduleId, e2);
+					LOG.debug("Error while stopping module: " + moduleId, e2);
 				}
 			}
 			
@@ -883,15 +883,15 @@ public class ModuleFactory {
 				cls = Context.loadClass(advice.getPoint());
 				Object aopObject = advice.getClassInstance();
 				if (Advisor.class.isInstance(aopObject)) {
-					log.debug("adding advisor: " + aopObject.getClass());
+					LOG.debug("adding advisor: " + aopObject.getClass());
 					Context.addAdvisor(cls, (Advisor) aopObject);
 				} else {
-					log.debug("Adding advice: " + aopObject.getClass());
+					LOG.debug("Adding advice: " + aopObject.getClass());
 					Context.addAdvice(cls, (Advice) aopObject);
 				}
 			}
 			catch (ClassNotFoundException e) {
-				log.warn("Could not load advice point: " + advice.getPoint(), e);
+				LOG.warn("Could not load advice point: " + advice.getPoint(), e);
 			}
 		}
 	}
@@ -914,9 +914,9 @@ public class ModuleFactory {
 		// check given version against current version
 		if (gp != null && StringUtils.hasLength(gp.getPropertyValue())) {
 			String currentDbVersion = gp.getPropertyValue();
-			if (log.isDebugEnabled()) {
-				log.debug("version:column " + version + ":" + currentDbVersion);
-				log.debug("compare: " + ModuleUtil.compareVersion(version, currentDbVersion));
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("version:column " + version + ":" + currentDbVersion);
+				LOG.debug("compare: " + ModuleUtil.compareVersion(version, currentDbVersion));
 			}
 			if (ModuleUtil.compareVersion(version, currentDbVersion) > 0) {
 				executeSQL = true;
@@ -929,7 +929,7 @@ public class ModuleFactory {
 		if (executeSQL) {
 			try {
 				Context.addProxyPrivilege(PrivilegeConstants.SQL_LEVEL_ACCESS);
-				log.debug("Executing sql: " + sql);
+				LOG.debug("Executing sql: " + sql);
 				String[] sqlStatements = sql.split(";");
 				for (String sqlStatement : sqlStatements) {
 					if (sqlStatement.trim().length() > 0) {
@@ -949,16 +949,16 @@ public class ModuleFactory {
 				        + " module.";
 				
 				if (gp == null) {
-					log.info("Global property " + key + " was not found. Creating one now.");
+					LOG.info("Global property " + key + " was not found. Creating one now.");
 					gp = new GlobalProperty(key, version, description);
 					as.saveGlobalProperty(gp);
 				} else if (!gp.getPropertyValue().equals(version)) {
-					log.info("Updating global property " + key + " to version: " + version);
+					LOG.info("Updating global property " + key + " to version: " + version);
 					gp.setDescription(description);
 					gp.setPropertyValue(version);
 					as.saveGlobalProperty(gp);
 				} else {
-					log.error("Should not be here. GP property value and sqldiff version should not be equal");
+					LOG.error("Should not be here. GP property value and sqldiff version should not be equal");
 				}
 				
 			}
@@ -1051,7 +1051,7 @@ public class ModuleFactory {
 				}
 			}
 			catch (Exception t) {
-				log.warn("Unable to call module's Activator.willStop() method", t);
+				LOG.warn("Unable to call module's Activator.willStop() method", t);
 			}
 			
 			String moduleId = mod.getModuleId();
@@ -1094,7 +1094,7 @@ public class ModuleFactory {
 			if (moduleClassLoader != null) {
 				unregisterProvidedPackages(moduleClassLoader);
 				
-				log.debug("Mod was in classloader map.  Removing advice and extensions.");
+				LOG.debug("Mod was in classloader map.  Removing advice and extensions.");
 				// remove all advice by this module
 				try {
 					for (AdvicePoint advice : mod.getAdvicePoints()) {
@@ -1103,20 +1103,20 @@ public class ModuleFactory {
 							cls = Context.loadClass(advice.getPoint());
 							Object aopObject = advice.getClassInstance();
 							if (Advisor.class.isInstance(aopObject)) {
-								log.debug("adding advisor: " + aopObject.getClass());
+								LOG.debug("adding advisor: " + aopObject.getClass());
 								Context.removeAdvisor(cls, (Advisor) aopObject);
 							} else {
-								log.debug("Adding advice: " + aopObject.getClass());
+								LOG.debug("Adding advice: " + aopObject.getClass());
 								Context.removeAdvice(cls, (Advice) aopObject);
 							}
 						}
 						catch (Exception t) {
-							log.warn("Could not remove advice point: " + advice.getPoint(), t);
+							LOG.warn("Could not remove advice point: " + advice.getPoint(), t);
 						}
 					}
 				}
 				catch (Exception t) {
-					log.warn("Error while getting advicePoints from module: " + moduleId, t);
+					LOG.warn("Error while getting advicePoints from module: " + moduleId, t);
 				}
 				
 				// remove all extensions by this module
@@ -1129,12 +1129,12 @@ public class ModuleFactory {
 							getExtensionMap().put(extId, tmpExtensions);
 						}
 						catch (Exception exterror) {
-							log.warn("Error while getting extension: " + ext, exterror);
+							LOG.warn("Error while getting extension: " + ext, exterror);
 						}
 					}
 				}
 				catch (Exception t) {
-					log.warn("Error while getting extensions from module: " + moduleId, t);
+					LOG.warn("Error while getting extensions from module: " + moduleId, t);
 				}
 			}
 			
@@ -1152,7 +1152,7 @@ public class ModuleFactory {
 				}
 			}
 			catch (Exception t) {
-				log.warn("Unable to call module's Activator.shutdown() method", t);
+				LOG.warn("Unable to call module's Activator.shutdown() method", t);
 			}
 			
 			//Since extensions are loaded by the module class loader which is about to be disposed,
@@ -1179,7 +1179,7 @@ public class ModuleFactory {
 					OpenmrsUtil.deleteDirectory(tmpModuleDir);
 				}
 				catch (IOException e) {
-					log.warn("Unable to delete libcachefolder for " + moduleId);
+					LOG.warn("Unable to delete libcachefolder for " + moduleId);
 				}
 			}
 		}
@@ -1202,7 +1202,7 @@ public class ModuleFactory {
 		// create map if it is null
 		getModuleClassLoaderMap();
 		if (!moduleClassLoaders.containsKey(mod)) {
-			log.warn("Module: " + mod.getModuleId() + " does not exist");
+			LOG.warn("Module: " + mod.getModuleId() + " does not exist");
 		}
 		
 		return moduleClassLoaders.remove(mod);
@@ -1229,7 +1229,7 @@ public class ModuleFactory {
 			boolean deleted = file.delete();
 			if (!deleted) {
 				file.deleteOnExit();
-				log.warn("Could not delete " + file.getAbsolutePath());
+				LOG.warn("Could not delete " + file.getAbsolutePath());
 			}
 
 		}
@@ -1271,7 +1271,7 @@ public class ModuleFactory {
 			}
 		}
 		
-		log.debug("Getting extensions defined by : " + pointId);
+		LOG.debug("Getting extensions defined by : " + pointId);
 		return extensions;
 	}
 	
@@ -1287,7 +1287,7 @@ public class ModuleFactory {
 		String key = Extension.toExtensionId(pointId, type);
 		List<Extension> extensions = getExtensionMap().get(key);
 		if (extensions != null) {
-			log.debug("Getting extensions defined by : " + key);
+			LOG.debug("Getting extensions defined by : " + key);
 			return extensions;
 		} else {
 			return getExtensions(pointId);
@@ -1307,7 +1307,7 @@ public class ModuleFactory {
 			privileges.addAll(mod.getPrivileges());
 		}
 		
-		log.debug(privileges.size() + " new privileges");
+		LOG.debug(privileges.size() + " new privileges");
 		
 		return privileges;
 	}
@@ -1325,7 +1325,7 @@ public class ModuleFactory {
 			globalProperties.addAll(mod.getGlobalProperties());
 		}
 		
-		log.debug(globalProperties.size() + " new global properties");
+		LOG.debug(globalProperties.size() + " new global properties");
 		
 		return globalProperties;
 	}
@@ -1363,7 +1363,7 @@ public class ModuleFactory {
 		ModuleClassLoader mcl = getModuleClassLoaderMap().get(mod);
 		
 		if (mcl == null) {
-			log.debug("Module classloader not found for module with id: " + mod.getModuleId());
+			LOG.debug("Module classloader not found for module with id: " + mod.getModuleId());
 		}
 		
 		return mcl;
@@ -1381,7 +1381,7 @@ public class ModuleFactory {
 	public static ModuleClassLoader getModuleClassLoader(String moduleId) throws ModuleException {
 		Module mod = getStartedModulesMap().get(moduleId);
 		if (mod == null) {
-			log.debug("Module id not found in list of started modules: " + moduleId);
+			LOG.debug("Module id not found in list of started modules: " + moduleId);
 		}
 		
 		return getModuleClassLoader(mod);
@@ -1479,7 +1479,7 @@ public class ModuleFactory {
 		
 		// copy content to a temporary file
 		InputStream inputStream = ModuleUtil.getURLStream(url);
-		log.warn("url pathname: " + url.getPath());
+		LOG.warn("url pathname: " + url.getPath());
 		String filename = url.getPath().substring(url.getPath().lastIndexOf("/"));
 		File moduleFile = ModuleUtil.insertModuleFile(inputStream, filename);
 		
@@ -1490,7 +1490,7 @@ public class ModuleFactory {
 			return newModule;
 		}
 		catch (Exception e) {
-			log.warn("Error while unloading old module and loading in new module");
+			LOG.warn("Error while unloading old module and loading in new module");
 			moduleFile.delete();
 			return mod;
 		}
@@ -1615,7 +1615,7 @@ public class ModuleFactory {
 			as.saveGlobalProperty(gp);
 		}
 		catch (Exception e) {
-			log.warn("Unable to save the global property", e);
+			LOG.warn("Unable to save the global property", e);
 		}
 	}
 	

@@ -29,7 +29,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	
 	public static final long serialVersionUID = 1234233L;
 	
-	private static final Logger log = LoggerFactory.getLogger(Role.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Role.class);
 	
 	// Fields
 	
@@ -225,8 +225,8 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 			}
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Total roles: " + allRoles);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Total roles: " + allRoles);
 		}
 		
 		return allRoles;
@@ -320,8 +320,8 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 			}
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Total roles: " + allRoles);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Total roles: " + allRoles);
 		}
 		
 		return allRoles;

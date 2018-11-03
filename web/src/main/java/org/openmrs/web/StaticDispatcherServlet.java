@@ -28,7 +28,7 @@ public class StaticDispatcherServlet extends org.springframework.web.servlet.Dis
 	
 	private static final long serialVersionUID = 1L;
 	
-	private static final Logger log = LoggerFactory.getLogger(StaticDispatcherServlet.class);
+	private static final Logger LOG = LoggerFactory.getLogger(StaticDispatcherServlet.class);
 	
 	/**
 	 * @see org.springframework.web.servlet.FrameworkServlet#initFrameworkServlet()
@@ -38,7 +38,7 @@ public class StaticDispatcherServlet extends org.springframework.web.servlet.Dis
 		
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
-		log.info("Framework being initialized for static content");
+		LOG.info("Framework being initialized for static content");
 		WebModuleUtil.setStaticDispatcherServlet(this);
 		
 		super.initFrameworkServlet();
@@ -52,7 +52,7 @@ public class StaticDispatcherServlet extends org.springframework.web.servlet.Dis
 	 * @throws ServletException
 	 */
 	public void refreshApplicationContext() throws ServletException {
-		log.info("Application context for the static content dispatcher servlet is being refreshed");
+		LOG.info("Application context for the static content dispatcher servlet is being refreshed");
 		
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		((XmlWebApplicationContext) getWebApplicationContext()).setClassLoader(OpenmrsClassLoader.getInstance());
@@ -67,7 +67,7 @@ public class StaticDispatcherServlet extends org.springframework.web.servlet.Dis
 			ctx.close();
 		}
 		catch (Exception e) {
-			log.error("Exception while stopping and closing static content dispatcher servlet context: ", e);
+			LOG.error("Exception while stopping and closing static content dispatcher servlet context: ", e);
 		}
 	}
 }

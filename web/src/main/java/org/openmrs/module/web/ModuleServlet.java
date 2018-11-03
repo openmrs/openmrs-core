@@ -28,11 +28,11 @@ public class ModuleServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1239820102030303L;
 	
-	private static final Logger log = LoggerFactory.getLogger(ModuleServlet.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ModuleServlet.class);
 	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log.debug("In service method for module servlet: " + request.getPathInfo());
+		LOG.debug("In service method for module servlet: " + request.getPathInfo());
 		String servletName = request.getPathInfo();
 		int end = servletName.indexOf("/", 1);
 		
@@ -41,13 +41,13 @@ public class ModuleServlet extends HttpServlet {
 			moduleId = servletName.substring(1, end);
 		}
 		
-		log.debug("ModuleId: " + moduleId);
+		LOG.debug("ModuleId: " + moduleId);
 		Module mod = ModuleFactory.getModuleById(moduleId);
 		 
 		// where in the path to start trimming
 		int start = 1;
 		if (mod != null) {
-			log.debug("Module with id " + moduleId + " found.  Looking for servlet name after " + moduleId + " in url path");
+			LOG.debug("Module with id " + moduleId + " found.  Looking for servlet name after " + moduleId + " in url path");
 			start = moduleId.length() + 2;
 			// this skips over the moduleId that is in the path
 		}
@@ -58,12 +58,12 @@ public class ModuleServlet extends HttpServlet {
 		}
 		servletName = servletName.substring(start, end);
 		
-		log.debug("Servlet name: " + servletName);
+		LOG.debug("Servlet name: " + servletName);
 		
 		HttpServlet servlet = WebModuleUtil.getServlet(servletName);
 		
 		if (servlet == null) {
-			log.warn("No servlet with name: " + servletName + " was found");
+			LOG.warn("No servlet with name: " + servletName + " was found");
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}

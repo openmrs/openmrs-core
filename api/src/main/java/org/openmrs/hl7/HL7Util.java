@@ -35,7 +35,7 @@ public class HL7Util {
 	private HL7Util() {
 	}
 	
-	private static final Logger log = LoggerFactory.getLogger(HL7Util.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HL7Util.class);
 	
 	// Date and time format parsers
 	private static final String TIMESTAMP_FORMAT = "yyyyMMddHHmmss.SSSZ";
@@ -182,7 +182,7 @@ public class HL7Util {
 			}
 			timeZoneOffset = fullString.substring(tzIndex);
 			if (timeZoneOffset.length() != 5) {
-				log.error("Invalid timestamp because its too short: " + timeZoneOffset);
+				LOG.error("Invalid timestamp because its too short: " + timeZoneOffset);
 			}
 			
 		} else {
@@ -290,11 +290,11 @@ public class HL7Util {
 		    OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY);
 		
 		if (StringUtils.isBlank(archiveDir)) {
-			log.warn("Invalid value for global property '" + OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY
+			LOG.warn("Invalid value for global property '" + OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY
 			        + "', trying to set a default one");
 			archiveDir = HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME;
 			
-			log.debug("Using '" + archiveDir
+			LOG.debug("Using '" + archiveDir
 			        + "' in the application data directory as the root directory for hl7_in_archives");
 		}
 		

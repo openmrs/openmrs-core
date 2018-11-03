@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ModuleClassLoader extends URLClassLoader {
 	
-	private static final Logger log = LoggerFactory.getLogger(ModuleClassLoader.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ModuleClassLoader.class);
 	
 	private final Module module;
 	
@@ -89,8 +89,8 @@ public class ModuleClassLoader extends URLClassLoader {
 			throw new IllegalArgumentException("Parent must not be ModuleClassLoader");
 		}
 		
-		if (log.isDebugEnabled()){
-			log.debug("URLs length: " + urls.size());
+		if (LOG.isDebugEnabled()){
+			LOG.debug("URLs length: " + urls.size());
 		}
 		this.module = module;
 		requiredModules = collectRequiredModuleImports(module);
@@ -223,7 +223,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 		}
 		catch (MalformedURLException ex) {
-			log.error("Failed to add development folder to the classpath", ex);
+			LOG.error("Failed to add development folder to the classpath", ex);
 		}
 		
 		File tmpModuleDir = getLibCacheFolderForModule(module);
@@ -237,7 +237,7 @@ public class ModuleClassLoader extends URLClassLoader {
 					tmpModuleJar.createNewFile();
 				}
 				catch (IOException io) {
-					log.warn("Unable to create tmpModuleFile", io);
+					LOG.warn("Unable to create tmpModuleFile", io);
 				}
 			}
 			
@@ -250,7 +250,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				OpenmrsUtil.copyFile(in, out);
 			}
 			catch (IOException io) {
-				log.warn("Unable to copy tmpModuleFile", io);
+				LOG.warn("Unable to copy tmpModuleFile", io);
 			}
 			finally {
 				try {
@@ -270,14 +270,14 @@ public class ModuleClassLoader extends URLClassLoader {
 				result.add(moduleFileURL);
 			}
 			catch (MalformedURLException e) {
-				log.warn("Unable to add files from module to URL list: " + module.getModuleId(), e);
+				LOG.warn("Unable to add files from module to URL list: " + module.getModuleId(), e);
 			}
 		}
 		
 		// add each defined jar in the /lib folder, add as a url in the classpath of the classloader
 		try {
-			if (log.isDebugEnabled()) {
-				log.debug("Expanding /lib folder in module");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Expanding /lib folder in module");
 			}
 			
 			ModuleUtil.expandJar(module.getFile(), tmpModuleDir, "lib", true);
@@ -319,23 +319,23 @@ public class ModuleClassLoader extends URLClassLoader {
 					    startedRelatedModules);
 					
 					if (include) {
-						if (log.isDebugEnabled()) {
-							log.debug("Including file in classpath: " + fileUrl);
+						if (LOG.isDebugEnabled()) {
+							LOG.debug("Including file in classpath: " + fileUrl);
 						}
 						result.add(fileUrl);
 					} else {
-						if (log.isDebugEnabled()) {
-							log.debug("Excluding file from classpath: " + fileUrl);
+						if (LOG.isDebugEnabled()) {
+							LOG.debug("Excluding file from classpath: " + fileUrl);
 						}
 					}
 				}
 			}
 		}
 		catch (MalformedURLException e) {
-			log.warn("Error while adding module 'lib' folder to URL result list");
+			LOG.warn("Error while adding module 'lib' folder to URL result list");
 		}
 		catch (IOException io) {
-			log.warn("Error while expanding lib folder", io);
+			LOG.warn("Error while expanding lib folder", io);
 		}
 		
 		// add each xml document to the url list
@@ -462,7 +462,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			Module coreModule = ModuleFactory.getModuleById(moduleId);
 			
 			if (coreModule == null && !ModuleUtil.ignoreCoreModules()) {
-				log.error("Unable to find an openmrs core loaded module with id: " + moduleId);
+				LOG.error("Unable to find an openmrs core loaded module with id: " + moduleId);
 				throw new APIException("Module.error.shouldNotBeHere", (Object[]) null);
 			}
 			
@@ -510,7 +510,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			addURL(u);
 		}
 		
-		if (log.isDebugEnabled()) {
+		if (LOG.isDebugEnabled()) {
 			StringBuilder buf = new StringBuilder();
 			buf.append("New code URL's populated for module ").append(getModule()).append(":\r\n");
 			for (URL u : newUrls) {
@@ -518,7 +518,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				buf.append(u);
 				buf.append("\r\n");
 			}
-			log.debug(buf.toString());
+			LOG.debug(buf.toString());
 		}
 		requiredModules = collectRequiredModuleImports(getModule());
 		awareOfModules = collectAwareOfModuleImports(getModule());
@@ -529,8 +529,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @see org.openmrs.module.ModuleFactory#stopModule(Module, boolean)
 	 */
 	public void dispose() {
-		if (log.isDebugEnabled())
-			log.debug("Disposing of ModuleClassLoader: " + this);
+		if (LOG.isDebugEnabled())
+			LOG.debug("Disposing of ModuleClassLoader: " + this);
 
 		for (File file : libraryCache.values()) {
 			file.delete();
@@ -608,8 +608,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	protected synchronized Class<?> loadClass(final String name, final boolean resolve, final ModuleClassLoader requestor,
 	        Set<String> seenModules) throws ClassNotFoundException {
 		
-		if (log.isTraceEnabled()) {
-			log.trace("Loading " + name + " " + getModule() + ", seenModules: " + seenModules + ", requestor: " + requestor
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("Loading " + name + " " + getModule() + ", seenModules: " + seenModules + ", requestor: " + requestor
 			        + ", resolve? " + resolve);
 			StringBuilder output = new StringBuilder();
 			for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
@@ -619,7 +619,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				output.append(element);
 				output.append("\n");
 			}
-			log.trace("Stacktrace: " + output.toString());
+			LOG.trace("Stacktrace: " + output.toString());
 		}
 		
 		// Check if we already tried this class loader
@@ -632,7 +632,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		if ((this != requestor) && !ModuleFactory.isModuleStarted(getModule())) {
 			String msg = "Can't load class " + name + ", because module " + getModule().getModuleId()
 			        + " is not yet started.";
-			log.warn(msg);
+			LOG.warn(msg);
 			
 			throw new ClassNotFoundException(msg);
 		}
@@ -738,14 +738,14 @@ public class ModuleClassLoader extends URLClassLoader {
 			return null;
 		}
 		
-		if (log.isTraceEnabled()) {
-			log.trace("findLibrary(String): name=" + name + ", this=" + this);
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("findLibrary(String): name=" + name + ", this=" + this);
 		}
 		String libname = System.mapLibraryName(name);
 		String result = null;
 		
-		if (log.isTraceEnabled()) {
-			log
+		if (LOG.isTraceEnabled()) {
+			LOG
 			        .trace("findLibrary(String): name=" + name + ", libname=" + libname + ", result=" + result + ", this="
 			                + this);
 		}
@@ -822,14 +822,14 @@ public class ModuleClassLoader extends URLClassLoader {
 			// save a link to the cached file
 			libraryCache.put(libUri, result);
 			
-			if (log.isDebugEnabled()) {
-				log.debug("library " + libname + " successfully cached from URL " + libUrl + " and saved to local file "
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("library " + libname + " successfully cached from URL " + libUrl + " and saved to local file "
 				        + result);
 			}
 			
 		}
 		catch (IOException ioe) {
-			log.error("can't cache library " + libname + " from URL " + libUrl, ioe);
+			LOG.error("can't cache library " + libname + " from URL " + libUrl, ioe);
 			libraryCache.put(libUri, null);
 			result = null;
 		}
@@ -876,13 +876,13 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @see #findResource(String)
 	 */
 	protected URL findResource(final String name, final ModuleClassLoader requestor, Set<String> seenModules) {
-		if (log.isTraceEnabled() && name != null && name.contains("starter")) {
+		if (LOG.isTraceEnabled() && name != null && name.contains("starter")) {
 			if (seenModules != null) {
-				log.trace("seenModules.size: " + seenModules.size());
+				LOG.trace("seenModules.size: " + seenModules.size());
 			}
-			log.trace("name: " + name);
+			LOG.trace("name: " + name);
 			for (URL url : getURLs()) {
-				log.trace("url: " + url);
+				LOG.trace("url: " + url);
 			}
 		}
 		
@@ -896,7 +896,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			if (isResourceVisible(name, result, requestor)) {
 				return result;
 			}
-			log.debug("Resource is not visible");
+			LOG.debug("Resource is not visible");
 			return null;
 		}
 		
@@ -1017,7 +1017,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			new URL(url.getProtocol(), url.getHost(), file.substring(0, file.length() - name.length()));
 		}
 		catch (MalformedURLException mue) {
-			log.error("can't get resource library URL", mue);
+			LOG.error("can't get resource library URL", mue);
 			return false;
 		}
 		

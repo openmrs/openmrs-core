@@ -36,7 +36,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	
-	private static final Logger log = LoggerFactory.getLogger(AddConceptMapTypesChangeset.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AddConceptMapTypesChangeset.class);
 	
 	/**
 	 * The "visibleConceptMapTypes" parameter defined in the liquibase xml changeSet element that is
@@ -129,37 +129,37 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				int[] updateCounts = pStmt.executeBatch();
 				for (int updateCount : updateCounts) {
 					if (updateCount > -1) {
-						log.debug("Successfully executed: updateCount=" + updateCount);
+						LOG.debug("Successfully executed: updateCount=" + updateCount);
 					} else if (updateCount == Statement.SUCCESS_NO_INFO) {
-						log.debug("Successfully executed; No Success info");
+						LOG.debug("Successfully executed; No Success info");
 					} else if (updateCount == Statement.EXECUTE_FAILED) {
-						log.warn("Failed to execute insert");
+						LOG.warn("Failed to execute insert");
 					}
 				}
 				
-				log.debug("Committing inserts...");
+				LOG.debug("Committing inserts...");
 				connection.commit();
 			}
 			catch (BatchUpdateException be) {
-				log.warn("Error generated while processsing batch insert", be);
+				LOG.warn("Error generated while processsing batch insert", be);
 				int[] updateCounts = be.getUpdateCounts();
 
 				for (int updateCount : updateCounts) {
 					if (updateCount > -1) {
-						log.warn("Executed with exception: insertCount=" + updateCount);
+						LOG.warn("Executed with exception: insertCount=" + updateCount);
 					} else if (updateCount == Statement.SUCCESS_NO_INFO) {
-						log.warn("Executed with exception; No Success info");
+						LOG.warn("Executed with exception; No Success info");
 					} else if (updateCount == Statement.EXECUTE_FAILED) {
-						log.warn("Failed to execute insert with exception");
+						LOG.warn("Failed to execute insert with exception");
 					}
 				}
 				
 				try {
-					log.debug("Rolling back batch", be);
+					LOG.debug("Rolling back batch", be);
 					connection.rollback();
 				}
 				catch (Exception rbe) {
-					log.warn("Error generated while rolling back batch insert", be);
+					LOG.warn("Error generated while rolling back batch insert", be);
 				}
 				
 				//marks the changeset as a failed one
@@ -175,7 +175,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 				connection.setAutoCommit(true);
 			}
 			catch (DatabaseException e) {
-				log.warn("Failed to reset auto commit back to true", e);
+				LOG.warn("Failed to reset auto commit back to true", e);
 			}
 			
 			if (pStmt != null) {
@@ -183,7 +183,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 					pStmt.close();
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the prepared statement object");
+					LOG.warn("Failed to close the prepared statement object");
 				}
 			}
 		}
@@ -206,17 +206,17 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 			if (rs.next()) {
 				result = rs.getInt(1);
 			} else {
-				log.warn("No row returned by getInt() method");
+				LOG.warn("No row returned by getInt() method");
 			}
 			
 			if (rs.next()) {
-				log.warn("Multiple rows returned by getInt() method");
+				LOG.warn("Multiple rows returned by getInt() method");
 			}
 			
 			return result;
 		}
 		catch (DatabaseException | SQLException e) {
-			log.warn("Error generated", e);
+			LOG.warn("Error generated", e);
 		}
 		finally {
 			if (stmt != null) {
@@ -224,7 +224,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 					stmt.close();
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the statement object");
+					LOG.warn("Failed to close the statement object");
 				}
 			}
 		}

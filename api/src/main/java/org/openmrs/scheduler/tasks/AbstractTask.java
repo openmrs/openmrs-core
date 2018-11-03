@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractTask implements Task {
 	
 	// Logger
-	private static final Logger log = LoggerFactory.getLogger(AbstractTask.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractTask.class);
 	
 	// Indicates whether the task is currently running
 	protected boolean isExecuting = false;
@@ -40,7 +40,7 @@ public abstract class AbstractTask implements Task {
 	 * @param taskDefinition the task definition
 	 */
 	protected AbstractTask(TaskDefinition taskDefinition) {
-		log.debug("Initializing " + taskDefinition.getName());
+		LOG.debug("Initializing " + taskDefinition.getName());
 		initialize(taskDefinition);
 	}
 	

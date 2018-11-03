@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 	
-	private static final Logger log = LoggerFactory.getLogger(ImmutableEntityInterceptor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ImmutableEntityInterceptor.class);
 	
 	/**
 	 * Returns the class handled by the interceptor
@@ -105,8 +105,8 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 				}
 			}
 			if (CollectionUtils.isNotEmpty(changedProperties)) {
-				if (log.isDebugEnabled()) {
-					log.debug("The following fields cannot be changed for " + getSupportedType() + ":" + changedProperties);
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("The following fields cannot be changed for " + getSupportedType() + ":" + changedProperties);
 				}
 				
 				throw new UnchangeableObjectException("editing.fields.not.allowed", new Object[] { changedProperties,

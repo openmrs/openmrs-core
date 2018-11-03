@@ -28,7 +28,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { Provider.class }, order = 50)
 public class ProviderValidator extends BaseCustomizableValidator implements Validator {
 	
-	private static final Logger log = LoggerFactory.getLogger(ProviderValidator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ProviderValidator.class);
 	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
@@ -38,7 +38,7 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
-		log.debug("{}.supports: {}", this.getClass().getName(), c.getName());
+		LOG.debug("{}.supports: {}", this.getClass().getName(), c.getName());
 		return Provider.class.isAssignableFrom(c);
 	}
 	
@@ -67,7 +67,7 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException {
-		log.debug("{}.validate...", this.getClass().getName());
+		LOG.debug("{}.validate...", this.getClass().getName());
 		
 		if (obj == null || !(obj instanceof Provider)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type " + Provider.class);

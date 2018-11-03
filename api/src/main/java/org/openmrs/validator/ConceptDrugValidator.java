@@ -26,7 +26,7 @@ import org.springframework.validation.Validator;
 public class ConceptDrugValidator implements Validator {
 	
 	// Logger for this class
-	private static final Logger log = LoggerFactory.getLogger(ConceptDrugValidator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ConceptDrugValidator.class);
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
@@ -56,7 +56,7 @@ public class ConceptDrugValidator implements Validator {
 		if (obj == null || !(obj instanceof Drug)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type" + Drug.class);
 		}
-		log.debug("request to validate drug having concept: " + ((Drug) obj).getConcept());
+		LOG.debug("request to validate drug having concept: " + ((Drug) obj).getConcept());
 		ValidationUtils.rejectIfEmpty(errors, "concept", "ConceptDrug.error.conceptRequired");
 	}
 	

@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class LayoutSupport<T extends LayoutTemplate> {
 	
-	private static final Logger log = LoggerFactory.getLogger(LayoutSupport.class);
+	private static final Logger LOG = LoggerFactory.getLogger(LayoutSupport.class);
 	
 	protected String defaultLayoutFormat;
 	
@@ -49,7 +49,7 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 	}
 	
 	public T getLayoutTemplateByName(String templateName) {
-		log.debug("looking for template name: " + templateName);
+		LOG.debug("looking for template name: " + templateName);
 		
 		if (this.layoutTemplates != null && templateName != null) {
 			T ret = null;
@@ -60,13 +60,13 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 				                || templateName.equalsIgnoreCase(at.getCodeName()) || templateName.equalsIgnoreCase(at
 				                .getCountry()))) {
 					ret = at;
-					log.debug("Found Layout Template named " + at.getDisplayName());
+					LOG.debug("Found Layout Template named " + at.getDisplayName());
 				}
 			}
 			
 			return ret;
 		} else {
-			log.debug("No Layout Templates defined");
+			LOG.debug("No Layout Templates defined");
 			return null;
 		}
 	}
@@ -78,13 +78,13 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 			for (T at : this.layoutTemplates) {
 				if (at != null && templateName.equalsIgnoreCase(at.getCodeName())) {
 					ret = at;
-					log.debug("Found Layout Template named " + at.getDisplayName());
+					LOG.debug("Found Layout Template named " + at.getDisplayName());
 				}
 			}
 			
 			return ret;
 		} else {
-			log.debug("No Layout Templates defined");
+			LOG.debug("No Layout Templates defined");
 			return null;
 		}
 	}
@@ -96,13 +96,13 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 			for (T at : this.layoutTemplates) {
 				if (at != null && templateName.equalsIgnoreCase(at.getCountry())) {
 					ret = at;
-					log.debug("Found Layout Template named " + at.getDisplayName());
+					LOG.debug("Found Layout Template named " + at.getDisplayName());
 				}
 			}
 			
 			return ret;
 		} else {
-			log.debug("No Layout Templates defined");
+			LOG.debug("No Layout Templates defined");
 			return null;
 		}
 	}
@@ -114,13 +114,13 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 			for (T at : this.layoutTemplates) {
 				if (at != null && templateName.equalsIgnoreCase(at.getDisplayName())) {
 					ret = at;
-					log.debug("Found Layout Template named " + at.getDisplayName());
+					LOG.debug("Found Layout Template named " + at.getDisplayName());
 				}
 			}
 			
 			return ret;
 		} else {
-			log.debug("No Layout Templates defined");
+			LOG.debug("No Layout Templates defined");
 			return null;
 		}
 	}

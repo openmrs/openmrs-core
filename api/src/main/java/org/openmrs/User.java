@@ -39,7 +39,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	
 	public static final long serialVersionUID = 2L;
 	
-	private static final Logger log = LoggerFactory.getLogger(User.class);
+	private static final Logger LOG = LoggerFactory.getLogger(User.class);
 	
 	// Fields
 	
@@ -145,8 +145,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 		
 		Set<Role> tmproles = getAllRoles();
 		
-		if (log.isDebugEnabled()) {
-			log.debug("User #" + userId + " has roles: " + tmproles);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("User #" + userId + " has roles: " + tmproles);
 		}
 		
 		return containsRole(r);
@@ -211,8 +211,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 			totalRoles.addAll(getRoles());
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("User's base roles: " + baseRoles);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("User's base roles: " + baseRoles);
 		}
 		
 		try {
@@ -221,11 +221,11 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 			}
 		}
 		catch (ClassCastException e) {
-			log.error("Error converting roles for user: " + this);
-			log.error("baseRoles.class: " + baseRoles.getClass().getName());
-			log.error("baseRoles: " + baseRoles.toString());
+			LOG.error("Error converting roles for user: " + this);
+			LOG.error("baseRoles.class: " + baseRoles.getClass().getName());
+			LOG.error("baseRoles: " + baseRoles.toString());
 			for (Role baseRole : baseRoles) {
-				log.error("baseRole: '" + baseRole + "'");
+				LOG.error("baseRole: '" + baseRole + "'");
 			}
 		}
 		return totalRoles;

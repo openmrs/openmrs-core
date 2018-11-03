@@ -35,7 +35,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class BooleanConceptChangeSet implements CustomTaskChange {
 	
-	private static final Logger log = LoggerFactory.getLogger(BooleanConceptChangeSet.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BooleanConceptChangeSet.class);
 	
 	private Integer trueConceptId;
 	
@@ -293,11 +293,11 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 				result = rs.getInt(1);
 			} else {
 				// this is okay, we just return null in this case
-				log.debug("Query returned no results: " + sql);
+				LOG.debug("Query returned no results: " + sql);
 			}
 			
 			if (rs.next()) {
-				log.warn("Query returned multiple results when we expected just one: " + sql);
+				LOG.warn("Query returned multiple results when we expected just one: " + sql);
 			}
 			
 			return result;

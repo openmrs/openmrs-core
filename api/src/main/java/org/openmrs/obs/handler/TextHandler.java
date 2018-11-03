@@ -41,7 +41,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	private static final String[] supportedViews = { ComplexObsHandler.TEXT_VIEW, ComplexObsHandler.RAW_VIEW,
 	        ComplexObsHandler.URI_VIEW };
 	
-	private static final Logger log = LoggerFactory.getLogger(TextHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(TextHandler.class);
 	
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally
@@ -59,8 +59,8 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	@Override
 	public Obs getObs(Obs obs, String view) {
 		File file = getComplexDataFile(obs);
-		log.debug("value complex: " + obs.getValueComplex());
-		log.debug("file path: " + file.getAbsolutePath());
+		LOG.debug("value complex: " + obs.getValueComplex());
+		LOG.debug("file path: " + file.getAbsolutePath());
 		ComplexData complexData = null;
 		
 		if (ComplexObsHandler.TEXT_VIEW.equals(view) || ComplexObsHandler.RAW_VIEW.equals(view)) {
@@ -75,7 +75,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 				        .getFileAsBytes(file)) : new ComplexData(originalFilename, OpenmrsUtil.getFileAsString(file));
 			}
 			catch (IOException e) {
-				log.error("Trying to read file: " + file.getAbsolutePath(), e);
+				LOG.error("Trying to read file: " + file.getAbsolutePath(), e);
 			}
 		} else if (ComplexObsHandler.URI_VIEW.equals(view)) {
 			complexData = new ComplexData(file.getName(), file.getPath());
@@ -114,7 +114,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	public Obs saveObs(Obs obs) throws APIException {
 		ComplexData complexData = obs.getComplexData();
 		if (complexData == null) {
-			log.error("Cannot save complex data where obsId=" + obs.getObsId() + " because its ComplexData is null.");
+			LOG.error("Cannot save complex data where obsId=" + obs.getObsId() + " because its ComplexData is null.");
 			return obs;
 		}
 		BufferedWriter fout = null;

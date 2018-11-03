@@ -47,7 +47,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class GenerateUuid implements CustomTaskChange {
 	
-	private static final Logger log = LoggerFactory.getLogger(GenerateUuid.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GenerateUuid.class);
 	
 	public static final Integer TRANSACTION_BATCH_SIZE_LIMIT = 512;
 	
@@ -127,7 +127,7 @@ public class GenerateUuid implements CustomTaskChange {
 								statement.close();
 							}
 							catch (SQLException e) {
-								log.warn("Failed to close the statement", e);
+								LOG.warn("Failed to close the statement", e);
 							}
 						}
 					}
@@ -175,7 +175,7 @@ public class GenerateUuid implements CustomTaskChange {
 									idStatement.close();
 								}
 								catch (SQLException e) {
-									log.warn("Failed to close statement", e);
+									LOG.warn("Failed to close statement", e);
 								}
 							}
 							if (updateStatement != null) {
@@ -183,7 +183,7 @@ public class GenerateUuid implements CustomTaskChange {
 									updateStatement.close();
 								}
 								catch (SQLException e) {
-									log.warn("Failed to close the statement", e);
+									LOG.warn("Failed to close the statement", e);
 								}
 							}
 						}

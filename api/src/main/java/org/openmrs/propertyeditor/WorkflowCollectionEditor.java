@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
  */
 public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	
-	private static final Logger log = LoggerFactory.getLogger(WorkflowCollectionEditor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(WorkflowCollectionEditor.class);
 	
 	public WorkflowCollectionEditor() {
 	}
@@ -76,7 +76,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 				if (id.trim().length() == 0) {
 					continue;
 				}
-				log.debug("trying " + id);
+				LOG.debug("trying " + id);
 				newConceptIds.add(Integer.valueOf(id.trim()));
 			}
 			

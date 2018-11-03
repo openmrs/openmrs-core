@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 	
-	private static final Logger log = LoggerFactory.getLogger(HandlerUtil.class);
+	private static final Logger LOg = LoggerFactory.getLogger(HandlerUtil.class);
 	
 	private static volatile Map<Key, List<?>> cachedHandlers = new WeakHashMap<>();
 	
@@ -114,14 +114,14 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 		List<H> handlers = new ArrayList<>();
 		
 		// First get all registered components of the passed class
-		log.debug("Getting handlers of type " + handlerType + (type == null ? "" : " for class " + type.getName()));
+		LOg.debug("Getting handlers of type " + handlerType + (type == null ? "" : " for class " + type.getName()));
 		for (H handler : Context.getRegisteredComponents(handlerType)) {
 			Handler handlerAnnotation = handler.getClass().getAnnotation(Handler.class);
 			// Only consider those that have been annotated as Handlers
 			if (handlerAnnotation != null) {
 				// If no type is passed in return all handlers
 				if (type == null) {
-					log.debug("Found handler " + handler.getClass());
+					LOg.debug("Found handler " + handler.getClass());
 					handlers.add(handler);
 				}
 				// Otherwise, return all handlers that support the passed type
@@ -129,7 +129,7 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 					for (int i = 0; i < handlerAnnotation.supports().length; i++) {
 						Class<?> clazz = handlerAnnotation.supports()[i];
 						if (clazz.isAssignableFrom(type)) {
-							log.debug("Found handler: " + handler.getClass());
+							LOg.debug("Found handler: " + handler.getClass());
 							handlers.add(handler);
 						}
 					}

@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernatePatientDAO implements PatientDAO {
 	
-	private static final Logger log = LoggerFactory.getLogger(HibernatePatientDAO.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HibernatePatientDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -228,8 +228,8 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (length != null && length < maximumSearchResults) {
 			criteria.setMaxResults(length);
 		} else {
-			if (log.isDebugEnabled()) {
-				log.debug("Limiting the size of the number of matching patients to " + maximumSearchResults);
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Limiting the size of the number of matching patients to " + maximumSearchResults);
 			}
 			criteria.setMaxResults(maximumSearchResults);
 		}
@@ -518,7 +518,7 @@ public class HibernatePatientDAO implements PatientDAO {
 				whereConditions.add(" t4." + attribute + t5 + attribute);
 				innerFields.add("pi1." + attribute);
 			} else {
-				log.warn("Unidentified attribute: " + attribute);
+				LOG.warn("Unidentified attribute: " + attribute);
 			}
 		}
 		if(CollectionUtils.isNotEmpty(innerFields) || CollectionUtils.isNotEmpty(whereConditions)) {

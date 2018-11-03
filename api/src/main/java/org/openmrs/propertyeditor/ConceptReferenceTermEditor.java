@@ -19,14 +19,14 @@ import org.springframework.util.StringUtils;
 
 public class ConceptReferenceTermEditor extends PropertyEditorSupport {
 	
-	private static final Logger log = LoggerFactory.getLogger(ConceptReferenceTermEditor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ConceptReferenceTermEditor.class);
 	
 	public ConceptReferenceTermEditor() {
 	}
 	
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
-		log.debug("Setting text: " + text);
+		LOG.debug("Setting text: " + text);
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(Context.getConceptService().getConceptReferenceTerm(Integer.valueOf(text)));

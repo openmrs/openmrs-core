@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
-	private static final Logger log = LoggerFactory.getLogger(Provider.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Provider.class);
 	
 	private Integer providerId;
 	
@@ -156,7 +156,7 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 		if (getPerson() != null && getPerson().getPersonName() != null) {
 			return getPerson().getPersonName().getFullName();
 		} else {
-			log.warn("We no longer support providers who are not linked to person. Set the name on the linked person");
+			LOG.warn("We no longer support providers who are not linked to person. Set the name on the linked person");
 			return null;
 		}
 	}

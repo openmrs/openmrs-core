@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateUserDAO implements UserDAO {
 	
-	private static final Logger log = LoggerFactory.getLogger(HibernateUserDAO.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HibernateUserDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -100,7 +100,7 @@ public class HibernateUserDAO implements UserDAO {
 		List<User> users = query.list();
 		
 		if (users == null || users.isEmpty()) {
-			log.warn("request for username '" + username + "' not found");
+			LOG.warn("request for username '" + username + "' not found");
 			return null;
 		}
 		
@@ -143,7 +143,7 @@ public class HibernateUserDAO implements UserDAO {
 		
 		Long count = (Long) query.uniqueResult();
 		
-		log.debug("# users found: " + count);
+		LOG.debug("# users found: " + count);
 		return (count != null && count != 0);
 	}
 	
@@ -265,7 +265,7 @@ public class HibernateUserDAO implements UserDAO {
 			authUser = u;
 		}
 		
-		log.debug("updating password");
+		LOG.debug("updating password");
 		//update the user with the new password
 		String salt = getLoginCredential(u).getSalt();
 		String newHashedPassword = Security.encodeString(pw + salt);
@@ -321,11 +321,11 @@ public class HibernateUserDAO implements UserDAO {
 		User u = Context.getAuthenticatedUser();
 		LoginCredential credentials = getLoginCredential(u);
 		if (!credentials.checkPassword(pw)) {
-			log.error("Passwords don't match");
+			LOG.error("Passwords don't match");
 			throw new DAOException("Passwords don't match");
 		}
 		
-		log.info("updating password for " + u.getUsername());
+		LOG.info("updating password for " + u.getUsername());
 		
 		// update the user with the new password
 		String salt = getLoginCredential(u).getSalt();
@@ -343,7 +343,7 @@ public class HibernateUserDAO implements UserDAO {
 		
 		LoginCredential credentials = getLoginCredential(u);
 		if (!credentials.checkPassword(pw)) {
-			log.error("Passwords don't match");
+			LOG.error("Passwords don't match");
 			throw new DAOException("Passwords don't match");
 		}
 		
@@ -355,7 +355,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changeQuestionAnswer(User u, String question, String answer) throws DAOException {
-		log.info("Updating secret question and answer for " + u.getUsername());
+		LOG.info("Updating secret question and answer for " + u.getUsername());
 		
 		LoginCredential credentials = getLoginCredential(u);
 		credentials.setSecretQuestion(question);
@@ -425,7 +425,7 @@ public class HibernateUserDAO implements UserDAO {
 		if (object instanceof Number) {
 			id = ((Number) query.uniqueResult()).intValue() + 1;
 		} else {
-			log.warn("What is being returned here? Definitely nothing expected object value: '" + object + "' of class: "
+			LOG.warn("What is being returned here? Definitely nothing expected object value: '" + object + "' of class: "
 			        + object.getClass());
 			id = 1;
 		}
@@ -554,7 +554,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	private Query createUserSearchQuery(String name, List<Role> roles, boolean includeRetired, String hqlSelectStart) {
 		
-		log.debug("name: " + name);
+		LOG.debug("name: " + name);
 		
 		name = HibernateUtil.escapeSqlWildcards(name, sessionFactory);
 		

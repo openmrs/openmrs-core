@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SerializationServiceImpl extends BaseOpenmrsService implements SerializationService {
 	
-	private static final Logger log = LoggerFactory.getLogger(SerializationServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SerializationServiceImpl.class);
 	
 	//***** Properties (set by spring)
 	private static Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap;
@@ -67,10 +67,10 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 				}
 			}
 			catch (Exception e) {
-				log.info("Cannot create an instance of " + prop + " - using builtin SimpleXStreamSerializer.");
+				LOG.info("Cannot create an instance of " + prop + " - using builtin SimpleXStreamSerializer.");
 			}
 		} else {
-			log.info("No default serializer specified - using builtin SimpleXStreamSerializer.");
+			LOG.info("No default serializer specified - using builtin SimpleXStreamSerializer.");
 		}
 		return serializerMap.get(SimpleXStreamSerializer.class);
 	}

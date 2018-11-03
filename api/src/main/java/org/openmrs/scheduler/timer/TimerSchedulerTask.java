@@ -27,7 +27,7 @@ public class TimerSchedulerTask extends TimerTask {
 	private Task task;
 	
 	/** Logger */
-	private static final Logger log = LoggerFactory.getLogger(TimerSchedulerTask.class);
+	private static final Logger LOG = LoggerFactory.getLogger(TimerSchedulerTask.class);
 	
 	/** * Public constructor */
 	public TimerSchedulerTask(Task task) {
@@ -47,7 +47,7 @@ public class TimerSchedulerTask extends TimerTask {
 		catch (Exception t) {
 			// Fix #862: IllegalStateException: Timer already cancelled.
 			// Suppress error in order to keep the scheduler's Timer from completely failing.
-			log.error(
+			LOG.error(
 			    "FATAL ERROR: Task [" + task.getClass() + "] failed due to exception [" + t.getClass().getName() + "]", t);
 			SchedulerUtil.sendSchedulerError(t);
 		}
@@ -70,12 +70,12 @@ public class TimerSchedulerTask extends TimerTask {
 				taskDefinition.setLastExecutionTime(new Date());
 				schedulerService.saveTaskDefinition(taskDefinition);
 			} else {
-				log.warn("Unable to save the last execution time for task. Task.taskDefinition is null in "
+				LOG.warn("Unable to save the last execution time for task. Task.taskDefinition is null in "
 				        + task.getClass());
 			}
 		}
 		catch (Exception e) {
-			log.warn("Unable to save the last execution time for task ", e);
+			LOG.warn("Unable to save the last execution time for task ", e);
 		}
 	}
 	

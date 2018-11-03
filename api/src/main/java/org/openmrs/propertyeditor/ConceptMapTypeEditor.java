@@ -19,14 +19,14 @@ import org.springframework.util.StringUtils;
 
 public class ConceptMapTypeEditor extends PropertyEditorSupport {
 	
-	private static final Logger log = LoggerFactory.getLogger(ConceptMapTypeEditor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ConceptMapTypeEditor.class);
 	
 	public ConceptMapTypeEditor() {
 	}
 	
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
-		log.debug("Setting text: " + text);
+		LOG.debug("Setting text: " + text);
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(Context.getConceptService().getConceptMapType(Integer.valueOf(text)));

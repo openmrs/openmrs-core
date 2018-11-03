@@ -46,7 +46,7 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	
 	public static final long serialVersionUID = 11231211232111L;
 	
-	private static final Logger log = LoggerFactory.getLogger(PersonAttribute.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PersonAttribute.class);
 	
 	// Fields
 	@DocumentId
@@ -149,10 +149,10 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 				
 			}
 			catch (NoSuchMethodException e) {
-				log.warn("No such method for comparison " + methodAttribute, e);
+				LOG.warn("No such method for comparison " + methodAttribute, e);
 			}
 			catch (IllegalAccessException | InvocationTargetException e) {
-				log.error("Error while comparing attributes", e);
+				LOG.error("Error while comparing attributes", e);
 			}
 
 		}
@@ -260,7 +260,7 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 			}
 			catch (InstantiationException e) {
 				// try to hydrate the object with the String constructor
-				log.trace("Unable to call no-arg constructor for class: " + c.getName());
+				LOG.trace("Unable to call no-arg constructor for class: " + c.getName());
 				return c.getConstructor(String.class).newInstance(getValue());
 			}
 		}
@@ -271,10 +271,10 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 				return null;
 			}
 			
-			log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), e);
+			LOG.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), e);
 		}
 		
-		log.debug("Returning value: '" + getValue() + "'");
+		LOG.debug("Returning value: '" + getValue() + "'");
 		return getValue();
 	}
 	

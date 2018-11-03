@@ -45,7 +45,7 @@ import liquibase.resource.ResourceAccessor;
 
 public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskChange {
 	
-	private static final Logger log = LoggerFactory.getLogger(DuplicateLocationAttributeTypeNameChangeSet.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DuplicateLocationAttributeTypeNameChangeSet.class);
 	
 	@Override
 	public String getConfirmationMessage() {
@@ -144,13 +144,13 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 			}
 		}
 		catch (BatchUpdateException e) {
-			log.warn("Error generated while processsing batch insert", e);
+			LOG.warn("Error generated while processsing batch insert", e);
 			try {
-				log.debug("Rolling back batch", e);
+				LOG.debug("Rolling back batch", e);
 				connection.rollback();
 			}
 			catch (Exception rbe) {
-				log.warn("Error generated while rolling back batch insert", e);
+				LOG.warn("Error generated while rolling back batch insert", e);
 			}
 			// marks the changeset as a failed one
 			throw new CustomChangeException("Failed to update one or more duplicate LocationAttributeType names", e);
@@ -165,7 +165,7 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 				connection.setAutoCommit(autoCommit);
 			}
 			catch (DatabaseException e) {
-				log.warn("Failed to reset auto commit back to true", e);
+				LOG.warn("Failed to reset auto commit back to true", e);
 			}
 			
 			if (rs != null) {
@@ -173,7 +173,7 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 					rs.close();
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the resultset object");
+					LOG.warn("Failed to close the resultset object");
 				}
 			}
 			
@@ -182,7 +182,7 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 					stmt.close();
 				}
 				catch (SQLException e) {
-					log
+					LOG
 					        .warn("Failed to close the select statement used to identify duplicate LocationAttributeType object names");
 				}
 			}
@@ -192,7 +192,7 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 					pStmt.close();
 				}
 				catch (SQLException e) {
-					log
+					LOG
 					        .warn("Failed to close the prepared statement used to update duplicate LocationAttributeType object names");
 				}
 			}

@@ -70,7 +70,7 @@ public class MigrationHelper {
 	
 	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
-	private static final Logger log = LoggerFactory.getLogger(MigrationHelper.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MigrationHelper.class);
 	
 	static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -318,7 +318,7 @@ public class MigrationHelper {
 		}
 		for (String s : programWorkflow) {
 			// ENROLLMENT:HIVEMR-V1,9266,IMB HIV PROGRAM,2005-08-25,
-			log.debug(s);
+			LOG.debug(s);
 			if (s.startsWith("ENROLLMENT:")) {
 				s = s.substring(s.indexOf(":") + 1);
 				String[] temp = s.split(",");

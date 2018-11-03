@@ -36,14 +36,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class OpenmrsFilter extends OncePerRequestFilter {
 	
-	private static final Logger log = LoggerFactory.getLogger(OpenmrsFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OpenmrsFilter.class);
 	
 	/**
 	 * @see javax.servlet.Filter#destroy()
 	 */
 	@Override
 	public void destroy() {
-		log.debug("Destroying filter");
+		LOG.debug("Destroying filter");
 	}
 	
 	/**
@@ -63,10 +63,10 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		// used by htmlInclude tag
 		httpRequest.setAttribute(WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(System.currentTimeMillis()));
 		
-		if (log.isDebugEnabled()) {
-			log.debug("requestURI " + httpRequest.getRequestURI());
-			log.debug("requestURL " + httpRequest.getRequestURL());
-			log.debug("request path info " + httpRequest.getPathInfo());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("requestURI " + httpRequest.getRequestURI());
+			LOG.debug("requestURL " + httpRequest.getRequestURL());
+			LOG.debug("request path info " + httpRequest.getPathInfo());
 		}
 		
 		// User context is created if it doesn't already exist and added to the session
@@ -83,8 +83,8 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 			userContext = new UserContext();
 			httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
 			
-			if (log.isDebugEnabled()) {
-				log.debug("Just set user context " + userContext + " as attribute on session");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Just set user context " + userContext + " as attribute on session");
 			}
 		} else {
 			// set username as attribute on session so parent servlet container 
@@ -102,7 +102,7 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		Context.setUserContext(userContext);
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
-		log.debug("before chain.Filter");
+		LOG.debug("before chain.Filter");
 		
 		// continue the filter chain (going on to spring, authorization, etc)
 		try {
@@ -112,7 +112,7 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 			Context.clearUserContext();
 		}
 		
-		log.debug("after chain.doFilter");
+		LOG.debug("after chain.doFilter");
 		
 	}
 	

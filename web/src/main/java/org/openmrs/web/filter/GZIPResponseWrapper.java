@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	
-	private static final Logger log = LoggerFactory.getLogger(GZIPResponseWrapper.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GZIPResponseWrapper.class);
 	
 	protected HttpServletResponse origResponse;
 	
@@ -57,7 +57,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 			}
 		}
 		catch (IOException e) {
-			log.error("Error during closing writer or stream", e);
+			LOG.error("Error during closing writer or stream", e);
 		}
 	}
 	
@@ -111,8 +111,8 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 		super.sendError(error, message);
 		this.error = error;
 		
-		if (log.isDebugEnabled()) {
-			log.debug("sending error: " + error + " [" + message + "]");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("sending error: " + error + " [" + message + "]");
 		}
 	}
 }

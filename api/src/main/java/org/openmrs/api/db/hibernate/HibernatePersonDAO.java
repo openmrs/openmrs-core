@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernatePersonDAO implements PersonDAO {
 	
-	private static final Logger log = LoggerFactory.getLogger(HibernatePersonDAO.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HibernatePersonDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -293,7 +293,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			    String.valueOf(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE)));
 		}
 		catch (Exception e) {
-			log.warn("Unable to convert the global property " + OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS
+			LOG.warn("Unable to convert the global property " + OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS
 			        + "to a valid integer. Returning the default "
 			        + OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE);
 		}

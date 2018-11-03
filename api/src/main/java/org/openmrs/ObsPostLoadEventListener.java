@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ObsPostLoadEventListener implements PostLoadEventListener {
 	
-	private static final Logger log = LoggerFactory.getLogger(ObsPostLoadEventListener.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ObsPostLoadEventListener.class);
 	
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -61,7 +61,7 @@ public class ObsPostLoadEventListener implements PostLoadEventListener {
 				field.set(event.getEntity(), false);
 			}
 			catch (ReflectiveOperationException e) {
-				log.error("Failed to unset an Obs as dirty after being loaded from the database", e);
+				LOG.error("Failed to unset an Obs as dirty after being loaded from the database", e);
 			}
 			finally {
 				if (field != null) {

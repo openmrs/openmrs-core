@@ -33,7 +33,7 @@ public class LoggingAdvice implements MethodInterceptor {
 	 * Logger for this class. Uses the name "org.openmrs.api" so that it seems to fit into the
 	 * log4j.xml configuration
 	 */
-	private static final Logger log = LoggerFactory.getLogger("org.openmrs.api");
+	private static final Logger LOG = LoggerFactory.getLogger("org.openmrs.api");
 	
 	/**
 	 * List of all method name prefixes that result in INFO-level log messages
@@ -57,8 +57,8 @@ public class LoggingAdvice implements MethodInterceptor {
 		
 		// decide what type of logging we're doing with the current method and the loglevel
 		boolean isSetterTypeOfMethod = OpenmrsUtil.stringStartsWith(name, SETTER_METHOD_PREFIXES);
-		boolean logGetter = !isSetterTypeOfMethod && log.isDebugEnabled();
-		boolean logSetter = isSetterTypeOfMethod && log.isInfoEnabled();
+		boolean logGetter = !isSetterTypeOfMethod && LOG.isDebugEnabled();
+		boolean logSetter = isSetterTypeOfMethod && LOG.isInfoEnabled();
 		
 		// used for the execution time calculations
 		long startTime = System.currentTimeMillis();
@@ -111,9 +111,9 @@ public class LoggingAdvice implements MethodInterceptor {
 			
 			// print the string as either debug or info
 			if (logGetter) {
-				log.debug(output.toString());
+				LOG.debug(output.toString());
 			} else if (logSetter) {
-				log.info(output.toString());
+				LOG.info(output.toString());
 			}
 		}
 		
@@ -133,7 +133,7 @@ public class LoggingAdvice implements MethodInterceptor {
 						username = user.getSystemId();
 					}
 				}
-				log.debug(String.format(
+				LOG.debug(String.format(
 				    "An error occurred while executing this method.%nCurrent user: %s%nError message: %s", username, e
 				            .getMessage()), e);
 			}
@@ -145,15 +145,15 @@ public class LoggingAdvice implements MethodInterceptor {
 				output.append("Exiting method ").append(name);
 				
 				// only append execution time info if we're in debug mode
-				if (log.isDebugEnabled()) {
+				if (LOG.isDebugEnabled()) {
 					output.append(". execution time: ").append(System.currentTimeMillis() - startTime).append(" ms");
 				}
 				
 				// print the string as either debug or info
 				if (logGetter) {
-					log.debug(output.toString());
+					LOG.debug(output.toString());
 				} else if (logSetter) {
-					log.info(output.toString());
+					LOG.info(output.toString());
 				}
 			}
 		}

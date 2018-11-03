@@ -44,7 +44,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 	
 	public static final long serialVersionUID = 4353L;
 
-	private static final Logger log = LoggerFactory.getLogger(PersonName.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PersonName.class);
 
 	// Fields
 	@DocumentId
@@ -408,7 +408,7 @@ public class PersonName extends BaseChangeableOpenmrsData implements java.io.Ser
 			nameTemplate = NameSupport.getInstance().getDefaultLayoutTemplate();
 		}
 		catch (APIException ex) {
-			log.warn("No name layout format set");
+			LOG.warn("No name layout format set");
 		}
 		
 		if (nameTemplate != null) {

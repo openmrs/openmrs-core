@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class Extension {
 	
-	private static final Logger log = LoggerFactory.getLogger(Extension.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Extension.class);
 	
 	// point which this extension is extending
 	private String pointId;
@@ -64,7 +64,7 @@ public abstract class Extension {
 	 * @param parameterMap
 	 */
 	public void initialize(Map<String, String> parameterMap) {
-		log.debug("Initializing extension for point: " + pointId);
+		LOG.debug("Initializing extension for point: " + pointId);
 		this.setPointId(pointId);
 		this.setParameterMap(parameterMap);
 	}

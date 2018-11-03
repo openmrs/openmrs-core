@@ -51,7 +51,7 @@ import org.springframework.validation.Validator;
  */
 public class HibernateAdministrationDAO implements AdministrationDAO, ApplicationContextAware {
 	
-	private static final Logger log = LoggerFactory.getLogger(HibernateAdministrationDAO.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HibernateAdministrationDAO.class);
 	private static final String PROPERTY = "property";
 	
 	/**
@@ -198,7 +198,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 				fieldLength = ((Column) persistentClass.getProperty(fieldName).getColumnIterator().next()).getLength();
 			}
 			catch (Exception e) {
-				log.debug("Could not determine maximum length", e);
+				LOG.debug("Could not determine maximum length", e);
 				return -1;
 			}
 			return fieldLength;

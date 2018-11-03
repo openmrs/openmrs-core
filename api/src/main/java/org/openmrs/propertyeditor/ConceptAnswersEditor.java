@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
  */
 public class ConceptAnswersEditor extends PropertyEditorSupport {
 	
-	private static final Logger log = LoggerFactory.getLogger(ConceptAnswersEditor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ConceptAnswersEditor.class);
 	
 	private Collection<ConceptAnswer> originalConceptAnswers;
 	
@@ -168,14 +168,14 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 				}
 			}
 			
-			log.debug("originalConceptAnswers.getConceptId(): ");
+			LOG.debug("originalConceptAnswers.getConceptId(): ");
 			for (ConceptAnswer a : originalConceptAnswers) {
-				log.debug("id: " + a.getAnswerConcept().getConceptId());
+				LOG.debug("id: " + a.getAnswerConcept().getConceptId());
 			}
 			
-			log.debug("requestConceptIds: ");
+			LOG.debug("requestConceptIds: ");
 			for (String i : requestConceptIds) {
-				log.debug("id: " + i);
+				LOG.debug("id: " + i);
 			}
 		} else {
 			originalConceptAnswers.clear();

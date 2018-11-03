@@ -43,7 +43,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
  */
 public class MutableResourceBundleMessageSource extends ReloadableResourceBundleMessageSource implements MutableMessageSource {
 
-	private static final Logger log = LoggerFactory.getLogger(MutableResourceBundleMessageSource.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MutableResourceBundleMessageSource.class);
 	
 	/**
 	 * Local reference to basenames used to search for properties files.
@@ -97,7 +97,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		}
 		
 		if (foundLocales.isEmpty()) {
-			log.warn("no locales found.");
+			LOG.warn("no locales found.");
 		}
 		return foundLocales;
 	}
@@ -149,7 +149,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 			}
 			catch (Exception e) {
 				// skip over errors in loading a single file
-				log.error("Unable to load properties from file: " + propertiesFile.getFilename(), e);
+				LOG.error("Unable to load properties from file: " + propertiesFile.getFilename(), e);
 			}
 		}
 		return presentations;
@@ -213,7 +213,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 				//OpenmrsUtil.storeProperties(props, propertyFile.getInputStream(), "OpenMRS Application Messages");
 			}
 			catch (Exception e) {
-				log.error("Error generated", e);
+				LOG.error("Error generated", e);
 			}
 		}
 	}
@@ -235,7 +235,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 				//OpenmrsUtil.storeProperties(props, propertyFile, PROPERTIES_FILE_COMMENT);
 			}
 			catch (Exception e) {
-				log.error("Error generated", e);
+				LOG.error("Error generated", e);
 			}
 		}
 	}
@@ -257,7 +257,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 				OpenmrsUtil.loadProperties(props, propertiesFile.getInputStream());
 			}
 			catch (Exception e) {
-				log.error("Error generated", e);
+				LOG.error("Error generated", e);
 			}
 			if (props.containsKey(code)) {
 				foundFile = propertiesFile;
@@ -288,10 +288,10 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 			}
 		}
 		catch (IOException e) {
-			log.error("Error generated", e);
+			LOG.error("Error generated", e);
 		}
-		if (log.isWarnEnabled() && (resourceSet.isEmpty())) {
-			log.warn("No properties files found.");
+		if (LOG.isWarnEnabled() && (resourceSet.isEmpty())) {
+			LOG.warn("No properties files found.");
 		}
 		return resourceSet.toArray(new Resource[resourceSet.size()]);
 	}
@@ -319,7 +319,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 			}
 			catch (Exception e) {
 				// skip over errors in loading a single file
-				log.error("Unable to load properties from file: " + propertiesFile.getFilename(), e);
+				LOG.error("Unable to load properties from file: " + propertiesFile.getFilename(), e);
 			}
 		}
 		

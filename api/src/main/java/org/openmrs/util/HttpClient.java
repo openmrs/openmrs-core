@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpClient {
 	
-	private static final Logger log = LoggerFactory.getLogger(HttpClient.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HttpClient.class);
 	
 	private HttpUrl url;
 	
@@ -84,8 +84,8 @@ public class HttpClient {
 			
 		}
 		catch (Exception e) {
-			log.warn("Exception while posting to : " + this.url, e);
-			log.warn("Reponse from server was: " + response);
+			LOG.warn("Exception while posting to : " + this.url, e);
+			LOG.warn("Reponse from server was: " + response);
 		}
 		finally {
 			if (wr != null) {

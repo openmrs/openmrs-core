@@ -68,7 +68,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class DatabaseUpdater {
 	
-	private static final Logger log = LoggerFactory.getLogger(DatabaseUpdater.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DatabaseUpdater.class);
 	
 	private static final String CHANGE_LOG_FILE = "liquibase-update-to-latest.xml";
 	
@@ -107,7 +107,7 @@ public class DatabaseUpdater {
 	public static void executeChangelog(String changelog, Map<String, Object> userInput) throws DatabaseUpdateException,
 	        InputRequiredException {
 		
-		log.debug("Executing changelog: " + changelog);
+		LOG.debug("Executing changelog: " + changelog);
 		
 		executeChangelog(changelog, userInput, null);
 	}
@@ -140,7 +140,7 @@ public class DatabaseUpdater {
 	 */
 	public static List<String> executeChangelog(String changelog, Map<String, Object> userInput,
 	        ChangeSetExecutorCallback callback) throws DatabaseUpdateException, InputRequiredException {
-		log.debug("installing the tables into the database");
+		LOG.debug("installing the tables into the database");
 		
 		if (changelog == null) {
 			changelog = CHANGE_LOG_FILE;
@@ -196,7 +196,7 @@ public class DatabaseUpdater {
 			cl = OpenmrsClassLoader.getInstance();
 		}
 		
-		log.debug("Setting up liquibase object to run changelog: " + changeLogFile);
+		LOG.debug("Setting up liquibase object to run changelog: " + changeLogFile);
 		Liquibase liquibase = getLiquibase(changeLogFile, cl);
 		int numChangeSetsToRun = liquibase.listUnrunChangeSets(contexts).size();
 		Database database = null;
@@ -227,7 +227,7 @@ public class DatabaseUpdater {
 				lockHandler.releaseLock();
 			}
 			catch (Exception e) {
-				log.error("Could not release lock", e);
+				LOG.error("Could not release lock", e);
 			}
 			try {
 				database.getConnection().close();
@@ -248,7 +248,7 @@ public class DatabaseUpdater {
 	 * @should always have a valid update to latest file
 	 */
 	public static boolean updatesRequired() throws LockException {
-		log.debug("checking for updates");
+		LOG.debug("checking for updates");
 		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges();
 		
 		// if the db is locked, it means there was a crash
@@ -259,7 +259,7 @@ public class DatabaseUpdater {
 			// if there is a db lock but there are no db changes we undo the
 			// lock
 			DatabaseUpdater.releaseDatabaseLock();
-			log.debug("db lock found and released automatically");
+			LOG.debug("db lock found and released automatically");
 			return false;
 		}
 		
@@ -274,7 +274,7 @@ public class DatabaseUpdater {
 	 * @should always have a valid update to latest file
 	 */
 	public static boolean updatesRequired(String... changeLogFilenames) throws Exception {
-		log.debug("checking for updates");
+		LOG.debug("checking for updates");
 		
 		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges(changeLogFilenames);
 		return !changesets.isEmpty();
@@ -310,7 +310,7 @@ public class DatabaseUpdater {
 		for (Object key : runtimePropertyKeys) {
 			String prop = (String) key;
 			String value = (String) runtimeProperties.get(key);
-			log.trace("Setting property: " + prop + ":" + value);
+			LOG.trace("Setting property: " + prop + ":" + value);
 			if (!prop.startsWith("hibernate") && !runtimeProperties.containsKey("hibernate." + prop)) {
 				runtimeProperties.setProperty("hibernate." + prop, value);
 			}
@@ -597,7 +597,7 @@ public class DatabaseUpdater {
 	 */
 	@Authorized(PrivilegeConstants.GET_DATABASE_CHANGES)
 	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges(String... changeLogFilenames) {
-		log.debug("Getting unrun changesets");
+		LOG.debug("Getting unrun changesets");
 		
 		Database database = null;
 		try {
@@ -693,16 +693,16 @@ public class DatabaseUpdater {
 			
 			//check if there was an error while writing to the file
 			if (writer.checkError()) {
-				log.warn("An Error occured while writing warnings to the database update log file'");
+				LOG.warn("An Error occured while writing warnings to the database update log file'");
 			}
 			
 			writer.close();
 		}
 		catch (FileNotFoundException e) {
-			log.warn("Failed to find the database update log file", e);
+			LOG.warn("Failed to find the database update log file", e);
 		}
 		catch (IOException e) {
-			log.warn("Failed to write to the database update log file", e);
+			LOG.warn("Failed to write to the database update log file", e);
 		}
 		finally {
 			IOUtils.closeQuietly(streamWriter);

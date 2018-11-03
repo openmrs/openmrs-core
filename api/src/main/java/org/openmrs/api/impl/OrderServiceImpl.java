@@ -74,7 +74,7 @@ import org.springframework.util.StringUtils;
 @Transactional
 public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator, GlobalPropertyListener {
 	
-	private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OrderServiceImpl.class);
 	
 	private static final String ORDER_NUMBER_PREFIX = "ORD-";
 	
@@ -345,10 +345,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			    OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID);
 			if (StringUtils.hasText(generatorBeanId)) {
 				orderNumberGenerator = Context.getRegisteredComponent(generatorBeanId, OrderNumberGenerator.class);
-				log.info("Successfully set the configured order number generator");
+				LOG.info("Successfully set the configured order number generator");
 			} else {
 				orderNumberGenerator = this;
-				log.info("Setting default order number generator");
+				LOG.info("Setting default order number generator");
 			}
 		}
 		

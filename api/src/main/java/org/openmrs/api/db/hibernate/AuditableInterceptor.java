@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 public class AuditableInterceptor extends EmptyInterceptor {
 	
-	private static final Logger log = LoggerFactory.getLogger(AuditableInterceptor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AuditableInterceptor.class);
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -78,8 +78,8 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		objectWasChanged = setCreatorAndDateCreatedIfNull(entity, currentState, propertyNames);
 		
 		if (entity instanceof Auditable && propertyNames != null) {
-			if (log.isDebugEnabled()) {
-				log.debug("Setting changed by fields on " + entity.getClass());
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Setting changed by fields on " + entity.getClass());
 			}
 			
 			Map<String, Object> propertyValues = getPropertyValuesToUpdate();
@@ -104,8 +104,8 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		boolean objectWasChanged = false;
 		
 		if (entity instanceof OpenmrsObject) {
-			if (log.isDebugEnabled()) {
-				log.debug("Setting creator and dateCreated on " + entity);
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Setting creator and dateCreated on " + entity);
 			}
 			
 			Map<String, Object> propertyValues = getPropertyValuesToSave();

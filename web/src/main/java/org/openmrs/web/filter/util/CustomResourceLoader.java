@@ -33,7 +33,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
  */
 public class CustomResourceLoader {
 	
-	private static final Logger log = LoggerFactory.getLogger(CustomResourceLoader.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CustomResourceLoader.class);
 	
 	/** */
 	public static final String PREFIX = "messages";
@@ -64,7 +64,7 @@ public class CustomResourceLoader {
 			}
 		}
 		catch (IOException ex) {
-			log.error(ex.getMessage(), ex);
+			LOG.error(ex.getMessage(), ex);
 		}
 	}
 	

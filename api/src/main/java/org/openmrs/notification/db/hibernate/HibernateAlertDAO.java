@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateAlertDAO implements AlertDAO {
 	
-	private static final Logger log = LoggerFactory.getLogger(HibernateAlertDAO.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HibernateAlertDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -95,7 +95,7 @@ public class HibernateAlertDAO implements AlertDAO {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws DAOException {
-		log.debug("Getting alerts for user " + user + " read? " + includeRead + " expired? " + includeExpired);
+		LOG.debug("Getting alerts for user " + user + " read? " + includeRead + " expired? " + includeExpired);
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Alert.class, "alert");
 		

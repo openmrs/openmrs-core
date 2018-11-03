@@ -30,13 +30,13 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	
 	private boolean initialized = false;
 	
-	private static final Logger log = LoggerFactory.getLogger(AddressSupport.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AddressSupport.class);
 	
 	private AddressSupport() {
 		if (singleton == null) {
 			singleton = this;
 		}
-		log.debug("Setting singleton: " + singleton);
+		LOG.debug("Setting singleton: " + singleton);
 	}
 	
 	public static AddressSupport getInstance() {
@@ -135,7 +135,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 			setAddressTemplate(newValue.getPropertyValue());
 		}
 		catch (Exception ex) {
-			log.error("Error in new xml global property value", ex);
+			LOG.error("Error in new xml global property value", ex);
 			setAddressTemplate(new ArrayList<>());
 		}
 	}
@@ -148,7 +148,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 			    AddressTemplate.class);
 		}
 		catch (SerializationException e) {
-			log.error("Error in deserializing address template", e);
+			LOG.error("Error in deserializing address template", e);
 			addressTemplate = new AddressTemplate("Error while deserializing address layout template.");
 		}
 		

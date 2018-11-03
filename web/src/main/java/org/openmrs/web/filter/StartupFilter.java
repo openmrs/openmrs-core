@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class StartupFilter implements Filter {
 	
-	private static final Logger log = LoggerFactory.getLogger(StartupFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(StartupFilter.class);
 	
 	protected static VelocityEngine velocityEngine = null;
 	
@@ -128,7 +128,7 @@ public abstract class StartupFilter implements Filter {
 					OpenmrsUtil.copyFile(imageFileInputStream, httpResponse.getOutputStream());
 				}
 				catch (FileNotFoundException e) {
-					log.error("Unable to find file: " + file.getAbsolutePath());
+					LOG.error("Unable to find file: " + file.getAbsolutePath());
 				}
 				finally {
 					if (imageFileInputStream != null) {
@@ -136,12 +136,12 @@ public abstract class StartupFilter implements Filter {
 							imageFileInputStream.close();
 						}
 						catch (IOException io) {
-							log.warn("Couldn't close imageFileInputStream: " + io);
+							LOG.warn("Couldn't close imageFileInputStream: " + io);
 						}
 					}
 				}
 			} else if (servletPath.startsWith("/scripts")) {
-				log.error("Calling /scripts during the initializationfilter pages will cause the openmrs_static_context-servlet.xml to initialize too early and cause errors after startup.  Use '/initfilter"
+				LOG.error("Calling /scripts during the initializationfilter pages will cause the openmrs_static_context-servlet.xml to initialize too early and cause errors after startup.  Use '/initfilter"
 				        + servletPath + "' instead.");
 			}
 			// for anything but /initialsetup
@@ -191,7 +191,7 @@ public abstract class StartupFilter implements Filter {
 				velocityEngine.init(props);
 			}
 			catch (Exception e) {
-				log.error("velocity init failed, because: " + e);
+				LOG.error("velocity init failed, because: " + e);
 			}
 		}
 	}
@@ -248,7 +248,7 @@ public abstract class StartupFilter implements Filter {
 				velocityContext.put(field.getName(), field.get(model));
 			}
 			catch (IllegalArgumentException | IllegalAccessException e) {
-				log.error("Error generated while getting field value: " + field.getName(), e);
+				LOG.error("Error generated while getting field value: " + field.getName(), e);
 			}
 		}
 		
@@ -329,7 +329,7 @@ public abstract class StartupFilter implements Filter {
 			return mapper.writeValueAsString(object);
 		}
 		catch (IOException e) {
-			log.error("Failed to convert object to JSON");
+			LOG.error("Failed to convert object to JSON");
 			throw new APIException(e);
 		}
 	}

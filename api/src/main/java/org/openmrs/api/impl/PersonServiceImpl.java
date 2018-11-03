@@ -55,7 +55,7 @@ import org.springframework.util.Assert;
 @Transactional
 public class PersonServiceImpl extends BaseOpenmrsService implements PersonService {
 	
-	private static final Logger log = LoggerFactory.getLogger(PersonServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PersonServiceImpl.class);
 	
 	private PersonDAO dao;
 	
@@ -600,7 +600,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		} else if (viewType == ATTR_VIEW_TYPE.HEADER) {
 			result = combineAttributes(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, personType);
 		} else {
-			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
+			LOG.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
 		}
 		return result;
 	}
@@ -615,7 +615,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		} else if (personType == PERSON_TYPE.USER) {
 			result = getGlobalProperties(userAttributeProperty);
 		} else {
-			log.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
+			LOG.error(MarkerFactory.getMarker("FATAL"), "Should not be here.");
 		}
 		return result;
 	}
@@ -810,13 +810,13 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		if (Context.getSerializationService().getDefaultSerializer() == null) {
 			throw new APIException("serializer.default.not.found", (Object[]) null);
 		}
-		log.debug("Auditing merging of non-preferred person " + personMergeLog.getLoser().getUuid()
+		LOG.debug("Auditing merging of non-preferred person " + personMergeLog.getLoser().getUuid()
 		        + " with preferred person " + personMergeLog.getWinner().getId());
 		//populate the mergedData XML from the PersonMergeLogData object
 		String serialized = Context.getSerializationService().getDefaultSerializer()
 		        .serialize(personMergeLog.getPersonMergeLogData());
 		personMergeLog.setSerializedMergedData(serialized);
-		log.debug(serialized);
+		LOG.debug(serialized);
 		//save the bean to the database
 		return dao.savePersonMergeLog(personMergeLog);
 	}

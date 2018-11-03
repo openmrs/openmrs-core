@@ -103,7 +103,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 112342333L;
 	
-	private static final Logger log = LoggerFactory.getLogger(Obs.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Obs.class);
 	
 	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
 	
@@ -1086,8 +1086,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @should fail if the value of the string is empty
 	 */
 	public void setValueAsString(String s) throws ParseException {
-		if (log.isDebugEnabled()) {
-			log.debug("getConcept() == " + getConcept());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("getConcept() == " + getConcept());
 		}
 		
 		if (getConcept() != null && !StringUtils.isBlank(s)) {

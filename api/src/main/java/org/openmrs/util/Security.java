@@ -40,7 +40,7 @@ public class Security {
 	/**
 	 * encryption settings
 	 */
-	private static final Logger log = LoggerFactory.getLogger(Security.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Security.class);
 	
 	/**
 	 * Compare the given hash and the given string-to-hash to see if they are equal. The
@@ -95,7 +95,7 @@ public class Security {
 		}
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
-			log.error(getPasswordEncodeFailMessage(algorithm), e);
+			LOG.error(getPasswordEncodeFailMessage(algorithm), e);
 			throw new APIException("system.cannot.find.password.encryption.algorithm", null, e);
 		}
 		
@@ -118,7 +118,7 @@ public class Security {
 		}
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
-			log.error(getPasswordEncodeFailMessage(algorithm), e);
+			LOG.error(getPasswordEncodeFailMessage(algorithm), e);
 			throw new APIException("system.cannot.find.encryption.algorithm", null, e);
 		}
 		
@@ -163,7 +163,7 @@ public class Security {
 		}
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
-			log.error(getPasswordEncodeFailMessage(algorithm), e);
+			LOG.error(getPasswordEncodeFailMessage(algorithm), e);
 			throw new APIException("system.cannot.find.encryption.algorithm", null, e);
 		}
 		

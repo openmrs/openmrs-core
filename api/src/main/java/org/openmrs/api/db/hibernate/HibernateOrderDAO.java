@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateOrderDAO implements OrderDAO {
 	
-	private static final Logger log = LoggerFactory.getLogger(HibernateOrderDAO.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HibernateOrderDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -106,8 +106,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public Order getOrder(Integer orderId) throws DAOException {
-		if (log.isDebugEnabled()) {
-			log.debug("getting order #" + orderId);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("getting order #" + orderId);
 		}
 		
 		return (Order) sessionFactory.getCurrentSession().get(Order.class, orderId);

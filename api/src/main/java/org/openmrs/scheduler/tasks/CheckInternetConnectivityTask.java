@@ -30,7 +30,7 @@ public class CheckInternetConnectivityTask extends AbstractTask {
 	/**
 	 * Logger
 	 */
-	private static final Logger log = LoggerFactory.getLogger(CheckInternetConnectivityTask.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CheckInternetConnectivityTask.class);
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
@@ -55,7 +55,7 @@ public class CheckInternetConnectivityTask extends AbstractTask {
 			}
 			catch (Exception e) {
 				// Uh oh, just log it.
-				log.error("Failed to check internet connectivity", e);
+				LOG.error("Failed to check internet connectivity", e);
 			}
 		}
 	}

@@ -60,7 +60,7 @@ public class ModuleUtil {
 	private ModuleUtil() {
 	}
 	
-	private static final Logger log = LoggerFactory.getLogger(ModuleUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ModuleUtil.class);
 	
 	/**
 	 * Start up the module system with the given properties.
@@ -74,11 +74,11 @@ public class ModuleUtil {
 		if (moduleListString == null || moduleListString.length() == 0) {
 			// Attempt to get all of the modules from the modules folder
 			// and store them in the modules list
-			log.debug("Starting all modules");
+			LOG.debug("Starting all modules");
 			ModuleFactory.loadModules();
 		} else {
 			// use the list of modules and load only those
-			log.debug("Starting all modules in this list: " + moduleListString);
+			LOG.debug("Starting all modules in this list: " + moduleListString);
 			
 			String[] moduleArray = moduleListString.split(" ");
 			List<File> modulesToLoad = new ArrayList<>();
@@ -110,10 +110,10 @@ public class ModuleUtil {
 								expandedFile.deleteOnExit();
 							}
 							catch (IOException io) {
-								log.error("Unable to expand classpath found module: " + modulePath, io);
+								LOG.error("Unable to expand classpath found module: " + modulePath, io);
 							}
 						} else {
-							log
+							LOG
 							        .error("Unable to load module at path: "
 							                + modulePath
 							                + " because no file exists there and it is not found on the classpath. (absolute path tried: "
@@ -130,12 +130,12 @@ public class ModuleUtil {
 		ModuleFactory.startModules();
 		
 		// some debugging info
-		if (log.isDebugEnabled()) {
+		if (LOG.isDebugEnabled()) {
 			Collection<Module> modules = ModuleFactory.getStartedModules();
 			if (modules == null || modules.isEmpty()) {
-				log.debug("No modules loaded");
+				LOG.debug("No modules loaded");
 			} else {
-				log.debug("Found and loaded " + modules.size() + " module(s)");
+				LOG.debug("Found and loaded " + modules.size() + " module(s)");
 			}
 		}
 		
@@ -154,8 +154,8 @@ public class ModuleUtil {
 		List<Module> modules = new ArrayList<>(ModuleFactory.getStartedModules());
 		
 		for (Module mod : modules) {
-			if (log.isDebugEnabled()) {
-				log.debug("stopping module: " + mod.getModuleId());
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("stopping module: " + mod.getModuleId());
 			}
 			
 			if (mod.isStarted()) {
@@ -163,7 +163,7 @@ public class ModuleUtil {
 			}
 		}
 		
-		log.debug("done shutting down modules");
+		LOG.debug("done shutting down modules");
 		
 		// clean up the static variables just in case they weren't done before
 		ModuleFactory.extensionMap = null;
@@ -336,13 +336,13 @@ public class ModuleUtil {
 					int upperReturn = compareVersion(version, upperBound);
 					
 					if (lowerReturn < 0 || upperReturn > 0) {
-						log.debug("Version " + version + " is not between " + lowerBound + " and " + upperBound);
+						LOG.debug("Version " + version + " is not between " + lowerBound + " and " + upperBound);
 					} else {
 						return true;
 					}
 				} else {
 					if (compareVersion(version, range) < 0) {
-						log.debug("Version " + version + " is below " + range);
+						LOG.debug("Version " + version + " is below " + range);
 					} else {
 						return true;
 					}
@@ -459,7 +459,7 @@ public class ModuleUtil {
 			}
 		}
 		catch (NumberFormatException e) {
-			log.error("Error while converting a version/value to an integer: " + version + "/" + value, e);
+			LOG.error("Error while converting a version/value to an integer: " + version + "/" + value, e);
 		}
 		
 		// default return value if an error occurs or elements are equal
@@ -503,7 +503,7 @@ public class ModuleUtil {
 		
 		// now create the modules folder if it doesn't exist
 		if (!folder.exists()) {
-			log.warn("Module repository " + folder.getAbsolutePath() + " doesn't exist.  Creating directories now.");
+			LOG.warn("Module repository " + folder.getAbsolutePath() + " doesn't exist.  Creating directories now.");
 			folder.mkdirs();
 		}
 		
@@ -578,7 +578,7 @@ public class ModuleUtil {
 					if (last >= 0) {
 						File parent = new File(docBase, entryName.substring(0, last));
 						parent.mkdirs();
-						log.debug("Creating parent dirs: " + parent.getAbsolutePath());
+						LOG.debug("Creating parent dirs: " + parent.getAbsolutePath());
 					}
 					// we don't want to "expand" directories or empty names
 					if (entryName.endsWith("/") || "".equals(entryName)) {
@@ -592,12 +592,12 @@ public class ModuleUtil {
 				}
 			}
 			if (!foundName) {
-				log.debug("Unable to find: " + name + " in file " + fileToExpand.getAbsolutePath());
+				LOG.debug("Unable to find: " + name + " in file " + fileToExpand.getAbsolutePath());
 			}
 			
 		}
 		catch (IOException e) {
-			log.warn("Unable to delete tmpModuleFile on error", e);
+			LOG.warn("Unable to delete tmpModuleFile on error", e);
 			throw e;
 		}
 		finally {
@@ -624,8 +624,8 @@ public class ModuleUtil {
 	 * @throws IOException if an error occurred while copying
 	 */
 	private static File expand(InputStream input, String fileDir, String name) throws IOException {
-		if (log.isDebugEnabled()) {
-			log.debug("expanding: " + name);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("expanding: " + name);
 		}
 		
 		File file = new File(fileDir, name);
@@ -660,12 +660,12 @@ public class ModuleUtil {
 			uc.setRequestProperty("Cache-Control", "max-age=0,no-cache");
 			uc.setRequestProperty("Pragma", "no-cache");
 			
-			log.debug("Logging an attempt to connect to: " + url);
+			LOG.debug("Logging an attempt to connect to: " + url);
 			
 			in = openConnectionCheckRedirects(uc);
 		}
 		catch (IOException io) {
-			log.warn("io while reading: " + url, io);
+			LOG.warn("io while reading: " + url, io);
 		}
 		
 		return in;
@@ -744,7 +744,7 @@ public class ModuleUtil {
 			output = out.toString(StandardCharsets.UTF_8.name());
 		}
 		catch (IOException io) {
-			log.warn("io while reading: " + url, io);
+			LOG.warn("io while reading: " + url, io);
 		}
 		finally {
 			try {
@@ -777,7 +777,7 @@ public class ModuleUtil {
 					// get the contents pointed to by the url
 					URL url = new URL(updateURL);
 					if (!url.toString().endsWith(ModuleConstants.UPDATE_FILE_NAME)) {
-						log.warn("Illegal url: " + url);
+						LOG.warn("Illegal url: " + url);
 						continue;
 					}
 					String content = getURL(url);
@@ -791,7 +791,7 @@ public class ModuleUtil {
 					UpdateFileParser parser = new UpdateFileParser(content);
 					parser.parse();
 					
-					log.debug("Update for mod: " + mod.getModuleId() + " compareVersion result: "
+					LOG.debug("Update for mod: " + mod.getModuleId() + " compareVersion result: "
 					        + compareVersion(mod.getVersion(), parser.getCurrentVersion()));
 					
 					// check the update.rdf version against the installed version
@@ -801,7 +801,7 @@ public class ModuleUtil {
 							mod.setUpdateVersion(parser.getCurrentVersion());
 							updateFound = true;
 						} else {
-							log.warn("Module id does not match in update.rdf:" + parser.getModuleId());
+							LOG.warn("Module id does not match in update.rdf:" + parser.getModuleId());
 						}
 					} else {
 						mod.setDownloadURL(null);
@@ -809,10 +809,10 @@ public class ModuleUtil {
 					}
 				}
 				catch (ModuleException e) {
-					log.warn("Unable to get updates from update.xml", e);
+					LOG.warn("Unable to get updates from update.xml", e);
 				}
 				catch (MalformedURLException e) {
-					log.warn("Unable to form a URL object out of: " + updateURL, e);
+					LOG.warn("Unable to form a URL object out of: " + updateURL, e);
 				}
 			}
 		}
@@ -862,7 +862,7 @@ public class ModuleUtil {
 				}
 			}
 			catch (Exception e) {
-				log.warn("Unable to call willRefreshContext() method in the module's activator", e);
+				LOG.warn("Unable to call willRefreshContext() method in the module's activator", e);
 			}
 		}
 		
@@ -875,7 +875,7 @@ public class ModuleUtil {
 			ctx.close();
 		}
 		catch (Exception e) {
-			log.warn("Exception while stopping and closing context: ", e);
+			LOG.warn("Exception while stopping and closing context: ", e);
 			// Spring seems to be trying to refresh the context instead of /just/ stopping
 			// pass
 		}
@@ -900,8 +900,8 @@ public class ModuleUtil {
 		OpenmrsClassLoader.setThreadsToNewClassLoader();
 		
 		// reload the advice points that were lost when refreshing Spring
-		if (log.isDebugEnabled()) {
-			log.debug("Reloading advice for all started modules: " + startedModules.size());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Reloading advice for all started modules: " + startedModules.size());
 		}
 		
 		try {
@@ -932,14 +932,14 @@ public class ModuleUtil {
 							}
 						}
 						catch (Exception e) {
-							log.warn("Unable to invoke started() method on the module's activator", e);
+							LOG.warn("Unable to invoke started() method on the module's activator", e);
 							ModuleFactory.stopModule(module, true, true);
 						}
 					}
 					
 				}
 				catch (Exception e) {
-					log.warn("Unable to invoke method on the module's activator ", e);
+					LOG.warn("Unable to invoke method on the module's activator ", e);
 				}
 			}
 		}
@@ -998,7 +998,7 @@ public class ModuleUtil {
 				if (compareVersion(mod.getVersion(), coreReqVersion) >= 0) {
 					coreModules.remove(moduleId);
 				} else {
-					log.debug("Module: " + moduleId + " is a core module and is started, but its version: "
+					LOG.debug("Module: " + moduleId + " is a core module and is started, but its version: "
 					        + mod.getVersion() + " is not within the required version: " + coreReqVersion);
 				}
 			}
@@ -1042,7 +1042,7 @@ public class ModuleUtil {
 			}
 		}
 		catch (Exception e) {
-			log.warn("Unable to get the mandatory module list", e);
+			LOG.warn("Unable to get the mandatory module list", e);
 		}
 		
 		return mandatoryModuleIds;
@@ -1150,15 +1150,15 @@ public class ModuleUtil {
 				
 				packageName = packageName.replaceAll("/", ".");
 				
-				if (packagesProvided.add(packageName) && log.isTraceEnabled()) {
-					log.trace("Adding module's jarentry with package: " + packageName);
+				if (packagesProvided.add(packageName) && LOG.isTraceEnabled()) {
+					LOG.trace("Adding module's jarentry with package: " + packageName);
 				}
 			}
 			
 			jar.close();
 		}
 		catch (IOException e) {
-			log.error("Error while reading file: " + file.getAbsolutePath(), e);
+			LOG.error("Error while reading file: " + file.getAbsolutePath(), e);
 		}
 		finally {
 			if (jar != null) {
@@ -1221,7 +1221,7 @@ public class ModuleUtil {
 			}
 		}
 		catch (IOException e) {
-			log.error("Unable to get '" + resource + "' from '" + innerJarFileLocation + "' of '" + outerJarFile.getName()
+			LOG.error("Unable to get '" + resource + "' from '" + innerJarFileLocation + "' of '" + outerJarFile.getName()
 			        + "'", e);
 		}
 		finally {
@@ -1235,12 +1235,12 @@ public class ModuleUtil {
 				}
 			}
 			catch (IOException e) {
-				log.warn("Unable to close inner jarfile: " + innerJarFile, e);
+				LOG.warn("Unable to close inner jarfile: " + innerJarFile, e);
 			}
 
 			// delete temporary file
 			if (tempFile != null && !tempFile.delete()) {
-				log.warn("Could not delete temporary jarfile: " + tempFile);
+				LOG.warn("Could not delete temporary jarfile: " + tempFile);
 			}
 		}
 		return null;

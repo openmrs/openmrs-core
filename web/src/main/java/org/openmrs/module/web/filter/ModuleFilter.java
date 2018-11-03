@@ -28,14 +28,14 @@ import org.slf4j.LoggerFactory;
  */
 public class ModuleFilter implements Filter {
 	
-	private static final Logger log = LoggerFactory.getLogger(ModuleFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ModuleFilter.class);
 	
 	/**
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-		log.debug("Initializating ModuleFilter");
+		LOG.debug("Initializating ModuleFilter");
 	}
 	
 	/**
@@ -43,7 +43,7 @@ public class ModuleFilter implements Filter {
 	 */
 	@Override
 	public void destroy() {
-		log.debug("Destroying the ModuleFilter");
+		LOG.debug("Destroying the ModuleFilter");
 	}
 	
 	/**

@@ -32,7 +32,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class EncryptSecretAnswersChangeSet implements CustomTaskChange {
 	
-	private static final Logger log = LoggerFactory.getLogger(EncryptSecretAnswersChangeSet.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EncryptSecretAnswersChangeSet.class);
 	
 	/**
 	 * @see CustomTaskChange#execute(Database)
@@ -68,7 +68,7 @@ public class EncryptSecretAnswersChangeSet implements CustomTaskChange {
 					stmt.close();
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the statement object");
+					LOG.warn("Failed to close the statement object");
 				}
 			}
 			
@@ -77,7 +77,7 @@ public class EncryptSecretAnswersChangeSet implements CustomTaskChange {
 					pStmt.close();
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the prepared statement object");
+					LOG.warn("Failed to close the prepared statement object");
 				}
 			}
 		}

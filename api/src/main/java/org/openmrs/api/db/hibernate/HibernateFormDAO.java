@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateFormDAO implements FormDAO {
 	
-	private static final Logger log = LoggerFactory.getLogger(HibernateFormDAO.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HibernateFormDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -201,7 +201,7 @@ public class HibernateFormDAO implements FormDAO {
 	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
 	        throws DAOException {
 		if (form == null) {
-			log.debug("form is null, no fields will be matched");
+			LOG.debug("form is null, no fields will be matched");
 			return null;
 		}
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormField.class, "ff").createAlias("field",
@@ -213,7 +213,7 @@ public class HibernateFormDAO implements FormDAO {
 		String err = "FormField warning.  No FormField matching concept '" + concept + "' for form '" + form + "'";
 		
 		if (formFields.isEmpty()) {
-			log.debug(err);
+			LOG.debug(err);
 			return null;
 		}
 		
@@ -229,7 +229,7 @@ public class HibernateFormDAO implements FormDAO {
 			if (!force) {
 				return backupPlan;
 			} else {
-				log.debug(err);
+				LOG.debug(err);
 				return null;
 			}
 		} else {

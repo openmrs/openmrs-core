@@ -77,7 +77,7 @@ import org.springframework.util.StringUtils;
 @Transactional
 public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptService {
 	
-	private static final Logger log = LoggerFactory.getLogger(ConceptServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ConceptServiceImpl.class);
 	
 	private ConceptDAO dao;
 	
@@ -141,7 +141,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 							BeanUtils.copyProperties(conceptName, clone);
 						}
 						catch (IllegalAccessException | InvocationTargetException e) {
-							log.error(errorMessage, e);
+							LOG.error(errorMessage, e);
 						}
 					}
 				}
@@ -477,7 +477,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		} else {
 			List<Drug> drugs = dao.getDrugs(drugNameOrId, null, false);
 			if (drugs.size() > 1) {
-				log.warn("more than one drug name returned with name:" + drugNameOrId);
+				LOG.warn("more than one drug name returned with name:" + drugNameOrId);
 			}
 			if (drugs.isEmpty()) {
 				return null;
@@ -587,7 +587,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public ConceptClass getConceptClassByName(String name) {
 		List<ConceptClass> ccList = dao.getConceptClasses(name);
 		if (ccList.size() > 1) {
-			log.warn("More than one ConceptClass found with name: " + name);
+			LOG.warn("More than one ConceptClass found with name: " + name);
 		}
 		if (ccList.size() == 1) {
 			return ccList.get(0);
@@ -1203,7 +1203,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				        OpenmrsConstants.GLOBAL_PROPERTY_UNKNOWN_CONCEPT))));
 			}
 			catch (NumberFormatException e) {
-				log.warn("Concept id for unknown concept should be a number");
+				LOG.warn("Concept id for unknown concept should be a number");
 			}
 		}
 		
@@ -1233,7 +1233,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			        OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT)));
 		}
 		catch (NumberFormatException e) {
-			log.warn("Concept ids for boolean concepts should be numbers");
+			LOG.warn("Concept ids for boolean concepts should be numbers");
 		}
 	}
 	
@@ -1285,8 +1285,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			if (!(dao.getSavedConceptDatatype(concept).isBoolean() && concept.getDatatype().isCoded())) {
 				throw new ConceptInUseException();
 			}
-			if (log.isDebugEnabled()) {
-				log.debug("Converting datatype of concept with id " + concept.getConceptId() + " from Boolean to Coded");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Converting datatype of concept with id " + concept.getConceptId() + " from Boolean to Coded");
 			}
 		}
 	}
@@ -1371,7 +1371,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
 			
-			log.warn(errorMessage, e);
+			LOG.warn(errorMessage, e);
 		}
 		return copy;
 	}

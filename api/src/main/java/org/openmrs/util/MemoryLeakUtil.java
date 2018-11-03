@@ -23,7 +23,7 @@ public class MemoryLeakUtil {
 	private MemoryLeakUtil() {
 	}
 	
-	private static final Logger log = LoggerFactory.getLogger(MemoryLeakUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MemoryLeakUtil.class);
 	
 	//http://bugs.mysql.com/bug.php?id=36565
 	public static void shutdownMysqlCancellationTimer() {
@@ -32,27 +32,27 @@ public class MemoryLeakUtil {
 			Class<?> clazz = Class.forName("com.mysql.jdbc.ConnectionImpl", false, myClassLoader);
 			
 			if (!(clazz.getClassLoader() == myClassLoader)) {
-				log.info("MySQL ConnectionImpl was loaded with another ClassLoader: (" + clazz.getClassLoader()
+				LOG.info("MySQL ConnectionImpl was loaded with another ClassLoader: (" + clazz.getClassLoader()
 				        + "): cancelling anyway");
 			} else {
-				log.info("MySQL ConnectionImpl was loaded with the WebappClassLoader: cancelling the Timer");
+				LOG.info("MySQL ConnectionImpl was loaded with the WebappClassLoader: cancelling the Timer");
 			}
 			
 			Field f = clazz.getDeclaredField("cancelTimer");
 			f.setAccessible(true);
 			Timer timer = (Timer) f.get(null);
 			timer.cancel();
-			log.info("completed timer cancellation");
+			LOG.info("completed timer cancellation");
 		}
 		catch (ClassNotFoundException | NoSuchFieldException cnfe) {
 			// Ignore
-			log.error("Cannot cancel", cnfe);
+			LOG.error("Cannot cancel", cnfe);
 		}
 		catch (SecurityException se) {
-			log.info("Failed to shut-down MySQL Statement Cancellation Timer due to a SecurityException", se);
+			LOG.info("Failed to shut-down MySQL Statement Cancellation Timer due to a SecurityException", se);
 		}
 		catch (IllegalAccessException iae) {
-			log.info("Failed to shut-down MySQL Statement Cancellation Timer due to an IllegalAccessException", iae);
+			LOG.info("Failed to shut-down MySQL Statement Cancellation Timer due to an IllegalAccessException", iae);
 		}
 	}
 }

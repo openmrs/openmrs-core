@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  */
 public class ProviderEditor extends PropertyEditorSupport {
 	
-	private static final Logger log = LoggerFactory.getLogger(ProviderEditor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ProviderEditor.class);
 	
 	public ProviderEditor() {
 	}
@@ -47,7 +47,7 @@ public class ProviderEditor extends PropertyEditorSupport {
 				Provider p = ps.getProviderByUuid(text);
 				setValue(p);
 				if (p == null) {
-					log.error("Error setting provider with id or uuid: " + text, ex);
+					LOG.error("Error setting provider with id or uuid: " + text, ex);
 					throw new IllegalArgumentException("Provider not found: " + ex.getMessage());
 				}
 			}

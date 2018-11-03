@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @Handler(supports = OpenmrsObject.class)
 public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 	
-	private static final Logger log = LoggerFactory.getLogger(OpenmrsObjectSaveHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OpenmrsObjectSaveHandler.class);
 	
 	/**
 	 * This sets the uuid property on the given OpenmrsObject if it is non-null.
@@ -117,13 +117,13 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 			}
 			catch (UnsupportedOperationException ex) {
 				// there is no need to log this. These should be (mostly) silently skipped over 
-				if (log.isInfoEnabled()) {
-					log.info("The property " + property.getName() + " is no longer supported and should be ignored.", ex);
+				if (LOG.isInfoEnabled()) {
+					LOG.info("The property " + property.getName() + " is no longer supported and should be ignored.", ex);
 				}
 			}
 			catch (InvocationTargetException ex) {
-				if (log.isWarnEnabled()) {
-					log.warn("Failed to access property " + property.getName() + "; accessor threw exception.", ex);
+				if (LOG.isWarnEnabled()) {
+					LOG.warn("Failed to access property " + property.getName() + "; accessor threw exception.", ex);
 				}
 			}
 			catch (Exception ex) {
