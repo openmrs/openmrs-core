@@ -11,8 +11,6 @@ package org.openmrs.module;
 
 import java.util.List;
 
-import org.openmrs.util.OpenmrsUtil;
-
 /**
  * This error is thrown when OpenMRS is started but a module marked as 'mandatory' but was unable to
  * start. <br>

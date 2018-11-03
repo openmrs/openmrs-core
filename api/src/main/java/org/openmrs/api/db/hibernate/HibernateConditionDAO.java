@@ -11,8 +11,6 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.openmrs.Condition;
@@ -26,8 +24,6 @@ import org.openmrs.api.db.DAOException;
  * @see ConditionDAO
  */
 public class HibernateConditionDAO implements ConditionDAO {
-	
-	private static final Log log = LogFactory.getLog(HibernateConditionDAO.class);
 	
 	/**
 	 * Hibernate session factory

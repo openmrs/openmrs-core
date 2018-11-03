@@ -11,9 +11,7 @@ package org.openmrs.validator;
 
 import org.openmrs.Condition;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**

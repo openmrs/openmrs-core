@@ -30,11 +30,8 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
 import org.aopalliance.aop.Advice;
-import org.apache.commons.io.IOUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.api.AdministrationService;

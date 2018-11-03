@@ -707,7 +707,7 @@ public final class OpenmrsConstants {
 		        ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT, "Name of the folder in which to store the modules"));
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_ADDRESS_TEMPLATE, DEFAULT_ADDRESS_TEMPLATE,
 		        "XML description of address formats"));
-		props.add(new GlobalProperty("layout.name.format", "short",
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT, PERSON_NAME_FORMAT_SHORT,
 		        "Format in which to display the person names.  Valid values are short, long"));
 		
 		// TODO should be changed to text defaults and constants should be removed
@@ -1039,7 +1039,7 @@ public final class OpenmrsConstants {
 		props
 		        .add(new GlobalProperty(
 		                GLOBAL_PROPERTY_PROVIDER_SEARCH_MATCH_MODE,
-		                "EXACT",
+		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_EXACT,
 		                "Specifies how provider identifiers are matched while searching for providers. Valid values are START,EXACT, END or ANYWHERE"));
 		
 		props

@@ -22,7 +22,7 @@ public class NameSupport extends LayoutSupport<NameTemplate> {
 	
 	private static NameSupport singleton;
 	
-	static Logger log = LoggerFactory.getLogger(NameSupport.class);
+	private static final Logger log = LoggerFactory.getLogger(NameSupport.class);
 	
 	public NameSupport() {
 		if (singleton == null) {

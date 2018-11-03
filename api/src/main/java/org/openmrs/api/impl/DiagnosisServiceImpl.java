@@ -17,8 +17,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DiagnosisDAO;
-import org.openmrs.parameter.EncounterSearchCriteria;
-import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Iterator;
