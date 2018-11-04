@@ -65,7 +65,6 @@ public class OrderContext {
 	public Map<String, Object> getContextAttributes() {
 		if (contextAttributes == null) {
 			contextAttributes = new HashMap<>();
-			return contextAttributes;
 		}
 		return contextAttributes;
 	}
