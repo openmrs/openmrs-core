@@ -1217,7 +1217,7 @@ public class InitializationFilter extends StartupFilter {
 	 *
 	 * @return true if this has been run already
 	 */
-	private synchronized static boolean isInitializationComplete() {
+	private static synchronized boolean isInitializationComplete() {
 		return initializationComplete;
 	}
 	
