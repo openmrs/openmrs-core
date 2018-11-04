@@ -194,6 +194,6 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 	
 	private int calculateGracePeriodInYears(int age) {
 		return Math.min(ESTIMATED_BIRTHDATE_ERROR_MARGIN_MINIMUM_YEARS,
-		    new Double(Math.ceil(age * ESTIMATED_BIRTHDATE_ERROR_MARGIN)).intValue());
+			(int)Math.ceil(age * ESTIMATED_BIRTHDATE_ERROR_MARGIN));
 	}
 }
