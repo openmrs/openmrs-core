@@ -30,7 +30,7 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	
 	private boolean initialized = false;
 	
-	static Logger log = LoggerFactory.getLogger(AddressSupport.class);
+	private static final Logger log = LoggerFactory.getLogger(AddressSupport.class);
 	
 	private AddressSupport() {
 		if (singleton == null) {
