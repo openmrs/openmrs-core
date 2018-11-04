@@ -11,7 +11,6 @@ package org.openmrs.api.impl;
 
 import org.openmrs.Condition;
 import org.openmrs.Patient;
-import org.openmrs.api.APIException;
 import org.openmrs.api.ConditionService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConditionDAO;
