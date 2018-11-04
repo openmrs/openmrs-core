@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AbstractHandler {
 	
-	private static final Logger log = LoggerFactory.getLogger(AbstractHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractHandler.class);
 	
 	protected NumberFormat nf;
 	
@@ -107,14 +107,14 @@ public class AbstractHandler {
 	 */
 	public Obs getObs(Obs obs, String view) {
 		File file = BinaryDataHandler.getComplexDataFile(obs);
-		log.debug("value complex: " + obs.getValueComplex());
-		log.debug("file path: " + file.getAbsolutePath());
+		LOG.debug("value complex: " + obs.getValueComplex());
+		LOG.debug("file path: " + file.getAbsolutePath());
 		ComplexData complexData = null;
 		try {
 			complexData = new ComplexData(file.getName(), OpenmrsUtil.getFileAsBytes(file));
 		}
 		catch (IOException e) {
-			log.error("Trying to read file: " + file.getAbsolutePath(), e);
+			LOG.error("Trying to read file: " + file.getAbsolutePath(), e);
 		}
 		String mimeType = OpenmrsUtil.getFileMimeType(file);
 		complexData.setMimeType(mimeType);
@@ -135,7 +135,7 @@ public class AbstractHandler {
 			return true;
 		}
 		
-		log.warn(
+		LOG.warn(
 		    "Could not delete complex data object for obsId=" + obs.getObsId() + " located at " + file.getAbsolutePath());
 		return false;
 	}

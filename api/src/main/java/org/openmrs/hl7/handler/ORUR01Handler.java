@@ -95,7 +95,7 @@ import ca.uhn.hl7v2.parser.PipeParser;
  */
 public class ORUR01Handler implements Application {
 	
-	private static final Logger log = LoggerFactory.getLogger(ORUR01Handler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ORUR01Handler.class);
 	
 	private static EncounterRole unknownRole = null;
 	
@@ -147,7 +147,7 @@ public class ORUR01Handler implements Application {
 			throw new ApplicationException(Context.getMessageSourceService().getMessage("ORUR01.error.invalidMessage"));
 		}
 		
-		log.debug("Processing ORU_R01 message");
+		LOG.debug("Processing ORU_R01 message");
 		
 		Message response;
 		try {
@@ -155,16 +155,16 @@ public class ORUR01Handler implements Application {
 			response = processORU_R01(oru);
 		}
 		catch (ClassCastException e) {
-			log.warn("Error casting " + message.getClass().getName() + " to ORU_R01", e);
+			LOG.warn("Error casting " + message.getClass().getName() + " to ORU_R01", e);
 			throw new ApplicationException(Context.getMessageSourceService().getMessage("ORUR01.error.invalidMessageType ",
 			    new Object[] { message.getClass().getName() }, null), e);
 		}
 		catch (HL7Exception e) {
-			log.warn("Error while processing ORU_R01 message", e);
+			LOG.warn("Error while processing ORU_R01 message", e);
 			throw new ApplicationException(Context.getMessageSourceService().getMessage("ORUR01.error.WhileProcessing"), e);
 		}
 		
-		log.debug("Finished processing ORU_R01 message");
+		LOG.debug("Finished processing ORU_R01 message");
 		
 		return response;
 	}
@@ -196,15 +196,15 @@ public class ORUR01Handler implements Application {
 		// Obtain message control id (unique ID for message from sending
 		// application)
 		String messageControlId = msh.getMessageControlID().getValue();
-		if (log.isDebugEnabled()) {
-			log.debug("Found HL7 message in inbound queue with control id = " + messageControlId);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Found HL7 message in inbound queue with control id = " + messageControlId);
 		}
 		
 		
 		// create the encounter
 		Patient patient = getPatient(pid);
-		if (log.isDebugEnabled()) {
-			log.debug("Processing HL7 message for patient " + patient.getPatientId());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Processing HL7 message for patient " + patient.getPatientId());
 		}
 		Encounter encounter = createEncounter(msh, patient, pv1, orc);
 		
@@ -213,7 +213,7 @@ public class ORUR01Handler implements Application {
 			updateHealthCenter(patient, pv1);
 		}
 		catch (Exception e) {
-			log.error("Error while processing Discharge To Location (" + messageControlId + ")", e);
+			LOG.error("Error while processing Discharge To Location (" + messageControlId + ")", e);
 		}
 		
 		// process NK1 (relationship) segments
@@ -227,8 +227,8 @@ public class ORUR01Handler implements Application {
 		List<ConceptProposal> conceptProposals = new ArrayList<>();
 		
 		// create observations
-		if (log.isDebugEnabled()) {
-			log.debug("Creating observations for message " + messageControlId + "...");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Creating observations for message " + messageControlId + "...");
 		}
 		// we ignore all MEDICAL_RECORD_OBSERVATIONS that are OBRs.  We do not
 		// create obs_groups for them
@@ -250,8 +250,8 @@ public class ORUR01Handler implements Application {
 		ORU_R01_PATIENT_RESULT patientResult = oru.getPATIENT_RESULT();
 		int numObr = patientResult.getORDER_OBSERVATIONReps();
 		for (int i = 0; i < numObr; i++) {
-			if (log.isDebugEnabled()) {
-				log.debug("Processing OBR (" + i + " of " + numObr + ")");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Processing OBR (" + i + " of " + numObr + ")");
 			}
 			ORU_R01_ORDER_OBSERVATION orderObs = patientResult.getORDER_OBSERVATION(i);
 			
@@ -308,13 +308,13 @@ public class ORUR01Handler implements Application {
 			int numObs = orderObs.getOBSERVATIONReps();
 			HL7Exception errorInHL7Queue = null;
 			for (int j = 0; j < numObs; j++) {
-				if (log.isDebugEnabled()) {
-					log.debug("Processing OBS (" + j + " of " + numObs + ")");
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Processing OBS (" + j + " of " + numObs + ")");
 				}
 				
 				OBX obx = orderObs.getOBSERVATION(j).getOBX();
 				try {
-					log.debug("Parsing observation");
+					LOG.debug("Parsing observation");
 					Obs obs = parseObs(encounter, obx, obr, messageControlId);
 					if (obs != null) {
 						
@@ -334,9 +334,9 @@ public class ORUR01Handler implements Application {
 						} else {
 							// set this obs on the encounter object that we
 							// will be saving later
-							log.debug("Obs is not null. Adding to encounter object");
+							LOG.debug("Obs is not null. Adding to encounter object");
 							encounter.addObs(obs);
-							log.debug("Done with this obs");
+							LOG.debug("Done with this obs");
 						}
 					}
 				}
@@ -369,10 +369,10 @@ public class ORUR01Handler implements Application {
 			
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Finished creating observations");
-			log.debug("Current thread: " + Thread.currentThread());
-			log.debug("Creating the encounter object");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Finished creating observations");
+			LOG.debug("Current thread: " + Thread.currentThread());
+			LOG.debug("Creating the encounter object");
 		}
 		Context.getEncounterService().saveEncounter(encounter);
 		
@@ -602,8 +602,8 @@ public class ORUR01Handler implements Application {
 	 * @should add comments to an observation group
 	 */
 	private Obs parseObs(Encounter encounter, OBX obx, OBR obr, String uid) throws HL7Exception, ProposingConceptException {
-		if (log.isDebugEnabled()) {
-			log.debug("parsing observation: " + obx);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("parsing observation: " + obx);
 		}
 		Varies[] values = obx.getObservationValue();
 		
@@ -613,21 +613,21 @@ public class ORUR01Handler implements Application {
 		}
 		
 		String hl7Datatype = values[0].getName();
-		if (log.isDebugEnabled()) {
-			log.debug("  datatype = " + hl7Datatype);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("  datatype = " + hl7Datatype);
 		}
 		Concept concept = getConcept(obx.getObservationIdentifier(), uid);
-		if (log.isDebugEnabled()) {
-			log.debug("  concept = " + concept.getConceptId());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("  concept = " + concept.getConceptId());
 		}
 		ConceptName conceptName = getConceptName(obx.getObservationIdentifier());
-		if (log.isDebugEnabled()) {
-			log.debug("  concept-name = " + conceptName);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("  concept-name = " + conceptName);
 		}
 		
 		Date datetime = getDatetime(obx);
-		if (log.isDebugEnabled()) {
-			log.debug("  timestamp = " + datetime);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("  timestamp = " + datetime);
 		}
 		if (datetime == null) {
 			datetime = encounter.getEncounterDatetime();
@@ -663,7 +663,7 @@ public class ORUR01Handler implements Application {
 		if ("NM".equals(hl7Datatype)) {
 			String value = ((NM) obx5).getValue();
 			if (value == null || value.length() == 0) {
-				log.warn("Not creating null valued obs for concept " + concept);
+				LOG.warn("Not creating null valued obs for concept " + concept);
 				return null;
 			} else if ("0".equals(value) || "1".equals(value)) {
 				concept = concept.hydrate(concept.getConceptId().toString());
@@ -713,19 +713,19 @@ public class ORUR01Handler implements Application {
 				}
 			}
 		} else if ("CWE".equals(hl7Datatype)) {
-			log.debug("  CWE observation");
+			LOG.debug("  CWE observation");
 			CWE value = (CWE) obx5;
 			String valueIdentifier = value.getIdentifier().getValue();
-			log.debug("    value id = " + valueIdentifier);
+			LOG.debug("    value id = " + valueIdentifier);
 			String valueName = value.getText().getValue();
-			log.debug("    value name = " + valueName);
+			LOG.debug("    value name = " + valueName);
 			if (isConceptProposal(valueIdentifier)) {
-				if (log.isDebugEnabled()) {
-					log.debug("Proposing concept");
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Proposing concept");
 				}
 				throw new ProposingConceptException(concept, valueName);
 			} else {
-				log.debug("    not proposal");
+				LOG.debug("    not proposal");
 				try {
 					Concept valueConcept = getConcept(value, uid);
 					obs.setValueCoded(valueConcept);
@@ -736,9 +736,9 @@ public class ORUR01Handler implements Application {
 					} else {
 						ConceptName valueConceptName = getConceptName(value);
 						if (valueConceptName != null) {
-							if (log.isDebugEnabled()) {
-								log.debug("    value concept-name-id = " + valueConceptName.getConceptNameId());
-								log.debug("    value concept-name = " + valueConceptName.getName());
+							if (LOG.isDebugEnabled()) {
+								LOG.debug("    value concept-name-id = " + valueConceptName.getConceptNameId());
+								LOG.debug("    value concept-name = " + valueConceptName.getName());
 							}
 							obs.setValueCodedName(valueConceptName);
 						}
@@ -749,8 +749,8 @@ public class ORUR01Handler implements Application {
 					    new Object[] { valueIdentifier, valueName }, null));
 				}
 			}
-			if (log.isDebugEnabled()) {
-				log.debug("  Done with CWE");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("  Done with CWE");
 			}
 		} else if ("CE".equals(hl7Datatype)) {
 			CE value = (CE) obx5;
@@ -774,7 +774,7 @@ public class ORUR01Handler implements Application {
 				Date valueDate = getDate(value.getYear(), value.getMonth(), value.getDay(), 0, 0, 0);
 				obs.setValueDatetime(valueDate);
 			} else {
-				log.warn("Not creating null valued obs for concept " + concept);
+				LOG.warn("Not creating null valued obs for concept " + concept);
 				return null;
 			}
 		} else if ("TS".equals(hl7Datatype)) {
@@ -785,7 +785,7 @@ public class ORUR01Handler implements Application {
 				
 				obs.setValueDatetime(valueDate);
 			} else {
-				log.warn("Not creating null valued obs for concept " + concept);
+				LOG.warn("Not creating null valued obs for concept " + concept);
 				return null;
 			}
 		} else if ("TM".equals(hl7Datatype)) {
@@ -794,20 +794,20 @@ public class ORUR01Handler implements Application {
 				Date valueTime = getDate(0, 0, 0, value.getHour(), value.getMinute(), value.getSecond());
 				obs.setValueDatetime(valueTime);
 			} else {
-				log.warn("Not creating null valued obs for concept " + concept);
+				LOG.warn("Not creating null valued obs for concept " + concept);
 				return null;
 			}
 		} else if ("ST".equals(hl7Datatype)) {
 			ST value = (ST) obx5;
 			if (value == null || value.getValue() == null || value.getValue().trim().length() == 0) {
-				log.warn("Not creating null valued obs for concept " + concept);
+				LOG.warn("Not creating null valued obs for concept " + concept);
 				return null;
 			}
 			obs.setValueText(value.getValue());
 		} else if ("ED".equals(hl7Datatype)) {
 			ED value = (ED) obx5;
 			if (value == null || value.getData() == null || !StringUtils.hasText(value.getData().getValue())) {
-				log.warn("Not creating null valued obs for concept " + concept);
+				LOG.warn("Not creating null valued obs for concept " + concept);
 				return null;
 			}
 			//we need to hydrate the concept so that the EncounterSaveHandler
@@ -895,7 +895,7 @@ public class ORUR01Handler implements Application {
 			}
 			catch (NumberFormatException e) {
 				// if it is not a valid number, more than likely it is a bad hl7 message
-				log.debug("Invalid concept name ID '" + hl7ConceptNameId + "'", e);
+				LOG.debug("Invalid concept name ID '" + hl7ConceptNameId + "'", e);
 			}
 		}
 		return specifiedConceptName;
@@ -1137,7 +1137,7 @@ public class ORUR01Handler implements Application {
 				} else if (OpenmrsUtil.nullSafeEquals(identifierType, HL7Constants.HL7_FORM_ID)) {
 					id = identifier.getEntityIdentifier().getValue();
 				} else {
-					log.warn("Form identifier type of " + identifierType + " unknown to ORU R01 processor.");
+					LOG.warn("Form identifier type of " + identifierType + " unknown to ORU R01 processor.");
 				}
 			}
 		}
@@ -1227,24 +1227,24 @@ public class ORUR01Handler implements Application {
 	
 	private void updateHealthCenter(Patient patient, PV1 pv1) {
 		// Update patient's location if it has changed
-		if (log.isDebugEnabled()) {
-			log.debug("Checking for discharge to location");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Checking for discharge to location");
 		}
 		DLD dld = pv1.getDischargedToLocation();
-		log.debug("DLD = " + dld);
+		LOG.debug("DLD = " + dld);
 		if (dld == null) {
 			return;
 		}
 		IS hl7DischargeToLocation = dld.getDischargeLocation();
-		log.debug("is = " + hl7DischargeToLocation);
+		LOG.debug("is = " + hl7DischargeToLocation);
 		if (hl7DischargeToLocation == null) {
 			return;
 		}
 		String dischargeToLocation = hl7DischargeToLocation.getValue();
-		log.debug("dischargeToLocation = " + dischargeToLocation);
+		LOG.debug("dischargeToLocation = " + dischargeToLocation);
 		if (dischargeToLocation != null && dischargeToLocation.length() > 0) {
-			if (log.isDebugEnabled()) {
-				log.debug("Patient discharged to " + dischargeToLocation);
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Patient discharged to " + dischargeToLocation);
 			}
 			// Ignore anything past the first subcomponent (or component)
 			// delimiter
@@ -1264,7 +1264,7 @@ public class ORUR01Handler implements Application {
 			    "Health Center");
 			
 			if (healthCenterAttrType == null) {
-				log.error("A person attribute type with name 'Health Center' is not defined but patient "
+				LOG.error("A person attribute type with name 'Health Center' is not defined but patient "
 				        + patient.getPatientId() + " is trying to change their health center to " + newLocationId);
 				return;
 			}
@@ -1274,7 +1274,7 @@ public class ORUR01Handler implements Application {
 			if (currentHealthCenter == null || !newLocationId.toString().equals(currentHealthCenter.getValue())) {
 				PersonAttribute newHealthCenter = new PersonAttribute(healthCenterAttrType, newLocationId.toString());
 				
-				log.debug("Updating patient's location from " + currentHealthCenter + " to " + newLocationId);
+				LOG.debug("Updating patient's location from " + currentHealthCenter + " to " + newLocationId);
 				
 				// add attribute (and void old if there is one)
 				patient.addAttribute(newHealthCenter);
@@ -1284,6 +1284,6 @@ public class ORUR01Handler implements Application {
 			}
 			
 		}
-		log.debug("finished discharge to location method");
+		LOG.debug("finished discharge to location method");
 	}
 }

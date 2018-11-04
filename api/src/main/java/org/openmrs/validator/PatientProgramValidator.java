@@ -34,7 +34,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { PatientProgram.class }, order = 50)
 public class PatientProgramValidator implements Validator {
 	
-	private static final Logger log = LoggerFactory.getLogger(PatientProgramValidator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PatientProgramValidator.class);
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -73,8 +73,8 @@ public class PatientProgramValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
-		if (log.isDebugEnabled()) {
-			log.debug(this.getClass().getName() + ".validate...");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug(this.getClass().getName() + ".validate...");
 		}
 		
 		if (obj == null) {

@@ -40,7 +40,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	
 	public static final long serialVersionUID = 1123121L;
 	
-	private static final Logger log = LoggerFactory.getLogger(PatientIdentifier.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PatientIdentifier.class);
 	
 	// Fields
 	
@@ -117,10 +117,10 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 				
 			}
 			catch (NoSuchMethodException e) {
-				log.warn("No such method for comparison " + methodName, e);
+				LOG.warn("No such method for comparison " + methodName, e);
 			}
 			catch (IllegalAccessException | InvocationTargetException e) {
-				log.error("Error while comparing identifiers", e);
+				LOG.error("Error while comparing identifiers", e);
 			}
 
 		}

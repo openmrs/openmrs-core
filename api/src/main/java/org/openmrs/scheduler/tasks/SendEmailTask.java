@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class SendEmailTask extends AbstractTask {
 	
 	// Logger 
-	private static final Logger log = LoggerFactory.getLogger(SendEmailTask.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SendEmailTask.class);
 	
 	/**
 	 * Process the next form entry in the database and then remove the form entry from the database.
@@ -28,7 +28,7 @@ public class SendEmailTask extends AbstractTask {
 	public void execute() {
 		try {
 			Context.openSession();
-			log.info("****************************** SEND EMAIL TASK:  Executing task ...");
+			LOG.info("****************************** SEND EMAIL TASK:  Executing task ...");
 		}
 		finally {
 			Context.closeSession();
@@ -41,7 +41,7 @@ public class SendEmailTask extends AbstractTask {
 	 */
 	@Override
 	public void shutdown() {
-		log.info("****************************** SEND EMAIL TASK:  Shutting down task ...");
+		LOG.info("****************************** SEND EMAIL TASK:  Shutting down task ...");
 	}
 	
 }

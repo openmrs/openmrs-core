@@ -30,7 +30,7 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  */
 public class Daemon {
 
-	private static final Logger log = LoggerFactory.getLogger(Daemon.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Daemon.class);
 	
 	/**
 	 * The uuid defined for the daemon user object
@@ -245,7 +245,7 @@ public class Daemon {
 		}
 		catch (InterruptedException e) {
 			// ignore
-			log.error("Thread was interrupted", e);
+			LOG.error("Thread was interrupted", e);
 		}
 		
 		if (onStartupThread.exceptionThrown != null) {

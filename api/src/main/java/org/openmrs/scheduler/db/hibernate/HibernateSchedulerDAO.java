@@ -29,7 +29,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	/**
 	 * Logger
 	 */
-	private static final Logger log = LoggerFactory.getLogger(HibernateSchedulerDAO.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HibernateSchedulerDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -75,7 +75,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 		TaskDefinition task = (TaskDefinition) sessionFactory.getCurrentSession().get(TaskDefinition.class, taskId);
 		
 		if (task == null) {
-			log.warn("Task '" + taskId + "' not found");
+			LOG.warn("Task '" + taskId + "' not found");
 			throw new ObjectRetrievalFailureException(TaskDefinition.class, taskId);
 		}
 		return task;
@@ -96,7 +96,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 		TaskDefinition task = (TaskDefinition) crit.uniqueResult();
 		
 		if (task == null) {
-			log.warn("Task '" + name + "' not found");
+			LOG.warn("Task '" + name + "' not found");
 			throw new ObjectRetrievalFailureException(TaskDefinition.class, name);
 		}
 		return task;
@@ -160,7 +160,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 		Schedule schedule = (Schedule) sessionFactory.getCurrentSession().get(Schedule.class, scheduleId);
 		
 		if (schedule == null) {
-			log.error("Schedule '" + scheduleId + "' not found");
+			LOG.error("Schedule '" + scheduleId + "' not found");
 			throw new ObjectRetrievalFailureException(Schedule.class, scheduleId);
 		}
 		return schedule;

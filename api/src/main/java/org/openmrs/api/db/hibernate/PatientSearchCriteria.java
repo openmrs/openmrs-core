@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @Deprecated
 public class PatientSearchCriteria {
 	
-	private static final Logger log = LoggerFactory.getLogger(PatientSearchCriteria.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PatientSearchCriteria.class);
 	
 	private final SessionFactory sessionFactory;
 	
@@ -122,7 +122,7 @@ public class PatientSearchCriteria {
 		criteria.add(Restrictions.eq("voided", false));
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		
-		log.debug(criteria.toString());
+		LOG.debug(criteria.toString());
 		
 		return criteria;
 	}
@@ -151,7 +151,7 @@ public class PatientSearchCriteria {
 			criteria.add(Restrictions.eq("voided", false));
 		}
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-		log.debug(criteria.toString());
+		LOG.debug(criteria.toString());
 		return criteria;
 	}
 	
@@ -201,7 +201,7 @@ public class PatientSearchCriteria {
 		}
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		
-		log.debug(criteria.toString());
+		LOG.debug(criteria.toString());
 		
 		return criteria;
 	}

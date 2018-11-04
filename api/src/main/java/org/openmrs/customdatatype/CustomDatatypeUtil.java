@@ -35,7 +35,7 @@ public class CustomDatatypeUtil {
 	private CustomDatatypeUtil() {
 	}
 	
-	private static final Logger log = LoggerFactory.getLogger(CustomDatatypeUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CustomDatatypeUtil.class);
 	
 	/**
 	 * @param descriptor
@@ -106,7 +106,7 @@ public class CustomDatatypeUtil {
 				return handler;
 			}
 			catch (Exception ex) {
-				log.warn("Failed to instantiate and configure preferred handler with class " + preferredHandlerClassname
+				LOG.warn("Failed to instantiate and configure preferred handler with class " + preferredHandlerClassname
 				        + " and config " + handlerConfig, ex);
 			}
 		}

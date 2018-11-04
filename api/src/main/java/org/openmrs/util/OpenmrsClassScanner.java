@@ -34,7 +34,7 @@ import org.springframework.core.type.filter.TypeFilter;
  */
 public class OpenmrsClassScanner {
 	
-	private static final Logger log = LoggerFactory.getLogger(OpenmrsClassScanner.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OpenmrsClassScanner.class);
 	
 	private final MetadataReaderFactory metadataReaderFactory;
 	
@@ -99,12 +99,12 @@ public class OpenmrsClassScanner {
 					}
 				}
 				catch (IOException e) {
-					log.debug("Resource cannot be loaded: " + resource);
+					LOG.debug("Resource cannot be loaded: " + resource);
 				}
 			}
 		}
 		catch (IOException ex) {
-			log.error("Failed to look for classes with annocation" + annotationClass, ex);
+			LOG.error("Failed to look for classes with annocation" + annotationClass, ex);
 		}
 		
 		annotationToClassMap.put(annotationClass, types);

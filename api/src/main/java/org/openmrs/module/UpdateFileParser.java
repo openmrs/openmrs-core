@@ -31,7 +31,7 @@ import org.xml.sax.InputSource;
  */
 public class UpdateFileParser {
 	
-	private static final Logger log = LoggerFactory.getLogger(UpdateFileParser.class);
+	private static final Logger LOG = LoggerFactory.getLogger(UpdateFileParser.class);
 	
 	private String content;
 	
@@ -77,7 +77,7 @@ public class UpdateFileParser {
 				updateDoc = db.parse(inputSource);
 			}
 			catch (Exception e) {
-				log.warn("Unable to parse content");
+				LOG.warn("Unable to parse content");
 				throw new ModuleException("Error parsing update.rdf file: " + content, e);
 			}
 			

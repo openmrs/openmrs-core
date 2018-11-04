@@ -53,7 +53,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 public class HibernateContextDAO implements ContextDAO {
 	
-	private static final Logger log = LoggerFactory.getLogger(HibernateContextDAO.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HibernateContextDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -101,17 +101,17 @@ public class HibernateContextDAO implements ContextDAO {
 				    0, login).setString(1, login).setString(2, loginWithDash).uniqueResult();
 			}
 			catch (HibernateException he) {
-				log.error("Got hibernate exception while logging in: '" + login + "'", he);
+				LOG.error("Got hibernate exception while logging in: '" + login + "'", he);
 			}
 			catch (Exception e) {
-				log.error("Got regular exception while logging in: '" + login + "'", e);
+				LOG.error("Got regular exception while logging in: '" + login + "'", e);
 			}
 		}
 		
 		// only continue if this is a valid username and a nonempty password
 		if (candidateUser != null && password != null) {
-			if (log.isDebugEnabled()) {
-				log.debug("Candidate user id: " + candidateUser.getUserId());
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Candidate user id: " + candidateUser.getUserId());
 			}
 			
 			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
@@ -122,7 +122,7 @@ public class HibernateContextDAO implements ContextDAO {
 					lockoutTime = Long.valueOf(lockoutTimeString);
 				}
 				catch (NumberFormatException e) {
-					log.debug("bad value stored in " + OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP + " user property: "
+					LOG.debug("bad value stored in " + OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP + " user property: "
 					        + lockoutTimeString);
 				}
 			}
@@ -182,7 +182,7 @@ public class HibernateContextDAO implements ContextDAO {
 					    OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT).trim());
 				}
 				catch (Exception ex) {
-					log.error("Unable to convert the global property "
+					LOG.error("Unable to convert the global property "
 					        + OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT
 					        + "to a valid integer. Using default value of 7");
 				}
@@ -201,7 +201,7 @@ public class HibernateContextDAO implements ContextDAO {
 		
 		// throw this exception only once in the same place with the same
 		// message regardless of username/pw combo entered
-		log.info("Failed login attempt (login=" + login + ") - " + errorMsg);
+		LOG.info("Failed login attempt (login=" + login + ") - " + errorMsg);
 		throw new ContextAuthenticationException(errorMsg);
 		
 	}
@@ -260,15 +260,15 @@ public class HibernateContextDAO implements ContextDAO {
 	
 	@Override
 	public void openSession() {
-		log.debug("HibernateContext: Opening Hibernate Session");
+		LOG.debug("HibernateContext: Opening Hibernate Session");
 		if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
-			if (log.isDebugEnabled()) {
-				log.debug("Participating in existing session (" + sessionFactory.hashCode() + ")");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Participating in existing session (" + sessionFactory.hashCode() + ")");
 			}
 			participate = true;
 		} else {
-			if (log.isDebugEnabled()) {
-				log.debug("Registering session with synchronization manager (" + sessionFactory.hashCode() + ")");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Registering session with synchronization manager (" + sessionFactory.hashCode() + ")");
 			}
 			Session session = sessionFactory.openSession();
 			session.setFlushMode(FlushMode.MANUAL);
@@ -281,9 +281,9 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	@Override
 	public void closeSession() {
-		log.debug("HibernateContext: closing Hibernate Session");
+		LOG.debug("HibernateContext: closing Hibernate Session");
 		if (!participate) {
-			log.debug("Unbinding session from synchronization manager (" + sessionFactory.hashCode() + ")");
+			LOG.debug("Unbinding session from synchronization manager (" + sessionFactory.hashCode() + ")");
 			
 			if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
 				Object value = TransactionSynchronizationManager.unbindResource(sessionFactory);
@@ -294,11 +294,11 @@ public class HibernateContextDAO implements ContextDAO {
 					}
 				}
 				catch (RuntimeException e) {
-					log.error("Unexpected exception on closing Hibernate Session", e);
+					LOG.error("Unexpected exception on closing Hibernate Session", e);
 				}
 			}
 		} else {
-			log.debug("Participating in existing session, so not releasing session through synchronization manager");
+			LOG.debug("Participating in existing session, so not releasing session through synchronization manager");
 		}
 	}
 	
@@ -349,24 +349,24 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	@Override
 	public void shutdown() {
-		if (log.isInfoEnabled()) {
+		if (LOG.isInfoEnabled()) {
 			showUsageStatistics();
 		}
 		
 		if (sessionFactory != null) {
 			
-			log.debug("Closing any open sessions");
+			LOG.debug("Closing any open sessions");
 			closeSession();
 			
-			log.debug("Shutting down threadLocalSession factory");
+			LOG.debug("Shutting down threadLocalSession factory");
 			if (!sessionFactory.isClosed()) {
 				sessionFactory.close();
 			}
 			
-			log.debug("The threadLocalSession has been closed");
+			LOG.debug("The threadLocalSession has been closed");
 			
 		} else {
-			log.error("SessionFactory is null");
+			LOG.error("SessionFactory is null");
 		}
 		
 	}
@@ -376,17 +376,17 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	private void showUsageStatistics() {
 		if (sessionFactory.getStatistics().isStatisticsEnabled()) {
-			log.debug("Getting query statistics: ");
+			LOG.debug("Getting query statistics: ");
 			Statistics stats = sessionFactory.getStatistics();
 			for (String query : stats.getQueries()) {
-				log.info("QUERY: " + query);
+				LOG.info("QUERY: " + query);
 				QueryStatistics qstats = stats.getQueryStatistics(query);
-				log.info("Cache Hit Count : " + qstats.getCacheHitCount());
-				log.info("Cache Miss Count: " + qstats.getCacheMissCount());
-				log.info("Cache Put Count : " + qstats.getCachePutCount());
-				log.info("Execution Count : " + qstats.getExecutionCount());
-				log.info("Average time    : " + qstats.getExecutionAvgTime());
-				log.info("Row Count       : " + qstats.getExecutionRowCount());
+				LOG.info("Cache Hit Count : " + qstats.getCacheHitCount());
+				LOG.info("Cache Miss Count: " + qstats.getCacheMissCount());
+				LOG.info("Cache Put Count : " + qstats.getCachePutCount());
+				LOG.info("Execution Count : " + qstats.getExecutionCount());
+				LOG.info("Average time    : " + qstats.getExecutionAvgTime());
+				LOG.info("Row Count       : " + qstats.getExecutionRowCount());
 			}
 		}
 	}
@@ -408,7 +408,7 @@ public class HibernateContextDAO implements ContextDAO {
 			Object key = entry.getKey();
 			String prop = (String) key;
 			String value = (String) entry.getValue();
-			log.trace("Setting property: " + prop + ":" + value);
+			LOG.trace("Setting property: " + prop + ":" + value);
 			if (!prop.startsWith("hibernate") && !runtimeProperties.containsKey("hibernate." + prop)) {
 				cache.put("hibernate." + prop, value);
 			}
@@ -499,7 +499,7 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	public void updateSearchIndex() {
 		try {
-			log.info("Updating the search index... It may take a few minutes.");
+			LOG.info("Updating the search index... It may take a few minutes.");
 			Search.getFullTextSession(sessionFactory.getCurrentSession()).createIndexer().startAndWait();
 			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
 					OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
@@ -508,7 +508,7 @@ public class HibernateContextDAO implements ContextDAO {
 			}
 			gp.setPropertyValue(OpenmrsConstants.SEARCH_INDEX_VERSION.toString());
 			Context.getAdministrationService().saveGlobalProperty(gp);
-			log.info("Finished updating the search index");
+			LOG.info("Finished updating the search index");
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Failed to update the search index", e);
@@ -521,7 +521,7 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	public Future<?> updateSearchIndexAsync() {
 		try {
-			log.info("Started asynchronously updating the search index...");
+			LOG.info("Started asynchronously updating the search index...");
 			return Search.getFullTextSession(sessionFactory.getCurrentSession()).createIndexer().start();
 		}
 		catch (Exception e) {

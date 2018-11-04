@@ -31,7 +31,7 @@ import liquibase.resource.ResourceAccessor;
  */
 public class UpdateLayoutAddressFormatChangeSet implements CustomTaskChange {
 	
-	private static final Logger log = LoggerFactory.getLogger(UpdateLayoutAddressFormatChangeSet.class);
+	private static final Logger LOG = LoggerFactory.getLogger(UpdateLayoutAddressFormatChangeSet.class);
 	
 	/**
 	 * @see CustomTaskChange#execute(Database)
@@ -58,7 +58,7 @@ public class UpdateLayoutAddressFormatChangeSet implements CustomTaskChange {
 			}
 		}
 		catch (DatabaseException | SQLException e) {
-			log.warn("Error generated", e);
+			LOG.warn("Error generated", e);
 		}
 		finally {
 			if (stmt != null) {
@@ -66,7 +66,7 @@ public class UpdateLayoutAddressFormatChangeSet implements CustomTaskChange {
 					stmt.close();
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the statement object");
+					LOG.warn("Failed to close the statement object");
 				}
 			}
 			
@@ -75,7 +75,7 @@ public class UpdateLayoutAddressFormatChangeSet implements CustomTaskChange {
 					pStmt.close();
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the prepared statement object");
+					LOG.warn("Failed to close the prepared statement object");
 				}
 			}
 		}

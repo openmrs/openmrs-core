@@ -36,7 +36,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 	
 	private static final long serialVersionUID = -6925172744402818729L;
 	
-	private static final Logger log = LoggerFactory.getLogger(DispatcherServlet.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DispatcherServlet.class);
 	
 	/**
 	 * @see org.springframework.web.servlet.FrameworkServlet#initFrameworkServlet()
@@ -47,7 +47,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 		
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
-		log.debug("Framework being initialized");
+		LOG.debug("Framework being initialized");
 		WebModuleUtil.setDispatcherServlet(this);
 		
 		super.initFrameworkServlet();
@@ -61,7 +61,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 	 * @throws ServletException
 	 */
 	public void reInitFrameworkServlet() throws ServletException {
-		log.debug("Framework being REinitialized");
+		LOG.debug("Framework being REinitialized");
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		((XmlWebApplicationContext) getWebApplicationContext()).setClassLoader(OpenmrsClassLoader.getInstance());
 		
@@ -83,10 +83,10 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 		
 		// hacky way to know if one of the startup filters needs to be run
 		if (UpdateFilter.updatesRequired() && !DatabaseUpdater.allowAutoUpdate()) {
-			log.info("DB updates are required, the update wizard must be run");
+			LOG.info("DB updates are required, the update wizard must be run");
 		}
 		if (InitializationFilter.initializationRequired()) {
-			log.info("Runtime properties were not found or the database is empty, so initialization is required");
+			LOG.info("Runtime properties were not found or the database is empty, so initialization is required");
 		}
 	}
 	
@@ -100,7 +100,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 			ctx.close();
 		}
 		catch (Exception e) {
-			log.error("Exception while stopping and closing dispatcherServlet context: ", e);
+			LOG.error("Exception while stopping and closing dispatcherServlet context: ", e);
 		}
 	}
 }

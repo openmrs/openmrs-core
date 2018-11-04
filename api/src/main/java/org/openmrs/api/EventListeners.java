@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EventListeners {
 	
-	private static final Logger log = LoggerFactory.getLogger(EventListeners.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EventListeners.class);
 	
 	private static List<GlobalPropertyListener> globalPropertyListeners = null;
 	
@@ -37,7 +37,7 @@ public class EventListeners {
 	 * @param globalPropertyListeners
 	 */
 	public void setGlobalPropertyListeners(List<GlobalPropertyListener> globalPropertyListeners) {
-		if (log.isDebugEnabled()) {
+		if (LOG.isDebugEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			for (GlobalPropertyListener gpl : globalPropertyListeners) {
 				if (sb.length() > 0) {
@@ -45,7 +45,7 @@ public class EventListeners {
 				}
 				sb.append(gpl.getClass().getName());
 			}
-			log.debug("GlobalPropertyListeners set to: " + sb.toString());
+			LOG.debug("GlobalPropertyListeners set to: " + sb.toString());
 			
 		}
 		

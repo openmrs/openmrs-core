@@ -31,7 +31,7 @@ public class FilterUtil {
 	private FilterUtil() {
 	}
 	
-	private static final Logger log = LoggerFactory.getLogger(FilterUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FilterUtil.class);
 	
 	private static final String DATABASE_CLOSING_ERROR = "Error while closing the database";
 	
@@ -82,7 +82,7 @@ public class FilterUtil {
 				}
 			}
 			catch (Exception e) {
-				log.error("Error while retriving locale property", e);
+				LOG.error("Error while retriving locale property", e);
 			}
 			finally {
 				try {
@@ -91,7 +91,7 @@ public class FilterUtil {
 					}
 				}
 				catch (SQLException e) {
-					log.warn("Error while closing statement");
+					LOG.warn("Error while closing statement");
 				}
 				
 				if (connection != null) {
@@ -99,7 +99,7 @@ public class FilterUtil {
 						connection.close();
 					}
 					catch (SQLException e) {
-						log.debug(DATABASE_CLOSING_ERROR, e);
+						LOG.debug(DATABASE_CLOSING_ERROR, e);
 					}
 				}
 				
@@ -108,7 +108,7 @@ public class FilterUtil {
 						results.close();
 					}
 					catch (SQLException e) {
-						log.warn("Error while closing ResultSet", e);
+						LOG.warn("Error while closing ResultSet", e);
 					}
 				}
 			}
@@ -147,7 +147,7 @@ public class FilterUtil {
 			}
 		}
 		catch (Exception e) {
-			log.error("Error while retrieving system default locale", e);
+			LOG.error("Error while retrieving system default locale", e);
 		}
 		finally {
 			if (needToCloseConection && connection != null) {
@@ -155,7 +155,7 @@ public class FilterUtil {
 					connection.close();
 				}
 				catch (SQLException e) {
-					log.debug(DATABASE_CLOSING_ERROR, e);
+					LOG.debug(DATABASE_CLOSING_ERROR, e);
 				}
 			}
 		}
@@ -188,7 +188,7 @@ public class FilterUtil {
 						statement.setInt(1, userId);
 						statement.setString(2, locale);
 						if (statement.executeUpdate() != 1) {
-							log.warn("Unable to save user locale as admin property.");
+							LOG.warn("Unable to save user locale as admin property.");
 						}
 					}
 					finally {
@@ -197,7 +197,7 @@ public class FilterUtil {
 								statement.close();
 							}
 							catch (Exception statementCloseEx) {
-								log.error("Failed to quietly close Statement", statementCloseEx);
+								LOG.error("Failed to quietly close Statement", statementCloseEx);
 							}
 						}
 					}
@@ -212,7 +212,7 @@ public class FilterUtil {
 					statement.setString(1, locale);
 					statement.setString(2, OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
 					if (statement.executeUpdate() != 1) {
-						log.warn("Unable to set system default locale property.");
+						LOG.warn("Unable to set system default locale property.");
 					}
 				}
 				finally {
@@ -221,13 +221,13 @@ public class FilterUtil {
 							statement.close();
 						}
 						catch (Exception statementCloseEx) {
-							log.error("Failed to quietly close Statement", statementCloseEx);
+							LOG.error("Failed to quietly close Statement", statementCloseEx);
 						}
 					}
 				}
 			}
 			catch (Exception e) {
-				log.warn("Locale " + locale + " could not be set for user with id " + userId + " .", e);
+				LOG.warn("Locale " + locale + " could not be set for user with id " + userId + " .", e);
 				return false;
 			}
 			finally {
@@ -236,7 +236,7 @@ public class FilterUtil {
 						connection.close();
 					}
 					catch (SQLException e) {
-						log.debug(DATABASE_CLOSING_ERROR, e);
+						LOG.debug(DATABASE_CLOSING_ERROR, e);
 					}
 				}
 			}
@@ -291,7 +291,7 @@ public class FilterUtil {
 			}
 		}
 		catch (Exception e) {
-			log.error("Error while retrieving value for global property:" + globalPropertyName, e);
+			LOG.error("Error while retrieving value for global property:" + globalPropertyName, e);
 		}
 		finally {
 			if (connection != null) {
@@ -299,7 +299,7 @@ public class FilterUtil {
 					connection.close();
 				}
 				catch (SQLException e) {
-					log.debug("Error while closing the database connection", e);
+					LOG.debug("Error while closing the database connection", e);
 				}
 			}
 		}

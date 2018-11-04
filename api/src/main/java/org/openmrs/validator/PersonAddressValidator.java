@@ -32,7 +32,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { PersonAddress.class }, order = 50)
 public class PersonAddressValidator implements Validator {
 	
-	private static final Logger log = LoggerFactory.getLogger(PersonAddressValidator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PersonAddressValidator.class);
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -59,8 +59,8 @@ public class PersonAddressValidator implements Validator {
 	@Override
 	public void validate(Object object, Errors errors) {
 		//TODO Validate other aspects of the personAddress object
-		if (log.isDebugEnabled()) {
-			log.debug(this.getClass().getName() + ".validate...");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug(this.getClass().getName() + ".validate...");
 		}
 		
 		if (object == null) {

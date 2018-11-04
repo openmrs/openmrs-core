@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
  */
 public class ConceptSetsEditor extends PropertyEditorSupport {
 	
-	private static final Logger log = LoggerFactory.getLogger(ConceptSetsEditor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ConceptSetsEditor.class);
 	
 	private Collection<ConceptSet> originalConceptSets;
 	
@@ -48,7 +48,7 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 	 */
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
-		log.debug("setting conceptSets with text: " + text);
+		LOG.debug("setting conceptSets with text: " + text);
 		
 		if (StringUtils.hasText(text)) {
 			ConceptService cs = Context.getConceptService();

@@ -47,7 +47,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	/**
 	 * Logger
 	 */
-	private static final Logger log = LoggerFactory.getLogger(TimerSchedulerServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(TimerSchedulerServiceImpl.class);
 	
 	/**
 	 * Registered task list
@@ -93,7 +93,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 */
 	@Override
 	public void onStartup() {
-		log.debug("Starting scheduler service ...");
+		LOG.debug("Starting scheduler service ...");
 		
 		// Get all of the tasks in the database
 		Collection<TaskDefinition> taskDefinitions = getSchedulerDAO().getTasks();
@@ -110,7 +110,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 					
 				}
 				catch (Exception e) {
-					log.error("Failed to schedule task for class " + taskDefinition.getTaskClass(), e);
+					LOG.error("Failed to schedule task for class " + taskDefinition.getTaskClass(), e);
 				}
 			}
 		}
@@ -129,14 +129,14 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 */
 	@Override
 	public void onShutdown() {
-		log.debug("Gracefully shutting down scheduler service ...");
+		LOG.debug("Gracefully shutting down scheduler service ...");
 		// gracefully shutdown all tasks and remove all references to the timers, scheduler
 		try {
 			shutdownAllTasks();
 			cancelAllTimers(); // Just a precaution - this shouldn't be necessary if shutdownAllTasks() does its job
 		}
 		catch (APIException e) {
-			log.error("Failed to stop all tasks due to API exception", e);
+			LOG.error("Failed to stop all tasks due to API exception", e);
 		}
 		finally {
 			setScheduledTasks(null);
@@ -166,10 +166,10 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 				
 			}
 			catch (SchedulerException e) {
-				log.error("Failed to stop task " + task.getTaskClass() + " due to Scheduler exception", e);
+				LOG.error("Failed to stop task " + task.getTaskClass() + " due to Scheduler exception", e);
 			}
 			catch (APIException e) {
-				log.error("Failed to stop task " + task.getTaskClass() + " due to API exception", e);
+				LOG.error("Failed to stop task " + task.getTaskClass() + " due to API exception", e);
 			}
 		}
 	}
@@ -209,7 +209,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 			// TODO Do we ever want the same task definition to run more than once?
 			TimerSchedulerTask schedulerTask = scheduledTasks.get(taskDefinition.getId());
 			if (schedulerTask != null) {
-				log.info("Shutting down the existing instance of this task to avoid conflicts!!");
+				LOG.info("Shutting down the existing instance of this task to avoid conflicts!!");
 				schedulerTask.shutdown();
 			}
 			
@@ -239,7 +239,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 						Date nextTime = SchedulerUtil.getNextExecution(taskDefinition);
 						
 						// Start task at fixed rate at given future date and repeat as directed 							
-						log.info("Starting task ... the task will execute for the first time at " + nextTime);
+						LOG.info("Starting task ... the task will execute for the first time at " + nextTime);
 						
 						if (repeatInterval > 0) {
 							// Schedule the task to run at a fixed rate
@@ -251,17 +251,17 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 						
 					} else if (repeatInterval > 0) {
 						// Start task on repeating schedule, delay for SCHEDULER_DEFAULT_DELAY seconds	
-						log.info("Delaying start time by " + SchedulerConstants.SCHEDULER_DEFAULT_DELAY + " seconds");
+						LOG.info("Delaying start time by " + SchedulerConstants.SCHEDULER_DEFAULT_DELAY + " seconds");
 						getTimer(taskDefinition).scheduleAtFixedRate(schedulerTask,
 						    SchedulerConstants.SCHEDULER_DEFAULT_DELAY, repeatInterval);
 					} else {
 						// schedule for single execution, starting now
-						log.info("Starting one-shot task");
+						LOG.info("Starting one-shot task");
 						getTimer(taskDefinition).schedule(schedulerTask, new Date());
 					}
 					
 					// Update task that has been started
-					log.debug("Registering timer for task " + taskDefinition.getId());
+					LOG.debug("Registering timer for task " + taskDefinition.getId());
 					
 					//  Add the new timer to the scheduler running task list  
 					scheduledTasks.put(taskDefinition.getId(), schedulerTask);
@@ -272,7 +272,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 				}
 			}
 			catch (Exception e) {
-				log.error("Failed to schedule task " + taskDefinition.getName(), e);
+				LOG.error("Failed to schedule task " + taskDefinition.getName(), e);
 				throw new SchedulerException("Failed to schedule task", e);
 			}
 		}
@@ -312,7 +312,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 				rescheduleTask(task);
 			}
 			catch (SchedulerException e) {
-				log.error("Failed to restart task: " + task.getName(), e);
+				LOG.error("Failed to restart task: " + task.getName(), e);
 			}
 		}
 	}
@@ -349,7 +349,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 			Set<Integer> taskIds = scheduledTasks.keySet();
 			for (Integer id : taskIds) {
 				TaskDefinition task = getTask(id);
-				log.debug("Adding scheduled task " + id + " to list (" + task.getRepeatInterval() + ")");
+				LOG.debug("Adding scheduled task " + id + " to list (" + task.getRepeatInterval() + ")");
 				list.add(task);
 			}
 		}
@@ -376,8 +376,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	@Override
 	@Transactional(readOnly = true)
 	public TaskDefinition getTask(Integer id) {
-		if (log.isDebugEnabled()) {
-			log.debug("get task " + id);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("get task " + id);
 		}
 		return getSchedulerDAO().getTask(id);
 	}
@@ -390,15 +390,15 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	@Override
 	@Transactional(readOnly = true)
 	public TaskDefinition getTaskByName(String name) {
-		if (log.isDebugEnabled()) {
-			log.debug("get task " + name);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("get task " + name);
 		}
 		TaskDefinition foundTask = null;
 		try {
 			foundTask = getSchedulerDAO().getTaskByName(name);
 		}
 		catch (ObjectRetrievalFailureException orfe) {
-			log.warn("getTaskByName(" + name + ") failed, because: " + orfe);
+			LOG.warn("getTaskByName(" + name + ") failed, because: " + orfe);
 		}
 		return foundTask;
 	}
@@ -464,7 +464,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 			}
 			catch (SchedulerException e) {
 				// just swallow exceptions
-				log.debug("Failed to stop task while saving memento " + task.getName(), e);
+				LOG.debug("Failed to stop task while saving memento " + task.getName(), e);
 			}
 		}
 		
@@ -494,7 +494,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 				}
 				catch (Exception e) {
 					// essentially swallow exceptions
-					log.debug("EXPECTED ERROR IF STOPPING THIS TASK'S MODULE: Unable to start task " + taskId, e);
+					LOG.debug("EXPECTED ERROR IF STOPPING THIS TASK'S MODULE: Unable to start task " + taskId, e);
 					
 					// save this errored task and try again next time we restore
 					timerMemento.addErrorTask(taskId);
@@ -531,14 +531,14 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 				scheduleTask(taskDef);
 			}
 			catch (SchedulerException e) {
-				log.error("Failed to schedule task, because:", e);
+				LOG.error("Failed to schedule task, because:", e);
 			}
 		} else if (!task.isExecuting()) {
 			try {
 				rescheduleTask(taskDef);
 			}
 			catch (SchedulerException e) {
-				log.error("Failed to re-schedule task, because:", e);
+				LOG.error("Failed to re-schedule task, because:", e);
 			}
 		}
 	}

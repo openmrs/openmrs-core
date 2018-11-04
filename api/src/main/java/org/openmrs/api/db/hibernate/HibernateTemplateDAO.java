@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 public class HibernateTemplateDAO implements TemplateDAO {
 	
-	private static final Logger log = LoggerFactory.getLogger(HibernateTemplateDAO.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HibernateTemplateDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -42,20 +42,20 @@ public class HibernateTemplateDAO implements TemplateDAO {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Template> getTemplates() {
-		log.info("Getting all templates from the database");
+		LOG.info("Getting all templates from the database");
 		return sessionFactory.getCurrentSession().createQuery("from Template").list();
 	}
 	
 	@Override
 	public Template getTemplate(Integer id) {
-		log.info("Get template " + id);
+		LOG.info("Get template " + id);
 		return (Template) sessionFactory.getCurrentSession().get(Template.class, id);
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Template> getTemplatesByName(String name) {
-		log.info("Get template " + name);
+		LOG.info("Get template " + name);
 		return sessionFactory.getCurrentSession().createQuery("from Template as template where template.name = ?")
 		        .setString(0, name).list();
 	}

@@ -26,7 +26,7 @@ import ca.uhn.hl7v2.HL7Exception;
 public class ProcessHL7InQueueTask extends AbstractTask {
 	
 	// Logger
-	private static final Logger log = LoggerFactory.getLogger(ProcessHL7InQueueTask.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ProcessHL7InQueueTask.class);
 	
 	// Instance of hl7 processor
 	private static HL7InQueueProcessor processor = null;
@@ -47,11 +47,11 @@ public class ProcessHL7InQueueTask extends AbstractTask {
 	public void execute() {
 		Context.openSession();
 		try {
-			log.debug("Processing HL7 queue ... ");
+			LOG.debug("Processing HL7 queue ... ");
 			processor.processHL7InQueue();
 		}
 		catch (HL7Exception e) {
-			log.error("Error running hl7 in queue task", e);
+			LOG.error("Error running hl7 in queue task", e);
 			throw new APIException("Hl7inQueue.error.running", null, e);
 		}
 		finally {

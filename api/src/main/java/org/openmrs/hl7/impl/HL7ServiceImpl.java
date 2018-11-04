@@ -85,7 +85,7 @@ import ca.uhn.hl7v2.parser.GenericParser;
 @Transactional
 public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	
-	private static final Logger log = LoggerFactory.getLogger(HL7ServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HL7ServiceImpl.class);
 	
 	private static HL7ServiceImpl instance;
 	
@@ -449,7 +449,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 				return user.getUserId();
 			}
 			catch (Exception e) {
-				log.error("Invalid user ID '" + idNumber + "'", e);
+				LOG.error("Invalid user ID '" + idNumber + "'", e);
 				return null;
 			}
 		} else {
@@ -460,7 +460,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 				}
 				else if (users.size() > 1) {
 					//Return null if that user ambiguous
-					log.error(getFindingUserErrorMessage(idNumber, familyName, givenName) + ": Found " + users.size() + " ambiguous users.");
+					LOG.error(getFindingUserErrorMessage(idNumber, familyName, givenName) + ": Found " + users.size() + " ambiguous users.");
 					return null;
 				}
 				else {
@@ -478,14 +478,14 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 					User user = Context.getUserService().getUserByUsername(username.toString());
 					
 					if (user == null) {
-						log.error(getFindingUserErrorMessage(idNumber, familyName, givenName) + ": User not found");
+						LOG.error(getFindingUserErrorMessage(idNumber, familyName, givenName) + ": User not found");
 						return null;
 					}
 					return user.getUserId();
 				}
 			}
 			catch (Exception e) {
-				log.error(getFindingUserErrorMessage(idNumber, familyName, givenName), e);
+				LOG.error(getFindingUserErrorMessage(idNumber, familyName, givenName), e);
 				return null;
 			}
 		}
@@ -507,7 +507,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 				return person.getPersonId();
 			}
 			catch (Exception e) {
-				log.error("Invalid person ID '" + idNumber + "'", e);
+				LOG.error("Invalid person ID '" + idNumber + "'", e);
 				return null;
 			}
 		} else {
@@ -515,10 +515,10 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			if (persons.size() == 1) {
 				return persons.get(0).getPersonId();
 			} else if (persons.isEmpty()) {
-				log.error("Couldn't find a person named " + givenName + " " + familyName);
+				LOG.error("Couldn't find a person named " + givenName + " " + familyName);
 				return null;
 			} else {
-				log.error("Found more than one person named " + givenName + " " + familyName);
+				LOG.error("Found more than one person named " + givenName + " " + familyName);
 				return null;
 			}
 		}
@@ -557,12 +557,12 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		try {
 			Location l = Context.getLocationService().getLocation(facility);
 			if (l == null) {
-				log.debug("Couldn't find a location named '" + facility + "'");
+				LOG.debug("Couldn't find a location named '" + facility + "'");
 			}
 			return l == null ? null : l.getLocationId();
 		}
 		catch (Exception ex) {
-			log.error("Error trying to treat PL.facility '" + facility + "' as a location.name", ex);
+			LOG.error("Error trying to treat PL.facility '" + facility + "' as a location.name", ex);
 			return null;
 		}
 	}
@@ -624,7 +624,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 							if (p != null) {
 								return p;
 							}
-							log.warn("Can't find person for UUID '" + hl7PersonId + "'");
+							LOG.warn("Can't find person for UUID '" + hl7PersonId + "'");
 							continue; // skip identifiers with unknown type
 						} else if (assigningAuthority.equals(HL7Constants.HL7_AUTHORITY_LOCAL)) {
 							// the ID is internal (local)
@@ -649,41 +649,41 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 								}
 							}
 							catch (NumberFormatException e) {}
-							log.warn("Can't find Local identifier of '" + hl7PersonId + "'");
+							LOG.warn("Can't find Local identifier of '" + hl7PersonId + "'");
 							continue; // skip identifiers with unknown type
 						}
-						log.warn("Can't find PatientIdentifierType named '" + assigningAuthority + "'");
+						LOG.warn("Can't find PatientIdentifierType named '" + assigningAuthority + "'");
 						continue; // skip identifiers with unknown type
 					}
 					List<PatientIdentifier> matchingIds = Context.getPatientService().getPatientIdentifiers(hl7PersonId,
 					    Collections.singletonList(pit), null, null, null);
 					if (matchingIds == null || matchingIds.isEmpty()) {
 						// no matches
-						log.warn("NO matches found for " + hl7PersonId);
+						LOG.warn("NO matches found for " + hl7PersonId);
 						continue; // try next identifier
 					} else if (matchingIds.size() == 1) {
 						// unique match -- we're done
 						return matchingIds.get(0).getPatient();
 					} else {
 						// ambiguous identifier
-						log.debug("Ambiguous identifier in PID. " + matchingIds.size() + " matches for identifier '"
+						LOG.debug("Ambiguous identifier in PID. " + matchingIds.size() + " matches for identifier '"
 						        + hl7PersonId + "' of type '" + pit + "'");
 						continue; // try next identifier
 					}
 				}
 				catch (Exception e) {
-					log.error("Error resolving patient identifier '" + hl7PersonId + "' for assigning authority '"
+					LOG.error("Error resolving patient identifier '" + hl7PersonId + "' for assigning authority '"
 					        + assigningAuthority + "'", e);
 					continue;
 				}
 			} else {
 				try {
-					log.debug("CX contains ID '" + hl7PersonId
+					LOG.debug("CX contains ID '" + hl7PersonId
 					        + "' without assigning authority -- assuming patient.patient_id");
 					return Context.getPatientService().getPatient(Integer.parseInt(hl7PersonId));
 				}
 				catch (NumberFormatException e) {
-					log.warn("Invalid patient ID '" + hl7PersonId + "'");
+					LOG.warn("Invalid patient ID '" + hl7PersonId + "'");
 				}
 			}
 		}
@@ -717,8 +717,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			hl7InQueue.setMessageState(HL7Constants.HL7_STATUS_PROCESSING);
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Processing HL7 inbound queue (id=" + hl7InQueue.getHL7InQueueId() + ",key="
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Processing HL7 inbound queue (id=" + hl7InQueue.getHL7InQueueId() + ",key="
 			        + hl7InQueue.getHL7SourceKey() + ")");
 		}
 		
@@ -737,18 +737,18 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			Context.getHL7Service().processHL7Message(parsedMessage);
 			
 			// Move HL7 inbound queue entry into the archive before exiting
-			log.debug("Archiving HL7 inbound queue entry");
+			LOG.debug("Archiving HL7 inbound queue entry");
 			
 			Context.getHL7Service().saveHL7InArchive(new HL7InArchive(hl7InQueue));
 			
-			log.debug("Removing HL7 message from inbound queue");
+			LOG.debug("Removing HL7 message from inbound queue");
 			Context.getHL7Service().purgeHL7InQueue(hl7InQueue);
 		}
 		catch (HL7Exception e) {
 			boolean skipError = false;
-			log.debug("Unable to process hl7inqueue: " + hl7InQueue.getHL7InQueueId(), e);
-			log.debug("Hl7inqueue source: " + hl7InQueue.getHL7Source());
-			log.debug("hl7_processor.ignore_missing_patient_non_local? "
+			LOG.debug("Unable to process hl7inqueue: " + hl7InQueue.getHL7InQueueId(), e);
+			LOG.debug("Hl7inqueue source: " + hl7InQueue.getHL7Source());
+			LOG.debug("hl7_processor.ignore_missing_patient_non_local? "
 			        + Context.getAdministrationService().getGlobalProperty(
 			            OpenmrsConstants.GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false"));
 			if (e.getCause() != null
@@ -781,12 +781,12 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		if (cause == null) {
 			hl7InError.setErrorDetails("");
 		} else {
-			log.error("Fatal error", cause);
+			LOG.error("Fatal error", cause);
 			hl7InError.setErrorDetails(ExceptionUtils.getStackTrace(cause));
 		}
 		Context.getHL7Service().saveHL7InError(hl7InError);
 		Context.getHL7Service().purgeHL7InQueue(hl7InQueue);
-		log.info(error, cause);
+		LOG.info(error, cause);
 	}
 	
 	/**
@@ -898,7 +898,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			String assigningAuthority = id.getAssigningAuthority().getNamespaceID().getValue();
 			String hl7PatientId = id.getIDNumber().getValue();
 			
-			log.debug("identifier has id=" + hl7PatientId + " assigningAuthority=" + assigningAuthority);
+			LOG.debug("identifier has id=" + hl7PatientId + " assigningAuthority=" + assigningAuthority);
 			
 			if (assigningAuthority != null && assigningAuthority.length() > 0) {
 				
@@ -907,7 +907,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 					    assigningAuthority);
 					if (pit == null) {
 						if (!"UUID".equals(assigningAuthority)) {
-							log.warn("Can't find PatientIdentifierType named '" + assigningAuthority + "'");
+							LOG.warn("Can't find PatientIdentifierType named '" + assigningAuthority + "'");
 						}
 						continue; // skip identifiers with unknown type
 					}
@@ -927,16 +927,16 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 						goodIdentifiers.add(pi);
 					}
 					catch (PatientIdentifierException ex) {
-						log.warn("Patient identifier in NK1 is invalid: " + pi, ex);
+						LOG.warn("Patient identifier in NK1 is invalid: " + pi, ex);
 					}
 					
 				}
 				catch (Exception e) {
-					log.error("Uncaught error parsing/creating patient identifier '" + hl7PatientId
+					LOG.error("Uncaught error parsing/creating patient identifier '" + hl7PatientId
 					        + "' for assigning authority '" + assigningAuthority + "'", e);
 				}
 			} else {
-				log.debug("NK1 contains identifier with no assigning authority");
+				LOG.debug("NK1 contains identifier with no assigning authority");
 				continue;
 			}
 		}
@@ -982,7 +982,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		ID precisionTemp = dateOfBirth.getDegreeOfPrecision();
 		if (precisionTemp != null && precisionTemp.getValue() != null) {
 			String precision = precisionTemp.getValue().toUpperCase();
-			log.debug("The birthdate is estimated: " + precision);
+			LOG.debug("The birthdate is estimated: " + precision);
 			
 			if ("Y".equals(precision) || "L".equals(precision)) {
 				person.setBirthdateEstimated(true);
@@ -1092,8 +1092,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			hl7InArchives = getHL7InArchivesToMigrate();
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Transfer of HL7 archives has completed or has been stopped");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Transfer of HL7 archives has completed or has been stopped");
 		}
 	}
 	
@@ -1171,7 +1171,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			
 			//check if there was an error while writing to the current file
 			if (writer.checkError()) {
-				log.warn("An Error occured while writing hl7 archive with id '" + hl7InArchive.getHL7InArchiveId()
+				LOG.warn("An Error occured while writing hl7 archive with id '" + hl7InArchive.getHL7InArchiveId()
 				        + "' to the file system");
 				throw new APIException("Hl7Service.write.no.error", (Object[]) null);
 			}
@@ -1181,7 +1181,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			
 		}
 		catch (FileNotFoundException e) {
-			log
+			LOG
 			        .warn("Failed to write hl7 archive with id '" + hl7InArchive.getHL7InArchiveId()
 			                + "' to the file system ", e);
 			throw new APIException("Hl7Service.write.error", null, e);

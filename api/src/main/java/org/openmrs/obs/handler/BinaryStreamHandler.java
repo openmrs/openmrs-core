@@ -36,7 +36,7 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
 	
-	private static final Logger log = LoggerFactory.getLogger(BinaryStreamHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BinaryStreamHandler.class);
 	
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally
@@ -72,7 +72,7 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 					FileInputStream fileInputStream = new FileInputStream(file);
 					complexData = new ComplexData(originalFilename, fileInputStream);
 				} else {
-					log.error("Unable to find file associated with complex obs " + obs.getId());
+					LOG.error("Unable to find file associated with complex obs " + obs.getId());
 				}
 			}
 			catch (Exception e) {

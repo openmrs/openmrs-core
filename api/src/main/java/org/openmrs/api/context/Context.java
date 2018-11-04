@@ -129,7 +129,7 @@ import org.springframework.aop.Advisor;
  */
 public class Context {
 
-	private static final Logger log = LoggerFactory.getLogger(Context.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Context.class);
 
 	// Global resources
 	private static ContextDAO contextDAO;
@@ -199,7 +199,7 @@ public class Context {
 	 * @param ctx UserContext to set
 	 */
 	public static void setUserContext(UserContext ctx) {
-		log.trace("Setting user context {}", ctx);
+		LOG.trace("Setting user context {}", ctx);
 
 		Object[] arr = new Object[] { ctx };
 		userContextHolder.set(arr);
@@ -209,7 +209,7 @@ public class Context {
 	 * Clears the user context from the threadlocal.
 	 */
 	public static void clearUserContext() {
-		log.trace("Clearing user context {}", Arrays.toString(userContextHolder.get()));
+		LOG.trace("Clearing user context {}", Arrays.toString(userContextHolder.get()));
 
 		userContextHolder.remove();
 	}
@@ -223,10 +223,10 @@ public class Context {
 	 */
 	public static UserContext getUserContext() {
 		Object[] arr = userContextHolder.get();
-		log.trace("Getting user context {} from userContextHolder {}", Arrays.toString(arr), userContextHolder);
+		LOG.trace("Getting user context {} from userContextHolder {}", Arrays.toString(arr), userContextHolder);
 
 		if (arr == null) {
-			log.trace("userContext is null.");
+			LOG.trace("userContext is null.");
 			throw new APIException(
 			        "A user context must first be passed to setUserContext()...use Context.openSession() (and closeSession() to prevent memory leaks!) before using the API");
 		}
@@ -243,12 +243,12 @@ public class Context {
 		if (serviceContext == null) {
 			synchronized (Context.class) {
 				if (serviceContext == null) {
-					log.error("serviceContext is null.  Creating new ServiceContext()");
+					LOG.error("serviceContext is null.  Creating new ServiceContext()");
 					serviceContext = ServiceContext.getInstance();
 				}
 			}
 		}
-		log.trace("serviceContext: {}", serviceContext);
+		LOG.trace("serviceContext: {}", serviceContext);
 
 		return ServiceContext.getInstance();
 	}
@@ -279,10 +279,10 @@ public class Context {
 	 * @should not authenticate with null password and proper system id
 	 */
 	public static void authenticate(String username, String password) throws ContextAuthenticationException {
-		log.debug("Authenticating with username: {}", username);
+		LOG.debug("Authenticating with username: {}", username);
 
 		if (Daemon.isDaemonThread()) {
-			log.error("Authentication attempted while operating on a "
+			LOG.error("Authentication attempted while operating on a "
 					+ "daemon thread, authenticating is not necessary or allowed");
 			return;
 		}
@@ -302,7 +302,7 @@ public class Context {
 		if (Daemon.isDaemonThread()) {
 			return;
 		}
-		log.debug("Refreshing authenticated user");
+		LOG.debug("Refreshing authenticated user");
 
 		getUserContext().refreshAuthenticatedUser();
 	}
@@ -315,7 +315,7 @@ public class Context {
 	 * @should change locale when become another user
 	 */
 	public static void becomeUser(String systemId) throws ContextAuthenticationException {
-		log.info("systemId: {}", systemId);
+		LOG.info("systemId: {}", systemId);
 
 		User user = getUserContext().becomeUser(systemId);
 
@@ -338,7 +338,7 @@ public class Context {
 	 * @return copy of the runtime properties
 	 */
 	public static Properties getRuntimeProperties() {
-		log.trace("getting runtime properties. size: {}", runtimeProperties.size());
+		LOG.trace("getting runtime properties. size: {}", runtimeProperties.size());
 
 		Properties props = new Properties();
 		props.putAll(runtimeProperties);
@@ -524,7 +524,7 @@ public class Context {
 
 		}
 		catch (Exception e) {
-			log.error("Unable to create message service due", e);
+			LOG.error("Unable to create message service due", e);
 		}
 		return ms;
 	}
@@ -619,7 +619,7 @@ public class Context {
 		if (!isSessionOpen()) {
 			return; // fail early if there isn't even a session open
 		}
-		log.debug("Logging out : {}", getAuthenticatedUser());
+		LOG.debug("Logging out : {}", getAuthenticatedUser());
 
 		getUserContext().logout();
 
@@ -711,7 +711,7 @@ public class Context {
 	 * closeSession calls.
 	 */
 	public static void openSession() {
-		log.trace("opening session");
+		LOG.trace("opening session");
 		setUserContext(new UserContext()); // must be cleared out in
 		// closeSession()
 		getContextDAO().openSession();
@@ -722,7 +722,7 @@ public class Context {
 	 * closeSession calls.
 	 */
 	public static void closeSession() {
-		log.trace("closing session");
+		LOG.trace("closing session");
 		clearUserContext(); // because we set a UserContext on the current
 		// thread in openSession()
 		getContextDAO().closeSession();
@@ -755,7 +755,7 @@ public class Context {
 	 * changes are still lost.
 	 */
 	public static void clearSession() {
-		log.trace("clearing session");
+		LOG.trace("clearing session");
 		getContextDAO().clearSession();
 	}
 
@@ -765,7 +765,7 @@ public class Context {
 	 * @since 1.6
 	 */
 	public static void flushSession() {
-		log.trace("flushing session");
+		LOG.trace("flushing session");
 		getContextDAO().flushSession();
 	}
 
@@ -787,7 +787,7 @@ public class Context {
 	 * @param obj The object to refresh from the database in the session
 	 */
 	public static void refreshEntity(Object obj) {
-		log.trace("refreshing object: {}", obj);
+		LOG.trace("refreshing object: {}", obj);
 		getContextDAO().refreshEntity(obj);
 	}
 
@@ -799,7 +799,7 @@ public class Context {
 	 * @param obj The object to evict/remove from the session
 	 */
 	public static void evictFromSession(Object obj) {
-		log.trace("clearing session");
+		LOG.trace("clearing session");
 		getContextDAO().evictFromSession(obj);
 	}
 
@@ -885,24 +885,24 @@ public class Context {
 	 * closing
 	 */
 	public static void shutdown() {
-		log.debug("Shutting down the scheduler");
+		LOG.debug("Shutting down the scheduler");
 		try {
 			// Needs to be shutdown before Hibernate
 			SchedulerUtil.shutdown();
 		}
 		catch (Exception e) {
-			log.warn("Error while shutting down scheduler service", e);
+			LOG.warn("Error while shutting down scheduler service", e);
 		}
 
-		log.debug("Shutting down the modules");
+		LOG.debug("Shutting down the modules");
 		try {
 			ModuleUtil.shutdown();
 		}
 		catch (Exception e) {
-			log.warn("Error while shutting down module system", e);
+			LOG.warn("Error while shutting down module system", e);
 		}
 
-		log.debug("Shutting down the context");
+		LOG.debug("Shutting down the context");
 		try {
 			ContextDAO dao = null;
 			try {
@@ -916,7 +916,7 @@ public class Context {
 			}
 		}
 		catch (Exception e) {
-			log.warn("Error while shutting down context dao", e);
+			LOG.warn("Error while shutting down context dao", e);
 		}
 	}
 
@@ -999,7 +999,7 @@ public class Context {
 			}
 		}
 		catch (Exception e) {
-			log.error("Error while setting core roles for openmrs system", e);
+			LOG.error("Error while setting core roles for openmrs system", e);
 		}
 		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
@@ -1024,7 +1024,7 @@ public class Context {
 			}
 		}
 		catch (Exception e) {
-			log.error("Error while setting core privileges", e);
+			LOG.error("Error while setting core privileges", e);
 		}
 		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_PRIVILEGES);
@@ -1074,7 +1074,7 @@ public class Context {
 			}
 		}
 		catch (Exception e) {
-			log.error("Error while setting core global properties", e);
+			LOG.error("Error while setting core global properties", e);
 		}
 		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);

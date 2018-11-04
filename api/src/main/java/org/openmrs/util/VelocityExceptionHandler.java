@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  */
 public class VelocityExceptionHandler implements MethodExceptionEventHandler {
 	
-	private static final Logger log = LoggerFactory.getLogger(VelocityExceptionHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(VelocityExceptionHandler.class);
 	
 	/**
 	 * When a user-supplied method throws an exception, the MethodExceptionEventHandler is invoked
@@ -32,7 +32,7 @@ public class VelocityExceptionHandler implements MethodExceptionEventHandler {
 	@Override
 	public Object methodException(Class claz, String method, Exception e) throws Exception {
 		
-		log.debug("Claz: " + claz.getName() + " method: " + method, e);
+		LOG.debug("Claz: " + claz.getName() + " method: " + method, e);
 		
 		// if formatting a date (and probably getting an "IllegalArgumentException")
 		if ("format".equals(method)) {

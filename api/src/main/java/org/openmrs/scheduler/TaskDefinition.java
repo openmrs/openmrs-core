@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TaskDefinition extends BaseChangeableOpenmrsMetadata {
 	
-	private static final Logger log = LoggerFactory.getLogger(TaskDefinition.class);
+	private static final Logger LOG = LoggerFactory.getLogger(TaskDefinition.class);
 	
 	// Task metadata
 	private Integer id;
@@ -66,7 +66,7 @@ public class TaskDefinition extends BaseChangeableOpenmrsMetadata {
 	 */
 	public TaskDefinition(Integer id, String name, String description, String taskClass) {
 		this();
-		log.debug("Creating taskconfig: " + id);
+		LOG.debug("Creating taskconfig: " + id);
 		this.id = id;
 		setName(name);
 		setDescription(description);

@@ -25,7 +25,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { ConceptStateConversion.class }, order = 50)
 public class StateConversionValidator implements Validator {
 	
-	private static final Logger log = LoggerFactory.getLogger(StateConversionValidator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(StateConversionValidator.class);
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
@@ -51,7 +51,7 @@ public class StateConversionValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 		ConceptStateConversion c = (ConceptStateConversion) obj;
 		if (c == null) {
-			log.debug("Rejecting because c is null");
+			LOG.debug("Rejecting because c is null");
 			errors.rejectValue("conceptStateConversion", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "concept", "error.concept");

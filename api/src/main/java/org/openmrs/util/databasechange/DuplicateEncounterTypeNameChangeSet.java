@@ -43,7 +43,7 @@ import liquibase.resource.ResourceAccessor;
 
 public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 	
-	private static final Logger log = LoggerFactory.getLogger(DuplicateEncounterTypeNameChangeSet.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DuplicateEncounterTypeNameChangeSet.class);
 	
 	@Override
 	public String getConfirmationMessage() {
@@ -143,14 +143,14 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 			}
 		}
 		catch (BatchUpdateException e) {
-			log.warn("Error generated while processsing batch insert", e);
+			LOG.warn("Error generated while processsing batch insert", e);
 			
 			try {
-				log.debug("Rolling back batch", e);
+				LOG.debug("Rolling back batch", e);
 				connection.rollback();
 			}
 			catch (Exception rbe) {
-				log.warn("Error generated while rolling back batch insert", e);
+				LOG.warn("Error generated while rolling back batch insert", e);
 			}
 			
 			// marks the changeset as a failed one
@@ -167,14 +167,14 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 				}
 			}
 			catch (DatabaseException e) {
-				log.warn("Failed to set auto commit to ids initial state", e);
+				LOG.warn("Failed to set auto commit to ids initial state", e);
 			}
 			if (rs != null) {
 				try {
 					rs.close();
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the resultset object");
+					LOG.warn("Failed to close the resultset object");
 				}
 			}
 			
@@ -183,7 +183,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 					stmt.close();
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the select statement used to identify duplicate EncounterType object names");
+					LOG.warn("Failed to close the select statement used to identify duplicate EncounterType object names");
 				}
 			}
 			
@@ -192,7 +192,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 					pStmt.close();
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the prepared statement used to update duplicate EncounterType object names");
+					LOG.warn("Failed to close the prepared statement used to update duplicate EncounterType object names");
 				}
 			}
 		}

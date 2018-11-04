@@ -58,7 +58,7 @@ import org.xml.sax.InputSource;
  */
 public class ModuleFileParser {
 	
-	private static final Logger log = LoggerFactory.getLogger(ModuleFileParser.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ModuleFileParser.class);
 
 	private static final String MODULE_CONFIG_XML_FILENAME = "config.xml";
 
@@ -255,7 +255,7 @@ public class ModuleFileParser {
 			config = db.parse(configStream);
 		}
 		catch (Exception e) {
-			log.error("Error parsing " + MODULE_CONFIG_XML_FILENAME + ": " + configStream.toString(), e);
+			LOG.error("Error parsing " + MODULE_CONFIG_XML_FILENAME + ": " + configStream.toString(), e);
 
 			String output = "";
 			try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -268,10 +268,10 @@ public class ModuleFileParser {
 				output = out.toString(StandardCharsets.UTF_8.name());
 			}
 			catch (Exception e2) {
-				log.warn("Another error parsing " + MODULE_CONFIG_XML_FILENAME, e2);
+				LOG.warn("Another error parsing " + MODULE_CONFIG_XML_FILENAME, e2);
 			}
 
-			log.error("{} content: {}", MODULE_CONFIG_XML_FILENAME, output);
+			LOG.error("{} content: {}", MODULE_CONFIG_XML_FILENAME, output);
 			throw new ModuleException(messageSourceService.getMessage("Module.error.cannotParseConfigFile"),
 				moduleFile.getName(), e);
 		}
@@ -412,16 +412,16 @@ public class ModuleFileParser {
 			return result;
 		}
 
-		log.debug("# advice: {}", advice.getLength());
+		LOG.debug("# advice: {}", advice.getLength());
 		int i = 0;
 		while (i < advice.getLength()) {
 			Element element = (Element) advice.item(i);
 			String point = getElementTrimmed(element, "point");
 			String adviceClass = getElementTrimmed(element, "class");
-			log.debug("advice point: {}, class: {}", point, adviceClass);
+			LOG.debug("advice point: {}, class: {}", point, adviceClass);
 
 			if (point.isEmpty() || adviceClass.isEmpty()) {
-				log.warn("'point' and 'class' are required for advice. Given '{}' and '{}'", point, adviceClass);
+				LOG.warn("'point' and 'class' are required for advice. Given '{}' and '{}'", point, adviceClass);
 			} else {
 				result.add(new AdvicePoint(module, point, adviceClass));
 			}
@@ -440,18 +440,18 @@ public class ModuleFileParser {
 			return result;
 		}
 
-		log.debug("# extensions: {}", extensions.getLength());
+		LOG.debug("# extensions: {}", extensions.getLength());
 		int i = 0;
 		while (i < extensions.getLength()) {
 			Element element = (Element) extensions.item(i);
 			String point = getElementTrimmed(element, "point");
 			String extClass = getElementTrimmed(element, "class");
-			log.debug("extension point: {}, class: {}", point, extClass);
+			LOG.debug("extension point: {}, class: {}", point, extClass);
 
 			if (point.isEmpty() || extClass.isEmpty()) {
-				log.warn("'point' and 'class' are required for extensions. Given '{}' and '{}'", point, extClass);
+				LOG.warn("'point' and 'class' are required for extensions. Given '{}' and '{}'", point, extClass);
 			} else if (point.contains(Extension.extensionIdSeparator)) {
-				log.warn("Point id contains illegal character: '{}'", Extension.extensionIdSeparator);
+				LOG.warn("Point id contains illegal character: '{}'", Extension.extensionIdSeparator);
 			} else {
 				result.put(point, extClass);
 			}
@@ -469,16 +469,16 @@ public class ModuleFileParser {
 			return result;
 		}
 
-		log.debug("# privileges: {}", privileges.getLength());
+		LOG.debug("# privileges: {}", privileges.getLength());
 		int i = 0;
 		while (i < privileges.getLength()) {
 			Element element = (Element) privileges.item(i);
 			String name = getElementTrimmed(element, "name");
 			String description = getElementTrimmed(element, "description");
-			log.debug("extension name: {}, description: {}", name, description);
+			LOG.debug("extension name: {}, description: {}", name, description);
 
 			if (name.isEmpty() || description.isEmpty()) {
-				log.warn("'name' and 'description' are required for privilege. Given '{}' and '{}'", name, description);
+				LOG.warn("'name' and 'description' are required for privilege. Given '{}' and '{}'", name, description);
 			} else {
 				result.add(new Privilege(name, description));
 			}
@@ -496,7 +496,7 @@ public class ModuleFileParser {
 			return result;
 		}
 		
-		log.debug("# global properties: {}", propNodes.getLength());
+		LOG.debug("# global properties: {}", propNodes.getLength());
 		int i = 0;
 		while (i < propNodes.getLength()) {
 			Element gpElement = (Element) propNodes.item(i);
@@ -519,9 +519,9 @@ public class ModuleFileParser {
 		String datatypeClassname = getElementTrimmed(element, "datatypeClassname");
 		String datatypeConfig = getElementTrimmed(element, "datatypeConfig");
 		
-		log.debug("property: {}, defaultValue: {}", property, defaultValue);
-		log.debug("description: {}, datatypeClassname: {}", description, datatypeClassname);
-		log.debug("datatypeConfig: {}", datatypeConfig);
+		LOG.debug("property: {}, defaultValue: {}", property, defaultValue);
+		LOG.debug("description: {}, datatypeClassname: {}", description, datatypeClassname);
+		LOG.debug("datatypeConfig: {}", datatypeConfig);
 
 		return createGlobalProperty(property, defaultValue, description, datatypeClassname,
 			datatypeConfig);
@@ -536,7 +536,7 @@ public class ModuleFileParser {
 
 		GlobalProperty globalProperty = null;
 		if (property.isEmpty()) {
-			log.warn("'property' is required for global properties. Given '{}'", property);
+			LOG.warn("'property' is required for global properties. Given '{}'", property);
 			return globalProperty;
 		}
 
@@ -558,11 +558,11 @@ public class ModuleFileParser {
 			globalProperty = new GlobalProperty(property, defaultValue, description, datatypeClazz, datatypeConfig);
 		}
 		catch (ClassCastException ex) {
-			log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
+			LOG.error("The class specified by 'datatypeClassname' (" + datatypeClassname
 				+ ") must be a subtype of 'org.openmrs.customdatatype.CustomDatatype<?>'.", ex);
 		}
 		catch (ClassNotFoundException ex) {
-			log.error("The class specified by 'datatypeClassname' (" + datatypeClassname
+			LOG.error("The class specified by 'datatypeClassname' (" + datatypeClassname
 				+ ") could not be found.", ex);
 		}
 		return globalProperty;

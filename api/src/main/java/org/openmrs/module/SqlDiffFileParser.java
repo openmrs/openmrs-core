@@ -39,7 +39,7 @@ public class SqlDiffFileParser {
 	private SqlDiffFileParser() {
 	}
 	
-	private static final Logger log = LoggerFactory.getLogger(SqlDiffFileParser.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SqlDiffFileParser.class);
 	
 	private static final String SQLDIFF_CHANGELOG_FILENAME = "sqldiff.xml";
 	
@@ -74,7 +74,7 @@ public class SqlDiffFileParser {
 				// Try the old way. Loading from the root of the omod
 				ZipEntry diffEntry = jarfile.getEntry(SQLDIFF_CHANGELOG_FILENAME);
 				if (diffEntry == null) {
-					log.debug("No sqldiff.xml found for module: " + module.getName());
+					LOG.debug("No sqldiff.xml found for module: " + module.getName());
 					return map;
 				} else {
 					try {
@@ -129,7 +129,7 @@ public class SqlDiffFileParser {
 						diffStream.close();
 					}
 					catch (IOException io) {
-						log.error("Error while closing config stream for module: " + module.getModuleId(), io);
+						LOG.error("Error while closing config stream for module: " + module.getModuleId(), io);
 					}
 				}
 				
@@ -145,7 +145,7 @@ public class SqlDiffFileParser {
 				}
 			}
 			catch (IOException e) {
-				log.warn("Unable to close jarfile: " + jarfile.getName());
+				LOG.warn("Unable to close jarfile: " + jarfile.getName());
 			}
 		}
 		return map;

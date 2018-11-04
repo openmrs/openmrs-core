@@ -45,7 +45,7 @@ import liquibase.resource.ResourceAccessor;
 
 public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 	
-	private static final Logger log = LoggerFactory.getLogger(DuplicateEncounterRoleNameChangeSet.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DuplicateEncounterRoleNameChangeSet.class);
 	
 	@Override
 	public String getConfirmationMessage() {
@@ -156,14 +156,14 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 		}
 		
 		catch (BatchUpdateException e) {
-			log.warn("Error generated while processsing batch insert", e);
+			LOG.warn("Error generated while processsing batch insert", e);
 			
 			try {
-				log.debug("Rolling back batch", e);
+				LOG.debug("Rolling back batch", e);
 				connection.rollback();
 			}
 			catch (Exception rbe) {
-				log.warn("Error generated while rolling back batch insert", e);
+				LOG.warn("Error generated while rolling back batch insert", e);
 			}
 			
 			// marks the changeset as a failed one
@@ -181,7 +181,7 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 				}
 			}
 			catch (DatabaseException e) {
-				log.warn("Failed to set auto commit to ids initial state", e);
+				LOG.warn("Failed to set auto commit to ids initial state", e);
 			}
 			
 			if (rs != null) {
@@ -189,7 +189,7 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 					rs.close();
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the resultset object");
+					LOG.warn("Failed to close the resultset object");
 				}
 			}
 			
@@ -198,7 +198,7 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 					stmt.close();
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the select statement used to identify duplicate EncounterRole object names");
+					LOG.warn("Failed to close the select statement used to identify duplicate EncounterRole object names");
 				}
 			}
 			
@@ -208,7 +208,7 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 					
 				}
 				catch (SQLException e) {
-					log.warn("Failed to close the prepared statement used to update duplicate EncounterRole object names");
+					LOG.warn("Failed to close the prepared statement used to update duplicate EncounterRole object names");
 				}
 			}
 		}

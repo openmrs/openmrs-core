@@ -23,14 +23,14 @@ public class TestTask extends AbstractTask {
 	private static int executionCount = 0;
 	
 	// Logger 
-	private static final Logger log = LoggerFactory.getLogger(TestTask.class);
+	private static final Logger LOG = LoggerFactory.getLogger(TestTask.class);
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(TaskDefinition)
 	 */
 	@Override
 	public void initialize(TaskDefinition taskDefinition) {
-		log.info("Initializing task " + taskDefinition);
+		LOG.info("Initializing task " + taskDefinition);
 	}
 	
 	public static void setExecutionCount(int executionCount) {
@@ -42,12 +42,12 @@ public class TestTask extends AbstractTask {
 	 */
 	@Override
 	public void execute() {
-		log.info("Executing task at " + new Date());
+		LOG.info("Executing task at " + new Date());
 		
 		setExecutionCount(executionCount + 1);
 		// Throw a runtime exception once every ten executions
 		if (executionCount % 10 == 0) {
-			log.info("Throwing a runtime exception in an attempt to break the scheduler");
+			LOG.info("Throwing a runtime exception in an attempt to break the scheduler");
 			throw new RuntimeException();
 		}
 	}
@@ -57,7 +57,7 @@ public class TestTask extends AbstractTask {
 	 */
 	@Override
 	public void shutdown() {
-		log.info("Shutting down task ...");
+		LOG.info("Shutting down task ...");
 		super.shutdown();
 	}
 	

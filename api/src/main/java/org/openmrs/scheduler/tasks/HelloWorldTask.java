@@ -20,24 +20,24 @@ import org.slf4j.LoggerFactory;
  */
 public class HelloWorldTask extends AbstractTask {
 	
-	private static final Logger log = LoggerFactory.getLogger(HelloWorldTask.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HelloWorldTask.class);
 	
 	/**
 	 * Public constructor.
 	 */
 	public HelloWorldTask() {
-		log.debug("hello world task created at " + new Date());
+		LOG.debug("hello world task created at " + new Date());
 	}
 	
 	@Override
 	public void execute() {
-		log.debug("executing hello world task");
+		LOG.debug("executing hello world task");
 		super.startExecuting();
 	}
 	
 	@Override
 	public void shutdown() {
-		log.debug("shutting down hello world task");
+		LOG.debug("shutting down hello world task");
 		this.stopExecuting();
 	}
 }

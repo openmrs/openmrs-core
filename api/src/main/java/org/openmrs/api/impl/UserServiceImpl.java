@@ -53,7 +53,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
-	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(UserServiceImpl.class);
 	
 	protected UserDAO dao;
 	
@@ -478,7 +478,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 				systemId = liv.getValidIdentifier(systemId);
 			}
 			catch (Exception e) {
-				log.error("error getting check digit", e);
+				LOG.error("error getting check digit", e);
 				return systemId;
 			}
 			

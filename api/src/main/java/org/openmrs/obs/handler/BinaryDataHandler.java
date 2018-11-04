@@ -34,7 +34,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
 	
-	private static final Logger log = LoggerFactory.getLogger(BinaryDataHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BinaryDataHandler.class);
 	
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally
@@ -52,8 +52,8 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 	@Override
 	public Obs getObs(Obs obs, String view) {
 		File file = getComplexDataFile(obs);
-		log.debug("value complex: " + obs.getValueComplex());
-		log.debug("file path: " + file.getAbsolutePath());
+		LOG.debug("value complex: " + obs.getValueComplex());
+		LOG.debug("file path: " + file.getAbsolutePath());
 		ComplexData complexData = null;
 		
 		// Raw view (i.e. the file as is)
@@ -68,7 +68,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 				complexData = new ComplexData(originalFilename, OpenmrsUtil.getFileAsBytes(file));
 			}
 			catch (IOException e) {
-				log.error("Trying to read file: " + file.getAbsolutePath(), e);
+				LOG.error("Trying to read file: " + file.getAbsolutePath(), e);
 			}
 		} else {
 			// No other view supported
@@ -105,7 +105,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		// Get the buffered file  from the ComplexData.
 		ComplexData complexData = obs.getComplexData();
 		if (complexData == null) {
-			log.error("Cannot save complex data where obsId=" + obs.getObsId() + " because its ComplexData is null.");
+			LOG.error("Cannot save complex data where obsId=" + obs.getObsId() + " because its ComplexData is null.");
 			return obs;
 		}
 		

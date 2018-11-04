@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
  */
 public class RoleEditor extends PropertyEditorSupport {
 	
-	private static final Logger log = LoggerFactory.getLogger(RoleEditor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RoleEditor.class);
 	
 	public RoleEditor() {
 	}
@@ -53,7 +53,7 @@ public class RoleEditor extends PropertyEditorSupport {
 				Role r = es.getRoleByUuid(text);
 				setValue(r);
 				if (r == null) {
-					log.error("Error setting text: " + text, ex);
+					LOG.error("Error setting text: " + text, ex);
 					throw new IllegalArgumentException("Role not found: " + ex.getMessage());
 				}
 			}

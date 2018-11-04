@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class MessageServiceImpl implements MessageService {
 	
-	private static final Logger log = LoggerFactory.getLogger(MessageServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MessageServiceImpl.class);
 	
 	private TemplateDAO templateDAO;
 	
@@ -93,7 +93,7 @@ public class MessageServiceImpl implements MessageService {
 			messageSender.send(message);
 		}
 		catch (Exception e) {
-			log.error("Message could not be sent due to " + e.getMessage(), e);
+			LOG.error("Message could not be sent due to " + e.getMessage(), e);
 			throw new MessageException(e);
 		}
 	}
@@ -171,7 +171,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Override
 	public void sendMessage(Message message, Integer recipientId) throws MessageException {
-		log.debug("Sending message to user with user id " + recipientId);
+		LOG.debug("Sending message to user with user id " + recipientId);
 		User user = Context.getUserService().getUser(recipientId);
 		message.addRecipient(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS));
 		Context.getMessageService().sendMessage(message);
@@ -185,7 +185,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Override
 	public void sendMessage(Message message, User user) throws MessageException {
-		log.debug("Sending message to user " + user);
+		LOG.debug("Sending message to user " + user);
 		String address = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS);
 		if (address != null) {
 			message.addRecipient(address);
@@ -198,7 +198,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Override
 	public void sendMessage(Message message, Collection<User> users) throws MessageException {
-		log.debug("Sending message to users " + users);
+		LOG.debug("Sending message to users " + users);
 		for (User user : users) {
 			String address = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS);
 			if (address != null) {
@@ -213,7 +213,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Override
 	public void sendMessage(Message message, String roleName) throws MessageException {
-		log.debug("Sending message to role with name " + roleName);
+		LOG.debug("Sending message to role with name " + roleName);
 		Role role = Context.getUserService().getRole(roleName);
 		Context.getMessageService().sendMessage(message, role);
 	}
@@ -223,15 +223,15 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Override
 	public void sendMessage(Message message, Role role) throws MessageException {
-		log.debug("Sending message to role " + role);
-		log.debug("User Service : " + Context.getUserService());
+		LOG.debug("Sending message to role " + role);
+		LOG.debug("User Service : " + Context.getUserService());
 		
 		List<Role> roles = new ArrayList<>();
 		roles.add(role);
 		
 		Collection<User> users = Context.getUserService().getUsers(null, roles, false);
 		
-		log.debug("Sending message " + message + " to " + users);
+		LOG.debug("Sending message " + message + " to " + users);
 		Context.getMessageService().sendMessage(message, users);
 	}
 	

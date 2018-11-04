@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  */
 public class LocaleUtility implements GlobalPropertyListener {
 	
-	private static final Logger log = LoggerFactory.getLogger(LocaleUtility.class);
+	private static final Logger LOG = LoggerFactory.getLogger(LocaleUtility.class);
 	
 	/**
 	 * Cached version of the default locale. This is cached so that we don't have to look it up in
@@ -64,14 +64,14 @@ public class LocaleUtility implements GlobalPropertyListener {
 							defaultLocaleCache = fromSpecification(locale);
 						}
 						catch (Exception t) {
-							log.warn("Unable to parse default locale global property value: " + locale, t);
+							LOG.warn("Unable to parse default locale global property value: " + locale, t);
 						}
 					}
 				}
 				catch (Exception e) {
 					// swallow most of the stack trace for most users
-					log.warn("Unable to get locale global property value. " + e.getMessage());
-					log.trace("Unable to get locale global property value", e);
+					LOG.warn("Unable to get locale global property value. " + e.getMessage());
+					LOG.trace("Unable to get locale global property value", e);
 				}
 				
 				// if we weren't able to load the locale from the global property,

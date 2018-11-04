@@ -64,7 +64,7 @@ import org.springframework.validation.Errors;
 @Transactional
 public class AdministrationServiceImpl extends BaseOpenmrsService implements AdministrationService, GlobalPropertyListener {
 	
-	private static final Logger log = LoggerFactory.getLogger(AdministrationServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AdministrationServiceImpl.class);
 
 	protected AdministrationDAO dao;
 	
@@ -248,7 +248,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public List<GlobalProperty> saveGlobalProperties(List<GlobalProperty> props) throws APIException {
-		log.debug("saving a list of global properties");
+		LOG.debug("saving a list of global properties");
 		
 		// add all of the new properties
 		for (GlobalProperty prop : props) {
@@ -376,7 +376,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			return Context.getSerializationService().getDefaultSerializer().deserialize(property, ImplementationId.class);
 		}
 		catch (Exception e) {
-			log.debug("Error while getting implementation id", e);
+			LOG.debug("Error while getting implementation id", e);
 		}
 		
 		return null;
@@ -485,8 +485,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			throw new APIException(ms);
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Response: " + response);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Response: " + response);
 		}
 		
 		if (response.startsWith("Success")) {
@@ -654,7 +654,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			throw new APIException("does.not.have.string.constructor", new Object[] { defaultValue.getClass().getName() }, e);
 		}
 		catch (Exception e) {
-			log.error("Unable to turn value '" + propVal + "' into type " + defaultValue.getClass().getName(), e);
+			LOG.error("Unable to turn value '" + propVal + "' into type " + defaultValue.getClass().getName(), e);
 			return defaultValue;
 		}
 	}

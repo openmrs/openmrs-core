@@ -27,7 +27,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { PersonName.class }, order = 50)
 public class PersonNameValidator implements Validator {
 	
-	private static final Logger log = LoggerFactory.getLogger(PersonNameValidator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PersonNameValidator.class);
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -49,8 +49,8 @@ public class PersonNameValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object object, Errors errors) {
-		if (log.isDebugEnabled()) {
-			log.debug(this.getClass().getName() + ".validate...");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug(this.getClass().getName() + ".validate...");
 		}
 		PersonName personName = (PersonName) object;
 		try {

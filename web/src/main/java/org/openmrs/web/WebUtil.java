@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 public class WebUtil implements GlobalPropertyListener {
 	
-	private static final Logger log = LoggerFactory.getLogger(WebUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(WebUtil.class);
 	
 	private static String defaultDateCache = null;
 
@@ -256,8 +256,8 @@ public class WebUtil implements GlobalPropertyListener {
 	 * @return filename stripped down
 	 */
 	public static String stripFilename(String filename) {
-		if (log.isDebugEnabled()) {
-			log.debug("Stripping filename from: " + filename);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Stripping filename from: " + filename);
 		}
 		
 		// for unix based filesystems
@@ -273,8 +273,8 @@ public class WebUtil implements GlobalPropertyListener {
 			tmpFilename = tmpFilename.substring(index + 1);
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Returning stripped down filename: " + tmpFilename);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Returning stripped down filename: " + tmpFilename);
 		}
 		
 		return tmpFilename;
@@ -380,7 +380,7 @@ public class WebUtil implements GlobalPropertyListener {
 	}
 	
 	public static String formatDate(Date date, Locale locale, FORMAT_TYPE type) {
-		log.debug("Formatting date: " + date + " with locale " + locale);
+		LOG.debug("Formatting date: " + date + " with locale " + locale);
 		
 		DateFormat dateFormat = null;
 		

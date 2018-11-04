@@ -36,7 +36,7 @@ import org.springframework.validation.Validator;
 public class UserValidator implements Validator {
 	
 	/** Logger for this class and subclasses */
-	private static final Logger log = LoggerFactory.getLogger(UserValidator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(UserValidator.class);
 	
 	private static final Pattern EMAIL_PATTERN = Pattern
 	        .compile("^.+@.+\\..+$");
@@ -171,7 +171,7 @@ public class UserValidator implements Validator {
 			return matcher.matches();
 		}
 		catch (PatternSyntaxException pex) {
-			log.error("Username Pattern Syntax exception in UserValidator", pex);
+			LOG.error("Username Pattern Syntax exception in UserValidator", pex);
 			return false;
 		}
 	}

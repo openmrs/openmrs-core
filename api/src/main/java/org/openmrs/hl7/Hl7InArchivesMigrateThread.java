@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Hl7InArchivesMigrateThread extends Thread {
 	
-	private static final Logger log = LoggerFactory.getLogger(Hl7InArchivesMigrateThread.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Hl7InArchivesMigrateThread.class);
 	
 	/**
 	 * Map holds data about the progress of the transfer process, that is numberTransferred and
@@ -135,19 +135,19 @@ public class Hl7InArchivesMigrateThread extends Thread {
 			}
 			catch (APIException api) {
 				// log this as a debug, because we want to swallow minor errors 
-				log.debug("Unable to migrate HL7 archive", api);
+				LOG.debug("Unable to migrate HL7 archive", api);
 				
 				try {
 					Thread.sleep(HL7Constants.THREAD_SLEEP_PERIOD);
 				}
 				catch (InterruptedException e) {
-					log.warn("Hl7 in archive migration thread has been abnormally interrupted", e);
+					LOG.warn("Hl7 in archive migration thread has been abnormally interrupted", e);
 				}
 				
 			}
 			catch (Exception e) {
 				setTransferStatus(Status.ERROR);
-				log.warn("Some error occurred while migrating hl7 archives", e);
+				LOG.warn("Some error occurred while migrating hl7 archives", e);
 			}
 		}
 		// clean up

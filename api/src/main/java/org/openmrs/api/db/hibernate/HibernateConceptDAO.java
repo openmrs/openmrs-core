@@ -80,7 +80,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateConceptDAO implements ConceptDAO {
 	
-	private static final Logger log = LoggerFactory.getLogger(HibernateConceptDAO.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HibernateConceptDAO.class);
 	
 	private SessionFactory sessionFactory;
 	
@@ -832,10 +832,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 				parents.addAll(getParents(c));
 			}
 			parents.add(current);
-			if (log.isDebugEnabled()) {
-				log.debug("parents found: ");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("parents found: ");
 				for (Concept c : parents) {
-					log.debug("id: " + c.getConceptId());
+					LOG.debug("id: " + c.getConceptId());
 				}
 			}
 		}
@@ -1796,9 +1796,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (concepts.size() == 1) {
 			return concepts.iterator().next();
 		} else if (list.isEmpty()) {
-			log.warn("No concept found for '" + name + "'");
+			LOG.warn("No concept found for '" + name + "'");
 		} else {
-			log.warn("Multiple concepts found for '" + name + "'");
+			LOG.warn("Multiple concepts found for '" + name + "'");
 			
 			for (Concept concept : concepts) {
 				for (ConceptName conceptName : concept.getNames(locale)) {

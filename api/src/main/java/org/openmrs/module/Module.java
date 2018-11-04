@@ -33,7 +33,7 @@ import org.w3c.dom.Document;
  */
 public final class Module {
 	
-	private static final Logger log = LoggerFactory.getLogger(Module.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 	
 	private String name;
 	
@@ -123,7 +123,7 @@ public final class Module {
 		this.author = author;
 		this.description = description;
 		this.version = version;
-		log.debug("Creating module " + name);
+		LOG.debug("Creating module " + name);
 	}
 	
 	@Override
@@ -520,9 +520,9 @@ public final class Module {
 	 * @see ModuleFileParser
 	 */
 	public void setExtensionNames(Map<String, String> map) {
-		if (log.isDebugEnabled()) {
+		if (LOG.isDebugEnabled()) {
 			for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
-				log.debug("Setting extension names: " + entry.getKey() + " : " + entry.getValue());
+				LOG.debug("Setting extension names: " + entry.getKey() + " : " + entry.getValue());
 			}
 		}
 		this.extensionNames = map;
@@ -552,7 +552,7 @@ public final class Module {
 	private List<Extension> expandExtensionNames() {
 		ModuleClassLoader moduleClsLoader = ModuleFactory.getModuleClassLoader(this);
 		if (moduleClsLoader == null) {
-			log.debug("Module class loader is not available, maybe the module {} is stopped/stopping", getName());
+			LOG.debug("Module class loader is not available, maybe the module {} is stopped/stopping", getName());
 			return extensions;
 		}
 		
@@ -560,17 +560,17 @@ public final class Module {
 		for (Map.Entry<String, String> entry : extensionNames.entrySet()) {
 			String point = entry.getKey();
 			String className = entry.getValue();
-			log.debug(getModuleId() + ": Expanding extension name (point|class): {}|{}", point, className);
+			LOG.debug(getModuleId() + ": Expanding extension name (point|class): {}|{}", point, className);
 			try {
 				Class<?> cls = moduleClsLoader.loadClass(className);
 				Extension ext = (Extension) cls.newInstance();
 				ext.setPointId(point);
 				ext.setModuleId(this.getModuleId());
 				extensions.add(ext);
-				log.debug(getModuleId() + ": Added extension: {}|{}", ext.getExtensionId(), ext.getClass());
+				LOG.debug(getModuleId() + ": Added extension: {}|{}", ext.getExtensionId(), ext.getClass());
 			}
 			catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoClassDefFoundError e) {
-				log.warn(getModuleId() + ": Unable to create instance of class defined for extension point: " + point, e);
+				LOG.warn(getModuleId() + ": Unable to create instance of class defined for extension point: " + point, e);
 			}
 		}
 		return extensions;

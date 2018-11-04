@@ -50,7 +50,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	
 	public static final String CONNECTION_PASSWORD = "connection.password";
 	
-	private static final Logger log = LoggerFactory.getLogger(SourceMySqldiffFile.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SourceMySqldiffFile.class);
 	
 	/**
 	 * Absolute path and name of file to source
@@ -145,10 +145,10 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			throw new CustomChangeException("Error while executing command: '" + commands.get(0) + "'", e);
 		}
 		
-		log.debug("Exec called: " + Collections.singletonList(commands));
+		LOG.debug("Exec called: " + Collections.singletonList(commands));
 		
 		if (exitValue != 0) {
-			log.error("There was an error while running the " + commands.get(0) + " command.  Command output: "
+			LOG.error("There was an error while running the " + commands.get(0) + " command.  Command output: "
 			        + output.toString());
 			throw new CustomChangeException(
 			        "There was an error while running the "
@@ -158,7 +158,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			                + errorCommand + "  ");
 		} else {
 			// a normal exit value
-			log.debug("Output of exec: " + output);
+			LOG.debug("Output of exec: " + output);
 		}
 		
 	}
@@ -193,7 +193,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	 * @return process exit value
 	 */
 	private Integer execCmd(File wd, String[] cmdWithArguments, StringBuilder out) throws Exception {
-		log.debug("executing command: " + Arrays.toString(cmdWithArguments));
+		LOG.debug("executing command: " + Arrays.toString(cmdWithArguments));
 		
 		Integer exitValue;
 		
@@ -228,9 +228,9 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		
 		exitValue = p.waitFor();
 		
-		log.debug("Process exit value: " + exitValue);
+		LOG.debug("Process exit value: " + exitValue);
 		
-		log.debug("execCmd output: \n" + out.toString());
+		LOG.debug("execCmd output: \n" + out.toString());
 		
 		return exitValue;
 	}

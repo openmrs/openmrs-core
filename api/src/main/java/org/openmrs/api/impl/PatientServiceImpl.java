@@ -85,7 +85,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class PatientServiceImpl extends BaseOpenmrsService implements PatientService {
 	
-	private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PatientServiceImpl.class);
 	
 	private PatientDAO dao;
 	
@@ -568,10 +568,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Override
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException, SerializationException {
-		log.debug("Merging patients: (preferred)" + preferred.getPatientId() + ", (notPreferred) "
+		LOG.debug("Merging patients: (preferred)" + preferred.getPatientId() + ", (notPreferred) "
 		        + notPreferred.getPatientId());
 		if (preferred.getPatientId().equals(notPreferred.getPatientId())) {
-			log.debug("Merge operation cancelled: Cannot merge user" + preferred.getPatientId() + " to self");
+			LOG.debug("Merge operation cancelled: Cannot merge user" + preferred.getPatientId() + " to self");
 			throw new APIException("Patient.merge.cancelled", new Object[] { preferred.getPatientId() });
 		}
 		requireNoActiveOrderOfSameType(preferred,notPreferred);
@@ -622,7 +622,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				Object[] parameters = { patient1.getPatientId(), patient2.getPatientId(), order1.getOrderType() };
 				String message = Context.getMessageSourceService().getMessage(messageKey, parameters,
 						Context.getLocale());
-				log.debug(message);
+				LOG.debug(message);
 				throw new APIException(message);
 			}
 		}));
@@ -635,7 +635,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			if (!pp.getVoided()) {
 				PatientProgram enroll = pp.copy();
 				enroll.setPatient(preferred);
-				log.debug("Copying patientProgram " + pp.getPatientProgramId() + " to " + preferred.getPatientId());
+				LOG.debug("Copying patientProgram " + pp.getPatientProgramId() + " to " + preferred.getPatientId());
 				PatientProgram persisted = programService.savePatientProgram(enroll);
 				mergedData.addCreatedProgram(persisted.getUuid());
 			}
@@ -649,8 +649,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		VisitService visitService = Context.getVisitService();
 		
 		for (Visit visit : visitService.getVisitsByPatient(notPreferred, true, true)) {
-			if (log.isDebugEnabled()) {
-				log.debug("Merging visit " + visit.getVisitId() + " to " + preferred.getPatientId());
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Merging visit " + visit.getVisitId() + " to " + preferred.getPatientId());
 			}
 			visit.setPatient(preferred);
 			Visit persisted = visitService.saveVisit(visit);
@@ -669,7 +669,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				.createEncounterSearchCriteria();
 		for (Encounter e : es.getEncounters(notPreferredPatientEncounterSearchCriteria)) {
 			e.setPatient(preferred);
-			log.debug("Merging encounter " + e.getEncounterId() + " to " + preferred.getPatientId());
+			LOG.debug("Merging encounter " + e.getEncounterId() + " to " + preferred.getPatientId());
 			Encounter persisted = es.saveEncounter(e);
 			mergedData.addMovedEncounter(persisted.getUuid());
 		}
@@ -709,7 +709,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 					if (personBisNotPreferred) {
 						tmpRel.setPersonB(preferred);
 					}
-					log.debug("Copying relationship " + rel.getRelationshipId() + " to " + preferred.getPatientId());
+					LOG.debug("Copying relationship " + rel.getRelationshipId() + " to " + preferred.getPatientId());
 					Relationship persisted = personService.saveRelationship(tmpRel);
 					mergedData.addCreatedRelationship(persisted.getUuid());
 					// void the existing relationship to the notPreferred
@@ -767,7 +767,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				tmpIdentifier.setPreferred(false);
 				preferred.addIdentifier(tmpIdentifier);
 				mergedData.addCreatedIdentifier(tmpIdentifier.getUuid());
-				log.debug("Merging identifier " + tmpIdentifier.getIdentifier() + " to " + preferred.getPatientId());
+				LOG.debug("Merging identifier " + tmpIdentifier.getIdentifier() + " to " + preferred.getPatientId());
 			}
 		}
 	}
@@ -831,7 +831,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				PersonName tmpName = constructTemporaryName(newName);
 				preferred.addName(tmpName);
 				mergedData.addCreatedName(tmpName.getUuid());
-				log.debug("Merging name " + newName.getGivenName() + " to " + preferred.getPatientId());
+				LOG.debug("Merging name " + newName.getGivenName() + " to " + preferred.getPatientId());
 			}
 		}
 	}
@@ -870,7 +870,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				tmpAddress.setUuid(UUID.randomUUID().toString());
 				preferred.addAddress(tmpAddress);
 				mergedData.addCreatedAddress(tmpAddress.getUuid());
-				log.debug("Merging address " + newAddress.getPersonAddressId() + " to " + preferred.getPatientId());
+				LOG.debug("Merging address " + newAddress.getPersonAddressId() + " to " + preferred.getPatientId());
 			}
 		}
 		
@@ -1012,7 +1012,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		// need to make sure there is an Obs that represents the patient's
 		// exit
-		log.debug("Patient is exiting, so let's make sure there's an Obs for it");
+		LOG.debug("Patient is exiting, so let's make sure there's an Obs for it");
 		
 		String codProp = Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare");
 		Concept reasonForExit = Context.getConceptService().getConcept(codProp);
@@ -1021,18 +1021,18 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			List<Obs> obssExit = Context.getObsService().getObservationsByPersonAndConcept(patient, reasonForExit);
 			if (obssExit != null) {
 				if (obssExit.size() > 1) {
-					log.error("Multiple reasons for exit (" + obssExit.size() + ")?  Shouldn't be...");
+					LOG.error("Multiple reasons for exit (" + obssExit.size() + ")?  Shouldn't be...");
 				} else {
 					Obs obsExit;
 					if (obssExit.size() == 1) {
 						// already has a reason for exit - let's edit it.
-						log.debug("Already has a reason for exit, so changing it");
+						LOG.debug("Already has a reason for exit, so changing it");
 						
 						obsExit = obssExit.iterator().next();
 						
 					} else {
 						// no reason for exit obs yet, so let's make one
-						log.debug("No reason for exit yet, let's create one.");
+						LOG.debug("No reason for exit yet, let's create one.");
 						
 						obsExit = new Obs();
 						obsExit.setPerson(patient);
@@ -1043,7 +1043,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						if (loc != null) {
 							obsExit.setLocation(loc);
 						} else {
-							log.error("Could not find a suitable location for which to create this new Obs");
+							LOG.error("Could not find a suitable location for which to create this new Obs");
 						}
 					}
 					
@@ -1058,7 +1058,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				}
 			}
 		} else {
-			log.debug("Reason for exit is null - should not have gotten here without throwing an error on the form.");
+			LOG.debug("Reason for exit is null - should not have gotten here without throwing an error on the form.");
 		}
 		
 	}
@@ -1091,7 +1091,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			Concept conceptPatientDied = Context.getConceptService().getConcept(strPatientDied);
 			
 			if (conceptPatientDied == null) {
-				log.debug("ConceptPatientDied is null");
+				LOG.debug("ConceptPatientDied is null");
 			}
 			exitFromCare(patient, dateDied, conceptPatientDied);
 			
@@ -1131,7 +1131,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			patient.setCauseOfDeath(cause);
 		}
 		
-		log.debug("Patient is dead, so let's make sure there's an Obs for it");
+		LOG.debug("Patient is dead, so let's make sure there's an Obs for it");
 		// need to make sure there is an Obs that represents the patient's
 		// cause of death, if applicable
 		
@@ -1143,18 +1143,18 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, causeOfDeath);
 			if (obssDeath != null) {
 				if (obssDeath.size() > 1) {
-					log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
+					LOG.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
 				} else {
 					Obs obsDeath;
 					if (obssDeath.size() == 1) {
 						// already has a cause of death - let's edit it.
-						log.debug("Already has a cause of death, so changing it");
+						LOG.debug("Already has a cause of death, so changing it");
 						
 						obsDeath = obssDeath.iterator().next();
 						
 					} else {
 						// no cause of death obs yet, so let's make one
-						log.debug("No cause of death yet, let's create one.");
+						LOG.debug("No cause of death yet, let's create one.");
 						
 						obsDeath = new Obs();
 						obsDeath.setPerson(patient);
@@ -1163,7 +1163,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						if (location != null) {
 							obsDeath.setLocation(location);
 						} else {
-							log.error("Could not find a suitable location for which to create this new Obs");
+							LOG.error("Could not find a suitable location for which to create this new Obs");
 						}
 					}
 					
@@ -1171,13 +1171,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 					Concept currCause = patient.getCauseOfDeath();
 					if (currCause == null) {
 						// set to NONE
-						log.debug("Current cause is null, attempting to set to NONE");
+						LOG.debug("Current cause is null, attempting to set to NONE");
 						String noneConcept = Context.getAdministrationService().getGlobalProperty("concept.none");
 						currCause = Context.getConceptService().getConcept(noneConcept);
 					}
 					
 					if (currCause != null) {
-						log.debug("Current cause is not null, setting to value_coded");
+						LOG.debug("Current cause is not null, setting to value_coded");
 						obsDeath.setValueCoded(currCause);
 						obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
 						
@@ -1195,25 +1195,25 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 							if (conceptOther.equals(currCause)) {
 								// seems like this is an other concept -
 								// let's try to get the "other" field info
-								log.debug("Setting value_text as " + otherReason);
+								LOG.debug("Setting value_text as " + otherReason);
 								obsDeath.setValueText(otherReason);
 							} else {
-								log.debug("New concept is NOT the OTHER concept, so setting to blank");
+								LOG.debug("New concept is NOT the OTHER concept, so setting to blank");
 								obsDeath.setValueText("");
 							}
 						} else {
-							log.debug("Don't seem to know about an OTHER concept, so deleting value_text");
+							LOG.debug("Don't seem to know about an OTHER concept, so deleting value_text");
 							obsDeath.setValueText("");
 						}
 						
 						Context.getObsService().saveObs(obsDeath, "updated by PatientService.saveCauseOfDeathObs");
 					} else {
-						log.debug("Current cause is still null - aborting mission");
+						LOG.debug("Current cause is still null - aborting mission");
 					}
 				}
 			}
 		} else {
-			log.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
+			LOG.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
 		}
 	}
 	
@@ -1254,7 +1254,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			return identifierValidators.get(Class.forName(defaultPIV));
 		}
 		catch (ClassNotFoundException e) {
-			log.error("Global Property " + OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR
+			LOG.error("Global Property " + OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR
 			        + " not set to an actual class.", e);
 			return identifierValidators.get(LuhnIdentifierValidator.class);
 		}
@@ -1323,7 +1323,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			return getIdentifierValidator((Class<IdentifierValidator>) Context.loadClass(pivClassName));
 		}
 		catch (ClassNotFoundException e) {
-			log.error("Could not find patient identifier validator " + pivClassName, e);
+			LOG.error("Could not find patient identifier validator " + pivClassName, e);
 			return getDefaultIdentifierValidator();
 		}
 	}

@@ -25,7 +25,7 @@ public class SchedulerUtil {
 	private SchedulerUtil() {
 	}
 	
-	private static final Logger log = LoggerFactory.getLogger(SchedulerUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SchedulerUtil.class);
 	
 	/**
 	 * Start the scheduler given the following start up properties.
@@ -38,13 +38,13 @@ public class SchedulerUtil {
 		String val = p.getProperty("scheduler.username", null);
 		if (val != null) {
 			SchedulerConstants.SCHEDULER_DEFAULT_USERNAME = val;
-			log.warn("Deprecated runtime property: scheduler.username. Value set in global_property in database now.");
+			LOG.warn("Deprecated runtime property: scheduler.username. Value set in global_property in database now.");
 		}
 		
 		val = p.getProperty("scheduler.password", null);
 		if (val != null) {
 			SchedulerConstants.SCHEDULER_DEFAULT_PASSWORD = val;
-			log.warn("Deprecated runtime property: scheduler.username. Value set in global_property in database now.");
+			LOG.warn("Deprecated runtime property: scheduler.username. Value set in global_property in database now.");
 		}
 		
 		// TODO: do this for all services
@@ -119,7 +119,7 @@ public class SchedulerUtil {
 					
 					// TODO need to the send the IP information for the server instance that is running this task
 					
-					log.debug("Sending scheduler error email to [" + recipients + "] from [" + sender + "] with subject ["
+					LOG.debug("Sending scheduler error email to [" + recipients + "] from [" + sender + "] with subject ["
 					        + subject + "]:\n" + message);
 					Context.getMessageService().sendMessage(recipients, sender, subject, message.toString());
 				}
@@ -129,7 +129,7 @@ public class SchedulerUtil {
 		}
 		catch (Exception e) {
 			// Log, but otherwise suppress errors
-			log.warn("Could not send scheduler error email: ", e);
+			LOG.warn("Could not send scheduler error email: ", e);
 		}
 		finally {
 			Context.closeSession();
@@ -197,11 +197,11 @@ public class SchedulerUtil {
 				
 				nextTime.setTime(new Date(currentTime.getTime() + additional));
 				
-				log.debug("The task " + taskDefinition.getName() + " will start at " + nextTime.getTime());
+				LOG.debug("The task " + taskDefinition.getName() + " will start at " + nextTime.getTime());
 			}
 		}
 		catch (Exception e) {
-			log.error("Failed to get next execution time for " + taskDefinition.getName(), e);
+			LOG.error("Failed to get next execution time for " + taskDefinition.getName(), e);
 		}
 		
 		return nextTime.getTime();

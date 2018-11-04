@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 public class Format {
 	
-	private static final Logger log = LoggerFactory.getLogger(Format.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Format.class);
 	
 	public enum FORMAT_TYPE {
 		DATE,
@@ -84,7 +84,7 @@ public class Format {
 		if (date == null || locale == null || type == null) {
 			return "";
 		}
-		log.debug("Formatting date: " + date + " with locale " + locale);
+		LOG.debug("Formatting date: " + date + " with locale " + locale);
 		
 		DateFormat dateFormat;
 		

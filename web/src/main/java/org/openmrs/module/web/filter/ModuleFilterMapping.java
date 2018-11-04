@@ -28,7 +28,7 @@ public class ModuleFilterMapping implements Serializable {
 	
 	public static final long serialVersionUID = 1;
 	
-	private static final Logger log = LoggerFactory.getLogger(ModuleFilterMapping.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ModuleFilterMapping.class);
 	
 	// Properties
 	private Module module;
@@ -185,7 +185,7 @@ public class ModuleFilterMapping implements Serializable {
 			return false;
 		}
 		
-		log.debug("Checking URL <" + requestPath + "> against pattern <" + patternToCheck + ">");
+		LOG.debug("Checking URL <" + requestPath + "> against pattern <" + patternToCheck + ">");
 		
 		// Match exact or full wildcard
 		if ("*".equals(patternToCheck) || "/*".equals(patternToCheck) || patternToCheck.equals(requestPath)) {
@@ -235,7 +235,7 @@ public class ModuleFilterMapping implements Serializable {
 			return false;
 		}
 		
-		log.debug("Checking servlet <" + servletName + "> against pattern <" + patternToCheck + ">");
+		LOG.debug("Checking servlet <" + servletName + "> against pattern <" + patternToCheck + ">");
 		
 		// Match exact or full wildcard
 		return ("*").equals(patternToCheck) || servletName.equals(patternToCheck);
@@ -293,7 +293,7 @@ public class ModuleFilterMapping implements Serializable {
 		catch (Exception e) {
 			throw new ModuleException("Unable to parse filters in module configuration.", e);
 		}
-		log.debug("Retrieved " + mappings.size() + " filter-mappings for " + module.getModuleId() + ": " + mappings);
+		LOG.debug("Retrieved " + mappings.size() + " filter-mappings for " + module.getModuleId() + ": " + mappings);
 		return mappings;
 	}
 }

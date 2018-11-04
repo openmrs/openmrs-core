@@ -73,7 +73,7 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class ServiceContext implements ApplicationContextAware {
 	
-	private static final Logger log = LoggerFactory.getLogger(ServiceContext.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ServiceContext.class);
 
 	private ApplicationContext applicationContext;
 	
@@ -110,7 +110,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @see ServiceContext#getInstance()
 	 */
 	private ServiceContext() {
-		log.debug("Instantiating service context");
+		LOG.debug("Instantiating service context");
 	}
 	
 	private static class ServiceContextHolder {
@@ -143,9 +143,9 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public static void destroyInstance() {
 		if (ServiceContextHolder.instance != null && ServiceContextHolder.instance.services != null) {
-			if (log.isDebugEnabled()) {
+			if (LOG.isDebugEnabled()) {
 				for (Map.Entry<Class, Object> entry : ServiceContextHolder.instance.services.entrySet()) {
-					log.debug("Service - " + entry.getKey().getName() + ":" + entry.getValue());
+					LOG.debug("Service - " + entry.getKey().getName() + ":" + entry.getValue());
 				}
 			}
 			
@@ -179,8 +179,8 @@ public class ServiceContext implements ApplicationContextAware {
 			}
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Destroying ServiceContext instance: " + ServiceContextHolder.instance);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Destroying ServiceContext instance: " + ServiceContextHolder.instance);
 		}
 		
 		ServiceContextHolder.instance = null;
@@ -655,8 +655,8 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getService(Class<? extends T> cls) {
-		if (log.isTraceEnabled()) {
-			log.trace("Getting service: " + cls);
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("Getting service: " + cls);
 		}
 		
 		// if the context is refreshing, wait until it is
@@ -664,20 +664,20 @@ public class ServiceContext implements ApplicationContextAware {
 		synchronized (refreshingContextLock) {
 			try {
 				while (refreshingContext) {
-					if (log.isDebugEnabled()) {
-						log.debug("Waiting to get service: " + cls + " while the context is being refreshed");
+					if (LOG.isDebugEnabled()) {
+						LOG.debug("Waiting to get service: " + cls + " while the context is being refreshed");
 					}
 					
 					refreshingContextLock.wait();
 					
-					if (log.isDebugEnabled()) {
-						log.debug("Finished waiting to get service " + cls + " while the context was being refreshed");
+					if (LOG.isDebugEnabled()) {
+						LOG.debug("Finished waiting to get service " + cls + " while the context was being refreshed");
 					}
 				}
 				
 			}
 			catch (InterruptedException e) {
-				log.warn("Refresh lock was interrupted", e);
+				LOG.warn("Refresh lock was interrupted", e);
 			}
 		}
 		
@@ -697,7 +697,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setService(Class cls, Object classInstance) {
 		
-		log.debug("Setting service: " + cls);
+		LOG.debug("Setting service: " + cls);
 		
 		if (cls != null && classInstance != null) {
 			try {
@@ -726,7 +726,7 @@ public class ServiceContext implements ApplicationContextAware {
 					
 					services.put(cls, advisedService);
 				}
-				log.debug("Service: " + cls + " set successfully");
+				LOG.debug("Service: " + cls + " set successfully");
 			}
 			catch (Exception e) {
 				throw new APIException("service.unable.create.proxy.factory", new Object[] { classInstance.getClass()
@@ -763,9 +763,9 @@ public class ServiceContext implements ApplicationContextAware {
 			if (!useSystemClassLoader) {
 				cls = OpenmrsClassLoader.getInstance().loadClass(classString);
 				
-				if (cls != null && log.isDebugEnabled()) {
+				if (cls != null && LOG.isDebugEnabled()) {
 					try {
-						log.debug("cls classloader: " + cls.getClass().getClassLoader() + " uid: "
+						LOG.debug("cls classloader: " + cls.getClass().getClassLoader() + " uid: "
 						        + cls.getClass().getClassLoader().hashCode());
 					}
 					catch (Exception e) { /*pass*/}
@@ -773,12 +773,12 @@ public class ServiceContext implements ApplicationContextAware {
 			} else if (useSystemClassLoader) {
 				try {
 					cls = Class.forName(classString);
-					if (log.isDebugEnabled()) {
-						log.debug("cls2 classloader: " + cls.getClass().getClassLoader() + " uid: "
+					if (LOG.isDebugEnabled()) {
+						LOG.debug("cls2 classloader: " + cls.getClass().getClassLoader() + " uid: "
 						        + cls.getClass().getClassLoader().hashCode());
 						//pay attention that here, cls = Class.forName(classString), the system class loader and
 						//cls2 is the openmrs class loader, like above.
-						log.debug("cls==cls2: "
+						LOG.debug("cls==cls2: "
 						        + String.valueOf(cls == OpenmrsClassLoader.getInstance().loadClass(classString)));
 					}
 				}
@@ -829,7 +829,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void startRefreshingContext() {
 		synchronized (refreshingContextLock) {
-			log.info("Refreshing Context");
+			LOG.info("Refreshing Context");
 			setRefreshingContext(true);
 		}
 	}
@@ -840,7 +840,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void doneRefreshingContext() {
 		synchronized (refreshingContextLock) {
-			log.info("Done refreshing Context");
+			LOG.info("Done refreshing Context");
 			setRefreshingContext(false);
 			refreshingContextLock.notifyAll();
 		}
@@ -878,8 +878,8 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	public <T> List<T> getRegisteredComponents(Class<T> type) {
 		Map<String, T> m = getRegisteredComponents(applicationContext, type);
-		if (log.isTraceEnabled()) {
-			log.trace("getRegisteredComponents(" + type + ") = " + m);
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getRegisteredComponents(" + type + ") = " + m);
 		}
 		return new ArrayList<>(m.values());
 	}
@@ -914,8 +914,8 @@ public class ServiceContext implements ApplicationContextAware {
 	private <T> Map<String, T> getRegisteredComponents(ApplicationContext context, Class<T> type) {
 		Map<String, T> components = new HashMap<>();
 		Map registeredComponents = context.getBeansOfType(type);
-		if (log.isTraceEnabled()) {
-			log.trace("getRegisteredComponents(" + context + ", " + type + ") = " + registeredComponents);
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getRegisteredComponents(" + context + ", " + type + ") = " + registeredComponents);
 		}
 		if (registeredComponents != null) {
 			components.putAll(registeredComponents);
@@ -952,15 +952,15 @@ public class ServiceContext implements ApplicationContextAware {
 				synchronized (refreshingContextLock) {
 					//Need to wait for application context to finish refreshing otherwise we get into trouble.
 					while (refreshingContext) {
-						if (log.isDebugEnabled()) {
-							log.debug("Waiting to get service: " + classString + " while the context"
+						if (LOG.isDebugEnabled()) {
+							LOG.debug("Waiting to get service: " + classString + " while the context"
 							        + " is being refreshed");
 						}
 
 						refreshingContextLock.wait();
 
-						if (log.isDebugEnabled()) {
-							log.debug("Finished waiting to get service " + classString
+						if (LOG.isDebugEnabled()) {
+							LOG.debug("Finished waiting to get service " + classString
 							        + " while the context was being refreshed");
 						}
 					}
@@ -969,7 +969,7 @@ public class ServiceContext implements ApplicationContextAware {
 				Daemon.runStartupForService(openmrsService);
 			}
 			catch (InterruptedException e) {
-				log.warn("Refresh lock was interrupted while waiting to run OpenmrsService.onStartup() for "
+				LOG.warn("Refresh lock was interrupted while waiting to run OpenmrsService.onStartup() for "
 				        + classString, e);
 			}
 		}).start();

@@ -27,7 +27,7 @@ import ca.uhn.hl7v2.HL7Exception;
 @Transactional
 public class HL7InQueueProcessor /* implements Runnable */{
 	
-	private static final Logger log = LoggerFactory.getLogger(HL7InQueueProcessor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HL7InQueueProcessor.class);
 	
 	private static Boolean isRunning = false; // allow only one running
 
@@ -55,8 +55,8 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	 */
 	public void processHL7InQueue(HL7InQueue hl7InQueue) {
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Processing HL7 inbound queue (id=" + hl7InQueue.getHL7InQueueId() + ",key="
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Processing HL7 inbound queue (id=" + hl7InQueue.getHL7InQueueId() + ",key="
 			        + hl7InQueue.getHL7SourceKey() + ")");
 		}
 		
@@ -64,7 +64,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 			Context.getHL7Service().processHL7InQueue(hl7InQueue);
 		}
 		catch (HL7Exception e) {
-			log.error("Unable to process hl7 in queue", e);
+			LOG.error("Unable to process hl7 in queue", e);
 		}
 		setCount(count + 1);
 		if (count > 25) {
@@ -74,7 +74,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 				Context.getHL7Service().garbageCollect();
 			}
 			catch (Exception e) {
-				log.error("Exception while performing garbagecollect in hl7 inbound processor", e);
+				LOG.error("Exception while performing garbagecollect in hl7 inbound processor", e);
 			}
 		}
 		
@@ -103,17 +103,17 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	public void processHL7InQueue() throws HL7Exception {
 		synchronized (lock) {
 			if (isRunning) {
-				log.warn("HL7 processor aborting (another processor already running)");
+				LOG.warn("HL7 processor aborting (another processor already running)");
 				return;
 			}
 			isRunning = true;
 		}
 		try {
-			log.debug("Start processing hl7 in queue");
+			LOG.debug("Start processing hl7 in queue");
 			while (processNextHL7InQueue()) {
 				// loop until queue is empty
 			}
-			log.debug("Done processing hl7 in queue");
+			LOG.debug("Done processing hl7 in queue");
 		}
 		finally {
 			isRunning = false;

@@ -39,7 +39,7 @@ public class HibernateUtil {
 	private HibernateUtil() {
 	}
 	
-	private static final Logger log = LoggerFactory.getLogger(HibernateUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HibernateUtil.class);
 	
 	private static Dialect dialect = null;
 	
@@ -78,8 +78,8 @@ public class HibernateUtil {
 		SessionFactoryImplementor implementor = (SessionFactoryImplementor) sessionFactory;
 		dialect = implementor.getDialect();
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Getting dialect for session: " + dialect);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Getting dialect for session: " + dialect);
 		}
 		
 		return dialect;
@@ -113,7 +113,7 @@ public class HibernateUtil {
 				escapeCharacter = connection.getMetaData().getSearchStringEscape();
 			}
 			catch (SQLException e) {
-				log.warn("Error generated", e);
+				LOG.warn("Error generated", e);
 			}
 			//insert an escape character before each sql wildcard in the search phrase
 			return StringUtils.replaceEach(oldString, new String[] { "%", "_", "*", "'" }, new String[] {

@@ -38,7 +38,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	
 	private static final long serialVersionUID = 564561231321112365L;
 	
-	private static final Logger log = LoggerFactory.getLogger(AlertServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AlertServiceImpl.class);
 	
 	private AlertDAO dao;
 	
@@ -61,7 +61,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	 */
 	@Override
 	public Alert saveAlert(Alert alert) throws APIException {
-		log.debug("Create a alert " + alert);
+		LOG.debug("Create a alert " + alert);
 		
 		if (alert.getCreator() == null) {
 			alert.setCreator(Context.getAuthenticatedUser());
@@ -110,7 +110,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Override
 	@Transactional(readOnly = true)
 	public List<Alert> getAllActiveAlerts(User user) throws APIException {
-		log.debug("Getting all active alerts for user " + user);
+		LOG.debug("Getting all active alerts for user " + user);
 		return Context.getAlertService().getAlerts(user, true, false);
 	}
 	
@@ -120,7 +120,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Override
 	@Transactional(readOnly = true)
 	public List<Alert> getAlertsByUser(User user) throws APIException {
-		log.debug("Getting unread alerts for user " + user);
+		LOG.debug("Getting unread alerts for user " + user);
 		
 		if (user == null) {
 			if (Context.isAuthenticated()) {
@@ -139,7 +139,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Override
 	@Transactional(readOnly = true)
 	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws APIException {
-		log.debug("Getting alerts for user " + user + " read? " + includeRead + " expired? " + includeExpired);
+		LOG.debug("Getting alerts for user " + user + " read? " + includeRead + " expired? " + includeExpired);
 		return dao.getAlerts(user, includeRead, includeExpired);
 	}
 	
@@ -149,7 +149,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Override
 	@Transactional(readOnly = true)
 	public List<Alert> getAllAlerts() throws APIException {
-		log.debug("Getting alerts for all users");
+		LOG.debug("Getting alerts for all users");
 		return Context.getAlertService().getAllAlerts(false);
 	}
 	
@@ -159,7 +159,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Override
 	@Transactional(readOnly = true)
 	public List<Alert> getAllAlerts(boolean includeExpired) throws APIException {
-		log.debug("Getting alerts for all users");
+		LOG.debug("Getting alerts for all users");
 		return dao.getAllAlerts(includeExpired);
 	}
 	

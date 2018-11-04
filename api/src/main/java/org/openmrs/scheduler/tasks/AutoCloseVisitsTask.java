@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AutoCloseVisitsTask extends AbstractTask {
 	
-	private static final Logger log = LoggerFactory.getLogger(AutoCloseVisitsTask.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AutoCloseVisitsTask.class);
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
@@ -33,8 +33,8 @@ public class AutoCloseVisitsTask extends AbstractTask {
 	@Override
 	public void execute() {
 		if (!isExecuting) {
-			if (log.isDebugEnabled()) {
-				log.debug("Starting Auto Close Visits Task...");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Starting Auto Close Visits Task...");
 			}
 			
 			startExecuting();
@@ -42,7 +42,7 @@ public class AutoCloseVisitsTask extends AbstractTask {
 				Context.getVisitService().stopVisits(new Date());
 			}
 			catch (Exception e) {
-				log.error("Error while auto closing visits:", e);
+				LOG.error("Error while auto closing visits:", e);
 			}
 			finally {
 				stopExecuting();

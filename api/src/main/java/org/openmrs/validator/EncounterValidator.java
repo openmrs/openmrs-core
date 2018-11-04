@@ -30,7 +30,7 @@ import org.springframework.validation.Validator;
 @Handler(supports = { Encounter.class }, order = 50)
 public class EncounterValidator implements Validator {
 	
-	private static final Logger log = LoggerFactory.getLogger(EncounterValidator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EncounterValidator.class);
 	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
@@ -40,7 +40,7 @@ public class EncounterValidator implements Validator {
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
-		log.debug("{}.supports: {}", this.getClass().getName(), c.getName());
+		LOG.debug("{}.supports: {}", this.getClass().getName(), c.getName());
 		return Encounter.class.isAssignableFrom(c);
 	}
 	
@@ -64,7 +64,7 @@ public class EncounterValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException {
-		log.debug("{}.validate...", this.getClass().getName());
+		LOG.debug("{}.validate...", this.getClass().getName());
 		
 		if (obj == null || !(obj instanceof Encounter)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type " + Encounter.class);

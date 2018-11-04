@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class CohortServiceImpl extends BaseOpenmrsService implements CohortService {
 	
-	private static final Logger log = LoggerFactory.getLogger(CohortServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CohortServiceImpl.class);
 	
 	private CohortDAO dao;
 	
@@ -63,8 +63,8 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 		if (cohort.getDescription() == null) {
 			throw new APIException("Cohort.save.descriptionRequired", (Object[]) null);
 		}
-		if (log.isInfoEnabled()) {
-			log.info("Saving cohort " + cohort);
+		if (LOG.isInfoEnabled()) {
+			LOG.info("Saving cohort " + cohort);
 		}
 		
 		return dao.saveCohort(cohort);

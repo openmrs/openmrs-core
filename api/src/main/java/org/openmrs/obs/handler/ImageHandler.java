@@ -45,7 +45,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW };
 	
-	private static final Logger log = LoggerFactory.getLogger(ImageHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ImageHandler.class);
 	
 	private Set<String> extensions;
 	
@@ -77,7 +77,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 				img = ImageIO.read(file);
 			}
 			catch (IOException e) {
-				log.error("Trying to read file: " + file.getAbsolutePath(), e);
+				LOG.error("Trying to read file: " + file.getAbsolutePath(), e);
 			}
 			
 			ComplexData complexData = new ComplexData(file.getName(), img);
@@ -92,14 +92,14 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 				if (imgReader.hasNext()) {
 					mimeType = "image/" + imgReader.next().getFormatName().toLowerCase();
 				} else {
-					log.warn("MIME type of " + file.getAbsolutePath() + " is not known");
+					LOG.warn("MIME type of " + file.getAbsolutePath() + " is not known");
 				}
 			}
 			catch (FileNotFoundException e) {
-				log.error("Image " + file.getAbsolutePath() + " was not found", e);
+				LOG.error("Image " + file.getAbsolutePath() + " was not found", e);
 			}
 			catch (IOException e) {
-				log.error("Trying to determine MIME type of " + file.getAbsolutePath(), e);
+				LOG.error("Trying to determine MIME type of " + file.getAbsolutePath(), e);
 			}
 					
 			// If the mimetype is still null, determine it via getFileMimeType()

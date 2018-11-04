@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class OpenmrsConstants {
 	
-	private static final Logger log = LoggerFactory.getLogger(OpenmrsConstants.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OpenmrsConstants.class);
 	
 	public static String KEY_OPENMRS_APPLICATION_DATA_DIRECTORY = "OPENMRS_APPLICATION_DATA_DIRECTORY";
 	
@@ -103,7 +103,7 @@ public final class OpenmrsConstants {
 	public static String getOpenmrsProperty(String property) {
 		InputStream file = OpenmrsConstants.class.getClassLoader().getResourceAsStream("org/openmrs/api/openmrs.properties");
 		if (file == null) {
-			log.error("Unable to find the openmrs.properties file");
+			LOG.error("Unable to find the openmrs.properties file");
 			return null;
 		}
 		
@@ -116,7 +116,7 @@ public final class OpenmrsConstants {
 			return props.getProperty(property);
 		}
 		catch (IOException e) {
-			log.error("Unable to parse the openmrs.properties file", e);
+			LOG.error("Unable to parse the openmrs.properties file", e);
 		}
 		finally {
 			IOUtils.closeQuietly(file);

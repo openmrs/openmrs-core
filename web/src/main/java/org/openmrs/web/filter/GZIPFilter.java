@@ -31,7 +31,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class GZIPFilter extends OncePerRequestFilter {
 	
-	private static final Logger log = LoggerFactory.getLogger(GZIPFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GZIPFilter.class);
 	
 	private Boolean cachedGZipEnabledFlag = null;
 	
@@ -52,7 +52,7 @@ public class GZIPFilter extends OncePerRequestFilter {
 			return;
 		}
 		if (isGZIPSupported(request) && isGZIPEnabled()) {
-			log.debug("GZIP supported and enabled, compressing response");
+			LOG.debug("GZIP supported and enabled, compressing response");
 			
 			GZIPResponseWrapper wrappedResponse = new GZIPResponseWrapper(response);
 			
@@ -77,19 +77,19 @@ public class GZIPFilter extends OncePerRequestFilter {
 				throw new APIException("Unsupported Media Type");
 			}
 			
-			if (log.isDebugEnabled()) {
-				log.debug("GZIP request supported");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("GZIP request supported");
 			}
 			
 			try {
 				GZIPRequestWrapper wrapperRequest = new GZIPRequestWrapper(req);
-				if (log.isDebugEnabled()) {
-					log.debug("GZIP request wrapped successfully");
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("GZIP request wrapped successfully");
 				}
 				return wrapperRequest;
 			}
 			catch (IOException e) {
-				log.error("Error during wrapping GZIP request " + e);
+				LOG.error("Error during wrapping GZIP request " + e);
 				return req;
 			}
 		} else {
@@ -111,7 +111,7 @@ public class GZIPFilter extends OncePerRequestFilter {
 		String userAgent = req.getHeader("user-agent");
 		
 		if ((userAgent != null) && userAgent.startsWith("httpunit")) {
-			log.debug("httpunit detected, disabling filter...");
+			LOG.debug("httpunit detected, disabling filter...");
 			
 			return false;
 		} else {
@@ -135,7 +135,7 @@ public class GZIPFilter extends OncePerRequestFilter {
 			return cachedGZipEnabledFlag;
 		}
 		catch (Exception e) {
-			log.warn("Unable to get the global property: " + OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, e);
+			LOG.warn("Unable to get the global property: " + OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, e);
 			// not caching the enabled flag here in case it becomes available
 			// before the next request
 			
@@ -162,7 +162,7 @@ public class GZIPFilter extends OncePerRequestFilter {
 			return false;
 		}
 		catch (Exception e) {
-			log.warn("Unable to process the global property: "
+			LOG.warn("Unable to process the global property: "
 			        + OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ACCEPT_COMPRESSED_REQUESTS_FOR_PATHS, e);
 			return false;
 		}

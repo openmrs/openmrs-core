@@ -43,7 +43,7 @@ public class ModuleFilterDefinition implements Serializable {
 	
 	public static final long serialVersionUID = 1;
 	
-	private static final Logger log = LoggerFactory.getLogger(ModuleFilterDefinition.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ModuleFilterDefinition.class);
 	
 	// Properties
 	private Module module;
@@ -192,7 +192,7 @@ public class ModuleFilterDefinition implements Serializable {
 		catch (Exception e) {
 			throw new ModuleException("Unable to parse filters in module configuration.", e);
 		}
-		log.debug("Retrieved " + filters.size() + " filters for " + module + ": " + filters);
+		LOG.debug("Retrieved " + filters.size() + " filters for " + module + ": " + filters);
 		return filters;
 	}
 }
