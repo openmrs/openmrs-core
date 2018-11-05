@@ -18,8 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class is the representation of a person's address. This class is many-to-one to the Person
@@ -28,8 +26,6 @@ import org.slf4j.LoggerFactory;
 public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress>, Address {
 	
 	public static final long serialVersionUID = 343333L;
-	
-	private static final Logger log = LoggerFactory.getLogger(PersonAddress.class);
 	
 	// Fields
 
