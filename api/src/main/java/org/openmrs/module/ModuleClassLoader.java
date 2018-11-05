@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ModuleClassLoader extends URLClassLoader {
 	
-	static Logger log = LoggerFactory.getLogger(ModuleClassLoader.class);
+	private static final Logger log = LoggerFactory.getLogger(ModuleClassLoader.class);
 	
 	private final Module module;
 	
