@@ -1423,6 +1423,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			}
 		}
 		catch (Exception e) {
+			System.out.println("Exception " + e);
 			// pass
 		}
 		return concepts;
@@ -1437,6 +1438,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return Context.getConceptService().getConceptsByName("");
 		}
 		catch (Exception e) {
+			System.out.println("Exception " + e);
 			// pass
 		}
 		return Collections.emptyList();
@@ -1451,6 +1453,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return Context.getConceptService().getConcept(Integer.valueOf(s));
 		}
 		catch (Exception e) {
+			System.out.println("Exception " + e);
 			// pass
 		}
 		return null;
