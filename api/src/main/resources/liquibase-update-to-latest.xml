@@ -8779,6 +8779,8 @@
 	</changeSet>
 
     <changeSet id="TRUNK-3422-20160216-1700" author="Wyclif" >
+		<validCheckSum>3:474feb8369313b4d680197f9bac6ec20</validCheckSum> <!-- old checksum-->
+		<validCheckSum>3:a517d5e30d3814f5b186cbc93aa359de</validCheckSum> <!-- current checksum 20181107-->
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT count(*) FROM privilege  WHERE privilege='Get Visits';
@@ -8793,6 +8795,8 @@
     </changeSet>
 
     <changeSet id="TRUNK-3422-20160216-1701" author="Wyclif" >
+		<validCheckSum>3:cc913159fdb532c487941d23ac9c79c9</validCheckSum> <!-- old checksum-->
+		<validCheckSum>3:e5e5b2b92bbceeb4041166cd3b86803e</validCheckSum> <!-- current checksum 20181107-->
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT count(*) FROM privilege  WHERE privilege='Get Providers';
@@ -8821,6 +8825,8 @@
     </changeSet>
 
     <changeSet id="TRUNK-3422-20160216-1703" author="PralayRamteke" >
+		<validCheckSum>3:693ea38e8702b7c1afef81ceefef9844</validCheckSum> <!-- old checksum-->
+		<validCheckSum>3:2188e5d96b696afc752217843a7fa697</validCheckSum> <!-- current checksum 20181107-->
         <preConditions onFail="MARK_RAN">
             <not>
                 <sqlCheck expectedResult="0">
@@ -8839,6 +8845,8 @@
     </changeSet>
 
     <changeSet id="TRUNK-3422-20160216-1704" author="PralayRamteke" >
+		<validCheckSum>3:b4caee668484f1d2759bbf3feeba2daa</validCheckSum> <!-- old checksum-->
+		<validCheckSum>3:13b334dbd8fba2fea886d1c9aab40e16</validCheckSum> <!-- current checksum 20181107-->
         <preConditions onFail="MARK_RAN">
             <not>
                 <sqlCheck expectedResult="0">
