@@ -12,8 +12,6 @@ package org.openmrs.order;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Contains convenience methods for working with Orders.
@@ -22,8 +20,6 @@ public class OrderUtil {
 	
 	private OrderUtil() {
 	}
-	
-	private static final Logger log = LoggerFactory.getLogger(OrderUtil.class);
 	
 	/**
 	 * Checks whether orderType2 matches or is a sub type of orderType1

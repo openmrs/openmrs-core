@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ModuleClassLoader extends URLClassLoader {
 	
-	static Logger log = LoggerFactory.getLogger(ModuleClassLoader.class);
+	private static final Logger log = LoggerFactory.getLogger(ModuleClassLoader.class);
 	
 	private final Module module;
 	
@@ -364,21 +364,25 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	static boolean shouldResourceBeIncluded(Module module, URL fileUrl, String openmrsVersion,
 	        Map<String, String> startedRelatedModules) {
-		boolean include = true; //all resources are included by default
+		//all resources are included by default
+		boolean include = true;
 		
 		for (ModuleConditionalResource conditionalResource : module.getConditionalResources()) {
 			if (fileUrl.getPath().matches(".*" + conditionalResource.getPath() + "$")) {
-				include = false; //if a resource matches a path of contidionalResource then it must meet all conditions
-				
-				if (StringUtils.isNotBlank(conditionalResource.getOpenmrsPlatformVersion())) { //openmrsPlatformVersion is optional
+				//if a resource matches a path of contidionalResource then it must meet all conditions
+				include = false;
+
+				//openmrsPlatformVersion is optional
+				if (StringUtils.isNotBlank(conditionalResource.getOpenmrsPlatformVersion())) {
 					include = ModuleUtil.matchRequiredVersions(openmrsVersion, conditionalResource.getOpenmrsPlatformVersion());
 					
 					if (!include) {
 						return false;
 					}
 				}
-				
-				if (conditionalResource.getModules() != null) { //modules are optional
+
+				//modules are optional
+				if (conditionalResource.getModules() != null) {
 					for (ModuleConditionalResource.ModuleAndVersion conditionalModuleResource : conditionalResource
 					        .getModules()) {
 						if ("!".equals(conditionalModuleResource.getVersion())) {
@@ -451,7 +455,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	protected static Module[] collectRequiredModuleImports(Module module) {
 		// collect imported modules (exclude duplicates)
-		Map<String, Module> publicImportsMap = new WeakHashMap<>(); //<module ID, Module>
+		//<module ID, Module>
+		Map<String, Module> publicImportsMap = new WeakHashMap<>();
 		
 		for (String moduleId : ModuleConstants.CORE_MODULES.keySet()) {
 			Module coreModule = ModuleFactory.getModuleById(moduleId);
@@ -483,7 +488,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	protected static Module[] collectAwareOfModuleImports(Module module) {
 		// collect imported modules (exclude duplicates)
-		Map<String, Module> publicImportsMap = new WeakHashMap<>(); //<module ID, Module>
+		//<module ID, Module>
+		Map<String, Module> publicImportsMap = new WeakHashMap<>();
 		
 		for (String awareOfPackage : module.getAwareOfModules()) {
 			Module awareOfModule = ModuleFactory.getModuleByPackage(awareOfPackage);
@@ -708,7 +714,8 @@ public class ModuleClassLoader extends URLClassLoader {
 		URL lib = getClassBaseUrl(cls);
 
 		if (lib == null) {
-			return; // cls is a system class
+			// cls is a system class
+			return;
 		}
 
 		ClassLoader loader = cls.getClassLoader();
@@ -884,7 +891,8 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		
 		URL result = super.findResource(name);
-		if (result != null) { // found resource in this module class path
+		// found resource in this module class path
+		if (result != null) {
 			if (isResourceVisible(name, result, requestor)) {
 				return result;
 			}
@@ -910,7 +918,8 @@ public class ModuleClassLoader extends URLClassLoader {
 				}
 				
 				if (result != null) {
-					return result; // found resource in required module
+					// found resource in required module
+					return result;
 				}
 			}
 		}
@@ -928,7 +937,8 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 
 			if (result != null) {
-				return result; // found resource in aware of module
+				// found resource in aware of module
+				return result;
 			}
 		}
 		

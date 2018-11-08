@@ -866,6 +866,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<failIfNoTests>false</failIfNoTests>
+					<useSystemClassLoader>false</useSystemClassLoader>
 				</configuration>
 			</plugin>
 			<plugin>

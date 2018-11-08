@@ -56,6 +56,8 @@ import java.util.Set;
  */
 public class AuthorizedAnnotationAttributes {
 	
+	private static final String UNSUPPORTED_OPERATION = "Unsupported operation";
+	
 	/**
 	 * Get the <code>Secured</code> attributes for a given target class.
 	 * 
@@ -151,19 +153,19 @@ public class AuthorizedAnnotationAttributes {
 	}
 	
 	public Collection<?> getAttributes(Class<?> clazz, Class<?> filter) {
-		throw new UnsupportedOperationException("Unsupported operation");
+		throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
 	}
 	
 	public Collection<?> getAttributes(Method method, Class<?> clazz) {
-		throw new UnsupportedOperationException("Unsupported operation");
+		throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
 	}
 	
 	public Collection<?> getAttributes(Field field) {
-		throw new UnsupportedOperationException("Unsupported operation");
+		throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
 	}
 	
 	public Collection<?> getAttributes(Field field, Class<?> clazz) {
-		throw new UnsupportedOperationException("Unsupported operation");
+		throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
 	}
 	
 }

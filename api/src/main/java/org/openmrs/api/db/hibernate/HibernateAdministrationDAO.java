@@ -52,6 +52,7 @@ import org.springframework.validation.Validator;
 public class HibernateAdministrationDAO implements AdministrationDAO, ApplicationContextAware {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateAdministrationDAO.class);
+	private static final String PROPERTY = "property";
 	
 	/**
 	 * Hibernate session factory
@@ -96,7 +97,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
 		if (isDatabaseStringComparisonCaseSensitive()) {
 			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
-			return (GlobalProperty) criteria.add(Restrictions.eq("property", propertyName).ignoreCase())
+			return (GlobalProperty) criteria.add(Restrictions.eq(PROPERTY, propertyName).ignoreCase())
 			        .uniqueResult();
 		} else {
 			return (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class, propertyName);
@@ -117,7 +118,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	@SuppressWarnings("unchecked")
 	public List<GlobalProperty> getAllGlobalProperties() throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
-		return criteria.addOrder(Order.asc("property")).list();
+		return criteria.addOrder(Order.asc(PROPERTY)).list();
 	}
 	
 	/**
@@ -127,7 +128,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	@SuppressWarnings("unchecked")
 	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix) {
 		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class)
-		        .add(Restrictions.ilike("property", prefix, MatchMode.START)).list();
+		        .add(Restrictions.ilike(PROPERTY, prefix, MatchMode.START)).list();
 	}
 	
 	/**
@@ -137,7 +138,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	@SuppressWarnings("unchecked")
 	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix) {
 		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class)
-		        .add(Restrictions.ilike("property", suffix, MatchMode.END)).list();
+		        .add(Restrictions.ilike(PROPERTY, suffix, MatchMode.END)).list();
 	}
 	
 	/**

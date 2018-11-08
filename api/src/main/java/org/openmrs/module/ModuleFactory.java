@@ -30,11 +30,8 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
 import org.aopalliance.aop.Advice;
-import org.apache.commons.io.IOUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.api.AdministrationService;
@@ -194,7 +191,8 @@ public class ModuleFactory {
 				// ignore .svn folder and the like
 				if (!f.getName().startsWith(".")) {
 					try {
-						Module mod = loadModule(f, true); // last module loaded wins
+						// last module loaded wins
+						Module mod = loadModule(f, true);
 						log.debug("Loaded module: " + mod + " successfully");
 					} catch (Exception e) {
 						log.debug("Unable to load file in module directory: " + f + ". Skipping file.", e);
@@ -248,7 +246,8 @@ public class ModuleFactory {
 			for (Module mod : modules) {
 				
 				if (mod.isStarted()) {
-					continue; // skip over modules that are already started
+					// skip over modules that are already started
+					continue;
 				}
 				
 				// Skip module if required ones are not started
@@ -1046,7 +1045,8 @@ public class ModuleFactory {
 			}
 			
 			try {
-				if (mod.getModuleActivator() != null) { // if extends BaseModuleActivator
+				// if extends BaseModuleActivator
+				if (mod.getModuleActivator() != null) {
 					mod.getModuleActivator().willStop();
 				}
 			}
@@ -1199,7 +1199,8 @@ public class ModuleFactory {
 	}
 
 	private static ModuleClassLoader removeClassLoader(Module mod) {
-		getModuleClassLoaderMap(); // create map if it is null
+		// create map if it is null
+		getModuleClassLoaderMap();
 		if (!moduleClassLoaders.containsKey(mod)) {
 			log.warn("Module: " + mod.getModuleId() + " does not exist");
 		}

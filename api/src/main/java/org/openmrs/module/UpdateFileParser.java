@@ -99,7 +99,8 @@ public class UpdateFileParser {
 				this.moduleId = rootNode.getAttribute("moduleId");
 				
 				NodeList nodes = rootNode.getElementsByTagName("update");
-				this.currentVersion = ""; // default to the lowest version possible
+				// default to the lowest version possible
+				this.currentVersion = "";
 				
 				// loop over all 'update' tags
 				for (Integer i = 0; i < nodes.getLength(); i++) {

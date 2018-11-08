@@ -206,7 +206,8 @@ public class Patient extends Person {
 			// identifier, identifierType
 			for (PatientIdentifier currentId : getActiveIdentifiers()) {
 				if (currentId.equalsContent(patientIdentifier)) {
-					return; // fail silently if someone tries to add a duplicate
+					// fail silently if someone tries to add a duplicate
+					return; 
 				}
 			}
 		}

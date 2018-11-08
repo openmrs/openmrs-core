@@ -33,6 +33,7 @@ import org.openmrs.api.db.DAOException;
  */
 public class HibernateCohortDAO implements CohortDAO {
 	
+	private static final String VOIDED = "voided";
 	private SessionFactory sessionFactory;
 	
 	/**
@@ -73,7 +74,7 @@ public class HibernateCohortDAO implements CohortDAO {
 		criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 		
 		if (!includeVoided) {
-			criteria.add(Restrictions.eq("voided", includeVoided));
+			criteria.add(Restrictions.eq(VOIDED, includeVoided));
 		}
 		return criteria.list();
 	}
@@ -129,7 +130,7 @@ public class HibernateCohortDAO implements CohortDAO {
 		criteria.addOrder(Order.asc("name"));
 		
 		if (!includeVoided) {
-			criteria.add(Restrictions.eq("voided", false));
+			criteria.add(Restrictions.eq(VOIDED, false));
 		}
 		
 		return (List<Cohort>) criteria.list();
@@ -143,7 +144,7 @@ public class HibernateCohortDAO implements CohortDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
 		
 		criteria.add(Restrictions.eq("name", name));
-		criteria.add(Restrictions.eq("voided", false));
+		criteria.add(Restrictions.eq(VOIDED, false));
 		
 		return (Cohort) criteria.uniqueResult();
 	}
@@ -169,7 +170,7 @@ public class HibernateCohortDAO implements CohortDAO {
 			));
 		}
 		if (!includeVoided) {
-			criteria.add(Restrictions.eq("voided", false));
+			criteria.add(Restrictions.eq(VOIDED, false));
 		}
 		return criteria.list();
 	}

@@ -458,7 +458,8 @@ public class Person extends BaseChangeableOpenmrsData {
 		
 		for (PersonAttribute currentAttribute : getActiveAttributes()) {
 			if (currentAttribute.equals(newAttribute)) {
-				return; // if we have the same PersonAttributeId, don't add the new attribute
+				// if we have the same PersonAttributeId, don't add the new attribute
+				return; 
 			} else if (currentAttribute.getAttributeType().equals(newAttribute.getAttributeType())) {
 				if (currentAttribute.getValue() != null && currentAttribute.getValue().equals(newAttribute.getValue())) {
 					// this person already has this attribute

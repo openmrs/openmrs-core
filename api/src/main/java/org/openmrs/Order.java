@@ -63,7 +63,7 @@ public class Order extends BaseOpenmrsData {
 		IN_PROGRESS,
 		EXCEPTION,
 		COMPLETED
-	};
+	}
 	
 	private Integer orderId;
 	
