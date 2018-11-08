@@ -61,9 +61,9 @@ public class Allergies implements List<Allergy> {
 		allergies.clear();
 	}
 	
-	public void confirmNoKnownAllergies() throws APIException {
+	public void confirmNoKnownAllergies() throws Exception {
 		if (!allergies.isEmpty()) {
-			throw new APIException("Cannot confirm no known allergies if allergy list is not empty");
+			throw new Exception("Cannot confirm no known allergies if allergy list is not empty");
 		}
 		allergyStatus = NO_KNOWN_ALLERGIES;
 	}

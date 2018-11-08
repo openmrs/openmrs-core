@@ -980,7 +980,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 				if (getValueCoded() == null) {
 					return "";
 				}
-				if (getValueDrug() != null) {
+                                else if (getValueDrug() != null) {
 					return getValueDrug().getFullName(locale);
 				} else {
 					ConceptName codedName = getValueCodedName();
