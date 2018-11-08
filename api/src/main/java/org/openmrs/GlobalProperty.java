@@ -277,7 +277,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	 * @since 1.9
 	 */
 	@Override
-	public Object getValue() throws InvalidCustomValueException {
+	public Object getValue() {
 		if (typedValue == null) {
 			typedValue = CustomDatatypeUtil.getDatatypeOrDefault(this).fromReferenceString(getValueReference());
 		}
@@ -290,7 +290,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	 * @since 1.9
 	 */
 	@Override
-	public <T> void setValue(T typedValue) throws InvalidCustomValueException {
+	public <T> void setValue(T typedValue){
 		this.typedValue = typedValue;
 		dirty = true;
 	}
