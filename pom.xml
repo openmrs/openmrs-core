@@ -921,6 +921,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<failIfNoTests>false</failIfNoTests>
+					<argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
