@@ -9,17 +9,17 @@
  */
 package org.openmrs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Assert;
+import org.junit.Test;
+import org.openmrs.util.RoleConstants;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.util.RoleConstants;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * This class tests all methods that are not getter or setters in the Role java object TODO: finish
@@ -99,6 +99,16 @@ public class RoleTest {
 	public void hasPrivilege_shouldReturnFalseIfNotFound() {
 		Role role = new Role();
 		assertFalse("This roles should not have the privilege", role.hasPrivilege("some other privilege name"));
+	}
+
+	@Test
+	public void hasPrivilege_shouldBeCaseInsensitive() {
+		Role role = new Role();
+
+		// very basic privilege adding and checking
+		Privilege p1 = new Privilege("PrIv1");
+		role.addPrivilege(p1);
+		assertTrue("This roles should have the privilege", role.hasPrivilege("priv1"));
 	}
 	
 	/**
