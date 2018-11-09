@@ -151,7 +151,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	 * @return The Java class as {@link java.lang.Class}
 	 * @throws APIException
 	 */
-	public Class getJavaClass() throws APIException {
+	public Class getJavaClass() {
 		try {
 			return Context.loadClass(javaClassName);
 		}
