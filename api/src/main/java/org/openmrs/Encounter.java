@@ -171,16 +171,15 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		List<Obs> leaves = new ArrayList<>();
 		
 		if (obsParent.hasGroupMembers()) {
-			for (Obs child : obsParent.getGroupMembers()) {
-				if (!child.getVoided()) {
-					if (!child.isObsGrouping()) {
-						leaves.add(child);
-					} else {
-						// recurse if this is a grouping obs
-						leaves.addAll(getObsLeaves(child));
-					}
-				}
-			}
+                    obsParent.getGroupMembers().forEach((child) -> {
+                        if (!child.getVoided() && !child.isObsGrouping()) {
+                            leaves.add(child);
+                        }
+                        else if (!child.getVoided() && child.isObsGrouping()) {
+                            // recurse if this is a grouping obs
+                            leaves.addAll(getObsLeaves(child));
+                        }
+                    });
 		} else if (!obsParent.getVoided()) {
 			leaves.add(obsParent);
 		}

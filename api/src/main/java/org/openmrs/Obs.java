@@ -550,11 +550,11 @@ public class Obs extends BaseChangeableOpenmrsData {
 				parentObs = parentObs.getObsGroup();
 			}
 		} else if (this.getObsGroup() != null) {
-			for (Obs obsSibling : this.getObsGroup().getGroupMembers()) {
+                   this.getObsGroup().getGroupMembers().stream().forEach((obsSibling)-> {
 				if (!obsSibling.isObsGrouping()) {
 					ret.add(obsSibling);
 				}
-			}
+			});
 		}
 		return ret;
 	}
