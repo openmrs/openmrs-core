@@ -31,6 +31,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * Logger for this class and subclasses
 	 */
 	private static final Logger log = LoggerFactory.getLogger(AuthorizationAdvice.class);
+        private static final String USER_IS_NOT_AUTHORIZED_TO_ACCESS = "User {} is not authorized to access {}";
 	
 	/**
 	 * Allows us to check whether a user is authorized to access a particular method.
@@ -106,7 +107,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param attrs Collection of String privilege names that the user must have
 	 */
 	private void throwUnauthorized(User user, Method method, Collection<String> attrs) {
-		log.debug("User {} is not authorized to access {}", user, method.getName());
+		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { StringUtils.join(attrs, ",") }, null));
 	}
@@ -119,7 +120,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param attrs privilege names that the user must have
 	 */
 	private void throwUnauthorized(User user, Method method, String attr) {
-		log.debug("User {} is not authorized to access {}", user, method.getName());
+		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { attr }, null));
 	}
@@ -131,7 +132,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @param method acting method
 	 */
 	private void throwUnauthorized(User user, Method method) {
-		log.debug("User {} is not authorized to access {}", user, method.getName());
+		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.aunthenticationRequired"));
 	}
 }
