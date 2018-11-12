@@ -44,7 +44,7 @@ public class FreeTextDosingInstructions implements DosingInstructions {
 	 * @see DosingInstructions#getDosingInstructions(DrugOrder)
 	 */
 	@Override
-	public DosingInstructions getDosingInstructions(DrugOrder order) throws APIException {
+	public DosingInstructions getDosingInstructions(DrugOrder order) {
 		if (!order.getDosingType().equals(this.getClass())) {
 			throw new APIException("DrugOrder.error.dosingTypeIsMismatched", new Object[] { this.getClass(),
 			        order.getDosingType() });
