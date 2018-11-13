@@ -16,8 +16,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openmrs.GlobalProperty;
-import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.Format.FORMAT_TYPE;
 import org.openmrs.util.LocaleUtility;
@@ -27,12 +25,10 @@ import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WebUtil implements GlobalPropertyListener {
+public class WebUtil {
 	
 	private static final Logger log = LoggerFactory.getLogger(WebUtil.class);
 	
-	private static String defaultDateCache = null;
-
 	/**
 	 * Encodes for (X)HTML text content and text attributes.
 	 *
@@ -412,31 +408,4 @@ public class WebUtil implements GlobalPropertyListener {
 		return date == null ? "" : dateFormat.format(date);
 	}
 	
-	/**
-	 * @see org.openmrs.api.GlobalPropertyListener#supportsPropertyName(java.lang.String)
-	 */
-	@Override
-	public boolean supportsPropertyName(String propertyName) {
-		return OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT.equals(propertyName);
-	}
-	
-	public static void setDefaultDateCache(String defaultDateCache) {
-		WebUtil.defaultDateCache = defaultDateCache;
-	}
-	
-	/**
-	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
-	 */
-	@Override
-	public void globalPropertyChanged(GlobalProperty newValue) {
-		setDefaultDateCache(null);
-	}
-	
-	/**
-	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyDeleted(java.lang.String)
-	 */
-	@Override
-	public void globalPropertyDeleted(String propertyName) {
-		setDefaultDateCache(null);
-	}
 }
