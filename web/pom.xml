@@ -149,6 +149,13 @@
 			<groupId>org.jacoco</groupId>
 			<artifactId>jacoco-maven-plugin</artifactId>
 		 </plugin>
+		  <plugin>
+			  <groupId>com.mycila</groupId>
+			  <artifactId>license-maven-plugin</artifactId>
+			  <configuration>
+				  <header>${project.parent.basedir}/license-header.txt</header>
+			  </configuration>
+		  </plugin>
       </plugins>
    </build>
    
