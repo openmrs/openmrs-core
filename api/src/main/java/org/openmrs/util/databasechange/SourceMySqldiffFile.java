@@ -104,7 +104,9 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			}
 		}
 		finally {
-			sqlFileInputStream.close();
+			if (sqlFileInputStream != null) {
+				sqlFileInputStream.close();
+			}
 		}
 		// build the mysql command line string
 		List<String> commands = new ArrayList<>();
