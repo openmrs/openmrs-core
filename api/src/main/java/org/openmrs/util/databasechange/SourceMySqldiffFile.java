@@ -45,20 +45,20 @@ import liquibase.resource.ResourceAccessor;
  * Expects parameter: "sqlFile" : name of file on classpath to source on mysql
  */
 public class SourceMySqldiffFile implements CustomTaskChange {
-	
+
 	public static final String CONNECTION_USERNAME = "connection.username";
-	
+
 	public static final String CONNECTION_PASSWORD = "connection.password";
-	
+
 	private static final Logger log = LoggerFactory.getLogger(SourceMySqldiffFile.class);
-	
+
 	/**
 	 * Absolute path and name of file to source
 	 */
 	private String sqlFile = null;
-	
+
 	private ResourceAccessor fileOpener = null;
-	
+
 	/**
 	 * Does the work of executing the file on mysql
 	 *
@@ -66,26 +66,26 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	 */
 	@Override
 	public void execute(Database database) throws CustomChangeException {
-		
+
 		Properties runtimeProperties = Context.getRuntimeProperties();
-		
+
 		String username = runtimeProperties.getProperty(CONNECTION_USERNAME);
 		String password = runtimeProperties.getProperty(CONNECTION_PASSWORD);
-		
+
 		if (username == null) {
 			username = System.getProperty(CONNECTION_USERNAME);
 		}
 		if (password == null) {
 			password = System.getProperty(CONNECTION_PASSWORD);
 		}
-		
+
 		// if we're in a "generate sql file" mode, quit early
 		if (username == null || password == null) {
 			return;
 		}
-		
+
 		DatabaseConnection connection = database.getConnection();
-		
+
 		// copy the file from the classpath to a real file
 		File tmpOutputFile = null;
 		try {
@@ -93,6 +93,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			InputStream sqlFileInputStream = fileOpener.getResourceAsStream(sqlFile);
 			OutputStream outputStream = new FileOutputStream(tmpOutputFile);
 			OpenmrsUtil.copyFile(sqlFileInputStream, outputStream);
+
 		}
 		catch (IOException e) {
 			if (tmpOutputFile != null) {
@@ -102,7 +103,9 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 				throw new CustomChangeException("Unable to copy " + sqlFile, e);
 			}
 		}
-		
+		finally {
+			sqlFileInputStream.close();
+		}
 		// build the mysql command line string
 		List<String> commands = new ArrayList<>();
 		String databaseName;
@@ -115,7 +118,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 				// windows hacks
 				path = fixWindowsPathHack(path);
 			}
-			
+
 			commands.add("-esource " + path);
 			databaseName = connection.getCatalog();
 			commands.add(databaseName);
@@ -123,11 +126,11 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		catch (DatabaseException e) {
 			throw new CustomChangeException("Unable to generate command string for file: " + sqlFile, e);
 		}
-		
+
 		// to be used in error messages if this fails
 		String errorCommand = "\"mysql -u" + username + " -p -e\"source " + tmpOutputFile.getAbsolutePath() + "\""
 		        + databaseName;
-		
+
 		// run the command line string
 		StringBuilder output = new StringBuilder();
 		Integer exitValue = -1; // default to a non-zero exit value in case of exceptions
@@ -144,9 +147,9 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		catch (Exception e) {
 			throw new CustomChangeException("Error while executing command: '" + commands.get(0) + "'", e);
 		}
-		
+
 		log.debug("Exec called: " + Collections.singletonList(commands));
-		
+
 		if (exitValue != 0) {
 			log.error("There was an error while running the " + commands.get(0) + " command.  Command output: "
 			        + output.toString());
@@ -160,9 +163,9 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			// a normal exit value
 			log.debug("Output of exec: " + output);
 		}
-		
+
 	}
-	
+
 	/**
 	 * A hacky way to get rid of the spaces in the java exec call because mysql and java are not
 	 * communicating well
@@ -185,7 +188,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		returnedPath.deleteCharAt(returnedPath.length() - 1);
 		return returnedPath.toString();
 	}
-	
+
 	/**
 	 * @param cmdWithArguments
 	 * @param wd
@@ -194,19 +197,19 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	 */
 	private Integer execCmd(File wd, String[] cmdWithArguments, StringBuilder out) throws Exception {
 		log.debug("executing command: " + Arrays.toString(cmdWithArguments));
-		
+
 		Integer exitValue;
-		
+
 		// Needed to add support for working directory because of a linux
 		// file system permission issue.
-		
+
 		if (!OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
 			wd = null;
 		}
-		
+
 		Process p = (wd != null) ? Runtime.getRuntime().exec(cmdWithArguments, null, wd) : Runtime.getRuntime().exec(
 		    cmdWithArguments);
-		
+
 		out.append("Normal cmd output:\n");
 		Reader reader = new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8);
 		BufferedReader input = new BufferedReader(reader);
@@ -216,7 +219,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		}
 		input.close();
 		reader.close();
-		
+
 		out.append("ErrorStream cmd output:\n");
 		reader = new InputStreamReader(p.getErrorStream(), StandardCharsets.UTF_8);
 		input = new BufferedReader(reader);
@@ -225,16 +228,16 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		}
 		input.close();
 		reader.close();
-		
+
 		exitValue = p.waitFor();
-		
+
 		log.debug("Process exit value: " + exitValue);
-		
+
 		log.debug("execCmd output: \n" + out.toString());
-		
+
 		return exitValue;
 	}
-	
+
 	/**
 	 * @see liquibase.change.custom.CustomChange#getConfirmationMessage()
 	 */
@@ -242,15 +245,15 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	public String getConfirmationMessage() {
 		return "Finished executing " + sqlFile + " on database";
 	}
-	
+
 	/**
-	 * @see liquibase.change.custom.CustomChange#setFileOpener(ResourceAccessor) 
+	 * @see liquibase.change.custom.CustomChange#setFileOpener(ResourceAccessor)
 	 */
 	@Override
 	public void setFileOpener(ResourceAccessor fileOpener) {
 		this.fileOpener = fileOpener;
 	}
-	
+
 	/**
 	 * Get the values of the parameters passed in and set them to the local variables on this class.
 	 *
@@ -258,9 +261,9 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	 */
 	@Override
 	public void setUp() throws SetupException {
-		
+
 	}
-	
+
 	/**
 	 * @see liquibase.change.custom.CustomChange#validate(liquibase.database.Database)
 	 */
@@ -268,12 +271,12 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	public ValidationErrors validate(Database database) {
 		return new ValidationErrors();
 	}
-	
+
 	/**
 	 * @param sqlFile the sqlFile to set
 	 */
 	public void setSqlFile(String sqlFile) {
 		this.sqlFile = sqlFile;
 	}
-	
+
 }
