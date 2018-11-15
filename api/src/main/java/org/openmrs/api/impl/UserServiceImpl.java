@@ -644,6 +644,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			}
 		} else if (!dao.getLoginCredential(user).checkPassword(oldPassword)) {
 			throw new APIException("old.password.not.correct", (Object[]) null);
+		} else if (!dao.getLoginCredential(user).changePassword(oldPassword)) {
+			throw new APIException("New Password cannot be same as old Password", (Object[]) null);
 		}
 	
 		updatePassword(user, newPassword);
