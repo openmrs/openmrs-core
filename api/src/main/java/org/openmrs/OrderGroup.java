@@ -107,9 +107,7 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	 * @param orders the orders to set
 	 */
 	public void setOrders(List<Order> orders) {
-		for (Order order : orders) {
-			addOrder(order);
-		}
+		this.orders = orders;
 	}
 	
 	/**
@@ -119,6 +117,18 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	 */
 	public void addOrder(Order order) {
 		this.addOrder(order, null);
+	}
+	
+	/**
+	 * Adds {@link Order}s to existing Order list
+	 * 
+	 * @param orders
+	 * @since 2.2
+	 */
+	public void addOrders(List<Order> orders) {
+		for (Order order : orders) {
+			addOrder(order);
+		}
 	}
 	
 	/**
