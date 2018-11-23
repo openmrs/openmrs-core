@@ -40,6 +40,10 @@
          <artifactId>commons-beanutils</artifactId>
       </dependency>
       <dependency>
+         <groupId>commons-validator</groupId>
+         <artifactId>commons-validator</artifactId>
+      </dependency>
+      <dependency>
          <groupId>commons-io</groupId>
          <artifactId>commons-io</artifactId>
       </dependency>

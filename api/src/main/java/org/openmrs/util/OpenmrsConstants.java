@@ -406,6 +406,11 @@ public final class OpenmrsConstants {
 	public static final String GP_PASSWORD_MINIMUM_LENGTH = "security.passwordMinimumLength";
 	
 	/**
+	 * Global property that stores the duration for which the password reset token is valid
+	 */
+	public static final String GP_PASSWORD_RESET_VALIDTIME = "security.validTime";
+	
+	/**
 	 * Global property name that allows specification of a regular expression that passwords must
 	 * adhere to
 	 */
@@ -599,6 +604,11 @@ public final class OpenmrsConstants {
 	public static final String GP_DRUG_ORDER_DRUG_OTHER = "drugOrder.drugOther";
 
 	/**
+	 * Global property that stores the base url for the application.
+	 */
+	public static final String GP_HOST_URL = "host.url";
+	
+	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
 	 * 
@@ -682,6 +692,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_MAIL_SMTP_STARTTLS_ENABLE, "false",
 		        "Set to true to enable TLS encryption, else set to false"));
+		
+		props.add(new GlobalProperty(GP_HOST_URL, "",
+		        "The URL to redirect to after requesting for a password reset. Always provide a place holder in this url with name {activationKey}, it will get substituted by the actual activation key."));
 		
 		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
 		props.add(new GlobalProperty("concept.height", "5090", "Concept id of the concept defining the HEIGHT concept"));
@@ -853,6 +866,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_PASSWORD_MINIMUM_LENGTH, "8",
 		        "Configure the minimum length required of all passwords"));
+		
+		props.add(new GlobalProperty(GP_PASSWORD_RESET_VALIDTIME, "600000",
+		        " Specifies the duration of time in seconds for which a password reset token is valid, the default value is 10 minutes and the allowed values range from 1 minute to 12hrs"));
 		
 		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_DIGIT, "true",
 		        "Configure whether passwords must contain at least one digit", BooleanDatatype.class, null));

@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
@@ -37,9 +38,6 @@ public class UserValidator implements Validator {
 	
 	/** Logger for this class and subclasses */
 	private static final Logger log = LoggerFactory.getLogger(UserValidator.class);
-	
-	private static final Pattern EMAIL_PATTERN = Pattern
-	        .compile("^.+@.+\\..+$");
 	
 	@Autowired
 	private PersonValidator personValidator;
@@ -126,6 +124,13 @@ public class UserValidator implements Validator {
 					errors.rejectValue("username", "error.username.pattern");
 				}
 			}
+			
+			if (!StringUtils.isBlank(user.getEmail())) {
+				if(!isEmailValid(user.getEmail())) {
+					errors.rejectValue("email", "error.email.invalid");
+				}
+			}
+			
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "username", "systemId", "retireReason");
 		}
 	}
@@ -186,11 +191,14 @@ public class UserValidator implements Validator {
 	 * @should return true if email valid
 	 */
 	public boolean isUserNameAsEmailValid(String username) {
-		if (StringUtils.isBlank(username)) {
-			return false;
-		}
-		
-		Matcher matcher = EMAIL_PATTERN.matcher(username);
-		return matcher.matches();
+		return EmailValidator.getInstance().isValid(username);
+	}
+	
+	/**
+	 * @return true if email is valid or false otherwise
+	 * @param email
+	 */
+	private boolean isEmailValid(String email) {
+		return EmailValidator.getInstance().isValid(email);
 	}
 }

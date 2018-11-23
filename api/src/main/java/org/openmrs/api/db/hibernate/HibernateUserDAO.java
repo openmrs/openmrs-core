@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Person;
@@ -106,6 +107,32 @@ public class HibernateUserDAO implements UserDAO {
 		
 		return users.get(0);
 	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#getUserByEmail(java.lang.String)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public User getUserByEmail(String email) {
+		return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.eq("email", email).ignoreCase()).uniqueResult();	
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getLoginCredentialByActivationKey(java.lang.String)
+	 */
+	@Override
+	public LoginCredential getLoginCredentialByActivationKey(String activationKey) {
+		String key = Security.encodeString(activationKey);
+		LoginCredential loginCred = (LoginCredential) sessionFactory.getCurrentSession().createCriteria(LoginCredential.class)
+									.add(Restrictions.like("activationKey", key, MatchMode.START)).uniqueResult();	
+		if(loginCred != null) {
+			String[] credTokens = loginCred.getActivationKey().split(":");
+			if(credTokens[0].equals(key)){
+				return loginCred;
+			}
+		}	
+		return null;
+ 	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#hasDuplicateUsername(org.openmrs.User)
@@ -631,4 +658,11 @@ public class HibernateUserDAO implements UserDAO {
 		return query;
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.UserDAO#createActivationKey(org.openmrs.User)
+	 */
+	@Override
+	public void setUserActivationKey(LoginCredential credentials) {		
+			sessionFactory.getCurrentSession().merge(credentials);	
+	}
 }

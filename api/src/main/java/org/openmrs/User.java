@@ -51,6 +51,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	
 	private String username;
 	
+	private String email;
+	
 	private Set<Role> roles;
 	
 	private Map<String, String> userProperties;
@@ -408,6 +410,22 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 */
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	
+	/**
+	 * @since 2.2
+	 * @return Returns the email.
+	 */
+	public String getEmail() {
+		return email;
+	}
+	
+ 	/**
+ 	 * @since 2.2
+	 * @param email The email to set.
+	 */
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	@Override

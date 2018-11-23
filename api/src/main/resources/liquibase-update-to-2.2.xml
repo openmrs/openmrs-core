@@ -342,5 +342,31 @@
 			</column>
 		</addColumn>
 	</changeSet>
+	
+	<changeSet id="20180706-passwordreset" author="harisu+fanyui">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="users" columnName="activation_key"/>
+			</not>
+		</preConditions>
+		<comment>Adding column users.activation_key</comment>
+        <addColumn tableName="users">
+            <column name="activation_key" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="20180808-passwordreset" author="harisu+fanyui">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="users" columnName="email"/>				
+			</not>
+		</preConditions>
+		<comment>Adding column users.email</comment>
+        <addColumn tableName="users">
+            <column name="email" type="varchar(255)">
+            	<constraints unique="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>
