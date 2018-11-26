@@ -1458,9 +1458,10 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		            + tokenTime);
 		dao.updateLoginCredential(credentials);
 		
+		final String PASSWORD = "Admin123";
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
-		userService.changePasswordUsingActivationKey(key, "Admin123");
-		Context.authenticate(createdUser.getUsername(), "Admin123");
+		userService.changePasswordUsingActivationKey(key, PASSWORD);
+		Context.authenticate(createdUser.getUsername(), PASSWORD);
 		
 	}
 	
