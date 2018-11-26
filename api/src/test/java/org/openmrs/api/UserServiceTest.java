@@ -1371,7 +1371,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void ggetUserByUsernameOrEmail_shouldNotGetUserIfEmailIsEmpty() {
+	public void getUserByUsernameOrEmail_shouldNotGetUserIfEmailIsEmpty() {
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage(messages.getMessage("error.usernameOrEmail.notNullOrBlank"));
 		userService.getUserByUsernameOrEmail("");
