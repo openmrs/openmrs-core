@@ -9,6 +9,18 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Allergen;
 import org.openmrs.Allergies;
@@ -39,6 +51,7 @@ import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientIdentifierTypeLockedException;
+import org.openmrs.api.PatientMergeAction;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
@@ -61,18 +74,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 /**
  * Default implementation of the patient service. This class should not be used on its own. The
  * current OpenMRS implementation should be fetched from the Context via
@@ -89,6 +90,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	private PatientDAO dao;
 	
+	private List<PatientMergeAction> patientMergeActions;
+	
 	/**
 	 * PatientIdentifierValidators registered through spring's applicationContext-service.xml
 	 */
@@ -100,6 +103,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	public void setPatientDAO(PatientDAO dao) {
 		this.dao = dao;
+	}
+	
+
+	public void setPatientMergeActions(List<PatientMergeAction> patientMergeActions) {
+		this.patientMergeActions = patientMergeActions;
 	}
 	
 	/**
@@ -574,10 +582,18 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			log.debug("Merge operation cancelled: Cannot merge user" + preferred.getPatientId() + " to self");
 			throw new APIException("Patient.merge.cancelled", new Object[] { preferred.getPatientId() });
 		}
+		
+		// do any "before-merge actions" that have been registered
+		if (patientMergeActions != null) {
+			for (PatientMergeAction patientMergeAction : patientMergeActions) {
+				patientMergeAction.beforeMergingPatients(preferred, notPreferred);
+			}
+		}
+		
 		requireNoActiveOrderOfSameType(preferred,notPreferred);
 		PersonMergeLogData mergedData = new PersonMergeLogData();
 		mergeVisits(preferred, notPreferred, mergedData);
-		mergeEncounters(preferred, notPreferred, mergedData);//merge the remaining encounter that don't have visit
+		mergeEncounters(preferred, notPreferred, mergedData);
 		mergeProgramEnrolments(preferred, notPreferred, mergedData);
 		mergeRelationships(preferred, notPreferred, mergedData);
 		mergeObservationsNotContainedInEncounters(preferred, notPreferred, mergedData);
@@ -611,6 +627,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		personMergeLog.setLoser(notPreferred);
 		personMergeLog.setPersonMergeLogData(mergedData);
 		Context.getPersonService().savePersonMergeLog(personMergeLog);
+		
+		// do any "after-merge actions" that have been registered
+		if (patientMergeActions != null) {
+			for (PatientMergeAction patientMergeAction : patientMergeActions) {
+				patientMergeAction.afterMergingPatients(preferred, notPreferred);
+			}
+		}
 	}
 	
 	private void requireNoActiveOrderOfSameType(Patient patient1, Patient patient2) {
@@ -1703,4 +1726,25 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			throw new PatientIdentifierTypeLockedException();
 		}
 	}
+	
+	public void addPatientMergeAction(PatientMergeAction patientMergeAction) {
+		if (this.patientMergeActions == null) {
+			this.patientMergeActions = new ArrayList<PatientMergeAction>();
+		}
+		this.patientMergeActions.add(patientMergeAction);
+	}
+	
+	@Override
+	public void removePatientMergeAction(PatientMergeAction patientMergeAction) {
+		if (this.patientMergeActions == null) {
+			this.patientMergeActions = new ArrayList<PatientMergeAction>();
+		}
+		this.patientMergeActions.remove(patientMergeAction);
+	}
+	
+	// for unit testing
+	public List<PatientMergeAction> getPatientMergeActions() {
+		return this.patientMergeActions;
+	}
+	
 }

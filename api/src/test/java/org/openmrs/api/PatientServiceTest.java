@@ -22,6 +22,21 @@ import static org.junit.Assert.fail;
 import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
 import static org.openmrs.util.AddressMatcher.containsAddress;
 import static org.openmrs.util.NameMatcher.containsFullName;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -64,20 +79,6 @@ import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -647,10 +648,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Visit visit1 = visitService.getVisit(1);
 		Visit visit2 = visitService.getVisit(2);
 		Visit visit3 = visitService.getVisit(3);
-		Visit visit6 = visitService.getVisit(6);
-		// patient 6 (preferred) has 2 unvoided visits (id = 4, 5) and no voided visits
-		Visit visit4 = visitService.getVisit(4);
-		Visit visit5 = visitService.getVisit(5);
+		visitService.getVisit(6);
+		visitService.getVisit(4);
+		visitService.getVisit(5);
 		
 		List<String> encounterUuidsThatShouldBeMoved = new ArrayList<>();
 		encounterUuidsThatShouldBeMoved.add(Context.getEncounterService().getEncounter(6).getUuid());
@@ -3254,6 +3254,59 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(8, encounterService.getEncounter(57).getAllObs(true).size());
 		assertEquals(1, encounterService.getEncounter(57).getObsAtTopLevel(false).size());
 		assertEquals(2, encounterService.getEncounter(57).getObsAtTopLevel(true).size());
+	}
+	
+	@Test
+	public void removeMergeAction_shouldRemovePaperRecordMergeAction() throws Exception {
+		PatientServiceImpl ps = new PatientServiceImpl();
+		List<PatientMergeAction> pma = new ArrayList<PatientMergeAction>();
+		ps.setPatientMergeActions(pma);
+		
+		PatientMergeAction action1 = new DummyPatientMergeAction();
+		PatientMergeAction action2 = new DummyPatientMergeAction();
+		
+		ps.addPatientMergeAction(action1);
+		ps.addPatientMergeAction(action2);
+		
+		ps.removePatientMergeAction(action1);
+		
+		assertThat(ps.getPatientMergeActions().size(), is(1));
+		assertFalse(ps.getPatientMergeActions().contains(action1));
+		assertTrue(ps.getPatientMergeActions().contains(action2));
+		
+	}
+	
+
+	
+	
+	private class DummyPatientMergeAction implements PatientMergeAction {
+		
+		@Override
+		public void beforeMergingPatients(Patient preferred, Patient notPreferred) {
+		}
+		
+		@Override
+		public void afterMergingPatients(Patient preferred, Patient notPreferred) {
+		}
+		
+	}
+	
+	@Test
+	public void addActions_shouldAddMergeActions() throws Exception {
+		PatientServiceImpl ps = new PatientServiceImpl();
+		
+		List<PatientMergeAction> pma = new ArrayList<PatientMergeAction>();
+		ps.setPatientMergeActions(pma);
+		PatientMergeAction action1 = new DummyPatientMergeAction();
+		PatientMergeAction action2 = new DummyPatientMergeAction();
+		
+		ps.addPatientMergeAction(action1);
+		ps.addPatientMergeAction(action2);
+		assertThat(ps.getPatientMergeActions().size(), is(2));
+		
+		assertTrue(ps.getPatientMergeActions().contains(action1));
+		assertTrue(ps.getPatientMergeActions().contains(action2));
+		
 	}
 
 }

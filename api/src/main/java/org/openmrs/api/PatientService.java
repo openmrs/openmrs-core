@@ -844,4 +844,14 @@ public interface PatientService extends OpenmrsService {
 	 * @throws PatientIdentifierTypeLockedException
 	 */
 	public void checkIfPatientIdentifierTypesAreLocked() throws PatientIdentifierTypeLockedException;
+
+	
+	/**
+	 * Removes a registered merge action
+	 * 
+	 * @param patientMergeAction merge action to be removed
+	 */
+	public void removePatientMergeAction(PatientMergeAction patientMergeAction);
+	
+	
 }
