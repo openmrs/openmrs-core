@@ -16,12 +16,15 @@ import org.junit.Test;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -165,4 +168,126 @@ public class CohortTest {
         double secondsToSet = (endTime - startTime)/1000;
         Assert.assertTrue("Setting cohort of size " + cohortSize + " took " + secondsToSet + " seconds", secondsToSet < 5);
     }
+    
+    @Test
+	public void hasActiveMembership_shouldFindAnActiveMemberCorrectly() throws Exception{
+	    
+	    Calendar calendar = Calendar.getInstance();
+	    calendar.add(Calendar.DAY_OF_YEAR, 1);
+	    // endDateLater will be tomorrow
+	    Date endDateLater =  calendar.getTime();
+	    calendar.add(Calendar.DAY_OF_YEAR, -2);
+	    // endDateEarlier will be yesterday
+	    Date endDateEarlier = calendar.getTime();
+	
+	
+	    Cohort cohort = new Cohort(3);
+	    CohortMembership membershipOne = new CohortMembership(7);
+	    membershipOne.setVoided(false);
+	    membershipOne.setEndDate(endDateLater);
+	    cohort.addMembership(membershipOne);
+	
+	    CohortMembership membershipTwo = new CohortMembership(8);
+	    membershipTwo.setVoided(true);
+	    cohort.addMembership(membershipTwo);
+	
+	    CohortMembership cohortMembershipThree = new CohortMembership(9);
+	    cohortMembershipThree.setEndDate(endDateEarlier);
+	    cohort.addMembership(cohortMembershipThree);
+	
+	    CohortMembership membershipFour = new CohortMembership(10);
+	    cohort.addMembership(membershipFour);
+	    
+	    assertTrue(cohort.hasActiveMembership(7));
+	    assertFalse(cohort.hasActiveMembership(9));
+	    assertFalse(cohort.hasActiveMembership(8));
+	    assertTrue(cohort.hasActiveMembership(10));
+	
+    }
+	
+	@Test
+	public void activeMembershipSize_shouldDetermineSizeCorrectly() throws Exception{
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DAY_OF_YEAR, 1);
+		// endDateLater will be tomorrow		
+		Date endDateLater =  calendar.getTime();
+		calendar.add(Calendar.DAY_OF_YEAR, -2);
+		// endDateEarlier will be yesterday
+		Date endDateEarlier = calendar.getTime();
+		
+		Cohort cohort = new Cohort(3);
+		CohortMembership temp = new CohortMembership(7);
+		temp.setVoided(false);
+		temp.setEndDate(endDateLater);
+		cohort.addMembership(temp);
+		
+		temp = new CohortMembership(8);
+		temp.setVoided(true);
+		cohort.addMembership(temp);
+		
+		temp = new CohortMembership(9);
+		temp.setEndDate(endDateEarlier);
+		cohort.addMembership(temp);
+		
+		temp = new CohortMembership(10);
+		temp.setVoided(false);
+		cohort.addMembership(temp);
+		
+		assertEquals(2, cohort.activeMembershipSize() );
+		
+	}
+	
+	
+	@Test
+	public void hasNoActiveMemberships_shouldReturnTrueIfNoneExists() throws Exception{
+		
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DAY_OF_YEAR, 1);
+		// endDateLater will be tomorrow		
+		Date endDateLater =  calendar.getTime();
+		calendar.add(Calendar.DAY_OF_YEAR, -2);
+		// endDateEarlier will be yesterday
+		Date endDateEarlier = calendar.getTime();
+		
+		Cohort cohort = new Cohort(3);
+		CohortMembership temp = new CohortMembership(7);
+		temp.setVoided(true);
+		temp.setEndDate(endDateLater);
+		cohort.addMembership(temp);
+		
+		temp = new CohortMembership(8);
+		temp.setVoided(true);
+		cohort.addMembership(temp);
+		
+		temp = new CohortMembership(9);
+		temp.setEndDate(endDateEarlier);
+		cohort.addMembership(temp);
+		
+		temp = new CohortMembership(10);
+		temp.setVoided(true);
+		cohort.addMembership(temp);
+		
+		assertTrue(cohort.hasNoActiveMemberships());
+	}
+	
+	@Test
+	public void hasNoActiveMemberships_shouldReturnFalseIfOneExists() throws Exception{
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DAY_OF_YEAR, 1);
+		// endDateLater will be tomorrow		
+		Date endDateLater =  calendar.getTime();
+		
+		Cohort cohort = new Cohort(3);
+		CohortMembership temp = new CohortMembership(7);
+		temp.setVoided(false);
+		temp.setEndDate(endDateLater);
+		cohort.addMembership(temp);
+
+		
+		assertFalse(cohort.hasNoActiveMemberships());
+		
+	}
 }
