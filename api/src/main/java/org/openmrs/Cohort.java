@@ -369,4 +369,38 @@ public class Cohort extends BaseChangeableOpenmrsData {
 		setCohortId(id);
 		
 	}
+	
+	/**
+	 * @since 2.3
+	 * 
+	 * This function checks if there exists any active CohortMembership for a given patientId
+	 * 
+	 * @param patientId is the patientid that should be checked for activity in cohort
+	 * @return true if cohort has active membership for the requested patient             
+	 */
+	public boolean hasActiveMembership(int patientId) {
+		return getMemberships().stream().anyMatch(m  -> m.getPatientId() == patientId && m.isActive());
+	}
+	
+	/**
+	 * 
+	 * @since  2.3
+	 * This method returns the number of active members in the cohort
+	 * 
+	 * @return  number of active memberships in the cohort
+	 */
+	public int activeMembershipSize() {
+		return getActiveMemberships().size();
+	}
+	
+	/**
+	 *
+	 * @since  2.3
+	 * This method returns true if cohort has no active memberships
+	 *
+	 * @return true if no active cohort exists
+	 **/
+	public boolean hasNoActiveMemberships() {
+		return activeMembershipSize() == 0;
+	}
 }
