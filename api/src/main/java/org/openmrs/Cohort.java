@@ -137,7 +137,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	
 	public boolean contains(Integer patientId) {
 		return getMemberships() != null
-		        && getMemberships().stream().anyMatch(m -> m.getPatientId().equals(patientId) && m.isActive());
+		        && getMemberships().stream().anyMatch(m -> m.getPatientId().equals(patientId) && !m.getVoided());
 	}
 	
 	@Override
@@ -217,7 +217,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	}
 	
 	public int size() {
-		return getMemberships().stream().filter(m -> !m.getVoided() && m.getEndDate() == null).collect(Collectors.toList())
+		return getMemberships().stream().filter(m -> !m.getVoided()).collect(Collectors.toList())
 		        .size();
 	}
 	
