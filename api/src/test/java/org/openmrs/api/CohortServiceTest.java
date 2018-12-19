@@ -73,7 +73,8 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		// now do the actual test: getCohort by name and expect a non voided cohort
 		Cohort exampleCohort = service.getCohortByName("Example Cohort");
 		assertNotNull(exampleCohort);
-		assertEquals(1, exampleCohort.size());
+		// since TRUNK-5450 also non-active cohorts (with an end-date) are counted
+		assertEquals(2, exampleCohort.size());
 		assertFalse(exampleCohort.getVoided());
 	}
 	
@@ -535,7 +536,8 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertNull(cm.getEndDate());
 		service.endCohortMembership(cm, endOnDate);
 		assertEquals(endOnDate, cm.getEndDate());
-		assertFalse(cohort.contains(cm.getPatientId()));
+		// Since TRUNK-5450 also CohortMembers with an end-date are taken into account by contains
+		assertTrue(cohort.contains(cm.getPatientId()));
 	}
 	
 	@Test

@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -168,6 +170,51 @@ public class CohortTest {
         double secondsToSet = (endTime - startTime)/1000;
         Assert.assertTrue("Setting cohort of size " + cohortSize + " took " + secondsToSet + " seconds", secondsToSet < 5);
     }
+	
+	
+	@Test
+	public void contains_shouldOnlyContainNonVoidedMembersAndIgnoreActiveStatus() {
+		
+		Cohort cohort = new Cohort("name", "description", ids);
+		
+		// create date in past to verify also non active patains are counted
+		CohortMembership cohortMembershipOne = new CohortMembership(12, new Date());
+		Date dateInPast = new GregorianCalendar(1992, Calendar.SEPTEMBER, 30).getTime();
+		cohortMembershipOne.setEndDate(dateInPast);
+		cohort.addMembership(cohortMembershipOne);
+		
+		Object[] allIds = ArrayUtils.add(ids, 12);
+		
+		Arrays.stream(allIds).forEach(id -> assertTrue(cohort.contains((Integer)id)));
+		assertEquals(cohort.size(), allIds.length);
+	}
+	
+	@Test
+	public void contains_shouldOnlyContainNonVoidedMembers() {
+		
+		Cohort cohort = new Cohort("name", "description", ids);
+		
+		// create date in past to verify also non active patains are counted
+		CohortMembership cohortMembershipOne = new CohortMembership(12, new Date());
+		cohortMembershipOne.setVoided(true);
+		cohort.addMembership(cohortMembershipOne);
+		
+		Arrays.stream(ids).forEach(id -> assertTrue(cohort.contains(id)));
+		assertFalse(cohort.contains(12));
+	}
+	
+	@Test
+	public void size_shouldOnlyCountNonVoidedMembers() {
+		
+		Cohort cohort = new Cohort("name", "description", ids);
+		
+		// create a cohort that should not be counted
+		CohortMembership cohortMembershipOne = new CohortMembership(12, new Date());
+		cohortMembershipOne.setVoided(true);
+		cohort.addMembership(cohortMembershipOne);
+		
+		assertEquals(cohort.size(),  ids.length);
+	}
     
     @Test
 	public void hasActiveMembership_shouldFindAnActiveMemberCorrectly() throws Exception{
