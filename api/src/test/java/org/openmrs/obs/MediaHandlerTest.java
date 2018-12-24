@@ -20,6 +20,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -79,8 +80,7 @@ public class MediaHandlerTest {
 	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
 		String mimetype = "audio/mpeg";
 		String filename = "TestingComplexObsSaving.mp3";
-		File sourceFile = new File(
-	        "src" + File.separator + "test" + File.separator + "resources" + File.separator + "ComplexObsTestAudio.mp3");
+		File sourceFile = Paths.get("src", "test", "resources", "ComplexObsTestAudio.mp3").toFile();
 		
 		FileInputStream in1 = new FileInputStream(sourceFile);
 		FileInputStream in2 = new FileInputStream(sourceFile);

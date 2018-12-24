@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -287,7 +288,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			OpenmrsUtil.setApplicationDataDirectory(appDataDir);
 		} else if (!"openmrs".equalsIgnoreCase(WebConstants.WEBAPP_NAME)) {
 			OpenmrsUtil.setApplicationDataDirectory(
-			    OpenmrsUtil.getApplicationDataDirectory() + File.separator + WebConstants.WEBAPP_NAME);
+			    new File(OpenmrsUtil.getApplicationDataDirectory(), WebConstants.WEBAPP_NAME).getAbsolutePath());
 		}
 	}
 	
@@ -337,7 +338,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 */
 	private void clearDWRFile(ServletContext servletContext) {
 		String realPath = servletContext.getRealPath("");
-		String absPath = realPath + "/WEB-INF/dwr-modules.xml";
+		String absPath = Paths.get(realPath, "WEB-INF", "dwr-modules.xml").toString();
 		File dwrFile = new File(absPath.replace("/", File.separator));
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -493,7 +494,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 */
 	public static void loadBundledModules(ServletContext servletContext) {
 		String path = servletContext.getRealPath("");
-		path += File.separator + "WEB-INF" + File.separator + "bundledModules";
+		path = Paths.get(path, "WEB-INF", "bundledModules").toString();
 		File folder = new File(path);
 		
 		if (!folder.exists()) {

@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Scanner;
@@ -112,7 +113,7 @@ public class WebModuleUtilTest {
 			realPath = System.getProperty("user.dir");
 		
 		// manually delete dwr-modules.xml 
-		File f = new File(realPath + "/WEB-INF/dwr-modules.xml");
+		File f = Paths.get(realPath, "WEB-INF", "dwr-modules.xml").toFile();
 		f.delete();
 		
 		// start the dummy module
@@ -144,7 +145,7 @@ public class WebModuleUtilTest {
 		WebModuleUtil.startModule(mod, servletContext, true);
 		
 		// test if dwr-modules.xml contains id of started dummy module
-		File f = new File(realPath + "/WEB-INF/dwr-modules.xml");
+		File f = Paths.get(realPath, "WEB-INF", "dwr-modules.xml").toFile();
 		Scanner scanner = new Scanner(f);
 		boolean found = false;
 		while (scanner.hasNextLine()) {
@@ -218,7 +219,7 @@ public class WebModuleUtilTest {
 	public void getModuleWebFolder_shouldReturnTheCorrectModuleFolder() {
 		setupMocks(false);
 		String moduleId = "basicmodule";
-		String expectedPath = (REAL_PATH + "/WEB-INF/view/module/" + moduleId).replace("/", File.separator);
+		String expectedPath = Paths.get(REAL_PATH, "WEB-INF", "view", "module", moduleId).toString();
 		String actualPath = WebModuleUtil.getModuleWebFolder(moduleId);
 		
 		assertEquals(expectedPath, actualPath);
@@ -231,7 +232,7 @@ public class WebModuleUtilTest {
 	public void getModuleWebFolder_shouldReturnTheCorrectModuleFolderIfRealPathHasATrailingSlash() {
 		setupMocks(true);
 		String moduleId = "basicmodule";
-		String expectedPath = (REAL_PATH + "/WEB-INF/view/module/" + moduleId).replace("/", File.separator);
+		String expectedPath = Paths.get(REAL_PATH, "WEB-INF", "view", "module", moduleId).toString();
 		String actualPath = WebModuleUtil.getModuleWebFolder(moduleId);
 		
 		assertEquals(expectedPath, actualPath);
