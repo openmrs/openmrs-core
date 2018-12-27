@@ -274,6 +274,32 @@ public class HibernateOrderDAO implements OrderDAO {
 	public OrderGroup getOrderGroupById(Integer orderGroupId) throws DAOException {
 		return (OrderGroup) sessionFactory.getCurrentSession().get(OrderGroup.class, orderGroupId);
 	}
+
+	/**
+	 * @see OrderDAO#getOrderGroupsByPatient(Patient)
+	 */
+	@Override
+	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws APIException {
+		if (patient == null) {
+			throw new APIException("Patient cannot be null");
+		}
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderGroup.class);
+		criteria.add(Restrictions.eq("patient", patient));
+		return criteria.list();
+	}
+
+	/**
+	 * @see OrderDAO#getOrderGroupsByEncounter(Encounter)
+	 */
+	@Override
+	public List<OrderGroup> getOrderGroupsByEncounter(Encounter encounter) throws APIException {
+		if (encounter == null) {
+			throw new APIException("Encounter cannot be null");
+		}
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderGroup.class);
+		criteria.add(Restrictions.eq("encounter", encounter));
+		return criteria.list();
+	}
 	
 	/**
 	 * Delete Obs that references (deleted) Order

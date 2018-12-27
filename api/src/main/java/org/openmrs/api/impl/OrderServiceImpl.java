@@ -1041,6 +1041,18 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public OrderGroup getOrderGroup(Integer orderGroupId) throws APIException {
 		return dao.getOrderGroupById(orderGroupId);
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<OrderGroup> getAllOrderGroupsByPatient(Patient patient) throws APIException {
+		return dao.getOrderGroupsByPatient(patient);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<OrderGroup> getAllOrderGroupsByEncounter(Encounter encounter) throws APIException {
+		return dao.getOrderGroupsByEncounter(encounter);
+	}
 	
 	private List<Concept> getSetMembersOfConceptSetFromGP(String globalProperty) {
 		String conceptUuid = Context.getAdministrationService().getGlobalProperty(globalProperty);
