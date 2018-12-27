@@ -253,7 +253,6 @@ public class ADTA28Handler implements Application {
 				}
 			} else {
 				log.error("PID contains identifier with no assigning authority");
-				continue;
 			}
 		}
 		if (goodIdentifiers.isEmpty()) {
