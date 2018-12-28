@@ -305,7 +305,15 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
         @Override
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(patientIdentifierType);
+    	    //Check whether type is already loaded in current Hibernate Session
+        	boolean typeAlreadyLoadedInSession = OpenmrsUtil.isObjectLoadedInCurrentHibernateSession(sessionFactory.getCurrentSession(), 
+        			PatientIdentifierType.class, patientIdentifierType.getId());
+        	if (typeAlreadyLoadedInSession) {
+        		sessionFactory.getCurrentSession().merge(patientIdentifierType);
+        	} else {
+        		sessionFactory.getCurrentSession().saveOrUpdate(patientIdentifierType);
+        	}
+        	
 		return patientIdentifierType;
 	}
 	

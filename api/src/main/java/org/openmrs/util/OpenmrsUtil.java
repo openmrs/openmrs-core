@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -73,6 +74,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
+import org.hibernate.Session;
+import org.hibernate.engine.internal.StatefulPersistenceContext;
+import org.hibernate.engine.spi.PersistenceContext;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
@@ -2193,6 +2198,59 @@ public class OpenmrsUtil {
 	 */
 	public static Set<String> getDeclaredFields(Class<?> clazz) {
 		return Arrays.stream(clazz.getDeclaredFields()).map(Field::getName).collect(Collectors.toSet());
+	}
+	
+	/**
+	 * Checks in the current Hibernate <code>Session</code> Whether a provided Object with given ID is already loaded.
+	 * @should Return true if given Object is already loaded in the given <code>Session</code>
+	 * @param session <code>Session</code>
+	 * @param Clazz <code>Class</code>
+	 * @param id Object Id
+	 * @return True if given Object is already loaded in the given <code>Session</code>
+	 * @since 2.2
+	 */
+	public static <Clazz> boolean isObjectLoadedInCurrentHibernateSession(Session session, Class<?> Clazz, Integer id)  {
+		 boolean isObjectAlreadyLoadedInSession = false;
+		 Integer objectIdLoadedInSession = null;
+		 HashMap<Object, Object> map = null;
+		 Field entityEntriesField = null;
+		 
+		 SessionImplementor sessionImpl = (SessionImplementor) session;
+		 PersistenceContext persistenceContext = sessionImpl.getPersistenceContext();
+		 try {
+		    entityEntriesField = StatefulPersistenceContext.class.getDeclaredField("entitiesByKey");
+		 } catch (NoSuchFieldException | SecurityException e1) {
+			 log.trace("Error while getting Entry Field from Session ", e1);
+		 }
+		 entityEntriesField.setAccessible(true);
+		 try {
+			map = (HashMap) entityEntriesField.get(persistenceContext);
+		 } catch (IllegalArgumentException | IllegalAccessException e1) {
+			log.trace("An Error Ocurred while trying to get All Objects Loaded in Current Session ", e1);
+		 }
+		 if(map != null && !map.isEmpty()) {
+			 
+		     Set<Map.Entry<Object, Object>> set = map.entrySet();
+		     for (Map.Entry<Object, Object> obj : set) {
+		         if (obj.getValue().getClass() == Clazz) {
+		    	    @SuppressWarnings("unchecked")
+				    Clazz object = (Clazz) obj.getValue(); 
+				     try {
+					     try {
+					    	 objectIdLoadedInSession = (Integer) object.getClass().getMethod("getId").invoke(object);
+					     } catch (IllegalAccessException | IllegalArgumentException | SecurityException e) {
+						     log.trace("Error Occured while trying to get Object Class currently loaded in Hibernate Session ", e);
+					     }
+				     } catch (InvocationTargetException | NoSuchMethodException e) {
+					     log.trace("Error Occured while trying to get Object ID", e); 
+				     }
+				     if (objectIdLoadedInSession.equals(id)) { 
+					     isObjectAlreadyLoadedInSession = true;
+				     } 
+		         }	
+		     }
+	     }
+		 return isObjectAlreadyLoadedInSession;
 	}
 	
 }

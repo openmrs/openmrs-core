@@ -68,6 +68,7 @@ import org.openmrs.api.db.hibernate.search.LuceneQuery;
 import org.openmrs.collection.ListPart;
 import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -427,7 +428,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptClass saveConceptClass(ConceptClass cc) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(cc);
+		//Check whether type is already loaded in current Hibernate Session
+    	boolean typeAlreadyLoadedInSession = OpenmrsUtil.isObjectLoadedInCurrentHibernateSession(sessionFactory.getCurrentSession(), 
+    			ConceptClass.class, cc.getId());
+    	if (typeAlreadyLoadedInSession) {
+    		sessionFactory.getCurrentSession().merge(cc);
+    	} else {
+    		sessionFactory.getCurrentSession().saveOrUpdate(cc);
+    	}
 		return cc;
 	}
 	

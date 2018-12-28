@@ -37,6 +37,7 @@ import org.openmrs.api.db.hibernate.search.LuceneQuery;
 import org.openmrs.collection.ListPart;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -322,10 +323,18 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * @see org.openmrs.api.PersonService#savePersonAttributeType(org.openmrs.PersonAttributeType)
 	 * @see org.openmrs.api.db.PersonDAO#savePersonAttributeType(org.openmrs.PersonAttributeType)
+	 * @see org.openmrs.api.util.OpenmrsUtil#isObjectLoadedInCurrentHibernateSession(Session,Class<?>,Id)
 	 */
 	@Override
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) {
-		sessionFactory.getCurrentSession().saveOrUpdate(type);
+	    //Check whether type is already loaded in current Hibernate Session
+	    boolean typeAlreadyLoadedInSession = OpenmrsUtil.isObjectLoadedInCurrentHibernateSession(sessionFactory.getCurrentSession(), PersonAttributeType.class, type.getId());	
+		if (typeAlreadyLoadedInSession) {
+			sessionFactory.getCurrentSession().merge(type);
+		} else {	
+			sessionFactory.getCurrentSession().saveOrUpdate(type);
+		}
+		
 		return type;
 	}
 	

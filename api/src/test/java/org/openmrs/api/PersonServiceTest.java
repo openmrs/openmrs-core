@@ -30,10 +30,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.hibernate.NonUniqueObjectException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -439,6 +441,39 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Race Updated,Birthpalce", patientListing);
 		patientViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES);
 		assertEquals("Birthpalce", patientViewing);
+	}
+	
+	/**
+	 * @see PersonService#savePersonAttributeType(PersonAttributeType)
+	 */
+	@Test
+	public void savePersonAttributeType_shouldNotResultIntoNonUniqueObjectExceptionWithPersonAttributeTypeObject() throws Exception {
+		PersonService service = Context.getPersonService();
+		PersonAttributeType pat = service.getPersonAttributeType(1);
+		service.savePersonAttributeType(pat);
+		try {
+			PersonAttributeType type = service.savePersonAttributeType(pat); 
+			assertNotNull("Updated PersonAttributeType should not be null", type);
+		} catch(NonUniqueObjectException e) {
+			fail("Should not throw NonUniqueObjectException");
+		}
+	}
+	
+	@Test
+	public void savePersonAttributeType_shouldNotResultIntoNonUniqueObjectExceptionWithOtherOpenmrsObjects() throws Exception {	
+		PatientIdentifierType type = ps.getPatientIdentifierType(1);
+		ConceptService conceptService = Context.getConceptService();
+		ConceptClass anotherOpemrsObject = conceptService.getConceptClass(1);
+		PersonService service = Context.getPersonService();
+		PersonAttributeType pat = service.getPersonAttributeType(1);
+		service.savePersonAttributeType(pat);
+		try {
+			ps.savePatientIdentifierType(type);
+			conceptService.saveConceptClass(anotherOpemrsObject);
+			
+		} catch(NonUniqueObjectException e) {
+			fail("Should not throw NonUniqueObjectException");
+		}
 	}
 	
 	/**

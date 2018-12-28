@@ -39,6 +39,8 @@ import java.util.TreeSet;
 import java.util.Collection;
 
 import org.apache.commons.io.IOUtils;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +48,7 @@ import org.junit.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.User;
 import org.openmrs.api.InvalidCharactersPasswordException;
 import org.openmrs.api.ShortPasswordException;
@@ -755,6 +758,19 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 
 		assertTrue(IOUtils.contentEquals(expectedByteArrayInputStream, byteArrayInputStreamFromOutputStream));
 		verify(output, times(1)).close();
+	}
+
+	/**
+	 * @see org.openmrs.api.util.OpenmrsUtil#isObjectLoadedInCurrentHibernateSession(Session,Class<?>,Id)
+	 */
+	@Test
+	public void isObjectLoadedInCurrentHibernateSession_shouldCheckIfObjectIsLoadedInSession() {
+		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
+	    sessionFactory.getCurrentSession().get(PersonAttributeType.class, 1);
+	    boolean loaded = OpenmrsUtil.isObjectLoadedInCurrentHibernateSession(sessionFactory.getCurrentSession(), PersonAttributeType.class, 1);
+	    assertTrue("Should Return true cause Object was already loaded in session", loaded);
+	    loaded = OpenmrsUtil.isObjectLoadedInCurrentHibernateSession(sessionFactory.getCurrentSession(), PersonAttributeType.class, 2);
+	    assertFalse("Should return false cause Object of Id=2 was not loaded in session", loaded);
 	}
 	
 }
