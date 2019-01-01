@@ -65,7 +65,7 @@ public class OpenmrsProfileExcludeFilter implements TypeFilter {
 
 		for (String moduleAndVersion : modules) {
 			if ("!".equals(moduleAndVersion.substring(0, 1))) {
-				if (ModuleFactory.isModuleStarted(moduleAndVersion.substring(1, moduleAndVersion.length()))) {
+				if (ModuleFactory.isModuleStarted(moduleAndVersion.substring(1))) {
 					return false;
 				}
 			}
