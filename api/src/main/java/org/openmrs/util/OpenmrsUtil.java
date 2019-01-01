@@ -1427,7 +1427,7 @@ public class OpenmrsUtil {
 				return valueOfMethod.invoke(null, string);
 			} else if (clazz.isEnum()) {
 				// Special-case for enum types
-				List<Enum> constants = Arrays.asList((Enum[]) clazz.getEnumConstants());
+				Enum[] constants = (Enum[]) clazz.getEnumConstants();
 				for (Enum e : constants) {
 					if (e.toString().equals(string)) {
 						return e;

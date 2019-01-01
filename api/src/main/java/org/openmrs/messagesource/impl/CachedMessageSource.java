@@ -69,7 +69,7 @@ public class CachedMessageSource extends AbstractMessageSource implements Mutabl
 	@Override
 	public void removePresentation(PresentationMessage message) {
 		PresentationMessageMap codeMessageMap = localizedMap.get(message.getLocale());
-		if ((codeMessageMap != null) && codeMessageMap.containsKey(message.getCode())) {
+		if (codeMessageMap != null) {
 			codeMessageMap.remove(message.getCode());
 		}
 	}

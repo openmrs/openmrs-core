@@ -390,9 +390,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @param tag the tag to remove
 	 */
 	public void removeTag(ConceptNameTag tag) {
-		if (tags.contains(tag)) {
-			tags.remove(tag);
-		}
+		tags.remove(tag);
 	}
 	
 	/**

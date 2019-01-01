@@ -499,7 +499,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 		if (getTags() == null) {
 			tags = new HashSet<>();
 		}
-		if (tag != null && !tags.contains(tag)) {
+		if (tag != null) {
 			tags.add(tag);
 		}
 	}

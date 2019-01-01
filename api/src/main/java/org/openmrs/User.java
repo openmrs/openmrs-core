@@ -461,7 +461,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 * Convenience method. Removes the given property from the user's properties
 	 */
 	public void removeUserProperty(String prop) {
-		if (getUserProperties() != null && userProperties.containsKey(prop)) {
+		if (getUserProperties() != null) {
 			userProperties.remove(prop);
 		}
 	}

@@ -170,9 +170,7 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 			if (conceptReferenceTermMaps == null) {
 				conceptReferenceTermMaps = new LinkedHashSet<>();
 			}
-			if (!conceptReferenceTermMaps.contains(conceptReferenceTermMap)) {
-				conceptReferenceTermMaps.add(conceptReferenceTermMap);
-			}
+			conceptReferenceTermMaps.add(conceptReferenceTermMap);
 		}
 	}
 	
