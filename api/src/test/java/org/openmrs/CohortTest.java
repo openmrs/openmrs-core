@@ -160,7 +160,7 @@ public class CohortTest {
     public void setMemberIds_shouldSupportLargeCohorts() {
 	    int cohortSize = 100000;
         Cohort c = new Cohort();
-        Set<Integer> ids = new HashSet<Integer>();
+        Set<Integer> ids = new HashSet<>();
         for (int i=0; i<cohortSize; i++) {
             ids.add(i);
         }

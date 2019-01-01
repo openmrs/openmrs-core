@@ -104,7 +104,7 @@ public class DiagnosisServiceImpl extends BaseOpenmrsService implements Diagnosi
 	@Transactional(readOnly = true)
 	public List<Diagnosis> getUniqueDiagnoses(Patient patient, Date fromDate) {
 		List<Diagnosis> diagnoses = getDiagnoses(patient, fromDate);
-		Set<CodedOrFreeText> answers = new HashSet<CodedOrFreeText>();
+		Set<CodedOrFreeText> answers = new HashSet<>();
 		Iterator<Diagnosis> iterator = diagnoses.iterator();
 		while(iterator.hasNext()) {
 			Diagnosis diagnosis = iterator.next();
