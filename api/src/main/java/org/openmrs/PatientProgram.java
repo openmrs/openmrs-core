@@ -290,7 +290,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	 * @return Set&lt;PatientState&gt; of all recent {@link PatientState}s for the {@link PatientProgram}
 	 */
 	public Set<PatientState> getMostRecentStateInEachWorkflow() {
-		HashMap<ProgramWorkflow,PatientState> map = new HashMap<ProgramWorkflow,PatientState>();
+		HashMap<ProgramWorkflow,PatientState> map = new HashMap<>();
 
 		for (PatientState state : getSortedStates()) {
 			if (!state.isVoided()) {
