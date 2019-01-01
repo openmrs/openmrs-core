@@ -72,7 +72,7 @@ public class MediaHandlerTest {
         assertFalse(handler.supportsView(ComplexObsHandler.TITLE_VIEW));
         assertFalse(handler.supportsView(ComplexObsHandler.URI_VIEW));
         assertFalse(handler.supportsView(""));
-        assertFalse(handler.supportsView((String) null));
+        assertFalse(handler.supportsView(null));
     }
      
 	@Test

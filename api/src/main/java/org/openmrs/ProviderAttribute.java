@@ -31,7 +31,7 @@ public class ProviderAttribute extends BaseAttribute<ProviderAttributeType, Prov
 	}
 	
 	public Provider getProvider() {
-		return (Provider) getOwner();
+		return getOwner();
 	}
 	
 	public void setProvider(Provider provider) {
