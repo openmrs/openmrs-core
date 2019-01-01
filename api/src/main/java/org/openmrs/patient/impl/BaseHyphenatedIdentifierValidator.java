@@ -70,7 +70,7 @@ public abstract class BaseHyphenatedIdentifierValidator implements IdentifierVal
 		
 		int computedCheckDigit = getCheckDigit(idWithoutCheckDigit);
 		
-		String checkDigit = identifier.substring(identifier.indexOf("-") + 1, identifier.length());
+		String checkDigit = identifier.substring(identifier.indexOf("-") + 1);
 		
 		if (checkDigit.length() != 1) {
 			throw new UnallowedIdentifierException("Identifier must have a check digit of length 1.");
