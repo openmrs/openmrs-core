@@ -85,16 +85,16 @@ public class WebModuleUtil {
 	private static StaticDispatcherServlet staticDispatcherServlet = null;
 	
 	// caches all of the modules' mapped servlets
-	private static Map<String, HttpServlet> moduleServlets = Collections.synchronizedMap(new HashMap<String, HttpServlet>());
+	private static Map<String, HttpServlet> moduleServlets = Collections.synchronizedMap(new HashMap<>());
 	
 	// caches all of the module loaded filters and filter-mappings
 	private static Map<Module, Collection<Filter>> moduleFilters = Collections
-	        .synchronizedMap(new HashMap<Module, Collection<Filter>>());
+	        .synchronizedMap(new HashMap<>());
 	
-	private static Map<String, Filter> moduleFiltersByName = Collections.synchronizedMap(new HashMap<String, Filter>());
+	private static Map<String, Filter> moduleFiltersByName = Collections.synchronizedMap(new HashMap<>());
 	
 	private static List<ModuleFilterMapping> moduleFilterMappings = Collections
-	        .synchronizedList(new Vector<ModuleFilterMapping>());
+	        .synchronizedList(new Vector<>());
 	
 	/**
 	 * Performs the webapp specific startup needs for modules Normal startup is done in
