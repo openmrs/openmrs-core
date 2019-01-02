@@ -90,7 +90,7 @@ public class OpenmrsClassScanner {
 					if (typeFilter.match(metadataReader, metadataReaderFactory)) {
 						String classname = metadataReader.getClassMetadata().getClassName();
 						try {
-							Class<?> metadata = (Class<?>) OpenmrsClassLoader.getInstance().loadClass(classname);
+							Class<?> metadata = OpenmrsClassLoader.getInstance().loadClass(classname);
 							types.add(metadata);
 						}
 						catch (ClassNotFoundException e) {
