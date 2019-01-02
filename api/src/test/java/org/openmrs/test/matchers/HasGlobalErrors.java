@@ -57,7 +57,7 @@ public final class HasGlobalErrors extends TypeSafeMatcher<Errors> {
 		if (code == null) {
 			return item.hasGlobalErrors();
 		} else {
-			return item.getGlobalErrors().stream().filter(c -> code.equals(c.getCode())).findFirst().isPresent();
+			return item.getGlobalErrors().stream().anyMatch(c -> code.equals(c.getCode()));
 		}
 	}
 	
