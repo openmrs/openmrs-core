@@ -112,7 +112,7 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 		
 		// Attempt to Deserialize the object
 		try {
-			return (T) serializer.deserialize(serializedObject, objectClass);
+			return serializer.deserialize(serializedObject, objectClass);
 		}
 		catch (Exception e) {
 			String msg = "An error occurred during deserialization of data <" + serializedObject + ">";
