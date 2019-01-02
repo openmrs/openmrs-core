@@ -220,7 +220,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 	 */
 	private Integer getDrugId(String conceptId) {
 		if (conceptId.contains("^")) {
-			return Integer.valueOf(conceptId.substring(conceptId.indexOf("^") + 1, conceptId.length()));
+			return Integer.valueOf(conceptId.substring(conceptId.indexOf("^") + 1));
 		}
 		
 		return null;
