@@ -161,7 +161,7 @@ public class VerhoeffIdentifierValidatorTest {
 					}
 				}
 				// Shuffle the allowed identifier string around so that first character becomes last.
-				allowedIdentifier = allowedIdentifier.substring(1, allowedIdentifier.length()) + allowedIdentifier.charAt(0);
+				allowedIdentifier = allowedIdentifier.substring(1) + allowedIdentifier.charAt(0);
 			}
 		}
 		assertTrue(failures + " transposed digits were not detected:\n" + failureMsg, failures == 0);
