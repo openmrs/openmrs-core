@@ -160,7 +160,7 @@ public class Reflect {
 				if (type.getActualTypeArguments()[0] instanceof Class) {
 					return (parametrizedClass.isAssignableFrom((Class) type.getActualTypeArguments()[0]));
 				} else if (type.getActualTypeArguments()[0] instanceof TypeVariable) {
-					return isSuperClass((TypeVariable<?>) type.getActualTypeArguments()[0]);
+					return isSuperClass(type.getActualTypeArguments()[0]);
 				}
 			}
 			catch (ClassCastException e) {
@@ -181,7 +181,7 @@ public class Reflect {
 		
 		List<Field> allFields = getAllFields(subClass);
 		for (Iterator<Field> iterator = allFields.iterator(); iterator.hasNext();) {
-			Field field = (Field) iterator.next();
+			Field field = iterator.next();
 			if (!hasField(field)) {
 				iterator.remove();
 			}
