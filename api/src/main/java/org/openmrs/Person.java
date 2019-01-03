@@ -1093,5 +1093,9 @@ public class Person extends BaseChangeableOpenmrsData {
 		setPersonId(id);
 		
 	}
-	
+
+	@JsonIgnore
+	public boolean hasZeroNotVoidedNames() {
+		return getNames().stream().allMatch(BaseOpenmrsData::getVoided);
+	}
 }

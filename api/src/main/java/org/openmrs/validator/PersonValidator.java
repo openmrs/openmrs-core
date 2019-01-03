@@ -68,53 +68,55 @@ public class PersonValidator implements Validator {
 		}
 		
 		Person person = (Person) target;
-		
-		int index = 0;
-		boolean atLeastOneNonVoidPersonNameLeft = false;
-		for (PersonName personName : person.getNames()) {
-			errors.pushNestedPath("names[" + index + "]");
-			personNameValidator.validate(personName, errors);
-			if (!personName.getVoided()) {
-				atLeastOneNonVoidPersonNameLeft = true;
-			}
-			errors.popNestedPath();
-			index++;
-		}
-		if (!person.getVoided() && !atLeastOneNonVoidPersonNameLeft) {
+
+		validatePersonName(errors, person);
+
+		if (!person.getVoided() && person.hasZeroNotVoidedNames()) {
 			errors.rejectValue("names", "Person.shouldHaveAtleastOneNonVoidedName");
 		}
 		
-		// validate the personAddress
-		index = 0;
-		for (PersonAddress address : person.getAddresses()) {
-			try {
-				errors.pushNestedPath("addresses[" + index + "]");
-				ValidationUtils.invokeValidator(personAddressValidator, address, errors);
-			}
-			finally {
-				errors.popNestedPath();
-				index++;
-			}
-		}
-		
+		validatePersonAddress(errors, person);
 		validateBirthDate(errors, person.getBirthdate());
 		validateDeathDate(errors, person.getDeathDate(), person.getBirthdate());
 		
 		if (person.getVoided()) {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 		}
+		
 		if (person.getDead()) {
-			if(person.getCauseOfDeath() != null && person.getCauseOfDeathNonCoded() != null) {
+			if (person.getCauseOfDeath() != null && person.getCauseOfDeathNonCoded() != null) {
 				errors.rejectValue("causeOfDeath", "Person.dead.shouldHaveOnlyOneCauseOfDeathOrCauseOfDeathNonCodedSet");
-			}
-			else if(person.getCauseOfDeath() == null && person.getCauseOfDeathNonCoded() == null) {
+			} else if (person.getCauseOfDeath() == null && person.getCauseOfDeathNonCoded() == null) {
 				errors.rejectValue("causeOfDeath", "Person.dead.causeOfDeathAndCauseOfDeathNonCodedNull");
 			}
 		}
 		
 		ValidateUtil.validateFieldLengths(errors, Person.class, "gender", "personVoidReason");
 	}
-	
+
+	private void validatePersonAddress(Errors errors, Person person) {
+		int index = 0;
+		for (PersonAddress address : person.getAddresses()) {
+			try {
+				errors.pushNestedPath("addresses[" + index + "]");
+				ValidationUtils.invokeValidator(personAddressValidator, address, errors);
+			} finally {
+				errors.popNestedPath();
+				index++;
+			}
+		}
+	}
+
+	private void validatePersonName(Errors errors, Person person) {
+		int index = 0;
+		for (PersonName personName : person.getNames()) {
+			errors.pushNestedPath("names[" + index + "]");
+			personNameValidator.validate(personName, errors);
+			errors.popNestedPath();
+			index++;
+		}
+	}
+
 	/**
 	 * Checks if the birth date specified is in the future or older than 120 years old..
 	 *

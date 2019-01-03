@@ -120,7 +120,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfPersonDoesNotHaveAtleastOneNonVoidedName() {
+	public void validate_shouldFailValidationIfPersonDoesNotHaveAtLeastOneNonVoidedName() {
 		Patient pa = Context.getPatientService().getPatient(2);
 		pa.getNames().clear();
 		Errors errors = new BindException(pa, "patient");

@@ -9,6 +9,9 @@
  */
 package org.openmrs;
 
+import static java.util.Collections.emptySet;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -825,7 +828,40 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.setDeathDate(deathDate);
 		assertTrue ("Person must be dead(setDead(true)) inorder have a deathDate set for him", p.getDead());
 	}
-	
+
+	@Test
+	public void hasZeroNotVoidedNames_whenPersonHasNoNames_shouldBeTrue() {
+		Person person = new Person();
+		person.setNames(emptySet());
+
+		assertThat(person.hasZeroNotVoidedNames(), is(true));
+	}
+
+	@Test
+	public void hasZeroNotVoidedNames_whenPersonHasOnlyVoidedName_shouldBeTrue() {
+		Person person = new Person();
+		person.getNames().add(PersonNameBuilder.newBuilder().withVoided(true).build());
+
+		assertThat(person.hasZeroNotVoidedNames(), is(true));
+	}
+
+	@Test
+	public void hasZeroNotVoidedNames_whenPersonHasNonVoidedName_shouldBeFalse() {
+		Person person = new Person();
+		person.getNames().add(PersonNameBuilder.newBuilder().withVoided(false).build());
+
+		assertThat(person.hasZeroNotVoidedNames(), is(false));
+	}
+
+	@Test
+	public void hasZeroNotVoidedNames_whenPersonHasBothVoidedAndNonVoidedNames_shouldBeFalse() {
+		Person person = new Person();
+		person.getNames().add(PersonNameBuilder.newBuilder().withVoided(false).build());
+		person.getNames().add(PersonNameBuilder.newBuilder().withVoided(true).build());
+
+		assertThat(person.hasZeroNotVoidedNames(), is(false));
+	}
+
 	// helper class
 	private static class PersonNameBuilder {
 		
