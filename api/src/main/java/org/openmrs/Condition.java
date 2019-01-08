@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * The condition class records detailed information about a condition, problem, diagnosis, or other situation or issue.
@@ -318,17 +319,15 @@ public class Condition extends BaseChangeableOpenmrsData {
 					condition.getCondition().getNonCoded() != null) {
 			return false;
 		}
-		if (onsetDate != null ? !onsetDate.equals(condition.onsetDate) : condition.onsetDate != null) {
+		if (!Objects.equals(onsetDate, condition.onsetDate)) {
 			return false;
 		}
-		if (additionalDetail != null ?
-				!additionalDetail.equals(condition.additionalDetail) :
-				condition.additionalDetail != null) {
+		if (!Objects.equals(additionalDetail, condition.additionalDetail)) {
 			return false;
 		}
-		if (endDate != null ? !endDate.equals(condition.endDate) : condition.endDate != null) {
+		if (!Objects.equals(endDate, condition.endDate)) {
 			return false;
 		}
-		return endReason != null ? endReason.equals(condition.endReason) : condition.endReason == null;
+		return Objects.equals(endReason, condition.endReason);
 	}
 }

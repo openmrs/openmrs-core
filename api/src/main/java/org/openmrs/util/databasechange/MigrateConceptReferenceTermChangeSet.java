@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -122,8 +123,7 @@ public class MigrateConceptReferenceTermChangeSet implements CustomTaskChange {
 					        + ", updated rows: " + updateMapType.getUpdateCount());
 				}
 				
-				if (source == prevSource
-				        && (sourceCode == prevSourceCode || (sourceCode != null && sourceCode.equals(prevSourceCode)))) {
+				if (source == prevSource && (Objects.equals(sourceCode, prevSourceCode))) {
 					if (mapTypeId == null && comment != null && !comment.equals(prevComment)) {
 						log.warn("Lost comment '" + comment + "' for map " + conceptMapId + ". Preserved comment "
 						        + prevComment);
