@@ -962,7 +962,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			throw new HL7Exception("Missing gender in an NK1 segment");
 		}
 		gender = gender.toUpperCase();
-		if (!OpenmrsConstants.GENDER().containsKey(gender)) {
+		if (!OpenmrsConstants.GENDERS.contains(gender)) {
 			throw new HL7Exception("Unrecognized gender: " + gender);
 		}
 		person.setGender(gender);
