@@ -12,6 +12,7 @@ package org.openmrs.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.Arrays.asList;
 
 /**
  * Constants used in OpenMRS. Contents built from build properties (version, version_short, and
@@ -196,15 +199,23 @@ public final class OpenmrsConstants {
 	/**
 	 * A gender character to gender name map<br>
 	 * TODO issues with localization. How should this be handled?
+	 * @deprecated As of 2.2, replaced by {@link #GENDERS}
 	 * 
 	 * @return Map&lt;String, String&gt; of gender character to gender name
 	 */
+	@Deprecated
+	@SuppressWarnings("squid:S00100")
 	public static final Map<String, String> GENDER() {
 		Map<String, String> genders = new LinkedHashMap<>();
 		genders.put("M", "Male");
 		genders.put("F", "Female");
 		return genders;
 	}
+	
+	/**
+	 * A list of 1-letter strings representing genders
+	 */
+	public static final List<String> GENDERS = Collections.unmodifiableList(asList("M", "F"));
 		
 	/**
 	 * These roles are given to a user automatically and cannot be assigned
