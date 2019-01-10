@@ -282,7 +282,7 @@ public class ADTA28Handler implements Application {
 			throw new HL7Exception("Missing gender in the PID segment");
 		}
 		gender = gender.toUpperCase();
-		if (!OpenmrsConstants.GENDER().containsKey(gender)) {
+		if (!OpenmrsConstants.GENDERS.contains(gender)) {
 			throw new HL7Exception("Unrecognized gender: " + gender);
 		}
 		patient.setGender(gender);
