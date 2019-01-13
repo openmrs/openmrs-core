@@ -25,8 +25,8 @@ public class HttpUrl {
 	public HttpUrl(String url) throws MalformedURLException {
 		if (url == null) {
 			throw new MalformedURLException("Url cannot be null");
-		} else if (!url.startsWith("http://")) {
-			throw new MalformedURLException("Not a valid http url");
+		} else if (!url.startsWith("http://") && !url.startsWith("https://")) {
+			throw new MalformedURLException("Not a valid http(s) url");
 		}
 		
 		this.url = new URL(url);

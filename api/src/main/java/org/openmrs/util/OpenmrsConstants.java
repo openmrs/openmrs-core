@@ -1204,7 +1204,7 @@ public final class OpenmrsConstants {
 	/**
 	 * URL to the concept source id verification server
 	 */
-	public static final String IMPLEMENTATION_ID_REMOTE_CONNECTION_URL = "http://resources.openmrs.org/tools/implementationid";
+	public static final String IMPLEMENTATION_ID_REMOTE_CONNECTION_URL = "https://implementation.openmrs.org";
 	
 	/**
 	 * Shortcut booleans used to make some OS specific checks more generic; note the *nix flavored
