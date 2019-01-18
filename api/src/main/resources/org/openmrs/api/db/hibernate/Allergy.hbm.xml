@@ -33,7 +33,7 @@
             <property name="nonCodedAllergen" type="java.lang.String" column="non_coded_allergen" length="255"/>
         </component>
         <many-to-one name="severity" column="severity_concept_id" class="org.openmrs.Concept"/>
-        <property name="comment" column="comment" type="java.lang.String" length="1024"/>
+        <property name="comment" column="comments" type="java.lang.String" length="1024"/>
         <bag name="reactions" inverse="true" cascade="all-delete-orphan,evict" lazy="false">
             <key>
                 <column name="allergy_id" not-null="true"/>
