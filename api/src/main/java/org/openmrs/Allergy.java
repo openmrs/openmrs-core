@@ -33,7 +33,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	
 	private Concept severity;
 	
-	private String comment;
+	private String comments;
 	
 	private List<AllergyReaction> reactions = new ArrayList<>();
 	
@@ -50,11 +50,11 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	 * @param comment the comment to set
 	 * @param reactions the reactions to set
 	 */
-	public Allergy(Patient patient, Allergen allergen, Concept severity, String comment, List<AllergyReaction> reactions) {
+	public Allergy(Patient patient, Allergen allergen, Concept severity, String comments, List<AllergyReaction> reactions) {
 		this.patient = patient;
 		this.allergen = allergen;
 		this.severity = severity;
-		this.comment = comment;
+		this.comments = comments;
 		
 		//we do not allow to be in a state where reactions is null
 		if (reactions != null) {
@@ -158,16 +158,36 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	
 	/**
 	 * @return Returns the comment
+	 * @deprecated as of 2.3.0, replaced by {@link #getComments()}
 	 */
+	@Deprecated
 	public String getComment() {
-		return comment;
+		return getComments();
 	}
 	
 	/**
 	 * @param comment the comment to set
+	 * @deprecated as of 2.3.0, replaced by {@link #setComments(String)}
 	 */
+	@Deprecated
 	public void setComment(String comment) {
-		this.comment = comment;
+		setComments(comment);
+	}
+	
+	/**
+	 * @return Returns the comments
+	 * @since 2.3.0
+	 */
+	public String getComments() {
+		return comments;
+	}
+	
+	/**
+	 * @param comments the comments to set
+	 * @since 2.3.0
+	 */
+	public void setComments(String comments) {
+		this.comments = comments;
 	}
 	/**
 	 * @return Returns the reactions
