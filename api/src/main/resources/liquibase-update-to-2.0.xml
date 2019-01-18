@@ -8808,6 +8808,7 @@
                                  constraintName="allergy_voided_by_fk" referencedColumnNames="user_id"
                                  referencedTableName="users"/>
     </changeSet>
+    
     <!--
             Create allergy_reaction table
         -->
