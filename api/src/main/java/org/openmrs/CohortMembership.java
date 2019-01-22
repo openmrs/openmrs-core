@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.Objects;
 
 import org.openmrs.util.OpenmrsUtil;
 
@@ -143,5 +144,23 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 			ret = this.getUuid().compareTo(o.getUuid());
 		}
 		return ret;
+	}
+	
+	/**
+	 * @since 2.3.0
+	 * Indicates if a given cohortMembership object is equal to this one
+	 * 
+	 * @param otherCohortMembership is a CohortMembership object that should be checked for equality with this object
+	 * @return true if both objects are logically equal. This is the case when endDate, startDate and patientId are equal  
+	 */
+	public boolean equals(CohortMembership otherCohortMembership) {
+		if(this == otherCohortMembership) return true;
+		
+		return otherCohortMembership != null && 
+			((endDate != null ) ? endDate.equals(otherCohortMembership.getEndDate()) : otherCohortMembership.getEndDate() == null)
+			&&
+			((startDate !=null) ? startDate.equals(otherCohortMembership.getStartDate())  : otherCohortMembership.getStartDate() == null)
+			&& 
+			((patientId != null) ? patientId.equals(otherCohortMembership.getPatientId()) : otherCohortMembership.getPatientId() == null);
 	}
 }

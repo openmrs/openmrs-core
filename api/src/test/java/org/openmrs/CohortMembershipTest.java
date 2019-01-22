@@ -22,7 +22,10 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
@@ -251,5 +254,157 @@ public class CohortMembershipTest {
 		Collections.sort(list);
 		
 		assertThat(list, contains(startedRecently, startedLongAgo, noStartOrEnd, endedRecently, endedLongAgo, voided));
+	}
+	
+	@Test
+	public void equal_shouldReturnTrueIfObjectReferenceAreTheSame() {
+		CohortMembership cohortMembership = new CohortMembership(12);
+		
+		assertTrue(cohortMembership.equals(cohortMembership));
+	
+	}
+	
+	@Test
+	public void equal_shouldReturnFalseIfObjectIsNull() {
+		// A null argument to equal should not lead to an exception
+		CohortMembership cohortMembership = new CohortMembership(12);
+		
+		assertFalse(cohortMembership.equals(null));
+		
+	}
+	
+	@Test
+	public void equal_shouldReturnTrueIfStartDateEndDatePatientIdAreSameInBothObjects() {
+		
+		// Creating two logical identical CohortMemberships to test equal method
+		final int PATIENT_ID = 12;
+		CohortMembership cohortMembershipOne = new CohortMembership(PATIENT_ID);
+		CohortMembership cohortMembershipTwo = new CohortMembership(PATIENT_ID);
+		
+		Date startDate = new Date(1545140935);
+		Date endDate = new Date(1577836800);
+		
+		cohortMembershipOne.setEndDate(endDate);
+		cohortMembershipOne.setStartDate(startDate);
+		cohortMembershipTwo.setStartDate(startDate);
+		cohortMembershipTwo.setEndDate(endDate);
+		
+		assertTrue(cohortMembershipOne.equals(cohortMembershipTwo));
+		
+	}
+	
+	@Test
+	public void equal_shouldReturnFalseIfEndDateAndPatientIdAreNotSameInBothObjects() {
+		
+		// Creating two logical identical CohortMemberships ot test equal
+		CohortMembership cohortMembershipOne = new CohortMembership(13);
+		CohortMembership cohortMembershipTwo = new CohortMembership(12);
+		
+		final int TIMESTAMP_START_DATE = 1545140935;
+		
+		Date startDate1 = new Date(TIMESTAMP_START_DATE);
+		Date endDate1 = new Date(1577836801);
+		
+		Date startDate2 = new Date(TIMESTAMP_START_DATE);
+		Date endDate2 = new Date(1577836800);
+		
+		
+		cohortMembershipOne.setEndDate(endDate1);
+		cohortMembershipOne.setStartDate(startDate1);
+		cohortMembershipTwo.setStartDate(startDate2);
+		cohortMembershipTwo.setEndDate(endDate2);
+		
+		assertFalse(cohortMembershipOne.equals(cohortMembershipTwo));
+	}
+	
+	@Test
+	public void equal_shouldReturnFalseIfOnlyStartDateOfOneObjectIsNull() {
+		
+		final int PATIENT_ID = 12;
+		CohortMembership cohortMembershipOne = new CohortMembership(PATIENT_ID);
+		CohortMembership cohortMembershipTwo = new CohortMembership(PATIENT_ID);
+		
+		final int TIMESTAMP_END_DATE =  1577836801;
+		
+		Date startDate1 = null;
+		Date endDate1 = new Date(TIMESTAMP_END_DATE);
+		
+		Date startDate2 = new Date(1545140935);
+		Date endDate2 = new Date(TIMESTAMP_END_DATE);
+		
+		
+		cohortMembershipOne.setEndDate(endDate1);
+		cohortMembershipOne.setStartDate(startDate1);
+		cohortMembershipTwo.setStartDate(startDate2);
+		cohortMembershipTwo.setEndDate(endDate2);
+		
+		assertFalse(cohortMembershipOne.equals(cohortMembershipTwo));
+	}
+	
+	@Test
+	public void equal_shouldReturnFalseIfOnlyEndDateOfOneObjectIsNull() {
+		
+		final int PATIENT_ID = 13;
+		CohortMembership cohortMembershipOne = new CohortMembership(PATIENT_ID);
+		CohortMembership cohortMembershipTwo = new CohortMembership(PATIENT_ID);
+		final int TIMESTAMP = 1577836801;
+		
+		Date startDate1 = new Date(TIMESTAMP);
+		Date endDate1 = null;
+		
+		Date startDate2 = new Date(TIMESTAMP);
+		Date endDate2 = new Date(TIMESTAMP);
+		
+		
+		cohortMembershipOne.setEndDate(endDate1);
+		cohortMembershipOne.setStartDate(startDate1);
+		cohortMembershipTwo.setStartDate(startDate2);
+		cohortMembershipTwo.setEndDate(endDate2);
+		
+		assertFalse(cohortMembershipOne.equals(cohortMembershipTwo));
+	}
+	
+	@Test
+	public void equal_shouldReturnTrueIfPatientIdIsEqualAndStarDateAndEndDateAreBothNull() {
+		
+		// Creating two logical identical CohortMemberships to test equal method
+		final int PATIENT_ID = 12;
+		CohortMembership cohortMembershipOne = new CohortMembership(PATIENT_ID);
+		CohortMembership cohortMembershipTwo = new CohortMembership(PATIENT_ID);
+		
+		Date startDate = null;
+		Date endDate = null;
+		
+		cohortMembershipOne.setEndDate(endDate);
+		cohortMembershipOne.setStartDate(startDate);
+		cohortMembershipTwo.setStartDate(startDate);
+		cohortMembershipTwo.setEndDate(endDate);
+		
+		assertTrue(cohortMembershipOne.equals(cohortMembershipTwo));
+		
+	}
+	
+	@Test
+	public void equal_shouldReturnTrueWhenBothPatientIdsAreNullAndEndDateAndStartDateAreEqual() {
+		
+		// Creating two logical identical CohortMemberships to test equal method
+		CohortMembership cohortMembershipOne = new CohortMembership();
+		CohortMembership cohortMembershipTwo = new CohortMembership();
+		
+		final int TIMESTAMP_START_DATE = 1545140935;
+		Date startDate1 = new Date(TIMESTAMP_START_DATE);
+		Date endDate1 = new Date(1577836801);
+		
+		Date startDate2 = new Date(TIMESTAMP_START_DATE);
+		Date endDate2 = new Date(1577836800);
+		
+		
+		cohortMembershipOne.setEndDate(endDate1);
+		cohortMembershipOne.setStartDate(startDate1);
+		cohortMembershipTwo.setStartDate(startDate2);
+		cohortMembershipTwo.setEndDate(endDate2);
+		
+		assertFalse(cohortMembershipOne.equals(cohortMembershipTwo));
+		
 	}
 }
