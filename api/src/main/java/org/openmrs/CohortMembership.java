@@ -150,11 +150,17 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	 * @since 2.3.0
 	 * Indicates if a given cohortMembership object is equal to this one
 	 * 
-	 * @param otherCohortMembership is a CohortMembership object that should be checked for equality with this object
+	 * @param otherCohortMembershipObject is a CohortMembership object that should be checked for equality with this object
 	 * @return true if both objects are logically equal. This is the case when endDate, startDate and patientId are equal  
 	 */
-	public boolean equals(CohortMembership otherCohortMembership) {
+	@Override
+	public boolean equals(Object otherCohortMembershipObject) {
+		if(!(otherCohortMembershipObject instanceof CohortMembership)){
+			return false;
+		}
+		CohortMembership otherCohortMembership = (CohortMembership)otherCohortMembershipObject;
 		if(this == otherCohortMembership) return true;
+		
 		
 		return otherCohortMembership != null && 
 			((endDate != null ) ? endDate.equals(otherCohortMembership.getEndDate()) : otherCohortMembership.getEndDate() == null)
@@ -162,5 +168,10 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 			((startDate !=null) ? startDate.equals(otherCohortMembership.getStartDate())  : otherCohortMembership.getStartDate() == null)
 			&& 
 			((patientId != null) ? patientId.equals(otherCohortMembership.getPatientId()) : otherCohortMembership.getPatientId() == null);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(patientId, endDate, startDate);
 	}
 }
