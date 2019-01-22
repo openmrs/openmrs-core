@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+	<concept concept_id="111" retired="true" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="c59ddec0-7863-11e3-981f-0800200c9a66"/>
+	<concept_name concept_id="111" name="mg" concept_name_id="1111" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="cf215350-7863-11e3-981f-0800200c9a66"/>
+	<concept concept_id="112" retired="true" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="ef1ce2f0-7863-11e3-981f-0800200c9a66"/>
+	<concept_name concept_id="112" name="tab(s)" concept_name_id="1121" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="f4c6c6d0-7863-11e3-981f-0800200c9a66"/>
+	<concept concept_id="113" retired="true" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="7e02d1a0-7869-11e3-981f-0800200c9a66"/>
+	<concept_name concept_id="113" name="1/day x 7 days/week" concept_name_id="1131" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="83f24a00-7869-11e3-981f-0800200c9a66"/>
+	<concept concept_id="114" retired="true" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="c86115f0-7c5f-11e3-baa7-0800200c9a66"/>
+	<concept_name concept_id="114" name="2/day x 7 days/week" concept_name_id="1141" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="cfb4b230-7c5f-11e3-baa7-0800200c9a66"/>
+	
+	<global_property property="order.drugDosingUnitsConceptUuid" property_value="c9386d70-d9c5-11e3-9c1a-0800200c9a66" uuid="35466f40-d9c5-11e3-9c1a-0800200c9a66"/>
+	<global_property property="order.drugDispensingUnitsConceptUuid" property_value="d198bec0-d9c5-11e3-9c1a-0800200c9a66" uuid="40f04640-d9c5-11e3-9c1a-0800200c9a66"/>
+	
+	<concept concept_id="25" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:58.0" version="" uuid="c9386d70-d9c5-11e3-9c1a-0800200c9a66"/>
+  	<concept concept_id="26" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:58.0" version="" uuid="d198bec0-d9c5-11e3-9c1a-0800200c9a66"/>
+  
+  	<concept_name concept_id="25" name="Dosing Units" locale="en" creator="1" date_created="2008-08-18 12:38:58.0" concept_name_id="6046" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="19da8470-d9c6-11e3-9c1a-0800200c9a66"/>
+  	<concept_name concept_id="26" name="Dispensing Units" locale="en" creator="1" date_created="2008-08-18 12:38:58.0" concept_name_id="6047" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="20a604f0-d9c6-11e3-9c1a-0800200c9a66"/>
+  	<concept_set concept_set_id="4" concept_id="111" concept_set="25" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="7c843d00-d9c6-11e3-9c1a-0800200c9a66"/>
+  	<concept_set concept_set_id="5" concept_id="112" concept_set="25" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="84c7b780-d9c6-11e3-9c1a-0800200c9a66"/>
+  </dataset>
