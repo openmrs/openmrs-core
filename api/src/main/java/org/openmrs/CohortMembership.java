@@ -142,6 +142,6 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 		if (ret == 0) {
 			ret = this.getUuid().compareTo(o.getUuid());
 		}
-		return ret;
+		return set;
 	}
 }
