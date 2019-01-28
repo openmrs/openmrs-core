@@ -30,7 +30,6 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	
 	private Date endDate;
 	
-	// Constructor
 	public CohortMembership() {
 	}
 	
