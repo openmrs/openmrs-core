@@ -22,6 +22,11 @@ import org.hibernate.SessionFactory;
  */
 public class DbSessionFactory {
 	
+	// This type shoudn't be instantiated
+	private DbSessionFactory() {
+		
+	}
+	
 	private SessionFactory sessionFactory;
 	
 	public DbSessionFactory(SessionFactory sessionFactory) {
