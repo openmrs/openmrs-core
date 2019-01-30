@@ -45,7 +45,7 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
         git clone git://github.com/YourGitHubUserName/openmrs-core.git
         git remote add upstream https://github.com/openmrs/openmrs-core.git
 
-3. Checkout out a new local branch based on your master and update it to the latest. The convention is to name the branch after the current ticket, e.g. TRUNK-123:
+3. Checkout to a new local branch based on your master and update it to the latest. The convention is to name the branch after the current ticket, e.g. TRUNK-123:
 
         git checkout -b TRUNK-123 master
         git clean -df
