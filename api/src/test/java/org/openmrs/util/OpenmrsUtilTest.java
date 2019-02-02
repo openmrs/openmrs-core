@@ -19,21 +19,28 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Collection;
@@ -43,10 +50,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.InvalidCharactersPasswordException;
 import org.openmrs.api.ShortPasswordException;
 import org.openmrs.api.WeakPasswordException;
@@ -62,6 +71,19 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	private static GlobalProperty luhnGP = new GlobalProperty(
 	        OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR,
 	        OpenmrsConstants.LUHN_IDENTIFIER_VALIDATOR);
+	
+	private ConceptService cs;
+	private final String separator = FileSystems.getDefault().getSeparator();
+	
+	@Before
+	public void setup() {
+		cs=Context.getConceptService();
+	}
+	private File createFileInUserDirectory(String relativePath) {
+		String userDirectoryPath = System.getProperty("user.dir");
+		File file = new File(userDirectoryPath + separator + relativePath);
+		return file;
+	}
 	
 	/**
 	 * @throws Exception
@@ -666,8 +688,155 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see OpenmrsUtil#nullSafeEqualsIgnoreCase(String,String)
+	 * @see OpenmrsUtil#folderContains(File, String)
 	 */
+	@Test
+	public void folderContains_shouldReturnTrueWhenFolderContainsFileWithGivenName() {
+		File folder = createFileInUserDirectory("folder");
+		folder.mkdir();
+		File file = createFileInUserDirectory("folder" + separator + "file");
+		try {
+			file.createNewFile();
+			assertTrue(OpenmrsUtil.folderContains(folder, "file"));
+			file.delete();
+
+		} 
+		catch (IOException e) {Assert.fail("Unable to create file");}
+		folder.delete();
+	}
+	
+	/**
+	 * @see OpenmrsUtil#folderContains(File, String)
+	 */
+	@Test
+	public void folderContains_shouldReturnFalseWhenFolderDoesNotContainFileWithGivenName() {
+		File folder = createFileInUserDirectory("folder");
+		folder.mkdir();
+		assertFalse(OpenmrsUtil.folderContains(folder,"file"));
+		folder.delete();
+	}
+	
+	/**
+	 * @see OpenmrsUtil#folderContains(File, String)
+	 */
+	@Test
+	public void folderContains_shouldReturnFalseWhenGivenStringIsNull() {
+		File folder = createFileInUserDirectory("folder");
+		folder.mkdir();
+		assertFalse(OpenmrsUtil.folderContains(folder, null));
+		folder.delete();
+	}
+	
+	/**
+	 * @see OpenmrsUtil#folderContains(File, String)
+	 */
+	@Test
+	public void folderContains_shouldReturnFalseWhenGivenFolderIsNull() {
+		assertFalse(OpenmrsUtil.folderContains(null,"file"));
+	}
+	
+	/**
+	 * @see OpenmrsUtil#conceptListHelper(String)
+	 */
+	@Test
+	public void conceptListHelper_shouldReturnEmptyListWhenGivenDescriptorIsNullOrEmpty() {
+		assertTrue(OpenmrsUtil.conceptListHelper("").isEmpty());
+		assertTrue(OpenmrsUtil.conceptListHelper(null).isEmpty());
+	}
+
+	/**
+	 * @see OpenmrsUtil#conceptListHelper(String)
+	 */
+	@Test
+	public void conceptListHelper_shouldReturnListOfConceptsWithGivenNameInDescriptor() {
+		List<Concept> helperList = OpenmrsUtil.conceptListHelper("name:YES|name:NO|name:DIED|set:25|set:26");
+		List<Concept> serviceList = new ArrayList<>();
+		Concept concept_auxiliar;
+		//Adding the concepts in the list to compare with the first one
+		serviceList.add(cs.getConceptByName("YES"));
+		serviceList.add(cs.getConceptByName("NO"));
+		serviceList.add(cs.getConceptByName("DIED"));
+		
+		concept_auxiliar = cs.getConcept(25);
+		serviceList.addAll(cs.getConceptsByConceptSet(concept_auxiliar));
+		
+		concept_auxiliar = cs.getConcept(26);
+		serviceList.addAll(cs.getConceptsByConceptSet(concept_auxiliar));
+		
+		assertTrue("List should be same size to be equal",helperList.size() == serviceList.size());
+		//Removing common elements
+		Set<Concept> serviceSet = new HashSet<>(serviceList);
+		helperList.stream()
+				.forEach(concept -> {
+					serviceSet.remove(concept);
+				});
+		
+		assertTrue("The set should be empty" ,serviceSet.isEmpty());
+	}
+	
+	/**
+	 * @see OpenmrsUtil#getFileAsString(File)
+	 */
+	@Test
+	public void getFileAsString_shouldReturnTheStringContainedInFile() {
+		try {
+			File file = createFileInUserDirectory("file");
+			file.createNewFile();
+			PrintWriter writer = new PrintWriter(file);
+			String output = "The first line" + "\n" + "The second line";
+			writer.println("The first line");
+			writer.print("The second line");
+			writer.close();
+			assertTrue(output.equals(OpenmrsUtil.getFileAsString(file)));
+			file.delete();
+			
+		}
+		catch (IOException e) {}
+		
+	}
+
+	/**
+	 * @see OpenmrsUtil#conceptSetHelper(String) 
+	 */
+	@Test
+	public void conceptSetHelper_shouldReturnSetOfConceptsWithGivenNameInDescriptor() {
+		Set<Concept> helperSet = OpenmrsUtil.conceptSetHelper("name:YES|name:NO|name:DIED|set:25|set:26");
+		Set<Concept> serviceSet = new HashSet<>();
+		Concept concept_auxiliar;
+		//Adding the concepts in the list to compare with the first one
+		serviceSet.add(cs.getConceptByName("YES"));
+		serviceSet.add(cs.getConceptByName("NO"));
+		serviceSet.add(cs.getConceptByName("DIED"));
+
+		concept_auxiliar = cs.getConcept(25);
+		serviceSet.addAll(cs.getConceptsByConceptSet(concept_auxiliar));
+
+		concept_auxiliar = cs.getConcept(26);
+		serviceSet.addAll(cs.getConceptsByConceptSet(concept_auxiliar));
+
+		assertTrue("List should be same size to be equal",helperSet.size() == serviceSet.size());
+		//Removing common elements
+
+		helperSet.stream()
+			.forEach(concept -> {
+				serviceSet.remove(concept);
+			});
+
+		assertTrue("The set should be empty" ,serviceSet.isEmpty());
+	}
+
+	/**
+	 * @see OpenmrsUtil#conceptListHelper(String)
+	 */
+	@Test
+	public void conceptSetHelper_shouldReturnEmptyListWhenGivenDescriptorIsNullOrEmpty() {
+		assertTrue(OpenmrsUtil.conceptSetHelper("").isEmpty());
+		assertTrue(OpenmrsUtil.conceptSetHelper(null).isEmpty());
+	}
+	
+		/**
+         * @see OpenmrsUtil#nullSafeEqualsIgnoreCase(String,String)
+         */
 	@Test
 	public void nullSafeEqualsIgnoreCase_shouldBeCaseInsensitive() {
 		Assert.assertTrue(OpenmrsUtil.nullSafeEqualsIgnoreCase("equal", "Equal"));
@@ -680,7 +849,11 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void nullSafeEqualsIgnoreCase_shouldReturnFalseIfOnlyOneOfTheStringsIsNull() {
 		Assert.assertFalse(OpenmrsUtil.nullSafeEqualsIgnoreCase(null, ""));
 	}
-	
+
+	/**
+	 * 
+	 * @see OpenmrsUtil#storeProperties(Properties, File, String) 
+	 */
 	@Test
 	public void storeProperties_shouldEscapeSlashes() throws IOException {
 		Charset utf8 = StandardCharsets.UTF_8;
