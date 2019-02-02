@@ -812,39 +812,9 @@ public class OpenmrsUtil {
 		return ret;
 	}
 	
-	// TODO: properly handle duplicates
 	public static List<Concept> conceptListHelper(String descriptor) {
 		List<Concept> ret = new ArrayList<>();
-		if (descriptor == null || descriptor.length() == 0) {
-			return ret;
-		}
-		ConceptService cs = Context.getConceptService();
-		
-		for (StringTokenizer st = new StringTokenizer(descriptor, "|"); st.hasMoreTokens();) {
-			String s = st.nextToken().trim();
-			boolean isSet = s.startsWith("set:");
-			if (isSet) {
-				s = s.substring(4).trim();
-			}
-			Concept c = null;
-			if (s.startsWith("name:")) {
-				String name = s.substring(5).trim();
-				c = cs.getConceptByName(name);
-			} else {
-				try {
-					c = cs.getConcept(Integer.valueOf(s.trim()));
-				}
-				catch (Exception ex) {}
-			}
-			if (c != null) {
-				if (isSet) {
-					List<Concept> inSet = cs.getConceptsByConceptSet(c);
-					ret.addAll(inSet);
-				} else {
-					ret.add(c);
-				}
-			}
-		}
+		ret.addAll(conceptSetHelper(descriptor));
 		return ret;
 	}
 	

@@ -32,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.SortedSet;
@@ -43,6 +44,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -215,6 +217,15 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void validatePassword_shouldFailWithoutUpperAndLowerCasePasswordIfNotAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
 		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
+	}
+	
+	/**
+	 * @see OpenmrsUtil#conceptListHelper(String)
+	 */
+	@Test
+	public void conceptListHelper_shouldReturnListOfUniqueConceptsWithGivenNameInDescriptor() {
+		List<Concept> helperList = OpenmrsUtil.conceptListHelper("name:YES|name:YES");
+		assertTrue("The list should have just one element" , helperList.size() == 1);
 	}
 	
 	/**
