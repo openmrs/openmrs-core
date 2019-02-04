@@ -106,6 +106,12 @@ public class ModuleResourcesServlet extends HttpServlet {
 			log.warn("No file with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
 			return null;
 		}
+		else
+		{
+			try {
+			
+		}catch (Exception ex){}
+		}
 		
 		return f;
 	}
