@@ -204,7 +204,7 @@ public class FormField extends BaseChangeableOpenmrsMetadata implements java.io.
 	 * @return same as isRequired()
 	 */
 	public Boolean getRequired() {
-		return required == null ? false : required;
+		return required == null ? Boolean.FALSE : required;
 	}
 	
 	/**
