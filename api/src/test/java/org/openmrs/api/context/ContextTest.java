@@ -82,7 +82,40 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	public void authenticate_shouldNotAuthenticateWithNullUsernameAndPassword() {
-		Context.authenticate(null, null);
+		Context.authenticate((String) null, null);
+	}
+	
+	/**
+	 * @see Context#authenticate(String,String)
+	 */
+	@Test(expected = ContextAuthenticationException.class)
+	public void authenticate_shouldNotAuthenticateWithNullCredentials() {
+		Context.authenticate((AuthenticationScheme) null  , null);
+	}
+	
+	/**
+	 * @see Context#authenticate(AuthenticationScheme, Credentials)
+	 */
+	@Test(expected = ContextAuthenticationException.class)
+	public void authenticate_shouldThrowWhenUnfitCredentials() {
+		Context.authenticate(new UserPassAuthenticationScheme(), new TestUuidCredentials("c1d8f5c2-e131-11de-babe-001e378eb67e"));
+	}
+	
+	/**
+	 * @see Context#authenticate(AuthenticationScheme, Credentials)
+	 */
+	@Test
+	public void authenticate_shouldAuthenticateUserWithAlternateScheme() {
+		// setup
+		Context.logout();
+		
+		// replay
+		Authenticated authenticated = Context.authenticate(new TestUuidAuthenticationScheme(), new TestUuidCredentials("c1d8f5c2-e131-11de-babe-001e378eb67e"));
+		
+		// verif
+		Assert.assertEquals("test-scheme", authenticated.getAuthenticationScheme());
+		Assert.assertEquals(Context.getAuthenticatedUser().getUuid(), authenticated.getUser().getUuid());
+		Assert.assertEquals("c1d8f5c2-e131-11de-babe-001e378eb67e", Context.getAuthenticatedUser().getUuid());
 	}
 	
 	/**
