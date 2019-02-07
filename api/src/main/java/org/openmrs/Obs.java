@@ -9,6 +9,17 @@
  */
 package org.openmrs;
 
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
@@ -20,17 +31,6 @@ import org.openmrs.util.Format.FORMAT_TYPE;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Set;
 
 /**
  * An observation is a single unit of clinical information. <br>
@@ -233,7 +233,6 @@ public class Obs extends BaseChangeableOpenmrsData {
 		newObs.setVoidReason(obsToCopy.getVoidReason());
 		newObs.setStatus(obsToCopy.getStatus());
 		newObs.setInterpretation(obsToCopy.getInterpretation());
-		newObs.setOrder(obsToCopy.getOrder());
 		
 		newObs.setValueComplex(obsToCopy.getValueComplex());
 		newObs.setComplexData(obsToCopy.getComplexData());
