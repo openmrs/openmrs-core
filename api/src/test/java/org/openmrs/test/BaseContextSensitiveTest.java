@@ -291,6 +291,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		return "openmrs";
 	}
 	
+	
 	/**
 	 * Mimics org.openmrs.web.Listener.getRuntimeProperties() Overrides the database connection
 	 * properties if the user wants an in-memory database
@@ -542,7 +543,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	public Boolean useInMemoryDatabase() {
 		return !"false".equals(System.getProperty("useInMemoryDatabase"));
 	}
-	
+
 	/**
 	 * Get the database connection currently in use by the testing framework.
 	 * <p>
