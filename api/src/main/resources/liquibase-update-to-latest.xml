@@ -21,4 +21,79 @@
     <include file="liquibase-update-to-2.2.xml"/>
     <include file="liquibase-update-to-2.3.xml"/>
 
+
+<changeSet id="TRUNK-3343-assigning-new-app-privileges" author="mozzy">
+
+	         <preConditions onFail="MARK_RAN">
+                        <not>
+			<changeSetExecuted id="TRUNK-3343-assigning-new-app-privileges" author="mozzy" changeLogFile="liquibase-update-to-latest.xml" />
+                        </not>
+		</preConditions>
+		
+		<comment>
+			Assigning the new Patient Overview privileges to roles with corresponding api level privileges
+		</comment>
+			<sql>
+				
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Dashboard - View Visits Section' FROM role_privilege rp 
+				WHERE rp.privilege = 'View Visits'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard - View Visits Section' and rp2.role=rp.role); 
+
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Dashboard - View Encounters Section' FROM role_privilege rp 
+				WHERE rp.privilege = 'View Encounters'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard - View Encounters Section' and rp2.role=rp.role); 
+                
+                
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Dashboard - View Demographics Section' FROM role_privilege rp 
+				WHERE rp.privilege = 'View Demographics'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard - View Demographics Section' and rp2.role=rp.role); 
+                
+                
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Dashboard - View Graphs Section' FROM role_privilege rp 
+				WHERE rp.privilege = 'View Graphs'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard - View Graphs Section' and rp2.role=rp.role); 
+                
+                
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Dashboard - View Overview Section' FROM role_privilege rp 
+				WHERE rp.privilege = 'View Overview'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Dashboard - View Overview Section' and rp2.role=rp.role); 
+                
+                
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - View Allergies' FROM role_privilege rp 
+				WHERE rp.privilege = 'View Allergies'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Allergies' and rp2.role=rp.role); 
+                
+                
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - View Patient Actions' FROM role_privilege rp 
+				WHERE rp.privilege = 'View Patient Actions'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Patient Actions' and rp2.role=rp.role); 
+                
+                
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - View Problem List' FROM role_privilege rp 
+				WHERE rp.privilege = 'View Problem List'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Problem List' and rp2.role=rp.role); 
+                
+                
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - View Programs' FROM role_privilege rp 
+				WHERE rp.privilege = 'View Programs'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Programs' and rp2.role=rp.role); 
+                
+                
+				INSERT INTO role_privilege (role, privilege)  
+				SELECT role, 'Patient Overview - View Relationships' FROM role_privilege rp 
+				WHERE rp.privilege = 'View Relationships'
+				and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Relationships' and rp2.role=rp.role); 
+                
+                
+			</sql>
+	</changeSet>
 </databaseChangeLog>
