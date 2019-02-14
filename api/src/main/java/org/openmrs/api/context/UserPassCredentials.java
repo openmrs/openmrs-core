@@ -11,6 +11,8 @@ package org.openmrs.api.context;
 
 /**
  * User-pass credentials represent the usual OpenMRS authentication credentials made of a pair username + password.
+ * 
+ * @since 2.3.0
  */
 public class UserPassCredentials implements Credentials {
 

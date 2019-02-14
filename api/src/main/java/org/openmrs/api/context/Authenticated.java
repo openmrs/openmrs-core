@@ -14,6 +14,8 @@ import org.openmrs.User;
 /**
  * The result of an authentication process, see {@link AuthenticationScheme#authenticate(Credentials)}.
  * At least the OpenMRS {@link User) is returned, and more if needed through further extensions/implementations.
+ * 
+ * @since 2.3.0
  */
 public interface Authenticated {
 	

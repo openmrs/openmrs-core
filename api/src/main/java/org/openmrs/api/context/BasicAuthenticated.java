@@ -13,6 +13,8 @@ import org.openmrs.User;
 
 /**
  * A basic implementation of {@link Authenticated} that contains the necessary elements for an OpenMRS authentication.
+ * 
+ * @since 2.3.0
  */
 public class BasicAuthenticated implements Authenticated {
 	

@@ -16,6 +16,8 @@ import org.apache.commons.logging.LogFactory;
  * Default OpenMRS authentication scheme to login with OpenMRS' usernames and passwords.
  * 
  * @see {@link AuthenticationScheme}
+ * 
+ * @since 2.3.0
  */
 public class UserPassAuthenticationScheme extends DaoAuthenticationScheme {
 

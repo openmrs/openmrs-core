@@ -12,6 +12,8 @@ package org.openmrs.api.context;
 /**
  * Authentication schemes define and require their own credentials.
  * Any client authenticating against a given scheme must supply appropriate credentials.
+ * 
+ * @since 2.3.0
  */
 public interface Credentials {
 	

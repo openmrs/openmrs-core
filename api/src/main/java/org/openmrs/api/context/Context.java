@@ -281,6 +281,7 @@ public class Context {
 	 * @should not authenticate with null password and proper username
 	 * @should not authenticate with null password and proper system id
 	 */
+	@Deprecated
 	public static void authenticate(String username, String password) throws ContextAuthenticationException {
 		authenticate( new UserPassAuthenticationScheme(), new UserPassCredentials(username, password) );
 	}
