@@ -267,7 +267,7 @@ public class Context {
 	}
 
 	/**
-	 * @deprecated since 2.3.0
+	 * @deprecated
 	 * @see #authenticate(AuthenticationScheme, Credentials)
 	 * 
 	 * Used to authenticate user within the context
@@ -283,7 +283,7 @@ public class Context {
 	 */
 	@Deprecated
 	public static void authenticate(String username, String password) throws ContextAuthenticationException {
-		authenticate( new UserPassAuthenticationScheme(), new UserPassCredentials(username, password) );
+		authenticate( new UsernamePasswordAuthenticationScheme(), new UsernamePasswordCredentials(username, password) );
 	}
 
 	/**

@@ -99,7 +99,7 @@ public class UserContext implements Serializable {
 			throws ContextAuthenticationException {
 
 		if (log.isDebugEnabled()) {
-			log.debug("Authenticating with sheme: " + credentials.getAuthenticationScheme());
+			log.debug("Authenticating client '" + credentials.getClientName() + "' with sheme: " + credentials.getAuthenticationScheme());
 		}
 
 		Authenticated authenticated = null;
@@ -120,7 +120,7 @@ public class UserContext implements Serializable {
 		if (log.isDebugEnabled()) {
 			log.debug("Authenticated as: " + this.user);
 		}
-
+		
 		return authenticated;
 	}
 	

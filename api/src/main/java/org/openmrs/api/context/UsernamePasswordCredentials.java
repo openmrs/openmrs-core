@@ -14,14 +14,14 @@ package org.openmrs.api.context;
  * 
  * @since 2.3.0
  */
-public class UserPassCredentials implements Credentials {
+public class UsernamePasswordCredentials implements Credentials {
 
 	protected String username;
 	protected String password;
 	
 	public static final String SCHEME = "OPENMRS_USERPASS_AUTH_SCHEME";
 
-	public UserPassCredentials(String username, String password) {
+	public UsernamePasswordCredentials(String username, String password) {
 		super();
 		this.username = username;
 		this.password = password;

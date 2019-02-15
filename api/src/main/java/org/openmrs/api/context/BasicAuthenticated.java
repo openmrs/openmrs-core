@@ -18,9 +18,9 @@ import org.openmrs.User;
  */
 public class BasicAuthenticated implements Authenticated {
 	
-	protected User user;
+	private User user;
 	
-	protected String authenticationScheme;
+	private String authenticationScheme;
 	
 	public BasicAuthenticated(User user, String authenticationScheme) {
 		this.user = user;
