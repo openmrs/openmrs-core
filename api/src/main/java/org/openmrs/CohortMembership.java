@@ -32,15 +32,16 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	
 	// Constructor
 	public CohortMembership() {
+		startDate = null;
 	}
 	
 	public CohortMembership(Integer patientId, Date startDate) {
 		this.patientId = patientId;
 		this.startDate = startDate;
 	}
-	
+
 	public CohortMembership(Integer patientId) {
-		this(patientId, new Date());
+		this(patientId, null);
 	}
 	
 	/**
@@ -50,7 +51,7 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	 */
 	public boolean isActive(Date asOfDate) {
 		Date date = asOfDate == null ? new Date() : asOfDate;
-		return !this.getVoided() && OpenmrsUtil.compare(startDate, date) <= 0
+		return !this.getVoided() && OpenmrsUtil.compareWithNullAsEarliest(startDate, date) <= 0
 				&& OpenmrsUtil.compareWithNullAsLatest(date, endDate) <= 0;
 	}
 	

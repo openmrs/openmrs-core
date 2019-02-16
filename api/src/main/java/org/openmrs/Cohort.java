@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openmrs.util.OpenmrsUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -206,7 +207,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	}
 	
 	public Collection<CohortMembership> getActiveMemberships() {
-		return getActiveMemberships(new Date());
+		return getActiveMemberships(null);
 	}
 	
 	/**
@@ -266,10 +267,21 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	public static Cohort intersect(Cohort a, Cohort b) {
 		Cohort ret = new Cohort();
 		ret.setName("(" + (a == null ? "NULL" : a.getName()) + " * " + (b == null ? "NULL" : b.getName()) + ")");
-		if (a != null && b != null) {
-			ret.getMemberships().addAll(a.getMemberships());
-			ret.getMemberships().retainAll(b.getMemberships());
-		}
+		//checking if one cohort is null
+		if (a != null && b != null)
+			//loop between memberships and find the intersections
+			for (CohortMembership membershipsA : a.getMemberships()) {
+				for (CohortMembership membershipB : b.getMemberships()) {
+					//add the membership with earliest date , if one date is null pick the other one 
+					if (membershipsA.getPatientId() == membershipB.getPatientId()) {
+						if (OpenmrsUtil.compareWithNullAsLatest(membershipsA.getStartDate(), membershipB.getStartDate()) < 0)
+							ret.addMembership(membershipsA);
+						else ret.addMembership(membershipB);
+						break;
+					}
+				}
+			}
+
 		return ret;
 	}
 	

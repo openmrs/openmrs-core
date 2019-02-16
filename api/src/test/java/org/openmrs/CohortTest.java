@@ -156,6 +156,89 @@ public class CohortTest {
 		});
 	}
 
+	@Test
+	public void intersect_shouldContainTheEarliestMembershipWithSamePatientId() throws Exception {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = dateFormat.parse("2017-01-01 00:00:00");
+		Date endDate = dateFormat.parse("2017-02-01 00:00:00");
+
+		Cohort cohortOne = new Cohort(3);
+		CohortMembership membershipOne = new CohortMembership(7, startDate);
+		membershipOne.setEndDate(endDate);
+		cohortOne.addMembership(membershipOne);
+
+
+		Cohort cohortTwo = new Cohort(4);
+		CohortMembership membershipTwo = new CohortMembership(8, startDate);
+		membershipTwo.setEndDate(endDate);
+		cohortTwo.addMembership(membershipOne);
+		cohortTwo.addMembership(membershipTwo);
+		startDate = dateFormat.parse("2017-01-02 00:00:00");
+		membershipTwo = new CohortMembership(7, startDate);
+		cohortTwo.addMembership(membershipTwo);
+
+
+		Cohort cohortIntersect = Cohort.intersect(cohortOne, cohortTwo);
+		assertTrue(cohortIntersect.getMemberships().contains(membershipOne));
+		assertTrue(cohortIntersect.getMemberships().size() == 1);
+		
+	}
+	
+	@Test
+	public void intersect_shouldReturnEmptyCohortIfACohortDoesntIsEmptyOrNull() throws Exception {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = dateFormat.parse("2017-01-01 00:00:00");
+		Date endDate = dateFormat.parse("2017-02-01 00:00:00");
+		Cohort cohortOne = new Cohort(1);
+
+		CohortMembership membershipOne = new CohortMembership(7, startDate);
+		Cohort cohortTwo = new Cohort(4);
+		CohortMembership membershipTwo = new CohortMembership(8, startDate);
+		membershipTwo.setEndDate(endDate);
+		cohortTwo.addMembership(membershipOne);
+		cohortTwo.addMembership(membershipTwo);
+		startDate = dateFormat.parse("2017-01-02 00:00:00");
+		membershipTwo = new CohortMembership(7, startDate);
+		cohortTwo.addMembership(membershipTwo);
+
+
+		Cohort cohortIntersect = Cohort.intersect(cohortTwo, null);
+		assertTrue(cohortIntersect.getMemberships().isEmpty());
+
+		cohortIntersect = Cohort.intersect(cohortTwo, cohortOne);
+		assertTrue(cohortIntersect.getMemberships().isEmpty());
+		
+	}
+	
+	
+	@Test
+	public void intersect_shouldReturnTheDuplicateMembershipsWithNotNullStartDate() throws Exception {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startDate = dateFormat.parse("2017-01-01 00:00:00");
+		Date endDate = dateFormat.parse("2017-02-01 00:00:00");
+
+		Cohort cohortOne = new Cohort(3);
+		CohortMembership membershipOne = new CohortMembership(7, startDate);
+		membershipOne.setEndDate(endDate);
+		cohortOne.addMembership(membershipOne);
+		
+		
+		
+		Cohort cohortTwo = new Cohort(4);
+		CohortMembership membershipTwo = new CohortMembership(8, startDate);
+		membershipTwo.setEndDate(endDate);
+		cohortTwo.addMembership(membershipOne);
+		cohortTwo.addMembership(membershipTwo);
+		membershipTwo = new CohortMembership(7 );
+		cohortTwo.addMembership(membershipTwo);
+		
+
+		Cohort cohortIntersect = Cohort.intersect(cohortOne, cohortTwo);
+		assertTrue(cohortIntersect.getMemberships().contains(membershipOne));
+		assertTrue(cohortIntersect.getMemberships().size() == 1);
+		
+	}
+
     @Test
     public void setMemberIds_shouldSupportLargeCohorts() {
 	    int cohortSize = 100000;

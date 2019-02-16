@@ -146,7 +146,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	@Override
 	@Transactional(readOnly = true)
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId) {
-		return dao.getCohortsContainingPatientId(patientId, false, new Date());
+		return dao.getCohortsContainingPatientId(patientId, false, null);
 	}
 	
 	/**
