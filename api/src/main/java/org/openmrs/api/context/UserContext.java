@@ -23,7 +23,6 @@ import org.openmrs.Location;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
-import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
@@ -77,33 +76,51 @@ public class UserContext implements Serializable {
 	private Integer locationId;
 	
 	/**
-	 * Default public constructor
+	 * The authentication scheme for this user
 	 */
-	public UserContext() {
+	private AuthenticationScheme authenticationScheme;
+	
+	/**
+	 * Creates a user context based on the provided auth. scheme.
+	 * 
+	 * @param authenticationScheme The auth. scheme that applies for this user context.
+	 * 
+	 * @since 2.1.5, 2.3.0
+	 */
+	public UserContext(AuthenticationScheme authenticationScheme) {
+		this.authenticationScheme = authenticationScheme; 
 	}
 	
 	/**
-	 * Authenticate the user to this UserContext.
-	 *
-	 * @see org.openmrs.api.context.Context#authenticate(String, String)
-	 * @param username String login name
-	 * @param password String login password
-	 * @param contextDAO ContextDAO implementation to use for authentication
-	 * @return User that has been authenticated
+	 * Authenticate user with the provided credentials. The authentication scheme must be Spring wired, see {@link Context#getAuthenticationScheme()}.
+	 * 
+	 * @param The credentials to use to authenticate
+	 * @return The authenticated client information
 	 * @throws ContextAuthenticationException
+	 * 
+	 * @since 2.1.5, 2.3.0
 	 */
-	public User authenticate(String username, String password, ContextDAO contextDAO) throws ContextAuthenticationException {
-		if (log.isDebugEnabled()) {
-			log.debug("Authenticating with username: " + username);
+	public Authenticated authenticate(Credentials credentials)
+			throws ContextAuthenticationException {
+
+		log.debug("Authenticating client '" + credentials.getClientName() + "' with sheme: " + credentials.getAuthenticationScheme());
+
+		Authenticated authenticated = null;
+		try {
+			authenticated = authenticationScheme.authenticate(credentials);
+			this.user = authenticated.getUser();
+		}
+		catch(ContextAuthenticationException e) {
+			User loggingInUser = new User();
+			loggingInUser.setUsername(credentials.getClientName());
+			throw e;
 		}
 		
-		this.user = contextDAO.authenticate(username, password);
 		setUserLocation();
-		if (log.isDebugEnabled()) {
-			log.debug("Authenticated as: " + this.user);
-		}
 		
-		return this.user;
+		log.debug("Authenticated as: " + this.user);
+		
+		return authenticated;
 	}
 	
 	/**
