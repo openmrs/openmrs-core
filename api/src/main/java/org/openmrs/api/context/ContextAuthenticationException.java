@@ -23,6 +23,13 @@ public class ContextAuthenticationException extends APIException {
 		super();
 	}
 	
+	/**
+	 * @since 2.2.1, 2.3.0
+	 */
+	public ContextAuthenticationException(String message, Throwable cause) {
+		super(message, cause);
+	}
+	
 	public ContextAuthenticationException(String message) {
 		super(message);
 	}
