@@ -25,7 +25,6 @@ import org.openmrs.UserSessionListener;
 import org.openmrs.UserSessionListener.Event;
 import org.openmrs.UserSessionListener.Status;
 import org.openmrs.api.APIAuthenticationException;
-import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
@@ -87,30 +86,42 @@ public class UserContext implements Serializable {
 	}
 	
 	/**
-	 * Authenticate the user to this UserContext.
-	 *
-	 * @see org.openmrs.api.context.Context#authenticate(String, String)
-	 * @param username String login name
-	 * @param password String login password
-	 * @param contextDAO ContextDAO implementation to use for authentication
-	 * @return User that has been authenticated
+	 * Authenticate user with the provided authentication scheme and credentials.
+	 * 
+	 * @param The authentication scheme to use
+	 * @param The credentials to use to authenticate
+	 * @return The authenticated client information
 	 * @throws ContextAuthenticationException
+	 * 
+	 * @since 2.3.0
 	 */
-	public User authenticate(String username, String password, ContextDAO contextDAO) throws ContextAuthenticationException {
-		log.debug("Authenticating with username: {}", username);
+	public Authenticated authenticate(AuthenticationScheme authenticationScheme, Credentials credentials)
+			throws ContextAuthenticationException {
+
+		if (log.isDebugEnabled()) {
+			log.debug("Authenticating client '" + credentials.getClientName() + "' with sheme: " + credentials.getAuthenticationScheme());
+		}
+
+		Authenticated authenticated = null;
 		try {
-			this.user = contextDAO.authenticate(username, password);
+			authenticated = authenticationScheme.authenticate(credentials);
+			this.user = authenticated.getUser();
 			notifyUserSessionListener(this.user, Event.LOGIN, Status.SUCCESS);
-		} catch(ContextAuthenticationException e) {
+		}
+		catch(ContextAuthenticationException e) {
 			User loggingInUser = new User();
-			loggingInUser.setUsername(username);
+			loggingInUser.setUsername(credentials.getClientName());
 			notifyUserSessionListener(loggingInUser, Event.LOGIN, Status.FAIL);
 			throw e;
 		}
-		setUserLocation();
-		log.debug("Authenticated as: {}", this.user);
 		
-		return this.user;
+		setUserLocation();
+		
+		if (log.isDebugEnabled()) {
+			log.debug("Authenticated as: " + this.user);
+		}
+		
+		return authenticated;
 	}
 	
 	/**

@@ -82,7 +82,72 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	public void authenticate_shouldNotAuthenticateWithNullUsernameAndPassword() {
-		Context.authenticate(null, null);
+		Context.authenticate((String) null, (String) null);
+	}
+	
+	/**
+	 * @see Context#authenticate(AuthenticationScheme, Credentials)
+	 */
+	@Test(expected = ContextAuthenticationException.class)
+	public void authenticate_shouldNotAuthenticateWithNullCredentials() {
+		Context.authenticate(new UsernamePasswordAuthenticationScheme(), null);
+	}
+	
+	/**
+	 * @see Context#authenticate(AuthenticationScheme, Credentials)
+	 */
+	@Test(expected = ContextAuthenticationException.class)
+	public void authenticate_shouldNotAuthenticateWithNullAuthenticationScheme() {
+		Context.authenticate(null, new UsernamePasswordCredentials("admin", "test"));
+	}
+	
+	/**
+	 * @see Context#authenticate(String,String)
+	 */
+	@Test(expected = ContextAuthenticationException.class)
+	public void authenticate_shouldNotAuthenticateWithNullCredentialsAndAuthenticationScheme() {
+		Context.authenticate((AuthenticationScheme) null, (Credentials) null);
+	}
+	
+	/**
+	 * @see Context#authenticate(AuthenticationScheme, Credentials)
+	 */
+	@Test(expected = ContextAuthenticationException.class)
+	public void authenticate_shouldThrowWhenUnfitCredentials() {
+		Context.authenticate(new UsernamePasswordAuthenticationScheme(), new TestUuidCredentials("c1d8f5c2-e131-11de-babe-001e378eb67e"));
+	}
+	
+	/**
+	 * @see Context#authenticate(String,String)
+	 */
+	@Test
+	public void authenticate_shouldAuthenticateUserWithUsernameAndPassword() {
+		// replay
+		Context.logout();
+		Context.authenticate("admin", "test");
+		String userUuid = Context.getAuthenticatedUser().getUuid();
+		
+		Context.logout();
+		Authenticated authenticated = Context.authenticate(new UsernamePasswordAuthenticationScheme(), new UsernamePasswordCredentials("admin", "test"));
+		
+		// verif
+		Assert.assertEquals(UsernamePasswordCredentials.SCHEME, authenticated.getAuthenticationScheme());
+		Assert.assertEquals(userUuid, Context.getAuthenticatedUser().getUuid());
+	}
+	
+	/**
+	 * @see Context#authenticate(AuthenticationScheme, Credentials)
+	 */
+	@Test
+	public void authenticate_shouldAuthenticateUserWithAlternateScheme() {
+		// replay
+		Context.logout();
+		Authenticated authenticated = Context.authenticate(new TestUuidAuthenticationScheme(), new TestUuidCredentials("c1d8f5c2-e131-11de-babe-001e378eb67e"));
+		
+		// verif
+		Assert.assertEquals("test-scheme", authenticated.getAuthenticationScheme());
+		Assert.assertEquals(Context.getAuthenticatedUser().getUuid(), authenticated.getUser().getUuid());
+		Assert.assertEquals("c1d8f5c2-e131-11de-babe-001e378eb67e", Context.getAuthenticatedUser().getUuid());
 	}
 	
 	/**
