@@ -145,7 +145,7 @@ public class Context {
 	private static Properties runtimeProperties = new Properties();
 
 	private static Properties configProperties = new Properties();
-
+	
 	/**
 	 * Default public constructor
 	 */
@@ -267,7 +267,7 @@ public class Context {
 	}
 
 	/**
-	 * @deprecated as of 2.3.0, replaced by #authenticate(AuthenticationScheme, Credentials)
+	 * @deprecated as of 2.3.0, replaced by {@link #authenticate(Credentials)}
 	 * 
 	 * Used to authenticate user within the context
 	 *
@@ -282,21 +282,16 @@ public class Context {
 	 */
 	@Deprecated
 	public static void authenticate(String username, String password) throws ContextAuthenticationException {
-		authenticate( new UsernamePasswordAuthenticationScheme(), new UsernamePasswordCredentials(username, password) );
+		authenticate(new UsernamePasswordCredentials(username, password));
 	}
-
+	
 	/**
-	 * Authenticate user within the context with the provided authentication scheme and credentials.
-	 * 
-	 * @param The authentication scheme to use
-	 * @param The credentials to use to authenticate
-	 * @return The authenticated client information
+	 * @param credentials
 	 * @throws ContextAuthenticationException
 	 * 
 	 * @since 2.3.0
 	 */
-	public static Authenticated authenticate(AuthenticationScheme authenticationScheme, Credentials credentials)
-			throws ContextAuthenticationException {
+	public static Authenticated authenticate(Credentials credentials) throws ContextAuthenticationException {
 		
 		if (Daemon.isDaemonThread()) {
 			log.error("Authentication attempted while operating on a "
@@ -307,16 +302,8 @@ public class Context {
 		if (credentials == null) {
 			throw new ContextAuthenticationException("Context cannot authenticate with null credentials.");
 		}
-			
-		if (authenticationScheme == null) {
-			throw new ContextAuthenticationException("Context cannot authenticate with null authentication scheme.");
-		}
 		
-		if (authenticationScheme instanceof DaoAuthenticationScheme) {
-			((DaoAuthenticationScheme) authenticationScheme).setContextDao(getContextDAO());
-		}
-		
-		return getUserContext().authenticate(authenticationScheme, credentials);
+		return getUserContext().authenticate(credentials);
 	}
 	
 	/**
@@ -637,6 +624,14 @@ public class Context {
 			return getAuthenticatedUser() != null;
 		}
 	}
+	
+	protected static AuthenticationScheme getAuthenticationScheme() {
+		AuthenticationScheme scheme = Context.getRegisteredComponent("authenticationScheme", AuthenticationScheme.class);
+		if (scheme instanceof DaoAuthenticationScheme) {
+			((DaoAuthenticationScheme) scheme).setContextDao(getContextDAO());
+		}
+		return scheme;
+	}
 
 	/**
 	 * logs out the "active" (authenticated) user within context
@@ -654,7 +649,7 @@ public class Context {
 
 		// reset the UserContext object (usually cleared out by closeSession()
 		// soon after this)
-		setUserContext(new UserContext());
+		setUserContext(new UserContext(getAuthenticationScheme()));
 	}
 
 	/**
@@ -741,7 +736,7 @@ public class Context {
 	 */
 	public static void openSession() {
 		log.trace("opening session");
-		setUserContext(new UserContext()); // must be cleared out in
+		setUserContext(new UserContext(getAuthenticationScheme())); // must be cleared out in
 		// closeSession()
 		getContextDAO().openSession();
 	}

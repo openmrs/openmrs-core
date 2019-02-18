@@ -34,6 +34,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.ContextDAO;
+import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
@@ -60,6 +61,8 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	private SessionFactory sessionFactory;
 	
+	private UserDAO userDao;
+	
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
 	 * context.
@@ -68,6 +71,10 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
+	}
+	
+	public void setUserDAO(UserDAO userDao) {
+		this.userDao = userDao;
 	}
 	
 	/**
@@ -224,6 +231,24 @@ public class HibernateContextDAO implements ContextDAO {
 		sessionFactory.getCurrentSession().setFlushMode(flushMode);
 		
 		return u;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#getUserByUsername(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public User getUserByUsername(String username) {
+		return userDao.getUserByUsername(username);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#saveUser(User, String)
+	 */
+	@Override
+	@Transactional
+	public User saveUser(User user, String password) {
+		return userDao.saveUser(user, password);
 	}
 	
 	/**

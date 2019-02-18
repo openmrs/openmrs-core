@@ -899,7 +899,9 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 				isBaseSetup = true;
 			}
 			
-			authenticate();
+			if (!skipAuthenticationInBaseSetup) {
+				authenticate();
+			}
 		} else {
 			if (isBaseSetup) {
 				deleteAllData();
@@ -996,4 +998,20 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		skipBaseSetup = true;
 	}
 	
+	/**
+	 * Instance variable used by the {@link #baseSetupWithStandardDataAndAuthentication()} method to
+	 * know whether the current "@Test" method has asked to be _not_ do the authentication.
+	 * 
+	 * @see SkipBaseSetup
+	 * @see SkipBaseSetupAnnotationExecutionListener
+	 * @see #baseSetupWithStandardDataAndAuthentication()
+	 */
+	private boolean skipAuthenticationInBaseSetup = false;
+	
+	/**
+	 * Use this in a context-sensitive test constructor to skip authentication during base setup.
+	 */
+	public void skipAuthenticationInBaseSetup() {
+		skipAuthenticationInBaseSetup = true;
+	}
 }
