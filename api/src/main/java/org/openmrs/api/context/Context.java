@@ -267,8 +267,7 @@ public class Context {
 	}
 
 	/**
-	 * @deprecated
-	 * @see #authenticate(AuthenticationScheme, Credentials)
+	 * @deprecated as of 2.3.0, replaced by #authenticate(AuthenticationScheme, Credentials)
 	 * 
 	 * Used to authenticate user within the context
 	 *
