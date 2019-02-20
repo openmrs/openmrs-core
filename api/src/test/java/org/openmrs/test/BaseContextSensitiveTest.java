@@ -81,6 +81,7 @@ import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
+import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
@@ -378,7 +379,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 		
 		try {
-			Context.authenticate("admin", "test");
+			Context.authenticate(new UsernamePasswordCredentials("admin", "test"));
 			authenticatedUser = Context.getAuthenticatedUser();
 			return;
 		}
@@ -899,9 +900,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 				isBaseSetup = true;
 			}
 			
-			if (!skipAuthenticationInBaseSetup) {
-				authenticate();
-			}
+			authenticate();
 		} else {
 			if (isBaseSetup) {
 				deleteAllData();
@@ -998,20 +997,4 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		skipBaseSetup = true;
 	}
 	
-	/**
-	 * Instance variable used by the {@link #baseSetupWithStandardDataAndAuthentication()} method to
-	 * know whether the current "@Test" method has asked to be _not_ do the authentication.
-	 * 
-	 * @see SkipBaseSetup
-	 * @see SkipBaseSetupAnnotationExecutionListener
-	 * @see #baseSetupWithStandardDataAndAuthentication()
-	 */
-	private boolean skipAuthenticationInBaseSetup = false;
-	
-	/**
-	 * Use this in a context-sensitive test constructor to skip authentication during base setup.
-	 */
-	public void skipAuthenticationInBaseSetup() {
-		skipAuthenticationInBaseSetup = true;
-	}
 }

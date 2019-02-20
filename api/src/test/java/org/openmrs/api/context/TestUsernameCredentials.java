@@ -20,10 +20,6 @@ public class TestUsernameCredentials implements Credentials {
 		this.username = username;
 	}
 	
-	public String getUsername() {
-		return username;
-	}
-
 	@Override
 	public String getAuthenticationScheme() {
 		return "test-scheme";
@@ -31,6 +27,6 @@ public class TestUsernameCredentials implements Credentials {
 
 	@Override
 	public String getClientName() {
-		return getUsername();
+		return username;
 	}
 }

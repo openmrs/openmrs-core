@@ -23,10 +23,6 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations = { "classpath*:AlternateAuthenticationSchemeTestingApplicationContext.xml" })
 public class AlternateAuthenticationSchemeContextTest extends BaseContextSensitiveTest {
 	
-	public AlternateAuthenticationSchemeContextTest() {
-		skipAuthenticationInBaseSetup();
-	}
-	
 	/**
 	 * Methods in this class might authenticate with a different user, so log that user out after
 	 * this whole junit class is done.
