@@ -625,7 +625,10 @@ public class Context {
 		}
 	}
 	
-	protected static AuthenticationScheme getAuthenticationScheme() {
+	/**
+	 * @return The authentication scheme currently used to authenticate users
+	 */
+	public static AuthenticationScheme getAuthenticationScheme() {
 		AuthenticationScheme scheme = Context.getRegisteredComponent("authenticationScheme", AuthenticationScheme.class);
 		if (scheme instanceof DaoAuthenticationScheme) {
 			((DaoAuthenticationScheme) scheme).setContextDao(getContextDAO());

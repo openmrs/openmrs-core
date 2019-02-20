@@ -80,7 +80,7 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		// if there isn't a userContext on the session yet, create one
 		// and set it onto the session
 		if (userContext == null) {
-			userContext = new UserContext();
+			userContext = new UserContext(Context.getAuthenticationScheme());
 			httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
 			
 			if (log.isDebugEnabled()) {
