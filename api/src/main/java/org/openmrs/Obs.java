@@ -9,7 +9,6 @@
  */
 package org.openmrs;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -197,7 +196,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		newObs.setVoidedBy(obsToCopy.getVoidedBy());
 		newObs.setDateVoided(obsToCopy.getDateVoided());
 		newObs.setVoidReason(obsToCopy.getVoidReason());
-		
+		newObs.setOrder(obsToCopy.getOrder());
 		newObs.setValueComplex(obsToCopy.getValueComplex());
 		newObs.setComplexData(obsToCopy.getComplexData());
 		newObs.setFormField(obsToCopy.getFormFieldNamespace(),obsToCopy.getFormFieldPath());
