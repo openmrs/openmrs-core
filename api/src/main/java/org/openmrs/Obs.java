@@ -234,7 +234,8 @@ public class Obs extends BaseOpenmrsData {
 		newObs.setVoidReason(obsToCopy.getVoidReason());
 		newObs.setStatus(obsToCopy.getStatus());
 		newObs.setInterpretation(obsToCopy.getInterpretation());
-		
+		newObs.setOrder(obsToCopy.getOrder());
+
 		newObs.setValueComplex(obsToCopy.getValueComplex());
 		newObs.setComplexData(obsToCopy.getComplexData());
 		newObs.setFormField(obsToCopy.getFormFieldNamespace(),obsToCopy.getFormFieldPath());
