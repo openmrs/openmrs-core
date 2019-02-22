@@ -9,28 +9,6 @@
  */
 package org.openmrs.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -69,6 +47,28 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -2811,7 +2811,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotEquals(sourceEncounter.getId(), transferredEncounter.getId());
 		Assert.assertEquals(targetPatient, transferredEncounter.getPatient());
 		
-		//check order
+		//check order associated with encounter is not transferred
 		Assert.assertEquals(0, transferredOrders.size());
 		
 		//check obs
@@ -2819,8 +2819,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(targetPatient, transferredObservations.get(0).getPerson());
 		Assert.assertEquals(targetPatient, transferredObservations.get(1).getPerson());
 		
-		Assert.assertNull(transferredObservations.get(0).getOrder());
-		Assert.assertNull(transferredObservations.get(1).getOrder());
+		// however any references from obs to orders should be preserved
+		Assert.assertNotNull(transferredObservations.get(0).getOrder());
+		Assert.assertNotNull(transferredObservations.get(1).getOrder());
 		
 		//check if form is transferred
 		Assert.assertNotNull(transferredEncounter.getForm());
