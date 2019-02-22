@@ -2811,7 +2811,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotEquals(sourceEncounter.getId(), transferredEncounter.getId());
 		Assert.assertEquals(targetPatient, transferredEncounter.getPatient());
 		
-		//check order
+		//check order associated with encounter is not transferred
 		Assert.assertEquals(0, transferredOrders.size());
 		
 		//check obs
@@ -2819,8 +2819,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(targetPatient, transferredObservations.get(0).getPerson());
 		Assert.assertEquals(targetPatient, transferredObservations.get(1).getPerson());
 		
-		Assert.assertNull(transferredObservations.get(0).getOrder());
-		Assert.assertNull(transferredObservations.get(1).getOrder());
+		// however any references from obs to orders should be preserved
+		Assert.assertNotNull(transferredObservations.get(0).getOrder());
+		Assert.assertNotNull(transferredObservations.get(1).getOrder());
 		
 		//check if form is transferred
 		Assert.assertNotNull(transferredEncounter.getForm());
