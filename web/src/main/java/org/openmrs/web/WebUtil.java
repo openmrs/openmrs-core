@@ -31,8 +31,6 @@ public class WebUtil implements GlobalPropertyListener {
 	
 	private static final Logger log = LoggerFactory.getLogger(WebUtil.class);
 	
-	private static String defaultDateCache = null;
-
 	/**
 	 * Encodes for (X)HTML text content and text attributes.
 	 *
@@ -420,16 +418,11 @@ public class WebUtil implements GlobalPropertyListener {
 		return OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT.equals(propertyName);
 	}
 	
-	public static void setDefaultDateCache(String defaultDateCache) {
-		WebUtil.defaultDateCache = defaultDateCache;
-	}
-	
 	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
 	 */
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		setDefaultDateCache(null);
 	}
 	
 	/**
@@ -437,6 +430,5 @@ public class WebUtil implements GlobalPropertyListener {
 	 */
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
-		setDefaultDateCache(null);
 	}
 }

@@ -1,0 +1,45 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
+package org.openmrs.api.context;
+
+import org.openmrs.User;
+
+/**
+ * A basic implementation of {@link Authenticated} that contains the necessary elements for an OpenMRS authentication.
+ * 
+ * @since 2.3.0
+ */
+public class BasicAuthenticated implements Authenticated {
+	
+	private User user;
+	
+	private String authenticationScheme;
+	
+	public BasicAuthenticated(User user, String authenticationScheme) {
+		this.user = user;
+		this.authenticationScheme = authenticationScheme;
+	}
+	
+	public String getAuthenticationScheme() {
+		return this.authenticationScheme;
+	}
+	
+	public void setAuthenticationScheme(String authenticationScheme) {
+		this.authenticationScheme = authenticationScheme;
+	}
+	
+	public User getUser() {
+		return this.user;
+	}
+	
+	public void setUser(User user) {
+		this.user = user;
+	}
+}

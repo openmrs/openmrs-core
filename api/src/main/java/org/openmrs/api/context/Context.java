@@ -36,7 +36,9 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.ConditionService;
 import org.openmrs.api.DatatypeService;
+import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.LocationService;
@@ -51,8 +53,6 @@ import org.openmrs.api.ProviderService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
-import org.openmrs.api.ConditionService;
-import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
@@ -267,6 +267,8 @@ public class Context {
 	}
 
 	/**
+	 * @deprecated as of 2.3.0, replaced by #authenticate(AuthenticationScheme, Credentials)
+	 * 
 	 * Used to authenticate user within the context
 	 *
 	 * @param username user's identifier token for login
@@ -278,18 +280,45 @@ public class Context {
 	 * @should not authenticate with null password and proper username
 	 * @should not authenticate with null password and proper system id
 	 */
+	@Deprecated
 	public static void authenticate(String username, String password) throws ContextAuthenticationException {
-		log.debug("Authenticating with username: {}", username);
+		authenticate( new UsernamePasswordAuthenticationScheme(), new UsernamePasswordCredentials(username, password) );
+	}
 
+	/**
+	 * Authenticate user within the context with the provided authentication scheme and credentials.
+	 * 
+	 * @param The authentication scheme to use
+	 * @param The credentials to use to authenticate
+	 * @return The authenticated client information
+	 * @throws ContextAuthenticationException
+	 * 
+	 * @since 2.3.0
+	 */
+	public static Authenticated authenticate(AuthenticationScheme authenticationScheme, Credentials credentials)
+			throws ContextAuthenticationException {
+		
 		if (Daemon.isDaemonThread()) {
 			log.error("Authentication attempted while operating on a "
 					+ "daemon thread, authenticating is not necessary or allowed");
-			return;
+			return new BasicAuthenticated(Daemon.getDaemonThreadUser(), "No auth scheme used by Context - Daemon user is always authenticated.");
 		}
-
-		getUserContext().authenticate(username, password, getContextDAO());
+		
+		if (credentials == null) {
+			throw new ContextAuthenticationException("Context cannot authenticate with null credentials.");
+		}
+			
+		if (authenticationScheme == null) {
+			throw new ContextAuthenticationException("Context cannot authenticate with null authentication scheme.");
+		}
+		
+		if (authenticationScheme instanceof DaoAuthenticationScheme) {
+			((DaoAuthenticationScheme) authenticationScheme).setContextDao(getContextDAO());
+		}
+		
+		return getUserContext().authenticate(authenticationScheme, credentials);
 	}
-
+	
 	/**
 	 * Refresh the authenticated user object in the current UserContext. This should be used when
 	 * updating information in the database about the current user and it needs to be reflecting in
