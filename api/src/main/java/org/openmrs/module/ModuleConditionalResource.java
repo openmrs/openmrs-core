@@ -11,6 +11,7 @@ package org.openmrs.module;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Allows to specify a conditionally loaded resource in a module based on
@@ -66,13 +67,13 @@ public class ModuleConditionalResource {
 		}
 		ModuleConditionalResource that = (ModuleConditionalResource) o;
 
-		if (modules != null ? !modules.equals(that.modules) : that.modules != null) {
+		if (!Objects.equals(modules, that.modules)) {
 			return false;
 		}
-		if (openmrsPlatformVersion != null ? !openmrsPlatformVersion.equals(that.openmrsPlatformVersion) : that.openmrsPlatformVersion != null) {
+		if (!Objects.equals(openmrsPlatformVersion, that.openmrsPlatformVersion)) {
 			return false;
 		}
-		return path != null ? path.equals(that.path) : that.path == null;
+		return Objects.equals(path, that.path);
 	}
 	
 	@Override
@@ -121,10 +122,10 @@ public class ModuleConditionalResource {
 			}
 			ModuleAndVersion that = (ModuleAndVersion) o;
 
-			if (moduleId != null ? !moduleId.equals(that.moduleId) : that.moduleId != null) {
+			if (!Objects.equals(moduleId, that.moduleId)) {
 				return false;
 			}
-			return version != null ? version.equals(that.version) : that.version == null;
+			return Objects.equals(version, that.version);
 		}
 		
 		@Override
