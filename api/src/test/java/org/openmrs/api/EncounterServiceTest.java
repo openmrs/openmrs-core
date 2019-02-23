@@ -618,6 +618,28 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertSame(obsWithDifferentDateBefore, obsWithDifferentDateAfter);
 	}
 	
+	@Test
+	public void saveEncounter_shouldCascadeUpdatedEncounterDatetimeToObsDatetimeOfAllObsWithMatchingObsDatetime() {
+		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
+		EncounterService es = Context.getEncounterService();
+		Encounter enc = es.getEncounter(100);
+		
+		// sanity check
+		assertEquals(3, enc.getAllObs().size());
+		for (Obs obs : enc.getAllObs()) {
+			assertEquals(enc.getEncounterDatetime(), obs.getObsDatetime());
+		}
+	
+		// update the date, assure it gets propagates to all obs
+		Date newDate = new Date();
+		enc.setEncounterDatetime(newDate);
+		es.saveEncounter(enc);
+
+		for (Obs obs : enc.getAllObs()) {
+			assertEquals(DateUtil.truncateToSeconds(newDate), DateUtil.truncateToSeconds(obs.getObsDatetime()));
+		}
+	}
+	
 	/**
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
