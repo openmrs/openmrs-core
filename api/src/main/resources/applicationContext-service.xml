@@ -126,9 +126,6 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
     <property name="userDAO"><ref bean="userDAO"/></property>
 	</bean>
-
-  <!-- The default authentication scheme -->
-  <bean id="authenticationScheme" class="org.openmrs.api.context.UsernamePasswordAuthenticationScheme"></bean>
 	
 	<bean id="patientDAO" class="org.openmrs.api.db.hibernate.HibernatePatientDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	

@@ -103,9 +103,7 @@ public class UserContext implements Serializable {
 	public Authenticated authenticate(Credentials credentials)
 			throws ContextAuthenticationException {
 
-		if (log.isDebugEnabled()) {
-			log.debug("Authenticating client '" + credentials.getClientName() + "' with sheme: " + credentials.getAuthenticationScheme());
-		}
+		log.debug("Authenticating client '" + credentials.getClientName() + "' with sheme: " + credentials.getAuthenticationScheme());
 
 		Authenticated authenticated = null;
 		try {
@@ -122,9 +120,7 @@ public class UserContext implements Serializable {
 		
 		setUserLocation();
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Authenticated as: " + this.user);
-		}
+		log.debug("Authenticated as: " + this.user);
 		
 		return authenticated;
 	}

@@ -80,6 +80,9 @@ import org.openmrs.validator.ValidateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.Advisor;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to authenticate to the database and
@@ -626,13 +629,34 @@ public class Context {
 	}
 	
 	/**
-	 * @return The authentication scheme currently used to authenticate users
+	 * OpenMRS provides its default authentication scheme that authenticates via DAO with OpenMRS usernames and passwords.
+	 * Any module can provide an authentication scheme override by Spring wiring a custom implementation of {@link AuthenticationScheme}.
+	 * This method would return Core's default authentication scheme unless a Spring override is provided somewhere else.
+	 * 
+	 * @return The enforced authentication scheme.
 	 */
 	public static AuthenticationScheme getAuthenticationScheme() {
-		AuthenticationScheme scheme = Context.getRegisteredComponent("authenticationScheme", AuthenticationScheme.class);
+		
+		AuthenticationScheme scheme = new UsernamePasswordAuthenticationScheme();
+		
+		try {
+			scheme = Context.getServiceContext().getApplicationContext().getBean(AuthenticationScheme.class);	// manual autowiring from a module
+			log.info("An authentication scheme override was provided. Using this one in place of the OpenMRS default authentication scheme.");
+		}
+		catch(NoUniqueBeanDefinitionException e) {
+			log.error("Multiple authentication schemes overrides are being provided, this is currently not supported. Sticking to OpenMRS default authentication scheme.");
+		}
+		catch(NoSuchBeanDefinitionException e) {
+			log.debug("No authentication scheme override was provided. Sticking to OpenMRS default authentication scheme.");
+		}
+		catch(BeansException e){
+			log.error("Fatal error encountered when injecting the authentication scheme override. Sticking to OpenMRS default authentication scheme.");
+		}
+		
 		if (scheme instanceof DaoAuthenticationScheme) {
 			((DaoAuthenticationScheme) scheme).setContextDao(getContextDAO());
 		}
+		
 		return scheme;
 	}
 

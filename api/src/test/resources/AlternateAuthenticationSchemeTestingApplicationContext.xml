@@ -14,6 +14,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <!-- This is how a module would override Core's default authentication scheme -->
-    <bean class="org.openmrs.api.context.TestUsernameAuthenticationScheme" id="authenticationScheme"/>
+    <bean class="org.openmrs.api.context.TestUsernameAuthenticationScheme"/>
 
 </beans>

@@ -22,28 +22,28 @@ import org.springframework.test.context.ContextConfiguration;
  */
 @ContextConfiguration(locations = { "classpath*:AlternateAuthenticationSchemeTestingApplicationContext.xml" })
 public class AlternateAuthenticationSchemeContextTest extends BaseContextSensitiveTest {
-	
-	/**
-	 * Methods in this class might authenticate with a different user, so log that user out after
-	 * this whole junit class is done.
-	 */
-	@AfterClass
-	public static void logOutAfterThisTestClass() {
-		Context.logout();
-	}
-	
-	/**
-	 * @see Context#authenticate(Credentials)
-	 */
-	@Test
-	public void authenticate_shouldAuthenticateUserWithAlternateScheme() {
-		// replay
-		Context.logout();
-		Authenticated authenticated = Context.authenticate(new TestUsernameCredentials("admin"));
-		
-		// verif
-		Assert.assertEquals("test-scheme", authenticated.getAuthenticationScheme());
-		Assert.assertEquals(Context.getAuthenticatedUser().getUuid(), authenticated.getUser().getUuid());
-		Assert.assertEquals("admin", Context.getAuthenticatedUser().getUsername());
-	}
+
+  /**
+   * Methods in this class might authenticate with a different user, so log that user out after
+   * this whole junit class is done.
+   */
+  @AfterClass
+  public static void logOutAfterThisTestClass() {
+    Context.logout();
+  }
+
+  /**
+   * @see Context#authenticate(Credentials)
+   */
+  @Test
+  public void authenticate_shouldAuthenticateUserWithAlternateScheme() {
+    // replay
+    Context.logout();
+    Authenticated authenticated = Context.authenticate(new TestUsernameCredentials("admin"));
+
+    // verif
+    Assert.assertEquals("test-scheme", authenticated.getAuthenticationScheme());
+    Assert.assertEquals(Context.getAuthenticatedUser().getUuid(), authenticated.getUser().getUuid());
+    Assert.assertEquals("admin", Context.getAuthenticatedUser().getUsername());
+  }
 }
