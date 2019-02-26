@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.openmrs.GlobalProperty;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
@@ -1110,6 +1111,8 @@ public final class OpenmrsConstants {
 				.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "", "Specifies the uuid of the concept which represents drug other non coded"));
 		props.add(new GlobalProperty(GP_LOGIN_URL, LOGIN_URL,
 			"Responsible for defining the Authentication URL "));
+		
+	    props.add(changeDefaultLoginUrl_GP());
 		props.addAll(ModuleFactory.getGlobalProperties());
 		
 		return props;
@@ -1306,6 +1309,14 @@ public final class OpenmrsConstants {
 	
 	/** Value for the long person name format */
 	public static final String PERSON_NAME_FORMAT_LONG = "long";
+	
+	public static final String PLATFORM_UI_LOGIN_URL = "owa/openmrs-owa-platformui-0.1.0/index.html#/login.htm";
+	
+	public static GlobalProperty changeDefaultLoginUrl_GP() {	
+	Context.getAdministrationService().updateGlobalProperty(GP_LOGIN_URL, PLATFORM_UI_LOGIN_URL);
+	return Context.getAdministrationService().getGlobalPropertyObject(GP_LOGIN_URL);
+	}
+	
 	
 	private OpenmrsConstants() {
 	}
