@@ -1556,6 +1556,23 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		return Collections.unmodifiableList(conceptMembers);
 	}
+
+	/**
+	 * If includeRetired is true, then the returned object is the list of all the concept
+	 * set members of current concept, else retired concept set members are excluded.
+	 *
+	 * @param includeRetired true/false whether to also include/exclude the retired concepts
+	 * @since 2.3
+	 */
+	public List<Concept> getSetMembers(boolean includeRetired) {
+		if (includeRetired) {
+			return getSetMembers();
+		} else {
+			return getSetMembers().stream()
+				.filter(a -> !a.getRetired())
+				.collect(Collectors.toList());
+		}
+	}
 	
 	/**
 	 * Appends the concept to the end of the existing list of concept members for this Concept

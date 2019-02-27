@@ -570,7 +570,49 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, setMembers.size());
 		setMembers.add(new Concept());
 	}
-	
+
+	/**
+	 * @see Concept#getSetMembers(boolean includeRetired)
+	 */
+	@Test
+	public void getSetMembers_shouldReturnAllConceptSetMembersOfCurrentConceptIfIncludeRetiredIsTrueElseExcludeRetired() {
+		Concept c = new Concept();
+
+		Concept retiredConcept = new Concept(3);
+		retiredConcept.setRetired(true);
+
+		Concept retiredConcept2 = new Concept(0);
+		retiredConcept2.setRetired(true);
+
+		ConceptSet set0 = new ConceptSet(retiredConcept, 3.0);
+
+		ConceptSet set1 = new ConceptSet(new Concept(1), 2.0);
+
+		ConceptSet set2 = new ConceptSet();
+		set2.setConcept(new Concept(3));
+
+		ConceptSet set3 = new ConceptSet();
+		set3.setConcept(retiredConcept2);
+
+		List<ConceptSet> sets = new ArrayList<>();
+
+		sets.add(set0);
+		sets.add(set1);
+		sets.add(set2);
+		sets.add(set3);
+
+		c.setConceptSets(sets);
+
+		List<Concept> setMembersRetiredIncluded = c.getSetMembers(true);
+
+		List<Concept> setMembersRetiredExcluded = c.getSetMembers(false);
+
+		Assert.assertEquals(4, setMembersRetiredIncluded.size());
+
+		Assert.assertEquals(2, setMembersRetiredExcluded.size());
+	}
+
+
 	/**
 	 * @see Concept#addSetMember(Concept)
 	 */
