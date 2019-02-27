@@ -12,16 +12,16 @@ package org.openmrs.api.context;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.openmrs.web.test.BaseWebContextSensitiveTest;
 
 /**
  * A Context loaded with a test Spring config that overrides the default auth scheme.
  * 
  * @see Context
  */
-@ContextConfiguration(locations = { "classpath*:AlternateAuthenticationSchemeTestingApplicationContext.xml" })
-public class AlternateAuthenticationSchemeContextTest extends BaseContextSensitiveTest {
+//Temporary workaround @see https://issues.openmrs.org/browse/TRUNK-381?focusedCommentId=254292&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-254292
+//@ContextConfiguration(locations = { "classpath*:AltAuthSchemeTestingApplicationContext.xml" })
+public class AltAuthSchemeContextTest extends BaseWebContextSensitiveTest {
 
   /**
    * Methods in this class might authenticate with a different user, so log that user out after
