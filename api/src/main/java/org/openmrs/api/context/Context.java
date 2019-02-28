@@ -148,7 +148,9 @@ public class Context {
 	private static Properties runtimeProperties = new Properties();
 
 	private static Properties configProperties = new Properties();
-	
+
+	private static AuthenticationScheme authenticationScheme;
+
 	/**
 	 * Default public constructor
 	 */
@@ -178,6 +180,32 @@ public class Context {
 
 	public static void setDAO(ContextDAO dao) {
 		contextDAO = dao;
+	}
+
+	/**
+	 * Spring init method that sets the authentication scheme.
+	 */
+	static private void setAuthenticationScheme() {
+
+		authenticationScheme = new UsernamePasswordAuthenticationScheme();
+
+		try {
+			authenticationScheme = Context.getServiceContext().getApplicationContext().getBean(AuthenticationScheme.class); // manual autowiring (from a module)
+			log.info("An authentication scheme override was provided. Using this one in place of the OpenMRS default authentication scheme.");
+		}
+		catch(NoUniqueBeanDefinitionException e) {
+			log.error("Multiple authentication schemes overrides are being provided, this is currently not supported. Sticking to OpenMRS default authentication scheme.");
+		}
+		catch(NoSuchBeanDefinitionException e) {
+			log.debug("No authentication scheme override was provided. Sticking to OpenMRS default authentication scheme.");
+		}
+		catch(BeansException e){
+			log.error("Fatal error encountered when injecting the authentication scheme override. Sticking to OpenMRS default authentication scheme.");
+		}
+
+		if (authenticationScheme instanceof DaoAuthenticationScheme) {
+			((DaoAuthenticationScheme) authenticationScheme).setContextDao(getContextDAO());
+		}
 	}
 
 	/**
@@ -231,7 +259,7 @@ public class Context {
 		if (arr == null) {
 			log.trace("userContext is null.");
 			throw new APIException(
-			        "A user context must first be passed to setUserContext()...use Context.openSession() (and closeSession() to prevent memory leaks!) before using the API");
+					"A user context must first be passed to setUserContext()...use Context.openSession() (and closeSession() to prevent memory leaks!) before using the API");
 		}
 		return (UserContext) userContextHolder.get()[0];
 	}
@@ -270,6 +298,18 @@ public class Context {
 	}
 
 	/**
+	 * OpenMRS provides its default authentication scheme that authenticates via DAO with OpenMRS usernames and passwords.
+	 * 
+	 * Any module can provide an authentication scheme override by Spring wiring a custom implementation of {@link AuthenticationScheme}.
+	 * This method would return Core's default authentication scheme unless a Spring override is provided somewhere else.
+	 * 
+	 * @return The enforced authentication scheme.
+	 */
+	public static AuthenticationScheme getAuthenticationScheme() {
+		return authenticationScheme;
+	}
+
+	/**
 	 * @deprecated as of 2.3.0, replaced by {@link #authenticate(Credentials)}
 	 * 
 	 * Used to authenticate user within the context
@@ -287,7 +327,7 @@ public class Context {
 	public static void authenticate(String username, String password) throws ContextAuthenticationException {
 		authenticate(new UsernamePasswordCredentials(username, password));
 	}
-	
+
 	/**
 	 * @param credentials
 	 * @throws ContextAuthenticationException
@@ -295,20 +335,20 @@ public class Context {
 	 * @since 2.3.0
 	 */
 	public static Authenticated authenticate(Credentials credentials) throws ContextAuthenticationException {
-		
+
 		if (Daemon.isDaemonThread()) {
 			log.error("Authentication attempted while operating on a "
 					+ "daemon thread, authenticating is not necessary or allowed");
 			return new BasicAuthenticated(Daemon.getDaemonThreadUser(), "No auth scheme used by Context - Daemon user is always authenticated.");
 		}
-		
+
 		if (credentials == null) {
 			throw new ContextAuthenticationException("Context cannot authenticate with null credentials.");
 		}
-		
+
 		return getUserContext().authenticate(credentials);
 	}
-	
+
 	/**
 	 * Refresh the authenticated user object in the current UserContext. This should be used when
 	 * updating information in the database about the current user and it needs to be reflecting in
@@ -627,38 +667,6 @@ public class Context {
 			return getAuthenticatedUser() != null;
 		}
 	}
-	
-	/**
-	 * OpenMRS provides its default authentication scheme that authenticates via DAO with OpenMRS usernames and passwords.
-	 * Any module can provide an authentication scheme override by Spring wiring a custom implementation of {@link AuthenticationScheme}.
-	 * This method would return Core's default authentication scheme unless a Spring override is provided somewhere else.
-	 * 
-	 * @return The enforced authentication scheme.
-	 */
-	public static AuthenticationScheme getAuthenticationScheme() {
-		
-		AuthenticationScheme scheme = new UsernamePasswordAuthenticationScheme();
-		
-		try {
-			scheme = Context.getServiceContext().getApplicationContext().getBean(AuthenticationScheme.class);	// manual autowiring from a module
-			log.info("An authentication scheme override was provided. Using this one in place of the OpenMRS default authentication scheme.");
-		}
-		catch(NoUniqueBeanDefinitionException e) {
-			log.error("Multiple authentication schemes overrides are being provided, this is currently not supported. Sticking to OpenMRS default authentication scheme.");
-		}
-		catch(NoSuchBeanDefinitionException e) {
-			log.debug("No authentication scheme override was provided. Sticking to OpenMRS default authentication scheme.");
-		}
-		catch(BeansException e){
-			log.error("Fatal error encountered when injecting the authentication scheme override. Sticking to OpenMRS default authentication scheme.");
-		}
-		
-		if (scheme instanceof DaoAuthenticationScheme) {
-			((DaoAuthenticationScheme) scheme).setContextDao(getContextDAO());
-		}
-		
-		return scheme;
-	}
 
 	/**
 	 * logs out the "active" (authenticated) user within context
@@ -712,7 +720,7 @@ public class Context {
 			String errorMessage;
 			if (StringUtils.isNotBlank(privilege)) {
 				errorMessage = Context.getMessageSourceService().getMessage("error.privilegesRequired",
-				    new Object[] { privilege }, null);
+						new Object[] { privilege }, null);
 			} else {
 				//Should we even be here if the privilege is blank?
 				errorMessage = Context.getMessageSourceService().getMessage("error.privilegesRequiredNoArgs");
@@ -798,7 +806,7 @@ public class Context {
 	 */
 	public static void closeSessionWithCurrentUser() {
 		getContextDAO().closeSession();
-    }
+	}
 
 	/**
 	 * Clears cached changes made so far during this unit of work without writing them to the
@@ -867,7 +875,7 @@ public class Context {
 	 *      the required question/datatypes
 	 */
 	public static synchronized void startup(Properties props) throws DatabaseUpdateException, InputRequiredException,
-	        ModuleMustStartException {
+	ModuleMustStartException {
 		// do any context database specific startup
 		getContextDAO().startup(props);
 
@@ -911,7 +919,7 @@ public class Context {
 	 *      the required question/datatypes
 	 */
 	public static synchronized void startup(String url, String username, String password, Properties properties)
-	        throws DatabaseUpdateException, InputRequiredException, ModuleMustStartException {
+			throws DatabaseUpdateException, InputRequiredException, ModuleMustStartException {
 		if (properties == null) {
 			properties = new Properties();
 		}
@@ -1138,10 +1146,10 @@ public class Context {
 		ValidateUtil.setDisableValidation(disableValidation);
 
 		PersonName.setFormat(Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT));
+				OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT));
 
 		Allergen.setOtherNonCodedConceptUuid(Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GP_ALLERGEN_OTHER_NON_CODED_UUID));
+				OpenmrsConstants.GP_ALLERGEN_OTHER_NON_CODED_UUID));
 	}
 
 	/**
@@ -1172,7 +1180,7 @@ public class Context {
 				DatabaseUpdater.executeChangelog();
 			} else {
 				throw new DatabaseUpdateException(
-				        "Database updates are required.  Call Context.updateDatabase() before .startup() to continue.");
+						"Database updates are required.  Call Context.updateDatabase() before .startup() to continue.");
 			}
 		}
 	}

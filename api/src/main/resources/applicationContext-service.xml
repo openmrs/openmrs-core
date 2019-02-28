@@ -115,9 +115,9 @@
         <property name="providerService"><ref bean="providerService"/></property>
 	</bean>	
 	
-	<bean id="context" class="org.openmrs.api.context.Context">
-        <property name="serviceContext"><ref bean="serviceContext"/></property>
-        <property name="contextDAO"><ref bean="contextDAO"/></property>
+  <bean id="context" class="org.openmrs.api.context.Context" init-method="setAuthenticationScheme">
+    <property name="serviceContext"><ref bean="serviceContext"/></property>
+    <property name="contextDAO"><ref bean="contextDAO"/></property>
 	</bean>
 
 	<!--  **************************  DATA ACCESS OBJECTS  *************************  -->		
