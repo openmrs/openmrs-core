@@ -7,11 +7,16 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.api.context;
+package org.openmrs.web.context;
 
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.api.context.Authenticated;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Credentials;
+import org.openmrs.api.context.TestUsernameCredentials;
+import org.openmrs.api.context.TestUsernameAuthenticationScheme;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 
 /**
@@ -19,16 +24,16 @@ import org.openmrs.web.test.BaseWebContextSensitiveTest;
  * 
  * @see Context
  */
-//Temporary workaround @see https://issues.openmrs.org/browse/TRUNK-381?focusedCommentId=254292&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-254292
+/*
+ * TODO Enable @ContextConfiguration on subclasses of BaseContextSensitiveTest
+ * 
+ * @see https://issues.openmrs.org/browse/TRUNK-381?focusedCommentId=254292&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-254292
+ */
 //@ContextConfiguration(locations = { "classpath*:AltAuthSchemeTestingApplicationContext.xml" })
 public class AltAuthSchemeContextTest extends BaseWebContextSensitiveTest {
 
-  /**
-   * Methods in this class might authenticate with a different user, so log that user out after
-   * this whole junit class is done.
-   */
-  @AfterClass
-  public static void logOutAfterThisTestClass() {
+  @After
+  public void logOutAfterThisTestClass() {
     Context.logout();
   }
 
