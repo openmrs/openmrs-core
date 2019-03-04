@@ -211,7 +211,7 @@ public class ConceptNumeric extends Concept {
 	}
 	
 	public Boolean getAllowDecimal() {
-		return allowDecimal == null ? false : allowDecimal;
+		return allowDecimal == null ? Boolean.FALSE : allowDecimal;
 	}
 	
 	public void setAllowDecimal(Boolean allowDecimal) {
