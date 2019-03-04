@@ -292,34 +292,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	}
 	
 	/**
-	 * Hacky way to get the current contextPath. This will usually be "openmrs". This method will be
-	 * obsolete when servlet api ~2.6 comes out...at which point a call like
-	 * servletContext.getContextRoot() would be sufficient
-	 *
 	 * @return current contextPath of this webapp without initial slash
 	 */
 	private String getContextPath(ServletContext servletContext) {
 		// Get the context path without the request.
-		String contextPath = "";
-		try {
-			contextPath = servletContext.getContextPath();
-		}
-		catch (NoSuchMethodError ex) {
-			// ServletContext.getContextPath() was added in version 2.5 of the Servlet API. Tomcat 5.5
-			// has version 2.4 of the servlet API, so we fall back to the hacky code we were previously
-			// using
-			try {
-				String path = servletContext.getResource("/").getPath();
-				contextPath = path.substring(0, path.lastIndexOf("/"));
-				contextPath = contextPath.substring(contextPath.lastIndexOf("/"));
-			}
-			catch (Exception e) {
-				log.error("Failed to get construct context path", e);
-			}
-		}
-		catch (Exception e) {
-			log.error("Failed to get context path", e);
-		}
+		String contextPath = servletContext.getContextPath();
 		
 		// trim off initial slash if it exists
 		if (contextPath.contains("/")) {
