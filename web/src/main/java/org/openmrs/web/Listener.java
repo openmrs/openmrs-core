@@ -554,7 +554,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				String filename = WebConstants.WEBAPP_NAME + "-test-runtime.properties";
 				File file = new File(OpenmrsUtil.getApplicationDataDirectory(), filename);
 				System.out.println(filename + " delete=" + file.delete());
-				//new com.mysql.management.MysqldResource(new File("../openmrs/target/database")).shutdown();
+			
 			}
 			// remove the user context that we set earlier
 			Context.closeSession();
