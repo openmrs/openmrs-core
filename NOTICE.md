@@ -166,8 +166,8 @@
 <td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2</a></td></tr>
 <tr class="a">
 <td>org.apache.velocity</td>
-<td><a class="externalLink" href="http://velocity.apache.org/engine/releases/velocity-1.6.2/">velocity</a></td>
-<td>1.6.2</td>
+<td><a class="externalLink" href="http://velocity.apache.org/engine/releases/velocity-2.0/">velocity</a></td>
+<td>2.0</td>
 <td>jar</td>
 <td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
 <tr class="b">
