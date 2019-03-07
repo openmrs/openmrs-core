@@ -300,7 +300,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * @see org.openmrs.api.db.OrderDAO#getNextOrderNumberSeedSequenceValue()
 	 */
 	@Override
-	public Long getNextOrderNumberSeedSequenceValue() {
+	public synchronized Long getNextOrderNumberSeedSequenceValue() {
 		GlobalProperty globalProperty = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class,
 		    OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED, LockOptions.UPGRADE);
 		
