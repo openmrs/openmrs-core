@@ -225,10 +225,7 @@ public class UserContext implements Serializable {
 	 */
 	public void removeProxyPrivilege(String privilege) {
 		log.debug("Removing proxy privilege: {}", privilege);
-		
-		if (proxies.contains(privilege)) {
-			proxies.remove(privilege);
-		}
+		proxies.remove(privilege);
 	}
 	
 	/**

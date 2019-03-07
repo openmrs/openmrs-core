@@ -69,9 +69,7 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 		log.debug("Setting activeMessageSource: " + activeMessageSource);
 		
 		this.activeMessageSource = activeMessageSource;
-		if (!availableMessageSources.contains(activeMessageSource)) {
-			availableMessageSources.add(activeMessageSource);
-		}
+		availableMessageSources.add(activeMessageSource);
 	}
 	
 	/**
