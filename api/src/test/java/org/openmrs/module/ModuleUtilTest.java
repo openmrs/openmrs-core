@@ -20,7 +20,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.Collection;
 import java.util.Properties;
 import java.util.jar.JarFile;
 
@@ -705,7 +708,52 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 
 		FileUtils.deleteDirectory(destinationFolder);
 	}
+	
+	/**
+	* @see ModuleUtil#file2url(File)
+	*/
+	@Test
+	public void file2url_shouldReturnNullIfFileIsNull() throws MalformedURLException {
+		URL nullURL = ModuleUtil.file2url(null);
+		Assert.assertNull(nullURL);
+	}
 
+	/**
+	* @see ModuleUtil#file2url(File)
+	*/
+	@Test(expected = MalformedURLException.class)
+	public void file2url_shouldThrowMalformedURLExceptionIfMalformedFilePath() throws MalformedURLException {
+		ModuleUtil.file2url(new File("org/openmrs/" + "\0" + "/include/test1-1.0-SNAPSHOT.omod"));	
+	}
+	
+	/**
+	* @see ModuleUtl#getPackagesFromFile(File)
+	*/
+	@Test
+	public void getPackagesFromFile_shouldReturnEmptyStringSetIfNonJarFile() {
+		File f = new File(this.getClass().getResource("/org/openmrs/module/include/test1-1.0-SNAPSHOT.omod").getFile());
+		Collection<String> packageCollection = ModuleUtil.getPackagesFromFile(f);
+		Assert.assertTrue(packageCollection.isEmpty());
+	}
+	
+	/**
+	* @see ModuleUtl#getPackagesFromFile(File)
+	*/
+	@Test
+	public void getPackagesFromFile_shouldSkipOptionalFoldersIfJarFile() throws IOException{
+		File f = new File(this.getClass().getResource("/org/openmrs/module/include/test1-1.0-SNAPSHOT.omod").getFile());
+		File d = new File("/tmp/test1-1.0-SNAPSHOT.jar");
+		FileUtils.copyFile(f, d);
+		Collection<String> packageCollection = ModuleUtil.getPackagesFromFile(d);
+		
+		Assert.assertFalse(packageCollection.isEmpty());
+		for (String string : packageCollection) {
+			Assert.assertFalse(string.contains("lib"));
+			Assert.assertFalse(string.contains("META-INF"));
+			Assert.assertFalse(string.contains("web/module"));
+		}
+	}
+	
 	/**
 	 * Gets Jar file to be expanded.
 	 * 
