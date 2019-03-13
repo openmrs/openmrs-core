@@ -331,6 +331,44 @@ public class ObsTest {
 		Obs obs = new Obs();
 		obs.setValueAsString(null);
 	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldSetValueAsDateTimeIfDataTypeOfQuestionConceptIsDateTimeHavingTimeZone()
+		throws Exception {
+		Obs obs = new Obs();
+		ConceptDatatype cdt = new ConceptDatatype();
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+		obs.setConcept(c);
+
+		String[] dates1 = { "2016-01-12T06:00:00+05:30", "2016-01-12T06:00:00+0530" };
+		String[] dates2 = { "2014-02-20T11:00:00.000-05:00", "2014-02-20T11:00:00.000-05" };
+
+		for (String date : dates1) {
+			obs.setValueAsString(date);
+		}
+
+		for (String date : dates2) {
+			obs.setValueAsString(date);
+		}
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test(expected = RuntimeException.class)
+	public void setValueAsString_shouldThrowRuntimeExceptionForAbbreviationCWE() throws Exception {
+		Obs obs = new Obs();
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("CWE");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+		obs.setConcept(c);
+		obs.setValueAsString("ABC");
+	}
 	
 	/**
 	 * @see Obs#getValueAsBoolean()
