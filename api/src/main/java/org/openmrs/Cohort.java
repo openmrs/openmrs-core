@@ -401,6 +401,6 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	 * @return true if no active cohort exists
 	 **/
 	public boolean hasNoActiveMemberships() {
-		return activeMembershipSize() == 0;
+		return getActiveMemberships().isEmpty();
 	}
 }
