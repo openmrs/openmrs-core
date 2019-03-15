@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db;
 
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Future;
 
@@ -75,15 +76,18 @@ public interface ContextDAO {
 	
 	/**
 	 * Creates a new user.
-	 * When the users are managed by a third-party auth provider, it will happen that a successfully authenticated user still needs to be created into OpenMRS.
+	 * When the users are managed by a third-party authentication provider, it will happen that a successfully authenticated user still needs to be created in OpenMRS.
+	 * This method is made available to authentication schemes to create new users on the fly.
 	 * 
 	 * @param user
 	 * @param password
-	 * @return The newly saved used
+	 * @param roleNames A list of role names to fetch the roles to add to the user.
+	 * @return The newly created user
+	 * @throws Exception 
 	 * 
 	 * @since 2.3.0
 	 */
-	public User saveUser(User user, String password);
+	public User createUser(User user, String password, List<String> roleNames) throws Exception;
 	
 	/**
 	 * Open session.

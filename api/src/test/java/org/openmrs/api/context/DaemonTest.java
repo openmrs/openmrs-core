@@ -9,8 +9,14 @@
  */
 package org.openmrs.api.context;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.Person;
+import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
@@ -50,6 +56,36 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	public void executeScheduledTask_shouldNotThrowErrorIfCalledFromATimerSchedulerTaskClass() throws Throwable {
 		Task task = new PrivateTask();
 		Assert.assertTrue(new PrivateSchedulerTask(task).runTheTest());
+	}
+	
+	@Test 
+	public void createUser_shouldThrowWhenCalledOutsideContextDAO() throws Throwable {
+		try {
+			Daemon.createUser(new User(), "password", null);
+			Assert.fail("Should not be here, an exception should have been thrown in the line above");
+		}
+		catch (APIException e) {
+			Assert.assertTrue(e.getMessage().startsWith(Context.getMessageSourceService().getMessage("Context.DAO.only", new Object[] { this.getClass().getName() }, null)));
+		}
+	}
+	
+	@Test
+	public void createUser_shouldCreateUserWithRolesInContextDAO() throws Throwable {
+		// setup
+		User u = new User();
+		u.setPerson(new Person());
+		u.addName(new PersonName("Jane", "X", "Doe"));
+		u.setUsername("jdoe");
+		u.getPerson().setGender("F");
+		
+		// replay
+		User createdUser = Context.getContextDAO().createUser(u, "P@ssw0rd", Arrays.asList("Provider", "Foobar Role"));
+		
+		// verif
+		Assert.assertNotNull(createdUser.getId());
+		Set<String> roleNames = createdUser.getRoles().stream().map(r -> r.getName()).collect(Collectors.toSet());
+		Assert.assertTrue(roleNames.contains("Provider"));
+		Assert.assertFalse(roleNames.contains("Foobar Role")); // a bogus role name has just no impact on the created user
 	}
 	
 	/**

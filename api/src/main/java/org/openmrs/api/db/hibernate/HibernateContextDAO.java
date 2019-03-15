@@ -12,6 +12,7 @@ package org.openmrs.api.db.hibernate;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
@@ -33,6 +34,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -243,12 +245,13 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ContextDAO#saveUser(User, String)
+	 * @throws Exception 
+	 * @see org.openmrs.api.db.ContextDAO#createUser(User, String)
 	 */
 	@Override
 	@Transactional
-	public User saveUser(User user, String password) {
-		return userDao.saveUser(user, password);
+	public User createUser(User user, String password, List<String> roleNames) throws Exception {
+		return Daemon.createUser(user, password, roleNames);
 	}
 	
 	/**
@@ -553,5 +556,4 @@ public class HibernateContextDAO implements ContextDAO {
 			throw new RuntimeException("Failed to start asynchronous search index update", e);
 		}
 	}
-
 }
