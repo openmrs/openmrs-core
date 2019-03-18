@@ -36,7 +36,9 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.util.Reflect;
@@ -52,6 +54,9 @@ public class ObsTest {
 	private static final String VERO = "Vero";
 	
 	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
+
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	
 	//ignore these fields, groupMembers and formNamespaceAndPath field are taken care of by other tests
 	private static final List<String> IGNORED_FIELDS = Arrays.asList("dirty", "log", "serialVersionUID",
@@ -330,6 +335,48 @@ public class ObsTest {
 	public void setValueAsString_shouldFailIfTheValueOfTheStringIsNull() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueAsString(null);
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldSetValueAsDateTimeIfDataTypeOfQuestionConceptIsDateTimeHavingTimeZone()
+		throws Exception {
+		Obs obs = new Obs();
+		ConceptDatatype cdt = new ConceptDatatype();
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+		obs.setConcept(c);
+		String abbrev = c.getDatatype().getHl7Abbreviation();
+
+
+		String[] dates1 = { "2016-01-12T06:00:00+05:30", "2016-01-12T06:00:00+0530" };
+		String[] dates2 = { "201-02-20T11:00:00.000-05:00", "-02-20T11:00:00.000-05" };
+
+		for (String date : dates1) {
+			obs.setValueAsString(date);
+		}
+
+		for (String date : dates2) {
+			obs.setValueAsString(date);
+			expectedException.expect(RuntimeException.class);
+			expectedException.expectMessage("Don't know how to handle " + abbrev);
+		}
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test(expected = RuntimeException.class)
+	public void setValueAsString_shouldThrowRuntimeExceptionForAbbreviationCWE() throws Exception {
+		Obs obs = new Obs();
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("CWE");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+		obs.setConcept(c);
+		obs.setValueAsString("ABC");
 	}
 	
 	/**
