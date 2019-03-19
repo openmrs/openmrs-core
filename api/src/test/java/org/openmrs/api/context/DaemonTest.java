@@ -14,7 +14,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
@@ -30,6 +32,9 @@ import org.openmrs.test.BaseContextSensitiveTest;
  * Tests the methods on the {@link Daemon} class
  */
 public class DaemonTest extends BaseContextSensitiveTest {
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * @see Daemon#executeScheduledTask(Task)
@@ -60,13 +65,12 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	
 	@Test 
 	public void createUser_shouldThrowWhenCalledOutsideContextDAO() throws Throwable {
-		try {
-			Daemon.createUser(new User(), "password", null);
-			Assert.fail("Should not be here, an exception should have been thrown in the line above");
-		}
-		catch (APIException e) {
-			Assert.assertTrue(e.getMessage().startsWith(Context.getMessageSourceService().getMessage("Context.DAO.only", new Object[] { this.getClass().getName() }, null)));
-		}
+		// verif
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Context.DAO.only", new Object[] { this.getClass().getName() }, null));
+		
+		// replay
+		Daemon.createUser(new User(), "password", null);
 	}
 	
 	@Test
@@ -93,15 +97,12 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		// setup
 		User u = Context.getUserService().getUser(501);
 		
-		try {
-			// replay
-			Context.getContextDAO().createUser(u, "P@ssw0rd", null);
-			Assert.fail("Should not be here, an exception should have been thrown in the line above");
-		}
-		catch (APIException e) {
-			// verif
-			Assert.assertTrue(e.getMessage().startsWith(Context.getMessageSourceService().getMessage("User.creating.already.exists", new Object[] { u.getDisplayString() }, null)));
-		}
+		// verif
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("User.creating.already.exists", new Object[] { u.getDisplayString() }, null));
+		
+		// replay
+		Context.getContextDAO().createUser(u, "P@ssw0rd", null);
 	}
 	
 	/**

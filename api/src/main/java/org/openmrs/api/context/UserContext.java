@@ -85,7 +85,11 @@ public class UserContext implements Serializable {
 	private AuthenticationScheme authenticationScheme;
 	
 	/**
-	 * Default public constructor
+	 * Creates a user context based on the provided auth. scheme.
+	 * 
+	 * @param authenticationScheme The auth. scheme that applies for this user context.
+	 * 
+	 * @since 2.3.0
 	 */
 	public UserContext(AuthenticationScheme authenticationScheme) {
 		this.authenticationScheme = authenticationScheme; 

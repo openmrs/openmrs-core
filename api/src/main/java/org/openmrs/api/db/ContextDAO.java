@@ -79,9 +79,9 @@ public interface ContextDAO {
 	 * When the users are managed by a third-party authentication provider, it will happen that a successfully authenticated user still needs to be created in OpenMRS.
 	 * This method is made available to authentication schemes to create new users on the fly.
 	 * 
-	 * @param user
-	 * @param password
-	 * @param roleNames A list of role names to fetch the roles to add to the user.
+	 * @param user A new user to be created.
+	 * @param password The password for the new user.
+	 * @param roleNames A list of role names to add to the user.
 	 * @return The newly created user
 	 * @throws Exception 
 	 * 
