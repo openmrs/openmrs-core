@@ -88,6 +88,22 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(roleNames.contains("Foobar Role")); // a bogus role name has just no impact on the created user
 	}
 	
+	@Test 
+	public void createUser_shouldThrowWhenUserExists() throws Throwable {
+		// setup
+		User u = Context.getUserService().getUser(501);
+		
+		try {
+			// replay
+			Context.getContextDAO().createUser(u, "P@ssw0rd", null);
+			Assert.fail("Should not be here, an exception should have been thrown in the line above");
+		}
+		catch (APIException e) {
+			// verif
+			Assert.assertTrue(e.getMessage().startsWith(Context.getMessageSourceService().getMessage("User.creating.already.exists", new Object[] { u.getDisplayString() }, null)));
+		}
+	}
+	
 	/**
 	 * @see Daemon#runInNewDaemonThread(Runnable)
 	 */
