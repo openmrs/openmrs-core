@@ -9,14 +9,12 @@
  */
 package org.openmrs.web.context;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.context.Authenticated;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.TestUsernameCredentials;
-import org.openmrs.api.context.TestUsernameAuthenticationScheme;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 
 /**
@@ -32,18 +30,12 @@ import org.openmrs.web.test.BaseWebContextSensitiveTest;
 //@ContextConfiguration(locations = { "classpath*:AltAuthSchemeTestingApplicationContext.xml" })
 public class AltAuthSchemeContextTest extends BaseWebContextSensitiveTest {
 
-  @After
-  public void logOutAfterThisTestClass() {
-    Context.logout();
-  }
-
   /**
    * @see Context#authenticate(Credentials)
    */
   @Test
   public void authenticate_shouldAuthenticateUserWithAlternateScheme() {
     // replay
-    Context.logout();
     Authenticated authenticated = Context.authenticate(new TestUsernameCredentials("admin"));
 
     // verif
