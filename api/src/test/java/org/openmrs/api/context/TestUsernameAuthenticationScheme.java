@@ -12,16 +12,14 @@ package org.openmrs.api.context;
 import org.openmrs.User;
 
 /*
- * This test auth scheme logs a user simply based on asserting that its UUID is valid and points to an exisiting user.
+ * This test auth scheme logs a user simply based on asserting that its username is valid and points to an existing user.
  */
-public class TestUuidAuthenticationScheme extends DaoAuthenticationScheme {
+public class TestUsernameAuthenticationScheme extends DaoAuthenticationScheme {
 
 	@Override
 	public Authenticated authenticate(Credentials credentials) throws ContextAuthenticationException {
 		
-		TestUuidCredentials creds = (TestUuidCredentials) credentials;
-		
-		User user = getContextDAO().getUserByUuid(creds.getUserUuid()); // that's the actual authentication
+		User user = getContextDAO().getUserByUsername(credentials.getClientName()); // that's the actual authentication
 		
 		return new BasicAuthenticated(user, "test-scheme");
 	}

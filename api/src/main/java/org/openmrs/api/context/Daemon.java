@@ -9,10 +9,16 @@
  */
 package org.openmrs.api.context;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.api.db.ContextDAO;
 import org.openmrs.module.DaemonToken;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
@@ -102,6 +108,73 @@ public class Daemon {
 
 		return (Module) startModuleThread.returnedObject;
 	}
+
+	/**
+	 * This method should not be called directly, only {@link ContextDAO#createUser(User, String)} can
+	 * legally invoke {@link #createUser(User, String)}.
+	 * 
+	 * @param user A new user to be created.
+	 * @param password The password to set for the new user.
+	 * @param roleNames A list of role names to fetch the roles to add to the user.
+	 * @return The newly created user
+	 * 
+	 * @should only allow the creation of new users, not the edition of existing ones
+	 * 
+	 * @since 2.3.0
+	 */
+	public static User createUser(User user, String password, List<String> roleNames) throws Exception {
+
+		// quick check to make sure we're only being called by ourselves
+		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
+		if (!ContextDAO.class.isAssignableFrom(callerClass)) {
+			throw new APIException("Context.DAO.only", new Object[] { callerClass.getName() });
+		}
+
+		// create a new thread and execute that task in it
+		DaemonThread createUserThread = new DaemonThread() {
+
+			@Override
+			public void run() {
+				isDaemonThread.set(true);
+				try {
+					Context.openSession();
+
+					if ( (user.getId() != null && Context.getUserService().getUser(user.getId()) != null) || Context.getUserService().getUserByUuid(user.getUuid()) != null || Context.getUserService().getUserByUsername(user.getUsername()) != null || (user.getEmail() != null && Context.getUserService().getUserByUsernameOrEmail(user.getEmail()) != null) ) {
+						throw new APIException("User.creating.already.exists", new Object[] { user.getDisplayString() });
+					}
+
+					if (!CollectionUtils.isEmpty(roleNames)) {
+						List<Role> roles = roleNames.stream().map(roleName -> Context.getUserService().getRole(roleName)).collect(Collectors.toList()); 
+						roles.forEach(role -> user.addRole(role));
+					}
+
+					returnedObject = Context.getUserService().createUser(user, password);
+				}
+				catch (Exception e) {
+					exceptionThrown = e;
+				}
+				finally {
+					Context.closeSession();
+				}
+			}
+		};
+
+		createUserThread.start();
+
+		// wait for the 'create user' thread to finish
+		try {
+			createUserThread.join();
+		}
+		catch (InterruptedException e) {
+			// ignore
+		}
+
+		if (createUserThread.exceptionThrown != null) {
+			throw createUserThread.exceptionThrown;
+		}
+
+		return (User) createUserThread.returnedObject;
+	}	
 	
 	/**
 	 * Executes the given task in a new thread that is authenticated as the daemon user. <br>
