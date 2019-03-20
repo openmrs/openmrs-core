@@ -27,9 +27,7 @@ public class UsernamePasswordAuthenticationScheme extends DaoAuthenticationSchem
 	public Authenticated authenticate(Credentials credentials)
 			throws ContextAuthenticationException {
 
-		if (log.isDebugEnabled()) {
-			log.debug("Authenticating client: " + credentials.getClientName());
-		}
+		log.debug("Authenticating client: " + credentials.getClientName());
 		
 		UsernamePasswordCredentials userPassCreds = null;
 		try {
@@ -41,4 +39,5 @@ public class UsernamePasswordAuthenticationScheme extends DaoAuthenticationSchem
 		
 		return new BasicAuthenticated( getContextDAO().authenticate(userPassCreds.getUsername(), userPassCreds.getPassword()) , UsernamePasswordCredentials.SCHEME);
 	}
+
 }

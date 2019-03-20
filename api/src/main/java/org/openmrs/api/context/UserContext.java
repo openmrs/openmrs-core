@@ -80,27 +80,34 @@ public class UserContext implements Serializable {
 	private Integer locationId;
 	
 	/**
-	 * Default public constructor
+	 * The authentication scheme for this user
 	 */
-	public UserContext() {
+	private AuthenticationScheme authenticationScheme;
+	
+	/**
+	 * Creates a user context based on the provided auth. scheme.
+	 * 
+	 * @param authenticationScheme The auth. scheme that applies for this user context.
+	 * 
+	 * @since 2.3.0
+	 */
+	public UserContext(AuthenticationScheme authenticationScheme) {
+		this.authenticationScheme = authenticationScheme; 
 	}
 	
 	/**
-	 * Authenticate user with the provided authentication scheme and credentials.
+	 * Authenticate user with the provided credentials. The authentication scheme must be Spring wired, see {@link Context#getAuthenticationScheme()}.
 	 * 
-	 * @param The authentication scheme to use
 	 * @param The credentials to use to authenticate
 	 * @return The authenticated client information
 	 * @throws ContextAuthenticationException
 	 * 
 	 * @since 2.3.0
 	 */
-	public Authenticated authenticate(AuthenticationScheme authenticationScheme, Credentials credentials)
+	public Authenticated authenticate(Credentials credentials)
 			throws ContextAuthenticationException {
 
-		if (log.isDebugEnabled()) {
-			log.debug("Authenticating client '" + credentials.getClientName() + "' with sheme: " + credentials.getAuthenticationScheme());
-		}
+		log.debug("Authenticating client '" + credentials.getClientName() + "' with sheme: " + credentials.getAuthenticationScheme());
 
 		Authenticated authenticated = null;
 		try {
@@ -117,9 +124,7 @@ public class UserContext implements Serializable {
 		
 		setUserLocation();
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Authenticated as: " + this.user);
-		}
+		log.debug("Authenticated as: " + this.user);
 		
 		return authenticated;
 	}

@@ -81,6 +81,7 @@ import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
+import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
@@ -378,7 +379,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 		
 		try {
-			Context.authenticate("admin", "test");
+			Context.authenticate(new UsernamePasswordCredentials("admin", "test"));
 			authenticatedUser = Context.getAuthenticatedUser();
 			return;
 		}

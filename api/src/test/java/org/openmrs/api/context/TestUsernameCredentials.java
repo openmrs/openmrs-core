@@ -10,20 +10,16 @@
 package org.openmrs.api.context;
 
 /*
- * Test credentials limited to just the user UUID.
+ * Test credentials limited to just the username.
  */
-public class TestUuidCredentials implements Credentials {
+public class TestUsernameCredentials implements Credentials {
 	
-	private String userUuid;
+	private String username;
 	
-	public TestUuidCredentials(String userUuid) {
-		this.userUuid = userUuid;
+	public TestUsernameCredentials(String username) {
+		this.username = username;
 	}
 	
-	public String getUserUuid() {
-		return userUuid;
-	}
-
 	@Override
 	public String getAuthenticationScheme() {
 		return "test-scheme";
@@ -31,6 +27,6 @@ public class TestUuidCredentials implements Credentials {
 
 	@Override
 	public String getClientName() {
-		return getUserUuid();
+		return username;
 	}
 }
