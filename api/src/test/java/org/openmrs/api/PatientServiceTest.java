@@ -1582,11 +1582,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#voidPatient(Patient,String)
 	 */
 	@Test
-	@Ignore
-	// TODO fix: NullPointerException in RequiredDataAdvice
 	public void voidPatient_shouldReturnNullWhenPatientIsNull() throws Exception {
 		PatientService patientService = Context.getPatientService();
-		Patient voidedPatient = patientService.voidPatient(null, "No null patient should be voided");
+		Patient patient = null;
+		Patient voidedPatient = patientService.voidPatient(patient, "No null patient should be voided");
 		Assert.assertNull(voidedPatient);
 	}
 	
@@ -2774,7 +2773,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void unvoidPatient_shouldReturnNullWhenPatientIsNull() throws Exception {
 		
-		assertNull(patientService.unvoidPatient(null));
+		Patient patient = null;
+		assertNull(patientService.unvoidPatient(patient));
 	}
 	
 	/**
@@ -3127,20 +3127,25 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		ps.savePatientIdentifierType(pit);
 	}
 	
-	@Test(expected = PatientIdentifierTypeLockedException.class)
+	@Test
 	public void retirePatientIdentifierType_shouldThrowErrorWhenTryingToRetireAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
 	    throws Exception {
 		PatientService ps = Context.getPatientService();
 		createPatientIdentifierTypeLockedGPAndSetValue("true");
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
-		ps.retirePatientIdentifierType(pit, "Retire test");
+		String retireReason = "Retire test";
+		expectedException.expect(PatientIdentifierTypeLockedException.class);
+		ps.retirePatientIdentifierType(pit, retireReason);
 	}
 	
-	@Test(expected = APIException.class)
+	@Test
 	public void retirePatientIdentifierType_shouldThrowAPIExceptionWhenNullReasonIsPassed() throws Exception {
 		PatientService ps = Context.getPatientService();
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
-		ps.retirePatientIdentifierType(pit, null);
+		String reason = null;
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("A reason is required when retiring an identifier type");
+		ps.retirePatientIdentifierType(pit, reason);
 	}
 	
 	@Test
@@ -3257,6 +3262,54 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(8, encounterService.getEncounter(57).getAllObs(true).size());
 		assertEquals(1, encounterService.getEncounter(57).getObsAtTopLevel(false).size());
 		assertEquals(2, encounterService.getEncounter(57).getObsAtTopLevel(true).size());
+	}
+	
+	@Test
+	public void getDuplicatePatientsByAttributes_shouldThrowExceptionIfAttributeListIsNull() throws Exception{
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("There must be at least one attribute supplied to search on");
+		patientService.getDuplicatePatientsByAttributes(null);
+	}
+
+	@Test
+	public void getDuplicatePatientsByAttributes_shouldThrowExceptionIfAttributeListIsEmpty() throws Exception{
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("There must be at least one attribute supplied to search on");
+		List<String> attributes = new ArrayList<>();
+		patientService.getDuplicatePatientsByAttributes(attributes);
+	}
+	
+	@Test
+	public void processDeath_shouldThrowExceptionIfPatientIsNull() throws Exception {
+		Date dateOfDeath = new Date();
+		Concept causeOfDeath = Context.getConceptService().getConcept(1);
+		String reason = "Cause of Death";
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Attempting to set an invalid patient's status to 'dead'");
+		patientService.processDeath(null,dateOfDeath,causeOfDeath,reason);
+		
+	}
+
+	@Test
+	public void processDeath_shouldThrowExceptionIfCauseOfDeathConceptIsNull() throws Exception {
+		Date dateOfDeath = new Date();
+		Patient patient = new Patient();
+		String reason = "Cause of Death";
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Must supply a valid causeOfDeath (even if 'Unknown') when indicating that a patient has died");
+		patientService.processDeath(patient,dateOfDeath,null,reason);
+
+	}
+
+	@Test
+	public void processDeath_shouldThrowExceptionIfDateIsNull() throws Exception {
+		Concept causeOfDeath = Context.getConceptService().getConcept(1);
+		Patient patient = new Patient();
+		String reason = "Cause of Death";
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Must supply a valid dateDied when indicating that a patient has died");
+		patientService.processDeath(patient,null,causeOfDeath,reason);
+
 	}
 
 }
