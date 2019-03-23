@@ -20,6 +20,13 @@ import org.springframework.test.context.ContextConfiguration;
  */
 // put reference to openmrs-servlet in the parent class to make this class really do nothing
 //@ContextConfiguration(locations = { "classpath:openmrs-servlet.xml" }, inheritLocations = true)
+
+/*
+ * TODO Enable @ContextConfiguration on subclasses of BaseContextSensitiveTest
+ * 
+ * @see https://issues.openmrs.org/browse/TRUNK-381?focusedCommentId=254292&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-254292
+ */
+@ContextConfiguration(locations = { "classpath*:AltAuthSchemeTestingApplicationContext.xml" })
 public abstract class BaseWebContextSensitiveTest extends BaseContextSensitiveTest {
 
 }

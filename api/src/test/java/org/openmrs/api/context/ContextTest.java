@@ -82,7 +82,20 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	public void authenticate_shouldNotAuthenticateWithNullUsernameAndPassword() {
-		Context.authenticate(null, null);
+		Context.authenticate((String) null, (String) null);
+	}
+	
+	/**
+	 * @see Context#authenticate(String,String)
+	 */
+	@Test
+	public void authenticate_shouldAuthenticateUserWithUsernameAndPassword() {
+		// replay
+		Context.logout();
+		Context.authenticate("admin", "test");
+		
+		// verif
+		Assert.assertEquals("admin", Context.getAuthenticatedUser().getUsername());
 	}
 	
 	/**

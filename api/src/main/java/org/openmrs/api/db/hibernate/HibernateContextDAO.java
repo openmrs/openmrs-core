@@ -12,6 +12,7 @@ package org.openmrs.api.db.hibernate;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
@@ -33,7 +34,9 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.ContextDAO;
+import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
@@ -60,6 +63,8 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	private SessionFactory sessionFactory;
 	
+	private UserDAO userDao;
+	
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
 	 * context.
@@ -68,6 +73,10 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
+	}
+	
+	public void setUserDAO(UserDAO userDao) {
+		this.userDao = userDao;
 	}
 	
 	/**
@@ -224,6 +233,25 @@ public class HibernateContextDAO implements ContextDAO {
 		sessionFactory.getCurrentSession().setFlushMode(flushMode);
 		
 		return u;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#getUserByUsername(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public User getUserByUsername(String username) {
+		return userDao.getUserByUsername(username);
+	}
+	
+	/**
+	 * @throws Exception 
+	 * @see org.openmrs.api.db.ContextDAO#createUser(User, String)
+	 */
+	@Override
+	@Transactional
+	public User createUser(User user, String password, List<String> roleNames) throws Exception {
+		return Daemon.createUser(user, password, roleNames);
 	}
 	
 	/**
@@ -528,5 +556,4 @@ public class HibernateContextDAO implements ContextDAO {
 			throw new RuntimeException("Failed to start asynchronous search index update", e);
 		}
 	}
-
 }
