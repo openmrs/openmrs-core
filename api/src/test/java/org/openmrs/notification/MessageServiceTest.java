@@ -11,20 +11,34 @@ package org.openmrs.notification;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.openmrs.api.context.Context.getAuthenticatedUser;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.openmrs.GlobalProperty;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.notification.mail.MailMessageSender;
+import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
+import org.openmrs.test.BaseContextMockTest;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
+
+import java.util.Date;
 
 /**
  * Unit tests for the MessageService.
  */
-public class MessageServiceTest extends BaseContextSensitiveTest {
+public class MessageServiceTest extends BaseContextMockTest {
 	
 	private static final String NO_SMTP_SERVER_ERROR = "Could not connect to SMTP host:";
 	
-	MessageService ms = null;
+	@Mock
+	private MessageService ms;
+
+	@Mock
+	private AdministrationService administrationService;
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -34,7 +48,14 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Before
 	public void runBeforeEachTest() {
-		executeDataSet("org/openmrs/notification/include/MessageServiceTest-initial.xml");
+		BaseContextSensitiveTest baseContextSensitiveTest = new BaseContextSensitiveTest() {
+			@Override
+			public void initMocks() {
+				super.initMocks();
+			}
+		};
+		
+		baseContextSensitiveTest.executeDataSet("org/openmrs/notification/include/MessageServiceTest-initial.xml");
 		
 		ms = Context.getMessageService();
 	}
@@ -111,6 +132,66 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 				fail();
 			}
 		}
+	}
+	
+	@Test
+	public void setMessagePreparator_shouldSetMessagePreparator() throws MessageException {
+		MessagePreparator messagePreparator = new VelocityMessagePreparator();
+		ms.setMessagePreparator(messagePreparator);
+		assertEquals(messagePreparator, ms.getMessagePreparator());
+	}
+
+	@Test
+	public void setMessageSender_shouldSetMessageSender() throws MessageException {
+		MessageSender messageSender = new MailMessageSender();
+		ms.setMessageSender(messageSender);
+		assertEquals(messageSender, ms.getMessageSender());
+	}
+	
+	@Test(expected = MessageException.class)
+	public void sendMessage_shouldFailIfMessageIsNull() throws MessageException {
+		ms.sendMessage(null);
+	}
+
+	@Test
+	public void createMessage_shouldSetAppopriateValuesForParameters() throws MessageException {
+		String subject = "Message Subject";
+		String recipients = "Message Recipients";
+		String sender = "Message Sender";
+		String content = "Message Content";
+		String attachment = "Message Attachment";
+		String attachmentFileName = "Message Attachment File name";
+		String attachmentContentType = "Message attachment content type";
+		Message message = ms.createMessage(recipients,sender,subject,content,attachment,attachmentContentType,attachmentFileName);
+		
+		assertEquals(message.getSubject(),subject);
+		assertEquals(message.getRecipients(),recipients);
+		assertEquals(message.getSender(),sender);
+		assertEquals(message.getContent(),content);
+		assertEquals(message.getAttachment(),attachment);
+		assertEquals(message.getAttachmentContentType(),attachmentContentType);
+		assertEquals(message.getAttachmentFileName(),attachmentFileName);
+	}
+	
+	@Test
+	public void sendMessage_shouldSetRecipientIfAddressIsNotNull() {
+		String recipient1 = "address1";
+		String recipient2 = "address2";
+		getAuthenticatedUser().setUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS, recipient2);
+		MessageSender messageSender = new MailMessageSender();
+		ms.setMessageSender(messageSender);
+		Message messageObj = new Message(1,recipient1,"sender","subject","content");
+		try {
+			ms.sendMessage(messageObj, getAuthenticatedUser());
+		}
+		catch (MessageException e) {
+		//So that this test doesn't fail just because the user isn't running an SMTP server.
+		if (!e.getMessage().contains(NO_SMTP_SERVER_ERROR)) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+		assertEquals(messageObj.getRecipients(),recipient1 + "," + recipient2);
 	}
 	
 }
