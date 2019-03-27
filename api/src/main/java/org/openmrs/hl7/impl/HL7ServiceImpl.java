@@ -544,7 +544,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			if (l != null) {
 				return l.getLocationId();
 			}
-		}
+		
 		catch (Exception ex) {
 			if (facility == null) { // we have no tricks left up our sleeve, so
 				// throw an exception
