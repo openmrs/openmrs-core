@@ -540,9 +540,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		// Care" as an internal openmrs location_id
 		try {
 			Integer locationId = Integer.valueOf(pointOfCare);
-			Location l = Context.getLocationService().getLocation(locationId);
-			if (l != null) {
-				return l.getLocationId();
+			if (locationId == null) throw new Exception();
+			return locationId;
 			}
 		
 		catch (Exception ex) {
