@@ -180,15 +180,16 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 			
 			if (pStmt != null) {
 				try {
-					pStmt.close();
+					pStmt.close();	
 				}
 				catch (SQLException e) {
 					log.warn("Failed to close the prepared statement object");
 				}
 			}
 		}
-	}
-	
+}
+					
+					
 	/**
 	 * returns an integer resulting from the execution of an sql statement
 	 *
@@ -199,35 +200,6 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	private int getInt(JdbcConnection connection, String sql) {
 		Statement stmt = null;
 		int result = 0;
-		try {
-			stmt = connection.createStatement();
-			ResultSet rs = stmt.executeQuery(sql);
-			
-			if (rs.next()) {
-				result = rs.getInt(1);
-			} else {
-				log.warn("No row returned by getInt() method");
-			}
-			
-			if (rs.next()) {
-				log.warn("Multiple rows returned by getInt() method");
-			}
-			
-			return result;
-		}
-		catch (DatabaseException | SQLException e) {
-			log.warn("Error generated", e);
-		}
-		finally {
-			if (stmt != null) {
-				try {
-					stmt.close();
-				}
-				catch (SQLException e) {
-					log.warn("Failed to close the statement object");
-				}
-			}
-		}
 		
 		return result;
 	}
