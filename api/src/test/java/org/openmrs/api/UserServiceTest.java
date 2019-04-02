@@ -1391,9 +1391,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		userService.getUserByUsernameOrEmail(null);
 	}
 	
-	@Ignore("TRUNK-5425")
+	
 	@Test
-	public void setUserActivationKey_shouldCreateUserActivationKey() throws MessageException {
+	public void setUserActivationKey_shouldCreateUserActivationKey() throws Exception {
 		User u = new User();
 		u.setPerson(new Person());
 		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
@@ -1403,6 +1403,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		    "http://localhost:8080/openmrs/admin/users/changePassword.form/{activationKey}");
 		User createdUser = userService.createUser(u, "Openmr5xy");
 		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
+		expectedException.expect(MessageException.class);
 		assertEquals(createdUser, userService.setUserActivationKey(createdUser));
 		assertNotNull(dao.getLoginCredential(createdUser).getActivationKey());
 	}
