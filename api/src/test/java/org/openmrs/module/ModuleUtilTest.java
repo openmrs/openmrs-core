@@ -505,8 +505,8 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void compareVersion_shouldTreatSNAPSHOTAsEarliestVersion() {
-		String olderVersion = "1.8.3";
-		String newerVersion = "1.8.4-SNAPSHOT";
+		String olderVersion = "1.8.4-SNAPSHOT";
+		String newerVersion = "1.8.4";
 		Assert.assertTrue(ModuleUtil.compareVersion(newerVersion, olderVersion) > 0);
 		//should still return the correct value if the arguments are switched
 		Assert.assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);

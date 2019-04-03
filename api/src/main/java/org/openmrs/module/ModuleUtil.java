@@ -452,7 +452,7 @@ public class ModuleUtil {
 				Long ver = NumberUtils.toLong(verNum, 0);
 				Long val = NumberUtils.toLong(valNum, 0);
 				
-				int ret = ver.compareTo(val);
+				int ret = val.compareTo(ver);
 				if (ret != 0) {
 					return ret;
 				}
