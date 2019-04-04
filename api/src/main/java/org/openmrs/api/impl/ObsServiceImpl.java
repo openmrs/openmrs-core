@@ -31,6 +31,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.handler.SaveHandler;
+import org.openmrs.api.ValidationException;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.obs.handler.AbstractHandler;
@@ -95,6 +96,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 
 		if(obs.getId() != null && changeMessage == null){
 			throw new APIException("Obs.error.ChangeMessage.required", (Object[]) null);
+		}
+		if(obs.getPerson()!=obs.getEncounter().getPatient().getPerson()) {
+			throw new ValidationException("obs person not matching with encounter person");
 		}
 
 		handleExistingObsWithComplexConcept(obs);
