@@ -193,7 +193,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 		if (memberships == null) {
 			memberships = new TreeSet<>();
 		}
-		return memberships;
+		return memberships.stream().filter(m -> !m.isVoided()).collect(Collectors.toList());
 	}
 	
 	/**
