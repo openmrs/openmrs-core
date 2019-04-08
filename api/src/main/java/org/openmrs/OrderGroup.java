@@ -34,7 +34,15 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	private List<Order> orders;
 	
 	private OrderSet orderSet;
-	
+
+	private Concept orderGroupReason;
+
+	private OrderGroup previousOrderGroup;
+
+	private OrderGroup parentOrderGroup;
+
+	private List<OrderGroup> nestedOrderGroups;
+
 	/**
 	 * Gets the orderGroupId
 	 *
@@ -206,6 +214,78 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	@Override
 	public void setId(Integer id) {
 		setOrderGroupId(id);
+	}
+	
+	/**
+	 * Gets the orderGroupReason
+	 *
+	 * @return the orderGroupReason
+	 */
+	public Concept getOrderGroupReason() {
+		return orderGroupReason;
+	}
+	
+	/**
+	 * Sets the orderGroupReason
+	 *
+	 * @param orderGroupReason the orderGroupReason to set
+	 */
+	public void setOrderGroupReason(Concept orderGroupReason) {
+		this.orderGroupReason = orderGroupReason;
+	}
+	
+	/**
+	 * Gets the previousOrderGroup
+	 *
+	 * @return the previousOrderGroup
+	 */
+	public OrderGroup getPreviousOrderGroup() {
+		return previousOrderGroup;
+	}
+	
+	/**
+	 * Sets the previousOrderGroup
+	 *
+	 * @param previousOrderGroup the previousOrderGroup to set
+	 */
+	public void setPreviousOrderGroup(OrderGroup previousOrderGroup) {
+		this.previousOrderGroup = previousOrderGroup;
+	}
+	
+	/**
+	 * Gets the parentOrderGroup
+	 *
+	 * @return the encounter
+	 */
+	public OrderGroup getParentOrderGroup() {
+		return parentOrderGroup;
+	}
+	
+	/**
+	 * Sets the parentOrderGroup
+	 *
+	 * @param parentOrderGroup the encounter to set
+	 */
+	public void setParentOrderGroup(OrderGroup parentOrderGroup) {
+		this.parentOrderGroup = parentOrderGroup;
+	}
+	
+	/**
+	 * Gets the nestedOrderGroups
+	 *
+	 * @return the nestedOrderGroups
+	 */
+	public List<OrderGroup> getNestedOrderGroups() {
+		return nestedOrderGroups;
+	}
+	
+	/**
+	 * Sets the nestedOrderGroups
+	 *
+	 * @param nestedOrderGroups the nestedOrderGroups to set
+	 */
+	public void setNestedOrderGroups(List<OrderGroup> nestedOrderGroups) {
+		this.nestedOrderGroups = nestedOrderGroups;
 	}
 	
 }
