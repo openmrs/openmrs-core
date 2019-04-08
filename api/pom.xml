@@ -36,6 +36,10 @@
          <artifactId>commons-lang3</artifactId>
       </dependency>
       <dependency>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+	    </dependency>
+      <dependency>
          <groupId>commons-beanutils</groupId>
          <artifactId>commons-beanutils</artifactId>
       </dependency>
@@ -53,7 +57,7 @@
       </dependency>
       <dependency>
          <groupId>org.apache.velocity</groupId>
-         <artifactId>velocity</artifactId>
+         <artifactId>velocity-engine-core</artifactId>
       </dependency>
       <dependency>
          <groupId>log4j</groupId>
