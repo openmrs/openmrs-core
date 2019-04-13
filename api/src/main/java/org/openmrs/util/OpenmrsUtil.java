@@ -89,10 +89,8 @@ import org.openmrs.annotation.HasAddOnStartupPrivileges;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
-import org.openmrs.api.InvalidCharactersPasswordException;
 import org.openmrs.api.PasswordException;
-import org.openmrs.api.ShortPasswordException;
-import org.openmrs.api.WeakPasswordException;
+import org.openmrs.api.InvalidPasswordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
@@ -118,7 +116,7 @@ import org.w3c.dom.DocumentType;
  * Utility methods used in openmrs
  */
 public class OpenmrsUtil {
-
+	
 	private OpenmrsUtil() {
 	}
 	
@@ -320,7 +318,7 @@ public class OpenmrsUtil {
 		if (!folder.isDirectory()) {
 			return false;
 		}
-
+		
 		File[] files = folder.listFiles();
 		if (files == null) {
 			return false;
@@ -696,7 +694,8 @@ public class OpenmrsUtil {
 	 * @param c Collection to be joined
 	 * @param separator string to put between all elements
 	 * @return a String representing the toString() of all elements in c, separated by separator
-	 * @deprecated as of 2.2 use Java's {@link String#join} or Apache Commons StringUtils.join for iterables which do not extend {@link CharSequence}
+	 * @deprecated as of 2.2 use Java's {@link String#join} or Apache Commons StringUtils.join for
+	 *             iterables which do not extend {@link CharSequence}
 	 */
 	@Deprecated
 	public static <E> String join(Collection<E> c, String separator) {
@@ -913,7 +912,7 @@ public class OpenmrsUtil {
 		if (fileList == null) {
 			return false;
 		}
-
+		
 		for (File f : fileList) {
 			if (f.isDirectory()) {
 				deleteDirectory(f);
@@ -1212,7 +1211,7 @@ public class OpenmrsUtil {
 			token = token.trim();
 			if (token.length() != 0) {
 				ret.add(Integer.valueOf(token));
-			} 
+			}
 		}
 		return ret;
 	}
@@ -1819,6 +1818,7 @@ public class OpenmrsUtil {
 		String nonDigitGp = "true";
 		String regexGp = null;
 		AdministrationService svc = null;
+		List errors = new ArrayList();
 		
 		try {
 			svc = Context.getAdministrationService();
@@ -1841,18 +1841,22 @@ public class OpenmrsUtil {
 		}
 		
 		if (password == null) {
-			throw new WeakPasswordException();
+			throw new InvalidPasswordException();
 		}
 		
-		if ("true".equals(userGp) && (password.equals(username) || password.equals(systemId))) {
-			throw new WeakPasswordException();
+		if ("true".equals(userGp) && password.equals(username)) {
+			errors.add(getMessage("error.password.matchingUsername"));
+		}
+		
+		if ("true".equals(userGp) && password.equals(systemId)) {
+			errors.add(getMessage("error.password.matchingSystemID"));
 		}
 		
 		if (StringUtils.isNotEmpty(lengthGp)) {
 			try {
 				int minLength = Integer.parseInt(lengthGp);
 				if (password.length() < minLength) {
-					throw new ShortPasswordException(getMessage("error.password.length", lengthGp));
+					errors.add(getMessage("error.password.length", lengthGp));
 				}
 			}
 			catch (NumberFormatException nfe) {
@@ -1862,15 +1866,15 @@ public class OpenmrsUtil {
 		}
 		
 		if ("true".equals(caseGp) && !containsUpperAndLowerCase(password)) {
-			throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase"));
+			errors.add(getMessage("error.password.requireMixedCase"));
 		}
 		
 		if ("true".equals(digitGp) && !containsDigit(password)) {
-			throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber"));
+			errors.add(getMessage("error.password.requireNumber"));
 		}
 		
 		if ("true".equals(nonDigitGp) && containsOnlyDigits(password)) {
-			throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter"));
+			errors.add(getMessage("error.password.requireLetter"));
 		}
 		
 		if (StringUtils.isNotEmpty(regexGp)) {
@@ -1878,13 +1882,17 @@ public class OpenmrsUtil {
 				Pattern pattern = Pattern.compile(regexGp);
 				Matcher matcher = pattern.matcher(password);
 				if (!matcher.matches()) {
-					throw new InvalidCharactersPasswordException(getMessage("error.password.different"));
+					errors.add(getMessage("error.password.different"));
 				}
 			}
 			catch (PatternSyntaxException pse) {
 				log.warn("Invalid regex of " + regexGp + " defined in global property <"
 				        + OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX + ">.");
 			}
+		}
+		
+		if (!errors.isEmpty()) {
+			throw new InvalidPasswordException(String.join(". ", errors));
 		}
 	}
 	
