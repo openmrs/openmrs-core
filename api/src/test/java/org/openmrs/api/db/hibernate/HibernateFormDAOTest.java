@@ -11,14 +11,19 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
+import java.util.HashSet;
 
+import org.codehaus.groovy.transform.tailrec.CollectRecursiveCalls;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Field;
+import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.api.context.Context;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class HibernateFormDAOTest extends BaseContextSensitiveTest {
@@ -41,5 +46,24 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 		formFields = Arrays.asList(new FormField(2), new FormField(3), new FormField(5));
 		Assert.assertEquals(0, (Object)dao.getForms(null, false, Collections.emptyList(), null, formFields, formFields, Arrays.asList(new Field(3))).size());
 		
+	}
+
+	/**
+	 * @see org.openmrs.api.db.hibernate.HibernateFormDAO#getFormCriteria()
+	 */
+	@Test
+	public void getFormCriteria_shouldFilterByContainingAnyFormFields() {
+		List<Form> forms = dao.getForms("", null, new HashSet<>(), null, Arrays.asList(dao.getFormField(2)), new HashSet<>(), new HashSet<>());
+		List<Form> expectedForms = Arrays.asList(dao.getForm(1));
+		Assert.assertEquals(new HashSet<>(expectedForms), new HashSet<>(forms));
+		Assert.assertEquals(1, forms.size());
+
+		forms = dao.getForms("", null, new HashSet<>(), null, Arrays.asList(dao.getFormField(2), dao.getFormField(5)), new HashSet<>(), new HashSet<>());
+		expectedForms = Arrays.asList(dao.getForm(1), dao.getForm(2));
+		Assert.assertEquals(new HashSet<>(expectedForms), new HashSet<>(forms));
+		Assert.assertEquals(2, forms.size());		
+
+		forms = dao.getForms("", null, new HashSet<>(), null, new HashSet<>(), new HashSet<>(), new HashSet<>());
+		Assert.assertEquals(new HashSet<>(dao.getAllForms(true)), new HashSet<>(forms));
 	}
 }
