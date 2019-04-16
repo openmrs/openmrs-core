@@ -10,6 +10,7 @@
 package org.openmrs.util;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -47,9 +48,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
-import org.openmrs.api.InvalidCharactersPasswordException;
-import org.openmrs.api.ShortPasswordException;
-import org.openmrs.api.WeakPasswordException;
+import org.openmrs.api.InvalidPasswordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
@@ -149,18 +148,32 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
-	@Test(expected = InvalidCharactersPasswordException.class)
+	@Test(expected = InvalidPasswordException.class)
 	public void validatePassword_shouldFailWithDigitOnlyPasswordByDefault() {
-		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
+		try {
+			OpenmrsUtil.validatePassword("admin", "123456789", "1-8");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that contains both upper- and lower-case letters. Please choose a password that contains at least one non digit character";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
 	}
 	
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
-	@Test(expected = InvalidCharactersPasswordException.class)
+	@Test(expected = InvalidPasswordException.class)
 	public void validatePassword_shouldFailWithDigitOnlyPasswordIfNotAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
-		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
+		try {
+			OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that contains both upper- and lower-case letters. Please choose a password that contains at least one non digit character";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
 	}
 	
 	/**
@@ -176,18 +189,32 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
-	@Test(expected = InvalidCharactersPasswordException.class)
+	@Test(expected = InvalidPasswordException.class)
 	public void validatePassword_shouldFailWithCharOnlyPasswordByDefault() {
-		OpenmrsUtil.validatePassword("admin", "testonly", "1-8");
+		try {
+			OpenmrsUtil.validatePassword("admin", "testonlY", "1-8");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that contains at least one number";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
 	}
 	
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
-	@Test(expected = InvalidCharactersPasswordException.class)
+	@Test(expected = InvalidPasswordException.class)
 	public void validatePassword_shouldFailWithCharOnlyPasswordIfNotAllowed() {
-		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
-		OpenmrsUtil.validatePassword("admin", "testonly", "1-8");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		try {
+			OpenmrsUtil.validatePassword("admin", "testonlY", "1-8");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that contains at least one number";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
 	}
 	
 	/**
@@ -203,18 +230,33 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
-	@Test(expected = InvalidCharactersPasswordException.class)
+	@Test(expected = InvalidPasswordException.class)
 	public void validatePassword_shouldFailWithoutUpperAndLowerCasePasswordByDefault() {
-		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
+		try {
+			OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that contains both upper- and lower-case letters";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
 	}
 	
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
-	@Test(expected = InvalidCharactersPasswordException.class)
+	@Test(expected = InvalidPasswordException.class)
 	public void validatePassword_shouldFailWithoutUpperAndLowerCasePasswordIfNotAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
-		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
+		try {
+			OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that contains both upper- and lower-case letters";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
+		
 	}
 	
 	/**
@@ -229,18 +271,32 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
-	@Test(expected = WeakPasswordException.class)
+	@Test(expected = InvalidPasswordException.class)
 	public void validatePassword_shouldFailWithPasswordEqualsToUserNameByDefault() {
-		OpenmrsUtil.validatePassword("Admin1234", "Admin1234", "1-8");
+		try {
+			OpenmrsUtil.validatePassword("Admin1234", "Admin1234", "1-8");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that does not match username";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
 	}
 	
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
-	@Test(expected = WeakPasswordException.class)
+	@Test(expected = InvalidPasswordException.class)
 	public void validatePassword_shouldFailWithPasswordEqualsToUserNameIfNotAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "true");
-		OpenmrsUtil.validatePassword("Admin1234", "Admin1234", "1-8");
+		try {
+			OpenmrsUtil.validatePassword("Admin1234", "Admin1234", "1-8");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that does not match username";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
 	}
 	
 	/**
@@ -255,18 +311,32 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
-	@Test(expected = WeakPasswordException.class)
+	@Test(expected = InvalidPasswordException.class)
 	public void validatePassword_shouldFailWithPasswordEqualsToSystemIdByDefault() {
-		OpenmrsUtil.validatePassword("admin", "Admin1234", "Admin1234");
+		try {
+			OpenmrsUtil.validatePassword("admin", "Admin1234", "Admin1234");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that does not match System ID";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
 	}
 	
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
-	@Test(expected = WeakPasswordException.class)
+	@Test(expected = InvalidPasswordException.class)
 	public void validatePassword_shouldFailWithPasswordEqualsToSystemIdIfNotAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "true");
-		OpenmrsUtil.validatePassword("admin", "Admin1234", "Admin1234");
+		try {
+			OpenmrsUtil.validatePassword("admin", "Admin1234", "Admin1234");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that does not match System ID";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
 	}
 	
 	/**
@@ -281,18 +351,32 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
-	@Test(expected = ShortPasswordException.class)
+	@Test(expected = InvalidPasswordException.class)
 	public void validatePassword_shouldFailWithShortPasswordByDefault() {
-		OpenmrsUtil.validatePassword("admin", "1234567", "1-8");
+		try {
+			OpenmrsUtil.validatePassword("admin", "Aa34567", "1-8");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that is at least 8 characters long";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
 	}
 	
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
-	@Test(expected = ShortPasswordException.class)
+	@Test(expected = InvalidPasswordException.class)
 	public void validatePassword_shouldFailWithShortPasswordIfNotAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
-		OpenmrsUtil.validatePassword("admin", "12345", "1-8");
+		try {
+			OpenmrsUtil.validatePassword("admin", "Aa345", "1-8");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that is at least 6 characters long";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
 	}
 	
 	/**
@@ -307,11 +391,18 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
-	@Test(expected = InvalidCharactersPasswordException.class)
+	@Test(expected = InvalidPasswordException.class)
 	public void validatePassword_shouldFailWithPasswordNotMatchingConfiguredRegex() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX,
 		    "[A-Z][a-z][0-9][0-9][a-z][A-Z][a-z][a-z][a-z][a-z]");
-		OpenmrsUtil.validatePassword("admin", "he11oWorld", "1-8");
+		try {
+			OpenmrsUtil.validatePassword("admin", "he11oWorld", "1-8");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a different password.";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
 	}
 	
 	/**
@@ -338,6 +429,87 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Test
 	public void validatePassword_shouldAllowPasswordToContainWhiteSpaces() {
 		OpenmrsUtil.validatePassword("admin", "Test *&^ 1234? ", "1-8");
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 */
+	@Test(expected = InvalidPasswordException.class)
+	public void validatePassword_shouldFailWIthPasswordBreakingManyRequirementsByDefault() {
+		try {
+			OpenmrsUtil.validatePassword("~", "~", "~");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that does not match username. Please choose a password that does not match System ID. Please choose a password that is at least 8 characters long. Please choose a password that contains both upper- and lower-case letters. Please choose a password that contains at least one number";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 */
+	@Test(expected = InvalidPasswordException.class)
+	public void validatePassword_shouldFailWIthPasswordBreakingManyRequirementsIfNotAllowed() {
+		try {
+			TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "true");
+			TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+			TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+			TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+			TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX,
+			    "[A-Z][a-z][0-9][0-9][a-z][A-Z][a-z][a-z][a-z][a-z]");
+			OpenmrsUtil.validatePassword("~", "~", "~");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that does not match username. Please choose a password that does not match System ID. Please choose a password that is at least 6 characters long. Please choose a password that contains both upper- and lower-case letters. Please choose a password that contains at least one number. Please choose a different password.";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 */
+	@Test
+	public void validatePassword_shouldPassWIthPasswordBreakingManyRequirementsIfAllowed() {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "0");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX, "[!]");
+		OpenmrsUtil.validatePassword("!", "!", "!");
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 */
+	@Test(expected = InvalidPasswordException.class)
+	public void validatePassword_shouldFailWIthPasswordNoUppercaseOrDigitsByDefault() {
+		try {
+			OpenmrsUtil.validatePassword("admin", "testaaaaaaa", "1-8");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that contains both upper- and lower-case letters. Please choose a password that contains at least one number";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
+	}
+	
+	/**
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 */
+	@Test(expected = InvalidPasswordException.class)
+	public void validatePassword_shouldFailWIthPasswordNoLowercaseorDigitsIfNotAllowed() {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		try {
+			OpenmrsUtil.validatePassword("admin", "TESTAAAAAAAA", "1-8");
+		}
+		catch (InvalidPasswordException ipe) {
+			String message = "Please choose a password that contains both upper- and lower-case letters. Please choose a password that contains at least one number";
+			assertEquals(message, ipe.getMessage());
+			throw ipe;
+		}
 	}
 	
 	/**

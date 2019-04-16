@@ -9,24 +9,25 @@
  */
 package org.openmrs.api;
 
+import org.openmrs.User;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Password exception when the length is less than the minimum allowed.
+ * Password exception handler that defaults to weak error message.
  * <p>
  * For details on what is checked, see {@link OpenmrsUtil#validatePassword(String, String, String)}.
  * 
  * @since 1.5
  */
-public class ShortPasswordException extends PasswordException {
+public class InvalidPasswordException extends PasswordException {
 	
-	private static final long serialVersionUID = 31620091002L;
+	private static final long serialVersionUID = 31620091004L;
 	
-	public ShortPasswordException() {
-		super("error.password.short");
+	public InvalidPasswordException() {
+		super("error.password.weak");
 	}
 	
-	public ShortPasswordException(String message) {
+	public InvalidPasswordException(String message) {
 		super(message);
 	}
 }
