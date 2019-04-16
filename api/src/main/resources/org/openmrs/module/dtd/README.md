@@ -19,6 +19,12 @@ your config. Like so
 </module>
 ```
 
+## Testing
+
+ Configuration files before version 1.6 were untested. There is currently a pull request awaiting approval that includes tests for configuration files (past and future). The tests check for XML syntax errors, incorrect ordering, a valid XML file, and if there is a missing required element. 
+
+ The tests for the configuration files will be found by navigating to api/src/test/java/org/openmrs/module/dtd/ once the pull request is approved. 
+
 ## Public availability/Build
 
 The DTD files from this folder are synced daily to `http://resources.openmrs.org/doctype/config-x.x.dtd`
