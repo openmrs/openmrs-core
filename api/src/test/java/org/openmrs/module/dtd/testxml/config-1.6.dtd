@@ -1,8 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>	
+<?xml version="1.0" encoding="UTF-8"?>
 
-	<!--
-	Top level configuration element.
-	-->
+<!--
+
+	This Source Code Form is subject to the terms of the Mozilla Public License,
+	v. 2.0. If a copy of the MPL was not distributed with this file, You can
+	obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+	the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+	Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+	graphic logo is a trademark of OpenMRS Inc.
+
+-->
+
+<!--
+Top level configuration element.
+-->
 	<!ELEMENT module (
 		(id),
 		(name),
@@ -28,9 +40,10 @@
 		(filter-mapping*),
 		(messages*),
 		(mappingFiles?),
-		(packagesWithMappedClasses?)
+		(packagesWithMappedClasses?),
+		(conditionalResources?)
 		)>
-	<!ATTLIST module configVersion CDATA #FIXED "1.5">
+	<!ATTLIST module configVersion CDATA #FIXED "1.6">
 
 	<!ELEMENT id (#PCDATA)>
 	<!ELEMENT name (#PCDATA)>
@@ -108,3 +121,12 @@
 
 	<!ELEMENT mappingFiles (#PCDATA)>
 	<!ELEMENT packagesWithMappedClasses (#PCDATA)>
+
+	<!ELEMENT conditionalResources (conditionalResource+)>
+	<!ELEMENT conditionalResource (path, (openmrsVersion | openmrsPlatformVersion | loadIfModulesPresent))>
+	<!ELEMENT path (#PCDATA)>
+	<!ELEMENT openmrsPlatformVersion (#PCDATA)>
+	<!ELEMENT openmrsVersion (#PCDATA)>
+	<!ELEMENT loadIfModulesPresent (openmrsModule+)>
+	<!ELEMENT openmrsModule (moduleId, version)>
+	<!ELEMENT moduleId (#PCDATA)>

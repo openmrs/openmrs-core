@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>	
+<?xml version="1.0" encoding="UTF-8"?>
 
 	<!--
 	Top level configuration element.
@@ -28,9 +28,10 @@
 		(filter-mapping*),
 		(messages*),
 		(mappingFiles?),
-		(packagesWithMappedClasses?)
+		(packagesWithMappedClasses?),
+		(conditionalResources?)
 		)>
-	<!ATTLIST module configVersion CDATA #FIXED "1.5">
+	<!ATTLIST module configVersion CDATA #FIXED "1.6">
 
 	<!ELEMENT id (#PCDATA)>
 	<!ELEMENT name (#PCDATA)>
@@ -108,3 +109,12 @@
 
 	<!ELEMENT mappingFiles (#PCDATA)>
 	<!ELEMENT packagesWithMappedClasses (#PCDATA)>
+
+	<!ELEMENT conditionalResources (conditionalResource+)>
+	<!ELEMENT conditionalResource (path, (openmrsVersion | openmrsPlatformVersion | loadIfModulesPresent))>
+	<!ELEMENT path (#PCDATA)>
+	<!ELEMENT openmrsPlatformVersion (#PCDATA)>
+	<!ELEMENT openmrsVersion (#PCDATA)>
+	<!ELEMENT loadIfModulesPresent (openmrsModule+)>
+	<!ELEMENT openmrsModule (moduleId, version)>
+	<!ELEMENT moduleId (#PCDATA)>
