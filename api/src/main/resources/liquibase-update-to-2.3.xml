@@ -49,4 +49,18 @@
 		</createTable>
 	</changeSet>
 
+    <changeSet id="TRUNK-5413" author="odorajonathan" dbms="mysql">
+      <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="order_set" columnName="category"/></not>
+      </preConditions>
+      <comment>
+          Add a category field to the order_set table
+      </comment>
+      <addColumn tableName="order_set">
+            <column name="category" type="int"/>
+      </addColumn>
+      <addForeignKeyConstraint constraintName="category_order_set_fk" referencedTableName="concept" 
+      baseColumnNames="category" baseTableName="order_set" referencedColumnNames="concept_id"/>
+    </changeSet>
+
 </databaseChangeLog>
