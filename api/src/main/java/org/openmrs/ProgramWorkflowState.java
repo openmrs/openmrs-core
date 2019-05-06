@@ -50,7 +50,7 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	/** @see Object#toString() */
 	@Override
 	public String toString() {
-		return "State " + getConcept().getName() + " initial=" + getInitial() + " terminal=" + getTerminal();
+		return "State " + getConcept().toString() + " initial=" + getInitial() + " terminal=" + getTerminal();
 	}
 	
 	// ******************
