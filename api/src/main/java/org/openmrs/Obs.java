@@ -9,6 +9,17 @@
  */
 package org.openmrs;
 
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
@@ -20,17 +31,6 @@ import org.openmrs.util.Format.FORMAT_TYPE;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Set;
 
 /**
  * An observation is a single unit of clinical information. <br>
@@ -67,32 +67,14 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @since 2.1.0
 	 */
 	public enum Interpretation {
-		NORMAL,
-		ABNORMAL,
-		CRITICALLY_ABNORMAL,
-		NEGATIVE,
-		POSITIVE,
-		CRITICALLY_LOW,
-		LOW,
-		HIGH,
-		CRITICALLY_HIGH,
-		VERY_SUSCEPTIBLE,
-		SUSCEPTIBLE,
-		INTERMEDIATE,
-		RESISTANT,
-		SIGNIFICANT_CHANGE_DOWN,
-		SIGNIFICANT_CHANGE_UP,
-		OFF_SCALE_LOW,
-		OFF_SCALE_HIGH
+		NORMAL, ABNORMAL, CRITICALLY_ABNORMAL, NEGATIVE, POSITIVE, CRITICALLY_LOW, LOW, HIGH, CRITICALLY_HIGH, VERY_SUSCEPTIBLE, SUSCEPTIBLE, INTERMEDIATE, RESISTANT, SIGNIFICANT_CHANGE_DOWN, SIGNIFICANT_CHANGE_UP, OFF_SCALE_LOW, OFF_SCALE_HIGH
 	}
 	
 	/**
 	 * @since 2.1.0
 	 */
 	public enum Status {
-		PRELIMINARY,
-		FINAL,
-		AMENDED
+		PRELIMINARY, FINAL, AMENDED
 	}
 	
 	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";
@@ -237,7 +219,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 		
 		newObs.setValueComplex(obsToCopy.getValueComplex());
 		newObs.setComplexData(obsToCopy.getComplexData());
-		newObs.setFormField(obsToCopy.getFormFieldNamespace(),obsToCopy.getFormFieldPath());
+		newObs.setFormField(obsToCopy.getFormFieldNamespace(), obsToCopy.getFormFieldPath());
 		
 		// Copy list of all members, including voided, and put them in respective groups
 		if (obsToCopy.hasGroupMembers(true)) {
@@ -432,7 +414,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 */
 	public Set<Obs> getGroupMembers() {
 		//same as just returning groupMembers
-		return getGroupMembers(false); 
+		return getGroupMembers(false);
 	}
 	
 	/**
@@ -474,7 +456,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 */
 	public void setGroupMembers(Set<Obs> groupMembers) {
 		//Copy over the entire list
-		this.groupMembers = groupMembers; 
+		this.groupMembers = groupMembers;
 		
 	}
 	
@@ -645,8 +627,8 @@ public class Obs extends BaseChangeableOpenmrsData {
 	public void setValueBoolean(Boolean valueBoolean) {
 		if (getConcept() != null && getConcept().getDatatype() != null && getConcept().getDatatype().isBoolean()) {
 			if (valueBoolean != null) {
-				setValueCoded(valueBoolean ? Context.getConceptService().getTrueConcept() : Context
-				        .getConceptService().getFalseConcept());
+				setValueCoded(valueBoolean ? Context.getConceptService().getTrueConcept() : Context.getConceptService()
+				        .getFalseConcept());
 			} else {
 				setValueCoded(null);
 			}
@@ -861,7 +843,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @since 1.5
 	 * @should return true if the concept is complex
 	 */
-	public boolean isComplex() {		
+	public boolean isComplex() {
 		if (getConcept() != null) {
 			return getConcept().isComplex();
 		}
@@ -971,7 +953,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 		NumberFormat nf = NumberFormat.getNumberInstance(locale);
 		DecimalFormat df = (DecimalFormat) nf;
 		// formatting style up to 6 digits
-		df.applyPattern("#0.0#####"); 
+		df.applyPattern("#0.0#####");
 		//branch on hl7 abbreviations
 		if (getConcept() != null) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
@@ -1307,8 +1289,9 @@ public class Obs extends BaseChangeableOpenmrsData {
 	}
 	
 	/**
-	 * Similar to FHIR's Observation.interpretation. Supports a subset of FHIR's Observation Interpretation Codes.
-	 * See https://www.hl7.org/fhir/valueset-observation-interpretation.html
+	 * Similar to FHIR's Observation.interpretation. Supports a subset of FHIR's Observation
+	 * Interpretation Codes. See https://www.hl7.org/fhir/valueset-observation-interpretation.html
+	 * 
 	 * @since 2.1.0
 	 */
 	public Interpretation getInterpretation() {
@@ -1325,9 +1308,10 @@ public class Obs extends BaseChangeableOpenmrsData {
 	
 	/**
 	 * Similar to FHIR's Observation.status. Supports a subset of FHIR's ObservationStatus values.
-	 * At present OpenMRS does not support FHIR's REGISTERED and CANCELLED statuses, because we don't support obs with
-	 * null values.
-	 * See: https://www.hl7.org/fhir/valueset-observation-status.html
+	 * At present OpenMRS does not support FHIR's REGISTERED and CANCELLED statuses, because we
+	 * don't support obs with null values. See:
+	 * https://www.hl7.org/fhir/valueset-observation-status.html
+	 * 
 	 * @since 2.1.0
 	 */
 	public Status getStatus() {

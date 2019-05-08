@@ -11,11 +11,11 @@ package org.openmrs;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -42,29 +42,29 @@ public class Person extends BaseChangeableOpenmrsData {
 	public static final long serialVersionUID = 2L;
 	
 	private static final Logger log = LoggerFactory.getLogger(Person.class);
-
+	
 	@DocumentId
 	protected Integer personId;
-
+	
 	private Set<PersonAddress> addresses = null;
-
+	
 	@ContainedIn
 	private Set<PersonName> names = null;
-
+	
 	@ContainedIn
 	private Set<PersonAttribute> attributes = null;
-
+	
 	@Field
 	private String gender;
-
+	
 	private Date birthdate;
-
+	
 	private Date birthtime;
-
+	
 	private Boolean birthdateEstimated = false;
-
+	
 	private Boolean deathdateEstimated = false;
-
+	
 	@Field
 	private Boolean dead = false;
 	
@@ -81,7 +81,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	private User personChangedBy;
 	
 	private Date personDateChanged;
-
+	
 	private Boolean personVoided = false;
 	
 	private User personVoidedBy;
@@ -89,7 +89,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	private Date personDateVoided;
 	
 	private String personVoidReason;
-
+	
 	@Field
 	private boolean isPatient;
 	
@@ -140,7 +140,7 @@ public class Person extends BaseChangeableOpenmrsData {
 		// base creator/voidedBy/changedBy info is not copied here
 		// because that is specific to and will be recreated
 		// by the subobject upon save
-
+		
 		setPersonCreator(person.getPersonCreator());
 		setPersonDateCreated(person.getPersonDateCreated());
 		setPersonChangedBy(person.getPersonChangedBy());
@@ -149,7 +149,7 @@ public class Person extends BaseChangeableOpenmrsData {
 		setPersonVoidedBy(person.getPersonVoidedBy());
 		setPersonDateVoided(person.getPersonDateVoided());
 		setPersonVoidReason(person.getPersonVoidReason());
-
+		
 		setPatient(person.getIsPatient());
 	}
 	
@@ -209,7 +209,6 @@ public class Person extends BaseChangeableOpenmrsData {
 	
 	/**
 	 * @return true if person's birthdate is estimated
-	 * 
 	 * @deprecated as of 2.0, use {@link #getBirthdateEstimated()}
 	 */
 	@Deprecated
@@ -251,29 +250,29 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @return person's time of birth with the date portion set to the date from person's birthdate
 	 */
 	public Date getBirthDateTime() {
-        if(birthdate != null && birthtime != null){
-            String birthDateString = new SimpleDateFormat("yyyy-MM-dd").format(birthdate);
-            String birthTimeString = new SimpleDateFormat("HH:mm:ss").format(birthtime);
-
-            try {
-                return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(birthDateString + " " + birthTimeString);
-            } catch (ParseException e) {
+		if (birthdate != null && birthtime != null) {
+			String birthDateString = new SimpleDateFormat("yyyy-MM-dd").format(birthdate);
+			String birthTimeString = new SimpleDateFormat("HH:mm:ss").format(birthtime);
+			
+			try {
+				return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(birthDateString + " " + birthTimeString);
+			}
+			catch (ParseException e) {
 				log.error("Failed to parse birth date string", e);
-            }
-        }
-        return null;
-    }
+			}
+		}
+		return null;
+	}
 	
 	/**
 	 * @return person's time of birth.
 	 */
 	public Date getBirthtime() {
-        return this.birthtime;
-    }
-
+		return this.birthtime;
+	}
+	
 	/**
 	 * @return Returns the death status.
-	 * 
 	 * @deprecated as of 2.0, use {@link #getDead()}
 	 */
 	@Deprecated
@@ -332,7 +331,6 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * 
 	 * @return non coded cause of death
 	 * @since 2.2.0
-	 * 
 	 */
 	public String getCauseOfDeathNonCoded() {
 		return this.causeOfDeathNonCoded;
@@ -346,7 +344,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @should not fail with null causeOfDeathNonCoded
 	 * @should set the attribute causeOfDeathNonCoded with the given parameter
 	 */
-	public void setCauseOfDeathNonCoded(String causeOfDeathNonCoded) { 
+	public void setCauseOfDeathNonCoded(String causeOfDeathNonCoded) {
 		this.causeOfDeathNonCoded = causeOfDeathNonCoded;
 	}
 	
@@ -397,7 +395,6 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @see org.openmrs.PersonAttribute
 	 * @should not get voided attributes
 	 * @should not fail with null attributes
-	 *
 	 */
 	public Set<PersonAttribute> getAttributes() {
 		if (attributes == null) {
@@ -459,7 +456,7 @@ public class Person extends BaseChangeableOpenmrsData {
 		for (PersonAttribute currentAttribute : getActiveAttributes()) {
 			if (currentAttribute.equals(newAttribute)) {
 				// if we have the same PersonAttributeId, don't add the new attribute
-				return; 
+				return;
 			} else if (currentAttribute.getAttributeType().equals(newAttribute.getAttributeType())) {
 				if (currentAttribute.getValue() != null && currentAttribute.getValue().equals(newAttribute.getValue())) {
 					// this person already has this attribute
@@ -515,7 +512,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @return PersonAttribute that matches the given type
 	 * @should not fail when attribute type is null
 	 * @should not return voided attribute
-	 * @should return null when existing PersonAttributeType is voided 
+	 * @should return null when existing PersonAttributeType is voided
 	 */
 	public PersonAttribute getAttribute(PersonAttributeType pat) {
 		if (pat != null) {
@@ -687,8 +684,8 @@ public class Person extends BaseChangeableOpenmrsData {
 		StringBuilder s = new StringBuilder("");
 		
 		for (PersonAttribute attribute : getAttributes()) {
-			s.append(attribute.getAttributeType()).append(" : ").append(attribute.getValue()).append(" : voided? ").append(
-			    attribute.getVoided()).append("\n");
+			s.append(attribute.getAttributeType()).append(" : ").append(attribute.getValue()).append(" : voided? ")
+			        .append(attribute.getVoided()).append("\n");
 		}
 		
 		return s.toString();
@@ -838,8 +835,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	}
 	
 	/**
-	 * Convenience method to get the {@link PersonAddress} object that is marked as "preferred".
-	 * <br>
+	 * Convenience method to get the {@link PersonAddress} object that is marked as "preferred". <br>
 	 * <br>
 	 * If two addresses are marked as preferred (or no addresses), the database ordering comes into
 	 * effect and the one that was created most recently will be returned. <br>
@@ -1043,7 +1039,6 @@ public class Person extends BaseChangeableOpenmrsData {
 	
 	/**
 	 * @return true/false whether this person is a patient or not
-	 *
 	 * @deprecated as of 2.0, use {@link #getIsPatient()}
 	 */
 	@Deprecated
@@ -1055,7 +1050,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	public boolean getIsPatient() {
 		return isPatient;
 	}
-
+	
 	/**
 	 * This should only be set by the database layer by looking at whether a row exists in the
 	 * patient table
