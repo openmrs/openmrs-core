@@ -218,9 +218,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * @since 1.11.0, 1.12.0
 	 */
 	public List<Encounter> getNonVoidedEncounters() {
-		return getEncounters().stream()
-				.filter(e -> !e.getVoided())
-				.collect(Collectors.toList());
+		return getEncounters().stream().filter(e -> !e.getVoided()).collect(Collectors.toList());
 	}
 	
 	/**
