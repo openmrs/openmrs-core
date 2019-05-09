@@ -35,7 +35,7 @@
   <patient patient_id="7" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
   <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="e997ac86-4d8a-40f3-bedb-da84d35917b8"/>
   <patient_identifier patient_identifier_id="2" patient_id="2" identifier="12345" identifier_type="1" preferred="0" location_id="1" creator="1" date_created="2004-01-01 00:00:00.0" voided="false" uuid="504c83c7-cfbf-4ae7-a4da-bdfa3236689f"/>
-  <patient_identifier patient_identifier_id="3" patient_id="3" identifier="4567" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="acc345a8-0ae9-4cad-92ec-7a5b0b25752f"/>
+  <patient_identifier patient_identifier_id="3" patient_id="3" identifier="4567" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="true" uuid="acc345a8-0ae9-4cad-92ec-7a5b0b25752f"/>
   <patient_identifier patient_identifier_id="4" patient_id="4" identifier="5634" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="true" uuid="e1bcf220-d116-4d98-93a4-2adf6282f797"/>
   <patient_identifier patient_identifier_id="5" patient_id="5" identifier="563422" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="f4798e60-b9ef-47d8-afa7-54a1dc9e27c1"/>
 </dataset>
