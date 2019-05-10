@@ -9,8 +9,16 @@
  */
 package org.openmrs.api.context;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.openmrs.Person;
+import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
@@ -24,6 +32,9 @@ import org.openmrs.test.BaseContextSensitiveTest;
  * Tests the methods on the {@link Daemon} class
  */
 public class DaemonTest extends BaseContextSensitiveTest {
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * @see Daemon#executeScheduledTask(Task)
@@ -50,6 +61,48 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	public void executeScheduledTask_shouldNotThrowErrorIfCalledFromATimerSchedulerTaskClass() throws Throwable {
 		Task task = new PrivateTask();
 		Assert.assertTrue(new PrivateSchedulerTask(task).runTheTest());
+	}
+	
+	@Test 
+	public void createUser_shouldThrowWhenCalledOutsideContextDAO() throws Throwable {
+		// verif
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Context.DAO.only", new Object[] { this.getClass().getName() }, null));
+		
+		// replay
+		Daemon.createUser(new User(), "password", null);
+	}
+	
+	@Test
+	public void createUser_shouldCreateUserWithRolesInContextDAO() throws Throwable {
+		// setup
+		User u = new User();
+		u.setPerson(new Person());
+		u.addName(new PersonName("Jane", "X", "Doe"));
+		u.setUsername("jdoe");
+		u.getPerson().setGender("F");
+		
+		// replay
+		User createdUser = Context.getContextDAO().createUser(u, "P@ssw0rd", Arrays.asList("Provider", "Foobar Role"));
+		
+		// verif
+		Assert.assertNotNull(createdUser.getId());
+		Set<String> roleNames = createdUser.getRoles().stream().map(r -> r.getName()).collect(Collectors.toSet());
+		Assert.assertTrue(roleNames.contains("Provider"));
+		Assert.assertFalse(roleNames.contains("Foobar Role")); // a bogus role name has just no impact on the created user
+	}
+	
+	@Test 
+	public void createUser_shouldThrowWhenUserExists() throws Throwable {
+		// setup
+		User u = Context.getUserService().getUser(501);
+		
+		// verif
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("User.creating.already.exists", new Object[] { u.getDisplayString() }, null));
+		
+		// replay
+		Context.getContextDAO().createUser(u, "P@ssw0rd", null);
 	}
 	
 	/**

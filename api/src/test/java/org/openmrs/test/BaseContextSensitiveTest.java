@@ -81,6 +81,8 @@ import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
+import org.openmrs.api.context.Credentials;
+import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
@@ -366,6 +368,17 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	/**
+	 * This method provides the credentials to authenticate the user that is authenticated through the base setup.
+	 * This method can be overridden when setting up test application contexts that are *not* using the default authentication scheme.
+	 * 
+	 * @return The credentials to use for base setup authentication.
+	 * @since 2.3.0
+	 */
+	protected Credentials getCredentials() {
+		return new UsernamePasswordCredentials("admin", "test");
+	}
+	
+	/**
 	 * Authenticate to the Context. A popup box will appear asking the current user to enter
 	 * credentials unless there is a junit.username and junit.password defined in the runtime
 	 * properties
@@ -378,7 +391,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 		
 		try {
-			Context.authenticate("admin", "test");
+			Context.authenticate(getCredentials());
 			authenticatedUser = Context.getAuthenticatedUser();
 			return;
 		}

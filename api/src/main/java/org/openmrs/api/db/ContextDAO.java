@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db;
 
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Future;
 
@@ -61,6 +62,32 @@ public interface ContextDAO {
 	 * @throws ContextAuthenticationException
 	 */
 	public User getUserByUuid(String uuid) throws ContextAuthenticationException;
+	
+	/**
+	 * Gets a user given the username. Privilege checks are not done here because this is used by the
+	 * {@link Context#getAuthenticatedUser()} or {@link Context#authenticate(org.openmrs.api.context.Credentials)} methods.
+	 * 
+	 * @param username The username of the user to fetch
+	 * @return The matched user, null otherwise.
+	 * 
+	 * @since 2.3.0
+	 */
+	public User getUserByUsername(String username);
+	
+	/**
+	 * Creates a new user.
+	 * When the users are managed by a third-party authentication provider, it will happen that a successfully authenticated user still needs to be created in OpenMRS.
+	 * This method is made available to authentication schemes to create new users on the fly.
+	 * 
+	 * @param user A new user to be created.
+	 * @param password The password for the new user.
+	 * @param roleNames A list of role names to add to the user.
+	 * @return The newly created user
+	 * @throws Exception 
+	 * 
+	 * @since 2.3.0
+	 */
+	public User createUser(User user, String password, List<String> roleNames) throws Exception;
 	
 	/**
 	 * Open session.
