@@ -1,179 +1,179 @@
-<!--
+<!-- This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed 
+	with this file, You can obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under the terms of the Healthcare 
+	Disclaimer located at http://openmrs.org/license. Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS 
+	graphic logo is a trademark of OpenMRS Inc. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>org.openmrs</groupId>
+		<artifactId>openmrs</artifactId>
+		<version>2.3.0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openmrs.web</groupId>
+	<artifactId>openmrs-webapp</artifactId>
+	<packaging>war</packaging>
+	<name>openmrs-webapp</name>
+	<description>The web application of openmrs</description>
 
-    This Source Code Form is subject to the terms of the Mozilla Public License,
-    v. 2.0. If a copy of the MPL was not distributed with this file, You can
-    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
-    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+	<dependencies>
+		<dependency>
+			<groupId>org.openmrs.test</groupId>
+			<artifactId>openmrs-test</artifactId>
+			<type>pom</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.api</groupId>
+			<artifactId>openmrs-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.web</groupId>
+			<artifactId>openmrs-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>servlet-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>jsp-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
 
-    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
-    graphic logo is a trademark of OpenMRS Inc.
+	<build>
+		<finalName>${webapp.name}</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<excludes>
+					<exclude>liquibase-demo-data.zip</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>src/main/webapp</directory>
+				<includes>
+					<include>WEB-INF/web.xml</include>
+				</includes>
+				<filtering>true</filtering>
+				<targetPath>../jetty</targetPath>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<unzip src="src/main/resources/liquibase-demo-data.zip" dest="${project.build.outputDirectory}" />
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<webResources>
+						<resource>
+							<directory>src/main/webapp</directory>
+							<includes>
+								<include>WEB-INF/web.xml</include>
+								<include>index.htm</include>
+							</includes>
+							<filtering>true</filtering>
+						</resource>
+					</webResources>
+					<packagingExcludes>test/**</packagingExcludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.3.3.v20150827</version>
+				<configuration>
+					<webApp>
+						<descriptor>${project.build.directory}/jetty/WEB-INF/web.xml</descriptor>
+						<contextPath>/${webapp.name}</contextPath>
+						<!--enable reloading static resources -->
+						<overrideDescriptor>src/test/resources/override-web.xml</overrideDescriptor>
+						<extraClasspath>target/classes;../api/target/classes;../web/target/classes</extraClasspath>
+					</webApp>
+					<scanIntervalSeconds>10</scanIntervalSeconds>
+					<scanTargets>
+						<scanTarget>../api/target/classes</scanTarget>
+						<scanTarget>../web/target/classes</scanTarget>
+					</scanTargets>
+					<systemProperties>
+						<systemProperty>
+							<name>OPENMRS_INSTALLATION_SCRIPT</name>
+							<value>${OPENMRS_INSTALLATION_SCRIPT}</value>
+						</systemProperty>
+					</systemProperties>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<path>/${project.build.finalName}</path>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<configuration>
+					<header>${project.parent.basedir}/license-header.txt</header>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<id>integration-test</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<dependencies>
 
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-   <parent>
-      <groupId>org.openmrs</groupId>
-      <artifactId>openmrs</artifactId>
-      <version>2.3.0-SNAPSHOT</version>
-   </parent>
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>org.openmrs.web</groupId>
-   <artifactId>openmrs-webapp</artifactId>
-   <packaging>war</packaging>
-   <name>openmrs-webapp</name>
-   <description>The web application of openmrs</description>
 
-   <dependencies>
-       <dependency>
-         <groupId>org.openmrs.test</groupId>
-         <artifactId>openmrs-test</artifactId>
-         <type>pom</type>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.openmrs.api</groupId>
-         <artifactId>openmrs-api</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.openmrs.web</groupId>
-         <artifactId>openmrs-web</artifactId>
-         <exclusions>
-            <exclusion>
-               <groupId>javax.servlet</groupId>
-               <artifactId>servlet-api</artifactId>
-            </exclusion>
-            <exclusion>
-               <groupId>javax.servlet</groupId>
-               <artifactId>jsp-api</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
-   </dependencies>
+				<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+				<dependency>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+					<version>8.0.16</version>
+					<scope>runtime</scope>
+				</dependency>
+				<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-mxj -->
+				<dependency>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-mxj</artifactId>
+					<version>5.0.12</version>
+					<scope>compile</scope>
+				</dependency>
 
-   <build>
-      <finalName>${webapp.name}</finalName>
-      <resources>
-         <resource>
-            <directory>src/main/resources</directory>
-            <excludes>
-               <exclude>liquibase-demo-data.zip</exclude>
-            </excludes>
-         </resource>
-         <resource>
-            <directory>src/main/webapp</directory>
-            <includes>
-               <include>WEB-INF/web.xml</include>
-            </includes>
-            <filtering>true</filtering>
-            <targetPath>../jetty</targetPath>
-         </resource>
-      </resources>
-      <plugins>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.4</version>
-            <executions>
-               <execution>
-                  <phase>process-resources</phase>
-                  <goals>
-                     <goal>run</goal>
-                  </goals>
-                  <configuration>
-                     <tasks>
-                        <unzip src="src/main/resources/liquibase-demo-data.zip" dest="${project.build.outputDirectory}" />
-                     </tasks>
-                  </configuration>
-               </execution>
-            </executions>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-war-plugin</artifactId>
-            <configuration>
-               <webResources>
-                  <resource>
-                     <directory>src/main/webapp</directory>
-                     <includes>
-                        <include>WEB-INF/web.xml</include>
-                         <include>index.htm</include>
-                     </includes>
-                     <filtering>true</filtering>
-                  </resource>
-               </webResources>
-               <packagingExcludes>test/**</packagingExcludes>
-            </configuration>
-         </plugin>
-         <plugin>
-             <groupId>org.eclipse.jetty</groupId>
-             <artifactId>jetty-maven-plugin</artifactId>
-             <version>9.3.3.v20150827</version>
-             <configuration>
-               <webApp>
-               	  <descriptor>${project.build.directory}/jetty/WEB-INF/web.xml</descriptor>
-                  <contextPath>/${webapp.name}</contextPath>
-                  <!--enable reloading static resources -->
-                  <overrideDescriptor>src/test/resources/override-web.xml</overrideDescriptor>
-                  <extraClasspath>target/classes;../api/target/classes;../web/target/classes</extraClasspath>
-               </webApp>
-               <scanIntervalSeconds>10</scanIntervalSeconds>
-               <scanTargets>
-                  <scanTarget>../api/target/classes</scanTarget>
-                  <scanTarget>../web/target/classes</scanTarget>
-               </scanTargets>
-               <systemProperties>
-                   <systemProperty>
-                       <name>OPENMRS_INSTALLATION_SCRIPT</name>
-                       <value>${OPENMRS_INSTALLATION_SCRIPT}</value>
-                   </systemProperty>
-               </systemProperties>
-            </configuration>
-         </plugin>
-         <plugin>
-		        <groupId>org.apache.tomcat.maven</groupId>
-		        <artifactId>tomcat7-maven-plugin</artifactId>
-		        <version>2.2</version>
-		        <configuration>
-		          <path>/${project.build.finalName}</path>
-		        </configuration>
-         </plugin>
-		  <plugin>
-			  <groupId>com.mycila</groupId>
-			  <artifactId>license-maven-plugin</artifactId>
-			  <configuration>
-				  <header>${project.parent.basedir}/license-header.txt</header>
-			  </configuration>
-		  </plugin>
-      </plugins>
-   </build>
-   <profiles>
-      <profile>
-            <id>integration-test</id>
-             <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
-                    <scope>runtime</scope>
-                </dependency>
+				<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-mxj-db-files -->
+				<dependency>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-mxj-db-files</artifactId>
+					<version>5.0.12</version>
+					<scope>compile</scope>
+				</dependency>
 
-                <dependency>
-                    <groupId>com.mysql</groupId>
-                    <artifactId>mysql-connector-mxj</artifactId>
-                    <version>5.0.11</version>
-                    <scope>compile</scope>
-                </dependency>
+			</dependencies>
+		</profile>
 
-                <dependency>
-                    <groupId>com.mysql</groupId>
-                    <artifactId>mysql-connector-mxj-dbfiles</artifactId>
-                    <version>5.0.11</version>
-                    <scope>compile</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        
 		<profile>
 			<id>release</id>
 			<!-- Create sources and javadocs jar -->
@@ -191,33 +191,33 @@
 			</build>
 		</profile>
 
-        <profile>
-            <id>h2</id>
-            <dependencies>
-                <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
-                </dependency>
-            </dependencies>
-        </profile>
+		<profile>
+			<id>h2</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
 
-        <profile>
-            <id>install-h2</id>
-            <dependencies>
-                <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
-                </dependency>
-            </dependencies>
-            <properties>
-                <OPENMRS_INSTALLATION_SCRIPT>classpath:installation.h2.properties</OPENMRS_INSTALLATION_SCRIPT>
-            </properties>
-        </profile>
-   </profiles>
+		<profile>
+			<id>install-h2</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+				</dependency>
+			</dependencies>
+			<properties>
+				<OPENMRS_INSTALLATION_SCRIPT>classpath:installation.h2.properties</OPENMRS_INSTALLATION_SCRIPT>
+			</properties>
+		</profile>
+	</profiles>
 
-   <properties>
-      <WEBAPP.DISPLAY.NAME>OpenMRS</WEBAPP.DISPLAY.NAME>
-      <WEBAPP.DESCRIPTION>An Open-Source EMR System</WEBAPP.DESCRIPTION>
-      <webapp.name>openmrs</webapp.name>
-   </properties>
+	<properties>
+		<WEBAPP.DISPLAY.NAME>OpenMRS</WEBAPP.DISPLAY.NAME>
+		<WEBAPP.DESCRIPTION>An Open-Source EMR System</WEBAPP.DESCRIPTION>
+		<webapp.name>openmrs</webapp.name>
+	</properties>
 </project>
