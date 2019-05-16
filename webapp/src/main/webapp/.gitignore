@@ -1,4 +1,4 @@
 *.jsp
 /*.css
 /*.js
-
+!master-single-page-application.jsp
