@@ -401,13 +401,14 @@
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.45</version>
+				<version>8.0.16</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
-				<groupId>com.mysql</groupId>
+				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-mxj</artifactId>
-				<version>5.0.11</version>
+				<version>5.0.12</version>
+				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>postgresql</groupId>
