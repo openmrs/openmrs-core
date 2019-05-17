@@ -1,9 +1,15 @@
-<!-- This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed 
-	with this file, You can obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under the terms of the Healthcare 
-	Disclaimer located at http://openmrs.org/license. Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS 
-	graphic logo is a trademark of OpenMRS Inc. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
@@ -241,7 +247,8 @@
 				<artifactId>hibernate-ehcache</artifactId>
 				<version>${hibernateVersion}</version>
 				<exclusions>
-					<!-- Excluding since we are using a newer version where arifactId is ehcache instead of ehcache-core -->
+					<!-- Excluding since we are using a newer version where
+					arifactId is ehcache instead of ehcache-core -->
 					<exclusion>
 						<groupId>net.sf.ehcache</groupId>
 						<artifactId>ehcache-core</artifactId>
@@ -391,19 +398,16 @@
 				<artifactId>commons-fileupload</artifactId>
 				<version>1.3.3</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>8.0.16</version>
+				<version>5.1.45</version>
 				<scope>runtime</scope>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-mxj -->
 			<dependency>
-				<groupId>mysql</groupId>
+				<groupId>com.mysql</groupId>
 				<artifactId>mysql-connector-mxj</artifactId>
-				<version>5.0.12</version>
-				<scope>test</scope>
+				<version>5.0.11</version>
 			</dependency>
 			<dependency>
 				<groupId>postgresql</groupId>
@@ -514,9 +518,9 @@
 				<version>2.10.0</version>
 			</dependency>
 			<dependency>
-				<groupId>commons-validator</groupId>
-				<artifactId>commons-validator</artifactId>
-				<version>1.4.0</version>
+			    <groupId>commons-validator</groupId>
+			    <artifactId>commons-validator</artifactId>
+			    <version>1.4.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -662,7 +666,8 @@
 							<artifactId>openmrs-tools</artifactId>
 							<version>${project.version}</version>
 						</tagletArtifact>
-						<!-- For some reason some packages from org.springframework are being included and causing errors. -->
+						<!-- For some reason some packages from org.springframework are being
+						included and causing errors. -->
 						<excludePackageNames>org.springframework.*</excludePackageNames>
 					</configuration>
 					<executions>
@@ -674,7 +679,8 @@
 						</execution>
 					</executions>
 				</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+				<!--This plugin's configuration is used to store Eclipse m2e settings
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -698,7 +704,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore/>
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -717,7 +723,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore/>
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -738,7 +744,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore/>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -984,10 +990,8 @@
 				<version>2.10.3</version>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
-					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active development and subject to
-						change&lt;/small&gt;&lt;/em&gt;</bottom>
-					<header>&lt;a href="http://www.openmrs.org" target=_top&gt;&lt;img src="resources/openmrs-logo-small.gif"
-						border=0/&gt;&lt;/a&gt;</header>
+					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active development and subject to change&lt;/small&gt;&lt;/em&gt;</bottom>
+					<header>&lt;a href="http://www.openmrs.org" target=_top&gt;&lt;img src="resources/openmrs-logo-small.gif" border=0/&gt;&lt;/a&gt;</header>
 					<footer>&lt;a href="http://www.openmrs.org" target=_top&gt;${project.name}&lt;/a&gt;</footer>
 				</configuration>
 			</plugin>
@@ -1037,15 +1041,14 @@
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
 
-		<openmrs.version.long>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}
-			${parsedVersion.qualifier} Build ${revisionNumber}</openmrs.version.long>
+		<openmrs.version.long>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion} ${parsedVersion.qualifier} Build ${revisionNumber}</openmrs.version.long>
 		<openmrs.version.short>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-${revisionNumber}</openmrs.version.short>
 		<openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</openmrs.version.shortnumericonly>
 		<openmrs.version>${project.version}</openmrs.version>
 
 		<springVersion>4.1.4.RELEASE</springVersion>
 		<hibernateVersion>4.3.9.Final</hibernateVersion>
-		<customArgLineForTesting />
+		<customArgLineForTesting/>
 
 		<sonar.host.url>https://sonar.openmrs.org</sonar.host.url>
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
