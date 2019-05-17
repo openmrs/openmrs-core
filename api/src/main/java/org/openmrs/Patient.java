@@ -222,13 +222,7 @@ public class Patient extends Person {
 	 * @see org.openmrs.PatientIdentifier
 	 */
 	public void setIdentifiers(Set<PatientIdentifier> identifiers) {
-		if (identifiers == null) {
-			this.identifiers = null;
-		} else {
-			for (PatientIdentifier id : identifiers) {
-				addIdentifier(id);
-			}
-		}
+		this.identifiers = identifiers;
 	}
 	
 	/**

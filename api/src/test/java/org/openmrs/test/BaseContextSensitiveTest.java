@@ -584,9 +584,10 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			throw new RuntimeException(
 			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
 
-		//Because creator property in the superclass is mapped as nullable by the autoddl tool, we need to first
-		//drop the constraint from person.creator column, historically this was to allow inserting first row.
-		//Ideally, this should not be necessary in production because tables are created using liquibase and not autoddl
+		//Because creator property in the superclass is mapped with optional set to false, the autoddl tool marks the 
+		//column as not nullable but for person it is actually nullable, we need to first drop the constraint from 
+		//person.creator column, historically this was to allow inserting the very first row. Ideally, this should not 
+		//be necessary outside of tests because tables are created using liquibase and not autoddl
 		dropNotNullConstraint("person", "creator");
 		setAutoIncrementOnTablesWithNativeIfNotAssignedIdentityGenerator();
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
