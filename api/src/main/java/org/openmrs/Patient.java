@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -56,30 +58,38 @@ public class Patient extends Person {
 	
 	@ManyToOne
 	@JoinColumn(name = "creator", updatable = false)
+	@Access(AccessType.PROPERTY)
 	private User creator;
 	
 	@Column(name = "date_created", nullable = false, updatable = false, length = 19)
+	@Access(AccessType.PROPERTY)
 	private Date dateCreated;
 	
 	@Column(name = "voided", nullable = false)
+	@Access(AccessType.PROPERTY)
 	@Field
 	private Boolean voided = Boolean.FALSE;
 	
 	@Column(name = "date_voided", length = 19)
+	@Access(AccessType.PROPERTY)
 	private Date dateVoided;
 	
 	@ManyToOne
 	@JoinColumn(name = "voided_by")
+	@Access(AccessType.PROPERTY)
 	private User voidedBy;
 	
 	@Column(name = "void_reason")
+	@Access(AccessType.PROPERTY)
 	private String voidReason;
 	
 	@ManyToOne
 	@JoinColumn(name = "changed_by")
+	@Access(AccessType.PROPERTY)
 	private User changedBy;
 	
 	@Column(name = "date_changed", length = 19)
+	@Access(AccessType.PROPERTY)
 	private Date dateChanged;
 	
 	// Constructors
@@ -449,142 +459,6 @@ public class Patient extends Person {
 	 */
 	public Person getPerson() {
 		return this;
-	}
-	
-	/**
-	 * @see Person#getCreator()
-	 */
-	@Override
-	public User getCreator() {
-		return creator;
-	}
-	
-	/**
-	 * @see Person#setCreator(User)
-	 */
-	@Override
-	public void setCreator(User creator) {
-		this.creator = creator;
-		super.setCreator(creator);
-	}
-	
-	/**
-	 * @see Person#getDateCreated()
-	 */
-	@Override
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	/**
-	 * @see Person#setDateCreated(Date)
-	 */
-	@Override
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-		super.setDateCreated(dateCreated);
-	}
-	
-	/**
-	 * @see Person#getVoided()
-	 */
-	@Override
-	public Boolean getVoided() {
-		return voided;
-	}
-	
-	/**
-	 * @see Person#setVoided(Boolean)
-	 */
-	@Override
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
-		super.setVoided(voided);
-	}
-	
-	/**
-	 * @see Person#getDateVoided()
-	 */
-	@Override
-	public Date getDateVoided() {
-		return dateVoided;
-	}
-	
-	/**
-	 * @see Person#setDateVoided(Date)
-	 */
-	@Override
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
-		super.setDateVoided(dateVoided);
-	}
-	
-	/**
-	 * @see Person#getVoidedBy()
-	 */
-	@Override
-	public User getVoidedBy() {
-		return voidedBy;
-	}
-	
-	/**
-	 * @see Person#setVoidedBy(User)
-	 */
-	@Override
-	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
-		super.setVoidedBy(voidedBy);
-	}
-	
-	/**
-	 * @see Person#getVoidReason()
-	 */
-	@Override
-	public String getVoidReason() {
-		return voidReason;
-	}
-	
-	/**
-	 * @see Person#setVoidReason(String)
-	 */
-	@Override
-	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
-		super.setVoidReason(voidReason);
-	}
-	
-	/**
-	 * @see Person#getChangedBy()
-	 */
-	@Override
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	/**
-	 * @see Person#setChangedBy(User)
-	 */
-	@Override
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-		super.setChangedBy(changedBy);
-	}
-	
-	/**
-	 * @see Person#getDateChanged()
-	 */
-	@Override
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	/**
-	 * @see Person#setDateChanged(Date)
-	 */
-	@Override
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-		super.setDateChanged(dateChanged);
 	}
 	
 }
