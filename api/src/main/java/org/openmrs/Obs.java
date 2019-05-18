@@ -189,7 +189,7 @@ public class Obs extends BaseChangeableOpenmrsData {
 	@JoinColumn(name = "previous_version", unique = true)
 	@ManyToOne
 	private Obs previousVersion;
-	
+	@Column(name="form_namespace_and_path", length = 16, nullable=false)
 	private String formNamespaceAndPath;
 	
 	private Boolean dirty = Boolean.FALSE;
