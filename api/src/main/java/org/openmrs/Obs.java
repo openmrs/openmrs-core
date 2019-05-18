@@ -113,16 +113,15 @@ public class Obs extends BaseChangeableOpenmrsData {
 	
 	private static final int FORM_NAMESPACE_PATH_MAX_LENGTH = 255;
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@SequenceGenerator(name = "sequence", sequenceName = "obs_obs_id_seq")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "obs_id")
 	protected Integer obsId;
-	@JoinColumn(name = "concept_id", nullable = false)
-	@ManyToOne
+	@JoinColumn(name = "concept_id")
+	@ManyToOne(optional=false)
 	protected Concept concept;
 	@Column(name = "obs_datetime", nullable = false, length = 19)
 	protected Date obsDatetime;
-	@Column(name = "accession_number", length = 255)
+	@Column(name = "accession_number")
 	protected String accessionNumber;
 	
 	/**
@@ -164,18 +163,17 @@ public class Obs extends BaseChangeableOpenmrsData {
 	protected String valueModifier;
 	@Column(name = "value_text", length = 65535)
 	protected String valueText;
-	@Column(name = "value_complex", length = 255)
+	@Column(name = "value_complex")
 	protected String valueComplex;
 	
 	// ComplexData is not persisted in the database.
 	protected transient ComplexData complexData;
-	@Column(name = "comments", length = 255)
+	@Column(name = "comments")
 	protected String comment;
-	@Transient
-	@Column(name = "person_id", nullable = false, length = 11)
+	@Column(name = "person_id", nullable = false, insertable=false, length = 11)
 	protected transient Integer personId;
-	@JoinColumn(name = "person_id", nullable = false)
-	@ManyToOne
+	@JoinColumn(name = "person_id")
+	@ManyToOne(optional=false)
 	protected Person person;
 	@JoinColumn(name = "order_id")
 	@ManyToOne
@@ -1202,9 +1200,6 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @see Auditable#setCreator(User)
 	 */
 	@Override
-	@Access(AccessType.PROPERTY)
-	@JoinColumn(nullable = false)
-	@ManyToOne
 	public void setCreator(User creator) {
 		markAsDirty(getCreator(), creator);
 		super.setCreator(creator);
@@ -1215,8 +1210,6 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * @see Auditable#setDateCreated(Date)
 	 */
 	@Override
-	@Access(AccessType.PROPERTY)
-	@Column(name = "date_created", nullable = false, length = 19)
 	public void setDateCreated(Date dateCreated) {
 		markAsDirty(getDateCreated(), dateCreated);
 		super.setDateCreated(dateCreated);
@@ -1347,9 +1340,6 @@ public class Obs extends BaseChangeableOpenmrsData {
 	/**
 	 * @since 2.1.0
 	 */
-	@Access(AccessType.PROPERTY)
-	@Enumerated(EnumType.STRING)
-	@Column(name = "interpretation", length = 32)
 	public void setInterpretation(Interpretation interpretation) {
 		markAsDirty(this.interpretation, interpretation);
 		this.interpretation = interpretation;
@@ -1370,9 +1360,6 @@ public class Obs extends BaseChangeableOpenmrsData {
 	/**
 	 * @since 2.1.0
 	 */
-	@Access(AccessType.PROPERTY)
-	@Enumerated(EnumType.STRING)
-	@Column(name = "status", length = 16, nullable = false)
 	public void setStatus(Status status) {
 		markAsDirty(this.status, status);
 		this.status = status;
