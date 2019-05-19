@@ -29,11 +29,17 @@ public class HttpUrlTest {
 		HttpUrl url = new HttpUrl("http://something");
 		assertThat(url, notNullValue());
 	}
+
+	@Test
+	public void constructor_shouldNotThrowExceptionIfItIsAnHttpsUrl() throws MalformedURLException {
+		HttpUrl url = new HttpUrl("https://something");
+		assertThat(url, notNullValue());
+	}
 	
 	@Test
 	public void constructor_shouldThrowMalformedUrlExceptionIfTheUrlDoesNotHaveHttp() throws MalformedURLException {
 		exception.expect(MalformedURLException.class);
-		exception.expectMessage("Not a valid http url");
+		exception.expectMessage("Not a valid http(s) url");
 		new HttpUrl("not_http");
 	}
 	
@@ -47,5 +53,10 @@ public class HttpUrlTest {
 	@Test
 	public void toString_shouldReturnUrl() throws MalformedURLException {
 		assertThat(new HttpUrl("http://something").toString(), is("http://something"));
+	}
+
+	@Test
+	public void toString_shouldReturnUrlHttps() throws MalformedURLException {
+		assertThat(new HttpUrl("https://something").toString(), is("https://something"));
 	}
 }
