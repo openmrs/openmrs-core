@@ -20,22 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Cascade;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.context.Context;
@@ -50,58 +34,33 @@ import org.openmrs.api.handler.VoidHandler;
  * @see Obs
  * @see Order
  */
-@Entity
-@Table(name = "encounter")
-@BatchSize(size = 25)
 public class Encounter extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 2L;
 	
 	// Fields
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "encounter_id")
+	
 	private Integer encounterId;
 	
-	@Column(name = "encounter_datetime", nullable = false, length = 19)
 	private Date encounterDatetime;
 	
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "patient_id")
 	private Patient patient;
 	
-	@ManyToOne
-	@JoinColumn(name = "location_id")
 	private Location location;
 	
-	@ManyToOne
-	@JoinColumn(name = "form_id")
 	private Form form;
 	
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "encounter_type")
 	private EncounterType encounterType;
 	
-	@OneToMany(mappedBy = "encounter")
 	private Set<Order> orders;
 	
-	@OneToMany(mappedBy = "encounter")
 	private Set<Diagnosis> diagnoses;
 	
-	@OneToMany(mappedBy = "encounter")
-	@Access(AccessType.FIELD)
-	@OrderBy("concept_id")
-	@BatchSize(size = 25)
 	@AllowDirectAccess
 	private Set<Obs> obs;
 	
-	@ManyToOne
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@JoinColumn(name = "visit_id")
 	private Visit visit;
 	
-	@OneToMany(mappedBy = "encounter", cascade = CascadeType.ALL)
-	@OrderBy("provider_id")
 	@DisableHandlers(handlerTypes = { VoidHandler.class })
 	private Set<EncounterProvider> encounterProviders = new LinkedHashSet<>();
 	
