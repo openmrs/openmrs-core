@@ -418,12 +418,12 @@
 			<dependency>
 				<groupId>org.codehaus.jackson</groupId>
 				<artifactId>jackson-core-asl</artifactId>
-				<version>1.9.13</version>
+				<version>1.9.13-atlassian-2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.jackson</groupId>
 				<artifactId>jackson-mapper-asl</artifactId>
-				<version>1.9.13</version>
+				<version>1.9.13-atlassian-2</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
@@ -510,7 +510,7 @@
 			<dependency>
 				<groupId>org.codehaus.sonar-plugins.java</groupId>
 				<artifactId>sonar-jacoco-listeners</artifactId>
-				<version>3.1</version>
+				<version>3.2</version>
 			</dependency>
 			<dependency>
 				<groupId>net.sf.ehcache</groupId>
