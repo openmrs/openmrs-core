@@ -23,11 +23,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
+import javax.persistence.Entity;
+
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -39,6 +42,7 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+import org.openmrs.util.OpenmrsClassScanner;
 
 import liquibase.Liquibase;
 import liquibase.database.Database;
@@ -236,6 +240,10 @@ public class DatabaseUpgradeTestUtil {
 	
 	public SessionFactory buildSessionFactory() {
 		Configuration config = new Configuration().configure();
+		Set<Class<?>> entityClasses = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(Entity.class);
+		for (Class<?> clazz : entityClasses) {
+			config.addAnnotatedClass(clazz);
+		}
 		//H2 version we use behaves differently from H2Dialect in Hibernate so we provide our implementation
 		config.setProperty(Environment.DIALECT, H2LessStrictDialect.class.getName());
 		config.setProperty(Environment.URL, connectionUrl);
