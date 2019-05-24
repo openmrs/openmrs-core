@@ -319,17 +319,17 @@
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>1.6.0</version>
+				<version>1.7.26 </version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>jcl-over-slf4j</artifactId>
-				<version>1.6.0</version>
+				<version>1.7.26 </version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
-				<version>1.6.0</version>
+				<version>1.7.26 </version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
