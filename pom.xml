@@ -258,12 +258,12 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-validator</artifactId>
-				<version>4.2.0.Final</version>
+				<version>6.0.16.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-search-orm</artifactId>
-				<version>5.1.2.Final</version>
+				<version>5.11.1.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
@@ -1001,7 +1001,7 @@
 		<openmrs.version>${project.version}</openmrs.version>
 
 		<springVersion>4.1.4.RELEASE</springVersion>
-		<hibernateVersion>4.3.9.Final</hibernateVersion>
+		<hibernateVersion>5.4.2.Final</hibernateVersion>
 		<customArgLineForTesting/>
 
 		<sonar.host.url>https://ci.openmrs.org/sonar</sonar.host.url>
