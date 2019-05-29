@@ -10,7 +10,10 @@
 package org.openmrs.api.handler;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.openmrs.Address;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -42,13 +45,16 @@ public class PersonSaveHandler implements SaveHandler<Person> {
 		
 		// address collection
 		if (person.getAddresses() != null && !person.getAddresses().isEmpty()) {
+			Set<Address> blankAddresses = new HashSet<>();
 			for (PersonAddress pAddress : person.getAddresses()) {
-				if (pAddress.isBlank()){
-					person.removeAddress(pAddress);
+				if (pAddress.isBlank()) {
+					blankAddresses.add(pAddress);
 					continue;
 				}
 				pAddress.setPerson(person);
 			}
+
+			person.getAddresses().removeAll(blankAddresses);
 		}
 		
 		// name collection

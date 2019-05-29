@@ -68,7 +68,7 @@
         Voided patient with non-voided name
     -->
     <person person_id="60" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" uuid="7443D9DD-CA51-4BD9-9E68-7C43628B82DF"/>
-    <person_name person_name_id="60" preferred="true" person_id="60" prefix="Mr." given_name="Meriadoc" middle_name="" family_name="Brandybuck" family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="61ACD71F-989B-4B4A-B00E-0503B756099F"/>
+    <person_name person_name_id="60" preferred="true" person_id="60" prefix="Mr." given_name="Meriadoc" middle_name="" family_name="Brandybuck" family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="true" void_reason="" uuid="61ACD71F-989B-4B4A-B00E-0503B756099F"/>
     <patient patient_id="60" creator="1" date_created="2014-01-09 00:00:00.0" changed_by="1" voided="true" void_reason=""/>
 
     <!--

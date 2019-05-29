@@ -675,6 +675,9 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		
 		Patient patient = patients.get(0);
 		patient.setVoided(true);
+		for (PersonName name : patient.getNames()) {
+			name.setVoided(true);
+		}
 		dao.savePatient(patient);
 
 		updateSearchIndex();
@@ -717,6 +720,9 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		
 		Patient patient = patients.get(0);
 		patient.setVoided(true);
+		for (PersonName name : patient.getNames()) {
+			name.setVoided(true);
+		}
 		dao.savePatient(patient);
 
 		updateSearchIndex();
