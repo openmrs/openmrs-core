@@ -297,6 +297,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public Person savePerson(Person person) throws APIException {
 		setPreferredPersonName(person);
 		setPreferredPersonAddress(person);
+		Context.updateSearchIndexForType(PersonAttribute.class);
 		return dao.savePerson(person);
 	}
 
