@@ -747,6 +747,21 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	public List<Patient> findPatients(String query, boolean includeVoided, Integer start, Integer length){
+		
+
+		//Just for testing...It has nothing to do with the function
+		List<String> testfields=new ArrayList<>();
+		testfields.add("gender");
+		LuceneQuery<Person> testQuery=LuceneQuery.newQuery(Person.class, sessionFactory.getCurrentSession(), "M", testfields);
+		System.out.println(testQuery.resultSize());
+		
+		ListPart<Object[]> test = testQuery.listPartProjection(0, 10, "person.personId");
+		test.getList().forEach(t->System.out.println(t[0]));
+				
+		//end testing block
+		
+		
+		
 		Integer tmpStart = start;
 		if (tmpStart == null) {
 			tmpStart = 0;
