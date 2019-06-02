@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -69,12 +70,43 @@ public class HttpClient {
 			connection.setRequestMethod("POST");
 			connection.setRequestProperty("Content-Length", String.valueOf(data.length()));
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			
+
 			wr = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
 			wr.write(data.toString());
 			wr.flush();
 			wr.close();
 			
+			// only handle a single redirection, don't want to get 
+			// caught in a redirection loop.
+			boolean redirect = false;
+			int status = connection.getResponseCode();
+			if (status == HttpURLConnection.HTTP_MOVED_TEMP
+					|| status == HttpURLConnection.HTTP_MOVED_PERM
+						|| status == HttpURLConnection.HTTP_SEE_OTHER) {
+				redirect = true;
+			}
+		
+			if (redirect) {
+
+				// get redirect url from "location" header field
+				String newUrl = connection.getHeaderField("Location");
+				connection = (HttpURLConnection)new URL(newUrl).openConnection();
+
+				log.info("Redirection to : " + newUrl);
+
+				// reset connection options & data
+				connection.setDoOutput(true);
+				connection.setDoInput(true);
+				connection.setRequestMethod("POST");
+				connection.setRequestProperty("Content-Length", String.valueOf(data.length()));
+				connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+											
+				wr = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
+				wr.write(data.toString());
+				wr.flush();
+				wr.close();
+			}
+		
 			// Get the response
 			rd = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
 			String line;

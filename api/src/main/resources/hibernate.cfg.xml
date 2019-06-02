@@ -52,7 +52,6 @@
         <mapping resource="org/openmrs/api/db/hibernate/FormResource.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/GlobalProperty.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Obs.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/Person.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonAddress.hbm.xml" />
@@ -62,7 +61,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/LoginCredential.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Privilege.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Role.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/Patient.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientIdentifier.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientIdentifierType.hbm.xml" />
                 <mapping resource="org/openmrs/api/db/hibernate/PatientProgram.hbm.xml" />
@@ -80,7 +78,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/LocationAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/LocationAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/EncounterType.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/Encounter.hbm.xml" />
         <mapping resource="org/openmrs/api/db/hibernate/EncounterProvider.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/EncounterRole.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Program.hbm.xml" />
@@ -111,7 +108,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/VisitType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/VisitAttributeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/VisitAttribute.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/Visit.hbm.xml" />
 		
 		<!-- Provider -->
 		<mapping resource="org/openmrs/api/db/hibernate/Provider.hbm.xml" />

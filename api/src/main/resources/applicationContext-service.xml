@@ -689,7 +689,7 @@
 	<bean id="conceptMapTypeValidator" class="org.openmrs.validator.ConceptMapTypeValidator" />
 	<bean id="conceptAttributeTypeValidator" class="org.openmrs.validator.ConceptAttributeTypeValidator" />
 	<bean id="implementationIdHttpClient" class="org.openmrs.util.HttpClient">
-        <constructor-arg name="url" value="http://resources.openmrs.org/tools/implementationid"/>
+        <constructor-arg name="url" value="https://implementation.openmrs.org"/>
     </bean>
 
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
