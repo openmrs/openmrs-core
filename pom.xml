@@ -374,15 +374,7 @@
 			<dependency>
 				<groupId>javax.mail</groupId>
 				<artifactId>mail</artifactId>
-<<<<<<< HEAD
-<<<<<<< HEAD
 				<version>1.4.7</version>
-=======
-				<version>1.5.0-b01</version>
->>>>>>> 4fa4604f6... TRUNK-5521-upgrade-javax-libraries
-=======
-				<version>1.4.7</version>
->>>>>>> f7c9e6aea... TRUNK-5521-upgrade-javax-libraries, update javax.mail to final version
 				<exclusions>
 					<exclusion>  <!-- declare the exclusion here -->
 						<groupId>javax.activation</groupId>
