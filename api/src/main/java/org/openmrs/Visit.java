@@ -11,10 +11,26 @@ package org.openmrs;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.BatchSize;
 import org.openmrs.customdatatype.Customizable;
 
 /**
@@ -23,24 +39,46 @@ import org.openmrs.customdatatype.Customizable;
  * 
  * @since 1.9
  */
-
+@Entity
+@Table(name = "visit")
 public class Visit extends BaseCustomizableData<VisitAttribute> implements Auditable, Customizable<VisitAttribute> {
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "visit_id")
 	private Integer visitId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "patient_id")
 	private Patient patient;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "visit_type_id")
 	private VisitType visitType;
 	
+	@ManyToOne
+	@JoinColumn(name = "indication_concept_id")
 	private Concept indication;
 	
+	@ManyToOne
+	@JoinColumn(name = "location_id")
 	private Location location;
 	
+	@Column(name = "date_started", nullable = false, length = 19)
 	private Date startDatetime;
 	
+	@Column(name = "date_stopped", length = 19)
 	private Date stopDatetime;
 	
+	@OneToMany(mappedBy = "visit")
+	@OrderBy("encounter_datetime desc, encounter_id desc")
 	private Set<Encounter> encounters;
+	
+	@Access(AccessType.PROPERTY)
+	@OneToMany(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("voided asc")
+	@BatchSize(size = 100)
+	private Set<VisitAttribute> attributes = new LinkedHashSet<>();
 	
 	/**
 	 * Default Constructor

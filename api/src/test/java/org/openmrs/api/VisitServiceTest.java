@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.TransientObjectException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -938,21 +937,25 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see VisitService#saveVisit(Visit)
 	 */
-	@Test(expected = TransientObjectException.class)
+	@Test
 	public void saveVisit_shouldNotPersistNewEncounter() {
-		
+
 		Visit visit = visitService.getVisit(1);
-		
+		EncounterService es = Context.getEncounterService();
+		final int originalCount = es.getEncountersByPatient(visit.getPatient()).size();
+
 		Encounter encounter = new Encounter();
 		encounter.setEncounterDatetime(new Date());
-		encounter.setEncounterType(Context.getEncounterService().getEncounterType(1));
+		encounter.setEncounterType(es.getEncounterType(1));
 		encounter.setPatient(visit.getPatient());
 		encounter.setLocation(visit.getLocation());
 		visit.addEncounter(encounter);
-		
+
 		visitService.saveVisit(visit);
 
 		Context.flushSession();
+		assertNull(encounter.getEncounterId());
+		assertEquals(originalCount, es.getEncountersByPatient(visit.getPatient()).size());
 	}
 
 	/**

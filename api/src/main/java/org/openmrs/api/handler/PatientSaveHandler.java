@@ -16,6 +16,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
+import org.openmrs.api.context.Context;
 
 /**
  * This class deals with {@link Patient} objects when they are saved via a save* method in an
@@ -44,6 +45,11 @@ public class PatientSaveHandler implements SaveHandler<Patient> {
 					pIdentifier.setPatient(patient);
 				}
 			}
+		}
+
+		if(patient.getPatientId() == null){
+			patient.setCreator(Context.getAuthenticatedUser());
+			patient.setDateCreated(new Date());
 		}
 	}
 }

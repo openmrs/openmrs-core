@@ -1811,8 +1811,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// sanity check. make sure there is at least one voided patient
 		Patient patient = patientService.getPatient(999);
 		Assert.assertTrue("This patient should be voided", patient.getVoided());
-		Assert.assertFalse("This test expects the patient to be voided BUT the identifier to be NONvoided",
-		    ((PatientIdentifier) (patient.getIdentifiers().toArray()[0])).getVoided());
 		
 		// now fetch all identifiers
 		List<PatientIdentifier> patientIdentifiers = patientService.getPatientIdentifiers(null, null, null, null, null);
@@ -2096,7 +2094,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test(expected = ValidationException.class)
 	public void savePatientIdentifier_shouldAllowLocationToBeNullWhenLocationBehaviourIsRequired() {
-		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
+		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(9);
 		patientIdentifier.setLocation(null);
 		patientIdentifier.getIdentifierType().setLocationBehavior(PatientIdentifierType.LocationBehavior.REQUIRED);
 		patientService.savePatientIdentifier(patientIdentifier);
