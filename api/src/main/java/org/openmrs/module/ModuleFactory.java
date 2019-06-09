@@ -355,9 +355,6 @@ public class ModuleFactory {
 	 */
 	private static void notifySuperUsersAboutModuleFailure(Module mod) {
 		try {
-			// Add the privileges necessary for notifySuperUsers
-			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
-			
 			// Send an alert to all administrators
 			Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", null, mod.getName());
 		}
@@ -365,8 +362,6 @@ public class ModuleFactory {
 			log.error("Unable to send an alert to the super users", e);
 		}
 		finally {
-			// Remove added privileges
-			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 		}
 	}
 	
@@ -375,14 +370,10 @@ public class ModuleFactory {
 	 */
 	private static void notifySuperUsersAboutCyclicDependencies(Exception ex) {
 		try {
-			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 			Context.getAlertService().notifySuperUsers("Module.error.cyclicDependencies", ex, ex.getMessage());
 		}
 		catch (Exception e) {
 			log.error("Unable to send an alert to the super users", e);
-		}
-		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 		}
 	}
 	
@@ -707,7 +698,6 @@ public class ModuleFactory {
 					// to do this, it must be "authenticated".  Give the current
 					// "user" the proxy privilege so this can be done. ("user" might
 					// be nobody because this is being run at startup)
-					Context.addProxyPrivilege("");
 					
 					for (Map.Entry<String, String> entry : diffs.entrySet()) {
 						String version = entry.getKey();
@@ -718,8 +708,6 @@ public class ModuleFactory {
 					}
 				}
 				finally {
-					// take the "authenticated" privilege away from the current "user"
-					Context.removeProxyPrivilege("");
 				}
 				
 				// run module's optional liquibase.xml immediately after sqldiff.xml
@@ -928,7 +916,6 @@ public class ModuleFactory {
 		// version is greater than the currently installed version. execute this update.
 		if (executeSQL) {
 			try {
-				Context.addProxyPrivilege(PrivilegeConstants.SQL_LEVEL_ACCESS);
 				log.debug("Executing sql: " + sql);
 				String[] sqlStatements = sql.split(";");
 				for (String sqlStatement : sqlStatements) {
@@ -938,13 +925,10 @@ public class ModuleFactory {
 				}
 			}
 			finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.SQL_LEVEL_ACCESS);
 			}
 			
 			// save the global property
 			try {
-				Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-				
 				String description = "DO NOT MODIFY.  Current database version number for the " + module.getModuleId()
 				        + " module.";
 				
@@ -963,7 +947,6 @@ public class ModuleFactory {
 				
 			}
 			finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 			}
 			
 		}

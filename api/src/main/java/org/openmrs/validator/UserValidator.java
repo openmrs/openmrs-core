@@ -105,12 +105,11 @@ public class UserValidator implements Validator {
 			AdministrationService as = Context.getAdministrationService();
 			boolean emailAsUsername;
 			try {
-				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 				emailAsUsername = Boolean.parseBoolean(as.getGlobalProperty(
 				    OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false"));
 			}
 			finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				
 			}
 			
 			if (emailAsUsername) {

@@ -730,19 +730,7 @@ public class Context {
 		}
 	}
 
-	/**
-	 * Convenience method. Passes through to {@link UserContext#addProxyPrivilege(String)}
-	 */
-	public static void addProxyPrivilege(String privilege) {
-		getUserContext().addProxyPrivilege(privilege);
-	}
-
-	/**
-	 * Convenience method. Passes through to {@link UserContext#removeProxyPrivilege(String)}
-	 */
-	public static void removeProxyPrivilege(String privilege) {
-		getUserContext().removeProxyPrivilege(privilege);
-	}
+	
 
 	/**
 	 * Convenience method. Passes through to {@link UserContext#setLocale(Locale)}
@@ -1041,7 +1029,6 @@ public class Context {
 	public static void checkCoreDataset() {
 		// setting core roles
 		try {
-			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
 			Set<String> currentRoleNames = new HashSet<>();
 			for (Role role : Context.getUserService().getAllRoles()) {
 				currentRoleNames.add(role.getRole().toUpperCase());
@@ -1061,12 +1048,10 @@ public class Context {
 			log.error("Error while setting core roles for openmrs system", e);
 		}
 		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
 		}
 
 		// setting core privileges
 		try {
-			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_PRIVILEGES);
 			Set<String> currentPrivilegeNames = new HashSet<>();
 			for (Privilege privilege : Context.getUserService().getAllPrivileges()) {
 				currentPrivilegeNames.add(privilege.getPrivilege().toUpperCase());
@@ -1086,13 +1071,10 @@ public class Context {
 			log.error("Error while setting core privileges", e);
 		}
 		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_PRIVILEGES);
 		}
 
 		// setting core global properties
 		try {
-			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			Set<String> currentPropNames = new HashSet<>();
 			Map<String, GlobalProperty> propsMissingDescription = new HashMap<>();
 			Map<String, GlobalProperty> propsMissingDatatype = new HashMap<>();
@@ -1135,11 +1117,7 @@ public class Context {
 		catch (Exception e) {
 			log.error("Error while setting core global properties", e);
 		}
-		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-		}
-
+		
 		// setting default validation rule
 		AdministrationService as = Context.getAdministrationService();
 		Boolean disableValidation = Boolean.valueOf(as.getGlobalProperty(OpenmrsConstants.GP_DISABLE_VALIDATION, "false"));

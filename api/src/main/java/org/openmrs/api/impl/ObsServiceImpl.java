@@ -125,8 +125,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		// void out the original observation to keep it around for
 		// historical purposes
 		try {
-			Context.addProxyPrivilege(PrivilegeConstants.DELETE_OBS);
-
 			// fetch a clean copy of this obs from the database so that
 			// we don't write the changes to the database when we save
 			// the fact that the obs is now voided
@@ -142,7 +140,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 
 		}
 		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.DELETE_OBS);
 		}
 	}
 

@@ -231,11 +231,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			threads.add(new Thread(() -> {
 				try {
 					Context.openSession();
-					Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
 					uniqueOrderNumbers.add(((OrderNumberGenerator) orderService).getNewOrderNumber(null));
 				}
 				finally {
-					Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
 					Context.closeSession();
 				}
 			}));

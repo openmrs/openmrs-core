@@ -49,11 +49,9 @@ public class SchedulerUtil {
 		
 		// TODO: do this for all services
 		try {
-			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 			Context.getSchedulerService().onStartup();
 		}
 		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 		}
 	}
 	
@@ -73,14 +71,12 @@ public class SchedulerUtil {
 		
 		// TODO: Do this for all services
 		try {
-			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 			// doesn't attempt shutdown if there was an error getting the scheduler service
 			if (service != null) {
 				service.onShutdown();
 			}
 		}
 		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 		}
 		
 	}

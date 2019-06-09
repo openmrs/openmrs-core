@@ -2206,12 +2206,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 			Context.logout();
 		}
 		Context.authenticate("test_user", "test");
-		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
 		
 		patientEncounters = encounterService.getEncountersByPatientId(3);
 		int actualSize = patientEncounters.size();
 		
-		Context.removeProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
 		Context.logout();
 		
 		assertEquals(actualSize, expectedSize);
@@ -2444,9 +2442,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// and authenticate under it's account
 		Context.becomeUser(user.getSystemId());
 		
-		// have to add privilege in order to be able to call getEncounter(Integer) method
-		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
-		
 		assertNull(Context.getEncounterService().getEncounter(encounter.getId()));
 	}
 	
@@ -2469,9 +2464,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// and authenticate under it's account
 		Context.becomeUser(user.getSystemId());
 		
-		// have to add privilege in order to be able to call getEncounter(Integer) method
-		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
-		
 		assertNotNull(Context.getEncounterService().getEncounter(encounter.getId()));
 	}
 	
@@ -2489,9 +2481,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// left this user as is - i.e. without required privilege
 		// and authenticate under it's account
 		Context.becomeUser(user.getSystemId());
-		
-		// have to add privilege in order to be able to call saveEncounter(Encounter) method
-		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
 		
 		Context.getEncounterService().saveEncounter(encounter);
 	}
@@ -2511,9 +2500,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// and authenticate under it's account
 		Context.becomeUser(user.getSystemId());
 		
-		// have to add privilege in order to be able to call voidEncounter(Encounter,String) method
-		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
-		
 		Context.getEncounterService().voidEncounter(encounter, "test");
 	}
 	
@@ -2531,9 +2517,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// left this user as is - i.e. without required privilege
 		// and authenticate under it's account
 		Context.becomeUser(user.getSystemId());
-		
-		// have to add privilege in order to be able to call unvoidEncounter(Encounter) method
-		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
 		
 		Context.getEncounterService().unvoidEncounter(encounter);
 	}
@@ -2553,9 +2536,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// and authenticate under it's account
 		Context.becomeUser(user.getSystemId());
 		
-		// have to add privilege in order to be able to call purgeEncounter(Encounter) method
-		Context.addProxyPrivilege(PrivilegeConstants.PURGE_ENCOUNTERS);
-		
 		Context.getEncounterService().purgeEncounter(encounter);
 	}
 	
@@ -2574,9 +2554,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// left this user as is - i.e. without required privilege
 		// and authenticate under it's account
 		Context.becomeUser(user.getSystemId());
-		
-		// have to add privilege in order to be able to call purgeEncounter(Encounter,Boolean) method
-		Context.addProxyPrivilege(PrivilegeConstants.PURGE_ENCOUNTERS);
 		
 		Context.getEncounterService().purgeEncounter(encounter, Boolean.TRUE);
 	}
