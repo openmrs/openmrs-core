@@ -471,7 +471,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getConceptDatatypes(java.lang.String)
+	 * @param name the name of the ConceptDatatype
+	 * @return a List of ConceptDatatype whose names start with the passed name
 	 */
 	@SuppressWarnings("unchecked")
 	public List<ConceptDatatype> getConceptDatatypes(String name) throws DAOException {
@@ -1022,6 +1023,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired) {
 		Criteria criteria = createSearchConceptMapCriteria(code, sourceName, includeRetired);
 		criteria.setProjection(Projections.property("concept"));
