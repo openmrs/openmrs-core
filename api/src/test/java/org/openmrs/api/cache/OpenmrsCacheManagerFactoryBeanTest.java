@@ -10,7 +10,8 @@
 package org.openmrs.api.cache;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
 import java.util.Collection;
@@ -26,10 +27,10 @@ public class OpenmrsCacheManagerFactoryBeanTest extends BaseContextSensitiveTest
     CacheManager cacheManager;
     
     @Test
-    public void shouldContainsThreeCacheConfigurations(){
-        Collection<String> cacheNames = cacheManager.getCacheNames();
-        assertThat(cacheNames.size(), is(3));
-        cacheNames.forEach(cn ->
-                assertThat(cn, anyOf(is("conceptDatatype"), is("subscription"), is("userSearchLocales"))));
+    public void shouldContainSpecificCacheConfigurations(){
+        String[] expectedCaches = {"conceptDatatype", "subscription", "userSearchLocales", "conceptIdsByMapping"};
+        Collection<String> actualCaches = cacheManager.getCacheNames();
+        assertThat(actualCaches.size(), is(expectedCaches.length));
+        assertThat(actualCaches, containsInAnyOrder(expectedCaches));
     }
 }
