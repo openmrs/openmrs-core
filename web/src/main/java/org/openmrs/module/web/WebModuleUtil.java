@@ -404,19 +404,9 @@ public class WebModuleUtil {
 	 * @param mod The Module that failed
 	 */
 	private static void notifySuperUsersAboutModuleFailure(Module mod) {
-		try {
-			// Add the privileges necessary for notifySuperUsers
-			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
-			Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
-			
-			// Send an alert to all administrators
-			Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", null, mod.getName());
-		}
-		finally {
-			// Remove added privileges
-			Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
-			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
-		}
+
+		// Send an alert to all administrators
+		Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", null, mod.getName());
 	}
 	
 	/**

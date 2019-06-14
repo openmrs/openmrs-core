@@ -60,12 +60,7 @@ public class PatientDataVoidHandler implements VoidHandler<Patient> {
 			}
 		}
 
-		Context.addProxyPrivilege(PrivilegeConstants.EDIT_COHORTS);
-		try {
-			Context.getCohortService().notifyPatientVoided(patient);
-		}
-		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_COHORTS);
-		}
+		Context.getCohortService().notifyPatientVoided(patient);
+		
 	}
 }

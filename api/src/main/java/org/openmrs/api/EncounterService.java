@@ -84,7 +84,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should fail if user is not allowed to view encounter by given id
 	 * @should return encounter if user is allowed to view it
 	 */
-	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
+	
 	public Encounter getEncounter(Integer encounterId) throws APIException;
 	
 	/**
@@ -641,7 +641,6 @@ public interface EncounterService extends OpenmrsService {
 	 * @should filter encounters if user is not allowed to see some encounters
 	 * @should not filter all encounters when the encounter type's view privilege column is null
 	 */
-	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> filterEncountersByViewPermissions(List<Encounter> encounters, User user);
 	
 	/**
@@ -706,8 +705,6 @@ public interface EncounterService extends OpenmrsService {
 	 * @since 1.11
 	 * @should find encounter roles based on their name
 	 */
-	
-	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_ROLES })
 	public List<EncounterRole> getEncounterRolesByName(String name);
 	
 	/**

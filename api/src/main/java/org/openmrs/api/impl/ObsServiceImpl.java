@@ -124,26 +124,20 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	private void voidExistingObs(Obs obs, String changeMessage, Obs newObs) {
 		// void out the original observation to keep it around for
 		// historical purposes
-		try {
-			Context.addProxyPrivilege(PrivilegeConstants.DELETE_OBS);
 
-			// fetch a clean copy of this obs from the database so that
-			// we don't write the changes to the database when we save
-			// the fact that the obs is now voided
-			evictObsAndChildren(obs);
-			obs = Context.getObsService().getObs(obs.getObsId());
-			//delete the previous file from the appdata/complex_obs folder
-			if (newObs.hasPreviousVersion() && newObs.getPreviousVersion().isComplex()) {
-				File previousFile = AbstractHandler.getComplexDataFile(obs);
-				previousFile.delete();
-			}
-			// calling this via the service so that AOP hooks are called
-			Context.getObsService().voidObs(obs, changeMessage);
+		// fetch a clean copy of this obs from the database so that
+		// we don't write the changes to the database when we save
+		// the fact that the obs is now voided
+		evictObsAndChildren(obs);
+		obs = Context.getObsService().getObs(obs.getObsId());
+		//delete the previous file from the appdata/complex_obs folder
+		if (newObs.hasPreviousVersion() && newObs.getPreviousVersion().isComplex()) {
+			File previousFile = AbstractHandler.getComplexDataFile(obs);
+			previousFile.delete();
+		}
+		// calling this via the service so that AOP hooks are called
+		Context.getObsService().voidObs(obs, changeMessage);
 
-		}
-		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.DELETE_OBS);
-		}
 	}
 
 	private Obs saveExistingObs(Obs obs, String changeMessage) {

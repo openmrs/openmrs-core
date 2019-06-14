@@ -1733,11 +1733,6 @@ public class InitializationFilter extends StartupFilter {
 						
 						if (!"".equals(wizardModel.implementationId)) {
 							try {
-								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPT_SOURCES);
-								Context.addProxyPrivilege(PrivilegeConstants.GET_CONCEPT_SOURCES);
-								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
-								
 								ImplementationId implId = new ImplementationId();
 								implId.setName(wizardModel.implementationIdName);
 								implId.setImplementationId(wizardModel.implementationId);
@@ -1753,12 +1748,6 @@ public class InitializationFilter extends StartupFilter {
 								WebModuleUtil.shutdownModules(filterConfig.getServletContext());
 								contextLoader.closeWebApplicationContext(filterConfig.getServletContext());
 								return;
-							}
-							finally {
-								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPT_SOURCES);
-								Context.removeProxyPrivilege(PrivilegeConstants.GET_CONCEPT_SOURCES);
-								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
 							}
 						}
 						

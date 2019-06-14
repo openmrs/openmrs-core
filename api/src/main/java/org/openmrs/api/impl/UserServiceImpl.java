@@ -436,13 +436,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			}
 			
 			user.setUserProperty(key, value);
-			try {
-				Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-				Context.getUserService().saveUser(user);
-			}
-			finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-			}
+			Context.getUserService().saveUser(user);
+			
 		}
 		
 		return user;
@@ -463,14 +458,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			}
 			
 			user.removeUserProperty(key);
+			Context.getUserService().saveUser(user);
 			
-			try {
-				Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-				Context.getUserService().saveUser(user);
-			}
-			finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-			}
 		}
 		
 		return user;
