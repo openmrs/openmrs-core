@@ -27,11 +27,12 @@ import org.apache.lucene.search.Query;
 import org.hibernate.Session;
 import org.hibernate.search.FullTextQuery;
 import org.hibernate.search.FullTextSession;
-import org.hibernate.search.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
+import org.openmrs.FullTextSessionFactory;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
+import org.openmrs.api.context.Context;
 import org.openmrs.collection.ListPart;
 
 /**
@@ -265,7 +266,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 * @return the full text session
 	 */
 	protected FullTextSession getFullTextSession() {
-		return Search.getFullTextSession(getSession());
+		return Context.getRegisteredComponent("fullTextSessionFactory", FullTextSessionFactory.class).getFullTextSession();
 	}
 	
 	/**
