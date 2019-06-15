@@ -22,7 +22,8 @@ import java.util.Set;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
+import javax.persistence.AssociationOverride;
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -34,12 +35,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -83,6 +85,9 @@ import org.slf4j.LoggerFactory;
 @Entity
 @Table(name = "obs")
 @BatchSize(size = 25)
+@SecondaryTable(name = "obs_unused_fields")
+@AssociationOverride(name = "changedBy", joinColumns = @JoinColumn(table = "obs_unused_fields", name = "changed_by"))
+@AttributeOverride(name = "dateChanged", column = @Column(table = "obs_unused_fields", name = "date_changed"))
 public class Obs extends BaseChangeableOpenmrsData {
 	
 	/**
@@ -112,15 +117,19 @@ public class Obs extends BaseChangeableOpenmrsData {
 	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
 	
 	private static final int FORM_NAMESPACE_PATH_MAX_LENGTH = 255;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "obs_id")
 	protected Integer obsId;
+	
 	@JoinColumn(name = "concept_id")
-	@ManyToOne(optional=false)
+	@ManyToOne(optional = false)
 	protected Concept concept;
+	
 	@Column(name = "obs_datetime", nullable = false, length = 19)
 	protected Date obsDatetime;
+	
 	@Column(name = "accession_number")
 	protected String accessionNumber;
 	
@@ -139,61 +148,84 @@ public class Obs extends BaseChangeableOpenmrsData {
 	 * The list of obs grouped under this obs.
 	 */
 	@AllowDirectAccess
-	@JoinColumn(name = "obs_group_id")
-	@OneToMany(cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "obsGroup")
+	@Cascade(CascadeType.DELETE)
 	@OrderBy("obs_id")
 	@BatchSize(size = 25)
+	@Access(AccessType.FIELD)
 	protected Set<Obs> groupMembers;
+	
 	@JoinColumn(name = "value_coded")
 	@ManyToOne
 	protected Concept valueCoded;
+	
 	@JoinColumn(name = "value_coded_name_id")
 	@ManyToOne
 	protected ConceptName valueCodedName;
+	
 	@JoinColumn(name = "value_drug")
 	@ManyToOne
 	protected Drug valueDrug;
-	@Column(name = "value_group_id", length = 11)
+	
+	@Column(name = "value_group_id")
 	protected Integer valueGroupId;
+	
 	@Column(name = "value_datetime", length = 19)
 	protected Date valueDatetime;
+	
 	@Column(name = "value_numeric", length = 22)
 	protected Double valueNumeric;
+	
 	@Column(name = "value_modifier", length = 2)
 	protected String valueModifier;
+	
 	@Column(name = "value_text", length = 65535)
 	protected String valueText;
+	
 	@Column(name = "value_complex")
 	protected String valueComplex;
 	
 	// ComplexData is not persisted in the database.
 	protected transient ComplexData complexData;
+	
 	@Column(name = "comments")
 	protected String comment;
-	@Column(name = "person_id", nullable = false, insertable=false, length = 11)
-	protected transient Integer personId;
+	
+	@Column(name = "person_id", nullable = false, insertable = false, updatable = false)
+	protected Integer personId;
+	
 	@JoinColumn(name = "person_id")
-	@ManyToOne(optional=false)
+	@ManyToOne(optional = false)
 	protected Person person;
+	
 	@JoinColumn(name = "order_id")
 	@ManyToOne
 	protected Order order;
-	@JoinColumn(name = "location_id", nullable = true)
+	
+	@JoinColumn(name = "location_id")
 	@ManyToOne
 	protected Location location;
+	
 	@JoinColumn(name = "encounter_id")
 	@ManyToOne
 	protected Encounter encounter;
+	
 	@JoinColumn(name = "previous_version", unique = true)
 	@ManyToOne
 	private Obs previousVersion;
-	@Column(name="form_namespace_and_path", length = 16, nullable=false)
+	
+	@Column(name = "form_namespace_and_path")
+	@Access(AccessType.FIELD)
 	private String formNamespaceAndPath;
 	
-	private Boolean dirty = Boolean.FALSE;
+	private transient Boolean dirty = Boolean.FALSE;
 	
+	@Enumerated(EnumType.STRING)
+	@Column(length = 32)
 	private Interpretation interpretation;
 	
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 16)
 	private Status status = Status.FINAL;
 	
 	/** default constructor */
