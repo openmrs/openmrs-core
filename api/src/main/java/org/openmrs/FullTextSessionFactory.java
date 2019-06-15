@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 /**
  * An instance of this class provides a factory for obtaining {@link FullTextSession} instances.
  * Having this factory as a spring bean provides a mechanism that allows external code and modules
- * to advise the factory. It is highly recommended to use ths factory to create instances of the
+ * to advise the factory. It is highly recommended to use this factory to create instances of the
  * {@link FullTextSession} rather than directly calling {@link Search#getFullTextSession(Session)}
  * for proper functionality.
  * 
@@ -32,9 +32,9 @@ public class FullTextSessionFactory {
 	private SessionFactory sessionFactory;
 	
 	/**
-	 * Obtains the a {@link FullTextSession} instance.
+	 * Obtains a {@link FullTextSession} instance.
 	 * 
-	 * @return a {@link FullTextSession object}
+	 * @return {@link FullTextSession} object
 	 */
 	public FullTextSession getFullTextSession() {
 		return Search.getFullTextSession(sessionFactory.getCurrentSession());
