@@ -9,6 +9,9 @@
  */
 package org.openmrs.api.impl;
 
+import java.io.IOException;
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -37,7 +40,9 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
+import org.openmrs.notification.MessageService;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -49,6 +54,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 
 /**
  * Default implementation of the user service. This class should not be used on its own. The current
@@ -752,12 +758,38 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		AdministrationService adminService = Context.getAdministrationService();
 		String link = adminService.getGlobalProperty(OpenmrsConstants.GP_HOST_URL)
 		        .replace("{activationKey}", token);
-		String msg = messages.getMessage("mail.passwordreset.content").replace("{name}", user.getUsername())
-		        .replace("{link}", link)
-		        .replace("{time}", String.valueOf(getValidTime() / 60000));
-		Context.getMessageService().sendMessage(user.getEmail(),
-		    adminService.getGlobalProperty("mail.from"),
-		    messages.getMessage("mail.passwordreset.subject"), msg);
+		String msg = null;
+
+		String intro = messages.getMessage("mail.passwordreset.intro").replace("{name}", user.getUsername());
+		String expiration = messages.getMessage("mail.passwordreset.welcomeTwo").replace("{time}", String.valueOf(getValidTime() / 60000));
+		
+		try {
+			msg = messages.getMessage(getTemplateFile()[0]).replace("{intro}", intro)
+                    .replace("{link}", link)
+					.replace("{welcome}", messages.getMessage("mail.passwordreset.welcome"))
+					.replace("{welcomeTwo}", expiration)
+					.replace("{resetButton}", messages.getMessage("mail.passwordreset.resetButton"))					
+					.replace("{main}", messages.getMessage("mail.passwordreset.main"))
+					.replace("{didNotMakeRequest}", messages.getMessage("mail.passwordreset.didNotMakeRequest"))
+					.replace("{problemWithLink}", messages.getMessage("mail.passwordreset.problemWithLink"))
+					.replace("{thanks}", messages.getMessage("mail.passwordreset.thanks"))
+					.replace("{team}", messages.getMessage("mail.passwordreset.team"))
+					.replace("{footNote}", messages.getMessage("mail.passwordreset.footNote"))
+					.replace("{title}", messages.getMessage("mail.passwordreset.title1"))
+					.replace("{src}", "data:image/jpeg;base64,");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		MessageService messageService = Context.getMessageService();
+		Message message = null;
+		try {
+			message = messageService.createMessage(user.getEmail(),
+            adminService.getGlobalProperty("mail.from"),
+            messages.getMessage("mail.passwordreset.subject"), msg, UserServiceImpl.getTemplateFile()[1], null, "Logo");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		messageService.sendMessage(message);
 		
 		return user;
 	}
@@ -772,5 +804,16 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			throw new InvalidActivationKeyException("activation.key.not.correct");
 		}
 		updatePassword(user, newPassword);
+	}
+	
+	public static String[] getTemplateFile() throws IOException {
+		String[] content = new String[2];
+		File file = ResourceUtils.getFile("classpath:passwordResetTemplate");
+		File file2 = ResourceUtils.getFile("classpath:OpenmrsLogo.png");
+		String content1 = new String(Files.readAllBytes(file.toPath()));
+		String content2 = file2.getPath();
+		content[0] = content1;
+		content[1] = content2;
+		return content;
 	}
 }
