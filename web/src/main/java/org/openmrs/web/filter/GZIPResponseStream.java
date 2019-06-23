@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Matt Raible
  * @version $Revision: 1.3 $ $Date: 2004/05/16 02:17:00 $
  */
+
 public class GZIPResponseStream extends ServletOutputStream {
 	
 	// abstraction of the output stream used for compression
@@ -162,5 +164,16 @@ public class GZIPResponseStream extends ServletOutputStream {
 	
 	public void reset() {
 		//noop
+	}
+
+	@Override
+	public boolean isReady() {
+		// TODO Auto-generated method stub
+		return this.isReady();
+	}
+
+	@Override
+	public void setWriteListener(WriteListener writeListener) {
+		
 	}
 }

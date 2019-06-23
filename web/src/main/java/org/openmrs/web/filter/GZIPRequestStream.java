@@ -12,6 +12,7 @@ package org.openmrs.web.filter;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,6 +43,21 @@ public class GZIPRequestStream extends ServletInputStream {
 	@Override
 	public int read(byte[] b) throws IOException {
 		return zipInput.read(b);
+	}
+
+	@Override
+	public boolean isFinished() {
+		return this.isFinished();
+	}
+
+	@Override
+	public boolean isReady() {
+		return this.isReady();
+	}
+
+	@Override
+	public void setReadListener(ReadListener readListener) {
+
 	}
 	
 }
