@@ -176,9 +176,9 @@ public abstract class StartupFilter implements Filter {
 			velocityEngine = new VelocityEngine();
 			
 			Properties props = new Properties();
-			props.setProperty(RuntimeConstants.RUNTIME_LOG, "startup_wizard_vel.log");
+			props.setProperty(RuntimeConstants.RUNTIME_LOG_NAME, "startup_wizard_vel.log");
 			// Linux requires setting logging properties to initialize Velocity Context.
-			props.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
+			props.setProperty(RuntimeConstants.RUNTIME_LOG_INSTANCE,
 			    "org.apache.velocity.runtime.log.CommonsLogLogChute");
 			props.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, "initial_wizard_velocity");
 			
