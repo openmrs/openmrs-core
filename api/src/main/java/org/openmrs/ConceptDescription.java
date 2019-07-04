@@ -62,6 +62,16 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 		setDescription(description);
 	}
 	
+	public ConceptDescription(Integer conceptDescriptionId, Concept concept, String description, Locale locale, User creator,
+	    Date dateCreated) {
+		this.conceptDescriptionId = conceptDescriptionId;
+		this.concept = concept;
+		this.description = description;
+		this.locale = locale;
+		this.creator = creator;
+		this.dateCreated = dateCreated;
+	}
+
 	/**
 	 * @return Returns the conceptDescriptionId.
 	 */

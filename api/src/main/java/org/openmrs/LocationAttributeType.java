@@ -21,6 +21,13 @@ public class LocationAttributeType extends BaseAttributeType<Location> implement
 	
 	private Integer locationAttributeTypeId;
 	
+	public LocationAttributeType() {
+	}
+
+	public LocationAttributeType(Integer locationAttributeTypeId) {
+		this.locationAttributeTypeId = locationAttributeTypeId;
+	}
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */

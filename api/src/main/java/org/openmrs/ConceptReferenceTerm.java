@@ -63,6 +63,14 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 		setName(name);
 	}
 	
+	public ConceptReferenceTerm(Integer conceptReferenceTermId, ConceptSource conceptSource, String code,
+	    Set<ConceptReferenceTermMap> conceptReferenceTermMaps) {
+		this.conceptReferenceTermId = conceptReferenceTermId;
+		this.conceptSource = conceptSource;
+		this.code = code;
+		this.conceptReferenceTermMaps = conceptReferenceTermMaps;
+	}
+
 	/**
 	 * @return the conceptReferenceTermId
 	 */

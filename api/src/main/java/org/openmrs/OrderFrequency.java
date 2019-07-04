@@ -28,6 +28,19 @@ public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 	
 	private Concept concept;
 	
+	
+	public OrderFrequency() {
+	}
+
+	public OrderFrequency(Integer orderFrequencyId) {
+		this.orderFrequencyId = orderFrequencyId;
+	}
+
+	public OrderFrequency(Integer orderFrequencyId, Concept concept) {
+		this.orderFrequencyId = orderFrequencyId;
+		this.concept = concept;
+	}
+
 	/**
 	 * Get the orderFrequencyId
 	 */

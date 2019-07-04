@@ -73,6 +73,10 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	public PatientIdentifier() {
 	}
 	
+	public PatientIdentifier(Integer patientIdentifierId) {
+		this.patientIdentifierId = patientIdentifierId;
+	}
+
 	/**
 	 * Convenience constructor for creating a basic identifier
 	 *

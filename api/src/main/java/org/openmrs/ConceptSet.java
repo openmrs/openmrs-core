@@ -41,13 +41,25 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	public ConceptSet() {
 	}
 	
+	public ConceptSet(Integer conceptSetId) {
+		this.conceptSetId = conceptSetId;
+	}
+
 	public ConceptSet(Concept concept, Double weight) {
 		setConcept(concept);
 		setSortWeight(weight);
 	}
-	
+
+	public ConceptSet(Integer conceptSetId, Concept concept, Concept conceptSet, User creator, Date dateCreated) {
+		this.conceptSetId = conceptSetId;
+		this.concept = concept;
+		this.conceptSet = conceptSet;
+		this.creator = creator;
+		this.dateCreated = dateCreated;
+	}
 	// Property accessors
 	
+
 	/**
 	 * Gets the concept set identifier.
 	 * 

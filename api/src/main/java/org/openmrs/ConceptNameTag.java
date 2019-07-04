@@ -64,6 +64,14 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	
 	// Property accessors
 	
+	public ConceptNameTag(Integer conceptNameTagId, String tag, User creator, Date dateCreated, Boolean voided) {
+		this.conceptNameTagId = conceptNameTagId;
+		this.tag = tag;
+		this.creator = creator;
+		this.dateCreated = dateCreated;
+		this.voided = voided;
+	}
+
 	/**
 	 * Returns the textual representation of this ConceptNameTag.
 	 * 

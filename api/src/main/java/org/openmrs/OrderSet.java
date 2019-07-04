@@ -41,6 +41,19 @@ public class OrderSet extends BaseChangeableOpenmrsMetadata {
 	private List<OrderSetMember> orderSetMembers;
 	
 	private Concept category;
+	
+	public OrderSet() {
+	}
+
+	public OrderSet(Integer orderSetId) {
+		this.orderSetId = orderSetId;
+	}
+
+	public OrderSet(Integer orderSetId, Operator operator, List<OrderSetMember> orderSetMembers) {
+		this.orderSetId = orderSetId;
+		this.operator = operator;
+		this.orderSetMembers = orderSetMembers;
+	}
 
 	/**
 	 * Gets the orderSetId

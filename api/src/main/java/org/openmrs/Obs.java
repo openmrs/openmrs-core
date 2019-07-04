@@ -256,6 +256,13 @@ public class Obs extends BaseChangeableOpenmrsData {
 		this.obsId = obsId;
 	}
 	
+	public Obs(Integer obsId, Concept concept, Date obsDatetime, Person person) {
+		this.obsId = obsId;
+		this.concept = concept;
+		this.obsDatetime = obsDatetime;
+		this.person = person;
+	}
+
 	/**
 	 * This is an equivalent to a copy constructor. Creates a new copy of the given
 	 * <code>obsToCopy</code> with a null obs id

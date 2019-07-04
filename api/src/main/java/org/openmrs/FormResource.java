@@ -62,6 +62,16 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 		// generic constructor
 	}
 	
+	public FormResource(Integer formResourceId) {
+		this.formResourceId = formResourceId;
+	}
+
+	public FormResource(Integer formResourceId, Form form, String valueReference) {
+		this.formResourceId = formResourceId;
+		this.form = form;
+		this.valueReference = valueReference;
+	}
+
 	/**
 	 * Create a copy of a provided FormResource, ignoring the uuid and id of the original
 	 *

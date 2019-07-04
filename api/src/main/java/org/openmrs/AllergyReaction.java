@@ -34,6 +34,12 @@ public class AllergyReaction extends BaseOpenmrsObject implements java.io.Serial
 	public AllergyReaction(){
 		
 	}
+/**
+ * 	@param allergyReactionId the allergyReactionId to set
+*/
+	public AllergyReaction(Integer allergyReactionId){
+		this.allergyReactionId=allergyReactionId;
+	}
 	
 	/**
 	 * @param allergy the allergy to set

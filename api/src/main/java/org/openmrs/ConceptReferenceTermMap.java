@@ -48,6 +48,13 @@ public class ConceptReferenceTermMap extends BaseConceptMap {
 		setConceptMapType(conceptMapType);
 	}
 	
+	public ConceptReferenceTermMap(Integer conceptReferenceTermMapId, ConceptReferenceTerm termA,
+	    ConceptReferenceTerm termB) {
+		this.conceptReferenceTermMapId = conceptReferenceTermMapId;
+		this.termA = termA;
+		this.termB = termB;
+	}
+
 	/**
 	 * @return the conceptReferenceTermMapId
 	 */

@@ -29,6 +29,22 @@ public class OrderSetMember extends BaseChangeableOpenmrsMetadata {
 	
 	private Concept concept;
 	
+	
+	
+	public OrderSetMember() {
+	}
+
+	
+	public OrderSetMember(Integer orderSetMemberId) {
+		this.orderSetMemberId = orderSetMemberId;
+	}
+
+	public OrderSetMember(Integer orderSetMemberId, OrderType orderType, Concept concept) {
+		this.orderSetMemberId = orderSetMemberId;
+		this.orderType = orderType;
+		this.concept = concept;
+	}
+
 	/**
 	 * Gets the orderSetMemberId
 	 *

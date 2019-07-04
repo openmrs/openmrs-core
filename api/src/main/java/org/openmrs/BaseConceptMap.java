@@ -27,7 +27,7 @@ public abstract class BaseConceptMap extends BaseOpenmrsObject implements Audita
 	private Date dateCreated;
 	
 	private Date dateChanged;
-	
+
 	/**
 	 * @return the conceptMapType
 	 */

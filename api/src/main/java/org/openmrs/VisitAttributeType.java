@@ -20,6 +20,14 @@ public class VisitAttributeType extends BaseAttributeType<Visit> implements Attr
 	
 	private Integer visitAttributeTypeId;
 	
+	
+	public VisitAttributeType() {
+	}
+
+	public VisitAttributeType(Integer visitAttributeTypeId) {
+		this.visitAttributeTypeId = visitAttributeTypeId;
+	}
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */

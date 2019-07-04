@@ -35,6 +35,22 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	
 	private OrderSet orderSet;
 	
+	
+	
+	public OrderGroup() {
+	}
+
+	
+	public OrderGroup(Integer orderGroupId) {
+		this.orderGroupId = orderGroupId;
+	}
+
+	public OrderGroup(Integer orderGroupId, Patient patient, Encounter encounter) {
+		this.orderGroupId = orderGroupId;
+		this.patient = patient;
+		this.encounter = encounter;
+	}
+
 	/**
 	 * Gets the orderGroupId
 	 *

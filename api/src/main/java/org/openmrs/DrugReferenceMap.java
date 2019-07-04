@@ -49,6 +49,20 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	public DrugReferenceMap() {
 	}
 	
+	public DrugReferenceMap(Integer drugReferenceMapId) {
+		this.drugReferenceMapId = drugReferenceMapId;
+	}
+
+	public DrugReferenceMap(Integer drugReferenceMapId, Drug drug, ConceptReferenceTerm conceptReferenceTerm,
+	    ConceptMapType conceptMapType, User creator, Date dateCreated) {
+		this.drugReferenceMapId = drugReferenceMapId;
+		this.drug = drug;
+		this.conceptReferenceTerm = conceptReferenceTerm;
+		this.conceptMapType = conceptMapType;
+		this.creator = creator;
+		this.dateCreated = dateCreated;
+	}
+
 	/**
 	 * @param term
 	 * @param conceptMapType

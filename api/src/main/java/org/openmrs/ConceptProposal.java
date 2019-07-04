@@ -63,6 +63,14 @@ public class ConceptProposal extends BaseOpenmrsObject {
 		this.conceptProposalId = conceptProposalId;
 	}
 	
+	public ConceptProposal(Integer conceptProposalId, String originalText, String state, User creator, Date dateCreated) {
+		this.conceptProposalId = conceptProposalId;
+		this.originalText = originalText;
+		this.state = state;
+		this.creator = creator;
+		this.dateCreated = dateCreated;
+	}
+
 	/**
 	 * @return Returns the changedBy.
 	 */

@@ -54,6 +54,11 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 		this.orderTypeId = orderTypeId;
 	}
 	
+	public OrderType(Integer orderTypeId, String javaClassName) {
+		this.orderTypeId = orderTypeId;
+		this.javaClassName = javaClassName;
+	}
+
 	/**
 	 * Convenience constructor that takes in the elements required to save this OrderType to the
 	 * database

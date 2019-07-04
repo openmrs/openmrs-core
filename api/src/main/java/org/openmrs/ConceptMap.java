@@ -42,6 +42,12 @@ public class ConceptMap extends BaseConceptMap {
 		this.conceptMapId = conceptMapId;
 	}
 	
+	public ConceptMap(Integer conceptMapId, Concept concept, ConceptReferenceTerm conceptReferenceTerm) {
+		this.conceptMapId = conceptMapId;
+		this.concept = concept;
+		this.conceptReferenceTerm = conceptReferenceTerm;
+	}
+
 	/**
 	 * Convenience constructor that takes the term to be mapped to and the type of the map
 	 *

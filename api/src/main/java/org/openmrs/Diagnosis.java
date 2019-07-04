@@ -36,6 +36,19 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	public Diagnosis() {
 	}
 
+	public Diagnosis(Integer diagnosisId) {
+		this.diagnosisId = diagnosisId;
+	}
+
+	public Diagnosis(Integer diagnosisId, Encounter encounter, ConditionVerificationStatus certainty, Integer rank,
+	    Patient patient) {
+		this.diagnosisId = diagnosisId;
+		this.encounter = encounter;
+		this.certainty = certainty;
+		this.rank = rank;
+		this.patient = patient;
+	}
+
 	/**
 	 * @param encounter the encounter for this diagnosis
 	 * @param diagnosis the diagnosis to set  

@@ -77,6 +77,13 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 		this.person = person;
 	}
 	
+	public User(Integer userId, Person person, String systemId, Map<String, String> userProperties) {
+		this.userId = userId;
+		this.person = person;
+		this.systemId = systemId;
+		this.userProperties = userProperties;
+	}
+
 	/**
 	 * Return true if this user has all privileges
 	 * 

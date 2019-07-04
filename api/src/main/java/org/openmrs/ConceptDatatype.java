@@ -79,8 +79,12 @@ public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 		this.conceptDatatypeId = conceptDatatypeId;
 	}
 	
+	public ConceptDatatype(Integer conceptDatatypeId, String hl7Abbreviation) {
+		this.conceptDatatypeId = conceptDatatypeId;
+		this.hl7Abbreviation = hl7Abbreviation;
+	}
 	// Property accessors
-	
+
 	public Integer getConceptDatatypeId() {
 		return this.conceptDatatypeId;
 	}
