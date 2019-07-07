@@ -20,6 +20,7 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
@@ -564,6 +565,8 @@ public interface PatientService extends OpenmrsService {
 	 */
 	public void mergePatients(Patient preferred, List<Patient> notPreferred) throws APIException, SerializationException;
 		
+	public void mergePersonToPatient(Patient preferred ,Person notPreferred) throws APIException, SerializationException;
+
 	/**
 	 * Convenience method to establish that a patient has died. In addition to exiting the patient
 	 * from care (see above), this method will also set the appropriate patient characteristics to

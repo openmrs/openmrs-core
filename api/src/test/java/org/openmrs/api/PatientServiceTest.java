@@ -3256,5 +3256,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, encounterService.getEncounter(57).getObsAtTopLevel(false).size());
 		assertEquals(2, encounterService.getEncounter(57).getObsAtTopLevel(true).size());
 	}
-
+	@Test
+	public void mergePersonToPatient_shouldMergeNames() throws APIException, SerializationException {
+		Person notPreffered = personService.getPerson(1);
+		Patient preffered = patientService.getPatient(8);
+		patientService.mergePersonToPatient(preffered, notPreffered);
+		assertEquals(2, preffered.getNames().size());
+	}
 }

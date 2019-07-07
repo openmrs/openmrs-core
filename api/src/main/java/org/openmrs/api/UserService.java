@@ -21,6 +21,7 @@ import org.openmrs.annotation.Logging;
 import org.openmrs.util.PersonByNameComparator;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.notification.MessageException;
+import org.openmrs.serialization.SerializationException;
 
 /**
  * Contains methods pertaining to Users in the system Use:<br>
@@ -566,4 +567,6 @@ public interface UserService extends OpenmrsService {
 	 * @param newPassword the new password
 	 */
 	public void changePasswordUsingActivationKey(String activationKey, String newPassword);
+	public void mergeUsers(User preferred ,User notPreferred) throws APIException, SerializationException;
+
 }

@@ -12,9 +12,11 @@ package org.openmrs.api.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.GlobalProperty;
@@ -25,10 +27,12 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PersonAttributeTypeLockedException;
 import org.openmrs.api.PersonService;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PersonDAO;
 import org.openmrs.person.PersonMergeLog;
@@ -989,6 +993,237 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED, "false");
 		if (Boolean.valueOf(locked)) {
 			throw new PersonAttributeTypeLockedException();
+		}
+	}
+
+	@Override
+	public void mergePersons(Person preferred, Person notPreferred) throws APIException, SerializationException {
+		log.debug("Merging persons: (preferred)" + preferred.getPersonId() + ", (notPreferred) "
+		        + notPreferred.getPersonId());
+		if (preferred.getPersonId().equals(notPreferred.getPersonId())) {
+			log.debug("Merge operation cancelled: Cannot merge user" + preferred.getPersonId() + " to self");
+			throw new APIException("Person.merge.cancelled", new Object[] { preferred.getPersonId() });
+		}
+		PersonMergeLogData mergedData = new PersonMergeLogData();
+		
+		mergeRelationships(preferred, notPreferred, mergedData);		
+		mergeNames(preferred, notPreferred, mergedData);
+		mergeAddresses(preferred, notPreferred, mergedData);
+		mergePersonAttributes(preferred, notPreferred, mergedData);
+		mergeGenderInformation(preferred, notPreferred, mergedData);
+		mergeDateOfBirth(preferred, notPreferred, mergedData);
+		mergeDateOfDeath(preferred, notPreferred, mergedData);
+		
+		// void the non preferred person
+		Context.getPersonService().voidPerson(notPreferred, "Merged with person #" + preferred.getPersonId());
+	
+		// associate the Users associated with the not preferred person, to the preferred person.
+		changeUserAssociations(preferred, notPreferred, mergedData);
+		
+		// Save the newly update preferred person
+		// This must be called _after_ voiding the nonPreferred person so that
+		//  a "Duplicate Identifier" error doesn't pop up.
+		Context.getPersonService().savePerson(preferred);
+		
+		//save the person merge log
+		PersonMergeLog personMergeLog = new PersonMergeLog();
+		personMergeLog.setWinner(preferred);
+		personMergeLog.setLoser(notPreferred);
+		personMergeLog.setPersonMergeLogData(mergedData);
+		savePersonMergeLog(personMergeLog);
+	}
+
+	private String relationshipHash(Relationship rel, Person primary) {
+		boolean isA = rel.getPersonA().equals(primary);
+		return rel.getRelationshipType().getRelationshipTypeId().toString() + (isA ? "A" : "B")
+		        + (isA ? rel.getPersonB().getPersonId().toString() : rel.getPersonA().getPersonId().toString());
+	}
+	private void mergeRelationships(Person preferred, Person notPreferred, PersonMergeLogData mergedData) {
+		// copy all relationships
+		Set<String> existingRelationships = new HashSet<>();
+		// fill in the existing relationships with hashes
+		for (Relationship rel : getRelationshipsByPerson(preferred)) {
+			existingRelationships.add(relationshipHash(rel, preferred));
+		}
+		// iterate over notPreferred's relationships and only copy them if they are needed
+		for (Relationship rel : getRelationshipsByPerson(notPreferred)) {
+			if (!rel.getVoided()) {
+				boolean personAisPreferred = rel.getPersonA().equals(preferred);
+				boolean personAisNotPreferred = rel.getPersonA().equals(notPreferred);
+				boolean personBisPreferred = rel.getPersonB().equals(preferred);
+				boolean personBisNotPreferred = rel.getPersonB().equals(notPreferred);
+				String relHash = relationshipHash(rel, notPreferred);
+				
+				if ((personAisPreferred && personBisNotPreferred) || (personBisPreferred && personAisNotPreferred)) {
+					// void this relationship if it's between the preferred and notPreferred person
+					voidRelationship(rel, "person " + (personAisNotPreferred ? "A" : "B")
+					        + " was merged to person " + (personAisPreferred ? "A" : "B"));
+				} else if (existingRelationships.contains(relHash)) {
+					// void this relationship if it already exists between preferred and the other side
+					voidRelationship(rel, "person " + (personAisNotPreferred ? "A" : "B")
+					        + " was merged and a relationship already exists");
+				} else {
+					// copy this relationship and replace notPreferred with preferred
+					Relationship tmpRel = rel.copy();
+					if (personAisNotPreferred) {
+						tmpRel.setPersonA(preferred);
+					}
+					if (personBisNotPreferred) {
+						tmpRel.setPersonB(preferred);
+					}
+					log.debug("Copying relationship " + rel.getRelationshipId() + " to " + preferred.getPersonId());
+					Relationship persisted = saveRelationship(tmpRel);
+					mergedData.addCreatedRelationship(persisted.getUuid());
+					// void the existing relationship to the notPreferred
+					voidRelationship(rel, "person " + (personAisNotPreferred ? "A" : "B")
+					        + " was merged, relationship copied to #" + tmpRel.getRelationshipId());
+					// add the relationship hash to existing relationships
+					existingRelationships.add(relHash);
+				}
+				mergedData.addVoidedRelationship(rel.getUuid());
+			}
+		}
+	}
+
+	private void mergeDateOfDeath(Person preferred, Person notPreferred, PersonMergeLogData mergedData) {
+		mergedData.setPriorDateOfDeath(preferred.getDeathDate());
+		if (preferred.getDeathDate() == null) {
+			preferred.setDeathDate(notPreferred.getDeathDate());
+		}
+		if (preferred.getCauseOfDeath() != null) {
+			mergedData.setPriorCauseOfDeath(preferred.getCauseOfDeath().getUuid());
+		}
+		if (preferred.getCauseOfDeath() == null) {
+			preferred.setCauseOfDeath(notPreferred.getCauseOfDeath());
+		}
+	}
+	
+	private void mergeDateOfBirth(Person preferred, Person notPreferred, PersonMergeLogData mergedData) {
+		mergedData.setPriorDateOfBirth(preferred.getBirthdate());
+		mergedData.setPriorDateOfBirthEstimated(preferred.getBirthdateEstimated());
+		if (preferred.getBirthdate() == null || (preferred.getBirthdateEstimated() && !notPreferred.getBirthdateEstimated())) {
+			preferred.setBirthdate(notPreferred.getBirthdate());
+			preferred.setBirthdateEstimated(notPreferred.getBirthdateEstimated());
+		}
+	}
+	
+	private void mergePersonAttributes(Person preferred, Person notPreferred, PersonMergeLogData mergedData) {
+		// copy person attributes
+		for (PersonAttribute attr : notPreferred.getAttributes()) {
+			if (!attr.getVoided()) {
+				PersonAttribute tmpAttr = attr.copy();
+				tmpAttr.setPerson(null);
+				tmpAttr.setUuid(UUID.randomUUID().toString());
+				preferred.addAttribute(tmpAttr);
+				mergedData.addCreatedAttribute(tmpAttr.getUuid());
+			}
+		}
+	}
+	
+	private void mergeGenderInformation(Person preferred, Person notPreferred, PersonMergeLogData mergedData) {
+		// move all gender info
+		mergedData.setPriorGender(preferred.getGender());
+		if (!"M".equals(preferred.getGender()) && !"F".equals(preferred.getGender())) {
+			preferred.setGender(notPreferred.getGender());
+		}
+	}
+	
+	private void mergeNames(Person preferred, Person notPreferred, PersonMergeLogData mergedData) {
+		// move all names
+		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
+		for (PersonName newName : notPreferred.getNames()) {
+			boolean containsName = false;
+			for (PersonName currentName : preferred.getNames()) {
+				containsName = currentName.equalsContent(newName);
+				if (containsName) {
+					break;
+				}
+			}
+			if (!containsName) {
+				PersonName tmpName = constructTemporaryName(newName);
+				preferred.addName(tmpName);
+				mergedData.addCreatedName(tmpName.getUuid());
+				log.debug("Merging name " + newName.getGivenName() + " to " + preferred.getPersonId());
+			}
+		}
+	}
+	
+	private PersonName constructTemporaryName(PersonName newName) {
+		PersonName tmpName = PersonName.newInstance(newName);
+		tmpName.setPersonNameId(null);
+		tmpName.setVoided(false);
+		tmpName.setVoidedBy(null);
+		tmpName.setVoidReason(null);
+		// we don't want to change the preferred name of the preferred person
+		tmpName.setPreferred(false);
+		tmpName.setUuid(UUID.randomUUID().toString());
+		return tmpName;
+	}
+	
+	private void mergeAddresses(Person preferred, Person notPreferred, PersonMergeLogData mergedData)
+	        throws SerializationException {
+		// move all addresses
+		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
+		for (PersonAddress newAddress : notPreferred.getAddresses()) {
+			boolean containsAddress = false;
+			for (PersonAddress currentAddress : preferred.getAddresses()) {
+				containsAddress = currentAddress.equalsContent(newAddress);
+				if (containsAddress) {
+					break;
+				}
+			}
+			if (!containsAddress) {
+				PersonAddress tmpAddress = (PersonAddress) newAddress.clone();
+				tmpAddress.setPersonAddressId(null);
+				tmpAddress.setVoided(false);
+				tmpAddress.setVoidedBy(null);
+				tmpAddress.setVoidReason(null);
+				tmpAddress.setPreferred(false); // addresses from non-preferred person shouldn't be marked as preferred
+				tmpAddress.setUuid(UUID.randomUUID().toString());
+				preferred.addAddress(tmpAddress);
+				mergedData.addCreatedAddress(tmpAddress.getUuid());
+				log.debug("Merging address " + newAddress.getPersonAddressId() + " to " + preferred.getPersonId());
+			}
+		}
+		
+		// copy person attributes
+		for (PersonAttribute attr : notPreferred.getAttributes()) {
+			if (!attr.getVoided()) {
+				PersonAttribute tmpAttr = attr.copy();
+				tmpAttr.setPerson(null);
+				tmpAttr.setUuid(UUID.randomUUID().toString());
+				preferred.addAttribute(tmpAttr);
+				mergedData.addCreatedAttribute(tmpAttr.getUuid());
+			}
+		}
+		// void the person associated with not preferred person
+		voidPerson(notPreferred,
+		    "The person corresponding to this person attributes has been voided and Merged with patient #" + preferred.getPersonId());
+		
+		// associate the Users associated with the not preferred person, to the preferred person.
+		changeUserAssociations(preferred, notPreferred, mergedData);
+		
+		// Save the newly update preferred person
+		// This must be called _after_ voiding the nonPreferred person so that
+		//  a "Duplicate Identifier" error doesn't pop up.
+		savePerson(preferred);
+		
+		//save the person merge log
+		PersonMergeLog personMergeLog = new PersonMergeLog();
+		personMergeLog.setWinner(preferred);
+		personMergeLog.setLoser(notPreferred);
+		personMergeLog.setPersonMergeLogData(mergedData);
+		savePersonMergeLog(personMergeLog);
+	}
+	private void changeUserAssociations(Person preferred, Person notPreferred, PersonMergeLogData mergedData) {
+		UserService userService = Context.getUserService();
+		List<User> users = userService.getUsersByPerson(notPreferred, true);
+		for (User user : users) {
+			user.setPerson(preferred);
+			User persisted = userService.saveUser(user);
+			if (mergedData != null) {
+				mergedData.addMovedUser(persisted.getUuid());
+			}
 		}
 	}
 }

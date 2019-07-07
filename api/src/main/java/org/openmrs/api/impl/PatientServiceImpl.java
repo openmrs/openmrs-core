@@ -1636,4 +1636,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			throw new PatientIdentifierTypeLockedException();
 		}
 	}
+
+	@Override
+	public void mergePersonToPatient(Patient preferred, Person notPreferred) throws APIException, SerializationException {
+		Person prefer = Context.getPersonService().getPersonByUuid(preferred.getUuid());
+		Context.getPersonService().mergePersons(prefer, notPreferred);
+	}
 }

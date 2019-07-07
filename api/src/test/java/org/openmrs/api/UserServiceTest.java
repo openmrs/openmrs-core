@@ -45,6 +45,7 @@ import org.openmrs.api.db.UserDAO;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.MessageException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import org.openmrs.serialization.SerializationException;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.util.OpenmrsConstants;
@@ -1504,5 +1505,14 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		expectedException.expectMessage(messages.getMessage("activation.key.not.correct"));
 		
 		userService.changePasswordUsingActivationKey(key, "Pa55w0rd");
+	}
+	
+	@Test
+	public void mergeUser_shouldAddRolesToPreffered() throws APIException, SerializationException {
+		executeDataSet(XML_FILENAME);
+		User user1 = userService.getUser(5506);
+		User user2 = userService.getUser(5507);
+		userService.mergeUsers(user1, user2);
+		assertEquals(2, user1.getAllRoles().size());
 	}
 }

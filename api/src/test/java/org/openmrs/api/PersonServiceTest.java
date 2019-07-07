@@ -50,6 +50,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.person.PersonMergeLogData;
+import org.openmrs.serialization.SerializationException;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -2347,5 +2348,39 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		assertThat(result, contains(birthplace));
 		assertEquals(result.size(), 1);
+	}
+	@Test
+	public void mergePersons_shouldAddAttributesToPreffered() throws APIException, SerializationException {
+		Person person1 = personService.getPersonByUuid("5946f880-b197-400b-9caa-a3c661d23041");
+		person1.setGender("");
+		Person person2 = personService.getPersonByUuid("da7f524f-27ce-4bb2-86d6-6d1d05312bd5");
+		personService.mergePersons(person1, person2);
+		person1.getAddresses().size();
+		assertEquals(2, person1.getAddresses().size());
+		assertEquals(4, person1.getNames().size());
+		assertEquals("M", person1.getGender().toString());
+		
+	}
+	
+	@Test
+	public void mergePersons_shouldAddBirthdateToPrefferedIfItHasNull() throws APIException, SerializationException {
+		Person person1 = personService.getPersonByUuid("8adf539e-4b5a-47aa-80c0-ba1025c957fa");
+		Person person2 = personService.getPersonByUuid("5946f880-b197-400b-9caa-a3c661d23041");
+		personService.mergePersons(person1, person2);
+		assertNotNull(person1.getBirthdate());
+		
+	}
+	@Test
+	public void mergePersons_shouldVoidNonPreffered() throws APIException, SerializationException {
+		Person person1 = Context.getPersonService().getPerson(6);
+		Person person2 = Context.getPersonService().getPerson(7);
+		personService.mergePersons(person1, person2);
+		Person voidedPerson = Context.getPersonService().getPerson(7);
+		assertTrue(voidedPerson.getVoided());
+		Assert.assertNotNull(voidedPerson.getVoidedBy());
+		Assert.assertNotNull(voidedPerson.getPersonVoidReason());
+		Assert.assertNotNull(voidedPerson.getPersonDateVoided());
+		System.out.println(voidedPerson.getVoided());
+		assertTrue(voidedPerson.getVoided());
 	}
 }

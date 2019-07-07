@@ -39,6 +39,8 @@ import org.openmrs.api.db.UserDAO;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.MessageException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import org.openmrs.person.PersonMergeLogData;
+import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
@@ -773,4 +775,39 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		}
 		updatePassword(user, newPassword);
 	}
+
+	@Override
+	public void mergeUsers(User preferred, User notPreferred) throws APIException, SerializationException {
+		log.debug("Merging patients: (preferred)" + preferred.getUserId() + ", (notPreferred) "
+		        + notPreferred.getUserId());
+		if (preferred.getUserId().equals(notPreferred.getUserId())) {
+			log.debug("Merge operation cancelled: Cannot merge user" + preferred.getUserId() + " to self");
+			throw new APIException("Patient.merge.cancelled", new Object[] { preferred.getUserId() });
+		}
+		PersonMergeLogData mergedData = new PersonMergeLogData();
+		mergeRoles(preferred,notPreferred, mergedData);
+		
+		/*I have Only merged Roles before retiring the user since all the other related fields allow for only single values
+		in the table*/
+		retireUser(notPreferred, "User has been merged");
+	}
+
+	public void	mergeRoles(User preferred,User notPreferred,PersonMergeLogData mergedData) {
+		for(Role currentRole: preferred.getAllRoles()) {
+			boolean containsRole= false;
+			for(Role roleOfNotpreferred: notPreferred.getAllRoles()) {
+				containsRole=roleOfNotpreferred.equals(currentRole);
+				if(containsRole) {
+					break;
+				}
+				if(!containsRole) {
+					preferred.addRole(roleOfNotpreferred);
+					/*mergedData.addCreatedRole; This is not yet a row in PersonMergeLogData and so not persisted yet*/
+					log.debug("Merging Role " + roleOfNotpreferred.toString() + " to " + preferred.getUserId());
+				}
+			}
+		}
+		
+	}	
+
 }

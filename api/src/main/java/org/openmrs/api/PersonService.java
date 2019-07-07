@@ -738,6 +738,8 @@ public interface PersonService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.GET_RELATIONSHIPS })
 	public Map<Person, List<Person>> getRelationshipMap(RelationshipType relationshipType) throws APIException;
 	
+	public void mergePersons(Person preferred ,Person notPreferred) throws APIException, SerializationException;
+
 	/**
 	 * Builds the serialized data from
 	 * {@link org.openmrs.person.PersonMergeLog#getPersonMergeLogData}, sets the mergedData String,
