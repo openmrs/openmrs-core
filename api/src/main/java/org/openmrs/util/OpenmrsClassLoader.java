@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.nio.file.Files;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -68,7 +69,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	private Map<String, WeakReference<Class<?>>> cachedClasses = new ConcurrentHashMap<>();
 	
 	// suffix of the OpenMRS required library cache folder
-	private static final String LIBCACHESUFFIX = ".openmrs-lib-cache";
+	private static final String LIBCACHESUFFIX = "openmrs-lib-cache";
 	
 	/**
 	 * Creates the instance for the OpenmrsClassLoader
@@ -705,30 +706,29 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		}
 		
 		synchronized (ModuleClassLoader.class) {
-			libCacheFolder = new File(OpenmrsUtil.getApplicationDataDirectory(), LIBCACHESUFFIX);
+			try {
+				libCacheFolder = Files.createTempDirectory(LIBCACHESUFFIX).toFile();
 			
-			log.debug("libraries cache folder is {}", libCacheFolder);
+				log.debug("libraries cache folder is {}", libCacheFolder);
 			
-			if (libCacheFolder.exists()) {
-				// clean up and empty the folder if it exists (and is not locked)
-				try {
-					OpenmrsUtil.deleteDirectory(libCacheFolder);
-					
-					libCacheFolder.mkdirs();
-				}
-				catch (IOException io) {
-					log.warn("Unable to delete: {}", libCacheFolder.getName());
-				}
-			} else {
-				// otherwise just create the dir structure
-				libCacheFolder.mkdirs();
+				// delete the entire library cache when the jvm exits
+				Runtime.getRuntime().addShutdownHook(new Thread() {
+					@Override
+					public void run() {
+						try {
+							OpenmrsUtil.deleteDirectory(libCacheFolder);
+						} catch (IOException e) {
+							log.error("Failed to delete cache folder", e);
+						}
+					}
+				});
+
+				// mark the lib cache folder as ready
+				libCacheFolderInitialized = true;
+
+			} catch (IOException e) {
+				log.error("Failed to create cache folder", e);
 			}
-			
-			// mark the lock and entire library cache to be deleted when the jvm exits
-			libCacheFolder.deleteOnExit();
-			
-			// mark the lib cache folder as ready
-			libCacheFolderInitialized = true;
 		}
 		
 		return libCacheFolder;
