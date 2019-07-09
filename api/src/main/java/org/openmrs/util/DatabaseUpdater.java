@@ -199,12 +199,12 @@ public class DatabaseUpdater {
 		log.debug("Setting up liquibase object to run changelog: " + changeLogFile);
 		Liquibase liquibase = getLiquibase(changeLogFile, cl);
 		int numChangeSetsToRun = liquibase.listUnrunChangeSets(contexts).size();
-		Database database = null;
+		Database database = null; 
 		LockService lockHandler = null;
 		
 		try {
 			database = liquibase.getDatabase();
-			lockHandler = LockService.getInstance(database);
+			lockHandler = LockServiceFactory.getInstance().getLockService();
 			lockHandler.waitForLock();
 			
 			ResourceAccessor openmrsFO = new ClassLoaderFileOpener(cl);
