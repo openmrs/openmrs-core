@@ -791,4 +791,15 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		assertEquals(new Integer(1),
 		    conceptService.getCountOfDrugs(phrase, conceptService.getConcept(conceptId), true, true, true));
 	}
+	@Test
+	public void getConceptByUuidOrMapping_shouldReturnConceptWhenMappingIsPossibleandUuidIsNull() {
+		Concept concept=conceptService.getConceptByUuidOrMapping("dre345333", "7345693", "SNOMED CT");
+		assertEquals("CD4 COUNT", concept.getName().toString());	
+	}
+	@Test
+	public void getConceptByUuidOrMapping_shouldReturnConceptWhenUuidMathes() {
+		Concept concept=conceptService.getConceptByUuidOrMapping("11716f9c-1434-4f8d-b9fc-9aa14c4d6126", "73", "RANDOM");
+		assertEquals("DATE OF FOOD ASSISTANCE", concept.getName().toString());		
+	}
+
 }

@@ -1027,6 +1027,57 @@ public interface ConceptService extends OpenmrsService {
 	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired) throws APIException;
 	
 	/**
+	 * Looks up a concept by its UUID or via {@link ConceptMap} which will return the {@link Concept} which contains
+	 * a {@link ConceptMap} entry whose <code>sourceCode</code> is equal to the passed
+	 * <code>conceptCode</code> and whose {@link ConceptSource} has either a <code>name</code> or
+	 * <code>hl7Code</code> that is equal to the passed <code>mappingCode</code>. Delegates to
+	 * getConceptByUuidOrMapping(uuid,code,sourceName,includeRetired) with includeRetired=true
+	 * 
+	 * @param code the code associated with a concept within a given {@link ConceptSource}
+	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
+	 * @param uuid
+	 * @return concept or null
+	 * @return the {@link Concept} that has the given mapping, or null if no {@link Concept} found
+	 * @throws APIException
+	 * @should find object given valid uuid
+	 * @should get concept using code and sourceName if uuid is null
+	 * @should get concept with given code and and source hl7 code
+	 * @should get concept with given code and source name
+	 * @should return null if source code does not exist
+	 * @should return null if mapping does not exist
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public Concept getConceptByUuidOrMapping(String uuid, String code, String sourceName) throws APIException;
+	/**
+	 * Looks up a concept by its UUID or via {@link ConceptMap} which will return the {@link Concept} which contains
+	 * a {@link ConceptMap} entry whose <code>sourceCode</code> is equal to the passed
+	 * <code>conceptCode</code> and whose {@link ConceptSource} has either a <code>name</code> or
+	 * <code>hl7Code</code> that is equal to the passed <code>mappingCode</code> . Operates under
+	 * the assumption that each mappingCode in a {@link ConceptSource} references one and only one
+	 * non-retired {@link Concept}: if the underlying dao method returns more than one non-retired
+	 * concept, this method will throw an exception; if the underlying dao method returns more than
+	 * one concept, but only one non-retired concept, this method will return the non-retired
+	 * concept; if the dao only returns retired concepts, this method will simply return the first
+	 * concept in the list returns by the dao method; retired concepts can be excluded by setting
+	 * the includeRetired parameter to false, but the above logic still applies
+	 *
+	 * @param code the code associated with a concept within a given {@link ConceptSource}
+	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
+	 * @param uuid	 
+	 * @param includeRetired whether or not to include retired concepts
+	 * @return the {@link Concept} that has the given mapping, or null if no {@link Concept} found
+	 * @throws APIException
+	 * @should find object given valid uuid
+	 * @should get concept using code and sourceName if uuid is null
+	 * @should get concept with given code and and source hl7 code
+	 * @should get concept with given code and source name
+	 * @should return null if source code does not exist
+	 * @should return null if mapping does not exist
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public Concept getConceptByUuidOrMapping(String uuid, String code, String sourceName,boolean includeRetired) throws APIException;
+	
+	/**
 	 * Get all the concept name tags defined in the database, included voided ones
 	 * 
 	 * @since 1.5

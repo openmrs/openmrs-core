@@ -1980,4 +1980,32 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		return mappedClasses;
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public Concept getConceptByUuidOrMapping(String uuid, String code, String sourceName) throws APIException {
+		return getConceptByUuidOrMapping(uuid, code, sourceName, true);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public Concept getConceptByUuidOrMapping(String uuid, String code, String sourceName, boolean includeRetired)
+	        throws APIException {
+		if (uuid == null && code == null) {
+			throw new IllegalArgumentException("Specify at least uuid or code with its sourceName or all");
+		}
+		if (uuid != null) {
+			Concept concept = Context.getConceptService().getConceptByUuid(uuid);
+			if (concept != null) {
+				return concept;
+			}
+			if (code != null && sourceName != null) {
+				concept = Context.getConceptService().getConceptByMapping(code, sourceName);
+				if (concept != null) {
+					return concept;
+				}
+			}
+		}
+		return null;
+	}
 }
