@@ -33,6 +33,7 @@ public interface OpenmrsMetadata extends Auditable, Retireable {
 	 */
 	public void setName(String name);
 	
+	
 	/**
 	 * @return the description
 	 */
@@ -47,6 +48,18 @@ public interface OpenmrsMetadata extends Auditable, Retireable {
 	 * @deprecated As of version 2.2 OpenmrsMetadata is immutable by default, it's up to the
 	 *             subclasses to make themselves mutable by extending BaseChangeableOpenmrsMetadata,
 	 *             this method will be removed in 2.3
+	 */
+	public String getMetadataName();
+
+	/**
+	 * 
+	 * @return metadata name
+	 */
+	public void settMetadataName(String caseSensitive);
+
+	/**
+	 * 
+	 * @return the case of the name passsed and compare
 	 */
 	@Override
 	@Deprecated
