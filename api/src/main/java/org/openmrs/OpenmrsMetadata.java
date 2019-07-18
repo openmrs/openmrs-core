@@ -21,6 +21,7 @@ import java.util.Date;
  * @see BaseChangeableOpenmrsMetadata
  * @since 1.5
  */
+
 public interface OpenmrsMetadata extends Auditable, Retireable {
 	
 	/**
@@ -49,13 +50,15 @@ public interface OpenmrsMetadata extends Auditable, Retireable {
 	 *             subclasses to make themselves mutable by extending BaseChangeableOpenmrsMetadata,
 	 *             this method will be removed in 2.3
 	 */
-	public String getMetadataName();
+	
+	public String getDateName();
 
 	/**
 	 * 
 	 * @return metadata name
 	 */
-	public void settMetadataName(String caseSensitive);
+
+	public void setDataNames(String casePreserving);
 
 	/**
 	 * 
