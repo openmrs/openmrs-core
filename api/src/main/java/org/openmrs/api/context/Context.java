@@ -239,7 +239,7 @@ public class Context {
 	 *
 	 * @return the current ServiceContext
 	 */
-	static ServiceContext getServiceContext() {
+	static synchronized ServiceContext getServiceContext() {
 		if (serviceContext == null) {
 			synchronized (Context.class) {
 				if (serviceContext == null) {
@@ -262,7 +262,7 @@ public class Context {
 		setContext(ctx);
 	}
 
-	public static void setContext(ServiceContext ctx) {
+	public static synchronized void setContext(ServiceContext ctx) {
 		serviceContext = ctx;
 	}
 
