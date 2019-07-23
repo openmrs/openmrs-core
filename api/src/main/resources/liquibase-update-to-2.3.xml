@@ -49,7 +49,7 @@
 		</createTable>
 	</changeSet>
 
-    <changeSet id="TRUNK-5413" author="odorajonathan" dbms="mysql">
+    <changeSet id="TRUNK-5413" author="odorajonathan">
       <preConditions onFail="MARK_RAN">
             <not><columnExists tableName="order_set" columnName="category"/></not>
       </preConditions>
