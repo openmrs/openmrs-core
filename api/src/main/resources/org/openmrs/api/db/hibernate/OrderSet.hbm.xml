@@ -36,6 +36,9 @@
             </type>
         </property>
 
+        <many-to-one name="category" class="org.openmrs.Concept"
+			not-null="false" column="category" />
+
         <list name="orderSetMembers" lazy="true" cascade="save-update" inverse="false">
             <key column="order_set_id" not-null="true"/>
             <list-index column="sequence_number"/>
