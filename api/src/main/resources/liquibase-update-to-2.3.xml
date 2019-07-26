@@ -48,6 +48,7 @@
 			<column name="date_changed" type="DATETIME" />
 		</createTable>
 	</changeSet>
+	
 
     <changeSet id="TRUNK-5413" author="odorajonathan">
       <preConditions onFail="MARK_RAN">
@@ -62,5 +63,22 @@
       <addForeignKeyConstraint constraintName="category_order_set_fk" referencedTableName="concept" 
       baseColumnNames="category" baseTableName="order_set" referencedColumnNames="concept_id"/>
     </changeSet>
-
+ <changeSet id="20190625-Trunk-5411" author="gitacliff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="drug" columnName="dose_limit_units"/>				
+			</not>
+		</preConditions>
+		<comment>Adding "dose_limit_units" column to drug table</comment>
+        <addColumn tableName="drug">
+            <column name="dose_limit_units" type="int">
+            	<constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="drug"
+								 baseColumnNames="dose_limit_units"
+								 constraintName="drug_dose_limit_units_fk"
+								 referencedTableName="concept"
+								 referencedColumnNames="concept_id" />
+    </changeSet>
 </databaseChangeLog>

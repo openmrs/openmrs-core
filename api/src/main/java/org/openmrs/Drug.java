@@ -43,6 +43,8 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	
 	private String strength;
 	
+	private Concept doseLimitUnits;
+	
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Concept concept;
 	
@@ -275,5 +277,27 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 			}
 			getDrugReferenceMaps().add(drugReferenceMap);
 		}
+	}
+	
+	/**
+	 * Gets the doseLimitUnits which represents the units of the existing maximumDailyDose and
+	 * minimumDailyDose
+	 * 
+	 * @param Returns the doseLimitUnits.
+	 * @since 2.3.0
+	 */
+	public Concept getDoseLimitUnits() {
+		return doseLimitUnits;
+	}
+	
+	/**
+	 * Sets the doseLimitUnits which represents the units of the existing maximumDailyDose and
+	 * minimumDailyDose
+	 * 
+	 * @param doseLimitUnits The doseLimitUnits to set.
+	 * @since 2.3.0
+	 */
+	public void setDoseLimitUnits(Concept doseLimitUnits) {
+		this.doseLimitUnits = doseLimitUnits;
 	}
 }
