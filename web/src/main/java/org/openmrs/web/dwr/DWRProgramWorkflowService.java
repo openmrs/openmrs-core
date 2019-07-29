@@ -217,6 +217,26 @@ public class DWRProgramWorkflowService {
 		s.savePatientProgram(pp);
 	}
 	
+	public void updateStateStartDate(Integer patientProgramId, String patientStateUuid, String startDateDMY)
+	        throws ParseException {
+		
+		Date startDate = null;
+		if (startDateDMY != null && startDateDMY.length() > 0) {
+			startDate = ymdDf.parse(startDateDMY);
+		}
+		
+		if (startDate != null) {
+			ProgramWorkflowService s = Context.getProgramWorkflowService();
+			PatientProgram pp = s.getPatientProgram(patientProgramId);
+			PatientState patientState = s.getPatientStateByUuid(patientStateUuid);
+			if (patientState != null) {
+				patientState.setStartDate(startDate);
+				s.savePatientProgram(pp);
+			}
+		}
+		return;
+	}
+	
 	public void voidLastState(Integer patientProgramId, Integer programWorkflowId, String voidReason) {
 		ProgramWorkflowService s = Context.getProgramWorkflowService();
 		PatientProgram pp = s.getPatientProgram(patientProgramId);

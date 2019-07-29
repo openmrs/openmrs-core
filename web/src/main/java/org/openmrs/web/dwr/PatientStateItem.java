@@ -18,6 +18,8 @@ public class PatientStateItem {
 	
 	private Integer patientStateId;
 	
+	private String patientStateUuid;
+	
 	private Integer programWorkflowId;
 	
 	private String stateName;
@@ -37,6 +39,7 @@ public class PatientStateItem {
 	
 	public PatientStateItem(PatientState s) {
 		patientStateId = s.getPatientStateId();
+		patientStateUuid = s.getUuid();
 		programWorkflowId = s.getState().getProgramWorkflow().getProgramWorkflowId();
 		stateName = s.getState().getConcept().getName(Context.getLocale(), false).getName();
 		workflowName = s.getState().getProgramWorkflow().getConcept().getName(Context.getLocale(), false).getName();
@@ -56,6 +59,10 @@ public class PatientStateItem {
 	
 	public Integer getPatientStateId() {
 		return patientStateId;
+	}
+	
+	public String getPatientStateUuid() {
+		return patientStateUuid;
 	}
 	
 	public void setPatientStateId(Integer patientStateId) {

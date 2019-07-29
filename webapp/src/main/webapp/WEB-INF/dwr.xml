@@ -220,6 +220,7 @@
 			<include method="updatePatientProgram"/>
 			<include method="deletePatientProgram"/>
 			<include method="getPossibleNextStates"/>
+			<include method="updateStateStartDate"/>
 			<include method="changeToState"/>
 			<include method="voidLastState"/>
 			<include method="getWorkflowsByProgram"/>

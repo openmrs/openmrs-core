@@ -153,6 +153,17 @@
 				});
 	}
 
+    function updateStateStartDate(patientStateUuid) {
+      var patientProgramId = patientProgramForWorkflowEdited;
+      var startStateDate = parseDate($('addStartDateToState').value);
+      DWRProgramWorkflowService.updateStateStartDate(patientProgramId, patientStateUuid, formatDate(startStateDate, 'yyyy-mm-dd'),
+		function() {
+          currentWorkflowBeingEdited = null;
+		  hideLayer('editWorkflowPopup');
+          refreshPage();
+        });
+    }
+
 	function showEditWorkflowPopup(wfName, patientProgramId, programWorkflowId) {
 		hideLayer('editPatientProgramPopup');
 		currentWorkflowBeingEdited = programWorkflowId;
@@ -194,8 +205,18 @@
 													function(state) {
 														++count;
 														var str = '';
-														if (!isEmpty(state.startDate)) str += ' <openmrs:message code="general.fromDate" javaScriptEscape="true"/> ' + formatDate(state.startDate);
-														if (!isEmpty(state.endDate)) str += ' <openmrs:message code="general.toDate" javaScriptEscape="true" /> ' + formatDate(state.endDate);
+                                                      	str += ' <openmrs:message code="general.fromDate" javaScriptEscape="true"/> ';
+														if (!isEmpty(state.startDate)) {
+														  str += formatDate(state.startDate);
+                                                        } else {
+														  str += '<input type="text" id="addStartDateToState" size="10" onfocus="showCalendar(this)" />';
+														}
+														if (!isEmpty(state.endDate)) {
+														  str += ' <openmrs:message code="general.toDate" javaScriptEscape="true" /> ' + formatDate(state.endDate);
+                                                        }
+													    if (isEmpty(state.startDate)) {
+														  str += '&nbsp; &nbsp; &nbsp;<input type="button" value="<openmrs:message code="general.save"/>" onClick="updateStateStartDate(\'' + state.patientStateUuid + '\')" />';
+														}
 														if (count == goUntil) {
 															str += ' <a href="javascript:handleVoidLastState()" style="color: red">[x]</a>';
 															$('lastStateStartDate').value = formatDate(state.startDate);
