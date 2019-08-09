@@ -30,6 +30,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import org.hibernate.annotations.SortNatural;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 
 /**
  * Defines a Patient in the system. A patient is simply an extension of a person and all that that
@@ -40,6 +44,7 @@ import java.util.TreeSet;
 @Entity
 @Table(name = "patient")
 @PrimaryKeyJoinColumn(name = "patient_id")
+@Indexed
 public class Patient extends Person {
 	
 	public static final long serialVersionUID = 93123L;
