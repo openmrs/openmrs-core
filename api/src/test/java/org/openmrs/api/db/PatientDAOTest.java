@@ -755,6 +755,42 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(0, patients.size());
 	}
 	
+	@Test
+	public void getPatients_shouldNotMatchVoidedPatientsWhenVoidedFalseIsPassed() {
+		List<Patient> patients = dao.getPatients("Oloo", 0, 11);
+		Assert.assertEquals(1, patients.size());
+		
+		Patient patient = patients.get(0);
+		
+		Set<PersonName> names = patient.getNames();
+		
+		for (PersonName name : names) {
+			name.setVoided(true);
+		}
+		dao.savePatient(patient);
+		updateSearchIndex();
+		patients = dao.getPatients("Oloo", false, 0, 11);
+		Assert.assertEquals(0, patients.size());
+	}
+	
+	@Test
+	public void getPatients_shouldMatchVoidedPersonWhenVoidedTrueIsPassed() {
+		List<Patient> patients = dao.getPatients("Oloo", 0, 11);
+		Assert.assertEquals(1, patients.size());
+		
+		Patient patient = patients.get(0);
+		
+		Set<PersonName> names = patient.getNames();
+		
+		for (PersonName name : names) {
+			name.setVoided(true);
+		}
+		dao.savePatient(patient);
+		updateSearchIndex();
+		patients = dao.getPatients("Oloo", true, 0, 11);
+		Assert.assertEquals(1, patients.size());
+	}
+	
 	/**
 	 * @see HibernatePatientDAO#getPatients(String, String, java.util.List, boolean, Integer, Integer, boolean)
 	 */
@@ -2468,4 +2504,5 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		time = System.currentTimeMillis() - time;
 		System.out.println("Anywhere search for 'uric' attribute limited to 15 results returned in " + time + " ms");
 	}
+	
 }
