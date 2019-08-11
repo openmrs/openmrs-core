@@ -46,9 +46,14 @@ import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.SortNatural;
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Resolution;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +68,7 @@ import org.springframework.util.StringUtils;
  * @see org.openmrs.Patient
  */
 @Entity
+@Indexed
 @Table(name = "person")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Person extends BaseChangeableOpenmrsData {
@@ -102,10 +108,12 @@ public class Person extends BaseChangeableOpenmrsData {
 	@ContainedIn
 	private Set<PersonAttribute> attributes = null;
 	
-	@Field
+	@Field(name="gender",index=Index.YES, analyze=Analyze.YES)
 	@Column(length = 50)
 	private String gender;
 	
+	@Field(name="birthdate",index=Index.YES, analyze=Analyze.YES)
+	@DateBridge(resolution = Resolution.MILLISECOND)
 	@Column(name = "birthdate", length = 10)
 	private Date birthdate;
 	

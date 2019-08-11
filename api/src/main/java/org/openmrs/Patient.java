@@ -31,6 +31,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 
 /**
  * Defines a Patient in the system. A patient is simply an extension of a person and all that that
@@ -39,6 +40,7 @@ import org.hibernate.search.annotations.Field;
  * @version 2.0
  */
 @Entity
+@Indexed
 @Table(name = "patient")
 @PrimaryKeyJoinColumn(name = "patient_id")
 public class Patient extends Person {

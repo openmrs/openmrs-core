@@ -599,9 +599,9 @@ public final class OpenmrsConstants {
 	/**
 	 * Indicates the version of the search index. The index will be rebuilt, if the version changes.
 	 * 
-	 * @since 1.11
+	 * @since 2.3
 	 */
-	public static final Integer SEARCH_INDEX_VERSION = 7;
+	public static final Integer SEARCH_INDEX_VERSION = 8;
 
 	/**
 	 * @since 1.12
