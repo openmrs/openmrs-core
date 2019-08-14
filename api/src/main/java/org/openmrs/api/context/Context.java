@@ -240,14 +240,14 @@ public class Context {
 	 * @return the current ServiceContext
 	 */
 	static synchronized ServiceContext getServiceContext() {
-		if (serviceContext == null) {
+		
 			synchronized (Context.class) {
 				if (serviceContext == null) {
 					log.error("serviceContext is null.  Creating new ServiceContext()");
 					serviceContext = ServiceContext.getInstance();
 				}
 			}
-		}
+		
 		log.trace("serviceContext: {}", serviceContext);
 
 		return ServiceContext.getInstance();
