@@ -35,6 +35,8 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	
 	private OrderSet orderSet;
 	
+	private OrderGroup parentOrderGroup;
+	
 	/**
 	 * Gets the orderGroupId
 	 *
@@ -206,6 +208,26 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	@Override
 	public void setId(Integer id) {
 		setOrderGroupId(id);
+	}
+	
+	/**
+	 * Gets the parent order group to maintain linkages between groups and support group nesting
+	 * 
+	 * @param returns the parent order group
+	 * @since 2.3.0..
+	 */
+	public OrderGroup getParentOrderGroup() {
+		return parentOrderGroup;
+	}
+	
+	/**
+	 * Sets the parent order group to maintain linkages between groups and support group nesting
+	 * 
+	 * @param parentOrderGroup the parent order group to set.
+	 * @since 2.3.0
+	 */
+	public void setParentOrderGroup(OrderGroup parentOrderGroup) {
+		this.parentOrderGroup = parentOrderGroup;
 	}
 	
 }

@@ -81,4 +81,22 @@
 								 referencedTableName="concept"
 								 referencedColumnNames="concept_id" />
     </changeSet>
+    <changeSet id="20190815-Trunk-5650" author="gitacliff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="order_group" columnName="parent_order_group"/>				
+			</not>
+		</preConditions>
+		<comment>Adding "parent_order_group" column to order_group table</comment>
+        <addColumn tableName="order_group">
+            <column name="parent_order_group" type="int">
+            	<constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="order_group"
+								 baseColumnNames="parent_order_group"
+								 constraintName="order_group_parent_order_group_fk"
+								 referencedTableName="order_group"
+								 referencedColumnNames="order_group_id" />
+    </changeSet>
 </databaseChangeLog>
