@@ -31,4 +31,22 @@ public class OrderGroupTest {
         Assert.assertNotNull("should have orderGroup in order", orders.get(0).getOrderGroup());
         Assert.assertNotNull("should have orderGroup in order", orders.get(1).getOrderGroup());
     }
+
+	@Test
+	public void addOrderGroup_shouldLinkOtherOrderGroupAddOrderGroupReason() {
+
+		OrderGroup previousOrderGroup = new OrderGroup();
+		OrderGroup parentOrderGroup = new OrderGroup();
+		OrderGroup orderGroup = new OrderGroup();
+
+		Concept orderGroupReason = new Concept();
+
+		orderGroup.setPreviousOrderGroup(previousOrderGroup);
+		orderGroup.setParentOrderGroup(parentOrderGroup);
+		orderGroup.setOrderGroupReason(orderGroupReason);
+
+		Assert.assertNotNull("should have previousOrderGroup in orderGroup", orderGroup.getPreviousOrderGroup());
+		Assert.assertNotNull("should have parentOrderGroup in orderGroup", orderGroup.getParentOrderGroup());
+		Assert.assertNotNull("should have orderGroupReason in orderGroup", orderGroup.getOrderGroupReason());
+	}
 }
