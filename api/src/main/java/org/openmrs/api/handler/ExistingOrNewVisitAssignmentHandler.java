@@ -33,7 +33,7 @@ import org.openmrs.util.OpenmrsUtil;
  */
 public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignmentHandler implements GlobalPropertyListener {
 	
-	private static volatile Map<EncounterType, VisitType> encounterVisitMapping;
+	private static volatile Map<EncounterType, ? extends VisitType> encounterVisitMapping;
 	
 	private static void setEncounterVisitMapping(Map<EncounterType, VisitType> encounterVisitMapping) {
 		ExistingOrNewVisitAssignmentHandler.encounterVisitMapping = encounterVisitMapping;
