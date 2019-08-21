@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.security.Security;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -48,7 +49,6 @@ import org.apache.log4j.Logger;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.PasswordException;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.OpenmrsCoreModuleException;
@@ -62,7 +62,6 @@ import org.openmrs.util.MemoryAppender;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
-import org.openmrs.util.Security;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebDaemon;
@@ -1443,7 +1442,8 @@ public class InitializationFilter extends StartupFilter {
 							} else {
 								// if error occurs stop
 								reportError(ErrorMessageConstants.ERROR_DB_CREATE_DB_USER, DEFAULT_PAGE);
-								return;
+								InstallationWizardError iwe = new InstallationWizardError();
+								iwe.setVisible(true);
 							}
 							
 							// grant the roles
@@ -1534,8 +1534,8 @@ public class InitializationFilter extends StartupFilter {
 								setMessage(message + " (" + i++ + "/" + numChangeSetsToRun + "): Author: "
 								        + changeSet.getAuthor() + " Comments: " + changeSet.getComments() + " Description: "
 								        + changeSet.getDescription());
-								float numChangeSetsToRunFloat = (float) numChangeSetsToRun;
-								float j = (float) i;
+								float numChangeSetsToRunFloat = numChangeSetsToRun;
+								float j = i;
 								setCompletedPercentage(Math.round(j * 100 / numChangeSetsToRunFloat));
 							}
 							
@@ -1836,7 +1836,7 @@ public class InitializationFilter extends StartupFilter {
 				DatabaseUtil.loadDatabaseDriver(databaseConnectionFinalUrl, null);
 				connection = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword);
 				
-				DatabaseMetaData dbMetaData = (DatabaseMetaData) connection.getMetaData();
+				DatabaseMetaData dbMetaData = connection.getMetaData();
 				
 				String[] types = { "TABLE" };
 				
