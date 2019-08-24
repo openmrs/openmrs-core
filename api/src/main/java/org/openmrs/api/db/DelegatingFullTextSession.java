@@ -27,9 +27,10 @@ import org.springframework.context.ApplicationEventPublisher;
 /**
  * Custom implementation of the {@link FullTextSession} interface that acts a wrapper around a
  * target FullTextSession instance, it actually delegates all the method calls directly to the
- * target except for the {@link FullTextSession#createFullTextQuery(Query, Class[])} method where is
- * first notifies registered listeners of creation event before returning the newly created
- * {@link FullTextQuery} object. The newly created query object is passed to the listeners. <br>
+ * target except for the {@link FullTextSession#createFullTextQuery(Query, Class[])} method where it
+ * first notifies registered listeners of the creation event before returning the newly created
+ * {@link FullTextQuery} object. The newly created query object and entity type are passed to the
+ * listeners wrapped in a {@link FullTextQueryAndEntityClass} object. <br>
  * <br>
  * An example use case is that a listener can enable/disable filters on the newly created query
  * object.

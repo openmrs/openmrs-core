@@ -15,7 +15,7 @@ import org.hibernate.search.Search;
 
 /**
  * Interface to be implemented by objects that are factories of {@link FullTextSession} instances. A
- * factory has to registered as a spring, it is highly recommended to use a factory to create
+ * factory has to be registered as a spring, it is highly recommended to use a factory to create
  * instances of the {@link FullTextSession} rather than directly calling
  * {@link Search#getFullTextSession(Session)} for proper functionality.
  *
