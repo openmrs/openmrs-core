@@ -13,7 +13,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
+import org.openmrs.api.db.DelegatingFullTextSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,8 +24,8 @@ import org.springframework.stereotype.Component;
  * to advise the factory. It is highly recommended to use this factory to create instances of the
  * {@link FullTextSession} rather than directly calling {@link Search#getFullTextSession(Session)}
  * for proper functionality.
- * 
- * @since 2.2.1
+ *
+ * @since 2.3.0
  */
 @Component("fullTextSessionFactory")
 public class FullTextSessionFactory {
@@ -31,13 +33,17 @@ public class FullTextSessionFactory {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
+	
 	/**
 	 * Obtains a {@link FullTextSession} instance.
-	 * 
+	 *
 	 * @return {@link FullTextSession} object
 	 */
 	public FullTextSession getFullTextSession() {
-		return Search.getFullTextSession(sessionFactory.getCurrentSession());
+		FullTextSession delegateSession = Search.getFullTextSession(sessionFactory.getCurrentSession());
+		return new DelegatingFullTextSession(delegateSession, eventPublisher);
 	}
 	
 }
