@@ -10,40 +10,24 @@
 package org.openmrs.api.db;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
-import org.openmrs.api.db.DelegatingFullTextSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
 
 /**
- * An instance of this class provides a factory for obtaining {@link FullTextSession} instances.
- * Having this factory as a spring bean provides a mechanism that allows external code and modules
- * to advise the factory. It is highly recommended to use this factory to create instances of the
- * {@link FullTextSession} rather than directly calling {@link Search#getFullTextSession(Session)}
- * for proper functionality.
+ * Interface to be implemented by objects that are factories of {@link FullTextSession} instances. A
+ * factory has to registered as a spring, it is highly recommended to use a factory to create
+ * instances of the {@link FullTextSession} rather than directly calling
+ * {@link Search#getFullTextSession(Session)} for proper functionality.
  *
  * @since 2.3.0
  */
-@Component("fullTextSessionFactory")
-public class FullTextSessionFactory {
-	
-	@Autowired
-	private SessionFactory sessionFactory;
-	
-	@Autowired
-	private ApplicationEventPublisher eventPublisher;
+public interface FullTextSessionFactory {
 	
 	/**
 	 * Obtains a {@link FullTextSession} instance.
 	 *
 	 * @return {@link FullTextSession} object
 	 */
-	public FullTextSession getFullTextSession() {
-		FullTextSession delegateSession = Search.getFullTextSession(sessionFactory.getCurrentSession());
-		return new DelegatingFullTextSession(delegateSession, eventPublisher);
-	}
+	FullTextSession getFullTextSession();
 	
 }
