@@ -13,10 +13,10 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * Represents an event object raised whenever a {@link org.hibernate.search.FullTextQuery} object is
- * created. Events are fired via the spring application event mechanism so listeners have to
- * implement {@link org.springframework.context.ApplicationListener} and set the Type parameter
- * value to FullTextQueryCreatedEvent, it also implies that listeners MUST be registered as spring
- * beans in order to be discovered.
+ * created. Events are fired via the spring application event mechanism, listeners have to implement
+ * {@link org.springframework.context.ApplicationListener} and set the Type parameter value to
+ * FullTextQueryCreatedEvent, it also implies that listeners MUST be registered as spring beans in
+ * order to be discovered.
  * 
  * @see FullTextQueryAndEntityClass
  * @since 2.3.0

@@ -14,7 +14,7 @@ import org.hibernate.search.FullTextQuery;
 /**
  * Wrapper class around a {@link FullTextQuery} object and the Type of the entities to be returned
  * by the query. An instance of this class is set as the source of a
- * {@link FullTextQueryCreatedEvent} objects.
+ * {@link FullTextQueryCreatedEvent} object.
  * 
  * @since 2.3.0
  */
