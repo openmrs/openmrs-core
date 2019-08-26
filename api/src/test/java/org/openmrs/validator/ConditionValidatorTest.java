@@ -91,7 +91,10 @@ public class ConditionValidatorTest {
 		condition.setClinicalStatus(ConditionClinicalStatus.INACTIVE);
 		validator.validate(condition,errors);
 		Assert.assertFalse(errors.hasFieldErrors("onsetDate"));
+	}
 
+	@Test
+	public void shouldFailForInvalidOnsetDate(){
 		Condition condition1 = new Condition();
 		condition1.setCondition(new CodedOrFreeText(new Concept(), new ConceptName("name", new Locale("en")), "nonCoded"));
 		condition1.setEndDate(new Date(1562591017000L));
