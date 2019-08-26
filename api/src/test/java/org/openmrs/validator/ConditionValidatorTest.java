@@ -95,12 +95,12 @@ public class ConditionValidatorTest {
 
 	@Test
 	public void shouldFailForInvalidOnsetDate(){
-		Condition condition1 = new Condition();
-		condition1.setCondition(new CodedOrFreeText(new Concept(), new ConceptName("name", new Locale("en")), "nonCoded"));
-		condition1.setEndDate(new Date(1562591017000L));
-		condition1.setOnsetDate(new Date(1562936617000L));
-		condition1.setClinicalStatus(ConditionClinicalStatus.INACTIVE);
-		validator.validate(condition1,errors);
+		Condition condition = new Condition();
+		condition.setCondition(new CodedOrFreeText(new Concept(), new ConceptName("name", new Locale("en")), "nonCoded"));
+		condition.setEndDate(new Date(1562591017000L));
+		condition.setOnsetDate(new Date(1562936617000L));
+		condition.setClinicalStatus(ConditionClinicalStatus.INACTIVE);
+		validator.validate(condition,errors);
 		Assert.assertTrue(errors.hasFieldErrors("onsetDate"));
 	
 	}
