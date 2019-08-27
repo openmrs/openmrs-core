@@ -11,8 +11,6 @@ package org.openmrs.api.db;
 
 import java.io.Serializable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.Query;
 import org.hibernate.engine.spi.SessionDelegatorBaseImpl;
 import org.hibernate.engine.spi.SessionImplementor;
@@ -21,7 +19,8 @@ import org.hibernate.search.FullTextSession;
 import org.hibernate.search.FullTextSharedSessionBuilder;
 import org.hibernate.search.MassIndexer;
 import org.hibernate.search.SearchFactory;
-import org.openmrs.api.APIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
@@ -37,7 +36,7 @@ import org.springframework.context.ApplicationEventPublisher;
  */
 public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implements FullTextSession {
 	
-	private static final Log log = LogFactory.getLog(DelegatingFullTextSession.class);
+	private static final Logger log = LoggerFactory.getLogger(DelegatingFullTextSession.class);
 	
 	private FullTextSession delegate;
 	
@@ -55,7 +54,7 @@ public class DelegatingFullTextSession extends SessionDelegatorBaseImpl implemen
 	@Override
 	public FullTextQuery createFullTextQuery(Query luceneQuery, Class<?>... entities) {
 		if (entities.length > 1) {
-			throw new APIException("Can't create FullTextQuery for multiple persistent classes");
+			throw new DAOException("Can't create FullTextQuery for multiple persistent classes");
 		}
 		
 		if (log.isDebugEnabled()) {
