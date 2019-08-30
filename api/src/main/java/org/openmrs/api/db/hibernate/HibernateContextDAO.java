@@ -29,7 +29,7 @@ import org.hibernate.search.FullTextSession;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.hibernate.type.StandardBasicTypes;
-import org.openmrs.FullTextSessionFactory;
+import org.openmrs.api.db.FullTextSessionFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
