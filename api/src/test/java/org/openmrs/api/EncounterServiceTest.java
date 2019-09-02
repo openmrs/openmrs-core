@@ -617,6 +617,52 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNull(obsWithDifferentDateAfter.getPreviousVersion());
 		assertSame(obsWithDifferentDateBefore, obsWithDifferentDateAfter);
 	}
+
+	/**
+	 * When the date on an encounter is modified and then saved, the encounterservice changes all of
+	 * the obs datetimes to the new datetime. This test case fails if the EncounterService uses the getAllObs() method.
+	 * The test passes now, since we updated EncounterService to use the the getAllFlattenObs() method
+	 * https://issues.openmrs.org/browse/TRUNK-5438
+	 */
+	@Test
+	public void saveEncounter_shouldCascadeUpdateTheObsdatetimesToAllObs() {
+		EncounterService es = Context.getEncounterService();
+		// Create a new Encounter
+		Encounter enc = buildEncounter();
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) -1);
+		enc.setEncounterDatetime(calendar.getTime());
+
+		//add an obs to the encounter
+		Obs groupObs = new Obs();
+		Concept c = Context.getConceptService().getConcept(1);
+		groupObs.setConcept(c);
+
+		// add an obs to the group
+		Obs childObs = new Obs();
+		childObs.setConcept(c);
+		childObs.setValueNumeric(50d);
+		groupObs.addGroupMember(childObs);
+		enc.addObs(groupObs);
+
+		Obs obs2 = buildObs();
+		enc.addObs(obs2);
+
+		//confirm that save and new enc id are cascaded to obs groupMembers
+		//even though childObs aren't directly associated to enc
+		assertNotNull("save succeeds without error", es.saveEncounter(enc));
+		assertTrue("enc save succeeds", enc.getId() > 0);
+
+		// update encounterDatetime, all encounter's Obs datetime should be udpated with new datetime
+		enc.setEncounterDatetime(new Date());
+		assertNotNull("save succeeds without error", es.saveEncounter(enc));
+		Date encounterDatetime = DateUtil.truncateToSeconds(enc.getEncounterDatetime());
+
+		for (Obs o : enc.getAllFlattenObs(false)) {
+			assertEquals("encounter datetime propagated", DateUtil.truncateToSeconds(o.getObsDatetime()), encounterDatetime);
+		}
+		
+	}
 	
 	@Test
 	public void saveEncounter_shouldCascadeUpdatedEncounterDatetimeToObsDatetimeOfAllObsWithMatchingObsDatetime() {

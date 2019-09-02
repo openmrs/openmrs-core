@@ -264,6 +264,21 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	public Set<Obs> getAllObs() {
 		return getAllObs(false);
 	}
+
+	public Set<Obs> getAllFlattenObs(boolean includeVoided) {
+
+		Set<Obs> ret = new LinkedHashSet<>();
+
+		if (this.obs != null) {
+			for (Obs o : this.obs) {
+				if(!o.getVoided()) {
+					ret.add(o);
+					ret.addAll(getObsLeaves(o));
+				}
+			}
+		}
+		return ret;
+	}
 	
 	/**
 	 * Returns a Set&lt;Obs&gt; of all root-level Obs of an Encounter, including obsGroups
