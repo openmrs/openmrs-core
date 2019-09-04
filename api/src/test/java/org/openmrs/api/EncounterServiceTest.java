@@ -658,7 +658,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNotNull("save succeeds without error", es.saveEncounter(enc));
 		Date encounterDatetime = DateUtil.truncateToSeconds(enc.getEncounterDatetime());
 
-		for (Obs o : enc.getAllFlattenObs(false)) {
+		for (Obs o : enc.getAllFlattenedObs(false)) {
 			assertEquals("encounter datetime propagated", DateUtil.truncateToSeconds(o.getObsDatetime()), encounterDatetime);
 		}
 		

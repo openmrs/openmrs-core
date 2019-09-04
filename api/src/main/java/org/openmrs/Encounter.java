@@ -236,16 +236,15 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @param includedVoided indicates whether or not to include voided Obs
 	 * @return a Set of all leaves Obs including the parent Obs
 	 */
-	private Set<Obs> getFlattenObsLeaves(Obs obsParent, boolean includedVoided) {
+	private Set<Obs> getFlattenedObsLeaves(Obs obsParent, boolean includedVoided) {
 		Set<Obs> leaves = new LinkedHashSet<>();
 
-		if (includedVoided || (!includedVoided && !obsParent.getVoided())) {
+		if (includedVoided || (!obsParent.getVoided())) {
+			leaves.add(obsParent);
 			if (obsParent.hasGroupMembers()) {
-				for (Obs child : obsParent.getGroupMembers()) {
-					leaves.addAll(getFlattenObsLeaves(child, includedVoided));
+				for (Obs child : obsParent.getGroupMembers(includedVoided)) {
+					leaves.addAll(getFlattenedObsLeaves(child, includedVoided));
 				}
-			} else {
-				leaves.add(obsParent);
 			}
 		}
 		return leaves;
@@ -291,15 +290,14 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @param includeVoided indicates whether or not to include voided obs
 	 * @return a Set of all encounter' Obs
 	 */
-	public Set<Obs> getAllFlattenObs(boolean includeVoided) {
+	public Set<Obs> getAllFlattenedObs(boolean includeVoided) {
 
 		Set<Obs> ret = new LinkedHashSet<>();
 
 		if (this.obs != null) {
 			for (Obs o : this.obs) {
-				if (includeVoided || (!includeVoided && !o.getVoided())) {
-					ret.add(o);
-					ret.addAll(getFlattenObsLeaves(o, includeVoided));
+				if (includeVoided || (!o.getVoided())) {
+					ret.addAll(getFlattenedObsLeaves(o, includeVoided));
 				}
 			}
 		}
