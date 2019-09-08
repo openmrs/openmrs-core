@@ -23,7 +23,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	
 	private Double high;
 	
-	private boolean closedLow = true; //TODO: add setters and getters for these
+	private boolean closedLow = true;
 	
 	private boolean closedHigh = false;
 	
@@ -76,6 +76,39 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	public void setLow(Double low) {
 		this.low = low == null ? new Double(Double.NEGATIVE_INFINITY) : low;
 	}
+	
+	/**
+	 * @return Returns the closedLow 
+	 * 
+	 */
+	public boolean getclosedLow () {
+		return closedLow;
+	}
+	
+	/**
+	 * @param closedLow to set
+	 * 
+	 */
+	public void closedLow(boolean closedLow) {
+		this.closedLow = closedLow;
+	}
+	
+	/**
+	 * @return Returns the closedHigh 
+	 * 
+	 */
+	public boolean getclosedHigh () {
+		return closedHigh;
+	}
+	
+	/**
+	 * @param closedHigh to set
+	 * 
+	 */
+	public void closedHigh(boolean closedHigh) {
+		this.closedHigh = closedHigh;
+	}
+	
 	
 	/**
 	 * first sorts according to low-bound (ascending) then according to high-bound (descending)
