@@ -187,7 +187,27 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		
 		return leaves;
 	}
-	
+
+	/**
+	 * Convenience method to recursively get all leaf obs for a given parent obs.
+	 * @param obsParent indicates the parent Obs
+	 * @param includedVoided indicates whether or not to include voided Obs
+	 * @return a Set of all leaves Obs including the parent Obs
+	 */
+	private Set<Obs> getFlattenedObsLeaves(Obs obsParent, boolean includedVoided) {
+		Set<Obs> leaves = new LinkedHashSet<>();
+
+		if (includedVoided || (!obsParent.getVoided())) {
+			leaves.add(obsParent);
+			if (obsParent.hasGroupMembers()) {
+				for (Obs child : obsParent.getGroupMembers(includedVoided)) {
+					leaves.addAll(getFlattenedObsLeaves(child, includedVoided));
+				}
+			}
+		}
+		return leaves;
+	}
+
 	/**
 	 * Returns all Obs where Obs.encounterId = Encounter.encounterId In practice, this method should
 	 * not be used very often...
@@ -224,7 +244,26 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	public Set<Obs> getAllObs() {
 		return getAllObs(false);
 	}
-	
+
+	/**
+	 * Returns all encounter obs as a flatten list(Set) of obs.
+	 * @param includeVoided indicates whether or not to include voided obs
+	 * @return a Set of all encounter' Obs
+	 */
+	public Set<Obs> getAllFlattenedObs(boolean includeVoided) {
+
+		Set<Obs> ret = new LinkedHashSet<>();
+
+		if (this.obs != null) {
+			for (Obs o : this.obs) {
+				if (includeVoided || (!o.getVoided())) {
+					ret.addAll(getFlattenedObsLeaves(o, includeVoided));
+				}
+			}
+		}
+		return ret;
+	}
+
 	/**
 	 * Returns a Set&lt;Obs&gt; of all root-level Obs of an Encounter, including obsGroups
 	 *
