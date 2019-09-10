@@ -235,6 +235,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @param obsParent indicates the parent Obs
 	 * @param includedVoided indicates whether or not to include voided Obs
 	 * @return a Set of all leaves Obs including the parent Obs
+	 * @since 2.2.1
 	 */
 	private Set<Obs> getFlattenedObsLeaves(Obs obsParent, boolean includedVoided) {
 		Set<Obs> leaves = new LinkedHashSet<>();
