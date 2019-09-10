@@ -249,6 +249,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * Returns all encounter obs as a flatten list(Set) of obs.
 	 * @param includeVoided indicates whether or not to include voided obs
 	 * @return a Set of all encounter' Obs
+	 * @since 2.2.1
 	 */
 	public Set<Obs> getAllFlattenedObs(boolean includeVoided) {
 
