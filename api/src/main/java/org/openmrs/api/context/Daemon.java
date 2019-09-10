@@ -29,6 +29,8 @@ import org.openmrs.util.OpenmrsSecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
+import org.openmrs.scheduler.SchedulerService;
+import org.openmrs.scheduler.timer.TimerSchedulerServiceImpl;
 
 /**
  * This class allows certain tasks to run with elevated privileges. Primary use is scheduling and
@@ -46,6 +48,8 @@ public class Daemon {
 	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<>();
 	
 	protected static final ThreadLocal<User> daemonThreadUser = new ThreadLocal<>();
+
+	private static Integer task;
 	
 	/**
 	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext)
@@ -185,7 +189,7 @@ public class Daemon {
 	 * @should not be called from other methods other than TimerSchedulerTask
 	 * @should not throw error if called from a TimerSchedulerTask class
 	 */
-	public static void executeScheduledTask(final Task task) throws Exception {
+	public static void executeScheduledTask(final Integer id) throws Exception {
 		
 		// quick check to make sure we're only being called by ourselves
 		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
@@ -202,7 +206,8 @@ public class Daemon {
 				
 				try {
 					Context.openSession();
-					TimerSchedulerTask.execute(task);
+					SchedulerService ss = new TimerSchedulerServiceImpl();
+					TimerSchedulerTask.execute(ss.getTask(id).getTaskInstance());
 				}
 				catch (Exception e) {
 					exceptionThrown = e;
@@ -228,6 +233,7 @@ public class Daemon {
 			throw executeTaskThread.exceptionThrown;
 		}
 		
+		Daemon.executeScheduledTask(task);
 	}
 	
 	/**

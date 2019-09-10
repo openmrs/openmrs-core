@@ -42,7 +42,7 @@ public class TimerSchedulerTask extends TimerTask {
 	@Override
 	public void run() {
 		try {
-			Daemon.executeScheduledTask(task);
+			Daemon.executeScheduledTask(task.getTaskDefinition().getId());
 		}
 		catch (Exception t) {
 			// Fix #862: IllegalStateException: Timer already cancelled.

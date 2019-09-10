@@ -42,7 +42,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	@Test
 	public void executeScheduledTask_shouldNotBeCalledFromOtherMethodsOtherThanTimerSchedulerTask() throws Throwable {
 		try {
-			Daemon.executeScheduledTask(new HelloWorldTask());
+			Daemon.executeScheduledTask(new HelloWorldTask().getTaskDefinition().getId());
 			Assert.fail("Should not be here, an exception should have been thrown in the line above");
 		}
 		catch (APIException e) {
@@ -165,12 +165,12 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		 * @return
 		 */
 		public boolean runTheTest() throws Throwable {
-			Daemon.executeScheduledTask(this.task);
+			Daemon.executeScheduledTask(this.task.getTaskDefinition().getId());
 			return ((PrivateTask) task).wasRun;
 		}
 		
 		public void runTask() throws Throwable {
-			Daemon.executeScheduledTask(this.task);
+			Daemon.executeScheduledTask(this.task.getTaskDefinition().getId());
 		}
 	}
 	
