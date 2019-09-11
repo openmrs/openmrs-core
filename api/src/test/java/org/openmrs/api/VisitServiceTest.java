@@ -9,9 +9,9 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -77,6 +77,13 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllVisitTypes_shouldGetAllVisitTypes() {
 		List<VisitType> visitTypes = visitService.getAllVisitTypes();
+		assertEquals(3, visitTypes.size());
+	}
+	
+	@Test
+	public void getAllVisitTypes_shouldGetAllVisitTypesBasedOnIncludeRetiredFlag1() {
+		List<VisitType> visitTypes = visitService.getAllVisitTypes(true);
+		assertNotNull(visitTypes);
 		assertEquals(3, visitTypes.size());
 	}
 	
@@ -461,6 +468,15 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	public void getVisitsByPatient_shouldReturnEmptyListGivenPatientWithNullPatientIdAndTrue() {
+		
+		Patient p = new Patient();
+		p.setPatientId(null);
+		
+		assertThat(visitService.getVisitsByPatient(null, true, true), is(empty()));
+	}
+	
+	@Test
 	public void getVisitsByPatient_shouldReturnEmptyListGivenPatientWithNullPatientIdAndFalse() {
 		
 		Patient p = new Patient();
@@ -778,6 +794,17 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		cal.add(Calendar.DAY_OF_MONTH, -1);
 		
 		visitService.endVisit(visit, cal.getTime());
+	}
+	
+	@Test
+	public void endVist_shouldSetTheStopDateTimeOfVisit() throws ParseException {
+		executeDataSet(VISITS_ATTRIBUTES_XML);
+		Visit visit = visitService.getVisit(1);
+		assertNull(visit.getStopDatetime());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = dateFormat.parse("2019-09-16 00:00:00");
+		visit.setStopDatetime(date);
+		visitService.endVisit(visit, visit.getStopDatetime());
 	}
 	
 	/**
