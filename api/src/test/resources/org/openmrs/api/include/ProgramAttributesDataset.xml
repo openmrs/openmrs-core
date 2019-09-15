@@ -14,5 +14,11 @@
     <program_attribute_type program_attribute_type_id="1" name="ProgramId" min_occurs="1" retired="false"
                             creator="1" date_created="2008-08-15 17:04:50.0" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype"
                             uuid="d7477c21-bfc3-4922-9591-e89d8b9c8efb"/>
+    <program_attribute_type program_attribute_type_id="222" name="program attribute type name"
+		description="the description" datatype="the datatype" min_occurs="123" creator="1" date_created="2019-09-09 00:00:00.0"
+		retired="false" uuid="1234-abc-000" />
+	<patient_program_attribute patient_program_attribute_id="1" patient_program_id="1"
+		attribute_type_id="222" value_reference="1" uuid="123-abc-456" creator="1" date_created="2019-09-09 00:00:00.0"
+		voided="false" />
 
 </dataset>

@@ -10,7 +10,9 @@
 package org.openmrs.api;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -30,6 +32,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientProgramAttribute;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramAttributeType;
@@ -45,26 +48,26 @@ import org.openmrs.test.TestUtil;
  * PatientService class
  */
 public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
-	
+
 	protected static final String CREATE_PATIENT_PROGRAMS_XML = "org/openmrs/api/include/ProgramWorkflowServiceTest-createPatientProgram.xml";
-	
+
 	protected static final String PROGRAM_WITH_OUTCOMES_XML = "org/openmrs/api/include/ProgramWorkflowServiceTest-initialData.xml";
-	
+
 	protected static final String PROGRAM_ATTRIBUTES_XML = "org/openmrs/api/include/ProgramAttributesDataset.xml";
-        
+
         protected ProgramWorkflowService pws = null;
-	
+
 	protected AdministrationService adminService = null;
-	
+
 	protected EncounterService encounterService = null;
-	
+
 	protected ConceptService cs = null;
-	
+
 	@Before
 	public void runBeforeEachTest() {
 		executeDataSet(CREATE_PATIENT_PROGRAMS_XML);
 		executeDataSet(PROGRAM_ATTRIBUTES_XML);
-                
+
 		if (pws == null) {
 			pws = Context.getProgramWorkflowService();
 			adminService = Context.getAdministrationService();
@@ -72,19 +75,19 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			cs = Context.getConceptService();
 		}
 	}
-	
+
 	/**
 	 * Tests fetching a PatientProgram, updating and saving it, and subsequently fetching the
 	 * updated value. To use in MySQL database: Uncomment method useInMemoryDatabase() and comment
 	 * out call to initializeInMemoryDatabase() and executeDataSet() within onSetupTransaction() .
-	 * 
+	 *
 	 * @see ProgramWorkflowService#savePatientProgram(PatientProgram)
 	 */
 	@Test
 	public void savePatientProgram_shouldUpdatePatientProgram() {
-		
+
 		Date today = new Date();
-		
+
 		PatientProgram patientProgram = pws.getPatientProgram(1);
 		Date dateCompleted = patientProgram.getDateCompleted();
 		Date dateChanged = patientProgram.getDateChanged();
@@ -98,15 +101,15 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		if (null != changedBy) {
 			//System.out.println("Changed By: " + changedBy.toString());
 		}
-		
+
 		patientProgram.setDateCompleted(today);
 		patientProgram.setChangedBy(Context.getAuthenticatedUser());
 		patientProgram.setDateChanged(today);
 		pws.savePatientProgram(patientProgram);
-		
+
 		// Uncomment to commit to database
 		// setComplete( );
-		
+
 		PatientProgram ptProg = pws.getPatientProgram(1);
 		Date dateCompleted2 = patientProgram.getDateCompleted();
 		Date dateChanged2 = patientProgram.getDateChanged();
@@ -121,10 +124,10 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		if (null != changedBy2) {
 			//System.out.println("Changed By: " + changedBy2.toString());
 		}
-		
+
 		assertNotNull(ptProg.getDateCompleted());
 		assertEquals(today, ptProg.getDateCompleted());
-		
+
 	}
 
 	/**
@@ -357,56 +360,56 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		// End date of past states should not change
 		assertTrue((patientstate1_w1.getEndDate().toString()).equals(day3.toString()));
 	}
-	
+
 	/**
 	 * Tests creating a new program containing workflows and states
-	 * 
+	 *
 	 * @see ProgramWorkflowService#saveProgram(Program)
 	 */
 	@Test
 	public void saveProgram_shouldCreateProgramWorkflows() {
-		
+
 		int numBefore = Context.getProgramWorkflowService().getAllPrograms().size();
-		
+
 		Program program = new Program();
 		program.setName("TEST PROGRAM");
 		program.setDescription("TEST PROGRAM DESCRIPTION");
 		program.setConcept(cs.getConcept(3));
-		
+
 		ProgramWorkflow workflow = new ProgramWorkflow();
 		workflow.setConcept(cs.getConcept(4));
 		program.addWorkflow(workflow);
-		
+
 		ProgramWorkflowState state1 = new ProgramWorkflowState();
 		state1.setConcept(cs.getConcept(5));
 		state1.setInitial(true);
 		state1.setTerminal(false);
 		workflow.addState(state1);
-		
+
 		ProgramWorkflowState state2 = new ProgramWorkflowState();
 		state2.setConcept(cs.getConcept(6));
 		state2.setInitial(false);
 		state2.setTerminal(true);
 		workflow.addState(state2);
-		
+
 		Context.getProgramWorkflowService().saveProgram(program);
-		
+
 		assertEquals("Failed to create program", numBefore + 1, Context.getProgramWorkflowService().getAllPrograms().size());
 		Program p = Context.getProgramWorkflowService().getProgramByName("TEST PROGRAM");
 		assertNotNull("Program is null", p);
 		assertNotNull("Workflows is null", p.getWorkflows());
 		assertEquals("Wrong number of workflows", 1, p.getWorkflows().size());
-		
+
 		ProgramWorkflow wf = p.getWorkflowByName("CIVIL STATUS");
 		assertNotNull(wf);
-		
+
 		List<String> names = new ArrayList<>();
 		for (ProgramWorkflowState s : wf.getStates()) {
 			names.add(s.getConcept().getName().getName());
 		}
 		TestUtil.assertCollectionContentsEquals(Arrays.asList("SINGLE", "MARRIED"), names);
 	}
-	
+
 	/**
 	 * @see ProgramWorkflowService#getConceptStateConversionByUuid(String)
 	 */
@@ -417,7 +420,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		    uuid);
 		Assert.assertEquals(1, (int) conceptStateConversion.getConceptStateConversionId());
 	}
-	
+
 	/**
 	 * @see ProgramWorkflowService#getConceptStateConversionByUuid(String)
 	 */
@@ -425,7 +428,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	public void getConceptStateConversionByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getProgramWorkflowService().getConceptStateConversionByUuid("some invalid uuid"));
 	}
-	
+
 	/**
 	 * @see ProgramWorkflowService#getPatientProgramByUuid(String)
 	 */
@@ -435,7 +438,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		PatientProgram patientProgram = Context.getProgramWorkflowService().getPatientProgramByUuid(uuid);
 		Assert.assertEquals(2, (int) patientProgram.getPatientProgramId());
 	}
-	
+
 	/**
 	 * @see ProgramWorkflowService#getPatientProgramByUuid(String)
 	 */
@@ -443,7 +446,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	public void getPatientProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getProgramWorkflowService().getPatientProgramByUuid("some invalid uuid"));
 	}
-	
+
 	/**
 	 * @see ProgramWorkflowService#getPatientStateByUuid(String)
 	 */
@@ -453,7 +456,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		PatientState patientState = Context.getProgramWorkflowService().getPatientStateByUuid(uuid);
 		Assert.assertEquals(1, (int) patientState.getPatientStateId());
 	}
-	
+
 	/**
 	 * @see ProgramWorkflowService#getPatientStateByUuid(String)
 	 */
@@ -461,7 +464,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	public void getPatientStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getProgramWorkflowService().getPatientStateByUuid("some invalid uuid"));
 	}
-	
+
 	/**
 	 * @see ProgramWorkflowService#getProgramByUuid(String)
 	 */
@@ -471,7 +474,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Program program = Context.getProgramWorkflowService().getProgramByUuid(uuid);
 		Assert.assertEquals(1, (int) program.getProgramId());
 	}
-	
+
 	/**
 	 * @see ProgramWorkflowService#getProgramByUuid(String)
 	 */
@@ -479,24 +482,24 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	public void getProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getProgramWorkflowService().getProgramByUuid("some invalid uuid"));
 	}
-	
+
 	@Test
 	public void getState_shouldGetStateAssociatedWithGivenIdIfWorkflowStateIdExists() {
-		
+
 		final Integer EXISTING_WORKFLOW_STATE_ID = 1;
-		
+
 		ProgramWorkflowState state = pws.getState(EXISTING_WORKFLOW_STATE_ID);
-		
+
 		assertNotNull("ProgramWorkflowState not found", state);
 		assertThat(state.getId(), is(EXISTING_WORKFLOW_STATE_ID));
 	}
-	
+
 	@Test
 	public void getState_shouldReturnNullIfGivenWorkflowStateIdDoesNotExists() {
-		
+
 		assertNull(pws.getState(99999));
 	}
-	
+
 	/**
 	 * @see ProgramWorkflowService#getStateByUuid(String)
 	 */
@@ -506,7 +509,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		ProgramWorkflowState state = Context.getProgramWorkflowService().getStateByUuid(uuid);
 		Assert.assertEquals(1, (int) state.getProgramWorkflowStateId());
 	}
-	
+
 	/**
 	 * @see ProgramWorkflowService#getStateByUuid(String)
 	 */
@@ -514,24 +517,24 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	public void getStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getProgramWorkflowService().getStateByUuid("some invalid uuid"));
 	}
-	
+
 	@Test
 	public void getWorkflow_shouldGetWorkflowAssociatedWithGivenIdIfWorkflowIdExists() {
-		
+
 		final Integer EXISTING_WORKFLOW_ID = 1;
-		
+
 		ProgramWorkflow workflow = pws.getWorkflow(EXISTING_WORKFLOW_ID);
-		
+
 		assertNotNull("ProgramWorkflow not found", workflow);
 		assertThat(workflow.getId(), is(EXISTING_WORKFLOW_ID));
 	}
-	
+
 	@Test
 	public void getWorkflow_shouldReturnNullIfGivenWorkflowIdDoesNotExists() {
-		
+
 		assertNull(pws.getWorkflow(99999));
 	}
-	
+
 	/**
 	 * @see ProgramWorkflowService#getWorkflowByUuid(String)
 	 */
@@ -541,7 +544,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		ProgramWorkflow programWorkflow = Context.getProgramWorkflowService().getWorkflowByUuid(uuid);
 		Assert.assertEquals(1, (int) programWorkflow.getProgramWorkflowId());
 	}
-	
+
 	/**
 	 * @see ProgramWorkflowService#getWorkflowByUuid(String)
 	 */
@@ -549,33 +552,33 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	public void getWorkflowByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() {
 		Assert.assertNull(Context.getProgramWorkflowService().getWorkflowByUuid("some invalid uuid"));
 	}
-	
+
 	/**
 	 * THIS TEST SHOULD BE IN THE CLASS 'PROGRAMWORKFLOWTEST.JAVA' BUT IT REQUIRES ACCESS TO THE DAO
 	 * LAYER
-	 * 
+	 *
 	 * @see ProgramWorkflow#getSortedStates()
 	 */
-	
+
 	@Test
 	public void getSortedStates_shouldSortNamesContainingNumbersIntelligently() {
-		
+
 		ProgramWorkflow program = new ProgramWorkflow();
-		
+
 		ConceptName state1ConceptName = new ConceptName("Group 10", Context.getLocale());
 		Concept state1Concept = new Concept();
 		state1Concept.addName(state1ConceptName);
 		ProgramWorkflowState state1 = new ProgramWorkflowState();
 		state1.setConcept(state1Concept);
 		program.addState(state1);
-		
+
 		ConceptName state2ConceptName = new ConceptName("Group 2", Context.getLocale());
 		Concept state2Concept = new Concept();
 		state2Concept.addName(state2ConceptName);
 		ProgramWorkflowState state2 = new ProgramWorkflowState();
 		state2.setConcept(state2Concept);
 		program.addState(state2);
-		
+
 		Set<ProgramWorkflowState> sortedStates = program.getSortedStates();
 		int x = 1;
 		for (ProgramWorkflowState state : sortedStates) {
@@ -589,39 +592,39 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			x++;
 		}
 	}
-	
+
 	@Test
 	public void getPossibleOutcomes_shouldGetOutcomesForASet() {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
-		
+
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(4);
 		assertEquals(4, possibleOutcomes.size());
 	}
-	
+
 	@Test
 	public void getPossibleOutcomes_shouldGetOutcomesForAQuestion() {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
-		
+
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(5);
 		assertEquals(2, possibleOutcomes.size());
 	}
-	
+
 	@Test
 	public void getPossibleOutcomes_shouldReturnEmptyListWhenNoProgramExists() {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
-		
+
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(999);
 		assertTrue(possibleOutcomes.isEmpty());
 	}
-	
+
 	@Test
 	public void getPossibleOutcomes_shouldReturnEmptyListWhenProgramHasNoOutcome() {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
-		
+
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(1);
 		assertTrue(possibleOutcomes.isEmpty());
 	}
-	
+
 	/**
 	 * @see ProgramWorkflowService#saveProgram(Program)
 	 */
@@ -630,11 +633,11 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Program program = Context.getProgramWorkflowService().getProgramByUuid("eae98b4c-e195-403b-b34a-82d94103b2c0");
 		program.setDescription("new description");
 		Context.evictFromSession(program);
-		
+
 		program = Context.getProgramWorkflowService().saveProgram(program);
 		Assert.assertEquals("new description", program.getDescription());
 	}
-	
+
 	/**
 	 * @throws InterruptedException
 	 * @see ProgramWorkflowService#triggerStateConversion(Patient,Concept,Date)
@@ -646,38 +649,38 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Date originalDateCompleted = new Date();
 		pp.setDateCompleted(originalDateCompleted);
 		pp = pws.savePatientProgram(pp);
-		
+
 		Concept diedConcept = cs.getConcept(16);
 		//sanity check to ensure the patient died is a possible state in one of the work flows
 		Assert.assertNotNull(pp.getProgram().getWorkflow(1).getState(diedConcept));
-		
+
 		Thread.sleep(10);//delay so that we have a time difference
-		
+
 		pp = pws.getPatientProgram(patientProgramId);
 		Assert.assertEquals(originalDateCompleted, pp.getDateCompleted());
 	}
-	
+
 	@Test
 	public void getProgramByName_shouldReturnProgramWhenNameMatches() {
 		Program p = pws.getProgramByName("program name");
 		assertNotNull(p);
 	}
-	
+
 	@Test
 	public void getProgramByName_shouldReturnNullWhenNoProgramForGivenName() {
 		Program p = pws.getProgramByName("unexisting program");
 		assertNull(p);
 	}
-	
+
 	@Test
 	public void retireProgram_shouldSaveTheRetiredProgramWithReason() throws APIException {
 		String reason = "Feeling well.";
-		
+
 		String uuid = "eae98b4c-e195-403b-b34a-82d94103b2c0";
 		Program program = Context.getProgramWorkflowService().getProgramByUuid(uuid);
-		
+
 		Program retireProgram = pws.retireProgram(program, reason);
-		
+
 		assertTrue(retireProgram.getRetired());
 		assertEquals(reason, retireProgram.getRetireReason());
 		for (ProgramWorkflow programWorkflow : program.getAllWorkflows()) {
@@ -686,20 +689,20 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 				assertTrue(programWorkflowState.getRetired());
 			}
 		}
-		
+
 	}
-	
+
 	@Test
 	public void purgeProgram_shouldPurgeProgramWithPatientsEnrolled() {
 		Program program = Context.getProgramWorkflowService().getProgram(2);
-		
+
 		// program has at least one patient enrolled
 		List<PatientProgram> patientPrograms = Context.getProgramWorkflowService().getPatientPrograms(null, program, null,
 		    null, null, null, true);
 		assertTrue(patientPrograms.size() > 0);
-		
+
 		Context.getProgramWorkflowService().purgeProgram(program);
-		
+
 		// should cascade to patient programs
 		for (PatientProgram patientProgram : patientPrograms) {
 			assertNull(Context.getProgramWorkflowService().getPatientProgram(patientProgram.getId()));
@@ -709,7 +712,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	@Test
 	public void shouldTestGetAllProgramAttributeTypes() throws Exception {
-                assertEquals(1, pws.getAllProgramAttributeTypes().size());
+                assertEquals(2, pws.getAllProgramAttributeTypes().size());
 	}
 
 	@Test
@@ -727,11 +730,11 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void shouldTestSaveProgramAttributeType() throws Exception {
-		assertEquals(1,pws.getAllProgramAttributeTypes().size());
+		assertEquals(2,pws.getAllProgramAttributeTypes().size());
 		ProgramAttributeType programAttributeType = new ProgramAttributeType();
 		programAttributeType.setName("test");
 		pws.saveProgramAttributeType(programAttributeType);
-		assertEquals(2,pws.getAllProgramAttributeTypes().size());
+		assertEquals(3,pws.getAllProgramAttributeTypes().size());
 	}
 
 	@Test
@@ -741,6 +744,112 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		pws.purgeProgramAttributeType(programAttributeType);
 		assertEquals((totalAttributeTypes - 1), pws.getAllProgramAttributeTypes().size());
 }
+
+	@Test
+	public void voidPatientProgram_shouldVoidPatientProgram() {
+		PatientProgram patientProgram = pws.getPatientProgram(1);
+		PatientProgram voidedPatientProgram = pws.voidPatientProgram(patientProgram, "for testing");
+		assertEquals(voidedPatientProgram.getVoided(), true);
+	}
+
+	@Test
+	public void unvoidPatientProgram_shouldUnvoidPatientProgram() {
+		PatientProgram patientProgram = pws.getPatientProgram(1);
+		// check precondition patientProgram is unvoided
+		assertFalse(patientProgram.getVoided());
+		assertNull(patientProgram.getVoidedBy());
+		assertNull(patientProgram.getVoidReason());
+		assertNull(patientProgram.getDateVoided());
+
+		PatientProgram voidedPatientProgram = pws.voidPatientProgram(patientProgram, "for testing");
+		// check precondtion patientProgram is voided
+		assertTrue(voidedPatientProgram.getVoided());
+		assertNotNull(voidedPatientProgram.getVoidedBy());
+		assertNotNull(voidedPatientProgram.getVoidReason());
+		assertNotNull(voidedPatientProgram.getDateVoided());
+
+		PatientProgram unVoidedPatientProgram = pws.unvoidPatientProgram(voidedPatientProgram);
+		assertFalse(unVoidedPatientProgram.getVoided());
+		assertNull(unVoidedPatientProgram.getVoidedBy());
+		assertNull(unVoidedPatientProgram.getVoidReason());
+		assertNull(unVoidedPatientProgram.getDateVoided());
+	}
+
+	@Test
+	public void getPrograms_shouldGetProgramByNameFragment() {
+		List<Program> programs = pws.getPrograms("program name");
+		assertEquals(1, programs.size());
+	}
+
+	@Test
+	public void unretireProgram_shouldUnRetireProgram() {
+		Program program = pws.getProgram(1);
+		Program retiredProgram = pws.retireProgram(program, "for testing");
+		Program unretiredProgram = pws.unretireProgram(retiredProgram);
+		assertEquals(unretiredProgram.getRetired(), false);
+	}
+
+	@Test
+	public void purgeConceptStateConversion_shouldPurge() {
+		ConceptStateConversion conceptStateConversion = pws.getConceptStateConversion(1);
+		pws.purgeConceptStateConversion(conceptStateConversion);
+		conceptStateConversion = pws.getConceptStateConversion(1);
+		assertNull(conceptStateConversion);
+	}
+
+	@Test
+	public void saveConceptStateConversion_shouldReturnValidConceptStateConversion() {
+		PatientProgram patientProgram = pws.getPatientProgram(1);
+		ConceptStateConversion csc = new ConceptStateConversion();
+		Concept deathConcept = cs.getConcept(16);
+		ProgramWorkflow pw = patientProgram.getProgram().getWorkflow(1);
+		ProgramWorkflowState state = patientProgram.getProgram().getWorkflow(1).getState(1);
+
+		Assert.assertNotNull(patientProgram.getProgram().getWorkflow(1));
+		Assert.assertNotNull(patientProgram.getProgram().getWorkflow(1).getState(deathConcept));
+		Assert.assertNotNull(patientProgram.getProgram().getWorkflow(1).getState(1));
+
+		csc.setConcept(deathConcept);
+		csc.setProgramWorkflow(pw);
+		csc.setProgramWorkflowState(state);
+
+		Assert.assertNotNull(pws.saveConceptStateConversion(csc));
+	}
+
+	@Test
+	public void getProgramWorkflowServiceByConcept_shouldReturnPWS() {
+		Concept concept = new Concept(1);
+		Assert.assertNotNull(pws.getProgramWorkflowsByConcept(concept));
+	}
+
+	@Test
+	public void getProgramWorkflowStatesByConcept_shouldReturnProgramWorkflowState() {
+		Concept concept = new Concept(1);
+		Assert.assertNotNull(pws.getProgramWorkflowStatesByConcept(concept));
+	}
+
+	@Test
+	public void getPatientProgramAttributeByUuid_shouldReturnPatientProgramAttribute() {
+		String uuid = "123-abc-456";
+		PatientProgramAttribute patientProgramAttribute = pws.getPatientProgramAttributeByUuid(uuid);
+
+		assertThat(patientProgramAttribute.getCreator().toString(), is("admin"));
+		assertThat(patientProgramAttribute.getAttributeType().getId(), is(222));
+		assertThat(patientProgramAttribute.getAttributeType().getDescription(), is("the description"));
+		assertThat(patientProgramAttribute.getAttributeType().getName(), is("program attribute type name"));
+	}
+
+	@Test
+	public void getPatientProgramByAttributeNameAndValue_shouldReturnPatientProgram() {
+		String attributeName = "program attribute type name";
+		String attributeValue = "1";
+		List<PatientProgram> patientPrograms = pws.getPatientProgramByAttributeNameAndValue(attributeName, attributeValue);
+
+		System.out.println(patientPrograms);
+
+		assertThat(patientPrograms, hasSize(1));
+	}
+
 	//	/**
 	//	 * This method should be uncommented when you want to examine the actual hibernate
 	//	 * sql calls being made.  The calls that should be limiting the number of returned
@@ -758,5 +867,5 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	//
 	//    	return props;
 	//    }
-	
+
 }
