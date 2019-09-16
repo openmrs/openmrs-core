@@ -20,13 +20,7 @@ import org.openmrs.api.db.ContextDAO;
  */
 public abstract class DaoAuthenticationScheme implements AuthenticationScheme {
 	
-	private ContextDAO contextDao;
-	
 	public ContextDAO getContextDAO() {
-		return contextDao;
-	}
-	
-	public void setContextDao(ContextDAO contextDao) {
-		this.contextDao = contextDao;
+		return Context.getContextDAO();
 	}
 }
