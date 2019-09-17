@@ -269,13 +269,13 @@
 <tr class="b">
 <td>org.openmrs.api</td>
 <td><a class="externalLink" href="http://openmrs.org/openmrs-api">openmrs-api</a></td>
-<td>2.3.0-SNAPSHOT</td>
+<td>2.4.0-SNAPSHOT</td>
 <td>jar</td>
 <td><a class="externalLink" href="http://openmrs.org/license">Mozilla Public License 2.0 with Healthcare Disclaimer</a></td></tr>
 <tr class="a">
 <td>org.openmrs.api</td>
 <td><a class="externalLink" href="http://openmrs.org/openmrs-api">openmrs-api</a></td>
-<td>2.3.0-SNAPSHOT</td>
+<td>2.4.0-SNAPSHOT</td>
 <td>test-jar</td>
 <td><a class="externalLink" href="http://openmrs.org/license">Mozilla Public License 2.0 with Healthcare Disclaimer</a></td></tr>
 <tr class="b">
@@ -299,25 +299,25 @@
 <tr class="a">
 <td>org.openmrs.test</td>
 <td><a class="externalLink" href="http://openmrs.org/openmrs-test">openmrs-test</a></td>
-<td>2.3.0-SNAPSHOT</td>
+<td>2.4.0-SNAPSHOT</td>
 <td>pom</td>
 <td><a class="externalLink" href="http://openmrs.org/license">Mozilla Public License 2.0 with Healthcare Disclaimer</a></td></tr>
 <tr class="b">
 <td>org.openmrs.tools</td>
 <td><a class="externalLink" href="http://openmrs.org/openmrs-tools">openmrs-tools</a></td>
-<td>2.3.0-SNAPSHOT</td>
+<td>2.4.0-SNAPSHOT</td>
 <td>jar</td>
 <td><a class="externalLink" href="http://openmrs.org/license">Mozilla Public License 2.0 with Healthcare Disclaimer</a></td></tr>
 <tr class="a">
 <td>org.openmrs.web</td>
 <td><a class="externalLink" href="http://openmrs.org/openmrs-web">openmrs-web</a></td>
-<td>2.3.0-SNAPSHOT</td>
+<td>2.4.0-SNAPSHOT</td>
 <td>jar</td>
 <td><a class="externalLink" href="http://openmrs.org/license">Mozilla Public License 2.0 with Healthcare Disclaimer</a></td></tr>
 <tr class="b">
 <td>org.openmrs.web</td>
 <td><a class="externalLink" href="http://openmrs.org/openmrs-webapp">openmrs-webapp</a></td>
-<td>2.3.0-SNAPSHOT</td>
+<td>2.4.0-SNAPSHOT</td>
 <td>war</td>
 <td><a class="externalLink" href="http://openmrs.org/license">Mozilla Public License 2.0 with Healthcare Disclaimer</a></td></tr>
 <tr class="a">
