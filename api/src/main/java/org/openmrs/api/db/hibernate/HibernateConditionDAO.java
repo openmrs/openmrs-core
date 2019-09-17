@@ -98,8 +98,8 @@ public class HibernateConditionDAO implements ConditionDAO {
 	@Override
 	public List<Condition> getActiveConditions(Patient patient) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from Condition c where c.patient.patientId = :patientId and c.voided = false and c.endDate is null order "
-						+ "by c.onsetDate desc");
+				"from Condition c where c.patient.patientId = :patientId and c.voided = false order "
+						+ "by c.onsetDate desc");   // These changes will be removed once the emrapi module uses the updated core
 		query.setInteger("patientId", patient.getId());
 		return query.list();
 	}
