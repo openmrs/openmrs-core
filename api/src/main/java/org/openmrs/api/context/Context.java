@@ -202,10 +202,6 @@ public class Context {
 		catch(BeansException e){
 			log.error("Fatal error encountered when injecting the authentication scheme override. Sticking to OpenMRS default authentication scheme.");
 		}
-
-		if (authenticationScheme instanceof DaoAuthenticationScheme) {
-			((DaoAuthenticationScheme) authenticationScheme).setContextDao(getContextDAO());
-		}
 	}
 
 	/**
