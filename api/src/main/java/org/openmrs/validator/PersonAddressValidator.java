@@ -62,14 +62,14 @@ public class PersonAddressValidator implements Validator {
 		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".validate...");
 		}
-		
-		if (object == null) {
-			throw new IllegalArgumentException("The personAddress object should not be null");
-		}
-		
 		PersonAddress personAddress = (PersonAddress) object;
-		
-		//resolve a shorter name to display along with the error message
+//resolve a shorter name to display along with the error message
+		if (object == null) {
+			 errors.reject("error.address");
+		 } else if (!personAddress.getVoided()) {
+		// TODO - the following method should be made private in a major release
+			validatePersonAddress(personAddress, errors, false, true);
+					}
 		String addressString;
 		if (StringUtils.isNotBlank(personAddress.getAddress1())) {
 			addressString = personAddress.getAddress1();
@@ -130,5 +130,10 @@ public class PersonAddressValidator implements Validator {
 		    "postalCode", "country", "latitude", "longitude", "voidReason", "countyDistrict", "address3", "address4",
 		    "address5", "address6", "address7", "address8", "address9", "address10", "address11", "address12", "address13", 
 		    "address14", "address15");
+	}
+
+	private void validatePersonAddress(PersonAddress personAddress, Errors errors, boolean b, boolean c) {
+		// TODO Auto-generated method stub
+		
 	}
 }
