@@ -9,41 +9,68 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
- * Diagnosis class defines the identification of the nature of an illness or other problem 
- * by examination of the symptoms during an encounter (visit or interaction of a patient with a healthcare worker).
+ * Diagnosis class defines the identification of the nature of an illness or other problem by
+ * examination of the symptoms during an encounter (visit or interaction of a patient with a
+ * healthcare worker).
  * 
  * @since 2.2
  */
+@Entity
+@Table(name = "encounter_diagnosis")
 public class Diagnosis extends BaseChangeableOpenmrsData {
-
+	
 	private static final long serialVersionUID = 1L;
-
+	
+	@Id
+	@GeneratedValue
+	@Column(name = "diagnosis_id")
 	private Integer diagnosisId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
 	
+	@Embedded
 	private CodedOrFreeText diagnosis;
 	
+	@ManyToOne
+	@JoinColumn(name = "condition_id")
 	private Condition condition;
-
+	
+	@Enumerated(EnumType.STRING)
+	@Column(length = 50)
 	private ConditionVerificationStatus certainty;
 	
+	@Column(nullable = false)
 	private Integer rank;
-
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "patient_id")
 	private Patient patient;
 	
 	public Diagnosis() {
 	}
-
+	
 	/**
 	 * @param encounter the encounter for this diagnosis
-	 * @param diagnosis the diagnosis to set  
+	 * @param diagnosis the diagnosis to set
 	 * @param certainty the certainty for the diagnosis
 	 * @param rank the rank of the diagnosis
 	 */
-	public Diagnosis(Encounter encounter, CodedOrFreeText diagnosis,ConditionVerificationStatus certainty,
-					 Integer rank, Patient patient) {
+	public Diagnosis(Encounter encounter, CodedOrFreeText diagnosis, ConditionVerificationStatus certainty, Integer rank,
+	    Patient patient) {
 		this.encounter = encounter;
 		this.diagnosis = diagnosis;
 		this.certainty = certainty;
@@ -60,7 +87,7 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	public Integer getId() {
 		return getDiagnosisId();
 	}
-
+	
 	/**
 	 * Sets diagnosis identifier
 	 * 
@@ -70,7 +97,7 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	public void setId(Integer diagnosisId) {
 		this.setDiagnosisId(diagnosisId);
 	}
-
+	
 	/**
 	 * Gets the diagnosis id.
 	 *
@@ -79,7 +106,7 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	public Integer getDiagnosisId() {
 		return diagnosisId;
 	}
-
+	
 	/**
 	 * Sets diagnosis id
 	 *
@@ -97,7 +124,7 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	public Encounter getEncounter() {
 		return encounter;
 	}
-
+	
 	/**
 	 * Sets the encounter associated with this diagnosis.
 	 * 
@@ -106,25 +133,25 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	public void setEncounter(Encounter encounter) {
 		this.encounter = encounter;
 	}
-
+	
 	/**
 	 * Gets the diagnosis.
 	 * 
-	 * @return diagnosis 
+	 * @return diagnosis
 	 */
 	public CodedOrFreeText getDiagnosis() {
 		return diagnosis;
 	}
-
+	
 	/**
 	 * Sets the diagnosis.
 	 * 
 	 * @param diagnosis the diagnosis to set
 	 */
-	public void setDiagnosis(CodedOrFreeText diagnosis)  {
+	public void setDiagnosis(CodedOrFreeText diagnosis) {
 		this.diagnosis = diagnosis;
 	}
-
+	
 	/**
 	 * Gets the diagnosis certainty.
 	 * 
@@ -133,16 +160,16 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	public ConditionVerificationStatus getCertainty() {
 		return certainty;
 	}
-
+	
 	/**
 	 * Sets the diagnosis certainty
 	 * 
-	 * @param certainty the condition verification status to set for this diagnosis 
+	 * @param certainty the condition verification status to set for this diagnosis
 	 */
-	public void setCertainty(ConditionVerificationStatus certainty)  {
+	public void setCertainty(ConditionVerificationStatus certainty) {
 		this.certainty = certainty;
 	}
-
+	
 	/**
 	 * Gets the diagnosis rank.
 	 * 
@@ -151,16 +178,16 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	public Integer getRank() {
 		return rank;
 	}
-
+	
 	/**
 	 * Sets diagnosis rank
 	 * 
 	 * @param rank the rank to set for this diagnosis.
 	 */
-	public void setRank(Integer rank)   {
+	public void setRank(Integer rank) {
 		this.rank = rank;
 	}
-
+	
 	/**
 	 * Gets the diagnosis condition.
 	 * 
@@ -169,16 +196,16 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	public Condition getCondition() {
 		return condition;
 	}
-
+	
 	/**
 	 * Sets diagnosis condition
 	 * 
 	 * @param condition the condition to set for this diagnosis.
 	 */
-	public void setCondition(Condition condition)   {
+	public void setCondition(Condition condition) {
 		this.condition = condition;
 	}
-
+	
 	/**
 	 * Gets the patient associated with the diagnosis
 	 *
@@ -187,7 +214,7 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	public Patient getPatient() {
 		return patient;
 	}
-
+	
 	/**
 	 * Sets patient with this diagnosis
 	 *
