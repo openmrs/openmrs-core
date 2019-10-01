@@ -9,10 +9,7 @@
  */
 package org.openmrs;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 /**
  * A Concept object can represent either a question or an answer to a data point. That data point is
@@ -28,15 +25,10 @@ import javax.persistence.ManyToOne;
 @Embeddable
 public class CodedOrFreeText {
 	
-	@ManyToOne
-	@JoinColumn(name = "diagnosis_coded")
 	Concept coded;
 	
-	@ManyToOne
-	@JoinColumn(name = "diagnosis_coded_name")
 	ConceptName specificName;
 	
-	@Column(name = "diagnosis_non_coded")
 	String nonCoded;
 	
 	public CodedOrFreeText() {

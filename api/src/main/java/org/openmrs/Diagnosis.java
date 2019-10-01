@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -43,6 +45,9 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	private Encounter encounter;
 	
 	@Embedded
+	@AttributeOverrides({ @AttributeOverride(name = "coded", column = @Column(name = "diagnosis_coded")),
+	        @AttributeOverride(name = "specificName", column = @Column(name = "diagnosis_coded_name")),
+	        @AttributeOverride(name = "nonCoded", column = @Column(name = "diagnosis_non_coded")) })
 	private CodedOrFreeText diagnosis;
 	
 	@ManyToOne
