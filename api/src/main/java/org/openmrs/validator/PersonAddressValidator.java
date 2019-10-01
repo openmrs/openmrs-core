@@ -67,7 +67,6 @@ public class PersonAddressValidator implements Validator {
 		if (object == null) {
 			 errors.reject("error.address");
 		 } else if (!personAddress.getVoided()) {
-		// TODO - the following method should be made private in a major release
 			validatePersonAddress(personAddress, errors, false, true);
 					}
 		String addressString;
