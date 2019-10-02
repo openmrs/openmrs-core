@@ -491,11 +491,21 @@ public class ORUR01Handler implements Application {
 	private MSH getMSH(ORU_R01 oru) {
 		return oru.getMSH();
 	}
-	
+
 	private PID getPID(ORU_R01 oru) {
 		return oru.getPATIENT_RESULT().getPATIENT().getPID();
 	}
-	
+
+	private Concept lazyConcept;
+
+	public Concept getLazyConcept() {
+		return lazyConcept;
+	}
+
+	public void setLazyConcept(Concept lazyConcept) {
+		this.lazyConcept = lazyConcept;
+	}
+
 	/**
 	 * finds NK1 segments in an ORU_R01 message. all HAPI-rendered Messages have at least one NK1
 	 * segment but if the original message truly does not contain an NK1, the setID will be null on
