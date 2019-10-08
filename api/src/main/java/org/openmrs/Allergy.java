@@ -15,26 +15,53 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Represent allergy
  */
+@Entity
+@Table(name = "allergy")
 public class Allergy extends BaseChangeableOpenmrsData {
 	
 	public static final long serialVersionUID = 1;
 	
+	@Id
+	@GeneratedValue
+	@Column(name = "allergy_id")
 	private Integer allergyId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "patient_id")
 	private Patient patient;
 	
+	@Embedded
 	private Allergen allergen;
 	
+	@ManyToOne
+	@JoinColumn(name = "severity_concept_id")
 	private Concept severity;
 	
+	@Column(name = "comments", length = 1024)
 	private String comments;
 	
+
+	@OneToMany(mappedBy = "allergy", cascade = CascadeType.ALL, orphanRemoval = true)
+	@LazyCollection(LazyCollectionOption.FALSE)
 	private List<AllergyReaction> reactions = new ArrayList<>();
 	
 	/**
@@ -44,7 +71,7 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	}
 	
 	/**
-	 * @param patient the patient to set
+	 * @param patient the patient to set.
 	 * @param allergen the allergen to set
 	 * @param severity the severity to set
 	 * @param comment the comment to set
