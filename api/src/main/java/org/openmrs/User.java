@@ -55,6 +55,9 @@ import org.slf4j.LoggerFactory;
 public class User extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Attributable<User> {
 	
 	
+	/**
+	 * serializable
+	 */
 	public static final long serialVersionUID = 2L;
 	
 	private static final Logger log = LoggerFactory.getLogger(User.class);
