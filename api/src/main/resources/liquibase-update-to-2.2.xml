@@ -369,4 +369,16 @@
         </addColumn>
     </changeSet>
 
+	<changeSet id="TRUNK-5663-20191001" author="gitacliff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="conditions" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to conditions table</comment>
+		<addColumn tableName="conditions">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>
