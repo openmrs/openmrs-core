@@ -29,6 +29,7 @@
 				  column="onset_date" length="19" />
 		<property name="endDate" type="java.util.Date"
 				  column="end_date" length="19" />
+		<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />		  
 		<component name="condition" class="org.openmrs.CodedOrFreeText">
 			<many-to-one name="coded" class="org.openmrs.Concept" column="condition_coded" />
 			<property name="nonCoded" type="java.lang.String" length="255" column="condition_non_coded" />
