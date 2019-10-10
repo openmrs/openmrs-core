@@ -19,7 +19,20 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -30,49 +43,108 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Defines a User Account in the system. This account belongs to a {@link Person} in the system,
+
+
  * although that person may have other user accounts. Users have login credentials
  * (username/password) and can have special user properties. User properties are just simple
  * key-value pairs for either quick info or display specific info that needs to be persisted (like
  * locale preferences, search options, etc)
  */
+@Entity
+@Table(name = "user")
 public class User extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Attributable<User> {
+	
 	
 	public static final long serialVersionUID = 2L;
 	
 	private static final Logger log = LoggerFactory.getLogger(User.class);
 	
 	// Fields
-	
+	@Id
+	@GeneratedValue
+	@Column(name = "user_id")
 	private Integer userId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "person_id")
 	private Person person;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "system_id")
 	private String systemId;
 	
+	
+	@ManyToOne
+	@JoinColumn(name = "username_id")
 	private String username;
 	
+	@ManyToOne
+	@JoinColumn(name = "email_id")
 	private String email;
 	
+	
+	@ManyToMany
+	@JoinColumn(name="roles")
 	private Set<Role> roles;
 	
+
+	@OneToMany(mappedBy = "user_property" )
+	@LazyCollection(LazyCollectionOption.TRUE)
 	private Map<String, String> userProperties;
 	
+	@OneToMany(mappedBy = "locale", cascade = CascadeType.ALL, orphanRemoval = true)
+	@LazyCollection(LazyCollectionOption.TRUE)
 	private List<Locale> proficientLocales = null;
 	
+	
+	@Column(name = "parseProficientLocalesProperty", length = 1025)
 	private String parsedProficientLocalesProperty = "";
 	
 	// Constructors
 	
+
 	/** default constructor */
+	
+
 	public User() {
 	}
 	
-	/** constructor with id */
+	/**
+	 * Constructors
+	 * @param userId
+	 * @param person
+	 * @param systemId
+	 * @param username
+	 * @param email
+	 * @param roles
+	 * @param userProperties
+	 * @param proficientLocales
+	 * @param parsedProficientLocalesProperty
+	 */
+	public User(Integer userId, Person person, String systemId, String username, String email, Set<Role> roles,
+			Map<String, String> userProperties, List<Locale> proficientLocales,
+			String parsedProficientLocalesProperty) {
+		super();
+		this.userId = userId;
+		this.person = person;
+		this.systemId = systemId;
+		this.username = username;
+		this.email = email;
+		this.roles = roles;
+		this.userProperties = userProperties;
+		this.proficientLocales = proficientLocales;
+		this.parsedProficientLocalesProperty = parsedProficientLocalesProperty;
+	}
+
+	/** constructor with id 
+	 * @param userId */
+	
 	public User(Integer userId) {
 		this.userId = userId;
 	}
 	
-	/** constructor with person object */
+	/** constructor with person object 
+	 * @param person */
 	public User(Person person) {
 		this.person = person;
 	}
@@ -499,6 +571,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	}
 	
 	/**
+	 * @param name 
 	 * @see Person#addName(PersonName)
 	 */
 	public void addName(PersonName name) {
@@ -506,6 +579,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	}
 	
 	/**
+	 * @return person
 	 * @see Person#getPersonName()
 	 */
 	public PersonName getPersonName() {
@@ -514,6 +588,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	
 	/**
 	 * Get givenName on the Person this user account belongs to
+	 * @return  person
 	 * 
 	 * @see Person#getGivenName()
 	 */
