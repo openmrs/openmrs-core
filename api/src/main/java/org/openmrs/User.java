@@ -87,9 +87,9 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	}
 	
 	/**
-	 * This method shouldn't be used directly. Use org.openmrs.api.context.Context#hasPrivilege so
-	 * that anonymous/authenticated/proxy privileges are all included Return true if this user has
-	 * the specified privilege
+	 * This method shouldn't be used directly. Use org.openmrs.api.context.Context#hasPrivilege so that
+	 * anonymous/authenticated/proxy privileges are all included Return true if this user has the
+	 * specified privilege
 	 * 
 	 * @param privilege
 	 * @return true/false depending on whether user has specified privilege
@@ -133,8 +133,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 * @param r String name of a role to check
 	 * @param ignoreSuperUser If this is false, then this method will always return true for a
 	 *            superuser.
-	 * @return Returns true if the user has the given role, or if ignoreSuperUser is false and the
-	 *         user is a superUser
+	 * @return Returns true if the user has the given role, or if ignoreSuperUser is false and the user
+	 *         is a superUser
 	 */
 	public boolean hasRole(String r, boolean ignoreSuperUser) {
 		if (!ignoreSuperUser && isSuperUser()) {
@@ -156,7 +156,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	
 	/**
 	 * Checks if the user has a given role. Role name comparisons are not case sensitive.
-	 * @param  roleName the name of the role to check
+	 * 
+	 * @param roleName the name of the role to check
 	 * @return true if the user has the given role, else false
 	 * @should return true if the user has the given role
 	 * @should return false if the user does not have the given role
@@ -196,8 +197,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	// Property accessors
 	
 	/**
-	 * Returns all roles attributed to this user by expanding the role list to include the parents
-	 * of the assigned roles
+	 * Returns all roles attributed to this user by expanding the role list to include the parents of
+	 * the assigned roles
 	 * 
 	 * @return all roles (inherited from parents and given) for this user
 	 */
@@ -420,8 +421,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 		return email;
 	}
 	
- 	/**
- 	 * @since 2.2
+	/**
+	 * @since 2.2
 	 * @param email The email to set.
 	 */
 	public void setEmail(String email) {
@@ -467,8 +468,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	}
 	
 	/**
-	 * Get prop property from this user's properties. If prop is not found in properties, return
-	 * empty string
+	 * Get prop property from this user's properties. If prop is not found in properties, return empty
+	 * string
 	 * 
 	 * @param prop
 	 * @return property value
@@ -536,7 +537,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	public Set<PersonName> getNames() {
 		return person.getNames();
 	}
-		
+	
 	/**
 	 * Returns a list of Locales for which the User is considered proficient.
 	 * 
