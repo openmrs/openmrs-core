@@ -25,7 +25,7 @@ import org.openmrs.User;
 public class UserByNameComparatorTest {
 	
 	/**
-	 * This tests sorting with the {@link UserByNameComparator} given a set of users with
+	 * These tests sort with the {@link UserByNameComparator} given a set of users with
 	 * personNames
 	 * 
 	 * @see UserByNameComparator#compare(User,User)
@@ -63,4 +63,63 @@ public class UserByNameComparatorTest {
 		Assert.assertTrue("Expected user3 to be the third in the sorted user list but wasn't", user3.equals(it.next()));
 		Assert.assertTrue("Expected user4 to be the fourth in the sorted user list but wasn't", user4.equals(it.next()));
 	}
+
+	/**
+	 * This test checks if null cases are found last in a list {@link UserByNameComparator}
+	 * given a set of users with personNames
+	 *
+	 * @see UserByNameComparator#compare(User,User)
+	 */
+	@Test
+	public void compare_shouldReturnCorrectListInCaseOfNull() {
+
+		Person person1 = new Person();
+		person1.addName(new PersonName("givenName", "middleName1", "familyName"));
+		User user1 = new User(person1);
+		User user2 = null;
+		Person person3 = new Person();
+		person3.addName(new PersonName("givenName", "middleName3", "familyName"));
+		User user3 = new User(person3);
+		User user4 = null;
+
+		List<User> listToSort = new ArrayList<>();
+		listToSort.add(user3);
+		listToSort.add(user2);
+		listToSort.add(user1);
+		listToSort.add(user4);
+
+		listToSort.sort(new UserByNameComparator());
+
+		Iterator<User> it = listToSort.iterator();
+		Assert.assertTrue("Expected user1 to be the first in the sorted user list but wasn't", user1.equals(it.next()));
+		Assert.assertTrue("Expected user3 to be the second in the sorted user list but wasn't", user3.equals(it.next()));
+		Assert.assertTrue("Expected null user to be the third in the sorted user list but wasn't", user2 == it.next());
+		Assert.assertTrue("Expected null user to be the fourth in the sorted user list but wasn't", user4 == it.next());
+		
+		
+	}
+
+	/**
+	 * This test checks if null case comparisons return expected value {@link UserByNameComparator}
+	 * given a set of users with personNames
+	 *
+	 * @see UserByNameComparator#compare(User,User)
+	 */
+	@Test
+	public void compare_shouldReturnCorrectResultInCaseOfNull() {
+
+		Person person1 = new Person();
+		person1.addName(new PersonName("givenName", "middleName1", "familyName"));
+		User user1 = new User(person1);
+		User user2 = null;
+		
+		int result = (new UserByNameComparator().compare(user1, user2));
+		Assert.assertTrue("Expected comparison result between user and null to be -1 but it wasn't", result == -1);
+
+		result = (new UserByNameComparator().compare(user2, user1));
+		Assert.assertTrue("Expected comparison result between null and user to be 1 but it wasn't",result == 1);
+
+
+	}
+	
 }
