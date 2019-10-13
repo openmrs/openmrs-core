@@ -66,6 +66,13 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 		setPatientProgramId(patientProgramId);
 	}
 
+	public PatientProgram(Integer patientProgramId, Patient patient, Program program, Set<PatientState> states) {
+		this.patientProgramId = patientProgramId;
+		this.patient = patient;
+		this.program = program;
+		this.states = states;
+	}
+
 	/**
 	 * Does a mostly-shallow copy of this PatientProgram. Does not copy patientProgramId. The
 	 * 'states' property will be deep-copied.

@@ -118,9 +118,13 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	public Encounter(Integer encounterId) {
 		this.encounterId = encounterId;
 	}
-	
+		
+	public Encounter(Integer encounterId, Date encounterDatetime) {
+		this.encounterId = encounterId;
+		this.encounterDatetime = encounterDatetime;
+	}
 	// Property accessors
-	
+
 	/**
 	 * @return Returns the encounterDatetime.
 	 */

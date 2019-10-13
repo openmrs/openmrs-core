@@ -21,6 +21,13 @@ public class LocationAttribute extends BaseAttribute<LocationAttributeType, Loca
 	
 	private Integer locationAttributeId;
 	
+	public LocationAttribute() {
+	}
+
+	public LocationAttribute(Integer locationAttributeId) {
+		this.locationAttributeId = locationAttributeId;
+	}
+
 	// BaseAttribute<Location> has an "owner" property of type Location, which we re-expose as "location"
 	
 	/**

@@ -67,6 +67,13 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 		this.answerDrug = d;
 	}
 	
+	public ConceptAnswer(Concept concept, Concept answerConcept, User creator, Date dateCreated) {
+		this.concept = concept;
+		this.answerConcept = answerConcept;
+		this.creator = creator;
+		this.dateCreated = dateCreated;
+	}
+
 	/**
 	 * @return Returns the answerConcept.
 	 */

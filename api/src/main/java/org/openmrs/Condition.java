@@ -48,6 +48,16 @@ public class Condition extends BaseChangeableOpenmrsData {
 	public Condition() {
 	}
 
+	public Condition(Integer conditionId) {
+		this.conditionId = conditionId;
+	}
+
+	public Condition(Integer conditionId, CodedOrFreeText condition, Patient patient) {
+		this.conditionId = conditionId;
+		this.condition = condition;
+		this.patient = patient;
+	}
+
 	/**
 	 * Convenience constructor to instantiate a condition class with all the necessary parameters
 	 *

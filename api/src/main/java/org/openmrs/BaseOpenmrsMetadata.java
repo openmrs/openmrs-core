@@ -74,9 +74,16 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	 */
 	public BaseOpenmrsMetadata() {
 	}
+		
+	public BaseOpenmrsMetadata(String name, User creator, Date dateCreated, Boolean retired) {
+		this.name = name;
+		this.creator = creator;
+		this.dateCreated = dateCreated;
+		this.retired = retired;
+	}
 	
 	//***** Property Access *****
-	
+
 	/**
 	 * @return the name
 	 */

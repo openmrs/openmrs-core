@@ -59,6 +59,14 @@ public class RelationshipType extends BaseChangeableOpenmrsMetadata{
 		this.relationshipTypeId = relationshipTypeId;
 	}
 	
+	public RelationshipType(Integer relationshipTypeId, String aIsToB, String bIsToA, Integer weight, Boolean preferred) {
+		this.relationshipTypeId = relationshipTypeId;
+		this.aIsToB = aIsToB;
+		this.bIsToA = bIsToA;
+		this.weight = weight;
+		this.preferred = preferred;
+	}
+
 	// Property accessors
 	
 	/**

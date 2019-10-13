@@ -51,6 +51,13 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 		setProgramWorkflowId(programWorkflowId);
 	}
 	
+	public ProgramWorkflow(Integer programWorkflowId, Program program, Concept concept, Set<ProgramWorkflowState> states) {
+		this.programWorkflowId = programWorkflowId;
+		this.program = program;
+		this.concept = concept;
+		this.states = states;
+	}
+
 	// ******************
 	// Instance methods
 	// ******************

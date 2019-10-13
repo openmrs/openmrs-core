@@ -83,6 +83,11 @@ public class PatientIdentifierType extends BaseChangeableOpenmrsMetadata {
 		this.patientIdentifierTypeId = patientIdentifierTypeId;
 	}
 	
+	public PatientIdentifierType(Integer patientIdentifierTypeId, Boolean required) {
+		this.patientIdentifierTypeId = patientIdentifierTypeId;
+		this.required = required;
+	}
+
 	// Property accessors
 	
 	/**

@@ -34,6 +34,13 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	// Constructor
 	public CohortMembership() {
 	}
+	public CohortMembership(Integer cohortMemberId, Cohort cohort, Integer patientId, Date startDate, Date endDate) {
+		this.cohortMemberId=cohortMemberId;
+		this.cohort=cohort;
+		this.patientId=patientId;
+		this.startDate=startDate;
+		this.endDate=endDate;
+	}
 	
 	public CohortMembership(Integer patientId, Date startDate) {
 		this.patientId = patientId;

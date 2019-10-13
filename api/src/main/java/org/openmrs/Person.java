@@ -236,8 +236,15 @@ public class Person extends BaseChangeableOpenmrsData {
 		this.personId = personId;
 	}
 	
+	public Person(Integer personId, Boolean dead, Date personDateCreated, Boolean personVoided) {
+		this.personId = personId;
+		this.dead = dead;
+		this.personDateCreated = personDateCreated;
+		this.personVoided = personVoided;
+	}
+
 	// Property accessors
-	
+
 	/**
 	 * @return Returns the personId.
 	 */

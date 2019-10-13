@@ -45,6 +45,14 @@ public class ConceptStateConversion extends BaseOpenmrsObject {
 	// Instance methods
 	// ******************
 	
+	public ConceptStateConversion(Integer conceptStateConversionId, Concept concept, ProgramWorkflow programWorkflow,
+	    ProgramWorkflowState programWorkflowState) {
+		this.conceptStateConversionId = conceptStateConversionId;
+		this.concept = concept;
+		this.programWorkflow = programWorkflow;
+		this.programWorkflowState = programWorkflowState;
+	}
+
 	/** @see Object#toString() */
 	@Override
 	public String toString() {

@@ -65,8 +65,13 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 		this.drugId = drugId;
 	}
 	
-	// Property accessors
 	
+	public Drug(Integer drugId, Boolean combination) {
+		this.drugId = drugId;
+		this.combination = combination;
+	}
+	// Property accessors
+
 	/**
 	 * Gets the internal identification number for this drug
 	 *

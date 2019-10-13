@@ -150,6 +150,12 @@ public class Patient extends Person {
 		this.identifiers = newIdentifiers;
 	}
 	
+	public Patient(Integer patientId, Date dateCreated, Boolean voided) {
+		this.patientId = patientId;
+		this.dateCreated = dateCreated;
+		this.voided = voided;
+	}
+
 	// Property accessors
 	
 	/**

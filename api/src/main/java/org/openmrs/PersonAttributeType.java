@@ -45,6 +45,12 @@ public class PersonAttributeType extends BaseChangeableOpenmrsMetadata implement
 		this.personAttributeTypeId = myPersonAttributeTypeId;
 	}
 	
+	public PersonAttributeType(Integer personAttributeTypeId, Double sortWeight, Boolean searchable) {
+		this.personAttributeTypeId = personAttributeTypeId;
+		this.sortWeight = sortWeight;
+		this.searchable = searchable;
+	}
+
 	// Property accessors
 	
 	/**

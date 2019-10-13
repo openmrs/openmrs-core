@@ -32,8 +32,16 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	public DrugIngredient() {
 	}
 	
+	public DrugIngredient(Drug drug) {
+		this.drug = drug;
+	}
+
+	public DrugIngredient(Drug drug, Concept ingredient) {
+		this.drug = drug;
+		this.ingredient = ingredient;
+	}
 	// Property accessors
-	
+
 	/**
 	 * @return the drug
 	 */

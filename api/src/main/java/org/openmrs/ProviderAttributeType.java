@@ -21,6 +21,13 @@ public class ProviderAttributeType extends BaseAttributeType<Provider> implement
 	
 	private Integer providerAttributeTypeId;
 	
+	public ProviderAttributeType() {
+	}
+
+	public ProviderAttributeType(Integer providerAttributeTypeId) {
+		this.providerAttributeTypeId = providerAttributeTypeId;
+	}
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */

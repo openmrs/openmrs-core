@@ -40,6 +40,17 @@ public class FieldAnswer extends BaseOpenmrsObject {
 	public FieldAnswer() {
 	}
 	
+	public FieldAnswer(Concept concept, Field field) {
+		this.concept = concept;
+		this.field = field;
+	}
+
+	public FieldAnswer(Concept concept, User creator, Field field) {
+		this.concept = concept;
+		this.creator = creator;
+		this.field = field;
+	}
+
 	/**
 	 * @return boolean whether or not this fieldAnswer has been modified
 	 *

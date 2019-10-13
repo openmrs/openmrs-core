@@ -69,6 +69,12 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	 */
 	public Allergy(){
 	}
+	/**
+     * @param allergyId the allergyId to set
+     */
+	public Allergy(Integer allergyId) {
+    	this.allergyId = allergyId;
+	}
 	
 	/**
 	 * @param patient the patient to set.

@@ -47,6 +47,12 @@ public class PatientState extends BaseChangeableOpenmrsData implements java.io.S
 		setPatientStateId(patientStateId);
 	}
 	
+	public PatientState(Integer patientStateId, PatientProgram patientProgram, ProgramWorkflowState state) {
+		this.patientStateId = patientStateId;
+		this.patientProgram = patientProgram;
+		this.state = state;
+	}
+
 	/**
 	 * Does a shallow copy of this PatientState. Does NOT copy patientStateId
 	 * 

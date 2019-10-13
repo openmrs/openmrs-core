@@ -22,6 +22,13 @@ public class ProviderAttribute extends BaseAttribute<ProviderAttributeType, Prov
 	
 	private Integer providerAttributeId;
 	
+	public ProviderAttribute() {
+	}
+
+	public ProviderAttribute(Integer providerAttributeId) {
+		this.providerAttributeId = providerAttributeId;
+	}
+
 	public Integer getProviderAttributeId() {
 		return providerAttributeId;
 	}

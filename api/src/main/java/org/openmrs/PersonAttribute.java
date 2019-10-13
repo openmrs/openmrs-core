@@ -74,6 +74,12 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 		this.personAttributeId = personAttributeId;
 	}
 	
+	public PersonAttribute(Integer personAttributeId, PersonAttributeType attributeType, String value) {
+		this.personAttributeId = personAttributeId;
+		this.attributeType = attributeType;
+		this.value = value;
+	}
+
 	/**
 	 * Constructor for creating a basic attribute
 	 * 

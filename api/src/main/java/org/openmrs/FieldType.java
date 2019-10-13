@@ -32,9 +32,13 @@ public class FieldType extends BaseChangeableOpenmrsMetadata {
 	public FieldType(Integer fieldTypeId) {
 		this.fieldTypeId = fieldTypeId;
 	}
-	
+		
+	public FieldType(Integer fieldTypeId, Boolean isSet) {
+		this.fieldTypeId = fieldTypeId;
+		this.isSet = isSet;
+	}
 	// Property accessors
-	
+
 	/**
 	 * @return Returns the fieldTypeId.
 	 */

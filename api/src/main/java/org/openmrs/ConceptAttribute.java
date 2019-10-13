@@ -16,6 +16,13 @@ public class ConceptAttribute extends BaseAttribute<ConceptAttributeType, Concep
 	
 	private Integer conceptAttributeId;
 	
+	public ConceptAttribute() {
+	}
+	
+	public ConceptAttribute(Integer conceptAttributeId) {
+		this.conceptAttributeId = conceptAttributeId;
+	}
+	
 	public Concept getConcept() {
 		return getOwner();
 	}

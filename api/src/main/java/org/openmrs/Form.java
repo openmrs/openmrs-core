@@ -52,6 +52,11 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 		this.formId = formId;
 	}
 	
+	public Form(Integer formId, String version) {
+		this.formId = formId;
+		this.version = version;
+	}
+
 	// Property accessors
 	
 	/**

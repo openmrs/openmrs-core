@@ -103,6 +103,18 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 		setLocale(locale);
 	}
 	
+	public ConceptName(Integer conceptNameId, Concept concept, String name, Locale locale, User creator, Date dateCreated,
+	    Boolean voided, Boolean localePreferred) {
+		this.conceptNameId = conceptNameId;
+		this.concept = concept;
+		this.name = name;
+		this.locale = locale;
+		this.creator = creator;
+		this.dateCreated = dateCreated;
+		this.voided = voided;
+		this.localePreferred = localePreferred;
+	}
+
 	/**
 	 * @return Returns the conceptId.
 	 */

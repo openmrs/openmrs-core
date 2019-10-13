@@ -40,6 +40,16 @@ public class ConceptStopWord extends BaseOpenmrsObject {
 	public ConceptStopWord() {
 	}
 	
+	public ConceptStopWord(Integer conceptStopWordId) {
+		this.conceptStopWordId = conceptStopWordId;
+	}
+
+	public ConceptStopWord(Integer conceptStopWordId, String value, Locale locale) {
+		this.conceptStopWordId = conceptStopWordId;
+		this.value = value;
+		this.locale = locale;
+	}
+
 	/**
 	 * Convenience constructor to create a ConceptStopWord object with default
 	 * locale English

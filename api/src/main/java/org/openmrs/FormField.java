@@ -61,6 +61,13 @@ public class FormField extends BaseChangeableOpenmrsMetadata implements java.io.
 		this.formFieldId = formFieldId;
 	}
 	
+	public FormField(Integer formFieldId, Form form, Field field, Boolean required) {
+		this.formFieldId = formFieldId;
+		this.form = form;
+		this.field = field;
+		this.required = required;
+	}
+
 	// Property accessors
 	
 	/**
