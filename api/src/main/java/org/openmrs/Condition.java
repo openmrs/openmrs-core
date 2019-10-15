@@ -12,6 +12,8 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Objects;
 
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -24,6 +26,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * The condition class records detailed information about a condition, problem, diagnosis, or other
@@ -46,9 +49,9 @@ public class Condition extends BaseChangeableOpenmrsData {
 	private Integer conditionId;
 	
 	@Embedded
-	@AttributeOverrides({ @AttributeOverride(name = "coded", column = @Column(name = "condition_coded")),
-	        @AttributeOverride(name = "specificName", column = @Column(name = "condition_coded_name")),
-	        @AttributeOverride(name = "nonCoded", column = @Column(name = "condition_non_coded")) })
+	@AttributeOverrides({ @AttributeOverride(name = "nonCoded", column = @Column(name = "condition_non_coded")) })
+	@AssociationOverrides({ @AssociationOverride(name = "coded", joinColumns = @JoinColumn(name = "condition_coded")),
+	        @AssociationOverride(name = "specificName", joinColumns = @JoinColumn(name = "condition_coded_name")) })
 	private CodedOrFreeText condition;
 	
 	@Enumerated(EnumType.STRING)
@@ -72,6 +75,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 	@Column(name = "end_date")
 	private Date endDate;
 	
+	@Transient
 	private String endReason;
 	
 	@ManyToOne(optional = false)

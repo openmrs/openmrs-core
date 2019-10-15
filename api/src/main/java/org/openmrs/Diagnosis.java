@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -45,9 +47,9 @@ public class Diagnosis extends BaseChangeableOpenmrsData {
 	private Encounter encounter;
 	
 	@Embedded
-	@AttributeOverrides({ @AttributeOverride(name = "coded", column = @Column(name = "diagnosis_coded")),
-	        @AttributeOverride(name = "specificName", column = @Column(name = "diagnosis_coded_name")),
-	        @AttributeOverride(name = "nonCoded", column = @Column(name = "diagnosis_non_coded")) })
+	@AttributeOverrides({ @AttributeOverride(name = "nonCoded", column = @Column(name = "diagnosis_non_coded")) })
+	@AssociationOverrides({ @AssociationOverride(name = "coded", joinColumns = @JoinColumn(name = "diagnosis_coded")),
+	        @AssociationOverride(name = "specificName", joinColumns = @JoinColumn(name = "diagnosis_coded_name")) })
 	private CodedOrFreeText diagnosis;
 	
 	@ManyToOne

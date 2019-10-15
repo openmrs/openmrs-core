@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import javax.persistence.Embeddable;
+import javax.persistence.ManyToOne;
 
 /**
  * A Concept object can represent either a question or an answer to a data point. That data point is
@@ -25,8 +26,10 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class CodedOrFreeText {
 	
+	@ManyToOne
 	Concept coded;
 	
+	@ManyToOne
 	ConceptName specificName;
 	
 	String nonCoded;
