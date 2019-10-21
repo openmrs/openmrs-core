@@ -812,4 +812,26 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws APIException;
+	
+	/**
+	 * Fetches all order groups for the specified patient
+	 * 
+	 * @param patient the patient to match on
+	 * @return list of matching OrderGroups
+	 * @since 2.3
+	 * @throws APIException
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDERS)
+	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws APIException;
+	
+	/**
+	 * Fetches all order groups for the specified encounter
+	 *
+	 * @param encounter the encounter to match on
+	 * @return list of matching OrderGroups
+	 * @since 2.3
+	 * @throws APIException
+	 */
+	@Authorized(PrivilegeConstants.GET_ORDERS)
+	public List<OrderGroup> getOrderGroupsByEncounter(Encounter encounter) throws APIException;
 }
