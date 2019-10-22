@@ -12,7 +12,7 @@
 -->
 <dataset>
   <conditions condition_id="1" patient_id="2" clinical_status="INACTIVE" creator="1" date_created="2015-01-12 00:00:00" voided="false"
-    onset_date="2017-01-12 00:00:00" verification_status="PROVISIONAL" uuid="2cc6880e-2c46-15e4-9038-a6c5e4d22fb7"/>
+    onset_date="2017-01-12 00:00:00" end_date="2017-01-15 00:00:00" verification_status="PROVISIONAL" uuid="2cc6880e-2c46-15e4-9038-a6c5e4d22fb7"/>
   <conditions condition_id="2" patient_id="2" clinical_status="ACTIVE" creator="1" date_created="2015-01-12 00:00:00" voided="false"
     onset_date="2017-01-12 00:00:50" verification_status="CONFIRMED" uuid="2cc6880e-2c46-11e4-9138-a6c5e4d20fb7"/>
   <conditions condition_id="4" patient_id="2" clinical_status="INACTIVE" creator="1" date_created="2016-01-12 00:00:00" voided="false"
