@@ -108,4 +108,16 @@
 			<column name="description" type="varchar(1)" />
 		</createTable>
 	</changeSet>
+	<changeSet id="TRUNK-5672-201910211105" author="Mritunjay">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(*) FROM users where username = 'admin'
+			</sqlCheck>
+		</preConditions>
+		<comment>Populate username for admin user</comment>
+		<update tableName="users">
+			<column name="username" value="admin"/>
+			<where>system_id='admin'</where>
+		</update>
+	</changeSet>
 </databaseChangeLog>
