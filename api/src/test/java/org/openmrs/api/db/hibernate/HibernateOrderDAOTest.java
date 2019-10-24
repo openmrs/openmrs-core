@@ -9,17 +9,23 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderGroup;
+import org.openmrs.Patient;
+import org.openmrs.api.APIException;
 import org.openmrs.api.builder.OrderBuilder;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,9 +39,12 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 	
 	private static final String ORDER_SET = "org/openmrs/api/include/OrderSetServiceTest-general.xml";
 	
+	private static final String ORDER_GROUP = "org/openmrs/api/include/OrderServiceTest-createOrderGroup.xml";
+	
 	@Before
 	public void setUp() {
 		executeDataSet(ORDER_SET);
+		executeDataSet(ORDER_GROUP);
 	}
 	
 	/**
@@ -65,4 +74,82 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		}
 		
 	}
+	
+	/**
+	 * @see {@link HibernateOrderDAO#getOrderGroupsByEncounter(Encounter)}
+	 * @throws Exception
+	 */
+	@Test(expected = APIException.class)
+	public void getOrderGroupsByEncounter_shouldFailGivenNullEncounter() {
+		dao.getOrderGroupsByEncounter(null);
+	}
+	
+	/**
+	 * @see {@link HibernateOrderDAO#getOrderGroupsByPatient(Patient)}
+	 * @throws Exception
+	 */
+	@Test(expected = APIException.class)
+	public void getOrderGroupsByPatient_shouldFailGivenNullPatient() {
+		dao.getOrderGroupsByPatient(null);
+	}
+	
+	/**
+	 * @see {@link HibernateOrderDAO#getOrderGroupsByEncounter(Encounter)}
+	 * @throws Exception
+	 */
+	@Test
+	public void getOrderGroupsByEncounter_shouldGetOrderGroupsFromAnEncounter() {
+		Encounter existingEncounter1 = Context.getEncounterService().getEncounter(4);
+		List<OrderGroup> ordergroups1 = Context.getOrderService().getOrderGroupsByEncounter(existingEncounter1);
+		
+		assertEquals(1, ordergroups1.size());
+	}
+	
+	/**
+	 * @see {@link HibernateOrderDAO#getOrderGroupsByEncounter(Encounter)}
+	 * @throws Exception
+	 */
+	@Test
+	public void getOrderGroupsByEncounter_shouldGetOrderGroupsFrommMultipleEncounters() {
+		Encounter existingEncounter1 = Context.getEncounterService().getEncounter(3);
+		Encounter existingEncounter2 = Context.getEncounterService().getEncounter(4);
+		
+		List<OrderGroup> ordergroups1 = Context.getOrderService().getOrderGroupsByEncounter(existingEncounter1);
+		List<OrderGroup> ordergroups2 = Context.getOrderService().getOrderGroupsByEncounter(existingEncounter2);
+		
+		assertEquals(2, ordergroups1.size());
+		assertEquals(1, ordergroups2.size());
+	}
+	
+	/**
+	 * @see {@link HibernateOrderDAO#getOrderGroupsByPatient(Patient)}
+	 * @throws Exception
+	 */
+	@Test
+	public void getOrderGroupsByPatient_shouldGetOrderGroupsFromMultiplePatients() {
+		
+		Patient existingPatient1 = Context.getPatientService().getPatient(7);
+		Patient existingPatient2 = Context.getPatientService().getPatient(8);
+		
+		List<OrderGroup> ordergroups1 = Context.getOrderService().getOrderGroupsByPatient(existingPatient1);
+		List<OrderGroup> ordergroups2 = Context.getOrderService().getOrderGroupsByPatient(existingPatient2);
+		
+		assertEquals(2, ordergroups1.size());
+		assertEquals(1, ordergroups2.size());
+		
+	}
+	
+	/**
+	 * @see {@link HibernateOrderDAO#getOrderGroupsByPatient(Patient)}
+	 * @throws Exception
+	 */
+	@Test
+	public void getOrderGroupsByPatient_shouldGetOrderGroupsGivenPatient() {
+		
+		Patient existingPatient1 = Context.getPatientService().getPatient(8);
+		List<OrderGroup> ordergroups1 = Context.getOrderService().getOrderGroupsByPatient(existingPatient1);
+		
+		assertEquals(1, ordergroups1.size());
+	}
+	
 }

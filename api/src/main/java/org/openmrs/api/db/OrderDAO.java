@@ -259,4 +259,14 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getOrderGroup(Integer)
 	 */
 	public OrderGroup getOrderGroupById(Integer orderGroupId) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupsByPatient(Patient)
+	 */
+	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupsByEncounter(Encounter)
+	 */
+	public List<OrderGroup> getOrderGroupsByEncounter(Encounter encounter) throws DAOException;
 }
