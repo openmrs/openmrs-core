@@ -31,28 +31,29 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Collection;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.InvalidCharactersPasswordException;
 import org.openmrs.api.ShortPasswordException;
 import org.openmrs.api.WeakPasswordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
+import org.springframework.core.JdkVersion;
 
 /**
  * Tests the methods in {@link OpenmrsUtil} TODO: finish adding tests for all methods
@@ -422,6 +423,34 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(OpenmrsUtil.containsDigit(null));
 	}
 	
+
+	/**
+	 * @see OpenmrsUtil#containsonlyuppercase(String)
+	 */
+	@Test
+	public void containsUpperAndLowerCase_shouldReturnTrueIfStringContainsOnlyUpperCase() {
+		Assert.assertTrue(
+				OpenmrsUtil.containsUpperAndLowerCase("THIS IS THE TEST"));
+		Assert.assertFalse(OpenmrsUtil
+				.containsUpperAndLowerCase("this is the false test"));
+		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase(""));
+	}
+
+	/**
+	 * @see Openmrs Checks whether the current JVM version matches with
+	 *      jdkversion specified
+	 */
+	@Test
+	public void JVMVersion_shouldReturnTrueIfOpenmrsVersionMatchesWithJdkVersion() {
+
+		if (JdkVersion.getJavaVersion().matches("1.(0|1|2|3|4|5).(.*)")) {
+			throw new APIException(
+					"OpenMRS requires Java 6, but is running under "
+							+ JdkVersion.getJavaVersion());
+		}
+
+	}
+
 	/**
 	 * The validate password method should be in a separate jvm here so that the Context and
 	 * services are not available to the validatePassword (similar to how its used in the
