@@ -81,6 +81,7 @@
 								 referencedTableName="concept"
 								 referencedColumnNames="concept_id" />
     </changeSet>
+<<<<<<< HEAD
      <changeSet id="TRUNK-5663-20191002" author="gitacliff">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -120,4 +121,21 @@
 			<where>system_id='admin'</where>
 		</update>
 	</changeSet>
+=======
+    
+    <changeSet id="TRUNK-5652" author="odorajonathan">
+    <preConditions onFail="MARK_RAN">
+    	<not><columnExists tableName="order_group" columnName="nested_order_groups"/></not>
+    </preConditions>
+    <comment>
+    	Add nested_order_group field to order_group table
+    </comment>
+    <addColumn tableName="order_group">
+    	<column name="nested_order_groups" type="int"/>
+    </addColumn>
+    <addForeignKeyConstraint constraintName="nested_order_group_fk" referencedTableName="concept" 
+    baseColumnNames="nested_order_group" baseTableName="order_group" referencedColumnNames="concept_id"/>
+    </changeSet>
+    
+>>>>>>> TRUNK-5652: Add NestedOrderGroups to OrderGroup
 </databaseChangeLog>

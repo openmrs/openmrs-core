@@ -35,6 +35,8 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	
 	private OrderSet orderSet;
 	
+	private Concept nestedOrderGroups;
+	
 	/**
 	 * Gets the orderGroupId
 	 *
@@ -179,7 +181,7 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 		}
 		return (getOrders().get(index - 1).getSortWeight() + getOrders().get(index + 1).getSortWeight()) / 2;
 	}
-	
+
 	/**
 	 * Gets the orderSet
 	 *
@@ -188,7 +190,7 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	public OrderSet getOrderSet() {
 		return orderSet;
 	}
-	
+
 	/**
 	 * Sets the orderSet
 	 *
@@ -196,6 +198,28 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	 */
 	public void setOrderSet(OrderSet orderSet) {
 		this.orderSet = orderSet;
+	}
+
+	/**
+	 * Gets the nestedOrderGroups
+	 * 
+	 * @return nestedOrderGroups
+	 * @since 2.3.0
+	 */
+
+	public Concept getNestedOrderGroups() {
+		return nestedOrderGroups;
+	}
+
+	/**
+	 * Sets the nestedOrderGroups
+	 * 
+	 * @param nestedOrderGroups to set
+	 * @since 2.3.0
+	 */
+
+	public void setNestedOrderGroups(Concept nestedOrderGroups) {
+		this.nestedOrderGroups = nestedOrderGroups;
 	}
 	
 	@Override

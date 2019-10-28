@@ -32,6 +32,9 @@
         <many-to-one name="patient" class="Patient" not-null="true">
             <column name="patient_id"/>
         </many-to-one>
+        
+        <many-to-one name="nestedOrderGroups" class="org.openmrs.Concept"
+        not-null="false" column="nested_order_groups"/>
 
         <!-- bi-directional one-to-many association to Order -->
         <bag name="orders" inverse="true" order-by="sort_weight" lazy="true">
