@@ -276,6 +276,11 @@
 				<version>4.10.4</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-analyzers-phonetic</artifactId>
+				<version>4.10.4</version>
+			</dependency>
+			<dependency>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
 				<version>2.0.5</version>
