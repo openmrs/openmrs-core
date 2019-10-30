@@ -62,13 +62,10 @@ public class PersonAddressValidator implements Validator {
 		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".validate...");
 		}
-		
-		if (object == null) {
-			throw new IllegalArgumentException("The personAddress object should not be null");
-		}
-		
 		PersonAddress personAddress = (PersonAddress) object;
-		
+		if (personAddress == null) {
+           errors.rejectValue("value", "error.null");
+		}
 		//resolve a shorter name to display along with the error message
 		String addressString;
 		if (StringUtils.isNotBlank(personAddress.getAddress1())) {
