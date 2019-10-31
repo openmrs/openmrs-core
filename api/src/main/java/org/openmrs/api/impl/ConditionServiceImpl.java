@@ -115,6 +115,15 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 	}
 
 	/**
+     * @see ConditionService#getAllConditions(Patient)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Condition> getAllConditions(Patient patient) {
+		return conditionDAO.getAllConditions(patient);
+	}
+
+	/**
 	 * Voids a condition
 	 *
 	 * @param condition  - the condition to be voided
