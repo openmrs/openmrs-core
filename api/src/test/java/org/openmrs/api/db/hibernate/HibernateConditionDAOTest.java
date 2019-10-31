@@ -97,7 +97,7 @@ public class HibernateConditionDAOTest extends BaseContextSensitiveTest {
 		assertEquals(condition.getClinicalStatus(), expectedClinicalStatus);
 		assertEquals(condition.getVerificationStatus(), expectedVerificationStatus);
 		assertEquals(1, (int) condition.getId());
-		assertEquals(null, condition.getEndDate());
+		assertEquals("2017-01-15 00:00:00.0", condition.getEndDate().toString());
 		assertEquals(1, (int) condition.getCreator().getId());
 	}
 	
@@ -112,7 +112,7 @@ public class HibernateConditionDAOTest extends BaseContextSensitiveTest {
 		assertEquals(expectedClinicalStatus, condition.getClinicalStatus());
 		assertEquals(expectedVerificationStatus, condition.getVerificationStatus());
 		assertEquals(1, (int) condition.getId());
-		assertEquals(null, condition.getEndDate());
+		assertEquals("2017-01-15 00:00:00.0", condition.getEndDate().toString());
 		assertEquals(1, (int) condition.getCreator().getId());
 	}
 	
@@ -128,7 +128,7 @@ public class HibernateConditionDAOTest extends BaseContextSensitiveTest {
 	public void shouldGetActiveConditions() {
 		Patient patient = new Patient(2);
 		List<Condition> active = dao.getActiveConditions(patient);
-		assertEquals(2, active.size());
+		assertEquals(1, active.size());
 	}
 	
 	@Test

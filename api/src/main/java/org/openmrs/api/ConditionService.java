@@ -62,6 +62,17 @@ public interface ConditionService extends OpenmrsService {
 	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
 	List<Condition> getActiveConditions(Patient patient) throws APIException;
 
+    /**
+	 * Gets all conditions i.e both active and inactive conditions, associated with a patient
+	 *
+	 * @param patient - the patient to retrieve conditions for
+	 * @throws APIException   
+	 * @return a list of the patient's conditions
+	 * @since 2.4.0
+	 */
+	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
+	List<Condition> getAllConditions(Patient patient) throws APIException;
+
 	/**
 	 * Gets a condition by id
 	 *
