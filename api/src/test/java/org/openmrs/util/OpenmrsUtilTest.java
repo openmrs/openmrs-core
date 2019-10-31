@@ -72,9 +72,10 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		authenticate();
-		
+
 		Context.getAdministrationService().saveGlobalProperty(luhnGP);
 	}
+
 	
 	/**
 	 * test the collection contains method
@@ -428,12 +429,11 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see OpenmrsUtil#containsonlyuppercase(String)
 	 */
 	@Test
-	public void containsUpperAndLowerCase_shouldReturnTrueIfStringContainsOnlyUpperCase() {
-		Assert.assertTrue(
-				OpenmrsUtil.containsUpperAndLowerCase("THIS IS THE TEST"));
-		Assert.assertFalse(OpenmrsUtil
-				.containsUpperAndLowerCase("this is the false test"));
-		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase(""));
+	public void containsUpperCase_shouldReturnIfStringContainsOnlyUpperCase() {
+
+		Assert.assertFalse(
+				OpenmrsUtil.containsUpperCaseOnly("this is the case"));
+
 	}
 
 	/**
