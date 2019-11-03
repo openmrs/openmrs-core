@@ -350,6 +350,38 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("tt.MM.uuuu", OpenmrsUtil.getDateFormat(Locale.GERMAN).toLocalizedPattern());
 		Assert.assertEquals("dd-MM-yyyy", OpenmrsUtil.getDateFormat(new Locale("pt", "pt")).toLocalizedPattern());
 	}
+	@Test
+	public void getDateFormat_shouldReturnTrueWhenDateIsNotNull() {
+		Date date = null;
+		try {
+			SimpleDateFormat sdf= new SimpleDateFormat(MM/dd/yyyy);
+			  date=sdf.parse(value);
+			  if(!value.equals(sdf.format(date))) {
+				  date=null;
+			  }
+			  
+		}catch(ParseException ex) {
+			ex.printStackTrace();
+		}
+		if(!date==null) {
+			
+		AssertTrue("isvalid -MM/dd/yyyy with 06/30/2019=true",OpenmrsUtil.getDateFormat(Locale.US).toLocalizedPattern);
+		}else {
+		AssertFalse("isInValid  - yyyy-mm-dd with 2019-06-30",OpenmrsUtil.getDtaeFormat(Locale.US).toLocalizedPattern);
+		}
+	}
+	/**
+	 * @see OpenmrsUtil#getTimeFormat(Locale)
+	 */
+	@Test
+	public void getTimeFormat_shouldAReturnPatternWithTwoHCharactersInIt() {
+		Assert.assertEquals("MM/dd/yyyy HH:mm:ss",OpenmrsUtil.getTimeFormat(Locale.US).toLocalizedPattern());
+		Assert.assertEquals("dd/MM/yyyy HH:mm:ss",OpenmrsUtils.getTimeFormat(Locale.UK).toLocalizedPattern());
+		Assert.assertEquals("tt.mm.uuuu HH:mm:ss",OpenmrsUtils.getTimeFormat(Locale.GERMAN).toLocalizedPattern());
+		Assert.assertEquals("dd-MM-yyyy"HH:mm:ss, OpenmrsUtil.getDateFormat(new Locale("pt", "pt")).toLocalizedPattern());
+	}
+	
+	
 	
 	/**
 	 * @see OpenmrsUtil#containsUpperAndLowerCase(String)
