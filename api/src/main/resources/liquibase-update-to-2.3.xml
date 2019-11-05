@@ -81,4 +81,43 @@
 								 referencedTableName="concept"
 								 referencedColumnNames="concept_id" />
     </changeSet>
+     <changeSet id="TRUNK-5663-20191002" author="gitacliff">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="conditions" columnName="date_changed"/>
+			</not>
+		</preConditions>
+		<comment>Adding "date_changed" column to conditions table</comment>
+		<addColumn tableName="conditions">
+			<column name="date_changed" type="DATETIME"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="TRUNK-5664-20191010" author="Wyclif">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="users_unused_fields" />
+			</not>
+		</preConditions>
+		<comment>Adding users_unused_fields table</comment>
+		<createTable tableName="users_unused_fields">
+			<column name="user_id" type="int" >
+				<constraints nullable="false" unique="true" />
+			</column>
+			<column name="name" type="varchar(1)" />
+			<column name="description" type="varchar(1)" />
+		</createTable>
+	</changeSet>
+	<changeSet id="TRUNK-5672-201910211105" author="Mritunjay">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(*) FROM users where username = 'admin'
+			</sqlCheck>
+		</preConditions>
+		<comment>Populate username for admin user</comment>
+		<update tableName="users">
+			<column name="username" value="admin"/>
+			<where>system_id='admin'</where>
+		</update>
+	</changeSet>
 </databaseChangeLog>

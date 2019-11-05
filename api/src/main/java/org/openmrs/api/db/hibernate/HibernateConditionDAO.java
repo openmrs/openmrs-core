@@ -103,6 +103,18 @@ public class HibernateConditionDAO implements ConditionDAO {
 		query.setInteger("patientId", patient.getId());
 		return query.list();
 	}
+
+	/**
+	 * @see ConditionService#getAllConditions(Patient)
+	 */
+	@Override
+	public List<Condition> getAllConditions(Patient patient) {
+		Query query = sessionFactory.getCurrentSession().createQuery(
+				"from Condition c where c.patient.patientId = :patientId and c.voided = false order "
+						+ "by c.onsetDate desc");
+		query.setInteger("patientId", patient.getId());
+		return query.list();
+	}
 	
 	/**
 	 * Removes a condition from the database

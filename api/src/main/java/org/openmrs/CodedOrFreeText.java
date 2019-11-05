@@ -9,22 +9,27 @@
  */
 package org.openmrs;
 
+import javax.persistence.Embeddable;
+import javax.persistence.ManyToOne;
+
 /**
  * A Concept object can represent either a question or an answer to a data point. That data point is
  * usually an {@link Obs}. <br>
  * <br>
  * ConceptName is the real world term used to express a Concept within the idiom of a particular
- * locale.
- * <br>
+ * locale. <br>
  * The purpose of this class therefore is to record information of a single encounter by taking the
  * concept and concept name or a string for a concept that may not be in the database.
  * 
  * @since 2.2
  */
+@Embeddable
 public class CodedOrFreeText {
 	
+	@ManyToOne
 	Concept coded;
 	
+	@ManyToOne
 	ConceptName specificName;
 	
 	String nonCoded;

@@ -19,7 +19,31 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Cacheable;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -35,6 +59,20 @@ import org.slf4j.LoggerFactory;
  * key-value pairs for either quick info or display specific info that needs to be persisted (like
  * locale preferences, search options, etc)
  */
+@Entity
+@Table(name = "users")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+/*
+*User inherits name and description properties from BaseOpenmrsMetadata but they don't exist in the users table since 
+*they are not used, because these field exist in BaseOpenmrsData and they are marked as persistent, hibernate generates 
+*a query containing these columns which of course fails to execute because of missing columns, so we introduce this 
+*dummy table containing these columns to 'please' hibernate until we fix the Class hierarchy see TRUNK-5665
+*/
+@SecondaryTable(name = "users_unused_fields")
+@AttributeOverrides({
+        @AttributeOverride(name = "name", column = @Column(table = "users_unused_fields", name = "name", insertable = false, updatable = false)),
+        @AttributeOverride(name = "description", column = @Column(table = "users_unused_fields", name = "description", insertable = false, updatable = false)) })
 public class User extends BaseChangeableOpenmrsMetadata implements java.io.Serializable, Attributable<User> {
 	
 	public static final long serialVersionUID = 2L;
@@ -42,23 +80,44 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	private static final Logger log = LoggerFactory.getLogger(User.class);
 	
 	// Fields
-	
+	@Id
+	@GeneratedValue
+	@Column(name = "user_id")
 	private Integer userId;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "person_id")
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@Cascade(CascadeType.SAVE_UPDATE)
 	private Person person;
 	
+	@Column(name = "system_id", nullable = false, length = 50)
 	private String systemId;
 	
+	@Column(length = 50)
 	private String username;
 	
+	@Column(unique = true)
 	private String email;
 	
+	@ManyToMany
+	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role"))
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.EVICT })
 	private Set<Role> roles;
 	
+	@ElementCollection
+	@CollectionTable(name = "user_property", joinColumns = @JoinColumn(name = "user_id", nullable = false))
+	@MapKeyColumn(name = "property", length = 100)
+	@Column(name = "property_value")
+	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.EVICT })
 	private Map<String, String> userProperties;
 	
+	@Transient
 	private List<Locale> proficientLocales = null;
 	
+	@Transient
 	private String parsedProficientLocalesProperty = "";
 	
 	// Constructors
@@ -87,9 +146,9 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	}
 	
 	/**
-	 * This method shouldn't be used directly. Use org.openmrs.api.context.Context#hasPrivilege so
-	 * that anonymous/authenticated/proxy privileges are all included Return true if this user has
-	 * the specified privilege
+	 * This method shouldn't be used directly. Use org.openmrs.api.context.Context#hasPrivilege so that
+	 * anonymous/authenticated/proxy privileges are all included Return true if this user has the
+	 * specified privilege
 	 * 
 	 * @param privilege
 	 * @return true/false depending on whether user has specified privilege
@@ -133,8 +192,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	 * @param r String name of a role to check
 	 * @param ignoreSuperUser If this is false, then this method will always return true for a
 	 *            superuser.
-	 * @return Returns true if the user has the given role, or if ignoreSuperUser is false and the
-	 *         user is a superUser
+	 * @return Returns true if the user has the given role, or if ignoreSuperUser is false and the user
+	 *         is a superUser
 	 */
 	public boolean hasRole(String r, boolean ignoreSuperUser) {
 		if (!ignoreSuperUser && isSuperUser()) {
@@ -156,7 +215,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	
 	/**
 	 * Checks if the user has a given role. Role name comparisons are not case sensitive.
-	 * @param  roleName the name of the role to check
+	 * 
+	 * @param roleName the name of the role to check
 	 * @return true if the user has the given role, else false
 	 * @should return true if the user has the given role
 	 * @should return false if the user does not have the given role
@@ -196,8 +256,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	// Property accessors
 	
 	/**
-	 * Returns all roles attributed to this user by expanding the role list to include the parents
-	 * of the assigned roles
+	 * Returns all roles attributed to this user by expanding the role list to include the parents of
+	 * the assigned roles
 	 * 
 	 * @return all roles (inherited from parents and given) for this user
 	 */
@@ -420,8 +480,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 		return email;
 	}
 	
- 	/**
- 	 * @since 2.2
+	/**
+	 * @since 2.2
 	 * @param email The email to set.
 	 */
 	public void setEmail(String email) {
@@ -467,8 +527,8 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	}
 	
 	/**
-	 * Get prop property from this user's properties. If prop is not found in properties, return
-	 * empty string
+	 * Get prop property from this user's properties. If prop is not found in properties, return empty
+	 * string
 	 * 
 	 * @param prop
 	 * @return property value
@@ -536,7 +596,7 @@ public class User extends BaseChangeableOpenmrsMetadata implements java.io.Seria
 	public Set<PersonName> getNames() {
 		return person.getNames();
 	}
-		
+	
 	/**
 	 * Returns a list of Locales for which the User is considered proficient.
 	 * 

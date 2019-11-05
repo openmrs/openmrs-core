@@ -101,48 +101,44 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	 * 
 	 * @since 2.2
 	 * @param role the role to set
-	 *                
 	 */
-	public void setRole(Concept role){
+	public void setRole(Concept role) {
 		this.role = role;
 	}
-
+	
 	/**
 	 * Gets the role concept
 	 * 
 	 * @since 2.2
 	 * @return the role
-	 * 
 	 */
-	public Concept getRole(){
+	public Concept getRole() {
 		return role;
 	}
-
+	
 	/**
 	 * Sets the speciality concept
 	 * 
 	 * @since 2.2
-	 * @param speciality the speciality to set 
+	 * @param speciality the speciality to set
 	 */
-	public void setSpeciality(Concept speciality){
+	public void setSpeciality(Concept speciality) {
 		this.speciality = speciality;
 	}
-
+	
 	/**
 	 * Gets the speciality concept
 	 * 
 	 * @since 2.2
 	 * @return the speciality
 	 */
-	public Concept getSpeciality(){
+	public Concept getSpeciality() {
 		return speciality;
 	}
 	
 	@Override
 	public String toString() {
-		String provider = String.valueOf(providerId)
-				+ " providerName:"
-				+ ((person != null) ? person.getNames() : "");
+		String provider = String.valueOf(providerId) + " providerName:" + ((person != null) ? person.getNames() : "");
 		return "[Provider: providerId:" + provider + " ]";
 	}
 	

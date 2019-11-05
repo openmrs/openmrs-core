@@ -9,17 +9,30 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * Represent allergen
  */
+@Embeddable
 public class Allergen {
 	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "allergen_type")
 	private AllergenType allergenType;
 	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "coded_allergen")
 	private Concept codedAllergen;
 	
+	@Column(name = "non_coded_allergen")
 	private String nonCodedAllergen;
 	
 	private static String OTHER_NON_CODED_CONCEPT_UUID;

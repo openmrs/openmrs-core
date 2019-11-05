@@ -105,9 +105,19 @@ public class ConditionServiceImplTest extends BaseContextSensitiveTest {
 	@Test
 	public void getActiveConditions_shouldGetActiveConditions() {
 		List<Condition> activeConditions = conditionService.getActiveConditions(patientService.getPatient(2));
-		Assert.assertTrue(activeConditions.size() == 2);
+		Assert.assertTrue(activeConditions.size() == 1);
 		Assert.assertEquals("2cc6880e-2c46-11e4-9138-a6c5e4d20fb7",activeConditions.get(0).getUuid());
-		Assert.assertEquals("2cc6880e-2c46-15e4-9038-a6c5e4d22fb7", activeConditions.get(1).getUuid());
+	}
+
+    /**
+	 * @see ConditionService#getAllConditions(Patient)
+	 */
+	@Test
+	public void getAllConditions_shouldGetAllConditions() {
+		List<Condition> conditions = conditionService.getAllConditions(patientService.getPatient(2));
+		Assert.assertTrue(conditions.size() == 2);
+		Assert.assertEquals("2cc6880e-2c46-11e4-9138-a6c5e4d20fb7",conditions.get(0).getUuid());
+		Assert.assertEquals("2cc6880e-2c46-15e4-9038-a6c5e4d22fb7",conditions.get(1).getUuid());
 	}
 	
 	

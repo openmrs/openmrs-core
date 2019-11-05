@@ -54,6 +54,11 @@ public interface ConditionDAO {
 	List<Condition> getActiveConditions(Patient patient);
 
 	/**
+	 * @see ConditionService#getAllConditions(Patient)
+	 */
+	List<Condition> getAllConditions(Patient patient);
+
+	/**
 	 * Gets a condition by id
 	 *
 	 * @param conditionId the id of the condition to return
