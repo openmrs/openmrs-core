@@ -49,7 +49,7 @@ public class OrderSearchCriteria {
 	/**
 	 * Matches on dateStopped that is any time on this date or less
 	 */
-	private final Date dateStoppedOnOrBeforeDate;
+	private final boolean isStopped;
 
 	/**
 	 * All canceled or auto expired orders before date
@@ -82,7 +82,7 @@ public class OrderSearchCriteria {
 	 */
 	public OrderSearchCriteria(Patient patient, CareSetting careSetting, Collection<Concept> concepts, 
 							   Collection<OrderType> orderTypes, Date activatedOnOrBeforeDate, 
-							   Date activatedOnOrAfterDate, Date dateStoppedOnOrBeforeDate, Date autoExpireOnOrBeforeDate,
+							   Date activatedOnOrAfterDate, boolean isStopped, Date autoExpireOnOrBeforeDate,
 							   Date canceledOrExpiredOnOrBeforeDate,
 							   Order.Action action,
 							   Order.FulfillerStatus fulfillerStatus,
@@ -93,7 +93,7 @@ public class OrderSearchCriteria {
 		this.orderTypes = orderTypes;
 		this.activatedOnOrBeforeDate = activatedOnOrBeforeDate;
 		this.activatedOnOrAfterDate = activatedOnOrAfterDate;
-		this.dateStoppedOnOrBeforeDate = dateStoppedOnOrBeforeDate;
+		this.isStopped = isStopped;
 		this.autoExpireOnOrBeforeDate = autoExpireOnOrBeforeDate;
 		this.canceledOrExpiredOnOrBeforeDate = canceledOrExpiredOnOrBeforeDate;
 		this.action = action;
@@ -136,8 +136,8 @@ public class OrderSearchCriteria {
 	 *
 	 * @return orders must have dateStopped on or before this date
 	 */
-	public Date getDateStoppedOnOrBeforeDate() {
-		return dateStoppedOnOrBeforeDate;
+	public boolean isStopped() {
+		return isStopped;
 	}
 
 	/**

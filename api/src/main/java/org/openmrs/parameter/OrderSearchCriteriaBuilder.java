@@ -33,7 +33,7 @@ public class OrderSearchCriteriaBuilder {
 
 	private Date activatedOnOrAfterDate;
 
-	private Date dateStoppedOnOrBeforeDate;
+	private boolean isStopped;
 
 	private Date autoExpireOnOrBeforeDate;
 
@@ -103,11 +103,11 @@ public class OrderSearchCriteriaBuilder {
 
 	/**
 	 *
-	 * @param dateStoppedOnOrBeforeDate
+	 * @param isStopped
 	 * @return this builde instance
 	 */
-	public OrderSearchCriteriaBuilder setDateStoppedOnOrBeforeDate(Date dateStoppedOnOrBeforeDate) {
-		this.dateStoppedOnOrBeforeDate = dateStoppedOnOrBeforeDate;
+	public OrderSearchCriteriaBuilder setIsStopped(boolean isStopped) {
+		this.isStopped = isStopped;
 		return (this);
 	}
 
@@ -172,7 +172,7 @@ public class OrderSearchCriteriaBuilder {
 	 */
 	public OrderSearchCriteria build() {
 		return new OrderSearchCriteria(patient, careSetting, concepts, orderTypes, activatedOnOrBeforeDate,  
-			activatedOnOrAfterDate, dateStoppedOnOrBeforeDate, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
+			activatedOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
 				action, fulfillerStatus, excludeCanceledAndExpired, includeVoided);
 	}
 }

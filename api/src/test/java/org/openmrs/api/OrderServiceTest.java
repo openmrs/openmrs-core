@@ -2052,6 +2052,91 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#(OrderSearchCriteria)
 	 */
 	@Test
+	public void getOrders_shouldGetStoppedOrders() {
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setIsStopped(true).build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(4, orders.size());
+		for (Order order : orders) {
+			assertNotNull(order.getDateStopped());
+		}
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldReturnOrdersAutoExpiredBeforeDate() {
+		Date autoExpireOnOrBeforeDate = new GregorianCalendar(2008, 9, 30).getTime();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setAutoExpireOnOrBeforeDate(autoExpireOnOrBeforeDate).build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(4, orders.size());
+		for (Order order : orders) {
+			assertNotNull(order.getAutoExpireDate());
+			assertTrue(autoExpireOnOrBeforeDate.after(order.getAutoExpireDate()));
+		}
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldReturnOnlyCanceledOrAutoExpiredOrdersBeforeDate() {
+		Date canceledOrExpiredOnOrBeforeDate = new GregorianCalendar(2008, 9, 30).getTime();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setCanceledOrExpiredOnOrBeforeDate(canceledOrExpiredOnOrBeforeDate).build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(7, orders.size());
+		for (Order order : orders) {
+			assertTrue((order.getDateStopped() != null && order.getDateStopped().before(canceledOrExpiredOnOrBeforeDate))
+					|| ( order.getAutoExpireDate() != null && order.getAutoExpireDate().before(canceledOrExpiredOnOrBeforeDate)) );
+		}
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldNotReturnCanceledOrAutoExpiredOrders() {
+		Date today = Calendar.getInstance().getTime();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setExcludeCanceledAndExpired(true).build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(6, orders.size());
+		for (Order order : orders) {
+			assertTrue(  (order.getDateStopped() == null || ( order.getDateStopped() != null && order.getDateStopped().after(today) ) ) &&
+					( order.getAutoExpireDate() == null || (order.getAutoExpireDate() != null && order.getAutoExpireDate().after(today) ))
+			);
+		}
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldreturnOrdersWithFulfillerStatusCompleted() {
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setFulfillerStatus(Order.FulfillerStatus.valueOf("COMPLETED")).build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(1, orders.size());
+		for (Order order : orders) {
+			assertTrue(order.getFulfillerStatus() == Order.FulfillerStatus.COMPLETED );
+		}
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
+	public void getOrders_shouldreturnDiscontinuedOrders() {
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setAction(Order.Action.valueOf("DISCONTINUE")).build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(2, orders.size());
+		for (Order order : orders) {
+			assertTrue(order.getAction() == Action.DISCONTINUE );
+		}
+	}
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
 	public void getOrders_shouldGetOrdersByCareSetting() {
 		CareSetting outPatient = orderService.getCareSetting(1);
 		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setCareSetting(outPatient).build();
