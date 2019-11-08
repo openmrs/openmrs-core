@@ -183,6 +183,35 @@ public class HibernateOrderDAO implements OrderDAO {
 			cal.setTime(searchCriteria.getActivatedOnOrAfterDate());
 			crit.add(Restrictions.ge("dateActivated", OpenmrsUtil.firstSecondOfDay(cal.getTime())));
 		}
+		if (searchCriteria.getDateStoppedOnOrBeforeDate() != null) {
+			// an order is considered Canceled regardless of the time when the dateStopped was set
+			crit.add(Restrictions.isNotNull("dateStopped"));
+		}
+		if (searchCriteria.getAutoExpireOnOrBeforeDate() != null) {
+			// set the date's time to the last millisecond of the date
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(searchCriteria.getAutoExpireOnOrBeforeDate());
+			crit.add(Restrictions.le("autoExpireDate", OpenmrsUtil.getLastMomentOfDay(cal.getTime())));
+		}
+        if (searchCriteria.getAction() != null) {
+            crit.add(Restrictions.eq("action", searchCriteria.getAction()));
+        }
+		if (searchCriteria.getFulfillerStatus() != null) {
+			crit.add(Restrictions.eq("fulfillerStatus", searchCriteria.getFulfillerStatus()));
+		}
+		if (searchCriteria.getExcludeCanceledAndExpired() == true) {
+			Calendar cal = Calendar.getInstance();
+			// exclude expired orders (include only orders with autoExpireDate = null or autoExpireDate in the future)
+			crit.add(Restrictions.or(Restrictions.isNull("autoExpireDate"), Restrictions.gt("autoExpireDate", OpenmrsUtil.getLastMomentOfDay(cal.getTime()))));
+			// exclude Canceled Orders
+			crit.add(Restrictions.isNull("dateStopped"));
+		}
+		if (searchCriteria.getCanceledOrExpiredOnOrBeforeDate() != null) {
+			// set the date's time to the last millisecond of the date
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(searchCriteria.getCanceledOrExpiredOnOrBeforeDate());
+			crit.add(Restrictions.or(Restrictions.isNotNull("dateStopped"), Restrictions.le("autoExpireDate", OpenmrsUtil.getLastMomentOfDay(cal.getTime()))));
+		}
 		if (!searchCriteria.getIncludeVoided()) {
 			crit.add(Restrictions.eq("voided", false));
 		}
