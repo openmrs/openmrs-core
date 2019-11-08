@@ -9,10 +9,7 @@
  */
 package org.openmrs.parameter;
 
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.OrderType;
-import org.openmrs.Patient;
+import org.openmrs.*;
 
 import java.util.Collection;
 import java.util.Date;
@@ -35,6 +32,18 @@ public class OrderSearchCriteriaBuilder {
 	private Date activatedOnOrBeforeDate;
 
 	private Date activatedOnOrAfterDate;
+
+	private boolean isStopped;
+
+	private Date autoExpireOnOrBeforeDate;
+
+	private Date canceledOrExpiredOnOrBeforeDate;
+
+	private Order.Action action;
+
+	private Order.FulfillerStatus fulfillerStatus;
+
+	private boolean excludeCanceledAndExpired;
 
 	private boolean includeVoided;
 
@@ -93,6 +102,62 @@ public class OrderSearchCriteriaBuilder {
 	}
 
 	/**
+	 *
+	 * @param isStopped
+	 * @return this builde instance
+	 */
+	public OrderSearchCriteriaBuilder setIsStopped(boolean isStopped) {
+		this.isStopped = isStopped;
+		return (this);
+	}
+
+	/**
+	 * 
+	 * @param autoExpireOnOrBeforeDate
+	 * @return this builder instance
+	 */
+	public OrderSearchCriteriaBuilder setAutoExpireOnOrBeforeDate(Date autoExpireOnOrBeforeDate) {
+		this.autoExpireOnOrBeforeDate = autoExpireOnOrBeforeDate;
+		return (this);
+	}
+
+	/**
+	 *
+	 * @param canceledOrExpiredOnOrBeforeDate
+	 * @return this builder instance
+	 */
+	public OrderSearchCriteriaBuilder setCanceledOrExpiredOnOrBeforeDate(Date canceledOrExpiredOnOrBeforeDate) {
+		this.canceledOrExpiredOnOrBeforeDate = canceledOrExpiredOnOrBeforeDate;
+		return (this);
+	}
+
+	/**
+     *
+     * @param action
+     * @return this builder instance
+     */
+    public OrderSearchCriteriaBuilder setAction(Order.Action action) {
+        this.action = action;
+        return (this);
+    }
+
+    /**
+	 *
+	 * @param fulfillerStatus
+	 * @return this builder instance
+	 */
+	public OrderSearchCriteriaBuilder setFulfillerStatus(Order.FulfillerStatus fulfillerStatus) {
+		this.fulfillerStatus = fulfillerStatus;
+		return (this);
+	}
+
+
+	public OrderSearchCriteriaBuilder setExcludeCanceledAndExpired(boolean excludeCanceledAndExpired) {
+		this.excludeCanceledAndExpired = excludeCanceledAndExpired;
+		return (this);
+	}
+
+	/**
 	 * @param includeVoided whether to include the voided orders or not
 	 * @return this builder instance
 	 */
@@ -107,7 +172,8 @@ public class OrderSearchCriteriaBuilder {
 	 */
 	public OrderSearchCriteria build() {
 		return new OrderSearchCriteria(patient, careSetting, concepts, orderTypes, activatedOnOrBeforeDate,  
-			activatedOnOrAfterDate, includeVoided);
+			activatedOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
+				action, fulfillerStatus, excludeCanceledAndExpired, includeVoided);
 	}
 }
 
