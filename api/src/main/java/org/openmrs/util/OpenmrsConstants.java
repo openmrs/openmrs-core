@@ -618,6 +618,11 @@ public final class OpenmrsConstants {
 	 * Global property that stores the base url for the application.
 	 */
 	public static final String GP_HOST_URL = "host.url";
+
+	/**
+	 * @since 2.4
+	 */
+	public static final String GP_LUCENE_SEARCH_FILTERS = "search.filters";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
@@ -707,6 +712,13 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_HOST_URL, "",
 		        "The URL to redirect to after requesting for a password reset. Always provide a place holder in this url with name {activationKey}, it will get substituted by the actual activation key."));
 		
+		props.add(new GlobalProperty(GP_LUCENE_SEARCH_FILTERS, 
+			"org.apache.lucene.analysis.core.LowerCaseFilterFactory,org.apache.lucene.analysis.standard.ClassicFilterFactory,org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilterFactory",
+			"A comma-separated list of Java classes extending TokenFilterFactory. Look for classes with " +
+				"names ending in 'FilterFactory' in " +
+				"https://lucene.apache.org/core/4_10_0/analyzers-common/index.html?org/apache/lucene/analysis/miscellaneous/ASCIIFoldingFilter.html\n" +
+				"After changing this, you must perform a reindex (see 'Search Index' in the Admin interface)."));
+
 		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
 		props.add(new GlobalProperty("concept.height", "5090", "Concept id of the concept defining the HEIGHT concept"));
 
