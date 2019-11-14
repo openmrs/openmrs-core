@@ -22,10 +22,7 @@ import org.hibernate.FlushMode;
 import org.hibernate.LockOptions;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.CareSetting;
@@ -196,9 +193,27 @@ public class HibernateOrderDAO implements OrderDAO {
         if (searchCriteria.getAction() != null) {
             crit.add(Restrictions.eq("action", searchCriteria.getAction()));
         }
-		if (searchCriteria.getFulfillerStatus() != null) {
-			crit.add(Restrictions.eq("fulfillerStatus", searchCriteria.getFulfillerStatus()));
+        SimpleExpression fulfillerStatusExpr = null;
+        if (searchCriteria.getFulfillerStatus() != null) {
+            fulfillerStatusExpr = Restrictions.eq("fulfillerStatus", searchCriteria.getFulfillerStatus());
 		}
+        Criterion fulfillerStatusCriteria = null;
+        if (searchCriteria.getIncludeNullFufillerStatus() != null ) {
+            if (searchCriteria.getIncludeNullFufillerStatus().booleanValue() == true ) {
+                fulfillerStatusCriteria = Restrictions.isNull("fulfillerStatus");
+            } else {
+                fulfillerStatusCriteria = Restrictions.isNotNull("fulfillerStatus");
+            }
+        }
+
+        if (fulfillerStatusExpr != null && fulfillerStatusCriteria != null) {
+            crit.add(Restrictions.or(fulfillerStatusExpr, fulfillerStatusCriteria));
+        } else if (fulfillerStatusExpr != null) {
+            crit.add(fulfillerStatusExpr);
+        } else if ( fulfillerStatusCriteria != null ){
+            crit.add(fulfillerStatusCriteria);
+        }
+
 		if (searchCriteria.getExcludeCanceledAndExpired() == true) {
 			Calendar cal = Calendar.getInstance();
 			// exclude expired orders (include only orders with autoExpireDate = null or autoExpireDate in the future)

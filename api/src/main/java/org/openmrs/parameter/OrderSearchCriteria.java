@@ -61,6 +61,14 @@ public class OrderSearchCriteria {
 	 */
 	private final Order.FulfillerStatus fulfillerStatus;
 
+	/**
+	 * Matches on orders with fulfiller_status = null
+	 * This parameter could work in conjunction with fulfillerStatus.
+	 *  If fulfillerStatus is specified then includeNullFufillerStatus=true would include
+	 *  all orders where fulfillerStatus=null OR fulfillerStatus = specified value
+	 */
+	private final Boolean includeNullFufillerStatus;
+
     /**
      * Matches on action
      */
@@ -86,6 +94,7 @@ public class OrderSearchCriteria {
 							   Date canceledOrExpiredOnOrBeforeDate,
 							   Order.Action action,
 							   Order.FulfillerStatus fulfillerStatus,
+							   Boolean includeNullFufillerStatus,
 							   boolean excludeCanceledAndExpired, boolean includeVoided) {
 		this.patient = patient;
 		this.careSetting = careSetting;
@@ -98,6 +107,7 @@ public class OrderSearchCriteria {
 		this.canceledOrExpiredOnOrBeforeDate = canceledOrExpiredOnOrBeforeDate;
 		this.action = action;
 		this.fulfillerStatus = fulfillerStatus;
+		this.includeNullFufillerStatus = includeNullFufillerStatus;
 		this.excludeCanceledAndExpired = excludeCanceledAndExpired;
 		this.includeVoided = includeVoided;
 	}
@@ -170,6 +180,14 @@ public class OrderSearchCriteria {
 	 */
 	public Order.FulfillerStatus getFulfillerStatus() {
 		return fulfillerStatus;
+	}
+
+	/**
+	 *
+	 * @return include(OR) orders with fulfiller_status = null
+	 */
+	public Boolean getIncludeNullFufillerStatus() {
+		return includeNullFufillerStatus;
 	}
 
 	public boolean getExcludeCanceledAndExpired() {
