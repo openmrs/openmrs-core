@@ -100,6 +100,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String FIND_PATIENTS_XML = "org/openmrs/api/include/PatientServiceTest-findPatients.xml";
 	
+	protected static final String FIND_PATIENTS_ACCENTS_XML = "org/openmrs/api/include/PatientServiceTest-findPatientsAccents.xml";
+	
 	private static final String PATIENT_RELATIONSHIPS_XML = "org/openmrs/api/include/PersonServiceTest-createRelationship.xml";
 	
 	private static final String ENCOUNTERS_FOR_VISITS_XML = "org/openmrs/api/include/PersonServiceTest-encountersForVisits.xml";
@@ -748,7 +750,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see PatientService#getPatients(String,String,List<QPatientIdentifierType ;>,null)
+	 * @see PatientService#getPatients(String, String, List, boolean) 
 	 */
 	@Test
 	public void getPatients_shouldSearchFamilyName2WithName() throws Exception {
@@ -1136,7 +1138,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see PatientService#getAllPatientIdentifierTypes(null)
+	 * @see PatientService#getAllPatientIdentifierTypes(boolean) 
 	 */
 	@Test
 	public void getAllPatientIdentifierTypes_shouldFetchPatientIdentifierTypesIncludingRetiredWhenIncludeRetiredIsTrue()
@@ -1156,7 +1158,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see PatientService#getAllPatientIdentifierTypes(null)
+	 * @see PatientService#getAllPatientIdentifierTypes(boolean)
 	 */
 	@Test
 	public void getAllPatientIdentifierTypes_shouldFetchPatientIdentifierTypesExcludingRetiredWhenIncludeRetiredIsFalse()
@@ -1945,6 +1947,54 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		    patients.contains(patientService.getPatient(3)));
 	}
 	
+	@SkipBaseSetup
+	@Test
+	public void getPatients_shouldIgnoreAccentsWhenMatchingName() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet(FIND_PATIENTS_ACCENTS_XML);
+		authenticate();
+		updateSearchIndex();
+		
+		List<Patient> patients = patientService.getPatients("Jose", null, null, false);
+		assertTrue("search term without accent did not find patient first name with accent",
+			patients.contains(patientService.getPatient(202)));
+		assertTrue("search term without accent did not find patient middle name with accent",
+			patients.contains(patientService.getPatient(205)));
+		
+		patients = patientService.getPatients("Úrsula", null, null, false);
+		assertTrue("search term with accent did not find matching name",
+			patients.contains(patientService.getPatient(203)));
+		assertTrue("search term with accent did not find matching name",
+			patients.contains(patientService.getPatient(204)));
+
+		patients = patientService.getPatients("Ho Xuan Huong", null, null, false);
+		assertTrue("three-term search did not find Vietnamese-accented name",
+			patients.contains(patientService.getPatient(208)));
+		
+		patients = patientService.getPatients("Hưong", null, null, false);
+		assertTrue("did not find a name with a partially accented search term",
+			patients.contains(patientService.getPatient(208)));
+
+		patients = patientService.getPatients("Ὀδυσσεύς", null, null, false);
+		assertTrue("did not find a Greek name that should have matched exactly",
+			patients.contains(patientService.getPatient(207)));
+		
+		// This is more to document behavior than to assert that this should necessarily behave this way
+		patients = patientService.getPatients("Amarantá", null, null, false);
+		assertFalse("unexpectedly found a patient using a search term with an extraneous accent",
+			patients.contains(patientService.getPatient(204)));
+
+		// This is more to document behavior than to assert that this should necessarily behave this way
+		patients = patientService.getPatients("Οδυσσευς", null, null, false);
+		assertFalse("unexpectedly found an accented Greek name by searching for its un-accented equivalent",
+			patients.contains(patientService.getPatient(207)));
+
+		// This is more to document behavior than to assert that this should necessarily behave this way
+		patients = patientService.getPatients("Dost", null, null, false);
+		assertFalse("unexpectedly found a Russian name with an ASCII search",
+			patients.contains(patientService.getPatient(209)));
+	}
+
 	@SkipBaseSetup
 	@Test
 	public void purgePatient_shouldDeletePatientFromDatabase() throws Exception {
