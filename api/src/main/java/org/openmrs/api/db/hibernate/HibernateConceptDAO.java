@@ -2044,6 +2044,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 	}
 
+	@Override
+	public List<Concept> getConceptsByClass(ConceptClass conceptClass) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Concept.class);
+		return criteria.add(Restrictions.eq("conceptClass", conceptClass)).list();	
+	}
+	
 	private Criteria createSearchDrugByMappingCriteria(String code, ConceptSource conceptSource, boolean includeRetired) {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		searchCriteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE);

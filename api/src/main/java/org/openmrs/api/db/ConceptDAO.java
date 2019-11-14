@@ -654,4 +654,6 @@ public interface ConceptDAO {
 	 * @see ConceptService#hasAnyConceptAttribute(ConceptAttributeType)
 	 */
 	public long getConceptAttributeCount(ConceptAttributeType conceptAttributeType);
+
+	List<Concept> getConceptsByClass(ConceptClass conceptClass);
 }

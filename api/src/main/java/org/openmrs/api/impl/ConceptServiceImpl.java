@@ -554,11 +554,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<Concept> getConceptsByClass(ConceptClass cc) {
-		List<ConceptClass> classes = new ArrayList<>();
-		classes.add(cc);
-		
-		return getConcepts(null, null, false, classes, null);
+	public List<Concept> getConceptsByClass(ConceptClass cc) {		
+		return dao.getConceptsByClass(cc);
 	}
 	
 	/**

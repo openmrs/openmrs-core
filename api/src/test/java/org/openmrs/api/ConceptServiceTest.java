@@ -2245,9 +2245,28 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see ConceptService#getConceptsByClass(ConceptClass)
 	 */
 	@Test
-	public void getConceptsByClass_shouldNotFailDueToNoNameInSearch() {
-		ConceptService cs = Context.getConceptService();
-		cs.getConceptsByClass(cs.getConceptClass(1));
+	public void getConceptsByClass_shouldGetConceptsByClass() {				
+		// replay
+		List<Concept> actualConcepts = conceptService.getConceptsByClass(new ConceptClass(3));
+		
+		// verify
+		Assert.assertThat(actualConcepts.size(), is(4));
+		Assert.assertThat(actualConcepts, containsInAnyOrder(conceptService.getConcept(3), conceptService.getConcept(60), conceptService.getConcept(88), conceptService.getConcept(792)));
+	}
+	
+	/**
+	 * @see ConceptService#getConceptsByClass(ConceptClass)
+	 */
+	@Test
+	public void getConceptsByClass_shouldReturnAnEmptyListIfNoneWasFound() {
+		// setup
+		ConceptClass cc = new ConceptClass(23);
+		
+		// replay
+		List<Concept> concepts = conceptService.getConceptsByClass(cc);
+		
+		// verify
+		Assert.assertTrue(concepts.isEmpty());
 	}
 	
 	/**
