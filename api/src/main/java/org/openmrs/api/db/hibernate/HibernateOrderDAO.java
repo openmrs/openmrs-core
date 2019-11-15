@@ -202,8 +202,8 @@ public class HibernateOrderDAO implements OrderDAO {
             fulfillerStatusExpr = Restrictions.eq("fulfillerStatus", searchCriteria.getFulfillerStatus());
 		}
         Criterion fulfillerStatusCriteria = null;
-        if (searchCriteria.getIncludeNullFufillerStatus() != null ) {
-            if (searchCriteria.getIncludeNullFufillerStatus().booleanValue() == true ) {
+        if (searchCriteria.getIncludeNullFulfillerStatus() != null ) {
+            if (searchCriteria.getIncludeNullFulfillerStatus().booleanValue() == true ) {
                 fulfillerStatusCriteria = Restrictions.isNull("fulfillerStatus");
             } else {
                 fulfillerStatusCriteria = Restrictions.isNotNull("fulfillerStatus");

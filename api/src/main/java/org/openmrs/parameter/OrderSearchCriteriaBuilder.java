@@ -43,7 +43,7 @@ public class OrderSearchCriteriaBuilder {
 
 	private Order.FulfillerStatus fulfillerStatus;
 
-	private Boolean includeNullFufillerStatus;
+	private Boolean includeNullFulfillerStatus;
 
 	private boolean excludeCanceledAndExpired;
 
@@ -155,11 +155,11 @@ public class OrderSearchCriteriaBuilder {
 
 	/**
 	 *
-	 * @param includeNullFufillerStatus
+	 * @param includeNullFulfillerStatus
 	 * @return
 	 */
-	public OrderSearchCriteriaBuilder setIncludeNullFufillerStatus(Boolean includeNullFufillerStatus) {
-		this.includeNullFufillerStatus = includeNullFufillerStatus;
+	public OrderSearchCriteriaBuilder setIncludeNullFulfillerStatus(Boolean includeNullFulfillerStatus) {
+		this.includeNullFulfillerStatus = includeNullFulfillerStatus;
 		return (this);
 	}
 
@@ -184,7 +184,7 @@ public class OrderSearchCriteriaBuilder {
 	public OrderSearchCriteria build() {
 		return new OrderSearchCriteria(patient, careSetting, concepts, orderTypes, activatedOnOrBeforeDate,  
 			activatedOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
-				action, fulfillerStatus, includeNullFufillerStatus, excludeCanceledAndExpired, includeVoided);
+				action, fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, includeVoided);
 	}
 }
 
