@@ -26,6 +26,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.CareSetting;
@@ -182,6 +183,63 @@ public class HibernateOrderDAO implements OrderDAO {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(searchCriteria.getActivatedOnOrAfterDate());
 			crit.add(Restrictions.ge("dateActivated", OpenmrsUtil.firstSecondOfDay(cal.getTime())));
+		}
+		if (searchCriteria.isStopped()) {
+			// an order is considered Canceled regardless of the time when the dateStopped was set
+			crit.add(Restrictions.isNotNull("dateStopped"));
+		}
+		if (searchCriteria.getAutoExpireOnOrBeforeDate() != null) {
+			// set the date's time to the last millisecond of the date
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(searchCriteria.getAutoExpireOnOrBeforeDate());
+			crit.add(Restrictions.le("autoExpireDate", OpenmrsUtil.getLastMomentOfDay(cal.getTime())));
+		}
+        if (searchCriteria.getAction() != null) {
+            crit.add(Restrictions.eq("action", searchCriteria.getAction()));
+        }
+        SimpleExpression fulfillerStatusExpr = null;
+        if (searchCriteria.getFulfillerStatus() != null) {
+            fulfillerStatusExpr = Restrictions.eq("fulfillerStatus", searchCriteria.getFulfillerStatus());
+		}
+        Criterion fulfillerStatusCriteria = null;
+        if (searchCriteria.getIncludeNullFulfillerStatus() != null ) {
+            if (searchCriteria.getIncludeNullFulfillerStatus().booleanValue() == true ) {
+                fulfillerStatusCriteria = Restrictions.isNull("fulfillerStatus");
+            } else {
+                fulfillerStatusCriteria = Restrictions.isNotNull("fulfillerStatus");
+            }
+        }
+
+        if (fulfillerStatusExpr != null && fulfillerStatusCriteria != null) {
+            crit.add(Restrictions.or(fulfillerStatusExpr, fulfillerStatusCriteria));
+        } else if (fulfillerStatusExpr != null) {
+            crit.add(fulfillerStatusExpr);
+        } else if ( fulfillerStatusCriteria != null ){
+            crit.add(fulfillerStatusCriteria);
+        }
+
+		if (searchCriteria.getExcludeCanceledAndExpired() == true) {
+			Calendar cal = Calendar.getInstance();
+			// exclude expired orders (include only orders with autoExpireDate = null or autoExpireDate in the future)
+			crit.add(Restrictions.or(
+					Restrictions.isNull("autoExpireDate"),
+					Restrictions.gt("autoExpireDate", cal.getTime())));
+			// exclude Canceled Orders
+			crit.add(Restrictions.or(
+					Restrictions.isNull("dateStopped"),
+					Restrictions.gt("dateStopped", cal.getTime())));
+		}
+		if (searchCriteria.getCanceledOrExpiredOnOrBeforeDate() != null) {
+			// set the date's time to the last millisecond of the date
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(searchCriteria.getCanceledOrExpiredOnOrBeforeDate());
+			crit.add(Restrictions.or(
+					Restrictions.and(
+							Restrictions.isNotNull("dateStopped"),
+							Restrictions.le("dateStopped", OpenmrsUtil.getLastMomentOfDay(cal.getTime()))),
+					Restrictions.and(
+							Restrictions.isNotNull("autoExpireDate"),
+							Restrictions.le("autoExpireDate", OpenmrsUtil.getLastMomentOfDay(cal.getTime())))));
 		}
 		if (!searchCriteria.getIncludeVoided()) {
 			crit.add(Restrictions.eq("voided", false));
