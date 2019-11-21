@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import static org.openmrs.Order.Action.DISCONTINUE;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -196,6 +198,11 @@ public class HibernateOrderDAO implements OrderDAO {
 		}
         if (searchCriteria.getAction() != null) {
             crit.add(Restrictions.eq("action", searchCriteria.getAction()));
+        }
+        if (searchCriteria.getExcludeDiscontinueOrders() == true) {
+            crit.add(Restrictions.or(
+                    Restrictions.ne("action", Order.Action.DISCONTINUE),
+                    Restrictions.isNull("action")));
         }
         SimpleExpression fulfillerStatusExpr = null;
         if (searchCriteria.getFulfillerStatus() != null) {

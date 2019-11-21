@@ -82,6 +82,8 @@ public class OrderSearchCriteria {
 
 	private final boolean excludeCanceledAndExpired;
 
+	private final boolean excludeDiscontinueOrders;
+
 	/**
 	 * Instead of calling this constructor directly, it is recommended to use {@link OrderSearchCriteriaBuilder}.
 	 * @param patient the patient the order is for
@@ -99,7 +101,9 @@ public class OrderSearchCriteria {
 							   Order.Action action,
 							   Order.FulfillerStatus fulfillerStatus,
 							   Boolean includeNullFulfillerStatus,
-							   boolean excludeCanceledAndExpired, boolean includeVoided) {
+							   boolean excludeCanceledAndExpired,
+							   boolean excludeDiscontinueOrders,
+							   boolean includeVoided) {
 		this.patient = patient;
 		this.careSetting = careSetting;
 		this.concepts = concepts;
@@ -113,6 +117,7 @@ public class OrderSearchCriteria {
 		this.fulfillerStatus = fulfillerStatus;
 		this.includeNullFulfillerStatus = includeNullFulfillerStatus;
 		this.excludeCanceledAndExpired = excludeCanceledAndExpired;
+		this.excludeDiscontinueOrders = excludeDiscontinueOrders;
 		this.includeVoided = includeVoided;
 	}
 
@@ -196,6 +201,11 @@ public class OrderSearchCriteria {
 
 	public boolean getExcludeCanceledAndExpired() {
 		return excludeCanceledAndExpired;
+	}
+
+
+	public boolean getExcludeDiscontinueOrders() {
+		return excludeDiscontinueOrders;
 	}
 
 	/**
