@@ -51,6 +51,8 @@ public class OrderSearchCriteriaBuilder {
 
 	private boolean excludeCanceledAndExpired;
 
+	private boolean excludeDiscontinueOrders;
+
 	private boolean includeVoided;
 
 	/**
@@ -172,6 +174,11 @@ public class OrderSearchCriteriaBuilder {
 		return (this);
 	}
 
+	public OrderSearchCriteriaBuilder setExcludeDiscontinueOrders(boolean excludeDiscontinueOrders) {
+		this.excludeDiscontinueOrders = excludeDiscontinueOrders;
+		return (this);
+	}
+
 	/**
 	 * @param includeVoided whether to include the voided orders or not
 	 * @return this builder instance
@@ -188,7 +195,7 @@ public class OrderSearchCriteriaBuilder {
 	public OrderSearchCriteria build() {
 		return new OrderSearchCriteria(patient, careSetting, concepts, orderTypes, activatedOnOrBeforeDate,  
 			activatedOnOrAfterDate, isStopped, autoExpireOnOrBeforeDate, canceledOrExpiredOnOrBeforeDate,
-				action, fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, includeVoided);
+				action, fulfillerStatus, includeNullFulfillerStatus, excludeCanceledAndExpired, excludeDiscontinueOrders, includeVoided);
 	}
 }
 

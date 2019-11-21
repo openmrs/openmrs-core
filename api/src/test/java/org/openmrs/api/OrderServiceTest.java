@@ -2176,6 +2176,20 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#(OrderSearchCriteria)
 	 */
 	@Test
+	public void getOrders_shouldNotReturnDiscontinuedOrders() {
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setExcludeDiscontinueOrders(true).build();
+		List<Order> orders = orderService.getOrders(orderSearchCriteria);
+		assertEquals(11, orders.size());
+		for (Order order : orders) {
+			assertNotEquals(order.getAction(), org.openmrs.Order.Action.DISCONTINUE);
+		}
+	}
+
+
+	/**
+	 * @see OrderService#(OrderSearchCriteria)
+	 */
+	@Test
 	public void getOrders_shouldGetOrdersByCareSetting() {
 		CareSetting outPatient = orderService.getCareSetting(1);
 		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setCareSetting(outPatient).build();
