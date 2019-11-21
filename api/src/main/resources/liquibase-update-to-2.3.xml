@@ -134,4 +134,5 @@
 			<column name="description" type="varchar(1)" />
 		</createTable>
 	</changeSet>
+	
 </databaseChangeLog>
