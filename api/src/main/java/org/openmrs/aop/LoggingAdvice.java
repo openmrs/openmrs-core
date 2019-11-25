@@ -18,6 +18,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.openmrs.User;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,16 +31,16 @@ import org.slf4j.LoggerFactory;
 public class LoggingAdvice implements MethodInterceptor {
 	
 	/**
-	 * Logger for this class. Uses the name "org.openmrs.api" so that it seems to fit into the
-	 * log4j.xml configuration
-	 */
-	private static final Logger log = LoggerFactory.getLogger("org.openmrs.api");
-	
-	/**
 	 * List of all method name prefixes that result in INFO-level log messages
 	 */
 	private static final String[] SETTER_METHOD_PREFIXES = { "save", "create", "update", "void", "unvoid", "retire",
 	        "unretire", "delete", "purge" };
+
+	/**
+	 * Logger for this class. Uses the name "org.openmrs.api" so that it seems to fit into the
+	 * log4j2.xml configuration
+	 */
+	private final Logger log = LoggerFactory.getLogger(OpenmrsConstants.LOG_CLASS_DEFAULT);
 	
 	/**
 	 * This method prints out debug statements for getters and info statements for everything else
