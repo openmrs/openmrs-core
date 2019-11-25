@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -689,7 +690,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 							throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
 					}
 					
-					reader = new InputStreamReader(fileInInputStreamFormat);
+					reader = new InputStreamReader(fileInInputStreamFormat, StandardCharsets.UTF_8);
 					ReplacementDataSet replacementDataSet = new ReplacementDataSet(
 					        new FlatXmlDataSet(reader, false, true, false));
 					replacementDataSet.addReplacementObject("[NULL]", null);
