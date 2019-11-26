@@ -9,20 +9,11 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
-import static org.openmrs.util.AddressMatcher.containsAddress;
-import static org.openmrs.util.NameMatcher.containsFullName;
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.Criteria;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -64,7 +55,10 @@ import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -78,6 +72,20 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
+import static org.openmrs.util.AddressMatcher.containsAddress;
+import static org.openmrs.util.NameMatcher.containsFullName;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -118,6 +126,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	protected static AdministrationService adminService = null;
 	
 	protected static LocationService locationService = null;
+	
+	@Autowired
+	protected SessionFactory sessionFactory;
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -1886,7 +1897,28 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Patient> allPatients = patientService.getAllPatients();
 		// there are 1 voided and 4 nonvoided patients in
 		// standardTestDataset.xml
+		
+		// NOTE: if we "unvoid" the person 432 in the test dataset, but keep the patient 432 voided this still passes in 2.2.x, but fails against 2.3.x. and master
+		// so evidently after the change to annotations the underlying query is now checking the the Person object, not the Patient object
 		assertEquals(4, allPatients.size());
+	}
+	
+	@Test
+	public void shouldFetchPatientByDateChanged() throws Exception {
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		
+		// this test passed against 2.2.x and fails against 2.3.x and above
+		// these two date changed are set on the Patient record, not the Person record
+		// evidently after the upgrade using hibernate mappings for Patient and Person, queries are running against the Person dateChanged, not the Patient datechanged
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+		crit.setProjection(Projections.property("id"));
+		crit.add(Restrictions.ge("dateChanged", format.parse("2008-08-18 12:25")));
+		crit.add(Restrictions.le("dateChanged", format.parse("2008-08-18 12:26")));
+		List<Integer> patientIds = crit.list();
+		assertThat(patientIds.size(), is(2));
+		assertTrue(patientIds.contains(6));
+		assertTrue(patientIds.contains(7));
+		
 	}
 	
 	@Test
