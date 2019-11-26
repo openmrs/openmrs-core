@@ -9,13 +9,9 @@
  */
 package org.openmrs;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import org.hibernate.annotations.SortNatural;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -27,10 +23,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.SortNatural;
-import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Defines a Patient in the system. A patient is simply an extension of a person and all that that
@@ -55,42 +54,7 @@ public class Patient extends Person {
 	@SortNatural
 	@ContainedIn
 	private Set<PatientIdentifier> identifiers;
-	
-	@ManyToOne
-	@JoinColumn(name = "creator", updatable = false)
-	@Access(AccessType.PROPERTY)
-	private User creator;
-	
-	@Column(name = "date_created", nullable = false, updatable = false, length = 19)
-	@Access(AccessType.PROPERTY)
-	private Date dateCreated;
-	
-	@Column(name = "voided", nullable = false)
-	@Access(AccessType.PROPERTY)
-	@Field
-	private Boolean voided = Boolean.FALSE;
-	
-	@Column(name = "date_voided", length = 19)
-	@Access(AccessType.PROPERTY)
-	private Date dateVoided;
-	
-	@ManyToOne
-	@JoinColumn(name = "voided_by")
-	@Access(AccessType.PROPERTY)
-	private User voidedBy;
-	
-	@Column(name = "void_reason")
-	@Access(AccessType.PROPERTY)
-	private String voidReason;
-	
-	@ManyToOne
-	@JoinColumn(name = "changed_by")
-	@Access(AccessType.PROPERTY)
-	private User changedBy;
-	
-	@Column(name = "date_changed", length = 19)
-	@Access(AccessType.PROPERTY)
-	private Date dateChanged;
+
 	
 	// Constructors
 	
@@ -234,7 +198,106 @@ public class Patient extends Person {
 	public void setIdentifiers(Set<PatientIdentifier> identifiers) {
 		this.identifiers = identifiers;
 	}
-	
+
+	@ManyToOne
+	@JoinColumn(name = "creator", updatable = false)
+	@Access(AccessType.PROPERTY)
+	@Override
+	public User getCreator() {
+		return super.getCreator();
+	}
+
+	@Override
+	public void setCreator(User creator) {
+		super.setCreator(creator);
+	}
+
+	@Column(name = "date_created", nullable = false, updatable = false, length = 19)
+	@Access(AccessType.PROPERTY)
+	@Override
+	public Date getDateCreated() {
+		return super.getDateCreated();
+	}
+
+	@Override
+	public void setDateCreated(Date dateCreated) {
+		super.setDateCreated(dateCreated);
+	}
+
+	@Column(name = "voided", nullable = false)
+	@Access(AccessType.PROPERTY)
+	@Field
+	@Override
+	public Boolean getVoided() {
+		return super.getVoided();
+	}
+
+	public void setVoided(Boolean voided) {
+		super.setVoided(voided);
+	}
+
+	@Column(name = "date_voided", length = 19)
+	@Access(AccessType.PROPERTY)
+	@Override
+	public Date getDateVoided() {
+		return super.getDateVoided();
+	}
+
+	@Override
+	public void setDateVoided(Date dateVoided) {
+		super.setDateVoided(dateVoided);
+	}
+
+	@ManyToOne
+	@JoinColumn(name = "voided_by")
+	@Override
+	public User getVoidedBy() {
+		return super.getVoidedBy();
+	}
+
+	@Override
+	public void setVoidedBy(User voidedBy) {
+		super.setVoidedBy(voidedBy);
+	}
+
+	@Column(name = "void_reason")
+	@Access(AccessType.PROPERTY)
+	@Override
+	public String getVoidReason() {
+		return super.getVoidReason();
+	}
+
+	@Override
+	public void setVoidReason(String voidReason) {
+		super.setVoidReason(voidReason);
+	}
+
+	@ManyToOne
+	@JoinColumn(name = "changed_by")
+	@Access(AccessType.PROPERTY)
+	@Override
+	public User getChangedBy() {
+		return super.getChangedBy();
+	}
+
+	@Override
+	public void setChangedBy(User changedBy) {
+		super.setChangedBy(changedBy);
+	}
+
+	@Column(name = "date_changed", length = 19)
+	@Access(AccessType.PROPERTY)
+	@Override
+	public Date getDateChanged() {
+		return super.getDateChanged();
+	}
+
+	@Override
+	public void setDateChanged(Date dateChanged) {
+		super.setDateChanged(dateChanged);
+	}
+
+
 	/**
 	 * Adds this PatientIdentifier if the patient doesn't contain it already
 	 * 
