@@ -206,22 +206,12 @@ public class Patient extends Person {
 	public User getCreator() {
 		return super.getCreator();
 	}
-
-	@Override
-	public void setCreator(User creator) {
-		super.setCreator(creator);
-	}
-
+	
 	@Column(name = "date_created", nullable = false, updatable = false, length = 19)
 	@Access(AccessType.PROPERTY)
 	@Override
 	public Date getDateCreated() {
 		return super.getDateCreated();
-	}
-
-	@Override
-	public void setDateCreated(Date dateCreated) {
-		super.setDateCreated(dateCreated);
 	}
 
 	@Column(name = "voided", nullable = false)
@@ -232,20 +222,11 @@ public class Patient extends Person {
 		return super.getVoided();
 	}
 
-	public void setVoided(Boolean voided) {
-		super.setVoided(voided);
-	}
-
 	@Column(name = "date_voided", length = 19)
 	@Access(AccessType.PROPERTY)
 	@Override
 	public Date getDateVoided() {
 		return super.getDateVoided();
-	}
-
-	@Override
-	public void setDateVoided(Date dateVoided) {
-		super.setDateVoided(dateVoided);
 	}
 
 	@ManyToOne
@@ -255,21 +236,11 @@ public class Patient extends Person {
 		return super.getVoidedBy();
 	}
 
-	@Override
-	public void setVoidedBy(User voidedBy) {
-		super.setVoidedBy(voidedBy);
-	}
-
 	@Column(name = "void_reason")
 	@Access(AccessType.PROPERTY)
 	@Override
 	public String getVoidReason() {
 		return super.getVoidReason();
-	}
-
-	@Override
-	public void setVoidReason(String voidReason) {
-		super.setVoidReason(voidReason);
 	}
 
 	@ManyToOne
@@ -280,23 +251,12 @@ public class Patient extends Person {
 		return super.getChangedBy();
 	}
 
-	@Override
-	public void setChangedBy(User changedBy) {
-		super.setChangedBy(changedBy);
-	}
-
 	@Column(name = "date_changed", length = 19)
 	@Access(AccessType.PROPERTY)
 	@Override
 	public Date getDateChanged() {
 		return super.getDateChanged();
 	}
-
-	@Override
-	public void setDateChanged(Date dateChanged) {
-		super.setDateChanged(dateChanged);
-	}
-
 
 	/**
 	 * Adds this PatientIdentifier if the patient doesn't contain it already
