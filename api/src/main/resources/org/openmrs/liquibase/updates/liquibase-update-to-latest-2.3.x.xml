@@ -109,5 +109,10 @@
 								 baseTableName="conditions" baseColumnNames="encounter_id"
 								 referencedTableName="encounter" referencedColumnNames="encounter_id" />
     </changeSet>
-    
+    <changeSet id="20190916-TRUNK-5331-cohort_member" author="gitacliff">
+		<comment>
+			Dropping not null constraint from cohort_member.start_date column
+		</comment>
+		<dropNotNullConstraint tableName="cohort_member" columnName="start_date" columnDataType="DATETIME" />
+	</changeSet>
 </databaseChangeLog>

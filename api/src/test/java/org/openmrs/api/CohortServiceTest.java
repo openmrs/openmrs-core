@@ -702,7 +702,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		membership.setEndDate(endDate);
 		
 		List<Cohort> cohortsWithPatientAdded = service.getCohortsContainingPatientId(patient.getId());
-		assertEquals(0, cohortsWithPatientAdded.size());
+		assertEquals(1, cohortsWithPatientAdded.size());
 	}
 	
 	@Test

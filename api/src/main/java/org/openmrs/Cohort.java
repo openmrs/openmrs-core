@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openmrs.util.OpenmrsUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -267,8 +268,19 @@ public class Cohort extends BaseChangeableOpenmrsData {
 		Cohort ret = new Cohort();
 		ret.setName("(" + (a == null ? "NULL" : a.getName()) + " * " + (b == null ? "NULL" : b.getName()) + ")");
 		if (a != null && b != null) {
-			ret.getMemberships().addAll(a.getMemberships());
-			ret.getMemberships().retainAll(b.getMemberships());
+			//loop between memberships and find the intersections
+			for (CohortMembership membershipA : a.getMemberships()) {
+				for (CohortMembership membershipB : b.getMemberships()) {
+					//add the membership with earliest date , if one date is null pick the other one
+					if (membershipA.getPatientId() == membershipB.getPatientId()) {
+						if (OpenmrsUtil.compareWithNullAsLatest(membershipA.getStartDate(), membershipB.getStartDate()) <= 0)
+							ret.addMembership(membershipB);
+						else
+							ret.addMembership(membershipA);
+						break;
+					}
+				}
+			}
 		}
 		return ret;
 	}
