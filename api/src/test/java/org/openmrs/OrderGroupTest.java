@@ -9,7 +9,11 @@
  */
 package org.openmrs;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,4 +35,19 @@ public class OrderGroupTest {
         Assert.assertNotNull("should have orderGroup in order", orders.get(0).getOrderGroup());
         Assert.assertNotNull("should have orderGroup in order", orders.get(1).getOrderGroup());
     }
+
+	@Test
+	public void shouldAddPreviousOrderGroupToOderGroup() {
+		OrderGroup orderGroup = new OrderGroup();
+		OrderGroup previousrderGroup = new OrderGroup();
+		orderGroup.setPreviousOrderGroup(previousrderGroup);
+		assertNotNull(orderGroup.getPreviousOrderGroup());
+	}
+
+	@Test
+	public void shouldReturnNullWhenNoPreviousOrdeGroupIsSet() {
+		OrderGroup orderGroup = new OrderGroup();
+		assertNull(orderGroup.getPreviousOrderGroup());
+
+	}
 }
