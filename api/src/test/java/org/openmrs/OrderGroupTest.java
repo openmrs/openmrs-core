@@ -13,7 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+
 
 public class OrderGroupTest {
 
@@ -33,4 +34,7 @@ public class OrderGroupTest {
         assertNotNull(orders.get(0).getOrderGroup(), "should have orderGroup in order");
         assertNotNull(orders.get(1).getOrderGroup(), "should have orderGroup in order");
     }
+
 }
+
+
