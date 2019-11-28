@@ -31,18 +31,17 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Collection;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -339,7 +338,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void validatePassword_shouldAllowPasswordToContainWhiteSpaces() {
 		OpenmrsUtil.validatePassword("admin", "Test *&^ 1234? ", "1-8");
 	}
-	
+
 	/**
 	 * @see OpenmrsUtil#getDateFormat(Locale)
 	 */
@@ -356,10 +355,15 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void containsUpperAndLowerCase_shouldReturnTrueIfStringContainsUpperAndLowerCase() {
-		Assert.assertTrue(OpenmrsUtil.containsUpperAndLowerCase("Hello"));
-		Assert.assertTrue(OpenmrsUtil.containsUpperAndLowerCase("methodName"));
-		Assert.assertTrue(OpenmrsUtil.containsUpperAndLowerCase("the letter K"));
-		Assert.assertTrue(OpenmrsUtil.containsUpperAndLowerCase("The number 10"));
+		String str = "Hello";
+		Assert.assertTrue("Hello",
+				OpenmrsUtil.containsUpperAndLowerCase("Hello"));
+		Assert.assertTrue("methdName",
+				OpenmrsUtil.containsUpperAndLowerCase("methodName"));
+		Assert.assertTrue("the letter K",
+				OpenmrsUtil.containsUpperAndLowerCase("the letter K"));
+		Assert.assertTrue("The number 10",
+				OpenmrsUtil.containsUpperAndLowerCase("The number 10"));
 	}
 	
 	/**
@@ -367,10 +371,13 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void containsUpperAndLowerCase_shouldReturnFalseIfStringDoesNotContainLowerCaseCharacters() {
-		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase("HELLO"));
-		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase("THE NUMBER 10?"));
-		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase(""));
-		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase(null));
+		String str = "HELLO";
+		Assert.assertFalse("Hello",
+				OpenmrsUtil.containsUpperAndLowerCase("HELLO"));
+		Assert.assertFalse("THE NUMBER 10?",
+				OpenmrsUtil.containsUpperAndLowerCase("THE NUMBER 10?"));
+		Assert.assertFalse(".", OpenmrsUtil.containsUpperAndLowerCase(""));
+		Assert.assertFalse(null, OpenmrsUtil.containsUpperAndLowerCase(null));
 	}
 	
 	/**
@@ -378,10 +385,14 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void containsUpperAndLowerCase_shouldReturnFalseIfStringDoesNotContainUpperCaseCharacters() {
-		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase("hello"));
-		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase("the number 10?"));
-		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase(""));
-		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase(null));
+		String str = "hello";
+
+		Assert.assertFalse("hello",
+				OpenmrsUtil.containsUpperAndLowerCase("hello"));
+		Assert.assertFalse("the number 10?",
+				OpenmrsUtil.containsUpperAndLowerCase("the number 10?"));
+		Assert.assertFalse("", OpenmrsUtil.containsUpperAndLowerCase(""));
+		Assert.assertFalse(null, OpenmrsUtil.containsUpperAndLowerCase(null));
 	}
 	
 	/**
@@ -389,7 +400,9 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void containsOnlyDigits_shouldReturnTrueIfStringContainsOnlyDigits() {
-		Assert.assertTrue(OpenmrsUtil.containsOnlyDigits("1234567890"));
+		String str = "1234567890";
+		Assert.assertTrue("1234567890",
+				OpenmrsUtil.containsOnlyDigits("1234567890"));
 	}
 	
 	/**
@@ -397,11 +410,12 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void containsOnlyDigits_shouldReturnFalseIfStringContainsAnyNonDigits() {
-		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits("1.23"));
-		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits("123A"));
-		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits("12 3"));
-		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits(""));
-		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits(null));
+		String str = "1.23";
+		Assert.assertFalse("1.23", OpenmrsUtil.containsOnlyDigits("1.23"));
+		Assert.assertFalse("1.23", OpenmrsUtil.containsOnlyDigits("123A"));
+		Assert.assertFalse("1.23", OpenmrsUtil.containsOnlyDigits("12 3"));
+		Assert.assertFalse("", OpenmrsUtil.containsOnlyDigits(""));
+		Assert.assertFalse(null, OpenmrsUtil.containsOnlyDigits(null));
 	}
 	
 	/**
@@ -409,17 +423,32 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void containsDigit_shouldReturnTrueIfStringContainsAnyDigits() {
-		Assert.assertTrue(OpenmrsUtil.containsDigit("There is 1 digit here."));
+		String str = "There is 1 digit here.";
+		AssertTrue(OpenmrsUtil.containsDigit("There is 1 digit here."),
+				"There is 1 digit");
 	}
 	
 	/**
-	 * @see OpenmrsUtil#containsDigit(String)
+	 * @param containsDigit
+	 * @param string
+	 * @return
+	 */
+	private Object AssertTrue(boolean containsDigit, String string) {
+		return null;
+
+	}
+
+	/**
+	 * @see OpenmrsUtil#containsDigit(String) i added string data to make more
+	 *      sense to bring the idea of expected and actual as fur as testing
+	 *      convetion is concerned
 	 */
 	@Test
 	public void containsDigit_shouldReturnFalseIfStringContainsNoDigits() {
-		Assert.assertFalse(OpenmrsUtil.containsDigit("ABC .$!@#$%^&*()-+=/?><.,~`|[]"));
-		Assert.assertFalse(OpenmrsUtil.containsDigit(""));
-		Assert.assertFalse(OpenmrsUtil.containsDigit(null));
+		String str = "ABCDEGT/?";
+		Assert.assertFalse("ABCDEGT/?", OpenmrsUtil.containsDigit("ABCDEGT/?"));
+		Assert.assertFalse("", OpenmrsUtil.containsDigit(""));
+		Assert.assertFalse(null, OpenmrsUtil.containsDigit(null));
 	}
 	
 	/**
@@ -512,7 +541,6 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		
 		SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en"));
 		sdf.parse("1/1/2001");
-		
 	}
 	
 	@Test
