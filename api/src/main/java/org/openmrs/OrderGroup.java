@@ -36,6 +36,9 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	private OrderSet orderSet;
 	
 	private OrderGroup parentOrderGroup;
+
+	private Concept nestedOrderGroups;
+
 	/**
 	 * Gets the orderGroupId
 	 *
@@ -227,5 +230,27 @@ public class OrderGroup extends BaseChangeableOpenmrsData {
 	 */
 	public void setParentOrderGroup(OrderGroup parentOrderGroup) {
 		this.parentOrderGroup = parentOrderGroup;
+	}
+
+	/*
+	* Gets the nestedOrderGroups 
+	*
+	*@return nestedOrderGroups
+	*@since 2.3.0
+	*/
+
+	public Concept getNestedOrderGroups(){
+		return nestedOrderGroups;
+	}
+
+	/*
+	* Sets the nestedOrderGroups 
+	*
+	*@param nestedOrderGroups to set
+	*@since 2.3.0
+	*/
+
+	public void setNestedOrderGroups(Concept nestedOrderGroups){
+		this.nestedOrderGroups = nestedOrderGroups;
 	}
 }

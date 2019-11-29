@@ -150,5 +150,20 @@
 								 constraintName="order_group_parent_order_group_fk"
 								 referencedTableName="order_group"
 								 referencedColumnNames="order_group_id" />
-    </changeSet>
+	</changeSet>
+	
+	<changeSet id="TRUNK-5652" author="odorajonathan">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="order_group" columnName="nested_order_groups"/></not>
+		</preConditions>
+		<comment>
+			Add nested_order_groups field to order_group table
+		</comment>
+		<addColumn tableName="order_group">
+			<column name="nested_order_groups" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint baseTableName="order_group" baseColumnNames="nested_order_groups" constraintName="nested_order_groups_fk"
+		 referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
+
 </databaseChangeLog>
