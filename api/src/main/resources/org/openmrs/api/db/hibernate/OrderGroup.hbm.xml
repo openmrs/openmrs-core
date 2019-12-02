@@ -72,4 +72,7 @@
 		    not-null="false" column="parent_order_group" />
     </class>
 
+    <many-to-one name="nestedOrderGroups" class="org.openmrs.Concept"
+        not-null="false" column="nested_order_groups"/>
+
 </hibernate-mapping>
