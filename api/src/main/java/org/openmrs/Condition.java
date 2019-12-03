@@ -340,34 +340,34 @@ public class Condition extends BaseChangeableOpenmrsData {
 			return false;
 		}
 		
-		Condition condition = (Condition) o;
+		Condition conditionToBeChecked = (Condition) o;
 		
-		if (!patient.equals(condition.patient)) {
+		if (!patient.equals(conditionToBeChecked.patient)) {
 			return false;
 		}
-		if (clinicalStatus != condition.clinicalStatus) {
+		if (clinicalStatus != conditionToBeChecked.clinicalStatus) {
 			return false;
 		}
-		if (verificationStatus != condition.verificationStatus) {
+		if (verificationStatus != conditionToBeChecked.verificationStatus) {
 			return false;
 		}
-		if (this.condition.getCoded() != null && !this.condition.getCoded().equals(condition.getCondition().getCoded())) {
+		if (this.condition.getCoded() != null && !this.condition.getCoded().equals(conditionToBeChecked.getCondition().getCoded())) {
 			return false;
 		}
 		if (this.condition.getNonCoded() != null
-		        ? !this.condition.getNonCoded().equals(condition.getCondition().getNonCoded())
-		        : condition.getCondition().getNonCoded() != null) {
+		        ? !this.condition.getNonCoded().equals(conditionToBeChecked.getCondition().getNonCoded())
+		        : conditionToBeChecked.getCondition().getNonCoded() != null) {
 			return false;
 		}
-		if (!Objects.equals(onsetDate, condition.onsetDate)) {
+		if (!Objects.equals(onsetDate, conditionToBeChecked.onsetDate)) {
 			return false;
 		}
-		if (!Objects.equals(additionalDetail, condition.additionalDetail)) {
+		if (!Objects.equals(additionalDetail, conditionToBeChecked.additionalDetail)) {
 			return false;
 		}
-		if (!Objects.equals(endDate, condition.endDate)) {
+		if (!Objects.equals(endDate, conditionToBeChecked.endDate)) {
 			return false;
 		}
-		return Objects.equals(endReason, condition.endReason);
+		return Objects.equals(endReason, conditionToBeChecked.endReason);
 	}
 }
