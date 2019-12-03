@@ -186,6 +186,11 @@ public interface ConceptDAO {
 	public List<ConceptDatatype> getAllConceptDatatypes(boolean includeRetired) throws DAOException;
 	
 	/**
+	 * @see org.openmrs.api.ConceptService#getConceptDatatypes(java.lang.string)
+	 */
+	public List<ConceptDatatype> getConceptDatatypes(String name) throws DAOException;
+	
+	/**
 	 * @param name
 	 * @return the {@link ConceptDatatype} that matches <em>name</em> exactly or null if one does
 	 *         not exist.
