@@ -106,8 +106,8 @@ public class Condition extends BaseChangeableOpenmrsData {
 		this.previousVersion = previousVersion;
 		this.additionalDetail = additionalDetail;
 		this.onsetDate = onsetDate;
-		this.endDate = endDate;
-		this.patient = patient;
+		this.endDate = new Date(endDate.getTime());
+		this.patient = new Patient(patient);
 	}
 	
 	public static Condition newInstance(Condition condition) {
@@ -246,7 +246,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 	 *         set
 	 */
 	public Date getOnsetDate() {
-		return onsetDate;
+		return onsetDate != null ? (Date) onsetDate.clone() : new Date();
 	}
 	
 	/**
@@ -255,7 +255,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 	 * @param onsetDate the onset date of the condition to be set
 	 */
 	public void setOnsetDate(Date onsetDate) {
-		this.onsetDate = onsetDate;
+		this.onsetDate = new Date(onsetDate.getTime());
 	}
 	
 	/**
@@ -264,7 +264,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 	 * @return endDate - a date object that shows the end date of the condition
 	 */
 	public Date getEndDate() {
-		return endDate;
+		return endDate != null ? (Date) endDate.clone() : new Date();
 	}
 	
 	/**
@@ -273,7 +273,7 @@ public class Condition extends BaseChangeableOpenmrsData {
 	 * @param endDate the end date to be set for the condition
 	 */
 	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+		this.endDate = new Date(endDate.getTime());
 	}
 	
 	/**
@@ -340,34 +340,34 @@ public class Condition extends BaseChangeableOpenmrsData {
 			return false;
 		}
 		
-		Condition condition = (Condition) o;
+		Condition conditionObj = (Condition) o;
 		
-		if (!patient.equals(condition.patient)) {
+		if (!patient.equals(conditionObj.patient)) {
 			return false;
 		}
-		if (clinicalStatus != condition.clinicalStatus) {
+		if (clinicalStatus != conditionObj.clinicalStatus) {
 			return false;
 		}
-		if (verificationStatus != condition.verificationStatus) {
+		if (verificationStatus != conditionObj.verificationStatus) {
 			return false;
 		}
-		if (this.condition.getCoded() != null && !this.condition.getCoded().equals(condition.getCondition().getCoded())) {
+		if (this.condition.getCoded() != null && !this.condition.getCoded().equals(conditionObj.getCondition().getCoded())) {
 			return false;
 		}
 		if (this.condition.getNonCoded() != null
-		        ? !this.condition.getNonCoded().equals(condition.getCondition().getNonCoded())
-		        : condition.getCondition().getNonCoded() != null) {
+		        ? !this.condition.getNonCoded().equals(conditionObj.getCondition().getNonCoded())
+		        : conditionObj.getCondition().getNonCoded() != null) {
 			return false;
 		}
-		if (!Objects.equals(onsetDate, condition.onsetDate)) {
+		if (!Objects.equals(onsetDate, conditionObj.onsetDate)) {
 			return false;
 		}
-		if (!Objects.equals(additionalDetail, condition.additionalDetail)) {
+		if (!Objects.equals(additionalDetail, conditionObj.additionalDetail)) {
 			return false;
 		}
-		if (!Objects.equals(endDate, condition.endDate)) {
+		if (!Objects.equals(endDate, conditionObj.endDate)) {
 			return false;
 		}
-		return Objects.equals(endReason, condition.endReason);
+		return Objects.equals(endReason, conditionObj.endReason);
 	}
 }
