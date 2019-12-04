@@ -289,6 +289,64 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see ConceptServiceImpl#saveDrug(Drug) 
+	 */
+	@Test
+	public void saveDrug_shouldPutGeneratedIdOntoReturnedDrug() {
+		Drug drug = new Drug();
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Concept", new Locale("en", "US")));
+		concept.addDescription(new ConceptDescription("Description", new Locale("en", "US")));
+		concept.setConceptClass(new ConceptClass(1));
+		concept.setDatatype(new ConceptDatatype(1));
+		Concept savedConcept = conceptService.saveConcept(concept);
+		drug.setConcept(savedConcept);
+		assertNull(drug.getDrugId());
+		Drug savedDrug = conceptService.saveDrug(drug);
+		assertNotNull(savedDrug.getDrugId());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveDrug(Drug)
+	 */
+	@Test
+	public void saveDrug_shouldCreateNewDrugInDatabase() {
+		Drug drug = new Drug();
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Concept", new Locale("en", "US")));
+		concept.addDescription(new ConceptDescription("Description", new Locale("en", "US")));
+		concept.setConceptClass(new ConceptClass(1));
+		concept.setDatatype(new ConceptDatatype(1));
+		Concept savedConcept = conceptService.saveConcept(concept);
+		drug.setConcept(savedConcept);
+		drug.setName("Drug");
+		assertNull(conceptService.getDrug("Drug"));
+		Drug savedDrug = conceptService.saveDrug(drug);
+		assertNotNull(conceptService.getDrug(savedDrug.getDrugId()));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveDrug(Drug)
+	 */
+	@Test
+	public void saveDrug_shouldUpdateDrugAlreadyExistingInDatabase() {
+		Drug drug = new Drug();
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Concept", new Locale("en", "US")));
+		concept.addDescription(new ConceptDescription("Description", new Locale("en", "US")));
+		concept.setConceptClass(new ConceptClass(1));
+		concept.setDatatype(new ConceptDatatype(1));
+		Concept savedConcept = conceptService.saveConcept(concept);
+		drug.setConcept(savedConcept);
+		drug.setCombination(false);
+		Drug savedDrug = conceptService.saveDrug(drug);
+		assertFalse(savedDrug.getCombination());
+		savedDrug.setCombination(true);
+		conceptService.saveDrug(savedDrug);
+		assertTrue(conceptService.getDrug(savedDrug.getDrugId()).getCombination());
+	}
+	
+	/**
 	 * @see ConceptServiceImpl#purgeConcept(Concept)
 	 */
 	@Test
