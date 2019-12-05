@@ -791,4 +791,41 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		assertEquals(new Integer(1),
 		    conceptService.getCountOfDrugs(phrase, conceptService.getConcept(conceptId), true, true, true));
 	}
+
+	/**
+	 * @see ConceptServiceImpl#saveConceptProposal(ConceptProposal) 
+	 */
+	@Test
+	public void saveConceptProposal_shouldReturnSavedConceptProposalObject() {
+		final String ORIGINAL_TEXT = "OriginalText";
+		ConceptProposal conceptProposal = new ConceptProposal();
+		conceptProposal.setOriginalText(ORIGINAL_TEXT);
+		List<ConceptProposal> existingConceptProposals = conceptService.getConceptProposals(ORIGINAL_TEXT);
+		assertTrue(existingConceptProposals.isEmpty());
+		ConceptProposal savedConceptProposal = conceptService.saveConceptProposal(conceptProposal);
+		assertEquals(ORIGINAL_TEXT, savedConceptProposal.getOriginalText());
+		assertEquals(conceptProposal, savedConceptProposal);
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveConceptProposal(ConceptProposal)
+	 */
+	@Test
+	public void saveConceptProposal_shouldReturnUpdatedConceptProposalObject() {
+		ConceptProposal conceptProposal = new ConceptProposal();
+		conceptProposal.setOriginalText("OriginalText");
+		ConceptProposal savedConceptProposal = conceptService.saveConceptProposal(conceptProposal);
+		final String ANOTHER_ORIGINAL_TEXT = "AnotherOriginalText";
+		savedConceptProposal.setOriginalText(ANOTHER_ORIGINAL_TEXT);
+		ConceptProposal updatedConceptProposal = conceptService.saveConceptProposal(savedConceptProposal);
+		assertEquals(ANOTHER_ORIGINAL_TEXT, updatedConceptProposal.getOriginalText());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#saveConceptProposal(ConceptProposal)
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void saveConceptProposal_shouldFailGivenNull() {
+		conceptService.saveConceptProposal(null);
+	}
 }
