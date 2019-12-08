@@ -122,12 +122,12 @@
 
 	<!--  **************************  DATA ACCESS OBJECTS  *************************  -->		
 
-	<bean id="contextDAO" class="org.openmrs.api.db.hibernate.HibernateContextDAO">
+	<bean id="contextDAO" class="org.openmrs.api.db.hibernate.HibernateContextDAO" scope ="singleton">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
     <property name="userDAO"><ref bean="userDAO"/></property>
 	</bean>
 	
-	<bean id="patientDAO" class="org.openmrs.api.db.hibernate.HibernatePatientDAO">
+	<bean id="patientDAO" class="org.openmrs.api.db.hibernate.HibernatePatientDAO" >
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
 	<bean id="personDAO" class="org.openmrs.api.db.hibernate.HibernatePersonDAO">
@@ -206,7 +206,7 @@
 		Note that we have circular dependency between service and context object.
 		There's nothing we could do about this.  
 	-->
-	<bean id="patientServiceTarget" class="org.openmrs.api.impl.PatientServiceImpl">
+	<bean id="patientServiceTarget" class="org.openmrs.api.impl.PatientServiceImpl" scope="singleton">
 		<property name="patientDAO"><ref bean="patientDAO"/></property>	
 		<property name="identifierValidators">
 			<map>
@@ -221,16 +221,16 @@
 			</map>
 		</property>
 	</bean>
-	<bean id="personServiceTarget" class="org.openmrs.api.impl.PersonServiceImpl">
+	<bean id="personServiceTarget" class="org.openmrs.api.impl.PersonServiceImpl" scope="singleton">
 		<property name="personDAO"><ref bean="personDAO"/></property>	
 	</bean>
-	<bean id="conceptServiceTarget" class="org.openmrs.api.impl.ConceptServiceImpl">
+	<bean id="conceptServiceTarget" class="org.openmrs.api.impl.ConceptServiceImpl" scope="singleton">
 		<property name="conceptDAO"><ref bean="conceptDAO"/></property>	
 	</bean>
-	<bean id="userServiceTarget" class="org.openmrs.api.impl.UserServiceImpl">
+	<bean id="userServiceTarget" class="org.openmrs.api.impl.UserServiceImpl" scope="singleton">
 		<property name="userDAO"><ref bean="userDAO"/></property>	
 	</bean>
-	<bean id="obsServiceTarget" class="org.openmrs.api.impl.ObsServiceImpl">
+	<bean id="obsServiceTarget" class="org.openmrs.api.impl.ObsServiceImpl" scope="singleton">
 		<property name="obsDAO"><ref bean="obsDAO"/></property>	
         <property name="handlers">
             <map>
@@ -253,64 +253,64 @@
             </map>
         </property>
 	</bean>
-	<bean id="encounterServiceTarget" class="org.openmrs.api.impl.EncounterServiceImpl">
+	<bean id="encounterServiceTarget" class="org.openmrs.api.impl.EncounterServiceImpl"scope="singleton">
 		<property name="encounterDAO"><ref bean="encounterDAO"/></property>	
 	</bean>
-	<bean id="locationServiceTarget" class="org.openmrs.api.impl.LocationServiceImpl">
+	<bean id="locationServiceTarget" class="org.openmrs.api.impl.LocationServiceImpl" scope="singleton">
 		<property name="locationDAO"><ref bean="locationDAO"/></property>	
 	</bean>
-	<bean id="orderServiceTarget" class="org.openmrs.api.impl.OrderServiceImpl">
+	<bean id="orderServiceTarget" class="org.openmrs.api.impl.OrderServiceImpl" scope="singleton">
 		<property name="orderDAO"><ref bean="orderDAO"/></property>
 	</bean>
-	<bean id="conditionServiceTarget" class="org.openmrs.api.impl.ConditionServiceImpl">
+	<bean id="conditionServiceTarget" class="org.openmrs.api.impl.ConditionServiceImpl" scope="singleton">
 		<property name="conditionDAO"><ref bean="conditionDAO"/></property>
 	</bean>
-	<bean id="diagnosisServiceTarget" class="org.openmrs.api.impl.DiagnosisServiceImpl">
+	<bean id="diagnosisServiceTarget" class="org.openmrs.api.impl.DiagnosisServiceImpl" scope="singleton">
 		<property name="diagnosisDAO"><ref bean="diagnosisDAO"/></property>
 	</bean>
-	<bean id="orderSetServiceTarget" class="org.openmrs.api.impl.OrderSetServiceImpl">
+	<bean id="orderSetServiceTarget" class="org.openmrs.api.impl.OrderSetServiceImpl" scope="singleton">
 		<property name="orderSetDAO"><ref bean="orderSetDAO"/></property>
 	</bean>
-	<bean id="formServiceTarget" class="org.openmrs.api.impl.FormServiceImpl">
+	<bean id="formServiceTarget" class="org.openmrs.api.impl.FormServiceImpl" scope="singleton">
 		<property name="formDAO"><ref bean="formDAO"/></property>	
 	</bean>
-	<bean id="adminServiceTarget" class="org.openmrs.api.impl.AdministrationServiceImpl">
+	<bean id="adminServiceTarget" class="org.openmrs.api.impl.AdministrationServiceImpl" scope="singleton">
 		<property name="administrationDAO"><ref bean="adminDAO"/></property>	
 		<property name="eventListeners"><ref bean="openmrsEventListeners"/></property>
 		<property name="globalLocaleList"><ref bean="globalLocaleList"/></property>
 		<property name="implementationIdHttpClient"><ref bean="implementationIdHttpClient"/></property>
 	</bean>
-	<bean id="datatypeServiceTarget" class="org.openmrs.api.impl.DatatypeServiceImpl">
+	<bean id="datatypeServiceTarget" class="org.openmrs.api.impl.DatatypeServiceImpl" scope="singleton">
 		<property name="dao"><ref bean="datatypeDAO"/></property>
 	</bean>
-	<bean id="programWorkflowServiceTarget" class="org.openmrs.api.impl.ProgramWorkflowServiceImpl">
+	<bean id="programWorkflowServiceTarget" class="org.openmrs.api.impl.ProgramWorkflowServiceImpl" scope="singleton">
 		<property name="programWorkflowDAO"><ref bean="programWorkflowDAO"/></property>	
 	</bean>
-	<bean id="visitServiceTarget" class="org.openmrs.api.impl.VisitServiceImpl">
+	<bean id="visitServiceTarget" class="org.openmrs.api.impl.VisitServiceImpl" scope="singleton">
         <property name="visitDAO"><ref bean="visitDAO"/></property>
 	</bean>
-	<bean id="providerServiceTarget" class="org.openmrs.api.impl.ProviderServiceImpl">
+	<bean id="providerServiceTarget" class="org.openmrs.api.impl.ProviderServiceImpl" scope="singleton">
         <property name="providerDAO"><ref bean="providerDAO"/></property>
 	</bean>	
 
 	<!-- Cohort Service setup -->
-	<bean id="cohortServiceTarget" class="org.openmrs.api.impl.CohortServiceImpl">
+	<bean id="cohortServiceTarget" class="org.openmrs.api.impl.CohortServiceImpl" scope="singleton">
 		<property name="cohortDAO"><ref bean="cohortDAO"/></property>
 	</bean>
 	<!-- /Cohort Service setup -->
 	
-	<bean id="schedulerServiceTarget" class="org.openmrs.scheduler.timer.TimerSchedulerServiceImpl">
+	<bean id="schedulerServiceTarget" class="org.openmrs.scheduler.timer.TimerSchedulerServiceImpl" scope="singleton">
 		<property name="schedulerDAO"><ref bean="schedulerDAO"/></property>	
 	</bean>
-	<bean id="alertServiceTarget" class="org.openmrs.notification.impl.AlertServiceImpl">
+	<bean id="alertServiceTarget" class="org.openmrs.notification.impl.AlertServiceImpl" scope="singleton">
 		<property name="alertDAO"><ref bean="alertDAO"/></property>	
 	</bean>
-	<bean id="messageServiceTarget" class="org.openmrs.notification.impl.MessageServiceImpl">
+	<bean id="messageServiceTarget" class="org.openmrs.notification.impl.MessageServiceImpl" scope="singleton">
 		<property name="templateDAO"><ref bean="templateDAO"/></property>	
 	</bean>
 
 	<!-- SerializationService setup -->
-	<bean id="serializationServiceTarget" class="org.openmrs.api.impl.SerializationServiceImpl">
+	<bean id="serializationServiceTarget" class="org.openmrs.api.impl.SerializationServiceImpl" factory-method="getInstance">
 		<property name="serializers">
 			<list>
                 <bean class="org.openmrs.serialization.SimpleXStreamSerializer"/>
