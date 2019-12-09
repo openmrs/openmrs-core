@@ -828,4 +828,22 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	public void saveConceptProposal_shouldFailGivenNull() {
 		conceptService.saveConceptProposal(null);
 	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptNameTagByName(String)
+	 */
+	@Test
+	public void getConceptNameTagByName_shouldReturnNullIfNoConceptNameTagIsFound() {
+		assertNull(conceptService.getConceptNameTagByName("random-tag"));
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptNameTagByName(String)
+	 */
+	@Test
+	public void getConceptNameTagByName_shouldReturnTheMatchingConceptNameTagObjectIfFound() {
+		ConceptNameTag conceptNameTag = conceptService.getConceptNameTag(1);
+		assertNotNull(conceptNameTag);
+		assertEquals(conceptNameTag, conceptService.getConceptNameTagByName(conceptNameTag.getTag()));
+	}
 }
