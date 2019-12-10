@@ -395,7 +395,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConcepTServiceImpl#retireDrug(Drug, String)
+	 * @see ConceptServiceImpl#retireDrug(Drug, String)
 	 */
 	@Test
 	public void retireDrug_shouldRetireTheGivenDrug() {
@@ -406,7 +406,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConcepTServiceImpl#unretireDrug(Drug)
+	 * @see ConceptServiceImpl#unretireDrug(Drug)
 	 */
 	@Test
 	public void unretireDrug_shouldMarkDrugAsNotRetired() {
@@ -417,7 +417,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConcepTServiceImpl#unretireDrug(Drug)
+	 * @see ConceptServiceImpl#unretireDrug(Drug)
 	 */
 	@Test
 	public void unretireDrug_shouldNotChangeAttributesOfDrugThatIsAlreadyNotRetired() {
@@ -562,7 +562,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConceptServiceImpl#getDrugByIngredients(Concept)
+	 * @see ConceptServiceImpl#getDrugsByIngredient(Concept)
 	 */
 	@Test
 	public void getDrugsByIngredient_shouldRaiseExceptionIfNoConceptIsGiven() {
