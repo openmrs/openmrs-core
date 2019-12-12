@@ -260,18 +260,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setConceptClass(ConceptClass conceptClass) {
 		this.conceptClass = conceptClass;
 	}
-	
-	/**
-	 * whether or not this concept is a set
-	 * 
-	 * @deprecated as of 2.0, use {@link #getSet()}
-	 */
-	@Deprecated
-	@JsonIgnore
-	public Boolean isSet() {
-		return getSet();
-	}
-	
+    
 	/**
 	 * @param set whether or not this concept is a set
 	 */
@@ -1225,18 +1214,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public boolean removeDescription(ConceptDescription description) {
 		return descriptions.remove(description);
-	}
-	
-	/**
-	 * @return Returns the retired.
-	 * 
-	 * @deprecated as of 2.0, use {@link #getRetired()}
-	 */
-	@Override
-	@Deprecated
-	@JsonIgnore
-	public Boolean isRetired() {
-		return getRetired();
 	}
 	
 	/**

@@ -184,24 +184,6 @@ public class Allergy extends BaseChangeableOpenmrsData {
 	}
 	
 	/**
-	 * @return Returns the comment
-	 * @deprecated as of 2.3.0, replaced by {@link #getComments()}
-	 */
-	@Deprecated
-	public String getComment() {
-		return getComments();
-	}
-	
-	/**
-	 * @param comment the comment to set
-	 * @deprecated as of 2.3.0, replaced by {@link #setComments(String)}
-	 */
-	@Deprecated
-	public void setComment(String comment) {
-		setComments(comment);
-	}
-	
-	/**
 	 * @return Returns the comments
 	 * @since 2.3.0
 	 */

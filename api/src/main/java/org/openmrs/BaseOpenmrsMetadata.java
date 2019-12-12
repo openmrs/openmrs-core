@@ -142,57 +142,6 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	}
 	
 	/**
-	 * @see org.openmrs.OpenmrsMetadata#getChangedBy()
-	 * @deprecated as of version 2.2
-	 */
-	@Override
-	@Deprecated
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	/**
-	 * @see org.openmrs.OpenmrsMetadata#setChangedBy(User)
-	 * @deprecated as of version 2.2
-	 */
-	@Override
-	@Deprecated
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	/**
-	 * @see org.openmrs.OpenmrsMetadata#getDateChanged()
-	 * @deprecated as of version 2.2
-	 */
-	@Override
-	@Deprecated
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	/**
-	 * @see org.openmrs.OpenmrsMetadata#setDateChanged(Date)
-	 * @deprecated as of version 2.2
-	 */
-	@Override
-	@Deprecated
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-	
-	/**
-	 * @deprecated as of 2.0, use {@link #getRetired()}
-	 * @see org.openmrs.Retireable#isRetired()
-	 */
-	@Override
-	@Deprecated
-	@JsonIgnore
-	public Boolean isRetired() {
-		return getRetired();
-	}
-	
-	/**
 	 * This method delegates to {@link #isRetired()}. This is only needed for jstl syntax like
 	 * ${fieldType.retired} because the return type is a Boolean object instead of a boolean
 	 * primitive type.

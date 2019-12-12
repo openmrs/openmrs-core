@@ -23,7 +23,7 @@ public abstract class BaseChangeableOpenmrsMetadata extends BaseOpenmrsMetadata 
 	 */
 	@Override
 	public User getChangedBy() {
-		return super.getChangedBy();
+		return changedBy;
 	}
 	
 	/**
@@ -31,7 +31,7 @@ public abstract class BaseChangeableOpenmrsMetadata extends BaseOpenmrsMetadata 
 	 */
 	@Override
 	public void setChangedBy(User changedBy) {
-		super.setChangedBy(changedBy);
+		super.changedBy = changedBy;
 	}
 	
 	/**
@@ -39,7 +39,7 @@ public abstract class BaseChangeableOpenmrsMetadata extends BaseOpenmrsMetadata 
 	 */
 	@Override
 	public Date getDateChanged() {
-		return super.getDateChanged();
+		return dateChanged;
 	}
 	
 	/**
@@ -47,6 +47,6 @@ public abstract class BaseChangeableOpenmrsMetadata extends BaseOpenmrsMetadata 
 	 */
 	@Override
 	public void setDateChanged(Date dateChanged) {
-		super.setDateChanged(dateChanged);
+		super.dateChanged = dateChanged;
 	}
 }
