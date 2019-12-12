@@ -94,7 +94,7 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	}
 	
 	public Date getStartDate() {
-		return new Date(startDate.getTime());
+		return return (Date) endDate.clone();
 	}
 	
 	public void setStartDate(Date startDate) {
@@ -102,7 +102,7 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	}
 	
 	public Date getEndDate() {
-		return new Date(endDate.getTime());
+		return (Date) endDate.clone();
 	}
 	
 	/**
